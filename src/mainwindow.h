@@ -12,15 +12,18 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void ExtNewTab() { NewTab(); }
 
 private slots:
     void NewTab();
-    void CloseTab(int index);
-    bool Quit();
+    void CloseTab(int index = -1);
+    void QuitButton();
     void About();
     void closeEvent(QCloseEvent *event);
 
 private:
+    bool Quit();
+    void OpenHomeTab();
     QString getVersionString();
 
     QTabWidget* tabs;

@@ -20,6 +20,7 @@
 
 #include "mainwindow.h"
 #include "plot.h"
+#include "HomeTab.h"
 #include "revision.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -33,16 +34,21 @@ MainWindow::MainWindow(QWidget *parent) :
     QMenu* menuHelp = new QMenu(tr("&Help"));
 
     QAction* actionNewTab = new QAction(tr("&New tab.."), this);
+    QAction* actionCloseTab = new QAction(tr("&Close tab"), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
     QAction* actionAbout = new QAction(tr("About Lorris.."), this);
 
-    actionNewTab->setShortcut(QKeySequence("Ctrl+N"));
+    actionNewTab->setShortcut(QKeySequence("Ctrl+T"));
+    actionQuit->setShortcut(QKeySequence("Alt+F4"));
+    actionCloseTab->setShortcut(QKeySequence("Ctrl+W"));
 
     connect(actionNewTab, SIGNAL(triggered()), this, SLOT(NewTab()));
-    connect(actionQuit, SIGNAL(triggered()), this, SLOT(Quit()));
-    // connect(actionAboutQt, SIGNAL(triggered()), this, SLOT(aboutQt()));
+    connect(actionQuit, SIGNAL(triggered()), this, SLOT(QuitButton()));
+    connect(actionAbout, SIGNAL(triggered()), this, SLOT(About()));
+    connect(actionCloseTab, SIGNAL(triggered()), this, SLOT(CloseTab()));
 
     menuFile->addAction(actionNewTab);
+    menuFile->addAction(actionCloseTab);
     menuFile->addAction(actionQuit);
     menuHelp->addAction(actionAbout);
     menuBar->addMenu(menuFile);
@@ -51,20 +57,16 @@ MainWindow::MainWindow(QWidget *parent) :
     setMenuBar(menuBar);
 
     //Tabs
-    tabs = new QTabWidget;
-
+    tabs = new QTabWidget(this);
     QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", tabs);
     connect(newTabBtn, SIGNAL(clicked()), this, SLOT(NewTab()));
 
     tabs->setCornerWidget(newTabBtn);
     tabs->setMovable(true);
-    tabs->setTabsClosable(true);
-
     connect(tabs, SIGNAL(tabCloseRequested(int)), this, SLOT(CloseTab(int)));
-
-    setCentralWidget(tabs);
     resize(950, 700);
-
+    OpenHomeTab();
+    setCentralWidget(tabs);
     windowCount = 0;
 }
 
@@ -75,9 +77,13 @@ MainWindow::~MainWindow()
 
 QString MainWindow::getVersionString()
 {
-    QString ver = "Lorris - build ";
-    ver.append(QString::number(REVISION));
+    QString ver = "Lorris [" + QString::number(REVISION) + "]";
     return ver;
+}
+
+void MainWindow::OpenHomeTab()
+{
+    tabs->addTab(new HomeTab(this), "Home");
 }
 
 void MainWindow::NewTab()
@@ -86,12 +92,22 @@ void MainWindow::NewTab()
     label.append(QString::number(++windowCount));
     int index = tabs->addTab(new Plot, label);
     if(tabs->count() > 1)
+    {
+        tabs->setTabsClosable(true);
         tabs->setCurrentIndex(index);
+    }
 }
 
 void MainWindow::CloseTab(int index)
 {
+    if(index == -1)
+        index = tabs->currentIndex();
     delete tabs->widget(index);
+    if(tabs->count() < 1)
+    {
+        tabs->setTabsClosable(false);
+        OpenHomeTab();
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -112,18 +128,21 @@ bool MainWindow::Quit()
     int ret = box->exec();
     switch(ret)
     {
-        case 0:
-            box->close();
-            this->close();
-            return true;
+        case 0: return true;
         case 1:
-        default:
-            box->close();
-            return false;
+        default: return false;
     }
+}
+
+void MainWindow::QuitButton()
+{
+    this->close();
 }
 
 void MainWindow::About()
 {
-
+    QMessageBox *box = new QMessageBox(this);
+    box->setWindowTitle("About Lorris");
+    box->setText("Lorris revision " + QString::number(REVISION));
+    box->show();
 }
