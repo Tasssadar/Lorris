@@ -17,10 +17,12 @@
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
 #include <QtGui/QWidget>
+#include <QLibrary>
+#include <dlfcn.h>
 
 #include "mainwindow.h"
-#include "plot.h"
 #include "HomeTab.h"
+#include "WorkTabMgr.h"
 #include "revision.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -68,11 +70,14 @@ MainWindow::MainWindow(QWidget *parent) :
     OpenHomeTab();
     setCentralWidget(tabs);
     windowCount = 0;
+
+    tabMgr = new WorkTabMgr();
 }
 
 MainWindow::~MainWindow()
 {
     delete tabs;
+    delete tabMgr;
 }
 
 QString MainWindow::getVersionString()
@@ -88,14 +93,15 @@ void MainWindow::OpenHomeTab()
 
 void MainWindow::NewTab()
 {
-    QString label = tr("New tab ");
+   /* QString label = tr("New tab ");
     label.append(QString::number(++windowCount));
     int index = tabs->addTab(new Plot, label);
     if(tabs->count() > 1)
     {
         tabs->setTabsClosable(true);
         tabs->setCurrentIndex(index);
-    }
+    } */
+    //TODO
 }
 
 void MainWindow::CloseTab(int index)

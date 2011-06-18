@@ -7,6 +7,8 @@ namespace Ui {
     class MainWindow;
 }
 
+class WorkTabMgr;
+
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -28,6 +30,7 @@ private:
 
     QTabWidget* tabs;
     int windowCount;
+    WorkTabMgr *tabMgr;
 };
 
 #endif // MAINWINDOW_H
