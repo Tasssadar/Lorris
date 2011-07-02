@@ -13,7 +13,7 @@ LorrisTerminal::LorrisTerminal()
     QTextEdit *text = new QTextEdit(mainWidget);
     text->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     text->setShown(true);
-
+    text->setEnabled(false);
     QPushButton *button = new QPushButton("Hi", mainWidget);
 
     layout->addWidget(button);

@@ -1,39 +1,26 @@
-################################################################
+# ###############################################################
 # Qwt Widget Library
 # Copyright (C) 1997   Josef Wilgen
 # Copyright (C) 2002   Uwe Rathmann
-#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the Qwt License, Version 1.0
-################################################################
-
+# ###############################################################
 # qmake project file for building the qwt libraries
-
 QWT_ROOT = $${PWD}/..
 include( $${QWT_ROOT}/qwtconfig.pri )
 include( $${QWT_ROOT}/qwtbuild.pri )
-
-TEMPLATE          = lib
-TARGET            = $$qtLibraryTarget(qwt)
-
-DESTDIR           = $${QWT_ROOT}/lib
-
-contains(QWT_CONFIG, QwtDll) {
-
+TEMPLATE = lib
+TARGET = $$qtLibraryTarget(qwt)
+DESTDIR = $${QWT_ROOT}/lib
+contains(QWT_CONFIG, QwtDll) { 
     CONFIG += dll
-    win32|symbian: DEFINES += QT_DLL QWT_DLL QWT_MAKEDLL
+    win32|symbian:DEFINES += QT_DLL \
+        QWT_DLL \
+        QWT_MAKEDLL
 }
-else {
-    CONFIG += staticlib
-} 
-
-contains(QWT_CONFIG, QwtFramework) {
-
-    CONFIG += lib_bundle
-}
-
-HEADERS += \
-    qwt.h \
+else:CONFIG += staticlib
+contains(QWT_CONFIG, QwtFramework):CONFIG += lib_bundle
+HEADERS += qwt.h \
     qwt_abstract_scale_draw.h \
     qwt_interval_symbol.h \
     qwt_clipper.h \
@@ -62,10 +49,9 @@ HEADERS += \
     qwt_system_clock.h \
     qwt_text_engine.h \
     qwt_text_label.h \
-    qwt_text.h
-
-SOURCES += \
-    qwt_abstract_scale_draw.cpp \
+    qwt_text.h \
+    qwt_analog_clock.h
+SOURCES += qwt_abstract_scale_draw.cpp \
     qwt_interval_symbol.cpp \
     qwt_clipper.cpp \
     qwt_color_map.cpp \
@@ -93,12 +79,8 @@ SOURCES += \
     qwt_scale_engine.cpp \
     qwt_symbol.cpp \
     qwt_system_clock.cpp
-
- 
-contains(QWT_CONFIG, QwtPlot) {
-
-    HEADERS += \
-        qwt_curve_fitter.h \
+contains(QWT_CONFIG, QwtPlot) { 
+    HEADERS += qwt_curve_fitter.h \
         qwt_event_pattern.h \
         qwt_legend.h \
         qwt_legend_item.h \
@@ -129,10 +111,8 @@ contains(QWT_CONFIG, QwtPlot) {
         qwt_matrix_raster_data.h \
         qwt_sampling_thread.h \
         qwt_series_data.h \
-        qwt_scale_widget.h 
-
-    SOURCES += \
-        qwt_curve_fitter.cpp \
+        qwt_scale_widget.h
+    SOURCES += qwt_curve_fitter.cpp \
         qwt_legend.cpp \
         qwt_legend_item.cpp \
         qwt_plot.cpp \
@@ -163,24 +143,16 @@ contains(QWT_CONFIG, QwtPlot) {
         qwt_matrix_raster_data.cpp \
         qwt_sampling_thread.cpp \
         qwt_series_data.cpp \
-        qwt_scale_widget.cpp 
+        qwt_scale_widget.cpp
 }
-
-contains(QWT_CONFIG, QwtSvg) {
-
+contains(QWT_CONFIG, QwtSvg) { 
     QT += svg
     HEADERS += qwt_plot_svgitem.h
-    SOURCES += qwt_plot_svgitem.cpp 
+    SOURCES += qwt_plot_svgitem.cpp
 }
-else {
-
-    DEFINES += QWT_NO_SVG
-}
-
-contains(QWT_CONFIG, QwtWidgets) {
-
-    HEADERS += \
-        qwt_abstract_slider.h \
+else:DEFINES += QWT_NO_SVG
+contains(QWT_CONFIG, QwtWidgets) { 
+    HEADERS += qwt_abstract_slider.h \
         qwt_abstract_scale.h \
         qwt_arrow_button.h \
         qwt_analog_clock.h \
@@ -194,9 +166,7 @@ contains(QWT_CONFIG, QwtWidgets) {
         qwt_slider.h \
         qwt_thermo.h \
         qwt_wheel.h
-    
-    SOURCES += \
-        qwt_abstract_slider.cpp \
+    SOURCES += qwt_abstract_slider.cpp \
         qwt_abstract_scale.cpp \
         qwt_arrow_button.cpp \
         qwt_analog_clock.cpp \
@@ -213,25 +183,20 @@ contains(QWT_CONFIG, QwtWidgets) {
 }
 
 # Install directives
-
-target.path    = $${QWT_INSTALL_LIBS}
-
-doc.files      = $${QWT_ROOT}/doc/html 
+target.path = $${QWT_INSTALL_LIBS}
+doc.files = $${QWT_ROOT}/doc/html
 unix:doc.files += $${QWT_ROOT}/doc/man
-doc.path       = $${QWT_INSTALL_DOCS}
-
-INSTALLS       = target doc
-
-CONFIG(lib_bundle) {
-
+doc.path = $${QWT_INSTALL_DOCS}
+INSTALLS = target \
+    doc
+CONFIG(lib_bundle) { 
     FRAMEWORK_HEADERS.version = Versions
     FRAMEWORK_HEADERS.files = $${HEADERS}
     FRAMEWORK_HEADERS.path = Headers
     QMAKE_BUNDLE_DATA += FRAMEWORK_HEADERS
 }
-else {
-
-    headers.files  = $${HEADERS}
-    headers.path   = $${QWT_INSTALL_HEADERS}
+else { 
+    headers.files = $${HEADERS}
+    headers.path = $${QWT_INSTALL_HEADERS}
     INSTALLS += headers
 }

@@ -19,7 +19,6 @@
 #include <QtGui/QWidget>
 #include <QHBoxLayout>
 #include <QLibrary>
-#include <dlfcn.h>
 
 #include "mainwindow.h"
 #include "HomeTab.h"

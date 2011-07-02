@@ -4,7 +4,7 @@
 #include "common.h"
 #include <QtGui/QWidget>
 
-class LORRISPROBESHARED_EXPORT WorkTab
+class WorkTab
 {
     public:
         virtual ~WorkTab();
