@@ -18,7 +18,11 @@ SOURCES += src/mainwindow.cpp \
     src/LorrisProbe/lorrisprobe.cpp \
     src/WorkTabMgr.cpp \
     src/WorkTabInfo.cpp \
-    src/LorrisProbe/lorrisprobeinfo.cpp
+    src/LorrisProbe/lorrisprobeinfo.cpp \
+    src/connection/connectionmgr.cpp \
+    src/ui/tabdialog.cpp \
+    src/LorrisTerminal/lorristerminal.cpp \
+    src/LorrisTerminal/lorristerminalinfo.cpp
 HEADERS += src/mainwindow.h \
     src/revision.h \
     src/HomeTab.h \
@@ -27,7 +31,12 @@ HEADERS += src/mainwindow.h \
     src/LorrisProbe/lorrisprobe.h \
     src/WorkTabMgr.h \
     src/WorkTabInfo.h \
-    src/LorrisProbe/lorrisprobeinfo.h
+    src/LorrisProbe/lorrisprobeinfo.h \
+    src/connection/connectionmgr.h \
+    src/ui/tabdialog.h \
+    src/singleton.h \
+    src/LorrisTerminal/lorristerminal.h \
+    src/LorrisTerminal/lorristerminalinfo.h
 QMAKE_LIBDIR += dep/qwt/lib
 LIBS += -lqwt
 OBJECTS_DIR = obj

@@ -9,7 +9,7 @@ class LORRISPROBESHARED_EXPORT LorrisProbe : public WorkTab
         explicit LorrisProbe();
         virtual ~LorrisProbe();
 
-        QWidget *GetTab();
+        QWidget *GetTab(QWidget *parent);
 
     private:
 };

@@ -2,11 +2,13 @@
 #include "WorkTabInfo.h"
 
 #include "LorrisProbe/lorrisprobeinfo.h"
+#include "LorrisTerminal/lorristerminalinfo.h"
 
 WorkTabMgr::WorkTabMgr()
 {
     //put ALL plugins into this vector
     m_workTabInfos.push_back(new LorrisProbeInfo);
+    m_workTabInfos.push_back(new LorrisTerminalInfo);
 }
 
 WorkTabMgr::~WorkTabMgr()
@@ -15,7 +17,7 @@ WorkTabMgr::~WorkTabMgr()
         delete m_workTabInfos[itr];
 }
 
-std::vector<WorkTabInfo*> *GetWorkTabInfos()
+std::vector<WorkTabInfo*> *WorkTabMgr::GetWorkTabInfos()
 {
-    return NULL;
+    return &m_workTabInfos;
 }

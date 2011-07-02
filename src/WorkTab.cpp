@@ -10,7 +10,7 @@ WorkTab::~WorkTab()
 
 }
 
-QWidget *WorkTab::GetTab()
+QWidget *WorkTab::GetTab(QWidget *parent)
 {
     return NULL;
 }

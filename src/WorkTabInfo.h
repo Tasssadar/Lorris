@@ -2,6 +2,7 @@
 #define WORKTABINFO_H
 
 #include <QString>
+#include "connection/connectionmgr.h"
 
 class WorkTab;
 
@@ -12,6 +13,7 @@ class WorkTabInfo
 
         virtual WorkTab *GetNewTab();
         virtual QString GetName();
+        virtual uint8_t GetConType();
 
     protected:
         explicit WorkTabInfo();

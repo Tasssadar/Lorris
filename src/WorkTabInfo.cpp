@@ -19,3 +19,8 @@ QString WorkTabInfo::GetName()
 {
     return NULL;
 }
+
+uint8_t WorkTabInfo::GetConType()
+{
+    return 0;
+}

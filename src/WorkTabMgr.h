@@ -3,9 +3,11 @@
 
 #include <vector>
 
+#include "singleton.h"
+
 class WorkTabInfo;
 
-class WorkTabMgr
+class WorkTabMgr : public Singleton<WorkTabMgr>
 {
     public:
         WorkTabMgr();
@@ -17,5 +19,9 @@ class WorkTabMgr
         std::vector<WorkTabInfo*> m_workTabInfos;
 
 };
+
+template <class WorkTabMgr> WorkTabMgr *Singleton<WorkTabMgr>::msSingleton = 0;
+#define sWorkTabMgr WorkTabMgr::GetSingleton()
+
 
 #endif // WORKTABMGR_H

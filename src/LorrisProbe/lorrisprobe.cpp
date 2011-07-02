@@ -10,7 +10,7 @@ LorrisProbe::~LorrisProbe()
 
 }
 
-QWidget *LorrisProbe::GetTab()
+QWidget *LorrisProbe::GetTab(QWidget *parent)
 {
-    return NULL;
+    return new QWidget(parent);
 }

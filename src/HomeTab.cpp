@@ -1,5 +1,6 @@
 #include <QPushButton>
 #include <QTabWidget>
+#include <QHBoxLayout>
 
 #include "HomeTab.h"
 #include "mainwindow.h"
@@ -10,9 +11,13 @@ HomeTab::HomeTab(MainWindow *parent)
 
     QPushButton *button = new QPushButton("New tab", this);
     button->setFixedSize(200, 50);
-    button->move(parent->geometry().center());
+
     connect(button, SIGNAL(clicked()), this, SLOT(NewTab()));
-    button->show();
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(button);
+    this->setLayout(layout);
+
 }
 
 HomeTab::~HomeTab()

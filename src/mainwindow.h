@@ -3,11 +3,8 @@
 
 #include <QMainWindow>
 
-namespace Ui {
-    class MainWindow;
-}
-
 class WorkTabMgr;
+class WorkTab;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -15,6 +12,7 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void ExtNewTab() { NewTab(); }
+    void AddTab(WorkTab *tab, QString label);
 
 private slots:
     void NewTab();
@@ -30,7 +28,6 @@ private:
 
     QTabWidget* tabs;
     int windowCount;
-    WorkTabMgr *tabMgr;
 };
 
 #endif // MAINWINDOW_H
