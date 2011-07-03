@@ -1,0 +1,7 @@
+add_subdirectory( anymaster )
+add_subdirectory( anyslave )
+add_subdirectory( enumerator )
+add_subdirectory( reader )
+add_subdirectory( sreader )
+add_subdirectory( writer )
+add_subdirectory( notifier )

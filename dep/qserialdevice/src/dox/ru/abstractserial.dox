@@ -1,0 +1,1346 @@
+﻿/*
+* This file is part of QSerialDevice, an open-source cross-platform library
+* Copyright (C) 2009  Denis Shienkov
+*
+* This library is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+* Contact Denis Shienkov:
+*          e-mail: <scapig2@yandex.ru>
+*             ICQ: 321789831
+*/
+
+
+/*! \~russian
+    \class AbstractSerial
+
+    \brief Класс AbstractSerial предоставляет интерфейс для работы с последовательными устройствами.
+
+    \section sec0_AbstractSerial Назначение и возможности.
+    
+    Этот класс является кроссплатформенной библиотекой которая использует низкоуровневые нативные API
+    для доступа к последовательным устройствам.\n
+    Класс использует фреймворк Qt4 и может использоваться для создания приложений Qt4.\n
+
+    При реализации структуры класса AbstractSerial за базовую структуру была выбрана структура класса \b QAbstractSocket, 
+    при которой класс наследуется от \b QIODevice и соответствует идеологии открытых/закрытых классов \b pimpl.\n
+    
+    Класс AbstractSerial поддерживается в следующих операционных системах:
+    
+    <TABLE>
+    <TR><TH> Операционная система </TH><TH> Поддержка </TH><TH> Примечание </TH></TR>
+    <TR><TD> MS Windows 2K,XP,Vista,7 </TD><TD> Да </TD><TD> Полная </TD></TR>
+    <TR><TD> Дистрибутивы GNU Linux </TD><TD> Да </TD><TD> Полная </TD></TR>
+    <TR><TD> Mac OSX </TD><TD> Да </TD><TD> Могут быть проблемы. Нужно тестировать. </TD></TR>
+    </TABLE>
+    
+    \section sec1_AbstractSerial Основные виртуальные методы QIODevice которые переопределены.
+    
+    \note См. в документации Qt4 про класс \b QIODevice.
+    
+    \subsection ss1_sec1_AbstractSerial Открытые методы.
+    
+    - qint64 bytesAvailable() const
+    - qint64 bytesToWrite() const
+    - void close()
+    - bool isSequential() const
+    - bool open(OpenMode mode)
+    - bool reset()
+    - bool waitForBytesWritten(int msecs)
+    - bool waitForReadyRead(int msecs)
+    .
+    
+    \subsection ss2_sec1_AbstractSerial Защищенные методы.
+    
+    - qint64 readData(char *data, qint64 maxSize)
+    - qint64 writeData(const char *data, qint64 maxSize) 
+    .
+    
+    \subsection ss3_sec1_AbstractSerial Сигналы.
+    
+    - void bytesWritten(qint64 bytes)
+    - void readyRead()
+    .
+    
+    \note Другие методы \b QIODevice остались нетронутыми.
+
+    \section sec2_AbstractSerial Краткое описание использования.
+    
+    Начало работы с классом необходимо начинать с создания экземпляра объекта AbstractSerial.\n
+    Пример:
+    \code
+        ..
+        AbstractSerial *serialDevice = new AbstractSerial(this);
+        ..
+    \endcode
+
+    При этом, объект, в зависимости от ОС, получит имя соответствующего последовательного устройства:
+    <TABLE>
+    <TR><TH> Операционная система </TH><TH> Имя устройства по умолчанию </TH></TR>
+    <TR><TD> MS Windows 2K,XP,Vista,7 </TD><TD> "COM1" </TD></TR>
+    <TR><TD> IRIX </TD><TD> "/dev/ttyf1" </TD></TR>
+    <TR><TD> HPUX </TD><TD> "/dev/tty1p0" </TD></TR>
+    <TR><TD> SOLARIS </TD><TD> "/dev/ttya" </TD></TR>
+    <TR><TD> FREEBSD </TD><TD> "/dev/ttyd1" </TD></TR>
+    <TR><TD> LINUX </TD><TD> "/dev/ttyS0" </TD></TR>
+    <TR><TD> <default> </TD><TD> "/dev/ttyS0" </TD></TR>
+    </TABLE>
+
+    Далее, необходимо устройству(объекту) присвоить реально существующее имя в системе:
+    - void AbstractSerial::setDeviceName(const QString &deviceName) устанавливает имя устройства.
+    .
+    \note Для определения существующих имен устройств можно использовать класс SerialDeviceEnumerator.
+
+    Для открытия последовательного устройства необходимо вызвать метод:
+    - bool AbstractSerial::open(OpenMode mode) открывает устройство.
+    .
+    Пример:
+    \code
+        ..
+        //this example open device as ReadOnly
+        bool ret = serialDevice->open(AbstractSerial::ReadOnly);
+        ..
+    \endcode
+    \note 
+    - Устройство всегда открывается в монопольном режиме поэтому другие процессы не смогут получить доступ к этому устройству.
+    - Устройство не поддерживает такие параметры открытия как: \b Append, \b Truncate и \b Text.
+    
+    .
+
+    Для закрытия последовательного устройства необходимо вызвать метод:
+    - void AbstractSerial::close() закрывает последовательное устройство.
+    .
+
+    После того как устройство успешно открыто можно приступать к его конфигурированию.\n
+    Для конфигурирования необходимо воспользоваться следующими методами:
+    - bool AbstractSerial::setBaudRate(qint32 baudRate, BaudRateDirection baudDir) устанавливает скорость обмена.
+    - bool AbstractSerial::setDataBits(AbstractSerial::DataBits) устанавливает количество бит данных.
+    - bool AbstractSerial::setParity(AbstractSerial::Parity) устанавливает контроль четности.
+    - bool AbstractSerial::setStopBits(AbstractSerial::StopBits) устанавливает количество стоп бит.
+    - bool AbstractSerial::setFlowControl(AbstractSerial::Flow) устанавливает контроль управления потоком.
+    - void AbstractSerial::setCharIntervalTimeout(int usecs) устанавливает время ожидания символа при чтении данных.
+    - void AbstractSerial::setTotalReadConstantTimeout(int msecs) устанавливает время ожидания всего пакета данных при чтении.
+    .
+    
+    \note При использовании методов setCharIntervalTimeout() и setTotalReadConstantTimeout() 
+    желательно придерживаться следующих рекомендаций:
+    -# Если используется \b буферизированный режим работы с устройством (т.е. при открытии \b не \b использован флаг \b Unbuffered),
+    то устанавливать таймауты этими методами не нужно, т.е. они должны быть равны 0 (по умолчанию). 
+    Это необходимо для немедленного возвращения функции чтения при автоматическом принятии данных в буфер AbstractSerial.
+    Любые значения таймаутов чтения отличные от нуля, только лишь замедлят процесс получения данных.
+    При работе в этом режиме, вызов любого метода из семейста \b AbstractSerial::read() будет возвращать всегда
+    лишь те байты, которые были автоматически приняты в буфер класса и установка таймаутов никак не будет влиять на работу
+    данных методов чтения.
+    -# Если используется \b не \b буферизированный режим работы с устройством (т.е. при открытии \b использован флаг \b Unbuffered),
+    то автоматический прием данных отключен и установка таймаутов будет влиять на вызов методов из семейств \b AbstractSerial::read()! \n
+    В разных ОС поведение будет разное (причина: неудавшаяся попытка реализации и кросс-платформенного обобщения автором всех особенностей):
+        - В \b Windows:
+            -# Нужно избегать значений \a CharIntervalTimeout и \a TotalReadConstantTimeout равных 0. 
+            В теории планировалось, что при нулевых значениях таймаутов метод \b AbstractSerial::read() будет читать те данные,
+            которые находятся в буфере драйвера устройства (не путать с буфером AbstractSerial !) и возвращать их немедленно.
+            Но по неизвестным причинам такое чтение всегда возвращает 0, в не зависимости от того есть или нет готовые данные в буфере.
+            -# Если \a CharIntervalTimeout любое, а \a TotalReadConstantTimeout > 0, то метод чтения \b AbstractSerial::read() будет
+            ожидать в течении времени \a TotalReadConstantTimeout данных, а по их истечении возвратит прочитанное количество байт.
+            Т.к. внутри своей реализации, методы чтения класса AbstractSerial читают кусками по 256 байт (по умолчанию), то устанавливать 
+            \a TotalReadConstantTimeout для чтения более 256 байт не имеет смысла.
+            -# Если \a CharIntervalTimeout любое, а \a TotalReadConstantTimeout = -1, то в этом режиме происходит автоматическое определение (пересчет)
+            оптимальной величины \a TotalReadConstantTimeout по формуле: \n
+            \verbatim
+            TotalReadConstantTimeout = [(start_bit + data_bits + parity_bit + stop_bits) * 256 * 1000 / speed] + 
+                                       + [(256 - 1) * CharIntervalTimeout / 1000], msec.
+            \endverbatim
+            При этом, метод \b AbstractSerial::read() ведет себя аналогично п.ii.
+            .
+        - В \b *nix:
+            -# При \a CharIntervalTimeout = 0 и \a TotalReadConstantTimeout любое, метод \b AbstractSerial::read() будет возвращать
+            данные немедленно.
+            -# При \a CharIntervalTimeout > 0 и \a TotalReadConstantTimeout любое, метод \b AbstractSerial::read() будет читать данные с
+            ожиданием следующего символа.
+            
+        .
+        
+    .
+
+    Для получения текущей конфигурации устройства используются методы:
+    - QString AbstractSerial::baudRate(BaudRateDirection baudDir) const возвращает понятное для человека значение скорости.
+    - QString AbstractSerial::dataBits() const возвращает понятное для человека кол-во бит данных.
+    - QString AbstractSerial::parity() const возвращает понятное для человека значение паритета.
+    - QString AbstractSerial::stopBits() const возвращает понятное для человека кол-во стоп-бит.
+    - QString AbstractSerial::flowControl() const возвращает понятное для человека значение управления потоком.
+    - int AbstractSerial::charIntervalTimeout() const возвращает понятное для человека значение времени ожидания символа при чтении.
+    - int totalReadConstantTimeout() const возвращает понятное для человека значение времени ожидания пакета при чтении.
+    .
+
+    Для получения списков поддерживаемых классом параметров используются методы:
+    - QStringList AbstractSerial::listBaudRate() const возвращает понятный для человека список скоростей.
+    - QStringList AbstractSerial::listDataBits() const возвращает понятный для человека список бит данных.
+    - QStringList AbstractSerial::listParity() const возвращает понятный для человека список паритетов.
+    - QStringList AbstractSerial::listStopBits() const возвращает понятный для человека список стоп-бит.
+    - QStringList AbstractSerial::listFlowControl() const возвращает понятный для человека список управления потоком.
+    .
+
+    Для чтения данных из порта, а также для записи данных в порт, можно использовать любой открытый метод чтения или записи из \b QIODevice.\n
+
+    Для ожидания прихода данных в последовательное устройство используется метод:
+    - bool AbstractSerial::waitForReadyRead(int msecs) ожидает в течении времени \a msecs прихода в приемный буфер
+    последовательного устройства хотя бы одного байта данных.
+    .
+
+    Для очистки буферов последовательного устройства используются методы:
+    - bool AbstractSerial::flush() ожидает завершения операций I/O и по их окончании
+    очищает очереди I/O.
+    - bool AbstractSerial::reset() не ожидает завершения операций I/O и очищает буферы последовательного
+    устройства.
+    .
+
+    Для управления RS-232 линиями DTR и RTS используются методы:
+    - bool AbstractSerial::setDtr(bool set) устанавливает/сбрасывает линию DTR.
+    - bool AbstractSerial::setRts(bool set) устанавливает/сбрасывает линию RTS.
+
+    Для получения статусов RS-232 линий CTS, DSR, DCD, RI, RTS, DTR, ST, SR используется метод:
+    - quint16 AbstractSerial::lineStatus() возвращает закодированные значения статусов линий побитовым \b ИЛИ
+    (см. enum AbstractSerial::LineStatusFlag).
+
+    <TABLE>
+    <TR><TH> Линия </TH><TH> Значение </TH><TH> Описание </TH></TR>
+    <TR><TD> LineLE </TD><TD> 0x0001 </TD><TD> Line DSR (data set ready/line enable) </TD></TR>
+    <TR><TD> LineDTR </TD><TD> 0x0002 </TD><TD> Line DTR (data terminal ready) </TD></TR>
+    <TR><TD> LineRTS </TD><TD> 0x0004 </TD><TD> Line RTS (request to send) </TD></TR>
+    <TR><TD> LineST </TD><TD> 0x0008 </TD><TD> Line Secondary TXD (transmit) </TD></TR>
+    <TR><TD> LineSR </TD><TD> 0x0010 </TD><TD> Line Secondary RXD (receive) </TD></TR>
+    <TR><TD> LineCTS </TD><TD> 0x0020 </TD><TD> Line CTS (clear to send) </TD></TR>
+    <TR><TD> LineDCD </TD><TD> 0x0040 </TD><TD> Line DCD (data carrier detect) </TD></TR>
+    <TR><TD> LineRI </TD><TD> 0x0080 </TD><TD> Line RNG (ring) </TD></TR>
+    <TR><TD> LineDSR </TD><TD> 0x0100 </TD><TD> Line DSR (data set ready) </TD></TR>
+    <TR><TD> LineErr </TD><TD> 0x8000 </TD><TD> rror get line status </TD></TR>
+    </TABLE>
+    
+    Для управления разрывами линии Tx используются методы:
+    - bool AbstractSerial::sendBreak(int duration) передает в Tx поток нулевых битов в течении определенного времени.
+    - bool AbstractSerial::setBreak(bool set) включает/отключает передачу в Tx нулевых битов.
+    .
+
+    Для получения текущего количества байт в приемном буфере последовательного устройства готовых для чтения
+    используется метод:
+    - qint64 AbstractSerial::bytesAvailable() получает текущее количество байт в приемном буфере.
+    .
+
+    Для включения/отключения режима излучения сигнала signalStatus() используется метод:
+    - void AbstractSerial::enableEmitStatus(bool enable). 
+    .
+
+    Класс AbstractSerial (помимо сигналов QIODevice) реализует следующие сигналы:
+    - void AbstractSerial::signalStatus(const QString &status, QDateTime current) несёт информацию о текущем статусе
+    последовательного устройства, а также времени и дате возникновения статуса. 
+    Излучение сигнала можно включать/отключать методом: AbstractSerial::enableEmitStatus(bool enable).\n
+    Этот сигнал излучается:
+        - При выполнении методов открытия или закрытия устройства.
+        - При ошибках при конфигурировании устройства.
+        - При ошибках I/O устройства.
+        .
+    - void AbstractSerial::exception() излучается при ошибках в драйвере устройства.
+    - void AbstractSerial::ctsChanged(bool value) излучается при изменении статуса линии CTS.
+    - void AbstractSerial::dsrChanged(bool value) излучается при изменении статуса линии DSR.
+    - void AbstractSerial::ringChanged(bool value) излучается при изменении статуса линии RING.
+    .
+    
+    \n
+    \n
+    \n
+
+    \warning В этой аннотации приведены только основные методы для работы с классом (т.е. не все), поэтому
+    ознакомьтесь с полным перечнем методов самостоятельно! 
+
+    \author Денис Шиенков \n
+    Контакты:
+    - ICQ       : 321789831
+    - e-mail    : scapig2@yandex.ru
+*/
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+//Baud direction
+
+/*! \~russian
+    \enum AbstractSerial::BaudRateDirectionFlag
+    Направления скоростей передачи данных.
+    \note Windows поддерживает только \a AllBaud.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRateDirectionFlag AbstractSerial::InputBaud
+    Только входная скорость (скорость при приеме данных).
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRateDirectionFlag AbstractSerial::OutputBaud
+    Только выходная скорость (скорость при передаче данных).
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRateDirectionFlag AbstractSerial::AllBaud
+    Все направления.
+*/
+
+//Speeds
+
+/*! \~russian
+    \enum AbstractSerial::BaudRate
+    Стандартные типы скоростей последовательного устройства которые поддерживает класс AbstractSerial.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRateUndefined
+    Скорость неопределена.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate50
+    Скорость 50 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate75
+    Скорость 75 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate110
+    Скорость 110 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate134
+    Скорость 134 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate150
+    Скорость 150 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate200
+    Скорость 200 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate300
+    Скорость 300 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate600
+    Скорость 600 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate1200
+    Скорость 1200 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate1800
+    Скорость 1800 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate2400
+    Скорость 2400 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate4800
+    Скорость 4800 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate9600
+    Скорость 9600 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate14400
+    Скорость 14400 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate19200
+    Скорость 19200 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate38400
+    Скорость 38400 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate56000
+    Скорость 5600 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate57600
+    Скорость 57600 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate76800
+    Скорость 76800 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate115200
+    Скорость 115200 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate128000
+    Скорость 128000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate230400
+    Скорость 230400 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate256000
+    Скорость 256000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate460800
+    Скорость 460800 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate500000
+    Скорость 500000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate576000
+    Скорость 576000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate921600
+    Скорость 921600 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate1000000
+    Скорость 1000000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate1152000
+    Скорость 1152000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate1500000
+    Скорость 1500000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate2000000
+    Скорость 2000000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate2500000
+    Скорость 2500000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate3000000
+    Скорость 3000000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate3500000
+    Скорость 3500000 бод.
+*/
+
+/*! \~russian
+    \var AbstractSerial::BaudRate AbstractSerial::BaudRate4000000
+    Скорость 4000000 бод.
+*/
+
+//Data bits
+
+/*! \~russian
+    \enum AbstractSerial::DataBits
+    Стандартные типы бит данных последовательного устройства которые поддерживает класс AbstractSerial.
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::DataBitsUndefined
+    Биты данных неопределены.
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::DataBits5
+    5 бит данных.
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::DataBits6
+    6 бит данных.
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::DataBits7
+    7 бит данных.
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::DataBits8
+    8 бит данных.
+*/
+
+//Parity
+
+/*! \~russian
+    \enum AbstractSerial::Parity
+    Стандартные типы паритета последовательного устройства которые поддерживает класс AbstractSerial.
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::ParityUndefined
+    Паритет неопределен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::ParityNone
+    Паритет "нет".
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::ParityOdd
+    Паритет "нечет".
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::ParityEven
+    Паритет "чет".
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::ParityMark
+    Паритет "маркер".
+*/
+
+/*! \~russian
+    \var AbstractSerial::DataBits AbstractSerial::ParitySpace
+    Паритет "пробел".
+*/
+
+//Stop bits
+
+/*! \~russian
+    \enum AbstractSerial::StopBits
+    Стандартные типы стоповых бит последовательного устройства которые поддерживает класс AbstractSerial.
+*/
+
+/*! \~russian
+    \var AbstractSerial::StopBits AbstractSerial::StopBitsUndefined
+    Кол-во стоповых бит неопределено.
+*/
+
+/*! \~russian
+    \var AbstractSerial::StopBits AbstractSerial::StopBits1
+    Один стоповый бит.
+*/
+
+/*! \~russian
+    \var AbstractSerial::StopBits AbstractSerial::StopBits1_5
+    Полтора стоповых бита.
+*/
+
+/*! \~russian
+    \var AbstractSerial::StopBits AbstractSerial::StopBits2
+    Два стовопых бита.
+*/
+
+//Flows
+
+/*! \~russian
+    \enum AbstractSerial::Flow
+    Стандартные типы управления потоком последовательного устройства которые поддерживает класс AbstractSerial.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Flow AbstractSerial::FlowControlUndefined
+    Управление потоком неопределено.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Flow AbstractSerial::FlowControlOff
+    Управление потоком отключено.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Flow AbstractSerial::FlowControlHardware
+    Управление потоком аппаратное.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Flow AbstractSerial::FlowControlXonXoff
+    Управление потоком Xon/Xoff.
+*/
+
+//Statuses
+
+/*! \~russian
+    \enum AbstractSerial::Status
+    Статусы последовательного устройства которые поддерживает класс AbstractSerial.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENone
+    Нет ошибок.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneOpen
+    Успешно открыто.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneClose
+    Успешно закрыто.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSetBaudRate
+    Тип скорости успешно изменен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSetParity
+    Тип паритета успешно изменен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSetDataBits
+    Тип бит данных успешно изменен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSetStopBits
+    Тип стоповых бит успешно изменен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSetFlow
+    Тип контроля потока успешно изменен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSetCharTimeout
+    Таймаут ожидания символа успешно изменен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSetDtr
+    DTR успешно изменен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSetRts
+    RTS успешно изменен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneLineStatus
+    Статусы линий успешно получены.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSendBreak
+    Break успешно отправлен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneSetBreak
+    Break успешно установлен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneFlush
+    Успешно очищен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ENoneReset
+    Успешно сброшен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EOpen
+    Ошибка открытия.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EDeviceIsNotOpen
+    Еще не открыто.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EOpenModeUnsupported
+    Режим открытия не поддерживается.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EOpenModeUndefined
+    Режим открытия неопределен.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EOpenInvalidFD
+    Недостоверный дескриптор.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EOpenOldSettingsNotSaved
+    Ошибка сохранения старых параметров при открытии.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EOpenGetCurrentSettings
+    Ошибка получения текущих параметров при открытии.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EOpenSetDefaultSettings
+    Ошибка изменения параметров по умолчанию при открытии.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EDeviceIsOpen
+    Уже открыто.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ECloseSetOldSettings
+    Ошибка сохранения старых параметров при закрытии.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ECloseFD
+    Ошибка закрытия дескриптора.
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EClose
+    Ошибка закрытия. 
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetBaudRate
+    Ошибка изменения типа скорости.          
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetDataBits
+    Ошибка изменения типа бит данных.     
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetParity
+    Ошибка изменения типа паритета.     
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetStopBits
+    Ошибка изменения типа стоповых бит.     
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetFlowControl
+    Ошибка изменения типа управления потоком.     
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetCharIntervalTimeout
+    Ошибка изменения таймаута ожидания символа.     
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetReadTotalTimeout 
+    Ошибка изменения таймаута ожидания пакета.     
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EBytesAvailable
+    Ошибка получения из буфера количества байт готовых для чтения.  
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetDtr
+    Ошибка изменения DTR.  
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetRts
+    Ошибка изменения RTS. 
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ELineStatus
+    Ошибка получения статусов линий. 
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EWaitReadyReadIO
+    Ошибка I/O ожидания приема данных.  
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EWaitReadyReadTimeout
+    Таймаут ожидания приема данных.  
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EWaitReadyWriteIO
+    Ошибка I/O ожидания передачи данных.    
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EWaitReadyWriteTimeout
+    Таймаут ожидания передачи данных.    
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EReadDataIO
+    Ошибка чтения данных.  
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EWriteDataIO
+    Ошибка передачи данных.  
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EFlush
+    Ошибка очистки очереди передачи буфера.  
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESendBreak
+    Ошибка передачи непрерывного потока нулевых бит.  
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::ESetBreak
+    Ошибка изменения сигнала разрыва линии.  
+*/
+
+/*! \~russian
+    \var AbstractSerial::Status AbstractSerial::EReset
+    Ошибка при сбросе  
+*/
+
+//Line statuses
+
+/*! \~russian
+    \enum AbstractSerial::LineStatus
+    Флаги состояний линий: CTS, DSR, DCD, RI, RTS, DTR, ST, SR интерфейса последовательного устройства (см. стандарт RS-232 и т.п.).\n
+    Для определения состояния желаемой линии необходимо наложить маску "И" соответствующего флага линии на 
+    результат выполнения метода: ulong AbstractSerial::lineStatus().
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineLE
+    Линия LE.
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineDTR
+    Линия DTR.
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineRTS
+    Линия RTS.
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineST
+    Линия ST. 
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineSR
+    Линия SR. 
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineCTS
+    Линия CTS. 
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineDCD
+    Линия DCD. 
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineRI
+    Линия RI. 
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineDSR
+    Линия DSR. 
+*/
+
+/*! \~russian
+    \var AbstractSerial::LineStatus AbstractSerial::LineErr
+    Ошибка. 
+*/
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+/*! \~russian
+    \fn AbstractSerial::AbstractSerial(QObject *parent)
+    Конструктор по умолчанию.\n Устройству присваивается имя из списка:
+    \verbatim
+        Operating system:       Name DEFAULT_DEVICE_NAME:
+        Windows                 "COM1"
+        IRIX                    "/dev/ttyf1"
+        HPUX                    "/dev/tty1p0"
+        SOLARIS                 "/dev/ttya"
+        FREEBSD                 "/dev/ttyd1"
+        LINUX                   "/dev/ttyS0"
+        <default>               "/dev/ttyS0"
+    \endverbatim
+*/
+
+/*! \~russian 
+    \fn AbstractSerial::~AbstractSerial()
+    Деструктор по умолчанию.
+*/
+
+/*! \~russian 
+    \fn void AbstractSerial::setDeviceName(const QString &deviceName)
+    Присваивает созданному объекту имя последовательного устройства \a deviceName.
+    Работает только если устройство еще не открыто, иначе игнорируется!
+    \param[in] deviceName Имя последовательного устройства реально существующего в системе и 
+    которое хотим установить.\n
+    Например: для Windows это: COM1, COM2 .. COMn, для Linux это: /dev/ttyS0, /dev/ttyS1 и т.д.
+*/
+
+/*! \~russian 
+    \fn QString AbstractSerial::deviceName() const
+    Возвращает имя текущего последовательного устройства с которым сконфигурирован объект.
+    \return Имя в виде QString.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::open(OpenMode mode)
+    Открывает последовательное устройство в режиме \a mode.
+    Работает только если устройство еще не открыто, иначе игнорируется! 
+    \param[in] mode Режим с которым хотим открыть последовательное устройство ( см. AbstractSerial::OpenMode ).
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn void AbstractSerial::close()
+    Закрывает последовательное устройство которое уже было открыто, иначе игнорируется.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setBaudRate(qint32 baudRate, BaudRateDirection baudDir)
+    Устанавливает желаемую скорость \a baudRate соответствующего направления \a baudDir.
+    \note В the *.nix можно устанавливать скорость отдельно для приема и передачи,
+    в Windows это невозможно и метод возвратит ошибку
+    (т.е. Windows поддерживает только \a AllBaud тип направления).
+    \param[in] baudRate Желаемая скорость как qint32.
+    \param[in] baudDir Направление скорости.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setBaudRate(BaudRate baudRate, BaudRateDirection baudDir)
+    \overload
+    Устанавливает желаемую скорость \a baudRate соответствующего направления \a baudDir.
+    \note В the *.nix можно устанавливать скорость отдельно для приема и передачи,
+    в Windows это невозможно и метод возвратит ошибку
+    (т.е. Windows поддерживает только \a AllBaud тип направления).
+    \param[in] baudRate Желаемая скорость как BaudRate.
+    \param[in] baudDir Направление скорости.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian 
+    \fn bool AbstractSerial::setBaudRate(const QString &baudRate, BaudRateDirection baudDir)
+    \overload
+    Устанавливает желаемую скорость \a baudRate соответствующего направления \a baudDir.
+    \note В the *.nix можно устанавливать скорость отдельно для приема и передачи,
+    в Windows это невозможно и метод возвратит ошибку
+    (т.е. Windows поддерживает только \a AllBaud тип направления).
+    \param[in] baudRate Желаемая скорость как QString.
+    \param[in] baudDir Направление скорости.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian 
+    \fn QString AbstractSerial::baudRate(BaudRateDirection baudDir) const
+    Возвращает текущую скорость соответствующего направления \a baudDir с которой сконфигурировано последовательное устройство.
+    Если скорость недоступна или ошибка то возвратит "Undefined baud".
+    \param[in] baudDir Направление скорости.
+    \return Скорость как QString.
+*/
+
+/*! \~russian
+    \fn QStringList AbstractSerial::listBaudRate() const
+    Возвращает текстовый список всех скоростей поддерживаемых классом AbstractSerial.
+    \return Cписок скоростей в виде QStringList.
+*/
+
+/*! \~russian
+    \fn QMap<AbstractSerial::BaudRate, QString> AbstractSerial::baudRateMap() const
+    Возвращает мапу всех скоростей поддерживаемых классом Abstractserial. Используется для заполнения QComboBox.
+    \return Мапа скоростей в виде QMap<AbstractSerial::BaudRate, QString>.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setDataBits(DataBits dataBits)
+    Устанавливает для последовательного устройства количество бит данных \a dataBits.
+    \param[in] dataBits Желаемое количество бит данных последовательного устройства ( см. AbstractSerial::DataBits ).
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setDataBits(const QString &dataBits)
+    \overload
+    \n Устанавливает для последовательного устройства количество бит данных \a dataBits.
+    \param[in] dataBits Желаемое количество бит данных последовательного устройства в виде QString.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn QString AbstractSerial::dataBits() const
+    Возвращает текущее количество бит данных с которыми сконфигурировано последовательное устройство.
+    \return Количество бит данных в виде QString.
+*/
+
+/*! \~russian
+    \fn QStringList AbstractSerial::listDataBits() const
+    Возвращает текстовый список всех типов бит данных. поддерживаемых классом AbstractSerial.
+    \return Cписок бит данных в виде QStringList.
+*/
+
+/*! \~russian
+    \fn QMap<AbstractSerial::DataBits, QString> AbstractSerial::dataBitsMap() const
+    Возвращает мапу всех видов бит данных поддерживаемых классом AbstractSerial. Используется для заполнения QComboBox.
+    \return Мапа типов бит данных в виде QMap<AbstractSerial::DataBits, QString>.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setParity(Parity parity)
+    Устанавливает для последовательного устройства тип контроля четности \a parity.
+    \param[in] parity Желаемый тип контроля четности последовательного устройства ( см. AbstractSerial::Parity ).
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setParity(const QString &parity)
+    \overload
+    \n Устанавливает для последовательного устройства тип контроля четности \a parity.
+    \param[in] parity Желаемый тип контроля четности последовательного устройства в виде QString. 
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn QString AbstractSerial::parity() const
+    Возвращает текущий тип контроля четности с которым сконфигурировано последовательное устройство.
+    \return Тип контроля четности в виде QString.
+*/
+
+/*! \~russian
+    \fn QStringList AbstractSerial::listParity() const
+    Возвращает текстовый список всех типов контроля паритета поддерживаемых классом AbstractSerial.
+    \return Cписок типов контроля паритета в виде QStringList.
+*/
+
+/*! \~russian
+    \fn QMap<AbstractSerial::Parity, QString> AbstractSerial::parityMap() const
+    Возвращает мапу всех видов паритета поддерживаемых классом AbstractSerial. Используется для заполнения QComboBox.
+    \return Мапа типов паритета в виде QMap<AbstractSerial::Parity, QString>.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setStopBits(StopBits stopBits)
+    Устанавливает для последовательного устройства количество стоп-бит \a stopBits.
+    \param[in] stopBits Желаемое количество стоп-бит последовательного устройства ( см. AbstractSerial::StopBits ).
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setStopBits(const QString &stopBits)
+    \overload
+    \n Устанавливает для последовательного устройства количество стоп-бит \a stopBits.
+    \param[in] stopBits Желаемое количество стоп-бит последовательного устройства в виде QString. 
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn QString AbstractSerial::stopBits() const
+    Возвращает текущее количество стоп-бит с которым сконфигурировано последовательное устройство.
+    \return Количество стоп-бит в виде QString.
+*/
+
+/*! \~russian
+    \fn QStringList AbstractSerial::listStopBits() const
+    Возвращает текстовый список всех типов стоп-бит поддерживаемых классом AbstractSerial.
+    \return Cписок стоп-бит в виде QStringList.
+*/
+
+/*! \~russian
+    \fn QMap<AbstractSerial::StopBits, QString> AbstractSerial::stopBitsMap() const
+    Возвращает мапу всех видов стоп бит поддерживаемых классом AbstractSerial. Используется для заполнения QComboBox.
+    \return Мапа типов стоп-бит в виде QMap<AbstractSerial::StopBits, QString>.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setFlowControl(Flow flow)
+    Устанавливает для последовательного устройства режим управления потоком \a flow.
+    \param[in] flow Желаемый тип управления потоком последовательного устройства ( см. AbstractSerial::Flow ).
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setFlowControl(const QString &flow)
+    \overload
+    \n Устанавливает для последовательного устройства режим управления потоком \a flow.
+    \param[in] flow Желаемый тип управления потоком последовательного устройства в виде QString.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn QString AbstractSerial::flowControl() const
+    Возвращает текущий режим управления потоком с которым сконфигурировано последовательное устройство.
+    \return Режим управления потоком в виде QString.
+*/
+
+/*! \~russian
+    \fn QStringList AbstractSerial::listFlowControl() const
+    Возвращает текстовый список всех режимов управления потоком поддерживаемых классом AbstractSerial.
+    \return Cписок режимов управления потоком в виде QStringList.
+*/
+
+/*! \~russian
+    \fn QMap<AbstractSerial::Flow, QString> AbstractSerial::flowControlMap() const
+    Возвращает мапу всех видов контроля потока поддерживаемых классом AbstractSerial. Используется для заполнения QComboBox.
+    \return Мапа типов контроля потока в виде QMap<AbstractSerial::Flow, QString>.
+*/
+
+/*! \~russian
+    \fn void AbstractSerial::setCharIntervalTimeout(int usecs)
+    Устанавливает время ожидания между двумя символами.
+    По умолчанию значение равно 0.
+    \note Используется только для небуферизированного режима (Unbuffered)!
+    \param[in] usecs Желаемое время, в мксек.
+*/
+
+/*! \~russian
+    \fn int AbstractSerial::charIntervalTimeout() const
+    Возвращает текущее время ожидания прихода символа в приемный буфер последовательного устройства с которым оно сконфигурировано.
+    \return Время ожидания прихода символа, в мксек.
+*/
+
+/*! \~russian
+    \fn void AbstractSerial::setTotalReadConstantTimeout(int msecs)
+    Устанавливает итоговый таймаут ожидания операции чтения.
+    По умолчанию значение равно 0.
+    \note Поведение при чтении зависит от входного параметра \a msecs:
+    - Если 0 то операция чтения возвращается немедленно.
+    - Если -1 то класс автоматически пересчитывает значение таймаута, находя наиболее оптимальный вариант, 
+    в зависимости от текущей скорости, кол-ва бит данных, стоп бит, битов паритета.
+    - Иначе устанавливает входное значение.
+    .
+    \note Используется только для небуферизированного режима (Unbuffered)!
+    \note Не поддерживается в *nix, игнорируется (Используется только в Windows).
+    \param[in] msecs Желаемый таймаут, в мсек.
+*/
+
+/*! \~russian
+    \fn int AbstractSerial::totalReadConstantTimeout() const
+    Возвращает текущее значение результирующего таймаута чтения.
+    \return Время, в мсек.
+    \note В *nix всегда возвращает 0.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setDtr(bool set)
+    Устанавливает линию DTR в состояное "high" или "low" в зависимости от параметра \a set.
+    \param[in] set Желаемое состояние линии DTR.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setRts(bool set)
+    Устанавливает линию RTS в состояное "high" или "low" в зависимости от параметра \a set.
+    \param[in] set Желаемое состояние линии RTS.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn ulong AbstractSerial::lineStatus()
+    Возвращает статусы линий CTS, DSR, DCD, RI, RTS, DTR, ST, SR.
+    Метод возвращает закодированные значения статусов линий побитовым ИЛИ.
+    \return Закодированное побитно значение в виде ulong.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::sendBreak(int duration)
+    Передает непрерывный поток нулевых битов в течение указанного промежутка времени \a duration
+    если терминал использует асинхронную последовательность передачи данных.\n
+    Значение \a duration :
+    - Если \a duration == 0 то нулевые биты передаются по меньшей мере в течение 0.25 секунд, но не более 0.5 секунды.
+    - Если \a duration != 0 то нулевые биты передаются в течении некоторого периода времени зависящего от реализации.
+    .
+    \param[in] duration Промежуток времени, в мсек.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::setBreak(bool set)
+    Включает/отключает сигнал разрыва, 
+    т.е. начинает/прекращает отправлять нулевые биты в зависимости от параметра \a set :
+    - Eсли \a set == true то включить передачу.
+    - Eсли \a set == false то отключить передачу.
+    .
+    \param[in] set Флаг включения/отключения передачи нулевых битов.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::flush()
+    Очищает буферы последовательного устройства после завершения операций I/O.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::reset()
+    Сбрасывает буферы последовательного устройства.
+    \return \a False в случае ошибки.
+*/
+
+/*! \~russian
+    \fn qint64 AbstractSerial::bytesAvailable() const
+    Возвращает количество байт готовых для чтения которые находятся во входном буфере последовательного устройства.
+    \return Количество байт доступных байт или -1 В случае ошибки.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::waitForReadyRead(int msecs)
+    Ожидает прихода во входной буфер последовательного устройства хотя-бы одного байта данных в течении времени \a msecs.
+    При успешном выполнении (т.е. если дождались символ) излучается сигнал readyRead().
+    \param[in] msecs Время в течении которого ожидается приход символа, в мсек.
+    \return \a False в случае ошибки или при таймауте.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::waitForBytesWritten(int msecs)
+    Ожидает ухода из выходного буфера последовательного устройства последнего символа в течении времени \a msecs.
+    \note В данной версии библиотеки этот метод пока не реализован!
+*/
+
+/*! \~russian
+    \fn void AbstractSerial::enableEmitStatus(bool enable)
+    Включает/отключает режим испускания сигнала signalStatus() в зависимости от параметра \a enable :
+    - Если \a enable == true то включить испускание сигнала signalStatus().
+    - Если \a enable == false то отключить испускание сигнала signalStatus().
+    \param[in] enable Режим.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::canEmitStatusString() const
+    Возвращает значение флага который определяет испускать или нет сигнал signalStatus().
+    \return Значение флага:
+    - Если \a true то испускание сигнала signalStatus() включено.
+    - Если \a false то испускание сигнала signalStatus() отключено.
+*/
+
+/*! \~russian
+    \fn bool AbstractSerial::isValid() const
+*/
+
+/*! \~russian
+    \fn void AbstractSerial::exception();
+    Излучается при ошибках в драйвере и т.п.
+*/
+
+/*! \~russian
+    \fn void AbstractSerial::ctsChanged(bool value)
+    Излучается при изменении состояния линии CTS. 
+    \param[out] value Текущий статус линии.
+*/
+
+/*! \~russian
+    \fn void AbstractSerial::dsrChanged(bool value)
+    Излучается при изменении состояния линии DSR. 
+    \param[out] value Текущий статус линии.
+*/
+
+/*! \~russian
+    \fn void AbstractSerial::ringChanged(bool value)
+    Излучается при изменении состояния линии RING. 
+    \param[out] value Текущий статус линии.
+*/
+
+/*! \~russian
+    \fn void AbstractSerial::signalStatus(const QString &status, QDateTime current)
+    Этот сигнал автоматически испускается при изменении статуса AbstractSerial. \n
+    Изменение статуса может быть вызвано следующими причинами:
+    - При ошибках конфигурировании устройства.
+    - При его открытии/закрытии.
+    - При ошибках I/O.
+    .
+    \param[out] status Текущий статус последовательного устройства.
+    \param[out] current Текущее значение даты/времени изменения статуса.
+    
+    Пример:
+    \code
+    //constructor
+    MyClass::MyClass(QObject *parent)
+    {
+        ..
+        port = new AbstractSerial(this);
+        ..
+        connect( port, SIGNAL(signalStatus(const QString &, QDateTime)), this, SLOT(viewStateSlot(QString &, QDateTime)) );
+        ..
+        //here set device name
+        ..
+        //here open port
+        ..
+        //here configure port
+        ..
+     }
+
+     //slot
+     void MyClass::viewStateSlot(QString &stateMsg, QDateTime dt)
+     {
+        ..
+        qDebug() << "State: " << stateMsg << ", in time: " << dt.time().toString();
+        ..
+     }
+    \endcode
+*/

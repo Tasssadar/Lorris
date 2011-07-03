@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <map>
 
 class WorkTabMgr;
 class WorkTab;
@@ -28,6 +29,8 @@ private:
 
     QTabWidget* tabs;
     int windowCount;
+
+    std::map<uint8_t, WorkTab*> m_workTabs;
 };
 
 #endif // MAINWINDOW_H

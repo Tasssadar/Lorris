@@ -1,0 +1,45 @@
+Current:
+
+*******************************************************************************************
+26/02/2011 version 0.4.0 Denis Shienkov
+
+Many changes see. http://gitorious.org/qserialdevice/qserialdevice/commits/master
+
+*******************************************************************************************
+XX/YY/2010 version 0.3.0 Denis Shienkov
+
++ Many Many Many undocumented fixes (see from git repository.).
+
+- Added methods: sendBreak(), setBreak()
+- Added methods: setInputBaudRate(), setOutputBaudRate(), inputBaudRate(), outputBaudRate()
+- Changed storage options with QHash in QMap
+- Added methods: baudRateMap(), dataBitsMap(), parityMap(), stopBitsMap(), flowControlMap() for QComboBox
+- Fixed crash when calling QSerialDeviceWatcher setEnabled(false)
+- Added examples in /examples/anymaster and /examples/anyslave
+- Changed (broken down into individual steps) method of opening the device.
+  Now the device is not called with the parameters 9600 8N1, but with the parameters defined
+  default in the system. When you open the device automatically invoke a method type: detectDefaultCurrentSettings(),
+  which tries to determine the current settings of your device.
+- Correct methods to automatically create/remove LOCK file in the device *.nix
+
+PS: thanks to "Laszlo Bako-Szabo", "kostya2vntu", etc.
+*******************************************************************************************
+02/03/2010 Version 0.2.0 Denis Shienkov
+
+- Changed the directory structure of the project
+- Added classes SerialDeviceInfo and SerialDeviceWatcher
+- From class AbstractSerial removed method devicesAvailable(),
+  now this method is used in SerialDeviceWatcher
+- Improved and cleaned up code, added many new
+- Updated documentation
+- Added ability to build libraries in an integrated and differentiated form
+- Added examples: serialdeviceinfo and serialdevicewatcher
+- For classes SerialDeviceInfo and SerialDeviceWatcher in GNU/Linux (or other *. nix) is required UDEV
+- And other changes
+*******************************************************************************************
+04.08.2009 Version 0.1.0 Denis Shienkov
+
+Completely redesigned the project structure in which to change the variable names, etc.
+The first test version of the new structure.
+Version v 0.1.0 differs from the version v 0.0.3 (deprecated)
+*******************************************************************************************

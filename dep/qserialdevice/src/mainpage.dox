@@ -1,0 +1,112 @@
+/*! \~english
+    \mainpage QSerialDevice
+
+    This document contains a description of cross-platform library for
+    serial devices. This library uses Qt4 framework and is
+    for use in Qt4.
+
+    \b Contents:
+    
+    \subpage introduction \n
+    \subpage examples
+    
+    \author Denis Shienkov
+    
+    \n
+    
+    \note 
+    - I hope that this library you (potential programmers) like it and will help you in your hard work.
+    - Suggestions, comments, bug fixes - please send to scapig2@yandex.ru or https://gitorious.org/qserialdevice
+    - Source code with the new patch to take this: git clone git://gitorious.org/qserialdevice/qserialdevice.git
+    or download from WEB site: https://gitorious.org/qserialdevice
+*/
+
+/*! \~english 
+    \page introduction Introduction
+    
+    QSerialDevice - a cross-platform library for serial devices
+    framework that uses Qt4 (see http://qt.nokia.com/). \n
+
+    Requirements:
+    - OS              : Win2K/WinXP/WinVista/Win7 or any GNU/Linux distribution
+    - Qt4             : >= 4.7.0
+    - Processor       : any (which is supported by Qt4)
+    - Compiler        : any (which is supported by Qt4)
+    .
+    
+    \note By virtue of the fact that I (the author) do not have the opportunity to test the library at all possible operating systems, 
+    all compilers, processors, etc. - it is possible that the library in some cases will not work.
+    Theoretically (with minor corrections source code) can ensure 
+    that the library worked on other platforms. \n
+    
+    \n
+
+    Library QSerialDevice contains the following classes:
+    - \ref sec1
+    - \ref sec2
+    .
+    
+    \n
+    
+    \section sec1 AbstractSerial
+    
+    Class AbstractSerial - provides a set of methods and properties for easy and
+    easy to work with serial devices (serial port) to your PC (or other device). \n
+    
+    The class provides the following features:
+    - configure the serial device:
+        - set the speed of data exchange
+        - set the number of data bits
+        - set the number of stop bits
+        - set modes parity
+        - set modes of control flow
+        - set wait symbol timeout
+        .
+    - write data to the serial device
+    - read data from serial device
+    - control RS-232 lines: DTR, RTS 
+    - read the state of RS-232 lines: CTS, DSR, DCD, RI, RTS, DTR, ST, SR
+    - automatically notified when:
+        - receiving at least one byte (character) in the input buffer
+        - writing the last byte in the output buffer
+        - change the state of the serial device (for errors, etc.)
+        .
+    - get the current value of the number of bytes in the receive buffer available for reading
+    - set timeout joining at least one byte (character) in the input buffer
+    .
+    
+    (see further description AbstractSerial and source code)
+    
+    \note This class can be compiled as a separate library, and part of the library QSerialDevice
+    (assembly instructions, see the file "Readme_en.txt") \n
+    
+    \n
+    \n
+    
+    \section sec2 SerialDeviceEnumerator
+
+    Class SerialDeviceEnumerator - a helper class to keep track of serial devices, and
+    and to obtain information about the serial devices. \n
+    Ie class contains the functional obsolete classes SerialDeviceWatcher and SerialDeviceInfo, but realized "progressive". \n
+    
+    The class provides the following features:
+    - get a list of names of all serial devices that are available in the system
+    - automatically notified when adding / removing the serial device
+    - receive information on any serial device
+    .
+    
+    (see further description SerialDeviceEnumerator and source code)
+    
+    \note This class can be compiled as a separate library, and part of the library QSerialDevice
+    (assembly instructions, see the file "Readme_en.txt") \n
+*/
+
+/*! \~english 
+    \page examples Examples
+    Sorry, but not yet ready.
+    See the source code examples in the directory: /example
+
+    - \subpage ex1
+    - \subpage ex2
+*/
+

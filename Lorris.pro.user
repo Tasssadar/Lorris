@@ -76,7 +76,7 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-g9PA8yhKzR,guid=c7817421da87f26efbc7b6fa00000020</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-jKLTsFTm5w,guid=a00472d178debdd7ba99233c00000032</value>
     <value type="QString">DESKTOP_SESSION=kde</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
@@ -97,16 +97,16 @@
     <value type="QString">PWD=/home/tassadar/Dokumenty</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
     <value type="QString">QT_PLUGIN_PATH=/home/tassadar/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2767,unix/tass-ntb:/tmp/.ICE-unix/2767</value>
+    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2848,unix/tass-ntb:/tmp/.ICE-unix/2848</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SHLVL=0</value>
-    <value type="QString">SSH_AGENT_PID=2666</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-njsOAX2625/agent.2625</value>
+    <value type="QString">SSH_AGENT_PID=2749</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-DSnbXX2708/agent.2708</value>
     <value type="QString">USER=tassadar</value>
     <value type="QString">WINDOWPATH=7</value>
     <value type="QString">XCURSOR_THEME=Oxygen_Black</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1309611341.466092-866319252</value>
+    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1309683592.532707-676423906</value>
     <value type="QString">XDM_MANAGED=method=classic</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
@@ -126,7 +126,7 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-g9PA8yhKzR,guid=c7817421da87f26efbc7b6fa00000020</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-jKLTsFTm5w,guid=a00472d178debdd7ba99233c00000032</value>
     <value type="QString">DESKTOP_SESSION=kde</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
@@ -147,16 +147,16 @@
     <value type="QString">PWD=/home/tassadar/Dokumenty</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
     <value type="QString">QT_PLUGIN_PATH=/home/tassadar/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2767,unix/tass-ntb:/tmp/.ICE-unix/2767</value>
+    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2848,unix/tass-ntb:/tmp/.ICE-unix/2848</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SHLVL=0</value>
-    <value type="QString">SSH_AGENT_PID=2666</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-njsOAX2625/agent.2625</value>
+    <value type="QString">SSH_AGENT_PID=2749</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-DSnbXX2708/agent.2708</value>
     <value type="QString">USER=tassadar</value>
     <value type="QString">WINDOWPATH=7</value>
     <value type="QString">XCURSOR_THEME=Oxygen_Black</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1309611341.466092-866319252</value>
+    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1309683592.532707-676423906</value>
     <value type="QString">XDM_MANAGED=method=classic</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
@@ -173,7 +173,7 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-iVsoT5eyiF,guid=6033487185f73f63a9616ddf0000006b</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-jKLTsFTm5w,guid=a00472d178debdd7ba99233c00000032</value>
     <value type="QString">DESKTOP_SESSION=kde</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
@@ -190,20 +190,20 @@
     <value type="QString">LANGUAGE=</value>
     <value type="QString">LD_LIBRARY_PATH=/usr/lib/qtcreator</value>
     <value type="QString">LOGNAME=tassadar</value>
-    <value type="QString">PATH=/usr/bin:/home/tassadar/CodeSourcery/Sourcery_G++_Lite/bin:/home/tassadar/arm/bin:/home/tassadar/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
-    <value type="QString">PWD=/home/tassadar</value>
+    <value type="QString">PATH=/usr/bin:/home/tassadar/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
+    <value type="QString">PWD=/home/tassadar/Dokumenty</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
     <value type="QString">QT_PLUGIN_PATH=/home/tassadar/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString">SESSION_MANAGER=local/tass-desktop:@/tmp/.ICE-unix/2128,unix/tass-desktop:/tmp/.ICE-unix/2128</value>
+    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2848,unix/tass-ntb:/tmp/.ICE-unix/2848</value>
     <value type="QString">SHELL=/bin/bash</value>
-    <value type="QString">SHLVL=1</value>
-    <value type="QString">SSH_AGENT_PID=2048</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-vIPAzO2009/agent.2009</value>
+    <value type="QString">SHLVL=0</value>
+    <value type="QString">SSH_AGENT_PID=2749</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-DSnbXX2708/agent.2708</value>
     <value type="QString">USER=tassadar</value>
     <value type="QString">WINDOWPATH=7</value>
     <value type="QString">XCURSOR_THEME=Oxygen_Black</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString">XDG_SESSION_COOKIE=52fefd42f56e50f1dd6a44c300000735-1308393289.422424-1092210186</value>
+    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1309683592.532707-676423906</value>
     <value type="QString">XDM_MANAGED=method=classic</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">true</value>

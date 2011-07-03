@@ -1,35 +1,66 @@
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QFileDialog>
+#include <QScrollBar>
 
 #include "lorristerminal.h"
 
-
-LorrisTerminal::LorrisTerminal()
+LorrisTerminal::LorrisTerminal() : WorkTab()
 {
     mainWidget = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(mainWidget);
-    QTextEdit *text = new QTextEdit(mainWidget);
+    QHBoxLayout *layout_buttons = new QHBoxLayout(mainWidget);
+    text = new QPlainTextEdit(mainWidget);
     text->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     text->setShown(true);
-    text->setEnabled(false);
-    QPushButton *button = new QPushButton("Hi", mainWidget);
+    text->setReadOnly(true);
 
-    layout->addWidget(button);
+    QColor color_black(0, 0, 0);\
+    QColor color_white(255, 255, 255);\
+    QPalette palette;
+    palette.setColor(QPalette::Base, color_black);
+    palette.setColor(QPalette::Text, color_white);
+    text->setPalette(palette);
+
+    hexLine = new QLineEdit(mainWidget);
+    QPushButton *browse = new QPushButton("Browse...", mainWidget);
+    connect(browse, SIGNAL(clicked()), this, SLOT(browseForHex()));
+
+    layout_buttons->addWidget(hexLine);
+    layout_buttons->addWidget(browse);
+    layout->addLayout(layout_buttons);
     layout->addWidget(text);
-    layout->setAlignment(button, Qt::AlignTop);
+
     mainWidget->setLayout(layout);
 }
 
 LorrisTerminal::~LorrisTerminal()
 {
     if(mainWidget)
+    {
+        delete text;
+        delete hexLine;
         delete mainWidget;
+    }
 }
 
 QWidget *LorrisTerminal::GetTab(QWidget *parent)
 {
     mainWidget->setParent(parent);
     return mainWidget;
+}
+
+void LorrisTerminal::browseForHex()
+{
+    hexLine->setText(QFileDialog::getOpenFileName(mainWidget, tr("Open File"), "", tr("Intel hex file (*.hex)")));\
+}
+
+void LorrisTerminal::readData(QByteArray data)
+{
+    text->textCursor().movePosition(QTextCursor::End);
+    text->insertPlainText(QString(data));
+    QScrollBar *sb = text->verticalScrollBar();
+    sb->setValue(sb->maximum());
 }

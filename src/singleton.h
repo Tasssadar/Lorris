@@ -7,18 +7,20 @@ template <class T> class Singleton
 {
     public:
         //! Constructor: Sets the static pointer.
-        Singleton()
+      /*  Singleton()
         {
-            msSingleton = static_cast<T *>(this);
+     //       msSingleton = static_cast<T *>(this);
         }
         //! Destructor: Sets the static pointer to NULL, just in case.
         ~Singleton()
         {
-            msSingleton = 0x00;
-        }
+       //     msSingleton = 0x00;
+        } */
         //! GetSingleton(): Returns a reference of the class.
         static T &GetSingleton(void)
         {
+            if(!msSingleton)
+                msSingleton = new T;
             return *msSingleton;
         }
         //! GetSingletonPtr(): Returns a pointer to the class.
@@ -33,6 +35,6 @@ template <class T> class Singleton
 };
 
 //! Define the following for any class that inherits from Singleton.
-//template <class T> T *Singleton<T>::msSingleton = 0;
+template <class T> T *Singleton<T>::msSingleton = 0;
 
 #endif

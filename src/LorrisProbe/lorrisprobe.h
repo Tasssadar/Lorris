@@ -3,8 +3,9 @@
 
 #include "WorkTab.h"
 
-class LORRISPROBESHARED_EXPORT LorrisProbe : public WorkTab
+class LorrisProbe : public WorkTab
 {
+    Q_OBJECT
     public:
         explicit LorrisProbe();
         virtual ~LorrisProbe();
@@ -12,6 +13,7 @@ class LORRISPROBESHARED_EXPORT LorrisProbe : public WorkTab
         QWidget *GetTab(QWidget *parent);
 
     private:
+        void readData(QByteArray data);
 };
 
 #endif // LORRISPROBE_H

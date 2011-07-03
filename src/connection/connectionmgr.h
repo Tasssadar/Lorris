@@ -1,18 +1,36 @@
 #ifndef CONNECTIONMGR_H
 #define CONNECTIONMGR_H
 
+#include <QString>
+#include <map>
+
+#include "singleton.h"
+#include "connection.h"
+
 enum ConnectionType
 {
-    CONNECTION_SOCKET      = 0x01,
-    CONNECTION_SERIAL_PORT = 0x02,
-    CONNECTION_FILE        = 0x04,
+    CONNECTION_SOCKET      = 0,
+    CONNECTION_SERIAL_PORT = 1,
+    CONNECTION_FILE        = 2,
 };
 
+#define MAX_CON_TYPE 3
+#define CON_MSK(con) (1 << con)
 
-class ConnectionMgr
+class ConnectionMgr : public Singleton<ConnectionMgr>
 {
 public:
     ConnectionMgr();
+
+    void AddCon(uint8_t type, Connection *con)
+    {
+        conMap[type].insert(std::make_pair<QString, Connection*>(con->GetIDString(), con));
+    }
+
+private:
+    std::map<QString, Connection*> conMap[MAX_CON_TYPE];
 };
+
+#define sConMgr ConnectionMgr::GetSingleton()
 
 #endif // CONNECTIONMGR_H

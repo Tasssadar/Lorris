@@ -74,8 +74,9 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(tabs);
     windowCount = 0;
 
-    //Initialize workTabMgr singleton
-    new WorkTabMgr;
+    //Initialize singletons
+    //new WorkTabMgr;
+    //sConMgr.
 }
 
 MainWindow::~MainWindow()
@@ -103,6 +104,7 @@ void MainWindow::NewTab()
 void MainWindow::AddTab(WorkTab *tab, QString label)
 {
     int index = tabs->addTab(tab->GetTab(this), label);
+    m_workTabs.insert(std::make_pair<uint8_t, WorkTab*>(index, tab));
     if(tabs->count() > 1)
     {
         tabs->setTabsClosable(true);
@@ -114,7 +116,15 @@ void MainWindow::CloseTab(int index)
 {
     if(index == -1)
         index = tabs->currentIndex();
-    delete tabs->widget(index);
+
+    if(m_workTabs.find(index) != m_workTabs.end())
+    {
+        std::map<uint8_t, WorkTab*>::iterator itr = m_workTabs.find(index);
+        delete itr->second;
+        m_workTabs.erase(itr);
+    }
+    else
+        delete tabs->widget(index);
     if(tabs->count() < 1)
     {
         tabs->setTabsClosable(false);

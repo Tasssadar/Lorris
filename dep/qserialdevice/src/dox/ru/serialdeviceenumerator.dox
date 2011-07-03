@@ -1,0 +1,357 @@
+/*
+* This file is part of QSerialDevice, an open-source cross-platform library
+* Copyright (C) 2009  Denis Shienkov
+*
+* This library is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+* Contact Denis Shienkov:
+*          e-mail: <scapig2@yandex.ru>
+*             ICQ: 321789831
+*/
+
+
+/*! \~russian
+    \class SerialDeviceEnumerator
+
+    \brief  Класс SerialDeviceEnumerator следит и получает информацию о всех последовательных устройствах в системе.
+
+    \section sec0_SerialDeviceEnumerator Назначение и возможности.
+    
+    Этот класс является частью библиотеки QSerialDevice и может использоваться совместно с классом AbstractSerial.\n
+    
+    Данный класс является синглтоном с указателем на приватный статический объект. \n
+
+    Данный класс предоставляет следующие возможности:
+    - Получать список имен всех имеющихся в системе последовательных устройств.
+    - Уведомлять об удалении/добавлении последовательного устройства.
+    - Получать информацию о любом последовательном устройстве которое имеется в системе.
+    .
+
+    Структура класса реализована по идеологии \b pimpl .\n
+    
+    Принцип работы класса в разных операционных системах имеет существенные отличия:
+    - В MS Windows 2K/XP/Vista/7 информация о наличии последовательных устройств извлекается из Win API, а события при добавлении/удалении
+    последовательных устройств извлекается из системного реестра.
+    - В GNU/Linux для получении информации используется \b UDEV (http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html).
+    .
+    
+    Класс SerialDeviceEnumerator поддерживается в следующих операционных системах:
+    
+    <TABLE>
+    <TR><TH> Операционная система </TH><TH> Поддержка </TH><TH> Примечание </TH></TR>
+    <TR><TD> MS Windows 2K,XP,Vista,7 </TD><TD> Да </TD><TD> Полная </TD></TR>
+    <TR><TD> Дистрибутивы GNU Linux </TD><TD> Да </TD><TD> Полная </TD></TR>
+    <TR><TD> Mac OSX </TD><TD> Нет </TD><TD> -//- </TD></TR>
+    </TABLE>
+
+    Данный класс объединяет в себе функии таких "устаревших" классов как: SerialDeviceWatcher и SerialDeviceInfo.
+    Причиной объединения послужило то, что SerialDeviceWatcher и SerialDeviceInfo используют однотипный код, который
+    приходилось дублировать и в SerialDeviceWatcher и в SerialDeviceInfo, а также его "сложность". \n
+    
+    \note Этот класс не является потокобезопасным и должен использоваться только в контексте главного потока приложения (GUI потоке)!
+    
+    Отличия реализации SerialDeviceEnumerator от SerialDeviceWatcher и SerialDeviceInfo:
+    - Содержит более простой код.
+    - Лучше выполняет функции обнаружения добавления/удаления новых устройств,
+    т.к. код был усовершенствован путем исключения чтения реестра (windows) и анализа директории /dev (linux).
+    - Быстрее и оптимальнее обновляет информацию об устройствах при ее запросе. 
+    .
+    
+    \section sec1_SerialDeviceEnumerator Краткое описание использования.
+    
+    Начало работы с классом необходимо начинать с получения указателя на синглтон (объект SerialDeviceEnumerator).\n
+    Пример:
+    \code
+        ...
+        SerialDeviceEnumerator *sde = SerialDeviceEnumerator::instance();
+        ...
+    \endcode
+
+    \note По умолчанию у синглтона включен режим контроля/слежения за наличием/отсутствием последовательных устройств.
+    
+    После этого необходимо связать сигналы от SerialDeviceEnumerator со слотом обработки информации, и в первый раз принудительно
+    обработать список устройств (далее, принудительно обрабатывать список устройств нет необходимости).
+    Например, выполнять эти действия следует один раз в процессе инициализации приложения (в конструкторе или любом методе). \n
+    Пример:
+    \code
+        void MyAppOrClass::myInitMethodOrConstructor()
+        {
+            ...
+            SerialDeviceEnumerator *enumerator = SerialDeviceEnumerator::instance();
+            connect(enumerator, SIGNAL(hasChanged(QStringList)), this, SLOT(mySlotProcDevicesList(QStringList)));
+            mySlotProcDevicesList(enumerator->devicesAvailable());
+            ...
+        }
+        
+        void MyAppOrClass::mySlotProcDevicesList(const QStringList &deviesList)
+        {
+            // Fill ports box (QComboBox), etc.
+            ui->portBox->clear();
+            ui->portBox->addItems(deviesList);
+        }
+    \endcode
+
+    \section sec2_SerialDeviceEnumerator Методы слежения и мониторинга.
+    
+    Для включения/отключения мониторинга за последовательными устройствами используется метод:
+    - void SerialDeviceEnumerator::setEnabled(bool enable) включает или отключает мониторинг.
+    \note Использовать этот метод нежелательно!
+    
+    .
+    
+    Для получения состояния мониторинга используется метод:
+    - bool SerialDeviceEnumerator::isEnabled() const возвращает текущий режим мониторинга (слежение активно или нет).
+    .
+
+    \section sec3_SerialDeviceEnumerator Методы получения информации.
+    
+    Для получения списка имен всех имеющихся в системе последовательных устройств используется метод:
+    - QStringList SerialDeviceEnumerator::devicesAvailable() const возвращает список имен.
+    
+    Для получения информации об конкретном устройстве необходимо установить имя этого устройства:
+    - void SerialDeviceEnumerator::setDeviceName(const QString &name) устанавливает имя устройства о котором хотим получить информацию.
+    \note
+        - Имена в ОС Windows должны быть "короткие" (т.е. без префиксов \\\\.\\ и т.п.), например: COM1 ... COMn.
+        - Имена в ОС GNU/Linux должны быть "полные" (т.е. полный путь до устройства), например: /dev/ttyS0 ... /dev/ttySn.
+        - Менять имя (переустанавливать новое имя) можно в любое время.
+    .
+    
+    После того как имя установили можно получить информацию, но прежде можно проверить имя установленного устройства:
+    - QString SerialDeviceEnumerator::name() const возвращает имя устройства которое в текущий момент установлено для получения информации.
+    
+    Для получения информации о последовательном устройстве используются методы:
+    - QString SerialDeviceEnumerator::shortName() const возвращает короткое имя устройства.
+    - QString SerialDeviceEnumerator::systemPath() возвращает информацию о системном пути к последовательному устройству.
+    - QString SerialDeviceEnumerator::subSystem() возвращает имя подсистемы последовательного устройства.
+    - QString SerialDeviceEnumerator::locationInfo() возвращает информацию о расположении последовательного устройства.
+    - QString SerialDeviceEnumerator::driver() возвращает информацию о драйвере последовательного устройства.
+    - QString SerialDeviceEnumerator::friendlyName() возвращает "дружественное имя" последовательного устройства.
+    - QString SerialDeviceEnumerator::description() возвращает описание последовательного устройства.
+    - QStringList SerialDeviceEnumerator::hardwareID() возвращает идентификатор аппаратных средств последовательного устройства.
+    - QString SerialDeviceEnumerator::vendorID() возвращает идентификатор производителя последовательного устройства.
+    - QString SerialDeviceEnumerator::productID() возвращает идентификатор продукта (чипа) последовательного устройства.
+    - QString SerialDeviceEnumerator::manufacturer() возвращает название фирмы-производителя последовательного устройства.
+    - QString SerialDeviceEnumerator::service() const возвращает сервис последовательного устройства.
+    - QString SerialDeviceEnumerator::bus() const возвращает шину последовательного устройства.
+    - QString SerialDeviceEnumerator::revision() const возвращает ревизию последовательного устройства.
+    - bool SerialDeviceEnumerator::isExists() const проверяет наличие последовательного устройства в системе.
+    - bool SerialDeviceEnumerator::isBusy() const проверяет занятость последовательного устройства в системе.
+    .
+
+    \note Перечисленные выше методы будут возвращать недостоверные результаты при отключенном режиме мониторинга,
+    поэтому отключать мониторинг методом setEnabled() не рекомендуется! И вообще, не рекомендуется использовать метод setEnabled(),
+    этот метод оставлен на будующее.
+    
+    \section sec4_SerialDeviceEnumerator Сигналы.
+    
+    Класс SerialDeviceEnumerator реализует следующие сигналы:
+    - void SerialDeviceEnumerator::hasChanged(const QStringList &list) автоматически излучается при добавлении/удалении последовательного устройства.
+ 
+    \n
+    \n
+    \n
+
+    \author Денис Шиенков \n
+    Контакты:
+    - ICQ       : 321789831
+    - e-mail    : scapig2@yandex.ru
+*/
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+/*! \~russian
+    \fn SerialDeviceEnumerator *SerialDeviceEnumerator::instance()
+    Возвращает указатель на статический объект (синглтон).
+    \return Указатель на SerialDeviceEnumerator.
+*/
+
+/*! \~russian
+    \fn SerialDeviceEnumerator::SerialDeviceEnumerator(QObject *parent)
+    Конструктор по умолчанию.
+*/
+
+/*! \~russian
+    \fn SerialDeviceEnumerator::~SerialDeviceEnumerator()
+    Деструктор по умолчанию.
+*/
+
+/*! \~russian
+    \fn void SerialDeviceEnumerator::setEnabled(bool enable)
+    Включает или отключает режим мониторинга последовательными 
+    устройствами в зависимости от параметра \a enable :
+    - Если \a enable == true то включается режим мониторинга/слежения.
+    - Если \a enable == false то отключается режим мониторинга/слежения.
+    .
+    \param[in] enable Флаг включения/отключения слежения.
+*/
+
+/*! \~russian
+    \fn bool SerialDeviceEnumerator::isEnabled() const
+    Возвращает текущее состояния мониторинга.
+    \return \a True мониторинг включен.
+*/
+
+/*! \~russian
+    \fn QStringList SerialDeviceEnumerator::devicesAvailable() const
+    Возвращает список имен всех последовательных устройств которые присутствуют 
+    в системе в данный момент. В случае отсутствия последовательных устройств
+    или ошибке метод возвратит пустую строку. 
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Список последовательных устройств в виде QStringList.
+*/
+
+/*! \~russian
+    \fn void SerialDeviceEnumerator::setDeviceName(const QString &name)
+    Устанавливает имя \a name последовательного устройства
+    информацию о котором мы хотим получить:
+    - В MS Windows имена должны быть "короткими", т.е. например: COM1 ... COMn.
+    - В GNU/Linux имена должны быть "длинными", т.е. например: /dev/ttyS0 ... /dev/ttySn.
+    .
+    \param[in] name Имя интересующего нас последовательного устройства.
+*/
+
+/*! \~russian
+    \fn QString SerialDeviceEnumerator::name() const
+    Возвращает имя последовательного устройства которое в текущий момент сконфигурировано
+    и о котором мы хотим получить информацию.
+    \return Имя текущего последовательного устройства в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::shortName() const
+    Возвращает короткое имя. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Короткое имя в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::systemPath() const
+    Возвращает системный путь. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Путь в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::subSystem() const
+    Возвращает подсистему. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Подсистема в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::locationInfo() const
+    Возвращает расположение. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Расположение в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::driver() const
+    Возвращает драйвер. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Драйвер в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::friendlyName() const
+    Возвращает дружественное имя. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Дружественное имя в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::description() const
+    Возвращает описание. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Описание в виде QString.
+*/
+
+/*! \~russian 
+    \fn QStringList SerialDeviceEnumerator::hardwareID() const
+    Возвращает идентификатор аппаратных средств. Если информация не найдена то возвратит пустой список.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Идентификатор в виде QStringList.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::vendorID() const
+    Возвращает идентификатор производителя. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Идентификатор в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::productID() const
+    Возвращает идентификатор продукта. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Идентификатор в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::manufacturer() const
+    Возвращает имя производителя. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Производитель в виде QString.
+*/
+
+/*! \~russian 
+    \fn QString SerialDeviceEnumerator::service() const
+    Возвращает имя сервиса. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Сервис в виде QString.
+*/
+
+/*! \~russian
+    \fn QString SerialDeviceEnumerator::bus() const
+    Возвращает имя шины. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Шина в виде QString.
+*/
+
+/*! \~russian
+    \fn QString SerialDeviceEnumerator::revision() const
+    Возвращает номер ревизии. Если информация не найдена то возвратит пустую строку.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return Ревизия в виде QString.
+*/
+
+/*! \~russian 
+    \fn bool SerialDeviceEnumerator::isExists() const
+    Проверяет наличие последовательного устройства в системе в текущий момент.
+    \note При отключенном мониторинге возвращаемый результат недостоверен.
+    \return \a True если последовательное устройство присутствует в системе.
+*/
+
+
+/*! \~russian 
+    \fn bool SerialDeviceEnumerator::isEmpty() const
+    Проверяет конфигурацию объекта SerialDeviceInfo на факт того что объект сконфигурирован.
+    \return \a True если объект класса пустой, т.е. не установлено имя методом: setName().
+*/
+
+/*! \~russian 
+    \fn bool SerialDeviceEnumerator::isBusy() const
+    Проверяет занято или нет последовательное устройство в текущий момент.
+    \return \a True если устройство занято каким-либо процессом (например открыто) или если произошла ошибка.
+*/
+
+
+/*! \~russian
+    \fn SerialDeviceEnumerator::hasChanged(const QStringList &list)
+    Этот сигнал автоматически испускается при добавлении/удалении последовательного устройства.
+    Исключением является только первый вызов метода setEnabled(true) когда сигнал излучается принудительно! 
+    При этом в сигнале передается список устройств которые присутствуют в системе.
+    \param[out] list Список последовательных устройств которые присутствуют в системе.
+*/

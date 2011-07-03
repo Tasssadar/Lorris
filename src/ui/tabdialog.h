@@ -3,8 +3,11 @@
 
 #include <QDialog>
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QComboBox>
 #include <QLineEdit>
+
+class SerialDeviceEnumerator;
 
 class TabDialog : public QDialog
 {
@@ -15,15 +18,18 @@ public:
 
 private slots:
     void PluginSelected(int index);
-    void ConnectionSelected(int index);
     void CreateTab();
+    void FillConOptions(int index);
 
 private:
 
-    QHBoxLayout *layout;
+
+    QVBoxLayout *layout;
+    QHBoxLayout *firstLine;
+    QHBoxLayout *secondLine;
     QComboBox *pluginsBox;
     QComboBox *conBox;
-    QLineEdit *conLine;
+    SerialDeviceEnumerator *m_sde;
 };
 
 #endif // TABDIALOG_H

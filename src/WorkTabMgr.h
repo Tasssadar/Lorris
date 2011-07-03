@@ -20,7 +20,7 @@ class WorkTabMgr : public Singleton<WorkTabMgr>
 
 };
 
-template <class WorkTabMgr> WorkTabMgr *Singleton<WorkTabMgr>::msSingleton = 0;
+//template <class WorkTabMgr> WorkTabMgr *Singleton<WorkTabMgr>::msSingleton = 0;
 #define sWorkTabMgr WorkTabMgr::GetSingleton()
 
 
