@@ -24,7 +24,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <QtCore/private/qwineventnotifier_p.h>
+#include "../qwineventnotifier_p.h"
 
 #include <objbase.h>
 #include <initguid.h>

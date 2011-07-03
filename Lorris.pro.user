@@ -90,7 +90,6 @@
     <value type="QString">KDE_SESSION_UID=1000</value>
     <value type="QString">KDE_SESSION_VERSION=4</value>
     <value type="QString">LANG=cs_CZ.UTF-8</value>
-    <value type="QString">LANGUAGE=</value>
     <value type="QString">LD_LIBRARY_PATH=/usr/lib/qtcreator</value>
     <value type="QString">LOGNAME=tassadar</value>
     <value type="QString">PATH=/usr/bin:/home/tassadar/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
@@ -140,7 +139,6 @@
     <value type="QString">KDE_SESSION_UID=1000</value>
     <value type="QString">KDE_SESSION_VERSION=4</value>
     <value type="QString">LANG=cs_CZ.UTF-8</value>
-    <value type="QString">LANGUAGE=</value>
     <value type="QString">LD_LIBRARY_PATH=/usr/lib/qtcreator</value>
     <value type="QString">LOGNAME=tassadar</value>
     <value type="QString">PATH=/usr/bin:/home/tassadar/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>

@@ -4,8 +4,8 @@
 #include <QPushButton>
 #include <QLabel>
 
-#include "dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator.h"
-#include "dep/qserialdevice/src/qserialdevice/abstractserial.h"
+#include "qserialdeviceenumerator/serialdeviceenumerator.h"
+#include "qserialdevice/abstractserial.h"
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
 #include "WorkTab.h"

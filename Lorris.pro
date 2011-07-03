@@ -9,6 +9,7 @@ CONFIG(debug, debug|release):DESTDIR = bin/debug
 else:DESTDIR = bin/release
 TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
+INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += src
 SOURCES += src/mainwindow.cpp \
     src/main.cpp \
@@ -68,6 +69,7 @@ win32 {
     SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_win.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_win.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialengine_win.cpp
+    HEADERS += dep/qserialdevice/src/qwineventnotifier_p.h
 }
 unix:!macx { 
     LIBS += -ludev
@@ -75,17 +77,15 @@ unix:!macx {
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp \
         dep/qserialdevice/src/unix/ttylocker.cpp
-
     HEADERS += dep/qserialdevice/src/unix/ttylocker.h \
-         dep/qserialdevice/src/unix/qcore_unix_p.h
+        dep/qserialdevice/src/unix/qcore_unix_p.h
 }
-macx {
-        LIBS += -framework \
-            IOKit \
-            -framework \
-            CoreFoundation
-        SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_mac.cpp \
-            dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
-            dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp \
+macx { 
+    LIBS += -framework \
+        IOKit \
+        -framework \
+        CoreFoundation
+    SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_mac.cpp \
+        dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
+        dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp \
 }
-

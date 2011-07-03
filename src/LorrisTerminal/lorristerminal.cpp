@@ -44,6 +44,7 @@ LorrisTerminal::~LorrisTerminal()
         delete hexLine;
         delete mainWidget;
     }
+    text = NULL;
 }
 
 QWidget *LorrisTerminal::GetTab(QWidget *parent)
@@ -59,6 +60,8 @@ void LorrisTerminal::browseForHex()
 
 void LorrisTerminal::readData(QByteArray data)
 {
+    if(!text)
+        return;
     text->textCursor().movePosition(QTextCursor::End);
     text->insertPlainText(QString(data));
     QScrollBar *sb = text->verticalScrollBar();

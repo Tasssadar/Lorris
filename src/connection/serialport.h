@@ -3,7 +3,7 @@
 
 #include <QDateTime>
 #include "connection.h"
-#include "dep/qserialdevice/src/qserialdevice/abstractserial.h"
+#include "qserialdevice/abstractserial.h"
 
 class SerialPort : public Connection
 {

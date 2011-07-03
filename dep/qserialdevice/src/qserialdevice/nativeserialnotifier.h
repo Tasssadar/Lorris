@@ -5,7 +5,7 @@
 #include <QtCore/QEvent>
 
 #ifdef Q_OS_WIN
-  #include <QtCore/private/qwineventnotifier_p.h>
+  #include "../qwineventnotifier_p.h"
 #else
   #include <QtCore/QThread>
   class QSocketNotifier;
