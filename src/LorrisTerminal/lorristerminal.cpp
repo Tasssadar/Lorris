@@ -1,4 +1,4 @@
-#include <QPlainTextEdit>
+#include <QTextEdit>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -10,9 +10,9 @@
 LorrisTerminal::LorrisTerminal() : WorkTab()
 {
     mainWidget = new QWidget();
-    QVBoxLayout *layout = new QVBoxLayout(mainWidget);
+    layout = new QVBoxLayout(mainWidget);
     QHBoxLayout *layout_buttons = new QHBoxLayout(mainWidget);
-    text = new QPlainTextEdit(mainWidget);
+    text = new QTextEdit(mainWidget);
     text->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     text->setShown(true);
     text->setReadOnly(true);
@@ -38,13 +38,13 @@ LorrisTerminal::LorrisTerminal() : WorkTab()
 
 LorrisTerminal::~LorrisTerminal()
 {
+    text = NULL;
     if(mainWidget)
     {
-        delete text;
-        delete hexLine;
+        WorkTab::DeleteAllMembers(layout);
+        delete layout;
         delete mainWidget;
     }
-    text = NULL;
 }
 
 QWidget *LorrisTerminal::GetTab(QWidget *parent)
@@ -62,7 +62,8 @@ void LorrisTerminal::readData(QByteArray data)
 {
     if(!text)
         return;
-    text->textCursor().movePosition(QTextCursor::End);
+
+    text->moveCursor(QTextCursor::End);
     text->insertPlainText(QString(data));
     QScrollBar *sb = text->verticalScrollBar();
     sb->setValue(sb->maximum());

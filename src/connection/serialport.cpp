@@ -1,9 +1,11 @@
 #include "serialport.h"
 #include <QtConcurrentRun>
+#include "connectionmgr.h"
 
 SerialPort::SerialPort() : Connection()
 {
     m_port = NULL;
+    m_type = CONNECTION_SERIAL_PORT;
 }
 
 SerialPort::~SerialPort()
@@ -16,7 +18,7 @@ bool SerialPort::Open()
 {
     m_port = new AbstractSerial();
     connect(m_port, SIGNAL(signalStatus(const QString, QDateTime)), this, SLOT(viewStateSlot(QString, QDateTime)));
-    m_port->setDeviceName(m_device);
+    m_port->setDeviceName(m_idString);
 
     m_port->enableEmitStatus(true);
     if(m_port->open(AbstractSerial::ReadWrite))

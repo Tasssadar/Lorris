@@ -154,6 +154,7 @@ bool MainWindow::Quit()
         case 1:
         default: return false;
     }
+    delete box;
 }
 
 void MainWindow::QuitButton()
@@ -166,5 +167,6 @@ void MainWindow::About()
     QMessageBox *box = new QMessageBox(this);
     box->setWindowTitle("About Lorris");
     box->setText("Lorris revision " + QString::number(REVISION));
-    box->show();
+    box->exec();
+    delete box;
 }

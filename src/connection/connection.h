@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QObject>
+#include <set>
 
 class Connection : public QObject
 {
@@ -15,12 +16,34 @@ public:
     virtual ~Connection();
     explicit Connection();
 
-    virtual QString GetIDString() { return QString(""); }
+    uint8_t getType() { return m_type; }
+
+    QString GetIDString() { return m_idString; }
     virtual bool Open() { return false; }
     virtual void Close() { }
 
+    void AddUsingTab(uint16_t id)
+    {
+        m_usingTabsIDs.insert(id);
+    }
+
+    void RemoveUsingTab(uint16_t id)
+    {
+        m_usingTabsIDs.erase(id);
+    }
+
+    bool IsUsedByTab()
+    {
+        return !(m_usingTabsIDs.empty());
+    }
+
 protected:
     bool opened;
+
+    uint8_t m_type;
+    std::set<uint16_t> m_usingTabsIDs;
+
+    QString m_idString;
 };
 
 #endif // CONNECTION_H

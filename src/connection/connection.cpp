@@ -1,4 +1,5 @@
 #include "connection.h"
+#include "connectionmgr.h"
 
 Connection::Connection()
 {
@@ -7,5 +8,5 @@ Connection::Connection()
 
 Connection::~Connection()
 {
-
+    sConMgr.RemoveCon(m_type, this);
 }

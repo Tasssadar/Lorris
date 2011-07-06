@@ -12,13 +12,11 @@ public:
     explicit SerialPort();
     virtual ~SerialPort();
 
-    QString GetIDString() { return QString(""); }
-
     bool Open();
     void Close();
     void SetNameAndRate(QString name, AbstractSerial::BaudRate rate)
     {
-        m_device = name;
+        m_idString = name;
         m_rate = rate;
     }
 
@@ -31,7 +29,6 @@ private:
 
     AbstractSerial *m_port;
     AbstractSerial::BaudRate m_rate;
-    QString m_device;
 };
 
 #endif // SERIALPORT_H

@@ -3,9 +3,11 @@
 
 #include <QObject>
 #include <QLineEdit>
-#include <QPlainTextEdit>
 
 #include "WorkTab.h"
+
+class QVBoxLayout;
+class QTextEdit;
 
 class LorrisTerminal : public WorkTab
 {
@@ -24,8 +26,9 @@ private:
 
 
     QWidget *mainWidget;
+    QVBoxLayout *layout;
     QLineEdit *hexLine;
-    QPlainTextEdit *text;
+    QTextEdit *text;
 };
 
 #endif // LORRISTERMINAL_H

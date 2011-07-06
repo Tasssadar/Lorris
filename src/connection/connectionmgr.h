@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <map>
+#include <QDebug>
 
 #include "singleton.h"
 #include "connection.h"
@@ -25,6 +26,16 @@ public:
     void AddCon(uint8_t type, Connection *con)
     {
         conMap[type].insert(std::make_pair<QString, Connection*>(con->GetIDString(), con));
+    }
+
+    void RemoveCon(uint8_t type, Connection *con);
+
+    Connection* FindConnection(uint8_t type, QString idString)
+    {
+        if(conMap[type].find(idString) != conMap[type].end())
+            return conMap[type].find(idString)->second;
+        else
+            return NULL;
     }
 
 private:
