@@ -2,16 +2,28 @@
 #define TERMINAL_H
 
 #include <QString>
+#include <QTextEdit>
 
-class Terminal
+class QByteArray;
+
+class Terminal : public QTextEdit
 {
-public:
-    Terminal() { content = ""; }
-    ~Terminal() { }
+    Q_OBJECT
 
-    void appendText(QString text) { content += text; }
-    void setText(QString text) { content = text; }
+Q_SIGNALS:
+    void keyPressedASCII(QByteArray key);
+
+public:
+    Terminal(QWidget *parent);
+    ~Terminal();
+
+    void appendText(QString text, bool toEdit = true);
+    void setTextTerm(QString text, bool toEdit = true);
     QString getText() { return content; }
+    void updateEditText();
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     QString content;

@@ -123,9 +123,9 @@ bool NativeSerialEnginePrivate::nativeOpen(QIODevice::OpenMode mode)
     this->prepareCommTimeouts(NativeSerialEnginePrivate::WriteTotalTimeoutConstant, 0);*/
     this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadIntervalTimeout, 1);
     this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadTotalTimeoutMultiplier, 0);
-    this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadTotalTimeoutConstant, 10);
+    this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadTotalTimeoutConstant, 1);
     this->prepareCommTimeouts(NativeSerialEnginePrivate::WriteTotalTimeoutMultiplier, 0);
-    this->prepareCommTimeouts(NativeSerialEnginePrivate::WriteTotalTimeoutConstant, 10);
+    this->prepareCommTimeouts(NativeSerialEnginePrivate::WriteTotalTimeoutConstant, 1);
 
 
     if (!this->updateCommTimeouts()) {

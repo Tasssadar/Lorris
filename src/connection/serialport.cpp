@@ -53,7 +53,5 @@ void SerialPort::ReadFromPort()
 
 void SerialPort::SendData(QByteArray data)
 {
-    uint8_t tries = 0;
-    while(m_port->write(data) == -1 && tries < 50)
-        ++tries;
+    m_port->write(data);
 }

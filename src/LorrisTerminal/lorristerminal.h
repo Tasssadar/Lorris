@@ -40,7 +40,8 @@ private slots:
     void flashButton();
     void pauseButton();
 
-    void readData(QByteArray data); 
+    void readData(QByteArray data);
+    void sendKeyEvent(QByteArray key);
 
     //Timers
     void stopTimerSig();
@@ -56,7 +57,6 @@ private:
     QWidget *mainWidget;
     QVBoxLayout *layout;
     QLineEdit *hexLine;
-    QTextEdit *text;
     QTimer *stopTimer;
     QTimer *flashTimeoutTimer;
     QByteArray stopCmd;

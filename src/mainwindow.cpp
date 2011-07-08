@@ -154,6 +154,7 @@ bool MainWindow::Quit()
     box->setText("Do you really want to leave Lorris?");
     box->addButton("Yes", QMessageBox::YesRole);
     box->addButton("No", QMessageBox::NoRole);
+    box->setIcon(QMessageBox::Question);
     int ret = box->exec();
     switch(ret)
     {
@@ -174,6 +175,7 @@ void MainWindow::About()
     QMessageBox *box = new QMessageBox(this);
     box->setWindowTitle("About Lorris");
     box->setText("Lorris revision " + QString::number(REVISION));
+    box->setIcon(QMessageBox::Information);
     box->exec();
     delete box;
 }

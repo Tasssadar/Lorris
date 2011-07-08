@@ -16,7 +16,6 @@
 
 TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
 {
-    m_sde = SerialDeviceEnumerator::instance();
     setFixedSize(500, 200);
 
     firstLine = new QHBoxLayout;
@@ -48,9 +47,7 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
 TabDialog::~TabDialog()
 {
     WorkTab::DeleteAllMembers(layout);
-    delete layout;
-    m_sde->setEnabled(false);
-    SerialDeviceEnumerator::destroyInstance();
+    delete layout; 
 }
 
 void TabDialog::PluginSelected(int index)
@@ -78,11 +75,15 @@ void TabDialog::FillConOptions(int index)
         QComboBox *portBox = new QComboBox(NULL);
         portBox->setEditable(true);
         portBox->setObjectName("PortBox");
+        m_sde = SerialDeviceEnumerator::instance();
         foreach (QString s, m_sde->devicesAvailable())
         {
             m_sde->setDeviceName(s);
             portBox->addItem(m_sde->name(), m_sde->name());
         }
+        m_sde->setEnabled(false);
+        SerialDeviceEnumerator::destroyInstance();
+        m_sde = NULL;
         secondLine->addWidget(portLabel);
         secondLine->addWidget(portBox);
 
@@ -153,6 +154,7 @@ bool TabDialog::ConnectSP(WorkTab *tab)
             QMessageBox *box = new QMessageBox(this);
             box->setWindowTitle("Error!");
             box->setText("Error opening " + portName);
+            box->setIcon(QMessageBox::Critical);
             box->exec();
             delete box;
             delete tab;

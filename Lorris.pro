@@ -30,7 +30,8 @@ SOURCES += src/mainwindow.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserialnotifier.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserialengine.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserial.cpp \
-    src/LorrisTerminal/hexfile.cpp
+    src/LorrisTerminal/hexfile.cpp \
+    src/LorrisTerminal/terminal.cpp
 HEADERS += src/mainwindow.h \
     src/revision.h \
     src/HomeTab.h \

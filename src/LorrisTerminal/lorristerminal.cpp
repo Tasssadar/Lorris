@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QLabel>
+#include <QKeyEvent>
 
 #include "lorristerminal.h"
 #include "hexfile.h"
@@ -24,9 +25,8 @@ LorrisTerminal::LorrisTerminal() : WorkTab()
     m_state = 0;
     stopTimer = NULL;
     hex = NULL;
-    terminal = new Terminal();
+    terminal = NULL;
     mainWidget = NULL;
-    text = NULL;
     hexLine = NULL;
 }
 
@@ -35,17 +35,18 @@ void LorrisTerminal::initUI()
     mainWidget = new QWidget();
     layout = new QVBoxLayout(mainWidget);
     QHBoxLayout *layout_buttons = new QHBoxLayout;
-    text = new QTextEdit(mainWidget);
-    text->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    text->setShown(true);
-    text->setReadOnly(true);
+    terminal = new Terminal(mainWidget);
+    connect(terminal, SIGNAL(keyPressedASCII(QByteArray)), this, SLOT(sendKeyEvent(QByteArray)));
+    terminal->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    terminal->setShown(true);
+    terminal->setReadOnly(true);
 
     QColor color_black(0, 0, 0);\
     QColor color_white(255, 255, 255);\
     QPalette palette;
     palette.setColor(QPalette::Base, color_black);
     palette.setColor(QPalette::Text, color_white);
-    text->setPalette(palette);
+    terminal->setPalette(palette);
 
     hexLine = new QLineEdit(mainWidget);
     QPushButton *browse = new QPushButton("Browse...", mainWidget);
@@ -79,16 +80,14 @@ void LorrisTerminal::initUI()
     layout_buttons->addWidget(pause);
     layout_buttons->addWidget(clear);
     layout->addLayout(layout_buttons);
-    layout->addWidget(text);
+    layout->addWidget(terminal);
 }
 
 LorrisTerminal::~LorrisTerminal()
 {
-    delete terminal;
     terminal = NULL;
-    text = NULL;
     if(mainWidget)
-    {
+    { 
         WorkTab::DeleteAllMembers(layout);
         delete layout;
         delete mainWidget;
@@ -109,8 +108,7 @@ void LorrisTerminal::browseForHex()
 
 void LorrisTerminal::clearButton()
 {
-    text->setText("");
-    terminal->setText("");
+    terminal->setTextTerm("");
 }
 
 void LorrisTerminal::pauseButton()
@@ -123,11 +121,9 @@ void LorrisTerminal::pauseButton()
     }
     else
     {
-        text->setText(terminal->getText());
+        terminal->updateEditText();
         m_state &= ~(STATE_PAUSED);
         button->setText("Pause");
-        QScrollBar *sb = text->verticalScrollBar();
-        sb->setValue(sb->maximum());
     }
 }
 
@@ -140,6 +136,10 @@ void LorrisTerminal::readData(QByteArray data)
             delete stopTimer;
             stopTimer = NULL;
         }
+        stopTimer = new QTimer(this);
+        connect(stopTimer, SIGNAL(timeout()), this, SLOT(stopTimerSig()));
+        stopTimer->start(500);
+
         m_state &= ~(STATE_STOPPING1);
         m_state |= STATE_STOPPING2;
 
@@ -148,14 +148,18 @@ void LorrisTerminal::readData(QByteArray data)
     }
     else if((m_state & STATE_STOPPING2) && data[0] == char(20))
     {
+        m_state &= ~(STATE_STOPPING2);
+        m_state |= STATE_STOPPED;
+        if(stopTimer)
+        {
+            delete stopTimer;
+            stopTimer = NULL;
+        }
         QPushButton *button = mainWidget->findChild<QPushButton *>("StopButton");
         button->setText("Start");
         button->setEnabled(true);
         button = mainWidget->findChild<QPushButton *>("FlashButton");
         button->setEnabled(true);
-
-        m_state &= ~(STATE_STOPPING2);
-        m_state |= STATE_STOPPED;
         return;
     }
     else if(m_state & STATE_AWAITING_ID)
@@ -171,17 +175,10 @@ void LorrisTerminal::readData(QByteArray data)
         return;
     }
 
-    if(!text)
+    if(!terminal)
         return;
 
-    terminal->appendText(QString(data));
-    if(!(m_state & STATE_PAUSED))
-    {
-        text->moveCursor(QTextCursor::End);
-        text->insertPlainText(QString(data));
-        QScrollBar *sb = text->verticalScrollBar();
-        sb->setValue(sb->maximum());
-    }
+    terminal->appendText(QString(data), !(m_state & STATE_PAUSED));
 }
 
 void LorrisTerminal::stopButton()
@@ -209,7 +206,7 @@ void LorrisTerminal::stopButton()
 
         stopTimer = new QTimer(this);
         connect(stopTimer, SIGNAL(timeout()), this, SLOT(stopTimerSig()));
-        stopTimer->start(1000);
+        stopTimer->start(500);
     }
 }
 
@@ -217,10 +214,30 @@ void LorrisTerminal::stopTimerSig()
 {
     delete stopTimer;
     stopTimer = NULL;
-    m_state &= ~(STATE_STOPPING1);
-    m_state |= STATE_STOPPING2;
+    if(m_state & STATE_STOPPING1)
+    {
+        stopTimer = new QTimer(this);
+        connect(stopTimer, SIGNAL(timeout()), this, SLOT(stopTimerSig()));
+        stopTimer->start(500);
 
-    m_con->SendData(stopCmd);
+        m_state &= ~(STATE_STOPPING1);
+        m_state |= STATE_STOPPING2;
+        m_con->SendData(stopCmd);
+    }
+    else if(m_state & STATE_STOPPING2)
+    {
+        m_state &= ~(STATE_STOPPING2);
+        QPushButton *button = mainWidget->findChild<QPushButton *>("StopButton");
+        button->setText("Stop");
+        button->setEnabled(true);
+
+        QMessageBox *box = new QMessageBox(mainWidget);
+        box->setIcon(QMessageBox::Critical);
+        box->setWindowTitle("Error!");
+        box->setText("Timeout on stopping chip!");
+        box->exec();
+        delete box;
+    }
 }
 
 void LorrisTerminal::flashButton()
@@ -234,6 +251,7 @@ void LorrisTerminal::flashButton()
         QMessageBox *box = new QMessageBox(mainWidget);
         box->setWindowTitle("Error!");
         box->setText("Error loading hex file: " + load);
+        box->setIcon(QMessageBox::Critical);
         box->exec();
         delete box;
         delete hex;
@@ -271,6 +289,7 @@ void LorrisTerminal::flash_prepare(QString deviceId)
         QMessageBox *box = new QMessageBox(mainWidget);
         box->setWindowTitle("Error!");
         box->setText("Error making pages: " + make);
+        box->setIcon(QMessageBox::Critical);
         box->exec();
         delete box;
         delete hex;
@@ -368,6 +387,7 @@ void LorrisTerminal::flashTimeout()
     QMessageBox *box = new QMessageBox(mainWidget);
     box->setWindowTitle("Error!");
     box->setText("Timeout during flashing!");
+    box->setIcon(QMessageBox::Critical);
     box->exec();
     delete box;
 }
@@ -390,6 +410,12 @@ void LorrisTerminal::deviceIdTimeout()
     QMessageBox *box = new QMessageBox(mainWidget);
     box->setWindowTitle("Error!");
     box->setText("Can't get device id!");
+    box->setIcon(QMessageBox::Critical);
     box->exec();
     delete box;
+}
+
+void LorrisTerminal::sendKeyEvent(QByteArray key)
+{
+    m_con->SendData(key);
 }
