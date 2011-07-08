@@ -61,7 +61,8 @@ bool NativeSerialEnginePrivate::nativeOpen(QIODevice::OpenMode mode)
         return false;
     }
 
-    int flags = (O_NOCTTY | O_NDELAY);
+    //int flags = (O_NOCTTY | O_NDELAY);
+    int flags = (O_NOCTTY);
     switch (QIODevice::ReadWrite & mode) {
     case QIODevice::ReadOnly: flags |= (O_RDONLY); break;
     case QIODevice::WriteOnly: flags |= (O_WRONLY); break;
@@ -510,7 +511,9 @@ bool NativeSerialEnginePrivate::nativeSetParity(AbstractSerial::Parity parity)
 #endif //CMSPAR
 
     case AbstractSerial::ParityNone:
-        this->tio.c_cflag &= (~PARENB);
+        this->tio.c_cflag &= ~(PARENB | CSIZE);
+        this->tio.c_cflag |= CS8;
+       // this->tio.c_cflag &= (~PARENB);
         break;
     case AbstractSerial::ParityEven:
         this->tio.c_cflag &= (~PARODD);
@@ -1263,7 +1266,7 @@ void NativeSerialEnginePrivate::prepareOtherOptions()
     //TODO: It is necessary to check work in Mac OSX, and if you need to make changes!
     ::cfmakeraw(&this->tio);
     //control modes [c_cflag]
-    this->tio.c_cflag |= (CREAD | CLOCAL);
+    //this->tio.c_cflag |= (CREAD | CLOCAL);
     //local modes [c_lflag]
     //input modes [c_iflag]
     //output modes [c_oflag]

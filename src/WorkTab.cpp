@@ -35,13 +35,17 @@ void WorkTab::DeleteAllMembers(QLayout *layout)
 {
     while(layout->count())
     {
-        if(layout->itemAt(0)->layout())
+        QLayoutItem *item = layout->itemAt(0);
+        layout->removeItem(item);
+        if(item->layout())
         {
-            WorkTab::DeleteAllMembers(layout->itemAt(0)->layout());
-            delete layout->itemAt(0)->layout();
+            WorkTab::DeleteAllMembers(item->layout());
+            delete item->layout();
         }
-        else
-            delete layout->itemAt(0)->widget();
-        layout->removeItem(layout->itemAt(0));
+        else if(item->widget())
+        {
+            delete item->widget();
+            delete item;
+        }
     }
 }

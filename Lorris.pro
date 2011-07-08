@@ -29,7 +29,8 @@ SOURCES += src/mainwindow.cpp \
     dep/qserialdevice/src/qserialdevice/nativeserialengine.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserialnotifier.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserialengine.cpp \
-    dep/qserialdevice/src/qserialdevice/abstractserial.cpp
+    dep/qserialdevice/src/qserialdevice/abstractserial.cpp \
+    src/LorrisTerminal/hexfile.cpp
 HEADERS += src/mainwindow.h \
     src/revision.h \
     src/HomeTab.h \
@@ -56,7 +57,10 @@ HEADERS += src/mainwindow.h \
     dep/qserialdevice/src/qserialdevice/abstractserialengine.h \
     dep/qserialdevice/src/qserialdevice/abstractserial_p.h \
     dep/qserialdevice/src/qserialdevice/abstractserial.h \
-    dep/qserialdevice/src/qserialdevice_global.h
+    dep/qserialdevice/src/qserialdevice_global.h \
+    src/LorrisTerminal/hexfile.h \
+    src/LorrisTerminal/deviceinfo.h \
+    src/LorrisTerminal/terminal.h
 QMAKE_LIBDIR += dep/qwt/lib
 
 # LIBS += -lqwt
@@ -87,5 +91,5 @@ macx {
         CoreFoundation
     SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_mac.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
-        dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp \
+        dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp
 }

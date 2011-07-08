@@ -76,7 +76,7 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-V3Io8GBz8H,guid=4bb8286a623ae6057af715c800000022</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-rJIp1D3VsW,guid=a8efd1bc7109d6ad762bd59900000058</value>
     <value type="QString">DESKTOP_SESSION=kde</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
@@ -96,16 +96,16 @@
     <value type="QString">PWD=/home/tassadar/Dokumenty</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
     <value type="QString">QT_PLUGIN_PATH=/home/tassadar/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/3012,unix/tass-ntb:/tmp/.ICE-unix/3012</value>
+    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2902,unix/tass-ntb:/tmp/.ICE-unix/2902</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SHLVL=0</value>
-    <value type="QString">SSH_AGENT_PID=2919</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-rpWpsu2875/agent.2875</value>
+    <value type="QString">SSH_AGENT_PID=2801</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-awcllz2757/agent.2757</value>
     <value type="QString">USER=tassadar</value>
     <value type="QString">WINDOWPATH=7</value>
     <value type="QString">XCURSOR_THEME=oxy-black</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1309974003.945179-1919097845</value>
+    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1310129779.638311-2061975432</value>
     <value type="QString">XDM_MANAGED=method=classic</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList">
@@ -125,7 +125,7 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-V3Io8GBz8H,guid=4bb8286a623ae6057af715c800000022</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-rJIp1D3VsW,guid=a8efd1bc7109d6ad762bd59900000058</value>
     <value type="QString">DESKTOP_SESSION=kde</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
@@ -145,16 +145,16 @@
     <value type="QString">PWD=/home/tassadar/Dokumenty</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
     <value type="QString">QT_PLUGIN_PATH=/home/tassadar/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/3012,unix/tass-ntb:/tmp/.ICE-unix/3012</value>
+    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2902,unix/tass-ntb:/tmp/.ICE-unix/2902</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SHLVL=0</value>
-    <value type="QString">SSH_AGENT_PID=2919</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-rpWpsu2875/agent.2875</value>
+    <value type="QString">SSH_AGENT_PID=2801</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-awcllz2757/agent.2757</value>
     <value type="QString">USER=tassadar</value>
     <value type="QString">WINDOWPATH=7</value>
     <value type="QString">XCURSOR_THEME=oxy-black</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1309974003.945179-1919097845</value>
+    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1310129779.638311-2061975432</value>
     <value type="QString">XDM_MANAGED=method=classic</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
@@ -171,7 +171,7 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-V3Io8GBz8H,guid=4bb8286a623ae6057af715c800000022</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-rJIp1D3VsW,guid=a8efd1bc7109d6ad762bd59900000058</value>
     <value type="QString">DESKTOP_SESSION=kde</value>
     <value type="QString">DISPLAY=:0.0</value>
     <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
@@ -191,16 +191,16 @@
     <value type="QString">PWD=/home/tassadar/Dokumenty</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
     <value type="QString">QT_PLUGIN_PATH=/home/tassadar/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
-    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/3012,unix/tass-ntb:/tmp/.ICE-unix/3012</value>
+    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2902,unix/tass-ntb:/tmp/.ICE-unix/2902</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SHLVL=0</value>
-    <value type="QString">SSH_AGENT_PID=2919</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-rpWpsu2875/agent.2875</value>
+    <value type="QString">SSH_AGENT_PID=2801</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-awcllz2757/agent.2757</value>
     <value type="QString">USER=tassadar</value>
     <value type="QString">WINDOWPATH=7</value>
     <value type="QString">XCURSOR_THEME=oxy-black</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
-    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1309974003.945179-1919097845</value>
+    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1310129779.638311-2061975432</value>
     <value type="QString">XDM_MANAGED=method=classic</value>
    </valuelist>
    <value key="abstractProcess.IgnoreReturnValue" type="bool">true</value>
@@ -221,18 +221,145 @@
   <variable>buildconfiguration-Release-buildstep0</variable>
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList">
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-rJIp1D3VsW,guid=a8efd1bc7109d6ad762bd59900000058</value>
+    <value type="QString">DESKTOP_SESSION=kde</value>
+    <value type="QString">DISPLAY=:0.0</value>
+    <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
+    <value type="QString">GS_LIB=/home/tassadar/.fonts</value>
+    <value type="QString">GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/tassadar/.gtkrc-2.0:/home/tassadar/.gtkrc-2.0-kde:/home/tassadar/.kde/share/config/gtkrc-2.0</value>
+    <value type="QString">GTK_MODULES=canberra-gtk-module</value>
+    <value type="QString">GTK_RC_FILES=/etc/gtk/gtkrc:/home/tassadar/.gtkrc::/home/tassadar/.kde/share/config/gtkrc</value>
+    <value type="QString">HOME=/home/tassadar</value>
+    <value type="QString">KDE_FULL_SESSION=true</value>
+    <value type="QString">KDE_MULTIHEAD=false</value>
+    <value type="QString">KDE_SESSION_UID=1000</value>
+    <value type="QString">KDE_SESSION_VERSION=4</value>
+    <value type="QString">LANG=cs_CZ.UTF-8</value>
+    <value type="QString">LD_LIBRARY_PATH=/usr/lib/qtcreator</value>
+    <value type="QString">LOGNAME=tassadar</value>
+    <value type="QString">PATH=/usr/bin:/home/tassadar/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
+    <value type="QString">PWD=/home/tassadar/Dokumenty</value>
+    <value type="QString">QTDIR=/usr/share/qt4</value>
+    <value type="QString">QT_PLUGIN_PATH=/home/tassadar/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
+    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2902,unix/tass-ntb:/tmp/.ICE-unix/2902</value>
+    <value type="QString">SHELL=/bin/bash</value>
+    <value type="QString">SHLVL=0</value>
+    <value type="QString">SSH_AGENT_PID=2801</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-awcllz2757/agent.2757</value>
+    <value type="QString">USER=tassadar</value>
+    <value type="QString">WINDOWPATH=7</value>
+    <value type="QString">XCURSOR_THEME=oxy-black</value>
+    <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
+    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1310129779.638311-2061975432</value>
+    <value type="QString">XDM_MANAGED=method=classic</value>
+   </valuelist>
+   <valuelist key="abstractProcess.arguments" type="QVariantList">
+    <value type="QString">/home/tassadar/Lorris/Lorris.pro</value>
+    <value type="QString">-spec</value>
+    <value type="QString">linux-g++</value>
+    <value type="QString">-r</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString">/usr/bin/qmake-qt4</value>
+   <value key="abstractProcess.enabled" type="bool">false</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/home/tassadar/Lorris</value>
   </valuemap>
  </data>
  <data>
   <variable>buildconfiguration-Release-buildstep1</variable>
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList">
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-rJIp1D3VsW,guid=a8efd1bc7109d6ad762bd59900000058</value>
+    <value type="QString">DESKTOP_SESSION=kde</value>
+    <value type="QString">DISPLAY=:0.0</value>
+    <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
+    <value type="QString">GS_LIB=/home/tassadar/.fonts</value>
+    <value type="QString">GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/tassadar/.gtkrc-2.0:/home/tassadar/.gtkrc-2.0-kde:/home/tassadar/.kde/share/config/gtkrc-2.0</value>
+    <value type="QString">GTK_MODULES=canberra-gtk-module</value>
+    <value type="QString">GTK_RC_FILES=/etc/gtk/gtkrc:/home/tassadar/.gtkrc::/home/tassadar/.kde/share/config/gtkrc</value>
+    <value type="QString">HOME=/home/tassadar</value>
+    <value type="QString">KDE_FULL_SESSION=true</value>
+    <value type="QString">KDE_MULTIHEAD=false</value>
+    <value type="QString">KDE_SESSION_UID=1000</value>
+    <value type="QString">KDE_SESSION_VERSION=4</value>
+    <value type="QString">LANG=cs_CZ.UTF-8</value>
+    <value type="QString">LD_LIBRARY_PATH=/usr/lib/qtcreator</value>
+    <value type="QString">LOGNAME=tassadar</value>
+    <value type="QString">PATH=/usr/bin:/home/tassadar/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
+    <value type="QString">PWD=/home/tassadar/Dokumenty</value>
+    <value type="QString">QTDIR=/usr/share/qt4</value>
+    <value type="QString">QT_PLUGIN_PATH=/home/tassadar/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
+    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2902,unix/tass-ntb:/tmp/.ICE-unix/2902</value>
+    <value type="QString">SHELL=/bin/bash</value>
+    <value type="QString">SHLVL=0</value>
+    <value type="QString">SSH_AGENT_PID=2801</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-awcllz2757/agent.2757</value>
+    <value type="QString">USER=tassadar</value>
+    <value type="QString">WINDOWPATH=7</value>
+    <value type="QString">XCURSOR_THEME=oxy-black</value>
+    <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
+    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1310129779.638311-2061975432</value>
+    <value type="QString">XDM_MANAGED=method=classic</value>
+   </valuelist>
+   <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
+   <valuelist key="abstractProcess.arguments" type="QVariantList">
+    <value type="QString">-w</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString">/usr/bin/make</value>
+   <value key="abstractProcess.enabled" type="bool">true</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/home/tassadar/Lorris</value>
   </valuemap>
  </data>
  <data>
   <variable>buildconfiguration-Release-cleanstep0</variable>
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList">
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-rJIp1D3VsW,guid=a8efd1bc7109d6ad762bd59900000058</value>
+    <value type="QString">DESKTOP_SESSION=kde</value>
+    <value type="QString">DISPLAY=:0.0</value>
+    <value type="QString">DM_CONTROL=/var/run/xdmctl</value>
+    <value type="QString">GS_LIB=/home/tassadar/.fonts</value>
+    <value type="QString">GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/tassadar/.gtkrc-2.0:/home/tassadar/.gtkrc-2.0-kde:/home/tassadar/.kde/share/config/gtkrc-2.0</value>
+    <value type="QString">GTK_MODULES=canberra-gtk-module</value>
+    <value type="QString">GTK_RC_FILES=/etc/gtk/gtkrc:/home/tassadar/.gtkrc::/home/tassadar/.kde/share/config/gtkrc</value>
+    <value type="QString">HOME=/home/tassadar</value>
+    <value type="QString">KDE_FULL_SESSION=true</value>
+    <value type="QString">KDE_MULTIHEAD=false</value>
+    <value type="QString">KDE_SESSION_UID=1000</value>
+    <value type="QString">KDE_SESSION_VERSION=4</value>
+    <value type="QString">LANG=cs_CZ.UTF-8</value>
+    <value type="QString">LD_LIBRARY_PATH=/usr/lib/qtcreator</value>
+    <value type="QString">LOGNAME=tassadar</value>
+    <value type="QString">PATH=/usr/bin:/home/tassadar/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games</value>
+    <value type="QString">PWD=/home/tassadar/Dokumenty</value>
+    <value type="QString">QTDIR=/usr/share/qt4</value>
+    <value type="QString">QT_PLUGIN_PATH=/home/tassadar/.kde/lib/kde4/plugins/:/usr/lib/kde4/plugins/</value>
+    <value type="QString">SESSION_MANAGER=local/tass-ntb:@/tmp/.ICE-unix/2902,unix/tass-ntb:/tmp/.ICE-unix/2902</value>
+    <value type="QString">SHELL=/bin/bash</value>
+    <value type="QString">SHLVL=0</value>
+    <value type="QString">SSH_AGENT_PID=2801</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/ssh-awcllz2757/agent.2757</value>
+    <value type="QString">USER=tassadar</value>
+    <value type="QString">WINDOWPATH=7</value>
+    <value type="QString">XCURSOR_THEME=oxy-black</value>
+    <value type="QString">XDG_DATA_DIRS=/usr/share:/usr/share:/usr/local/share</value>
+    <value type="QString">XDG_SESSION_COOKIE=4c7ea78e6ac1007546a65dfb0000000a-1310129779.638311-2061975432</value>
+    <value type="QString">XDM_MANAGED=method=classic</value>
+   </valuelist>
+   <value key="abstractProcess.IgnoreReturnValue" type="bool">true</value>
+   <valuelist key="abstractProcess.arguments" type="QVariantList">
+    <value type="QString">clean</value>
+    <value type="QString">-w</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString">/usr/bin/make</value>
+   <value key="abstractProcess.enabled" type="bool">true</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/home/tassadar/Lorris</value>
+   <value key="cleanConfig" type="bool">true</value>
+   <valuelist key="makeargs" type="QVariantList">
+    <value type="QString">clean</value>
+   </valuelist>
   </valuemap>
  </data>
  <data>

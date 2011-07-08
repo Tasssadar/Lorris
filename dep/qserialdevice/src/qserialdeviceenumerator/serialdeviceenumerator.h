@@ -43,6 +43,7 @@ Q_SIGNALS:
 public:
 
     static SerialDeviceEnumerator *instance();
+    static void destroyInstance();
 
     void setEnabled(bool enable);
     bool isEnabled() const;

@@ -21,6 +21,7 @@ public:
     QString GetIDString() { return m_idString; }
     virtual bool Open() { return false; }
     virtual void Close() { }
+    virtual void SendData(QByteArray data);
 
     void AddUsingTab(uint16_t id)
     {

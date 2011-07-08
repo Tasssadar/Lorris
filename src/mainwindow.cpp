@@ -19,6 +19,7 @@
 #include <QtGui/QWidget>
 #include <QHBoxLayout>
 #include <QLibrary>
+#include <QObjectList>
 
 #include "mainwindow.h"
 #include "HomeTab.h"
@@ -32,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     setWindowTitle(getVersionString());
+    setMinimumSize(700, 500);
+    setWindowState(Qt::WindowMaximized);
 
     // menu bar
     QMenuBar* menuBar = new QMenuBar(this);
@@ -69,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tabs->setCornerWidget(newTabBtn);
     tabs->setMovable(true);
     connect(tabs, SIGNAL(tabCloseRequested(int)), this, SLOT(CloseTab(int)));
-    resize(950, 700);
+
     OpenHomeTab();
     setCentralWidget(tabs);
     windowCount = 0;
@@ -81,7 +84,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete tabs;
+    const QList<QObject*> list = children();
+    for(QList<QObject*>::const_iterator it = list.begin(); it != list.end(); ++it)
+        delete *it;
+    //delete tabs;
 }
 
 QString MainWindow::getVersionString()
@@ -97,8 +103,9 @@ void MainWindow::OpenHomeTab()
 
 void MainWindow::NewTab()
 {
-    TabDialog dialog(this);
-    dialog.exec();
+    TabDialog *dialog = new TabDialog(this);
+    dialog->exec();
+    delete dialog;
 }
 
 void MainWindow::AddTab(WorkTab *tab, QString label)

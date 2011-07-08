@@ -286,6 +286,13 @@ SerialDeviceEnumerator *SerialDeviceEnumerator::instance()
     return self;
 }
 
+void SerialDeviceEnumerator::destroyInstance()
+{
+    if(self)
+        delete self;
+    self = NULL;
+}
+
 /*! \~english
     \fn SerialDeviceEnumerator::SerialDeviceEnumerator(QObject *parent)
     Default constructor.

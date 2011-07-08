@@ -14,6 +14,7 @@ public:
 
     bool Open();
     void Close();
+    void SendData(QByteArray data);
     void SetNameAndRate(QString name, AbstractSerial::BaudRate rate)
     {
         m_idString = name;

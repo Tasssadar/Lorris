@@ -50,6 +50,7 @@ TabDialog::~TabDialog()
     WorkTab::DeleteAllMembers(layout);
     delete layout;
     m_sde->setEnabled(false);
+    SerialDeviceEnumerator::destroyInstance();
 }
 
 void TabDialog::PluginSelected(int index)
@@ -65,14 +66,7 @@ void TabDialog::PluginSelected(int index)
 
 void TabDialog::FillConOptions(int index)
 {
-    QWidget *wi = NULL;
-    while(secondLine->count())
-    {
-        wi = secondLine->itemAt(0)->widget();
-        wi->hide();
-        secondLine->removeWidget(wi);
-        delete wi;
-    }
+    WorkTab::DeleteAllMembers(secondLine);
 
     if(conBox->itemText(index) == "Socket")
     {
@@ -118,50 +112,54 @@ void TabDialog::CreateTab()
     WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos()->at(pluginsBox->currentIndex());
     WorkTab *tab = info->GetNewTab();
     if(conBox->itemText(conBox->currentIndex()) == "Serial port")
-    {
-        QString portName("");
-        AbstractSerial::BaudRate rate;
-
-        for(uint8_t i = 0; i < secondLine->count(); ++i)
-        {
-            QWidget *wi = secondLine->itemAt(i)->widget();
-            if(wi->objectName() == "PortBox")
-                portName = ((QComboBox*)wi)->itemText(((QComboBox*)wi)->currentIndex());
-            if(wi->objectName() == "RateBox")
-                rate = AbstractSerial::BaudRate(((QComboBox*)wi)->itemData(((QComboBox*)wi)->currentIndex()).Int);
-        }
-
-        SerialPort *port = (SerialPort*)sConMgr.FindConnection(CONNECTION_SERIAL_PORT, portName);
-        if(port)
-        {
-            sWorkTabMgr.AddWorkTab(tab);
-            tab->setConnection(port);
-        }
-        else
-        {
-            port = new SerialPort();
-            port->SetNameAndRate(portName, rate);
-            if(port->Open())
-            {
-                sWorkTabMgr.AddWorkTab(tab);
-                tab->setConnection(port);
-                sConMgr.AddCon(CONNECTION_SERIAL_PORT, port);
-            }
-            else
-            {
-                QMessageBox *box = new QMessageBox(this);
-                box->setWindowTitle("Error!");
-                box->setText("Error opening " + portName);
-                box->exec();
-                delete box;
-                delete tab;
-                delete port;
-                return;
-            }
-        }
-    }
+        if(!ConnectSP(tab))
+            return;
     ((MainWindow*)parent())->AddTab(tab, info->GetName());
     close();
 }
 
+bool TabDialog::ConnectSP(WorkTab *tab)
+{
+    QString portName("");
+    AbstractSerial::BaudRate rate;
+
+    for(uint8_t i = 0; i < secondLine->count(); ++i)
+    {
+        QWidget *wi = secondLine->itemAt(i)->widget();
+        if(wi->objectName() == "PortBox")
+            portName = ((QComboBox*)wi)->currentText();
+        if(wi->objectName() == "RateBox")
+            rate = AbstractSerial::BaudRate(((QComboBox*)wi)->itemData(((QComboBox*)wi)->currentIndex()).Int);
+    }
+
+    SerialPort *port = (SerialPort*)sConMgr.FindConnection(CONNECTION_SERIAL_PORT, portName);
+    if(port)
+    {
+        sWorkTabMgr.AddWorkTab(tab);
+        tab->setConnection(port);
+    }
+    else
+    {
+        port = new SerialPort();
+        port->SetNameAndRate(portName, rate);
+        if(port->Open())
+        {
+            sWorkTabMgr.AddWorkTab(tab);
+            tab->setConnection(port);
+            sConMgr.AddCon(CONNECTION_SERIAL_PORT, port);
+        }
+        else
+        {
+            QMessageBox *box = new QMessageBox(this);
+            box->setWindowTitle("Error!");
+            box->setText("Error opening " + portName);
+            box->exec();
+            delete box;
+            delete tab;
+            delete port;
+            return false;
+        }
+    }
+    return true;
+}
 

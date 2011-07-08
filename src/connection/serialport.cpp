@@ -21,9 +21,13 @@ bool SerialPort::Open()
     m_port->setDeviceName(m_idString);
 
     m_port->enableEmitStatus(true);
-    if(m_port->open(AbstractSerial::ReadWrite))
+    if(m_port->open(AbstractSerial::ReadWrite | AbstractSerial::Unbuffered))
     {
         m_port->setBaudRate(m_rate, AbstractSerial::AllBaud);
+        m_port->setParity(AbstractSerial::ParityNone);
+        m_port->setDataBits(AbstractSerial::DataBits8);
+        m_port->setStopBits(AbstractSerial::StopBits1);
+        m_port->setFlowControl(AbstractSerial::FlowControlOff);
         opened = true;
         connect(m_port, SIGNAL(readyRead()), this, SLOT(ReadFromPort()));
     }
@@ -45,4 +49,11 @@ void SerialPort::ReadFromPort()
 {
     QByteArray ba = m_port->readAll();
     emit dataRead(ba);
+}
+
+void SerialPort::SendData(QByteArray data)
+{
+    uint8_t tries = 0;
+    while(m_port->write(data) == -1 && tries < 50)
+        ++tries;
 }

@@ -10,3 +10,8 @@ Connection::~Connection()
 {
     sConMgr.RemoveCon(m_type, this);
 }
+
+void Connection::SendData(QByteArray data)
+{
+
+}

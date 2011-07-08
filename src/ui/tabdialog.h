@@ -8,6 +8,7 @@
 #include <QLineEdit>
 
 class SerialDeviceEnumerator;
+class WorkTab;
 
 class TabDialog : public QDialog
 {
@@ -22,7 +23,7 @@ private slots:
     void FillConOptions(int index);
 
 private:
-
+    bool ConnectSP(WorkTab *tab);
 
     QVBoxLayout *layout;
     QHBoxLayout *firstLine;

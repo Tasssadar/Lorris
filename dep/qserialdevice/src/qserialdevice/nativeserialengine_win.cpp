@@ -116,11 +116,17 @@ bool NativeSerialEnginePrivate::nativeOpen(QIODevice::OpenMode mode)
     }
 
     // Prepare timeouts.
-    this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadIntervalTimeout, MAXWORD);
+    /*this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadIntervalTimeout, MAXWORD);
     this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadTotalTimeoutMultiplier, 0);
     this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadTotalTimeoutConstant, 0);
     this->prepareCommTimeouts(NativeSerialEnginePrivate::WriteTotalTimeoutMultiplier, 0);
-    this->prepareCommTimeouts(NativeSerialEnginePrivate::WriteTotalTimeoutConstant, 0);
+    this->prepareCommTimeouts(NativeSerialEnginePrivate::WriteTotalTimeoutConstant, 0);*/
+    this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadIntervalTimeout, 1);
+    this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadTotalTimeoutMultiplier, 0);
+    this->prepareCommTimeouts(NativeSerialEnginePrivate::ReadTotalTimeoutConstant, 10);
+    this->prepareCommTimeouts(NativeSerialEnginePrivate::WriteTotalTimeoutMultiplier, 0);
+    this->prepareCommTimeouts(NativeSerialEnginePrivate::WriteTotalTimeoutConstant, 10);
+
 
     if (!this->updateCommTimeouts()) {
 #if defined (NATIVESERIALENGINE_WIN_DEBUG)
