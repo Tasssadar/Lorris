@@ -1,57 +1,72 @@
 #include "serialport.h"
 #include <QtConcurrentRun>
+#include <QApplication>
 #include "connectionmgr.h"
+#include "serialportthread.h"
 
 SerialPort::SerialPort() : Connection()
 {
-    m_port = NULL;
     m_type = CONNECTION_SERIAL_PORT;
+    thread = NULL;
 }
 
 SerialPort::~SerialPort()
 {
-    if(m_port)
-        delete m_port;
+    if(thread)
+    {
+        thread->terminate();
+        thread->wait();
+        delete thread;
+        thread = NULL;
+    }
 }
 
 bool SerialPort::Open()
 {
-    m_port = new AbstractSerial();
-    connect(m_port, SIGNAL(signalStatus(const QString, QDateTime)), this, SLOT(viewStateSlot(QString, QDateTime)));
-    m_port->setDeviceName(m_idString);
+    return false;
+}
 
-    m_port->enableEmitStatus(true);
-    if(m_port->open(AbstractSerial::ReadWrite | AbstractSerial::Unbuffered))
-    {
-        m_port->setBaudRate(m_rate, AbstractSerial::AllBaud);
-        m_port->setParity(AbstractSerial::ParityNone);
-        m_port->setDataBits(AbstractSerial::DataBits8);
-        m_port->setStopBits(AbstractSerial::StopBits1);
-        m_port->setFlowControl(AbstractSerial::FlowControlOff);
-        opened = true;
-        connect(m_port, SIGNAL(readyRead()), this, SLOT(ReadFromPort()));
-    }
-    return opened;
+void SerialPort::dataReadSer(QByteArray data)
+{
+    emit dataRead(data);
+}
+
+void SerialPort::connectResultSer(bool opened)
+{
+    this->opened = opened;
+    emit connectResult(this, opened);
+    if(!opened)
+        thread = NULL;
 }
 
 void SerialPort::Close()
 {
-    m_port->close();
+    if(thread)
+    {
+        thread->terminate();
+        thread->wait();
+        delete thread;
+        thread = NULL;
+    }
     opened = false;
-}
-
-void SerialPort::viewStateSlot(QString stateMsg, QDateTime dt)
-{
-
-}
-
-void SerialPort::ReadFromPort()
-{
-    QByteArray ba = m_port->readAll();
-    emit dataRead(ba);
 }
 
 void SerialPort::SendData(QByteArray data)
 {
-    m_port->write(data);
+    if(opened)
+        thread->Send(data);
+}
+
+void SerialPort::OpenConcurrent()
+{
+    if(thread)
+    {
+        thread->terminate();
+        thread->wait();
+        delete thread;
+    }
+    thread = new SerialPortThread(m_idString, m_rate);
+    connect(thread, SIGNAL(dataRead(QByteArray)), this, SLOT(dataReadSer(QByteArray)));
+    connect(thread, SIGNAL(connectResult(bool)), this, SLOT(connectResultSer(bool)));
+    thread->start();
 }

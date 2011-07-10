@@ -1,3 +1,5 @@
+#include <QtConcurrentRun>
+
 #include "connection.h"
 #include "connectionmgr.h"
 
@@ -11,7 +13,17 @@ Connection::~Connection()
     sConMgr.RemoveCon(m_type, this);
 }
 
-void Connection::SendData(QByteArray data)
+bool Connection::Open()
+{
+    return false;
+}
+
+void Connection::SendData(QByteArray /*data*/)
+{
+
+}
+
+void Connection::OpenConcurrent()
 {
 
 }

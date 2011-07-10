@@ -20,12 +20,12 @@ WorkTab::~WorkTab()
     }
 }
 
-QWidget *WorkTab::GetTab(QWidget *parent)
+QWidget *WorkTab::GetTab(QWidget */*parent*/)
 {
     return NULL;
 }
 
-void WorkTab::readData(QByteArray data)
+void WorkTab::readData(QByteArray /*data*/)
 {
 
 }

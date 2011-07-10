@@ -8,6 +8,7 @@
 #include <QProgressBar>
 #include <QLabel>
 #include <QKeyEvent>
+#include <QProgressDialog>
 
 #include "lorristerminal.h"
 #include "hexfile.h"
@@ -52,6 +53,10 @@ void LorrisTerminal::initUI()
     QPushButton *browse = new QPushButton("Browse...", mainWidget);
     connect(browse, SIGNAL(clicked()), this, SLOT(browseForHex()));
 
+    QPushButton *con = new QPushButton("Disconnect", mainWidget);
+    con->setObjectName("ConnectButton");
+    connect(con, SIGNAL(clicked()), this, SLOT(connectButton()));
+
     QPushButton *stop = new QPushButton("Stop", mainWidget);
     stop->setObjectName("StopButton");
     connect(stop, SIGNAL(clicked()), this, SLOT(stopButton()));
@@ -72,6 +77,7 @@ void LorrisTerminal::initUI()
     flashText->setMinimumWidth(100);
     flashText->setObjectName("FlashLabel");
 
+    layout_buttons->addWidget(con);
     layout_buttons->addWidget(stop);
     layout_buttons->addWidget(flash);
     layout_buttons->addWidget(hexLine);
@@ -124,6 +130,61 @@ void LorrisTerminal::pauseButton()
         terminal->updateEditText();
         m_state &= ~(STATE_PAUSED);
         button->setText("Pause");
+    }
+}
+
+void LorrisTerminal::connectButton()
+{
+    QPushButton *button = mainWidget->findChild<QPushButton *>("StopButton");
+    if(!(m_state & STATE_DISCONNECTED))
+    {
+        m_state |= STATE_DISCONNECTED;
+        m_state &= ~(STATE_STOPPING1 | STATE_STOPPING2 | STATE_STOPPED);
+        button->setEnabled(false);
+        button->setText("Stop");
+
+        button = mainWidget->findChild<QPushButton *>("FlashButton");
+        button->setEnabled(false);
+        button->setText("Flash");
+
+        button = mainWidget->findChild<QPushButton *>("ConnectButton");
+        button->setText("Connect");
+        m_con->Close();
+    }
+    else
+    {
+        button = mainWidget->findChild<QPushButton *>("ConnectButton");
+        button->setText("Connecting...");
+        button->setEnabled(false);
+
+        connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
+        m_con->OpenConcurrent();
+    }
+}
+
+void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
+{
+    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
+    QPushButton *button = mainWidget->findChild<QPushButton *>("ConnectButton");
+    button->setEnabled(true);
+    if(result)
+    {
+        m_state &= ~(STATE_DISCONNECTED);
+        button->setText("Disconnect");   
+
+        button = mainWidget->findChild<QPushButton *>("StopButton");
+        button->setEnabled(true);
+    }
+    else
+    {
+        button->setText("Connect");
+
+        QMessageBox *box = new QMessageBox(mainWidget);
+        box->setIcon(QMessageBox::Critical);
+        box->setWindowTitle("Error!");
+        box->setText("Can't open serial port!");
+        box->exec();
+        delete box;
     }
 }
 
@@ -417,5 +478,6 @@ void LorrisTerminal::deviceIdTimeout()
 
 void LorrisTerminal::sendKeyEvent(QByteArray key)
 {
-    m_con->SendData(key);
+    if(!(m_state & STATE_DISCONNECTED))
+        m_con->SendData(key);
 }

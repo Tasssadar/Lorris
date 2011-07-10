@@ -5,6 +5,8 @@
 #include "connection.h"
 #include "qserialdevice/abstractserial.h"
 
+class SerialPortThread;
+
 class SerialPort : public Connection
 {
     Q_OBJECT
@@ -20,16 +22,18 @@ public:
         m_idString = name;
         m_rate = rate;
     }
+    void OpenConcurrent();
+   // void concurrentFinished();
 
 private slots:
-    void viewStateSlot(QString stateMsg, QDateTime dt);
-    void ReadFromPort();
+    void dataReadSer(QByteArray data);
+    void connectResultSer(bool opened);
 
 private:
-
-
-    AbstractSerial *m_port;
     AbstractSerial::BaudRate m_rate;
+    SerialPortThread *thread;
 };
+
+
 
 #endif // SERIALPORT_H

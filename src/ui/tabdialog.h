@@ -9,6 +9,8 @@
 
 class SerialDeviceEnumerator;
 class WorkTab;
+class Connection;
+class WorkTabInfo;
 
 class TabDialog : public QDialog
 {
@@ -21,9 +23,10 @@ private slots:
     void PluginSelected(int index);
     void CreateTab();
     void FillConOptions(int index);
+    void serialConResult(Connection *con, bool result);
 
 private:
-    bool ConnectSP(WorkTab *tab);
+    WorkTab *ConnectSP(WorkTabInfo *info);
 
     QVBoxLayout *layout;
     QHBoxLayout *firstLine;
@@ -31,6 +34,7 @@ private:
     QComboBox *pluginsBox;
     QComboBox *conBox;
     SerialDeviceEnumerator *m_sde;
+    WorkTabInfo *tmpTabInfo;
 };
 
 #endif // TABDIALOG_H

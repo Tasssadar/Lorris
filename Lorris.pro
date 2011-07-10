@@ -31,7 +31,8 @@ SOURCES += src/mainwindow.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserialengine.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserial.cpp \
     src/LorrisTerminal/hexfile.cpp \
-    src/LorrisTerminal/terminal.cpp
+    src/LorrisTerminal/terminal.cpp \
+    src/connection/serialportthread.cpp
 HEADERS += src/mainwindow.h \
     src/revision.h \
     src/HomeTab.h \
@@ -61,7 +62,8 @@ HEADERS += src/mainwindow.h \
     dep/qserialdevice/src/qserialdevice_global.h \
     src/LorrisTerminal/hexfile.h \
     src/LorrisTerminal/deviceinfo.h \
-    src/LorrisTerminal/terminal.h
+    src/LorrisTerminal/terminal.h \
+    src/connection/serialportthread.h
 QMAKE_LIBDIR += dep/qwt/lib
 
 # LIBS += -lqwt

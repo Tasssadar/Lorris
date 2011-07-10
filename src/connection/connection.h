@@ -4,6 +4,8 @@
 #include <QString>
 #include <QObject>
 #include <set>
+#include <QFuture>
+#include <QFutureWatcher>
 
 class Connection : public QObject
 {
@@ -11,6 +13,7 @@ class Connection : public QObject
 
 Q_SIGNALS:
     void dataRead(QByteArray data);
+    void connectResult(Connection *con, bool open);
 
 public:
     virtual ~Connection();
@@ -19,7 +22,8 @@ public:
     uint8_t getType() { return m_type; }
 
     QString GetIDString() { return m_idString; }
-    virtual bool Open() { return false; }
+    virtual bool Open();
+    virtual void OpenConcurrent();
     virtual void Close() { }
     virtual void SendData(QByteArray data);
 
@@ -38,8 +42,13 @@ public:
         return !(m_usingTabsIDs.empty());
     }
 
+protected slots:
+   // virtual void concurrentFinished();
+
 protected:
     bool opened;
+    QFuture<bool> *future;
+    QFutureWatcher<bool> *watcher;
 
     uint8_t m_type;
     std::set<uint16_t> m_usingTabsIDs;
