@@ -31,7 +31,7 @@ public:
     explicit LorrisTerminal();
     virtual ~LorrisTerminal();
 
-    QWidget *GetTab(QWidget *parent);
+    QWidget *GetTab(QWidget *parent = NULL);
 
 private slots:
     //Buttons
@@ -45,6 +45,7 @@ private slots:
     void readData(QByteArray data);
     void sendKeyEvent(QByteArray key);
     void connectionResult(Connection *con, bool result);
+    void connectedStatus(bool connected);
 
     //Timers
     void stopTimerSig();
@@ -65,7 +66,7 @@ private:
     HexFile *hex;
     Terminal *terminal;
 
-    uint8_t m_state;
+    quint8 m_state;
 };
 
 #endif // LORRISTERMINAL_H

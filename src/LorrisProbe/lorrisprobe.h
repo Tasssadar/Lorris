@@ -10,7 +10,7 @@ class LorrisProbe : public WorkTab
         explicit LorrisProbe();
         virtual ~LorrisProbe();
 
-        QWidget *GetTab(QWidget *parent);
+        QWidget *GetTab(QWidget *parent = NULL);
 
     private:
         void readData(QByteArray data);

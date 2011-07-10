@@ -9,8 +9,8 @@ class DeviceInfo;
 
 struct Page
 {
-    uint16_t address;
-    std::vector<uint8_t> data;
+    quint16 address;
+    std::vector<quint8> data;
 };
 
 class HexFile
@@ -22,7 +22,7 @@ public:
     QString load(QString file);
     QString makePages(DeviceInfo *info);
 
-    uint16_t getPagesCount() { return pages.size(); }
+    quint16 getPagesCount() { return pages.size(); }
     Page *getNextPage()
     {
         if(m_pagesItr >= pages.size())
@@ -33,16 +33,16 @@ public:
 private:
     void deleteAllPages()
     {
-        for(uint16_t i = 0; i < pages.size(); ++i)
+        for(quint16 i = 0; i < pages.size(); ++i)
             delete pages[i];
         pages.clear();
     }
 
-    bool patch_page(Page *page,  uint16_t patch_pos, uint16_t boot_reset, uint16_t page_pos);
+    bool patch_page(Page *page,  quint16 patch_pos, quint16 boot_reset, quint16 page_pos);
 
-    std::vector<uint8_t> m_buffer;
+    std::vector<quint8> m_buffer;
     std::vector<Page*> pages;
-    uint16_t m_pagesItr;
+    quint16 m_pagesItr;
 };
 
 #endif // HEXFILE_H

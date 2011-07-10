@@ -1,6 +1,4 @@
 #include "serialport.h"
-#include <QtConcurrentRun>
-#include <QApplication>
 #include "connectionmgr.h"
 #include "serialportthread.h"
 
@@ -35,8 +33,11 @@ void SerialPort::connectResultSer(bool opened)
 {
     this->opened = opened;
     emit connectResult(this, opened);
+
     if(!opened)
         thread = NULL;
+    else
+        emit connected(true);
 }
 
 void SerialPort::Close()
@@ -47,6 +48,7 @@ void SerialPort::Close()
         thread->wait();
         delete thread;
         thread = NULL;
+        emit connected(false);
     }
     opened = false;
 }

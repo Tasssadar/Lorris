@@ -3,31 +3,63 @@
 
 #include <vector>
 #include <map>
-#include <QtCore/QVariant>
+#include <QTabWidget>
 
 #include "singleton.h"
+#include "WorkTab.h"
 
 class WorkTabInfo;
-class WorkTab;
+class HomeTab;
 
 class WorkTabMgr : public Singleton<WorkTabMgr>
 {
+    typedef std::map<quint16, WorkTab*> WorkTabMap;
+
     public:
         WorkTabMgr();
         ~WorkTabMgr();
 
         std::vector<WorkTabInfo*> *GetWorkTabInfos();
-        uint16_t AddWorkTab(WorkTab *tab);
+        quint16 AddWorkTab(WorkTab *tab, QString label);
+
+        void removeTab(quint16 index)
+        {
+            for(WorkTabMap::iterator itr = m_workTabs.begin(); itr != m_workTabs.end(); ++itr)
+            {
+                if(itr->second->GetTab() == tabWidget->widget(index))
+                {
+                    removeTab(itr->second);
+                    return;
+                }
+            }
+        }
+
+        void removeTabWithId(quint16 id)
+        {
+            WorkTabMap::iterator itr = m_workTabs.find(id);
+            if(itr != m_workTabs.end())
+                removeTab(itr->second);
+        }
+
+        void removeTab(WorkTab *tab);
+
+        QTabWidget *getWi() { return tabWidget; }
+        void CreateWidget(QWidget *parent) { tabWidget = new QTabWidget(parent); }
+
+        void OpenHomeTab();
+        void CloseHomeTab();
+        void NewTabDialog();
 
     private:
         std::vector<WorkTabInfo*> m_workTabInfos;
-        std::map<uint16_t, WorkTab*> m_workTabs;
+        WorkTabMap m_workTabs;
 
-        uint16_t tabIdCounter;
-
+        quint16 tabIdCounter;
+        QTabWidget *tabWidget;
+        HomeTab *hometab;
 };
 
-//template <class WorkTabMgr> WorkTabMgr *Singleton<WorkTabMgr>::msSingleton = 0;
+
 #define sWorkTabMgr WorkTabMgr::GetSingleton()
 
 

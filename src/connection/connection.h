@@ -3,9 +3,8 @@
 
 #include <QString>
 #include <QObject>
+#include <QDataStream>
 #include <set>
-#include <QFuture>
-#include <QFutureWatcher>
 
 class Connection : public QObject
 {
@@ -14,12 +13,13 @@ class Connection : public QObject
 Q_SIGNALS:
     void dataRead(QByteArray data);
     void connectResult(Connection *con, bool open);
+    void connected(bool connected);
 
 public:
     virtual ~Connection();
     explicit Connection();
 
-    uint8_t getType() { return m_type; }
+    quint8 getType() { return m_type; }
 
     QString GetIDString() { return m_idString; }
     virtual bool Open();
@@ -27,12 +27,12 @@ public:
     virtual void Close() { }
     virtual void SendData(QByteArray data);
 
-    void AddUsingTab(uint16_t id)
+    void AddUsingTab(quint16 id)
     {
         m_usingTabsIDs.insert(id);
     }
 
-    void RemoveUsingTab(uint16_t id)
+    void RemoveUsingTab(quint16 id)
     {
         m_usingTabsIDs.erase(id);
     }
@@ -42,16 +42,11 @@ public:
         return !(m_usingTabsIDs.empty());
     }
 
-protected slots:
-   // virtual void concurrentFinished();
-
 protected:
     bool opened;
-    QFuture<bool> *future;
-    QFutureWatcher<bool> *watcher;
 
-    uint8_t m_type;
-    std::set<uint16_t> m_usingTabsIDs;
+    quint8 m_type;
+    std::set<quint16> m_usingTabsIDs;
 
     QString m_idString;
 };

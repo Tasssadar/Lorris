@@ -4,7 +4,6 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QMessageBox>
-#include <QVariant>
 
 #include "qserialdeviceenumerator/serialdeviceenumerator.h"
 #include "qserialdevice/abstractserial.h"
@@ -55,7 +54,7 @@ TabDialog::~TabDialog()
 void TabDialog::PluginSelected(int index)
 {
     std::vector<WorkTabInfo*> *tabs = sWorkTabMgr.GetWorkTabInfos();
-    uint8_t conn = tabs->at(index)->GetConType();
+    quint8 conn = tabs->at(index)->GetConType();
 
     conBox->clear();
     if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem("Socket", QVariant((int)CONNECTION_SOCKET));
@@ -126,8 +125,6 @@ void TabDialog::CreateTab()
         default:    // TODO: other connection types
             return;
     }
-
-    ((MainWindow*)parent())->AddTab(tab, info->GetName());
     close();
 }
 
@@ -145,7 +142,7 @@ WorkTab *TabDialog::ConnectSP(WorkTabInfo *info)
     if(port)
     {
         WorkTab *tab = info->GetNewTab();
-        sWorkTabMgr.AddWorkTab(tab);
+        sWorkTabMgr.AddWorkTab(tab, info->GetName() + " - " +port->GetIDString());
         tab->setConnection(port);
         return tab;
     }
@@ -174,10 +171,9 @@ void TabDialog::serialConResult(Connection *con, bool result)
     if(result)
     {
         WorkTab *tab = tmpTabInfo->GetNewTab();
-        sWorkTabMgr.AddWorkTab(tab);
+        sWorkTabMgr.AddWorkTab(tab, tmpTabInfo->GetName() + " - " + con->GetIDString());
         tab->setConnection(con);
         sConMgr.AddCon(CONNECTION_SERIAL_PORT, con);
-        ((MainWindow*)parent())->AddTab(tab, tmpTabInfo->GetName());
         close();
     }
     else

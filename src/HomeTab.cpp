@@ -4,11 +4,10 @@
 
 #include "HomeTab.h"
 #include "mainwindow.h"
+#include "WorkTabMgr.h"
 
-HomeTab::HomeTab(MainWindow *parent)
+HomeTab::HomeTab(QWidget *parent) : QWidget(parent)
 {
-    m_mainWindow = parent;
-
     QPushButton *button = new QPushButton("New tab", this);
     button->setFixedSize(200, 50);
 
@@ -27,5 +26,5 @@ HomeTab::~HomeTab()
 
 void HomeTab::NewTab()
 {
-    m_mainWindow->ExtNewTab();
+   sWorkTabMgr.NewTabDialog();
 }

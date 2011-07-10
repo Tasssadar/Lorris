@@ -102,8 +102,11 @@ LorrisTerminal::~LorrisTerminal()
 
 QWidget *LorrisTerminal::GetTab(QWidget *parent)
 {
-    initUI();
-    mainWidget->setParent(parent);
+    if(!mainWidget)
+    {
+        initUI();
+        mainWidget->setParent(parent);
+    }
     return mainWidget;
 }
 
@@ -138,17 +141,7 @@ void LorrisTerminal::connectButton()
     QPushButton *button = mainWidget->findChild<QPushButton *>("StopButton");
     if(!(m_state & STATE_DISCONNECTED))
     {
-        m_state |= STATE_DISCONNECTED;
-        m_state &= ~(STATE_STOPPING1 | STATE_STOPPING2 | STATE_STOPPED);
-        button->setEnabled(false);
-        button->setText("Stop");
 
-        button = mainWidget->findChild<QPushButton *>("FlashButton");
-        button->setEnabled(false);
-        button->setText("Flash");
-
-        button = mainWidget->findChild<QPushButton *>("ConnectButton");
-        button->setText("Connect");
         m_con->Close();
     }
     else
@@ -162,20 +155,40 @@ void LorrisTerminal::connectButton()
     }
 }
 
-void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
+void LorrisTerminal::connectedStatus(bool connected)
 {
-    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
     QPushButton *button = mainWidget->findChild<QPushButton *>("ConnectButton");
-    button->setEnabled(true);
-    if(result)
+    if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
-        button->setText("Disconnect");   
+        button->setText("Disconnect");
 
         button = mainWidget->findChild<QPushButton *>("StopButton");
         button->setEnabled(true);
     }
     else
+    {
+        m_state |= STATE_DISCONNECTED;
+        m_state &= ~(STATE_STOPPING1 | STATE_STOPPING2 | STATE_STOPPED);
+
+        button->setText("Connect");
+
+        button = mainWidget->findChild<QPushButton *>("StopButton");
+        button->setEnabled(false);
+        button->setText("Stop");
+
+        button = mainWidget->findChild<QPushButton *>("FlashButton");
+        button->setEnabled(false);
+        button->setText("Flash");
+    }
+}
+
+void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
+{
+    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
+    QPushButton *button = mainWidget->findChild<QPushButton *>("ConnectButton");
+    button->setEnabled(true);
+    if(!result)
     {
         button->setText("Connect");
 
@@ -411,11 +424,11 @@ bool LorrisTerminal::SendNextPage()
     data[0] = 0x10;
     m_con->SendData(data);
 
-    data[0] = uint8_t(page->address >> 8);
-    data[1] = uint8_t(page->address);
+    data[0] = quint8(page->address >> 8);
+    data[1] = quint8(page->address);
     m_con->SendData(data);
 
-    for(uint16_t i = 0; i < page->data.size(); ++i)
+    for(quint16 i = 0; i < page->data.size(); ++i)
         data[i] = page->data[i];
     m_con->SendData(data);
     bar->setValue(bar->value()+1);

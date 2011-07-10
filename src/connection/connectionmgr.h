@@ -23,14 +23,14 @@ class ConnectionMgr : public Singleton<ConnectionMgr>
 public:
     ConnectionMgr();
 
-    void AddCon(uint8_t type, Connection *con)
+    void AddCon(quint8 type, Connection *con)
     {
         conMap[type].insert(std::make_pair<QString, Connection*>(con->GetIDString(), con));
     }
 
-    void RemoveCon(uint8_t type, Connection *con);
+    void RemoveCon(quint8 type, Connection *con);
 
-    Connection* FindConnection(uint8_t type, QString idString)
+    Connection* FindConnection(quint8 type, QString idString)
     {
         if(conMap[type].find(idString) != conMap[type].end())
             return conMap[type].find(idString)->second;

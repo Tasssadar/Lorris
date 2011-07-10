@@ -1,5 +1,6 @@
 #include "WorkTabInfo.h"
 
+
 WorkTabInfo::WorkTabInfo()
 {
 
@@ -20,7 +21,7 @@ QString WorkTabInfo::GetName()
     return NULL;
 }
 
-uint8_t WorkTabInfo::GetConType()
+quint8 WorkTabInfo::GetConType()
 {
     return 0;
 }

@@ -1,5 +1,3 @@
-#include <QtConcurrentRun>
-
 #include "connection.h"
 #include "connectionmgr.h"
 

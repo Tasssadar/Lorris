@@ -1,7 +1,6 @@
 #ifndef SERIALPORT_H
 #define SERIALPORT_H
 
-#include <QDateTime>
 #include "connection.h"
 #include "qserialdevice/abstractserial.h"
 
@@ -23,7 +22,6 @@ public:
         m_rate = rate;
     }
     void OpenConcurrent();
-   // void concurrentFinished();
 
 private slots:
     void dataReadSer(QByteArray data);

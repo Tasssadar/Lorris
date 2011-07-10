@@ -23,14 +23,14 @@ QString HexFile::load(QString fileName)
     }
 
     QByteArray line;
-    uint8_t lineLenght = 0;
-    std::vector<uint8_t> rec_nums;
+    quint8 lineLenght = 0;
+    std::vector<quint8> rec_nums;
     char *nums = new char[3];
     nums[2] = ' ';
-    uint16_t length;
-    uint32_t address;
-    uint8_t rectype;
-    int16_t base = 0;
+    quint16 length;
+    quint32 address;
+    quint8 rectype;
+    qint16 base = 0;
 
     m_buffer.clear();
 
@@ -55,7 +55,7 @@ QString HexFile::load(QString fileName)
         }
 
         rec_nums.clear();
-        for(uint8_t i = 1; i < lineLenght;)
+        for(quint8 i = 1; i < lineLenght;)
         {
             nums[0] = line[i++];
             nums[1] = line[i++];
@@ -97,7 +97,7 @@ QString HexFile::load(QString fileName)
             delete[] nums;
             return "Invalid record type.";
         }
-        for (uint16_t i = 0; i < length; ++i)
+        for (quint16 i = 0; i < length; ++i)
         {
             if (base + address + i >= m_buffer.size())
                 m_buffer.resize(base + address + i + 1, 0xFF);
@@ -123,20 +123,20 @@ QString HexFile::makePages(DeviceInfo *info)
     deleteAllPages();
     m_pagesItr = 0;
 
-    uint16_t size = m_buffer.size();
+    quint16 size = m_buffer.size();
     if (size > info->mem_size)
         for (int a = info->mem_size; a < size; ++a)
             if (m_buffer[a] != 0xff)
                 return "Program is too big!";
 
-    uint16_t alt_entry_page = info->patch_pos / info->page_size;
+    quint16 alt_entry_page = info->patch_pos / info->page_size;
     bool add_alt_page = info->patch_pos != 0;
 
-    uint16_t i = 0;
-    uint16_t pageItr = 0;
+    quint16 i = 0;
+    quint16 pageItr = 0;
     Page *cur_page = NULL;
-    uint16_t page_size = info->page_size;
-    uint16_t stopGenerate = info->mem_size / info->page_size;
+    quint16 page_size = info->page_size;
+    quint16 stopGenerate = info->mem_size / info->page_size;
 
     for (bool generate = true; generate && i < stopGenerate; ++i)
     {
@@ -146,7 +146,7 @@ QString HexFile::makePages(DeviceInfo *info)
         pageItr = 0;
         if (size <= (i + 1) * page_size)
         {
-            for (uint16_t y = 0; y < page_size; ++y)
+            for (quint16 y = 0; y < page_size; ++y)
             {
                 if (i * page_size + y < size)
                     cur_page->data[pageItr] = m_buffer[i * page_size + y];
@@ -158,7 +158,7 @@ QString HexFile::makePages(DeviceInfo *info)
         }
         else
         {
-            for (uint16_t y = i * page_size; y < (i + 1) * page_size; ++y)
+            for (quint16 y = i * page_size; y < (i + 1) * page_size; ++y)
             {
                 cur_page->data[pageItr] = m_buffer[y];
                 ++pageItr;
@@ -174,7 +174,7 @@ QString HexFile::makePages(DeviceInfo *info)
     }
     if (add_alt_page)
     {
-        for (uint16_t y = 0; y < page_size; ++y)
+        for (quint16 y = 0; y < page_size; ++y)
             cur_page->data[y] = 0xFF;
         cur_page->address = alt_entry_page * page_size;
         patch_page(cur_page, info->patch_pos, info->mem_size, pageItr);
@@ -183,36 +183,36 @@ QString HexFile::makePages(DeviceInfo *info)
     return "";
 }
 
-bool HexFile::patch_page(Page *page,  uint16_t patch_pos, uint16_t boot_reset, uint16_t page_pos)
+bool HexFile::patch_page(Page *page,  quint16 patch_pos, quint16 boot_reset, quint16 page_pos)
 {
     if (patch_pos == 0)
         return true;
 
     if (page->address == 0)
     {
-        uint16_t entrypt_jmp = (boot_reset / 2 - 1) | 0xc000;
+        quint16 entrypt_jmp = (boot_reset / 2 - 1) | 0xc000;
         if((entrypt_jmp & 0xf000) != 0xc000)
             return false;
-        page->data[0] = uint8_t(entrypt_jmp);
-        page->data[1] = uint8_t(entrypt_jmp >> 8);
+        page->data[0] = quint8(entrypt_jmp);
+        page->data[1] = quint8(entrypt_jmp >> 8);
         return true;
     }
 
     if (page->address > patch_pos || page->address + page_pos <= patch_pos)
         return true;
 
-    uint16_t new_patch_pos = patch_pos - page->address;
+    quint16 new_patch_pos = patch_pos - page->address;
 
     if (page->data[new_patch_pos] != 0xFF || page->data[new_patch_pos + 1] != 0xFF)
        return false;
 
-    uint16_t entrypt_jmp2 = m_buffer[0] | (m_buffer[1] << 8);
+    quint16 entrypt_jmp2 = m_buffer[0] | (m_buffer[1] << 8);
     if ((entrypt_jmp2 & 0xf000) != 0xc000)
         return false;
 
-    uint16_t entry_addr = (entrypt_jmp2 & 0x0fff) + 1;
+    quint16 entry_addr = (entrypt_jmp2 & 0x0fff) + 1;
     entrypt_jmp2 = ((entry_addr - patch_pos / 2 - 1) & 0xfff) | 0xc000;
-    page->data[new_patch_pos] = uint8_t(entrypt_jmp2);
-    page->data[new_patch_pos + 1] = uint8_t(entrypt_jmp2 >> 8);
+    page->data[new_patch_pos] = quint8(entrypt_jmp2);
+    page->data[new_patch_pos + 1] = quint8(entrypt_jmp2 >> 8);
     return true;
 }

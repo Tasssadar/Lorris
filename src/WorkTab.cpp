@@ -30,6 +30,10 @@ void WorkTab::readData(QByteArray /*data*/)
 
 }
 
+void WorkTab::connectedStatus(bool /*connected*/)
+{
+
+}
 
 void WorkTab::DeleteAllMembers(QLayout *layout)
 {

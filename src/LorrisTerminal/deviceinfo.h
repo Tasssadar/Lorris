@@ -29,9 +29,9 @@ public:
 
     QString name;
     QString id;
-    uint32_t mem_size;
-    uint16_t page_size;
-    uint16_t patch_pos;
+    quint32 mem_size;
+    quint16 page_size;
+    quint16 patch_pos;
 };
 
 #endif // DEVICEINFO_H

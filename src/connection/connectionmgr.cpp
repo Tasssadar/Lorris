@@ -5,7 +5,7 @@ ConnectionMgr::ConnectionMgr()
 {
 }
 
-void ConnectionMgr::RemoveCon(uint8_t type, Connection *con)
+void ConnectionMgr::RemoveCon(quint8 type, Connection *con)
 {
     conMap[type].erase(con->GetIDString());
 }

@@ -36,7 +36,6 @@ SOURCES += src/mainwindow.cpp \
 HEADERS += src/mainwindow.h \
     src/revision.h \
     src/HomeTab.h \
-    src/common.h \
     src/WorkTab.h \
     src/LorrisProbe/lorrisprobe.h \
     src/WorkTabMgr.h \

@@ -11,7 +11,7 @@ public:
 
     WorkTab *GetNewTab();
     QString GetName();
-    uint8_t GetConType() { return CON_MSK(CONNECTION_SERIAL_PORT); }
+    quint8 GetConType() { return CON_MSK(CONNECTION_SERIAL_PORT); }
 };
 
 #endif // LORRISTERMINALINFO_H
