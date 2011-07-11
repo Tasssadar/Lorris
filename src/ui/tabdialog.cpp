@@ -57,9 +57,9 @@ void TabDialog::PluginSelected(int index)
     quint8 conn = tabs->at(index)->GetConType();
 
     conBox->clear();
-    if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem("Socket", QVariant((int)CONNECTION_SOCKET));
-    if(conn & CON_MSK(CONNECTION_SERIAL_PORT)) conBox->addItem("Serial port", QVariant(CONNECTION_SERIAL_PORT));
-    if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem("File", QVariant((int)CONNECTION_FILE));
+    if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem("Socket", CONNECTION_SOCKET);
+    if(conn & CON_MSK(CONNECTION_SERIAL_PORT)) conBox->addItem("Serial port", CONNECTION_SERIAL_PORT);
+    if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem("File", CONNECTION_FILE);
 }
 
 void TabDialog::FillConOptions(int index)

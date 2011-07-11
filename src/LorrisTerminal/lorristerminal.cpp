@@ -38,16 +38,6 @@ void LorrisTerminal::initUI()
     QHBoxLayout *layout_buttons = new QHBoxLayout;
     terminal = new Terminal(mainWidget);
     connect(terminal, SIGNAL(keyPressedASCII(QByteArray)), this, SLOT(sendKeyEvent(QByteArray)));
-    terminal->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    terminal->setShown(true);
-    terminal->setReadOnly(true);
-
-    QColor color_black(0, 0, 0);\
-    QColor color_white(255, 255, 255);\
-    QPalette palette;
-    palette.setColor(QPalette::Base, color_black);
-    palette.setColor(QPalette::Text, color_white);
-    terminal->setPalette(palette);
 
     hexLine = new QLineEdit(mainWidget);
     QPushButton *browse = new QPushButton("Browse...", mainWidget);

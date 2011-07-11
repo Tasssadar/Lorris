@@ -20,6 +20,12 @@ WorkTabMgr::~WorkTabMgr()
 {
     for(quint8 itr = 0; itr < m_workTabInfos.size(); ++itr)
         delete m_workTabInfos[itr];
+
+    for(qint16 i = tabWidget->count(); tabWidget->count() && hometab == NULL;)
+        removeTab(--i);
+
+    CloseHomeTab();
+    delete tabWidget;
 }
 
 std::vector<WorkTabInfo*> *WorkTabMgr::GetWorkTabInfos()
