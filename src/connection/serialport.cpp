@@ -12,9 +12,7 @@ SerialPort::~SerialPort()
 {
     if(thread)
     {
-        thread->terminate();
-        thread->wait();
-        delete thread;
+        emit stopThread();
         thread = NULL;
     }
 }
@@ -44,9 +42,7 @@ void SerialPort::Close()
 {
     if(thread)
     {
-        thread->terminate();
-        thread->wait();
-        delete thread;
+        emit stopThread();
         thread = NULL;
         emit connected(false);
     }
@@ -62,12 +58,8 @@ void SerialPort::SendData(QByteArray data)
 void SerialPort::OpenConcurrent()
 {
     if(thread)
-    {
-        thread->terminate();
-        thread->wait();
-        delete thread;
-    }
-    thread = new SerialPortThread(m_idString, m_rate);
+        emit stopThread();
+    thread = new SerialPortThread(m_idString, m_rate, this);
     connect(thread, SIGNAL(dataRead(QByteArray)), this, SLOT(dataReadSer(QByteArray)));
     connect(thread, SIGNAL(connectResult(bool)), this, SLOT(connectResultSer(bool)));
     thread->start();

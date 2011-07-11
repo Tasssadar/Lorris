@@ -9,6 +9,10 @@ class SerialPortThread;
 class SerialPort : public Connection
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void stopThread();
+
 public:
     explicit SerialPort();
     virtual ~SerialPort();

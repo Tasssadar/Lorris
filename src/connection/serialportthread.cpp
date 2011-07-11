@@ -1,30 +1,27 @@
 #include "serialportthread.h"
 
-SerialPortThread::SerialPortThread(QString name, AbstractSerial::BaudRate rate) : QThread(0)
+SerialPortThread::SerialPortThread(QString name, AbstractSerial::BaudRate rate, SerialPort *con) : QThread(0)
 {
     m_port = NULL;
     runTh = true;
     devName = name;
     m_rate = rate;
+    m_con = con;
 }
 
 SerialPortThread::~SerialPortThread()
 {
-    if(m_port)
-        delete m_port;
-}
 
-void SerialPortThread::Stop()
-{
-    if(m_port)
-        m_port->close();
-    runTh = false;
 }
 
 void SerialPortThread::Send(QByteArray data)
 {
     if(m_port)
+    {
+        m_portMutex.lock();
         m_port->write(data);
+        m_portMutex.unlock();
+    }
 }
 
 bool SerialPortThread::Open()
@@ -60,15 +57,27 @@ void SerialPortThread::run()
     if(!opened)
         return;
 
+    connect(m_con, SIGNAL(stopThread()), this, SLOT(stop()), Qt::QueuedConnection);
+
     while(runTh)
     {
+        m_portMutex.lock();
         if(m_port->bytesAvailable() > 0)
         {
             QByteArray ba = m_port->readAll();
             emit dataRead(ba);
         }
-        msleep(5);
+        m_portMutex.unlock();
+        msleep(10);
     }
+    m_port->close();
+    delete m_port;
+    deleteLater();
+}
+
+void SerialPortThread::stop()
+{
+    runTh = false;
 }
 
 void SerialPortThread::viewStateSlot(QString /*stateMsg*/, QDateTime /*dt*/)
