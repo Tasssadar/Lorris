@@ -79,6 +79,10 @@ MainWindow::~MainWindow()
     const QList<QObject*> list = children();
     for(QList<QObject*>::const_iterator it = list.begin(); it != list.end(); ++it)
         delete *it;
+
+    //delete singletons
+    WorkTabMgr::Destroy();
+    ConnectionMgr::Destroy();
 }
 
 QString MainWindow::getVersionString()

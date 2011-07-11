@@ -29,6 +29,12 @@ template <class T> class Singleton
             return msSingleton;
         }
 
+        static void Destroy(void)
+        {
+            delete msSingleton;
+            msSingleton = NULL;
+        }
+
     private:
         //! msSingleton: The static variable which holds the pointer to the singleton.
         static T *msSingleton;
