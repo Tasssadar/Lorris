@@ -18,7 +18,7 @@ WorkTab *LorrisProbeInfo::GetNewTab()
 
 QString LorrisProbeInfo::GetName()
 {
-    return QString("Lorris probe");
+    return QObject::tr("Lorris probe");
 }
 
 QString LorrisProbeInfo::GetDescription()

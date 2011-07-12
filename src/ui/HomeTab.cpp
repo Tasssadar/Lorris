@@ -8,7 +8,7 @@
 
 HomeTab::HomeTab(QWidget *parent) : QWidget(parent)
 {
-    QPushButton *button = new QPushButton("New tab", this);
+    QPushButton *button = new QPushButton(tr("New tab"), this);
     button->setFixedSize(200, 50);
 
     connect(button, SIGNAL(clicked()), this, SLOT(NewTab()));

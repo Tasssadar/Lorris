@@ -114,10 +114,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 bool MainWindow::Quit()
 {
     QMessageBox *box = new QMessageBox(this);
-    box->setWindowTitle("Exit Lorris?");
-    box->setText("Do you really want to leave Lorris?");
-    box->addButton("Yes", QMessageBox::YesRole);
-    box->addButton("No", QMessageBox::NoRole);
+    box->setWindowTitle(tr("Exit Lorris?"));
+    box->setText(tr("Do you really want to leave Lorris?"));
+    box->addButton(tr("Yes"), QMessageBox::YesRole);
+    box->addButton(tr("No"), QMessageBox::NoRole);
     box->setIcon(QMessageBox::Question);
     int ret = box->exec();
     switch(ret)
@@ -137,8 +137,8 @@ void MainWindow::QuitButton()
 void MainWindow::About()
 {
     QMessageBox *box = new QMessageBox(this);
-    box->setWindowTitle("About Lorris");
-    box->setText("Lorris revision " + QString::number(REVISION));
+    box->setWindowTitle(tr("About Lorris"));
+    box->setText(tr("Lorris revision ") + QString::number(REVISION));
     box->setIcon(QMessageBox::Information);
     box->exec();
     delete box;

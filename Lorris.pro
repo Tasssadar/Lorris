@@ -7,6 +7,7 @@ CONFIG += qwt
 TARGET = Lorris
 CONFIG(debug, debug|release):DESTDIR = bin/debug
 else:DESTDIR = bin/release
+TRANSLATIONS = translations/Lorris.cs_CZ.ts
 TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src

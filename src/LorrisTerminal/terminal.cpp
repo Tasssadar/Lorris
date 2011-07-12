@@ -33,7 +33,8 @@ void Terminal::appendText(QString text, bool toEdit)
     if(text.contains(QChar('\f')))
     {
         content = "";
-        setText("");
+        if(toEdit)
+            setText("");
         qint32 index = -1;
         while(true)
         {

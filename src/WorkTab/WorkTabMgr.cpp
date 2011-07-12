@@ -1,3 +1,4 @@
+
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
 #include "ui/HomeTab.h"
@@ -66,7 +67,7 @@ void WorkTabMgr::removeTab(WorkTab *tab)
 void WorkTabMgr::OpenHomeTab()
 {
     hometab = new HomeTab(tabWidget);
-    tabWidget->addTab(hometab, "Home");
+    tabWidget->addTab(hometab, QObject::tr("Home"));
 }
 
 void WorkTabMgr::CloseHomeTab()

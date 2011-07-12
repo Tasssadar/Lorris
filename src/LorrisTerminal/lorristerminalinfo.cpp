@@ -18,12 +18,12 @@ WorkTab *LorrisTerminalInfo::GetNewTab()
 
 QString LorrisTerminalInfo::GetName()
 {
-    return QString("Terminal");
+    return QObject::tr("Terminal");
 }
 
 QString LorrisTerminalInfo::GetDescription()
 {
-    return "Terminal can show input data from serial port, send key strokes "
-           "to serial port and flash new programs to devices with bootloader.";
+    return QObject::tr("Terminal can show input data from serial port, send key strokes "
+           "to serial port and flash new programs to devices with bootloader.");
 }
 

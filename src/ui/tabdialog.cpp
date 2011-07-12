@@ -37,7 +37,7 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
     secondCol->addWidget(desc);
 
     QHBoxLayout *conLayout = new QHBoxLayout;
-    QLabel *qConLabel = new QLabel("Connection: ", this);
+    QLabel *qConLabel = new QLabel(tr("Connection: "), this);
 
     conBox = new QComboBox;
     connect(conBox, SIGNAL(currentIndexChanged(int)), this, SLOT(FillConOptions(int)));
@@ -45,7 +45,7 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
     conLayout->addWidget(qConLabel);
     conLayout->addWidget(conBox, 1);
 
-    QPushButton *create = new QPushButton("Create", this);
+    QPushButton *create = new QPushButton(tr("Create tab"), this);
     create->setObjectName("CreateButton");
     connect(create, SIGNAL(clicked()), this, SLOT(CreateTab()));
 
@@ -75,9 +75,9 @@ void TabDialog::PluginSelected(int index)
     desc->setText(tabs->at(index)->GetDescription());
 
     conBox->clear();
-    if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem("Socket", CONNECTION_SOCKET);
-    if(conn & CON_MSK(CONNECTION_SERIAL_PORT)) conBox->addItem("Serial port", CONNECTION_SERIAL_PORT);
-    if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem("File", CONNECTION_FILE);
+    if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem(tr("Socket"), CONNECTION_SOCKET);
+    if(conn & CON_MSK(CONNECTION_SERIAL_PORT)) conBox->addItem(tr("Serial port"), CONNECTION_SERIAL_PORT);
+    if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem(tr("File"), CONNECTION_FILE);
 }
 
 void TabDialog::FillConOptions(int index)
@@ -92,7 +92,7 @@ void TabDialog::FillConOptions(int index)
             return;
         case CONNECTION_SERIAL_PORT:
         {
-            QLabel *portLabel = new QLabel("Port: ", NULL, Qt::WindowFlags(0));
+            QLabel *portLabel = new QLabel(tr("Port: "), NULL, Qt::WindowFlags(0));
             QComboBox *portBox = new QComboBox(this);
             portBox->setEditable(true);
             portBox->setObjectName("PortBox");
@@ -110,7 +110,7 @@ void TabDialog::FillConOptions(int index)
             conOptions->addWidget(portLabel);
             conOptions->addWidget(portBox);
 
-            QLabel *rateLabel = new QLabel("Baud Rate: ", NULL, Qt::WindowFlags(0));
+            QLabel *rateLabel = new QLabel(tr("Baud Rate: "), NULL, Qt::WindowFlags(0));
             QComboBox *rateBox = new QComboBox(this);
             rateBox->addItem("38400",   AbstractSerial::BaudRate38400);
             rateBox->addItem("19200",   AbstractSerial::BaudRate19200);
@@ -167,7 +167,7 @@ WorkTab *TabDialog::ConnectSP(WorkTabInfo *info)
     else
     {
         QPushButton *create = findChild<QPushButton *>("CreateButton");
-        create->setText("Connecting...");
+        create->setText(tr("Connecting..."));
         create->setEnabled(false);
 
         tmpTabInfo = info;
@@ -196,12 +196,12 @@ void TabDialog::serialConResult(Connection *con, bool result)
     }
     else
     {
-        create->setText("Create");
+        create->setText(tr("Create tab"));
         create->setEnabled(true);
 
         QMessageBox *box = new QMessageBox(this);
-        box->setWindowTitle("Error!");
-        box->setText("Error opening serial port!");
+        box->setWindowTitle(tr("Error!"));
+        box->setText(tr("Error opening serial port!"));
         box->setIcon(QMessageBox::Critical);
         box->exec();
         delete box;

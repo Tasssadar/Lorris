@@ -19,7 +19,7 @@ QString HexFile::load(QString fileName)
     if(!file->open(QIODevice::ReadOnly))
     {
         delete file;
-        return "Can't open file!";
+        return QObject::tr("Can't open file!");
     }
 
     QByteArray line;
@@ -51,7 +51,7 @@ QString HexFile::load(QString fileName)
             file->close();
             delete file;
             delete[] nums;
-            return "Wrong line format.";
+            return QObject::tr("Wrong line format.");
         }
 
         rec_nums.clear();
@@ -71,7 +71,7 @@ QString HexFile::load(QString fileName)
             file->close();
             delete file;
             delete[] nums;
-            return "Invalid record lenght.";
+            return QObject::tr("Invalid record lenght.");
         }
 
         if(rectype == 2)
@@ -81,7 +81,7 @@ QString HexFile::load(QString fileName)
                 file->close();
                 delete file;
                 delete[] nums;
-                return "Invalid type 2 record.";
+                return QObject::tr("Invalid type 2 record.");
                 base = (rec_nums[4] * 0x100 + rec_nums[5]) * 16;
                 continue;
             }
@@ -95,7 +95,7 @@ QString HexFile::load(QString fileName)
             file->close();
             delete file;
             delete[] nums;
-            return "Invalid record type.";
+            return QObject::tr("Invalid record type.");
         }
 
         for (quint16 i = 0; i < length; ++i)
@@ -108,7 +108,7 @@ QString HexFile::load(QString fileName)
                 file->close();
                 delete file;
                 delete[] nums;
-                return "Memory location was defined twice!";
+                return QObject::tr("Memory location was defined twice!");
             }
             m_buffer[base + address + i] = rec_nums[i + 4];
         }
@@ -128,7 +128,7 @@ QString HexFile::makePages(DeviceInfo *info)
     if (size > info->mem_size)
         for (int a = info->mem_size; a < size; ++a)
             if (m_buffer[a] != 0xff)
-                return "Program is too big!";
+                return QObject::tr("Program is too big!");
 
     quint16 alt_entry_page = info->patch_pos / info->page_size;
     bool add_alt_page = info->patch_pos != 0;
@@ -167,7 +167,7 @@ QString HexFile::makePages(DeviceInfo *info)
         }
 
         if (!patch_page(cur_page, info->patch_pos, info->mem_size, pageItr))
-            return "Failed patching page";
+            return QObject::tr("Failed patching page");
         pages.push_back(cur_page);
 
         if (i == alt_entry_page)
