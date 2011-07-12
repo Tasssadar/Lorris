@@ -4,7 +4,7 @@
 
 #include "HomeTab.h"
 #include "mainwindow.h"
-#include "WorkTabMgr.h"
+#include "WorkTab/WorkTabMgr.h"
 
 HomeTab::HomeTab(QWidget *parent) : QWidget(parent)
 {

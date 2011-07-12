@@ -7,40 +7,55 @@
 
 #include "qserialdeviceenumerator/serialdeviceenumerator.h"
 #include "qserialdevice/abstractserial.h"
-#include "WorkTabMgr.h"
-#include "WorkTabInfo.h"
-#include "WorkTab.h"
+#include "WorkTab/WorkTabMgr.h"
+#include "WorkTab/WorkTabInfo.h"
+#include "WorkTab/WorkTab.h"
 #include "tabdialog.h"
 #include "mainwindow.h"
 #include "connection/serialport.h"
 
 TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
 {
-    setFixedSize(500, 200);
+    setFixedSize(600, 200);
 
-    firstLine = new QHBoxLayout;
-    secondLine = new QHBoxLayout;
+    columns = new QHBoxLayout;
+    secondCol = new QVBoxLayout;
+    conOptions = new QHBoxLayout;
 
-    pluginsBox = new QComboBox;
+    pluginsBox = new QListWidget(this);
+    pluginsBox->setFixedWidth(150);
+    pluginsBox->setSelectionMode(QAbstractItemView::SingleSelection);
     std::vector<WorkTabInfo*> *tabs = sWorkTabMgr.GetWorkTabInfos();
     for(std::vector<WorkTabInfo*>::iterator i = tabs->begin(); i != tabs->end(); ++i)
         pluginsBox->addItem((*i)->GetName());
-    connect(pluginsBox, SIGNAL(currentIndexChanged(int)), this, SLOT(PluginSelected(int)));
+    connect(pluginsBox, SIGNAL(currentRowChanged(int)), this, SLOT(PluginSelected(int)));
+
+    QLabel *desc = new QLabel(this);
+    desc->setObjectName("pluginDesc");
+    desc->setFixedWidth(430);
+    desc->setWordWrap(true);
+    secondCol->addWidget(desc);
+
+    QHBoxLayout *conLayout = new QHBoxLayout;
+    QLabel *qConLabel = new QLabel("Connection: ", this);
 
     conBox = new QComboBox;
     connect(conBox, SIGNAL(currentIndexChanged(int)), this, SLOT(FillConOptions(int)));
-    PluginSelected(pluginsBox->currentIndex());
+    PluginSelected(0);
+    conLayout->addWidget(qConLabel);
+    conLayout->addWidget(conBox, 1);
 
     QPushButton *create = new QPushButton("Create", this);
     create->setObjectName("CreateButton");
     connect(create, SIGNAL(clicked()), this, SLOT(CreateTab()));
 
-    firstLine->addWidget(pluginsBox);
-    firstLine->addWidget(conBox);
+    columns->addWidget(pluginsBox);
+    secondCol->addLayout(conLayout);
 
     layout = new QVBoxLayout(this);
-    layout->addLayout(firstLine);
-    layout->addLayout(secondLine);
+    layout->addLayout(columns);
+    columns->addLayout(secondCol);
+    secondCol->addLayout(conOptions);
     layout->addWidget(create);
     setLayout(layout);
 }
@@ -56,6 +71,9 @@ void TabDialog::PluginSelected(int index)
     std::vector<WorkTabInfo*> *tabs = sWorkTabMgr.GetWorkTabInfos();
     quint8 conn = tabs->at(index)->GetConType();
 
+    QLabel *desc = findChild<QLabel *>("pluginDesc");
+    desc->setText(tabs->at(index)->GetDescription());
+
     conBox->clear();
     if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem("Socket", CONNECTION_SOCKET);
     if(conn & CON_MSK(CONNECTION_SERIAL_PORT)) conBox->addItem("Serial port", CONNECTION_SERIAL_PORT);
@@ -64,7 +82,7 @@ void TabDialog::PluginSelected(int index)
 
 void TabDialog::FillConOptions(int index)
 {
-    WorkTab::DeleteAllMembers(secondLine);
+    WorkTab::DeleteAllMembers(conOptions);
 
     switch(conBox->itemData(index).toInt())
     {
@@ -89,8 +107,8 @@ void TabDialog::FillConOptions(int index)
             SerialDeviceEnumerator::destroyInstance();
             m_sde = NULL;
 
-            secondLine->addWidget(portLabel);
-            secondLine->addWidget(portBox);
+            conOptions->addWidget(portLabel);
+            conOptions->addWidget(portBox);
 
             QLabel *rateLabel = new QLabel("Baud Rate: ", NULL, Qt::WindowFlags(0));
             QComboBox *rateBox = new QComboBox(this);
@@ -103,8 +121,8 @@ void TabDialog::FillConOptions(int index)
             rateBox->addItem("1500000", AbstractSerial::BaudRate1500000);
             rateBox->addItem("2000000", AbstractSerial::BaudRate2000000);
             rateBox->setObjectName("RateBox");
-            secondLine->addWidget(rateLabel);
-            secondLine->addWidget(rateBox);
+            conOptions->addWidget(rateLabel);
+            conOptions->addWidget(rateBox);
             break;
         }
     }
@@ -112,7 +130,7 @@ void TabDialog::FillConOptions(int index)
 
 void TabDialog::CreateTab()
 {
-    WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos()->at(pluginsBox->currentIndex());
+    WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos()->at(pluginsBox->currentIndex().row());
     WorkTab *tab = NULL;
 
     switch(conBox->itemData(conBox->currentIndex()).toInt())

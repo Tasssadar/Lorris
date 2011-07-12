@@ -1,6 +1,6 @@
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
-#include "HomeTab.h"
+#include "ui/HomeTab.h"
 #include "ui/tabdialog.h"
 
 #include "LorrisProbe/lorrisprobeinfo.h"
@@ -36,10 +36,12 @@ std::vector<WorkTabInfo*> *WorkTabMgr::GetWorkTabInfos()
 quint16 WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
 {
     quint16 id = tabIdCounter++;
+
     m_workTabs.insert(std::make_pair<quint16, WorkTab*>(id, tab));
     tab->setId(id);
 
-    quint16 index = tabWidget->addTab(tab->GetTab(tabWidget), label);
+    tab->setParent(tabWidget);
+    quint16 index = tabWidget->addTab(tab, label);
     if(tabWidget->count() > 1)
     {
         tabWidget->setTabsClosable(true);
@@ -51,7 +53,7 @@ quint16 WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
 
 void WorkTabMgr::removeTab(WorkTab *tab)
 {
-    tabWidget->removeTab(tabWidget->indexOf(tab->GetTab()));
+    tabWidget->removeTab(tabWidget->indexOf(tab));
     m_workTabs.erase(tab->getId());
     if(tabWidget->count() == 0)
     {

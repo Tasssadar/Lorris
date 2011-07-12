@@ -20,3 +20,8 @@ QString LorrisProbeInfo::GetName()
 {
     return QString("Lorris probe");
 }
+
+QString LorrisProbeInfo::GetDescription()
+{
+    return "";
+}

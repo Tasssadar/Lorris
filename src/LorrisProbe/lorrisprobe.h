@@ -1,7 +1,7 @@
 #ifndef LORRISPROBE_H
 #define LORRISPROBE_H
 
-#include "WorkTab.h"
+#include "WorkTab/WorkTab.h"
 
 class LorrisProbe : public WorkTab
 {
@@ -9,8 +9,6 @@ class LorrisProbe : public WorkTab
     public:
         explicit LorrisProbe();
         virtual ~LorrisProbe();
-
-        QWidget *GetTab(QWidget *parent = NULL);
 
     private:
         void readData(QByteArray data);

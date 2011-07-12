@@ -4,12 +4,11 @@
 #include <QtGui/QWidget>
 #include "connection/connection.h"
 
-class WorkTab : public QObject
+class WorkTab : public QWidget
 {
     Q_OBJECT
     public:
         virtual ~WorkTab();
-        virtual QWidget *GetTab(QWidget *parent = NULL);
 
         void setId(quint16 id) { m_id = id; }
         quint16 getId() { return m_id; }

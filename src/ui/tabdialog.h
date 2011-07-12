@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QListWidget>
 
 class SerialDeviceEnumerator;
 class WorkTab;
@@ -29,9 +30,10 @@ private:
     WorkTab *ConnectSP(WorkTabInfo *info);
 
     QVBoxLayout *layout;
-    QHBoxLayout *firstLine;
-    QHBoxLayout *secondLine;
-    QComboBox *pluginsBox;
+    QHBoxLayout *columns;
+    QVBoxLayout *secondCol;
+    QHBoxLayout *conOptions;
+    QListWidget *pluginsBox;
     QComboBox *conBox;
     SerialDeviceEnumerator *m_sde;
     WorkTabInfo *tmpTabInfo;

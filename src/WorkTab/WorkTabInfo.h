@@ -13,6 +13,7 @@ class WorkTabInfo
 
         virtual WorkTab *GetNewTab();
         virtual QString GetName();
+        virtual QString GetDescription();
         virtual quint8 GetConType();
 
     protected:

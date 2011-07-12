@@ -27,43 +27,42 @@ LorrisTerminal::LorrisTerminal() : WorkTab()
     stopTimer = NULL;
     hex = NULL;
     terminal = NULL;
-    mainWidget = NULL;
     hexLine = NULL;
+    initUI();
 }
 
 void LorrisTerminal::initUI()
 {
-    mainWidget = new QWidget();
-    layout = new QVBoxLayout(mainWidget);
+    layout = new QVBoxLayout(this);
     QHBoxLayout *layout_buttons = new QHBoxLayout;
-    terminal = new Terminal(mainWidget);
+    terminal = new Terminal(this);
     connect(terminal, SIGNAL(keyPressedASCII(QByteArray)), this, SLOT(sendKeyEvent(QByteArray)));
 
-    hexLine = new QLineEdit(mainWidget);
-    QPushButton *browse = new QPushButton("Browse...", mainWidget);
+    hexLine = new QLineEdit(this);
+    QPushButton *browse = new QPushButton("Browse...", this);
     connect(browse, SIGNAL(clicked()), this, SLOT(browseForHex()));
 
-    QPushButton *con = new QPushButton("Disconnect", mainWidget);
+    QPushButton *con = new QPushButton("Disconnect", this);
     con->setObjectName("ConnectButton");
     connect(con, SIGNAL(clicked()), this, SLOT(connectButton()));
 
-    QPushButton *stop = new QPushButton("Stop", mainWidget);
+    QPushButton *stop = new QPushButton("Stop", this);
     stop->setObjectName("StopButton");
     connect(stop, SIGNAL(clicked()), this, SLOT(stopButton()));
 
-    QPushButton *flash = new QPushButton("Flash", mainWidget);
+    QPushButton *flash = new QPushButton("Flash", this);
     flash->setEnabled(false);
     flash->setObjectName("FlashButton");
     connect(flash, SIGNAL(clicked()), this, SLOT(flashButton()));
 
-    QPushButton *pause = new QPushButton("Pause", mainWidget);
+    QPushButton *pause = new QPushButton("Pause", this);
     pause->setObjectName("PauseButton");
     connect(pause, SIGNAL(clicked()), this, SLOT(pauseButton()));
 
-    QPushButton *clear = new QPushButton("Clear", mainWidget);
+    QPushButton *clear = new QPushButton("Clear", this);
     connect(clear, SIGNAL(clicked()), this, SLOT(clearButton()));
 
-    QLabel *flashText = new QLabel(mainWidget);
+    QLabel *flashText = new QLabel(this);
     flashText->setMinimumWidth(100);
     flashText->setObjectName("FlashLabel");
 
@@ -81,28 +80,13 @@ void LorrisTerminal::initUI()
 
 LorrisTerminal::~LorrisTerminal()
 {
-    terminal = NULL;
-    if(mainWidget)
-    { 
-        WorkTab::DeleteAllMembers(layout);
-        delete layout;
-        delete mainWidget;
-    }
-}
-
-QWidget *LorrisTerminal::GetTab(QWidget *parent)
-{
-    if(!mainWidget)
-    {
-        initUI();
-        mainWidget->setParent(parent);
-    }
-    return mainWidget;
+    WorkTab::DeleteAllMembers(layout);
+    delete layout;
 }
 
 void LorrisTerminal::browseForHex()
 {
-    hexLine->setText(QFileDialog::getOpenFileName(mainWidget, tr("Open File"), "", tr("Intel hex file (*.hex)")));
+    hexLine->setText(QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Intel hex file (*.hex)")));
 }
 
 void LorrisTerminal::clearButton()
@@ -112,7 +96,7 @@ void LorrisTerminal::clearButton()
 
 void LorrisTerminal::pauseButton()
 {
-    QPushButton *button = mainWidget->findChild<QPushButton *>("PauseButton");
+    QPushButton *button = findChild<QPushButton *>("PauseButton");
     if(!(m_state & STATE_PAUSED))
     {
         m_state |= STATE_PAUSED;
@@ -128,7 +112,7 @@ void LorrisTerminal::pauseButton()
 
 void LorrisTerminal::connectButton()
 {
-    QPushButton *button = mainWidget->findChild<QPushButton *>("StopButton");
+    QPushButton *button = findChild<QPushButton *>("StopButton");
     if(!(m_state & STATE_DISCONNECTED))
     {
 
@@ -136,7 +120,7 @@ void LorrisTerminal::connectButton()
     }
     else
     {
-        button = mainWidget->findChild<QPushButton *>("ConnectButton");
+        button = findChild<QPushButton *>("ConnectButton");
         button->setText("Connecting...");
         button->setEnabled(false);
 
@@ -147,13 +131,13 @@ void LorrisTerminal::connectButton()
 
 void LorrisTerminal::connectedStatus(bool connected)
 {
-    QPushButton *button = mainWidget->findChild<QPushButton *>("ConnectButton");
+    QPushButton *button = findChild<QPushButton *>("ConnectButton");
     if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
         button->setText("Disconnect");
 
-        button = mainWidget->findChild<QPushButton *>("StopButton");
+        button = findChild<QPushButton *>("StopButton");
         button->setEnabled(true);
     }
     else
@@ -163,11 +147,11 @@ void LorrisTerminal::connectedStatus(bool connected)
 
         button->setText("Connect");
 
-        button = mainWidget->findChild<QPushButton *>("StopButton");
+        button = findChild<QPushButton *>("StopButton");
         button->setEnabled(false);
         button->setText("Stop");
 
-        button = mainWidget->findChild<QPushButton *>("FlashButton");
+        button = findChild<QPushButton *>("FlashButton");
         button->setEnabled(false);
         button->setText("Flash");
     }
@@ -176,13 +160,13 @@ void LorrisTerminal::connectedStatus(bool connected)
 void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
 {
     disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-    QPushButton *button = mainWidget->findChild<QPushButton *>("ConnectButton");
+    QPushButton *button = findChild<QPushButton *>("ConnectButton");
     button->setEnabled(true);
     if(!result)
     {
         button->setText("Connect");
 
-        QMessageBox *box = new QMessageBox(mainWidget);
+        QMessageBox *box = new QMessageBox(this);
         box->setIcon(QMessageBox::Critical);
         box->setWindowTitle("Error!");
         box->setText("Can't open serial port!");
@@ -219,10 +203,10 @@ void LorrisTerminal::readData(QByteArray data)
             delete stopTimer;
             stopTimer = NULL;
         }
-        QPushButton *button = mainWidget->findChild<QPushButton *>("StopButton");
+        QPushButton *button = findChild<QPushButton *>("StopButton");
         button->setText("Start");
         button->setEnabled(true);
-        button = mainWidget->findChild<QPushButton *>("FlashButton");
+        button = findChild<QPushButton *>("FlashButton");
         button->setEnabled(true);
         return;
     }
@@ -247,7 +231,7 @@ void LorrisTerminal::readData(QByteArray data)
 
 void LorrisTerminal::stopButton()
 {
-    QPushButton *stop = mainWidget->findChild<QPushButton *>("StopButton");
+    QPushButton *stop = findChild<QPushButton *>("StopButton");
     if(m_state & STATE_STOPPED)
     {
         QByteArray data;
@@ -257,8 +241,10 @@ void LorrisTerminal::stopButton()
         stop->setText("Stop");
         m_state &= ~(STATE_STOPPED);
 
-        stop = mainWidget->findChild<QPushButton *>("FlashButton");
+        stop = findChild<QPushButton *>("FlashButton");
         stop->setEnabled(false);
+
+        terminal->setFocus();
     }
     else
     {
@@ -291,11 +277,11 @@ void LorrisTerminal::stopTimerSig()
     else if(m_state & STATE_STOPPING2)
     {
         m_state &= ~(STATE_STOPPING2);
-        QPushButton *button = mainWidget->findChild<QPushButton *>("StopButton");
+        QPushButton *button = findChild<QPushButton *>("StopButton");
         button->setText("Stop");
         button->setEnabled(true);
 
-        QMessageBox *box = new QMessageBox(mainWidget);
+        QMessageBox *box = new QMessageBox(this);
         box->setIcon(QMessageBox::Critical);
         box->setWindowTitle("Error!");
         box->setText("Timeout on stopping chip!");
@@ -312,7 +298,7 @@ void LorrisTerminal::flashButton()
     QString load = hex->load(hexLine->text());
     if(load != "")
     {
-        QMessageBox *box = new QMessageBox(mainWidget);
+        QMessageBox *box = new QMessageBox(this);
         box->setWindowTitle("Error!");
         box->setText("Error loading hex file: " + load);
         box->setIcon(QMessageBox::Critical);
@@ -322,10 +308,10 @@ void LorrisTerminal::flashButton()
         hex = NULL;
         return;
     }
-    QPushButton *button = mainWidget->findChild<QPushButton *>("FlashButton");
+    QPushButton *button = findChild<QPushButton *>("FlashButton");
     button->setEnabled(false);
     button->setText("Flashing...");
-    button = mainWidget->findChild<QPushButton *>("StopButton");
+    button = findChild<QPushButton *>("StopButton");
     button->setEnabled(false);
 
     flashTimeoutTimer = new QTimer();
@@ -350,7 +336,7 @@ void LorrisTerminal::flash_prepare(QString deviceId)
     QString make = hex->makePages(info);
     if(make != "")
     {
-        QMessageBox *box = new QMessageBox(mainWidget);
+        QMessageBox *box = new QMessageBox(this);
         box->setWindowTitle("Error!");
         box->setText("Error making pages: " + make);
         box->setIcon(QMessageBox::Critical);
@@ -360,19 +346,19 @@ void LorrisTerminal::flash_prepare(QString deviceId)
         delete info;
         hex = NULL;
 
-        QPushButton *button = mainWidget->findChild<QPushButton *>("FlashButton");
+        QPushButton *button = findChild<QPushButton *>("FlashButton");
         button->setEnabled(true);
         button->setText("Flash");
-        button = mainWidget->findChild<QPushButton *>("StopButton");
+        button = findChild<QPushButton *>("StopButton");
         button->setEnabled(true);
         return;
     }
-    QProgressBar *bar = new QProgressBar(mainWidget);
+    QProgressBar *bar = new QProgressBar(this);
     bar->setMaximum(hex->getPagesCount());
     bar->setObjectName("FlashProgress");
     layout->insertWidget(1, bar);
 
-    QLabel *label = mainWidget->findChild<QLabel *>("FlashLabel");
+    QLabel *label = findChild<QLabel *>("FlashLabel");
     label->setText("Flashing into " + info->name + "...");
 
     flashTimeoutTimer = new QTimer();
@@ -388,20 +374,20 @@ void LorrisTerminal::flash_prepare(QString deviceId)
 bool LorrisTerminal::SendNextPage()
 {
     flashTimeoutTimer->start(1500);
-    QProgressBar *bar = mainWidget->findChild<QProgressBar *>("FlashProgress");
+    QProgressBar *bar = findChild<QProgressBar *>("FlashProgress");
     Page *page = hex->getNextPage();
     if(!page)
     {
         layout->removeWidget(bar);
         delete bar;
 
-        QLabel *label = mainWidget->findChild<QLabel *>("FlashLabel");
+        QLabel *label = findChild<QLabel *>("FlashLabel");
         label->setText("");
 
-        QPushButton *button = mainWidget->findChild<QPushButton *>("FlashButton");
+        QPushButton *button = findChild<QPushButton *>("FlashButton");
         button->setEnabled(true);
         button->setText("Flash");
-        button = mainWidget->findChild<QPushButton *>("StopButton");
+        button = findChild<QPushButton *>("StopButton");
         button->setEnabled(true);
 
         delete hex;
@@ -435,20 +421,20 @@ void LorrisTerminal::flashTimeout()
 
     m_state &= ~(STATE_FLASHING);
 
-    QProgressBar *bar =  mainWidget->findChild<QProgressBar *>("FlashProgress");
+    QProgressBar *bar =  findChild<QProgressBar *>("FlashProgress");
     layout->removeWidget(bar);
     delete bar;
 
-    QPushButton *button = mainWidget->findChild<QPushButton *>("FlashButton");
+    QPushButton *button = findChild<QPushButton *>("FlashButton");
     button->setEnabled(true);
     button->setText("Flash");
-    button = mainWidget->findChild<QPushButton *>("StopButton");
+    button = findChild<QPushButton *>("StopButton");
     button->setEnabled(true);
 
-    QLabel *label = mainWidget->findChild<QLabel *>("FlashLabel");
+    QLabel *label = findChild<QLabel *>("FlashLabel");
     label->setText("");
 
-    QMessageBox *box = new QMessageBox(mainWidget);
+    QMessageBox *box = new QMessageBox(this);
     box->setWindowTitle("Error!");
     box->setText("Timeout during flashing!");
     box->setIcon(QMessageBox::Critical);
@@ -465,13 +451,13 @@ void LorrisTerminal::deviceIdTimeout()
     flashTimeoutTimer = NULL;
     hex = NULL;
 
-    QPushButton *button = mainWidget->findChild<QPushButton *>("FlashButton");
+    QPushButton *button = findChild<QPushButton *>("FlashButton");
     button->setEnabled(true);
     button->setText("Flash");
-    button = mainWidget->findChild<QPushButton *>("StopButton");
+    button = findChild<QPushButton *>("StopButton");
     button->setEnabled(true);
 
-    QMessageBox *box = new QMessageBox(mainWidget);
+    QMessageBox *box = new QMessageBox(this);
     box->setWindowTitle("Error!");
     box->setText("Can't get device id!");
     box->setIcon(QMessageBox::Critical);

@@ -97,6 +97,7 @@ QString HexFile::load(QString fileName)
             delete[] nums;
             return "Invalid record type.";
         }
+
         for (quint16 i = 0; i < length; ++i)
         {
             if (base + address + i >= m_buffer.size())

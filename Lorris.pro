@@ -11,13 +11,13 @@ TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += src
-SOURCES += src/mainwindow.cpp \
+SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
-    src/HomeTab.cpp \
-    src/WorkTab.cpp \
+    src/ui/HomeTab.cpp \
+    src/WorkTab/WorkTab.cpp \
     src/LorrisProbe/lorrisprobe.cpp \
-    src/WorkTabMgr.cpp \
-    src/WorkTabInfo.cpp \
+    src/WorkTab/WorkTabMgr.cpp \
+    src/WorkTab/WorkTabInfo.cpp \
     src/LorrisProbe/lorrisprobeinfo.cpp \
     src/connection/connectionmgr.cpp \
     src/ui/tabdialog.cpp \
@@ -33,13 +33,13 @@ SOURCES += src/mainwindow.cpp \
     src/LorrisTerminal/hexfile.cpp \
     src/LorrisTerminal/terminal.cpp \
     src/connection/serialportthread.cpp
-HEADERS += src/mainwindow.h \
+HEADERS += src/ui/mainwindow.h \
     src/revision.h \
-    src/HomeTab.h \
-    src/WorkTab.h \
+    src/ui/HomeTab.h \
+    src/WorkTab/WorkTab.h \
     src/LorrisProbe/lorrisprobe.h \
-    src/WorkTabMgr.h \
-    src/WorkTabInfo.h \
+    src/WorkTab/WorkTabMgr.h \
+    src/WorkTab/WorkTabInfo.h \
     src/LorrisProbe/lorrisprobeinfo.h \
     src/connection/connectionmgr.h \
     src/ui/tabdialog.h \

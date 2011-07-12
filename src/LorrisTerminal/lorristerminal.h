@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <QByteArray>
 
-#include "WorkTab.h"
+#include "WorkTab/WorkTab.h"
 
 class QVBoxLayout;
 class QTextEdit;
@@ -30,8 +30,6 @@ class LorrisTerminal : public WorkTab
 public:
     explicit LorrisTerminal();
     virtual ~LorrisTerminal();
-
-    QWidget *GetTab(QWidget *parent = NULL);
 
 private slots:
     //Buttons
@@ -57,7 +55,6 @@ private:
     bool SendNextPage();
     void initUI();
 
-    QWidget *mainWidget;
     QVBoxLayout *layout;
     QLineEdit *hexLine;
     QTimer *stopTimer;

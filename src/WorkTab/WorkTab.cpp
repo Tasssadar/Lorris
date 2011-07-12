@@ -1,7 +1,7 @@
 #include "WorkTab.h"
 #include <QLayout>
 
-WorkTab::WorkTab() : QObject(NULL)
+WorkTab::WorkTab() : QWidget(NULL)
 {
     m_con = NULL;
     m_id = 0;
@@ -18,11 +18,6 @@ WorkTab::~WorkTab()
             delete m_con;
         }
     }
-}
-
-QWidget *WorkTab::GetTab(QWidget */*parent*/)
-{
-    return NULL;
 }
 
 void WorkTab::readData(QByteArray /*data*/)

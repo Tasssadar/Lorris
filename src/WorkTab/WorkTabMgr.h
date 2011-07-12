@@ -24,14 +24,7 @@ class WorkTabMgr : public Singleton<WorkTabMgr>
 
         void removeTab(quint16 index)
         {
-            for(WorkTabMap::iterator itr = m_workTabs.begin(); itr != m_workTabs.end(); ++itr)
-            {
-                if(itr->second->GetTab() == tabWidget->widget(index))
-                {
-                    removeTab(itr->second);
-                    return;
-                }
-            }
+            removeTab((WorkTab*)tabWidget->widget(index));
         }
 
         void removeTabWithId(quint16 id)

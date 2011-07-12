@@ -1,7 +1,7 @@
 #ifndef LORRISPROBEINFO_H
 #define LORRISPROBEINFO_H
 
-#include "WorkTabInfo.h"
+#include "WorkTab/WorkTabInfo.h"
 
 class LorrisProbeInfo : public WorkTabInfo
 {
@@ -11,6 +11,7 @@ class LorrisProbeInfo : public WorkTabInfo
 
         WorkTab *GetNewTab();
         QString GetName();
+        QString GetDescription();
         quint8 GetConType() { return (CON_MSK(CONNECTION_SOCKET) | CON_MSK(CONNECTION_SERIAL_PORT) | CON_MSK(CONNECTION_FILE)); }
 };
 

@@ -20,10 +20,10 @@
 
 #include "mainwindow.h"
 #include "HomeTab.h"
-#include "WorkTab.h"
-#include "WorkTabMgr.h"
-#include "WorkTabInfo.h"
-#include "ui/tabdialog.h"
+#include "WorkTab/WorkTab.h"
+#include "WorkTab/WorkTabMgr.h"
+#include "WorkTab/WorkTabInfo.h"
+#include "tabdialog.h"
 #include "revision.h"
 
 MainWindow::MainWindow(QWidget *parent) :
