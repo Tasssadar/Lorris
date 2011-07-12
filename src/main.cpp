@@ -9,7 +9,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QTranslator translator;
-    translator.load("Lorris." + QLocale::system().name());
+    if(!translator.load("Lorris." + QLocale::system().name(), "translations"))
+        translator.load("Lorris." + QLocale::system().name(), "/opt/Lorris");
     a.installTranslator(&translator);
 
     MainWindow w;

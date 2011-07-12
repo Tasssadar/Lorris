@@ -77,6 +77,8 @@ win32 {
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_win.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialengine_win.cpp
     HEADERS += dep/qserialdevice/src/qwineventnotifier_p.h
+
+    QMAKE_POST_LINK = mkdir "$$DESTDIR/translations" & copy /y translations\\*.qm "$$DESTDIR/translations/"
 }
 unix:!macx { 
     LIBS += -ludev
@@ -86,6 +88,8 @@ unix:!macx {
         dep/qserialdevice/src/unix/ttylocker.cpp
     HEADERS += dep/qserialdevice/src/unix/ttylocker.h \
         dep/qserialdevice/src/unix/qcore_unix_p.h
+
+    QMAKE_POST_LINK = mkdir "$$DESTDIR/translations" & cp translations/*.qm "$$DESTDIR/translations/"
 }
 macx { 
     LIBS += -framework \
@@ -95,4 +99,5 @@ macx {
     SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_mac.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp
+    QMAKE_POST_LINK = mkdir "$$DESTDIR/translations" & cp translations/*.qm "$$DESTDIR/translations/"
 }
