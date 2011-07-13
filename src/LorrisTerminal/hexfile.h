@@ -30,14 +30,14 @@ public:
         return pages[m_pagesItr++];
     }
 
-private:
-    void deleteAllPages()
+    static void deleteAllPages(std::vector<Page*> pages)
     {
         for(quint16 i = 0; i < pages.size(); ++i)
             delete pages[i];
         pages.clear();
     }
 
+private:
     bool patch_page(Page *page,  quint16 patch_pos, quint16 boot_reset, quint16 page_pos);
 
     std::vector<quint8> m_buffer;

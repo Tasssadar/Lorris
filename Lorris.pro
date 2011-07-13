@@ -33,7 +33,8 @@ SOURCES += src/ui/mainwindow.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserial.cpp \
     src/LorrisTerminal/hexfile.cpp \
     src/LorrisTerminal/terminal.cpp \
-    src/connection/serialportthread.cpp
+    src/connection/serialportthread.cpp \
+    src/LorrisTerminal/eeprom.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -63,7 +64,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisTerminal/hexfile.h \
     src/LorrisTerminal/deviceinfo.h \
     src/LorrisTerminal/terminal.h \
-    src/connection/serialportthread.h
+    src/connection/serialportthread.h \
+    src/LorrisTerminal/eeprom.h
 QMAKE_LIBDIR += dep/qwt/lib
 
 # LIBS += -lqwt
@@ -77,8 +79,13 @@ win32 {
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_win.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialengine_win.cpp
     HEADERS += dep/qserialdevice/src/qwineventnotifier_p.h
-
-    QMAKE_POST_LINK = mkdir "$$DESTDIR/translations" & copy /y translations\\*.qm "$$DESTDIR/translations/"
+    QMAKE_POST_LINK = mkdir \
+        "$$DESTDIR/translations" \
+        & \
+        copy \
+        /y \
+        translations\\*.qm \
+        "$$DESTDIR/translations/"
 }
 unix:!macx { 
     LIBS += -ludev
@@ -88,8 +95,12 @@ unix:!macx {
         dep/qserialdevice/src/unix/ttylocker.cpp
     HEADERS += dep/qserialdevice/src/unix/ttylocker.h \
         dep/qserialdevice/src/unix/qcore_unix_p.h
-
-    QMAKE_POST_LINK = mkdir "$$DESTDIR/translations" & cp translations/*.qm "$$DESTDIR/translations/"
+    QMAKE_POST_LINK = mkdir \
+        "$$DESTDIR/translations" \
+        & \
+        cp \
+        translations/*.qm \
+        "$$DESTDIR/translations/"
 }
 macx { 
     LIBS += -framework \
@@ -99,5 +110,10 @@ macx {
     SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_mac.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp
-    QMAKE_POST_LINK = mkdir "$$DESTDIR/translations" & cp translations/*.qm "$$DESTDIR/translations/"
+    QMAKE_POST_LINK = mkdir \
+        "$$DESTDIR/translations" \
+        & \
+        cp \
+        translations/*.qm \
+        "$$DESTDIR/translations/"
 }

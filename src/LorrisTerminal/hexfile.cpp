@@ -10,7 +10,7 @@ HexFile::HexFile()
 
 HexFile::~HexFile()
 {
-    deleteAllPages();
+    HexFile::deleteAllPages(pages);
 }
 
 QString HexFile::load(QString fileName)
@@ -121,7 +121,7 @@ QString HexFile::load(QString fileName)
 
 QString HexFile::makePages(DeviceInfo *info)
 {
-    deleteAllPages();
+    HexFile::deleteAllPages(pages);
     m_pagesItr = 0;
 
     quint16 size = m_buffer.size();
