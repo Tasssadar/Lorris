@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 
     QTranslator translator;
     if(!translator.load("Lorris." + QLocale::system().name(), "translations"))
-        translator.load("Lorris." + QLocale::system().name(), "/opt/Lorris");
+        translator.load("Lorris." + QLocale::system().name(), "/usr/share/lorris");
     a.installTranslator(&translator);
 
     MainWindow w;
