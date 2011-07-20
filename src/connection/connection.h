@@ -27,6 +27,8 @@ public:
     virtual void Close() { }
     virtual void SendData(QByteArray data);
 
+    bool isOpen() { return opened; }
+
     void AddUsingTab(quint16 id)
     {
         m_usingTabsIDs.insert(id);

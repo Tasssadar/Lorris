@@ -6,12 +6,15 @@
 
 #include "LorrisProbe/lorrisprobeinfo.h"
 #include "LorrisTerminal/lorristerminalinfo.h"
+#include "LorrisAnalyzer/lorrisanalyzerinfo.h"
 
 WorkTabMgr::WorkTabMgr()
 {
     //put ALL plugins into this vector
     m_workTabInfos.push_back(new LorrisProbeInfo);
     m_workTabInfos.push_back(new LorrisTerminalInfo);
+    m_workTabInfos.push_back(new LorrisAnalyzerInfo);
+
     tabIdCounter = 0;
     tabWidget = NULL;
     hometab = NULL;

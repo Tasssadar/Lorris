@@ -34,7 +34,11 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisTerminal/hexfile.cpp \
     src/LorrisTerminal/terminal.cpp \
     src/connection/serialportthread.cpp \
-    src/LorrisTerminal/eeprom.cpp
+    src/LorrisTerminal/eeprom.cpp \
+    src/LorrisAnalyzer/newsourcedialog.cpp \
+    src/LorrisAnalyzer/lorrisanalyzerinfo.cpp \
+    src/LorrisAnalyzer/lorrisanalyzer.cpp \
+    src/LorrisAnalyzer/widgets/analyzerwidget.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -65,7 +69,12 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisTerminal/deviceinfo.h \
     src/LorrisTerminal/terminal.h \
     src/connection/serialportthread.h \
-    src/LorrisTerminal/eeprom.h
+    src/LorrisTerminal/eeprom.h \
+    src/LorrisAnalyzer/lorrisanalyzer.h \
+    src/LorrisAnalyzer/newsourcedialog.h \
+    src/LorrisAnalyzer/lorrisanalyzerinfo.h \
+    src/LorrisAnalyzer/lorrisanalyzer.h \
+    src/LorrisAnalyzer/widgets/analyzerwidget.h
 QMAKE_LIBDIR += dep/qwt/lib
 
 # LIBS += -lqwt

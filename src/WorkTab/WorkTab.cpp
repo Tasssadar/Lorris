@@ -40,11 +40,10 @@ void WorkTab::DeleteAllMembers(QLayout *layout)
         {
             WorkTab::DeleteAllMembers(item->layout());
             delete item->layout();
+            continue;
         }
         else if(item->widget())
-        {
             delete item->widget();
-            delete item;
-        }
+        delete item;
     }
 }

@@ -35,6 +35,7 @@ private:
     AbstractSerial::BaudRate m_rate;
     QString devName;
     bool opened;
+    quint8 m_writeErrorCount;
 
     SerialPort *m_con;
     QMutex m_portMutex;

@@ -16,7 +16,7 @@
 
 TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
 {
-    setFixedSize(600, 200);
+    setFixedSize(600, 250);
 
     columns = new QHBoxLayout;
     secondCol = new QVBoxLayout;
@@ -34,7 +34,8 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
     desc->setObjectName("pluginDesc");
     desc->setFixedWidth(430);
     desc->setWordWrap(true);
-    secondCol->addWidget(desc);
+    desc->setAlignment(Qt::AlignTop);
+    secondCol->addWidget(desc, Qt::AlignTop);
 
     QHBoxLayout *conLayout = new QHBoxLayout;
     QLabel *qConLabel = new QLabel(tr("Connection: "), this);
@@ -112,7 +113,9 @@ void TabDialog::FillConOptions(int index)
 
             QLabel *rateLabel = new QLabel(tr("Baud Rate: "), NULL, Qt::WindowFlags(0));
             QComboBox *rateBox = new QComboBox(this);
+
             rateBox->addItem("38400",   AbstractSerial::BaudRate38400);
+            rateBox->addItem("9600",    AbstractSerial::BaudRate9600);
             rateBox->addItem("19200",   AbstractSerial::BaudRate19200);
             rateBox->addItem("57600",   AbstractSerial::BaudRate57600);
             rateBox->addItem("115200",  AbstractSerial::BaudRate115200);
@@ -141,6 +144,8 @@ void TabDialog::CreateTab()
                 return;
             break;
         default:    // TODO: other connection types
+            sWorkTabMgr.AddWorkTab(info->GetNewTab(), info->GetName());
+            close();
             return;
     }
     close();
@@ -154,10 +159,10 @@ WorkTab *TabDialog::ConnectSP(WorkTabInfo *info)
     QComboBox *combo = findChild<QComboBox *>("PortBox");
     portName = combo->currentText();
     combo = findChild<QComboBox *>("RateBox");
-    rate =  AbstractSerial::BaudRate(combo->itemData(combo->currentIndex()).Int);
+    rate =  AbstractSerial::BaudRate(combo->itemData(combo->currentIndex()).toInt());
 
     SerialPort *port = (SerialPort*)sConMgr.FindConnection(CONNECTION_SERIAL_PORT, portName);
-    if(port)
+    if(port && port->isOpen())
     {
         WorkTab *tab = info->GetNewTab();
         sWorkTabMgr.AddWorkTab(tab, info->GetName() + " - " +port->GetIDString());
@@ -172,8 +177,11 @@ WorkTab *TabDialog::ConnectSP(WorkTabInfo *info)
 
         tmpTabInfo = info;
 
-        port = new SerialPort();
-        port->SetNameAndRate(portName, rate);
+        if(!port)
+        {
+            port = new SerialPort();
+            port->SetNameAndRate(portName, rate);
+        }
 
         connect(port, SIGNAL(connectResult(Connection*,bool)), this, SLOT(serialConResult(Connection*,bool)));
         port->OpenConcurrent();

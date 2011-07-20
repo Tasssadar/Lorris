@@ -18,6 +18,41 @@
     </message>
 </context>
 <context>
+    <name>LorrisAnalyzer</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="19"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="89"/>
+        <source>Disconnect</source>
+        <translation>Odpojit</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="23"/>
+        <source>New data source</source>
+        <translation>Nový zdroj dat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="51"/>
+        <source>Connecting...</source>
+        <translation>Připojuji...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="72"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="94"/>
+        <source>Connect</source>
+        <translation>Připojit</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="76"/>
+        <source>Error!</source>
+        <translation>Chyba!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="77"/>
+        <source>Can&apos;t open connection!</source>
+        <translation>Nemůžu se připojit!</translation>
+    </message>
+</context>
+<context>
     <name>LorrisTerminal</name>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="44"/>
@@ -185,7 +220,7 @@
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="41"/>
         <source>&amp;New tab..</source>
-        <translation>&amp;Nový panel</translation>
+        <translation>&amp;Nový panel..</translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="42"/>
@@ -231,6 +266,45 @@
         <location filename="../src/ui/mainwindow.cpp" line="141"/>
         <source>Lorris revision </source>
         <translation>Lorris v revizi </translation>
+    </message>
+</context>
+<context>
+    <name>NewSourceDialog</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="23"/>
+        <source>Set packet lenght and start transmiting packets.</source>
+        <translation>Nastavte délku packetu a začněte posílat data.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="25"/>
+        <source>Packet lenght</source>
+        <translation>Délka packetu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="42"/>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="153"/>
+        <source>Pause</source>
+        <translation>Zmrazit</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="47"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="49"/>
+        <source>Text</source>
+        <translation>Text</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="53"/>
+        <source>Next</source>
+        <translation>Další</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="151"/>
+        <source>Unpause</source>
+        <translation>Odmrazit</translation>
     </message>
 </context>
 <context>
@@ -844,61 +918,75 @@
         <translation>Terminál umí zobrazit data ze sériového port, poslat do portu stisky kláves a nahrát nový program do čipu s bootloaderem.</translation>
     </message>
     <message>
-        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="70"/>
+        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="73"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="21"/>
+        <source>Analyzer</source>
+        <translation>Analyzér</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="26"/>
+        <source>Analyzer can parse any data you give it and show them as anything you like.You can mark packet in data source, mark its header or bottom, mark individual data blocks, select their data type and the way they will be showed to you.</source>
+        <translation>Analyzér může překousat jakákoliv data které mu dáte a zobrazit je jak chcete. Můžete označit packet který se má v proudu dat vyhledávat, označit jeho hlavičku a konec, určit bloky data, jejich typ a způsob jakým budou zobrazeny.</translation>
+    </message>
+    <message>
+        <source>Analyzer can parse any data you give it and show them as anything you like.You can mark packet in data source, mark its header or bottom, mark individual data blocks, select their data type and the way they showed to you.</source>
+        <translation type="obsolete">Analyzér může překousat jakákoliv data které mu dáte a zobrazit je jak chcete. Můžete označit packet v proudu data který se má vyhledávat, označit jeho hlavičku a konec, určit bloky data, jejich typ a způsob jakým budou zobrazeny.</translation>
     </message>
 </context>
 <context>
     <name>TabDialog</name>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="40"/>
+        <location filename="../src/ui/tabdialog.cpp" line="41"/>
         <source>Connection: </source>
         <translation>Připojení: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="48"/>
-        <location filename="../src/ui/tabdialog.cpp" line="199"/>
+        <location filename="../src/ui/tabdialog.cpp" line="49"/>
+        <location filename="../src/ui/tabdialog.cpp" line="207"/>
         <source>Create tab</source>
         <translation>Vytvořit panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="78"/>
+        <location filename="../src/ui/tabdialog.cpp" line="79"/>
         <source>Socket</source>
         <translation>Socket</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="79"/>
+        <location filename="../src/ui/tabdialog.cpp" line="80"/>
         <source>Serial port</source>
         <translation>Sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="80"/>
+        <location filename="../src/ui/tabdialog.cpp" line="81"/>
         <source>File</source>
         <translation>Soubor</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="95"/>
+        <location filename="../src/ui/tabdialog.cpp" line="96"/>
         <source>Port: </source>
         <translation>Port: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="113"/>
+        <location filename="../src/ui/tabdialog.cpp" line="114"/>
         <source>Baud Rate: </source>
         <translation>Rychlost: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="170"/>
+        <location filename="../src/ui/tabdialog.cpp" line="175"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="203"/>
+        <location filename="../src/ui/tabdialog.cpp" line="211"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="204"/>
+        <location filename="../src/ui/tabdialog.cpp" line="212"/>
         <source>Error opening serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
     </message>

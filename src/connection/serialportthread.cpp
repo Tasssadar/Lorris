@@ -7,6 +7,8 @@ SerialPortThread::SerialPortThread(QString name, AbstractSerial::BaudRate rate, 
     devName = name;
     m_rate = rate;
     m_con = con;
+
+    m_writeErrorCount = 0;
 }
 
 SerialPortThread::~SerialPortThread()
@@ -27,7 +29,7 @@ void SerialPortThread::Send(QByteArray data)
 bool SerialPortThread::Open()
 {
     m_port = new AbstractSerial();
-    connect(m_port, SIGNAL(signalStatus(const QString, QDateTime)), this, SLOT(viewStateSlot(QString, QDateTime)));
+    connect(m_port, SIGNAL(signalStatus(const QString, QDateTime)), this, SLOT(viewStateSlot(QString, QDateTime)), Qt::QueuedConnection);
 
     m_port->setDeviceName(devName);
     m_port->enableEmitStatus(true);
@@ -80,7 +82,16 @@ void SerialPortThread::stop()
     runTh = false;
 }
 
-void SerialPortThread::viewStateSlot(QString /*stateMsg*/, QDateTime /*dt*/)
+void SerialPortThread::viewStateSlot(QString stateMsg, QDateTime /*dt*/)
 {
-
+    if(stateMsg == "Controls::Write data to device - i/o problem. Error!")
+    {
+        ++m_writeErrorCount;
+        if(m_writeErrorCount >= 10)
+        {
+            emit connectResult(false);
+            opened = false;
+            runTh = false;
+        }
+    }
 }
