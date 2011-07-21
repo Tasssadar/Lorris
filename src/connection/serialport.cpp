@@ -33,10 +33,7 @@ void SerialPort::connectResultSer(bool opened)
     emit connectResult(this, opened);
 
     if(!opened)
-    {
-        emit connected(false);
         thread = NULL;
-    }
     else
         emit connected(true);
 }
