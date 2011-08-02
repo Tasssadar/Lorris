@@ -27,6 +27,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
 
 
     m_area = new QMdiArea(this);
+    m_area->addSubWindow(new QLabel("fdfdas", this));
+    m_area->addSubWindow(new QLabel("fdfdasěšššě", this));
 
     butt_1_layout->addWidget(connectButt);
     butt_1_layout->addWidget(newsource_button);
@@ -105,6 +107,12 @@ void LorrisAnalyzer::readData(QByteArray data)
 void LorrisAnalyzer::newSourceButton()
 {
     dialog = new NewSourceDialog(this);
+    connect(dialog, SIGNAL(structureData(analyzer_packet,QByteArray)), this, SLOT(dataStructure(analyzer_packet,QByteArray)));
     dialog->exec();
+}
+
+void LorrisAnalyzer::dataStructure(analyzer_packet pkt, QByteArray curData)
+{
+
 }
 

@@ -4,12 +4,18 @@
 #include <QDialog>
 #include <QHBoxLayout>
 
+#include "lorrisanalyzer.h"
+
 class QVBoxLayout;
 class QTableWidget;
 
 class NewSourceDialog : public QDialog
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void structureData(analyzer_packet pkt, QByteArray curData);
+
 public:
     NewSourceDialog(QWidget *parent);
     ~NewSourceDialog();

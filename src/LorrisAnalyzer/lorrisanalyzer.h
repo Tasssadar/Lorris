@@ -14,6 +14,13 @@ enum states_
 
 class NewSourceDialog;
 
+struct analyzer_packet
+{
+    QByteArray start;
+    QByteArray stop;
+    quint8 lenght;
+};
+
 class LorrisAnalyzer : public WorkTab
 {
     Q_OBJECT
@@ -27,6 +34,8 @@ class LorrisAnalyzer : public WorkTab
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
+
+        void dataStructure(analyzer_packet pkt, QByteArray curData);
 
     private:
         void readData(QByteArray data);

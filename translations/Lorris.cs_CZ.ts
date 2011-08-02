@@ -21,7 +21,7 @@
     <name>LorrisAnalyzer</name>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="19"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="89"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="91"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
@@ -31,23 +31,23 @@
         <translation>Nový zdroj dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="51"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="53"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="72"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="94"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="96"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="76"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="78"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="77"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="79"/>
         <source>Can&apos;t open connection!</source>
         <translation>Nemůžu se připojit!</translation>
     </message>
@@ -271,38 +271,48 @@
 <context>
     <name>NewSourceDialog</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="23"/>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="25"/>
         <source>Set packet lenght and start transmiting packets.</source>
         <translation>Nastavte délku packetu a začněte posílat data.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="25"/>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="27"/>
         <source>Packet lenght</source>
         <translation>Délka packetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="42"/>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="153"/>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="33"/>
+        <source>Start bytes: </source>
+        <translation>Start byty: </translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="38"/>
+        <source>Stop bytes: </source>
+        <translation>Stop byty: </translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="53"/>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="170"/>
         <source>Pause</source>
         <translation>Zmrazit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="47"/>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="58"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="49"/>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="60"/>
         <source>Text</source>
         <translation>Text</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="53"/>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="64"/>
         <source>Next</source>
         <translation>Další</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="151"/>
+        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="168"/>
         <source>Unpause</source>
         <translation>Odmrazit</translation>
     </message>
