@@ -5,8 +5,6 @@
 #include <QLabel>
 #include <QMessageBox>
 
-#include "qserialdeviceenumerator/serialdeviceenumerator.h"
-#include "qserialdevice/abstractserial.h"
 #include "WorkTab/WorkTabMgr.h"
 #include "WorkTab/WorkTabInfo.h"
 #include "WorkTab/WorkTab.h"

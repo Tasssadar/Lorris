@@ -38,7 +38,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/newsourcedialog.cpp \
     src/LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     src/LorrisAnalyzer/lorrisanalyzer.cpp \
-    src/LorrisAnalyzer/widgets/analyzerwidget.cpp
+    src/LorrisAnalyzer/widgets/analyzerwidget.cpp \
+    src/LorrisAnalyzer/parser.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -74,7 +75,10 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/newsourcedialog.h \
     src/LorrisAnalyzer/lorrisanalyzerinfo.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
-    src/LorrisAnalyzer/widgets/analyzerwidget.h
+    src/LorrisAnalyzer/widgets/analyzerwidget.h \
+    src/LorrisAnalyzer/parser.h \
+    src/common.h \
+    src/num_func.h
 QMAKE_LIBDIR += dep/qwt/lib
 
 # LIBS += -lqwt

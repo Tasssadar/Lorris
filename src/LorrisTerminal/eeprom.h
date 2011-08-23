@@ -32,8 +32,6 @@ public:
         return pages[pageItr++];
     }
 
-    QString prepareHexByte(quint8 data);
-
 private:
     QByteArray data;
     DeviceInfo *m_deviceInfo;

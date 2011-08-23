@@ -4,7 +4,9 @@
 #include "WorkTab/WorkTab.h"
 
 class QVBoxLayout;
+class QHBoxLayout;
 class QMdiArea;
+class Parser;
 
 enum states_
 {
@@ -41,9 +43,11 @@ class LorrisAnalyzer : public WorkTab
         void readData(QByteArray data);
 
         QVBoxLayout *layout;
+        QHBoxLayout *layout_area;
         QMdiArea *m_area;
         quint16 m_state;
         NewSourceDialog *dialog;
+        Parser *m_parser;
 };
 
 #endif // LORRISANALYZER_H

@@ -3,6 +3,7 @@
 
 #include "connection.h"
 #include "qserialdevice/abstractserial.h"
+#include "qserialdeviceenumerator/serialdeviceenumerator.h"
 
 class SerialPortThread;
 

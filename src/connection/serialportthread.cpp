@@ -82,7 +82,7 @@ void SerialPortThread::stop()
     runTh = false;
 }
 
-void SerialPortThread::viewStateSlot(QString stateMsg, QDateTime /*dt*/)
+void SerialPortThread::viewStateSlot(QString /*stateMsg*/, QDateTime /*dt*/)
 {
    /* if(stateMsg == "Controls::Write data to device - i/o problem. Error!")
     {

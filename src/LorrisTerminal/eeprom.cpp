@@ -1,6 +1,8 @@
-#include "eeprom.h"
 #include <QFileDialog>
 #include <QMessageBox>
+
+#include "eeprom.h"
+#include "common.h"
 
 EEPROM::EEPROM(QWidget *parent, DeviceInfo *info)
 {
@@ -44,18 +46,18 @@ void EEPROM::Export()
             line = ":10"; // data size (16)
 
             // Address
-            line += prepareHexByte(address >> 8);
-            line += prepareHexByte(quint8(address));
+            line += Nums::hexToString(address >> 8);
+            line += Nums::hexToString(quint8(address));
 
             line += "00"; // record type, 0 = data
 
             checksum = 0x10 + (address >> 8) + quint8(address) + 0x00;
             for(quint8 i = 0; i < 16; ++i)
             {
-                line += prepareHexByte(data[address+i]);
+                line += Nums::hexToString(data[address+i]);
                 checksum += data[address+i];
             }
-            line += prepareHexByte(256 - checksum);
+            line += Nums::hexToString(256 - checksum);
             line += "\r\n";
             file->write(line.toAscii());
         }
@@ -126,10 +128,4 @@ bool EEPROM::Import()
     return true;
 }
 
-QString EEPROM::prepareHexByte(quint8 data)
-{
-    QString result = QString::number(data, 16).toUpper();
-    if(result.count() == 1)
-        result.push_front('0');
-    return result;
-}
+

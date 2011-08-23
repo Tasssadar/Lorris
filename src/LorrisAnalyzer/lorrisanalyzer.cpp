@@ -5,7 +5,10 @@
 #include <QPushButton>
 #include <QMdiSubWindow>
 #include <QMessageBox>
+#include <QListView>
+#include <QStringListModel>
 
+#include "parser.h"
 #include "lorrisanalyzer.h"
 #include "newsourcedialog.h"
 
@@ -15,6 +18,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
     layout = new QVBoxLayout(this);
 
     QHBoxLayout *butt_1_layout = new QHBoxLayout();
+    layout_area = new QHBoxLayout();
 
     QPushButton *connectButt = new QPushButton(tr("Disconnect"), this);
     connectButt->setObjectName("connectButton");
@@ -25,7 +29,6 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
     connect(newsource_button, SIGNAL(clicked()), this, SLOT(newSourceButton()));
     QSpacerItem *spacer = new QSpacerItem(100, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-
     m_area = new QMdiArea(this);
     m_area->addSubWindow(new QLabel("fdfdas", this));
     m_area->addSubWindow(new QLabel("fdfdasěšššě", this));
@@ -34,15 +37,18 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
     butt_1_layout->addWidget(newsource_button);
     butt_1_layout->addSpacerItem(spacer);
     layout->addLayout(butt_1_layout);
-    layout->addWidget(m_area);
+    layout_area->addWidget(m_area, 1);
+    layout->addLayout(layout_area);
 
     dialog = NULL;
+    m_parser = new Parser();
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
 {
     WorkTab::DeleteAllMembers(layout);
     delete layout;
+    delete m_parser;
 }
 
 void LorrisAnalyzer::connectButton()
@@ -113,6 +119,16 @@ void LorrisAnalyzer::newSourceButton()
 
 void LorrisAnalyzer::dataStructure(analyzer_packet pkt, QByteArray curData)
 {
+    QListView *list = new QListView(this);
+    layout_area->insertWidget(0, list);
+    m_parser->setStructure(pkt);
 
+
+    QStringListModel *model = new QStringListModel();
+    QStringList stringlist;
+    for(quint8 i = 0; i < curData.size(); ++i)
+        stringlist << (QString::number(curData[i]));
+    model->setStringList(stringlist);
+    list->setModel(model);
 }
 
