@@ -20,34 +20,34 @@
 <context>
     <name>LorrisAnalyzer</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="19"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="91"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="27"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="108"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="23"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="31"/>
         <source>New data source</source>
         <translation>Nový zdroj dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="53"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="70"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="74"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="96"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="91"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="113"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="78"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="95"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="79"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="96"/>
         <source>Can&apos;t open connection!</source>
         <translation>Nemůžu se připojit!</translation>
     </message>
@@ -850,34 +850,34 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="19"/>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="73"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="21"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="75"/>
         <source>Intel hex file (*.hex);;Data file (*.dta)</source>
         <translation>Intel hex (*.hex);;Datový soubor (*.dta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="20"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="22"/>
         <source>Export EEPROM</source>
         <translation>Exportovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="28"/>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="80"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="30"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="82"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="29"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="31"/>
         <source>Can&apos;t create/open file!</source>
         <translation>Nemůžu vytvořit/otevřít soubor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="74"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="76"/>
         <source>Import EEPROM</source>
         <translation>Importovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="81"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="83"/>
         <location filename="../src/LorrisTerminal/hexfile.cpp" line="22"/>
         <source>Can&apos;t open file!</source>
         <translation>Nemůžu otevřít soubor!</translation>
@@ -950,53 +950,53 @@
 <context>
     <name>TabDialog</name>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="41"/>
+        <location filename="../src/ui/tabdialog.cpp" line="39"/>
         <source>Connection: </source>
         <translation>Připojení: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="49"/>
-        <location filename="../src/ui/tabdialog.cpp" line="207"/>
+        <location filename="../src/ui/tabdialog.cpp" line="47"/>
+        <location filename="../src/ui/tabdialog.cpp" line="205"/>
         <source>Create tab</source>
         <translation>Vytvořit panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="79"/>
+        <location filename="../src/ui/tabdialog.cpp" line="77"/>
         <source>Socket</source>
         <translation>Socket</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="80"/>
+        <location filename="../src/ui/tabdialog.cpp" line="78"/>
         <source>Serial port</source>
         <translation>Sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="81"/>
+        <location filename="../src/ui/tabdialog.cpp" line="79"/>
         <source>File</source>
         <translation>Soubor</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="96"/>
+        <location filename="../src/ui/tabdialog.cpp" line="94"/>
         <source>Port: </source>
         <translation>Port: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="114"/>
+        <location filename="../src/ui/tabdialog.cpp" line="112"/>
         <source>Baud Rate: </source>
         <translation>Rychlost: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="175"/>
+        <location filename="../src/ui/tabdialog.cpp" line="173"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="211"/>
+        <location filename="../src/ui/tabdialog.cpp" line="209"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="212"/>
+        <location filename="../src/ui/tabdialog.cpp" line="210"/>
         <source>Error opening serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
     </message>

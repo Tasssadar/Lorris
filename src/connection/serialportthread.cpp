@@ -18,7 +18,7 @@ SerialPortThread::~SerialPortThread()
 
 void SerialPortThread::Send(QByteArray data)
 {
-    if(m_port)
+    if(runTh && m_port)
     {
         m_portMutex.lock();
         m_port->write(data);
@@ -74,6 +74,7 @@ void SerialPortThread::run()
     }
     m_port->close();
     delete m_port;
+    m_port = NULL;
     deleteLater();
 }
 

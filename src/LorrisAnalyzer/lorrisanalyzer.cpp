@@ -11,7 +11,8 @@
 #include "parser.h"
 #include "lorrisanalyzer.h"
 #include "newsourcedialog.h"
-
+#include "datawidget.h"
+#include "widgets/textwidget.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
 {
@@ -19,6 +20,9 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
 
     QHBoxLayout *butt_1_layout = new QHBoxLayout();
     layout_area = new QHBoxLayout();
+
+    QHBoxLayout *toolbox_layout = new QHBoxLayout();
+    QHBoxLayout *header_ver_layout = new QHBoxLayout();
 
     QPushButton *connectButt = new QPushButton(tr("Disconnect"), this);
     connectButt->setObjectName("connectButton");
@@ -30,14 +34,21 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
     QSpacerItem *spacer = new QSpacerItem(100, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     m_area = new QMdiArea(this);
-    m_area->addSubWindow(new QLabel("fdfdas", this));
-    m_area->addSubWindow(new QLabel("fdfdasěšššě", this));
+
+    QPushButton *tool1 = new QPushButton("TextView", this);
+    connect(tool1, SIGNAL(clicked()), this, SLOT(textLabelButton()));
+    toolbox_layout->addWidget(tool1, Qt::AlignTop);
+
+    DataWidget *data = new DataWidget(this);
 
     butt_1_layout->addWidget(connectButt);
     butt_1_layout->addWidget(newsource_button);
     butt_1_layout->addSpacerItem(spacer);
-    layout->addLayout(butt_1_layout);
+    header_ver_layout->addLayout(butt_1_layout);
+    header_ver_layout->addWidget(data, 1, Qt::AlignLeft);
+    layout->addLayout(header_ver_layout);
     layout_area->addWidget(m_area, 1);
+    layout_area->addLayout(toolbox_layout);
     layout->addLayout(layout_area);
 
     dialog = NULL;
@@ -115,6 +126,14 @@ void LorrisAnalyzer::newSourceButton()
     dialog = new NewSourceDialog(this);
     connect(dialog, SIGNAL(structureData(analyzer_packet,QByteArray)), this, SLOT(dataStructure(analyzer_packet,QByteArray)));
     dialog->exec();
+}
+
+void LorrisAnalyzer::textLabelButton()
+{
+    TextWidget *wid = new TextWidget(NULL);
+
+    m_area->addSubWindow(wid);
+    wid->show();
 }
 
 void LorrisAnalyzer::dataStructure(analyzer_packet pkt, QByteArray curData)

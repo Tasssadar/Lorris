@@ -33,6 +33,7 @@ class LorrisAnalyzer : public WorkTab
     private slots:
         void connectButton();
         void newSourceButton();
+        void textLabelButton();
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
