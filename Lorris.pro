@@ -35,13 +35,13 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisTerminal/terminal.cpp \
     src/connection/serialportthread.cpp \
     src/LorrisTerminal/eeprom.cpp \
-    src/LorrisAnalyzer/newsourcedialog.cpp \
     src/LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     src/LorrisAnalyzer/lorrisanalyzer.cpp \
     src/LorrisAnalyzer/widgets/analyzerwidget.cpp \
     src/LorrisAnalyzer/parser.cpp \
     src/LorrisAnalyzer/datawidget.cpp \
-    src/LorrisAnalyzer/widgets/textwidget.cpp
+    src/LorrisAnalyzer/widgets/textwidget.cpp \
+    src/num_func.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -74,7 +74,6 @@ HEADERS += src/ui/mainwindow.h \
     src/connection/serialportthread.h \
     src/LorrisTerminal/eeprom.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
-    src/LorrisAnalyzer/newsourcedialog.h \
     src/LorrisAnalyzer/lorrisanalyzerinfo.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
     src/LorrisAnalyzer/widgets/analyzerwidget.h \

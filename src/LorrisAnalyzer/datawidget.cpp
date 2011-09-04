@@ -4,37 +4,27 @@
 #include <QMouseEvent>
 
 #include "datawidget.h"
+#include "widgets/analyzerwidget.h"
 #include "WorkTab/WorkTab.h"
+
+#include "common.h"
+#include <stdio.h>
 
 DataWidget::DataWidget(QWidget *parent) : QWidget(parent)
 {
     layout = new QVBoxLayout(this);
 
-    QHBoxLayout *first_line = new QHBoxLayout();
-    QHBoxLayout *second_line = new QHBoxLayout();
+    first_line = new QHBoxLayout();
+    second_line = new QHBoxLayout();
 
-    DataLabel *label = new DataLabel("0x04", this);
-    label->setAutoFillBackground(true);
-    label->setStyleSheet( "background-color: #000000; color: #FFFFFF" );
+    QSpacerItem *spacer = new QSpacerItem(0, 20, QSizePolicy::Expanding, QSizePolicy::Maximum);
+    second_line->addSpacerItem(spacer);
 
-    DataLabel *label2 = new DataLabel("0xFF", this);
-    label2->setStyleSheet( "background-color: yellow; color: black" );
-    label2->setAutoFillBackground(true);
+    layout->addLayout(first_line, 0);
+    layout->addLayout(second_line, 0);
 
-    DataLabel *label3 = new DataLabel("0x04", this);
-    label3->setAutoFillBackground(true);
-    label3->setStyleSheet( "background-color: blue; color: #FFFFFF" );
-
-    DataLabel *label4 = new DataLabel("0xFF", this);
-    label4->setStyleSheet( "background-color: purple; color: white" );
-    label4->setAutoFillBackground(true);
-
-    first_line->addWidget(label);
-    first_line->addWidget(label2);
-    second_line->addWidget(label3);
-    second_line->addWidget(label4);
-    layout->addLayout(first_line);
-    layout->addLayout(second_line);
+    setObjectName("DataWidget");
+    m_size = 0;
 }
 
 DataWidget::~DataWidget()
@@ -42,6 +32,50 @@ DataWidget::~DataWidget()
     WorkTab::DeleteAllMembers(layout);
     delete layout;
     layout = NULL;
+}
+
+void DataWidget::setSize(quint16 size)
+{
+    if(size > m_size)
+    {
+        for(;m_size != size; )
+        {
+            DataLabel *label = new DataLabel("    ", this);
+            label->setAutoFillBackground(true);
+            label->setObjectName(QString::number(++m_size));
+            label->setStyleSheet( "background-color: #000000; color: #FFFFFF" );
+            label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+            first_line->addWidget(label);
+        }
+    }
+    else
+    {
+        for(;m_size != size; --m_size)
+        {
+            DataLabel *label = this->findChild<DataLabel*>(QString(m_size));
+            first_line->removeWidget(label);
+            delete label;
+        }
+    }
+}
+
+void DataWidget::newData(QByteArray data)
+{
+    for(quint16 i = 1; i <= m_size; ++i)
+    {
+        DataLabel *label = this->findChild<DataLabel*>(QString::number(i));
+        label->setText(Nums::hexToString(data[i-1], true));
+    }
+}
+
+void DataWidget::connectLabel(AnalyzerWidget *widget, int id)
+{
+    DataLabel *label = findChild<DataLabel*>(QString::number(id));
+    if(!label)
+        return;
+    label->disconnect(widget);
+
+    connect(label, SIGNAL(textChanged(QString,int)), widget, SLOT(textChanged(QString,int)));
 }
 
 DataLabel::DataLabel(const QString & text, QWidget *parent) : QLabel(text, parent)
@@ -58,7 +92,7 @@ void DataLabel::mousePressEvent(QMouseEvent *event)
     {
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
-        mimeData->setText(text());
+        mimeData->setText(objectName());
         drag->setMimeData(mimeData);
 
         QPixmap pixmap(size());
@@ -69,4 +103,10 @@ void DataLabel::mousePressEvent(QMouseEvent *event)
         drag->exec();
         event->accept();
     }
+}
+
+void DataLabel::setText ( const QString & text)
+{
+    emit textChanged(text, objectName().toUInt());
+    QLabel::setText(text);
 }

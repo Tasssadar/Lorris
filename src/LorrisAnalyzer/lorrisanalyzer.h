@@ -14,8 +14,6 @@ enum states_
     STATE_DIALOG          = 0x02,
 };
 
-class NewSourceDialog;
-
 struct analyzer_packet
 {
     QByteArray start;
@@ -32,8 +30,8 @@ class LorrisAnalyzer : public WorkTab
 
     private slots:
         void connectButton();
-        void newSourceButton();
         void textLabelButton();
+        void packetLenChanged(int val);
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
@@ -47,7 +45,6 @@ class LorrisAnalyzer : public WorkTab
         QHBoxLayout *layout_area;
         QMdiArea *m_area;
         quint16 m_state;
-        NewSourceDialog *dialog;
         Parser *m_parser;
 };
 

@@ -7,10 +7,10 @@
 #include <QMessageBox>
 #include <QListView>
 #include <QStringListModel>
+#include <QSpinBox>
 
 #include "parser.h"
 #include "lorrisanalyzer.h"
-#include "newsourcedialog.h"
 #include "datawidget.h"
 #include "widgets/textwidget.h"
 
@@ -19,19 +19,24 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
     layout = new QVBoxLayout(this);
 
     QHBoxLayout *butt_1_layout = new QHBoxLayout();
+    QHBoxLayout *butt_2_layout = new QHBoxLayout();
     layout_area = new QHBoxLayout();
 
     QHBoxLayout *toolbox_layout = new QHBoxLayout();
-    QHBoxLayout *header_ver_layout = new QHBoxLayout();
+    QVBoxLayout *header_ver_layout = new QVBoxLayout();
+    QHBoxLayout *header_hor_layout = new QHBoxLayout();
 
     QPushButton *connectButt = new QPushButton(tr("Disconnect"), this);
     connectButt->setObjectName("connectButton");
     connect(connectButt, SIGNAL(clicked()), this, SLOT(connectButton()));
 
-    QPushButton *newsource_button = new QPushButton(tr("New data source"), this);
-    newsource_button->setObjectName("newSourceButton");
-    connect(newsource_button, SIGNAL(clicked()), this, SLOT(newSourceButton()));
     QSpacerItem *spacer = new QSpacerItem(100, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+    QLabel *label_len = new QLabel(tr("Packet lenght: "), this);
+    QSpinBox *packet_len = new QSpinBox(this);
+    packet_len->setObjectName("packetLen");
+    packet_len->setMinimum(0);
+    connect(packet_len, SIGNAL(valueChanged(int)), this, SLOT(packetLenChanged(int)));
 
     m_area = new QMdiArea(this);
 
@@ -42,16 +47,18 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
     DataWidget *data = new DataWidget(this);
 
     butt_1_layout->addWidget(connectButt);
-    butt_1_layout->addWidget(newsource_button);
     butt_1_layout->addSpacerItem(spacer);
+    butt_2_layout->addWidget(label_len);
+    butt_2_layout->addWidget(packet_len);
     header_ver_layout->addLayout(butt_1_layout);
-    header_ver_layout->addWidget(data, 1, Qt::AlignLeft);
-    layout->addLayout(header_ver_layout);
+    header_ver_layout->addLayout(butt_2_layout);
+    layout->addLayout(header_hor_layout);
+    header_hor_layout->addLayout(header_ver_layout);
+    header_hor_layout->addWidget(data, 1, Qt::AlignLeft);
     layout_area->addWidget(m_area, 1);
     layout_area->addLayout(toolbox_layout);
     layout->addLayout(layout_area);
 
-    dialog = NULL;
     m_parser = new Parser();
 }
 
@@ -117,23 +124,19 @@ void LorrisAnalyzer::connectedStatus(bool connected)
 
 void LorrisAnalyzer::readData(QByteArray data)
 {
-    if(dialog)
-        dialog->newData(data);
-}
-
-void LorrisAnalyzer::newSourceButton()
-{
-    dialog = new NewSourceDialog(this);
-    connect(dialog, SIGNAL(structureData(analyzer_packet,QByteArray)), this, SLOT(dataStructure(analyzer_packet,QByteArray)));
-    dialog->exec();
+    DataWidget *dataW = findChild<DataWidget*>("DataWidget");
+    dataW->newData(data);
 }
 
 void LorrisAnalyzer::textLabelButton()
 {
-    TextWidget *wid = new TextWidget(NULL);
+    TextWidget *wid = new TextWidget(this);
 
     m_area->addSubWindow(wid);
     wid->show();
+
+    DataWidget *dataW = findChild<DataWidget*>("DataWidget");
+    connect(wid, SIGNAL(connectLabel(AnalyzerWidget*,int)), dataW, SLOT(connectLabel(AnalyzerWidget*,int)));
 }
 
 void LorrisAnalyzer::dataStructure(analyzer_packet pkt, QByteArray curData)
@@ -149,5 +152,11 @@ void LorrisAnalyzer::dataStructure(analyzer_packet pkt, QByteArray curData)
         stringlist << (QString::number(curData[i]));
     model->setStringList(stringlist);
     list->setModel(model);
+}
+
+void LorrisAnalyzer::packetLenChanged(int val)
+{
+    DataWidget *data = this->findChild<DataWidget*>("DataWidget");
+    data->setSize(val);
 }
 
