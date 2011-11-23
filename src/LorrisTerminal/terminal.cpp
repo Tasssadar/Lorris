@@ -5,7 +5,6 @@
 
 Terminal::Terminal(QWidget *parent) : QPlainTextEdit(parent)
 {
-    autoScroll = true;
     sb = verticalScrollBar();
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -22,21 +21,11 @@ Terminal::Terminal(QWidget *parent) : QPlainTextEdit(parent)
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     setFont(font);
-
-    connect(sb, SIGNAL(valueChanged(int)), this, SLOT(scrollPosChanged(int)));
 }
 
 Terminal::~Terminal()
 {
 
-}
-
-void Terminal::scrollPosChanged(int value)
-{
-    if(value == sb->maximum())
-        autoScroll = true;
-    else if(autoScroll)
-        autoScroll = false;
 }
 
 void Terminal::appendText(QString text, bool toEdit)
@@ -61,7 +50,7 @@ void Terminal::appendText(QString text, bool toEdit)
     if(toEdit)
     {
         setUpdatesEnabled(false);
-        if(autoScroll)
+        if(sb->value() == sb->maximum())
         {
             moveCursor(QTextCursor::End);
             insertPlainText(text);
@@ -84,7 +73,6 @@ void Terminal::setTextTerm(QString text, bool toEdit)
     if(toEdit)
     {
         setPlainText(text);
-        autoScroll = true;
         sb->setValue(sb->maximum());
     }
 }
@@ -92,7 +80,6 @@ void Terminal::setTextTerm(QString text, bool toEdit)
 void Terminal::updateEditText()
 {
     setPlainText(content);
-    autoScroll = true;
     sb->setValue(sb->maximum());
 }
 
