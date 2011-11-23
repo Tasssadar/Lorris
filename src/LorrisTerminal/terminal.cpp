@@ -3,16 +3,17 @@
 
 #include "terminal.h"
 
-Terminal::Terminal(QWidget *parent) : QTextEdit(parent)
+Terminal::Terminal(QWidget *parent) : QPlainTextEdit(parent)
 {
-    content = "";
+    autoScroll = true;
+    sb = verticalScrollBar();
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setShown(true);
     setReadOnly(true);
 
-    QColor color_black(0, 0, 0);\
-    QColor color_white(255, 255, 255);\
+    QColor color_black(0, 0, 0);
+    QColor color_white(255, 255, 255);
     QPalette palette;
     palette.setColor(QPalette::Base, color_black);
     palette.setColor(QPalette::Text, color_white);
@@ -21,11 +22,21 @@ Terminal::Terminal(QWidget *parent) : QTextEdit(parent)
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     setFont(font);
+
+    connect(sb, SIGNAL(valueChanged(int)), this, SLOT(scrollPosChanged(int)));
 }
 
 Terminal::~Terminal()
 {
 
+}
+
+void Terminal::scrollPosChanged(int value)
+{
+    if(value == sb->maximum())
+        autoScroll = true;
+    else if(autoScroll)
+        autoScroll = false;
 }
 
 void Terminal::appendText(QString text, bool toEdit)
@@ -34,7 +45,7 @@ void Terminal::appendText(QString text, bool toEdit)
     {
         content = "";
         if(toEdit)
-            setText("");
+            setPlainText("");
         qint32 index = -1;
         while(true)
         {
@@ -49,10 +60,21 @@ void Terminal::appendText(QString text, bool toEdit)
 
     if(toEdit)
     {
-        moveCursor(QTextCursor::End);
-        insertPlainText(text);
-        QScrollBar *sb = verticalScrollBar();
-        sb->setValue(sb->maximum());
+        setUpdatesEnabled(false);
+        if(autoScroll)
+        {
+            moveCursor(QTextCursor::End);
+            insertPlainText(text);
+            sb->setValue(sb->maximum());
+        }
+        else
+        {
+            int val = sb->value();
+            moveCursor(QTextCursor::End);
+            insertPlainText(text);
+            sb->setValue(val);
+        }
+        setUpdatesEnabled(true);
     }
 }
 
@@ -61,16 +83,16 @@ void Terminal::setTextTerm(QString text, bool toEdit)
     content = text;
     if(toEdit)
     {
-        setText(text);
-        QScrollBar *sb = verticalScrollBar();
+        setPlainText(text);
+        autoScroll = true;
         sb->setValue(sb->maximum());
     }
 }
 
 void Terminal::updateEditText()
 {
-    setText(content);
-    QScrollBar *sb = verticalScrollBar();
+    setPlainText(content);
+    autoScroll = true;
     sb->setValue(sb->maximum());
 }
 
