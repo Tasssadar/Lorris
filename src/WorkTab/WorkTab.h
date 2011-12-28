@@ -23,6 +23,8 @@ class WorkTab : public QWidget
 
         static void DeleteAllMembers(QLayout *layout);
 
+        virtual void onTabShow();
+
     protected slots:
         virtual void readData(QByteArray data);
         virtual void connectedStatus(bool connected);

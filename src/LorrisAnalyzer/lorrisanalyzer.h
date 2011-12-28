@@ -28,6 +28,8 @@ class LorrisAnalyzer : public WorkTab
         explicit LorrisAnalyzer();
         virtual ~LorrisAnalyzer();
 
+        void onTabShow();
+
     private slots:
         void connectButton();
         void textLabelButton();

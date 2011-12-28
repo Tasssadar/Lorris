@@ -13,6 +13,7 @@
 #include "lorrisanalyzer.h"
 #include "datawidget.h"
 #include "widgets/textwidget.h"
+#include "sourcedialog.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
 {
@@ -159,4 +160,12 @@ void LorrisAnalyzer::packetLenChanged(int val)
     DataWidget *data = this->findChild<DataWidget*>("DataWidget");
     data->setSize(val);
 }
+
+void LorrisAnalyzer::onTabShow()
+{
+    SourceDialog *d = new SourceDialog(this);
+    d->exec();
+    delete d;
+}
+
 

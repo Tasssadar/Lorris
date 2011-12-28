@@ -47,3 +47,8 @@ void WorkTab::DeleteAllMembers(QLayout *layout)
         delete item;
     }
 }
+
+void WorkTab::onTabShow()
+{
+
+}

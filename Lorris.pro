@@ -1,8 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2011-05-30T19:16:22
 # -------------------------------------------------
-QT += network \
-    webkit
+QT += network gui core
 CONFIG += qwt
 TARGET = Lorris
 CONFIG(debug, debug|release):DESTDIR = bin/debug
@@ -41,7 +40,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/parser.cpp \
     src/LorrisAnalyzer/datawidget.cpp \
     src/LorrisAnalyzer/widgets/textwidget.cpp \
-    src/num_func.cpp
+    src/num_func.cpp \
+    src/LorrisAnalyzer/sourcedialog.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -81,7 +81,8 @@ HEADERS += src/ui/mainwindow.h \
     src/common.h \
     src/num_func.h \
     src/LorrisAnalyzer/datawidget.h \
-    src/LorrisAnalyzer/widgets/textwidget.h
+    src/LorrisAnalyzer/widgets/textwidget.h \
+    src/LorrisAnalyzer/sourcedialog.h
 QMAKE_LIBDIR += dep/qwt/lib
 
 # LIBS += -lqwt
@@ -133,3 +134,9 @@ macx {
         translations/*.qm \
         "$$DESTDIR/translations/"
 }
+
+FORMS += \
+    src/LorrisAnalyzer/sourcedialog.ui
+
+
+

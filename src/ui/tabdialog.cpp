@@ -140,10 +140,13 @@ void TabDialog::CreateTab()
             tab = ConnectSP(info);
             if(!tab)
                 return;
+            tab->onTabShow();
             break;
         default:    // TODO: other connection types
-            sWorkTabMgr.AddWorkTab(info->GetNewTab(), info->GetName());
+            tab = info->GetNewTab();
+            sWorkTabMgr.AddWorkTab(tab, info->GetName());
             close();
+            tab->onTabShow();
             return;
     }
     close();
