@@ -40,8 +40,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/parser.cpp \
     src/LorrisAnalyzer/datawidget.cpp \
     src/LorrisAnalyzer/widgets/textwidget.cpp \
-    src/num_func.cpp \
-    src/LorrisAnalyzer/sourcedialog.cpp
+    src/LorrisAnalyzer/sourcedialog.cpp \
+    src/utils.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -79,10 +79,10 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/widgets/analyzerwidget.h \
     src/LorrisAnalyzer/parser.h \
     src/common.h \
-    src/num_func.h \
     src/LorrisAnalyzer/datawidget.h \
     src/LorrisAnalyzer/widgets/textwidget.h \
-    src/LorrisAnalyzer/sourcedialog.h
+    src/LorrisAnalyzer/sourcedialog.h \
+    src/utils.h
 QMAKE_LIBDIR += dep/qwt/lib
 
 # LIBS += -lqwt
@@ -136,7 +136,13 @@ macx {
 }
 
 FORMS += \
-    src/LorrisAnalyzer/sourcedialog.ui
+    src/LorrisAnalyzer/sourcedialog.ui \
+    src/LorrisAnalyzer/lorrisanalyzer.ui
+
+
+
+
+
 
 
 

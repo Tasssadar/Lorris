@@ -10,6 +10,12 @@
     <height>359</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
@@ -25,7 +31,7 @@
    <property name="title">
     <string>Header</string>
    </property>
-   <widget class="QScrollArea" name="scrollArea_2">
+   <widget class="QScrollArea" name="header_scroll">
     <property name="geometry">
      <rect>
       <x>300</x>
@@ -33,6 +39,9 @@
       <width>401</width>
       <height>81</height>
      </rect>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOn</enum>
     </property>
     <property name="widgetResizable">
      <bool>true</bool>
@@ -43,12 +52,12 @@
        <x>0</x>
        <y>0</y>
        <width>395</width>
-       <height>75</height>
+       <height>58</height>
       </rect>
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>11</x>
@@ -66,11 +75,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinBox"/>
+      <widget class="QSpinBox" name="header_len_box"/>
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -101,6 +110,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="len_check">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Packet length</string>
          </property>
@@ -129,7 +141,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>0</y>
      <width>721</width>
      <height>171</height>
     </rect>
@@ -137,17 +149,17 @@
    <property name="title">
     <string>Packet Data</string>
    </property>
-   <widget class="QScrollArea" name="scrollArea">
+   <widget class="QScrollArea" name="data_scroll">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>20</y>
       <width>701</width>
-      <height>91</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="sizePolicy">
-     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
       <horstretch>0</horstretch>
       <verstretch>0</verstretch>
      </sizepolicy>
@@ -164,80 +176,153 @@
        <x>0</x>
        <y>0</y>
        <width>695</width>
-       <height>68</height>
+       <height>58</height>
       </rect>
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>109</x>
-      <y>121</y>
-      <width>86</width>
-      <height>48</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QRadioButton" name="len_static">
-       <property name="text">
-        <string>Static</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="len_dynamic">
-       <property name="text">
-        <string>Dynamic</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>11</x>
-      <y>121</y>
-      <width>241</width>
-      <height>26</height>
+      <x>5</x>
+      <y>120</y>
+      <width>274</width>
+      <height>57</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <property name="spacing">
-      <number>10</number>
-     </property>
      <item>
       <widget class="QLabel" name="len_label">
        <property name="text">
         <string>Packet length</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QRadioButton" name="len_static">
+         <property name="text">
+          <string>Static</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="len_dynamic">
+         <property name="text">
+          <string>Dynamic</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QSpinBox" name="len_box"/>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QSpinBox" name="len_box"/>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </item>
     </layout>
+   </widget>
+   <widget class="QComboBox" name="fmt_combo">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>110</y>
+      <width>85</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Hex</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Byte</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>String</string>
+     </property>
+    </item>
    </widget>
   </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>len_static</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>len_box</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>134</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>245</x>
+     <y>133</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>len_dynamic</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>len_check</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>161</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>188</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>len_static</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>len_check</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>134</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>188</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

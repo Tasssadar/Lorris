@@ -64,7 +64,7 @@ void DataWidget::newData(QByteArray data)
     for(quint16 i = 1; i <= m_size; ++i)
     {
         DataLabel *label = this->findChild<DataLabel*>(QString::number(i));
-        label->setText(Nums::hexToString(data[i-1], true));
+        label->setText(Utils::hexToString(data[i-1], true));
     }
 }
 

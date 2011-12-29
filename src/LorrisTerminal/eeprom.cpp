@@ -46,18 +46,18 @@ void EEPROM::Export()
             line = ":10"; // data size (16)
 
             // Address
-            line += Nums::hexToString(address >> 8);
-            line += Nums::hexToString(quint8(address));
+            line += Utils::hexToString(address >> 8);
+            line += Utils::hexToString(quint8(address));
 
             line += "00"; // record type, 0 = data
 
             checksum = 0x10 + (address >> 8) + quint8(address) + 0x00;
             for(quint8 i = 0; i < 16; ++i)
             {
-                line += Nums::hexToString(data[address+i]);
+                line += Utils::hexToString(data[address+i]);
                 checksum += data[address+i];
             }
-            line += Nums::hexToString(256 - checksum);
+            line += Utils::hexToString(256 - checksum);
             line += "\r\n";
             file->write(line.toAscii());
         }

@@ -21,9 +21,14 @@ struct analyzer_packet
     quint8 lenght;
 };
 
+namespace Ui {
+  class LorrisAnalyzer;
+}
+
 class LorrisAnalyzer : public WorkTab
 {
     Q_OBJECT
+
     public:
         explicit LorrisAnalyzer();
         virtual ~LorrisAnalyzer();
@@ -48,6 +53,7 @@ class LorrisAnalyzer : public WorkTab
         QMdiArea *m_area;
         quint16 m_state;
         Parser *m_parser;
+        Ui::LorrisAnalyzer *ui;
 };
 
 #endif // LORRISANALYZER_H

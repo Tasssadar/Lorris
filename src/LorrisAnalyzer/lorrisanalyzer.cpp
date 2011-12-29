@@ -14,9 +14,11 @@
 #include "datawidget.h"
 #include "widgets/textwidget.h"
 #include "sourcedialog.h"
+#include "ui_lorrisanalyzer.h"
 
-LorrisAnalyzer::LorrisAnalyzer() : WorkTab()
+LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
+   // ui->setupUi(this);
     layout = new QVBoxLayout(this);
 
     QHBoxLayout *butt_1_layout = new QHBoxLayout();
@@ -68,6 +70,7 @@ LorrisAnalyzer::~LorrisAnalyzer()
     WorkTab::DeleteAllMembers(layout);
     delete layout;
     delete m_parser;
+//    delete ui;
 }
 
 void LorrisAnalyzer::connectButton()
@@ -125,8 +128,8 @@ void LorrisAnalyzer::connectedStatus(bool connected)
 
 void LorrisAnalyzer::readData(QByteArray data)
 {
-    DataWidget *dataW = findChild<DataWidget*>("DataWidget");
-    dataW->newData(data);
+    if(m_state & STATE_DIALOG)
+        return;
 }
 
 void LorrisAnalyzer::textLabelButton()
@@ -164,6 +167,7 @@ void LorrisAnalyzer::packetLenChanged(int val)
 void LorrisAnalyzer::onTabShow()
 {
     SourceDialog *d = new SourceDialog(this);
+    connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
     d->exec();
     delete d;
 }

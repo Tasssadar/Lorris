@@ -202,6 +202,7 @@ void TabDialog::serialConResult(Connection *con, bool result)
         tab->setConnection(con);
         sConMgr.AddCon(CONNECTION_SERIAL_PORT, con);
         close();
+        tab->onTabShow();
     }
     else
     {

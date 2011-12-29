@@ -3,10 +3,11 @@
 
 #include <QString>
 
-class Nums
+class Utils
 {
 public:
     static QString hexToString(quint8 data, bool withZeroEx = false);
+    static QString parseChar(char c);
 };
 
 #endif // NUM_FUNC_H

@@ -4,6 +4,6 @@
 #include <QString>
 
 #include "revision.h"
-#include "num_func.h"
+#include "utils.h"
 
 #endif // COMMON_H
