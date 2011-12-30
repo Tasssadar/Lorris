@@ -4,30 +4,16 @@
 #include <QDialog>
 #include <QHBoxLayout>
 #include <vector>
+#include "packet.h"
 
 namespace Ui {
   class SourceDialog;
 }
 
 class ScrollDataLayout;
+class LabelLayout;
 class QSpacerItem;
 class QLabel;
-
-enum DataFormat
-{
-    FORMAT_HEX    = 0,
-    FORMAT_BYTE   = 1,
-    FORMAT_STRING = 2
-};
-
-enum DataType
-{
-    DATA_BODY      = 0x01,
-    DATA_HEADER    = 0x02,
-    DATA_DEVICE_ID = 0x04,
-    DATA_OPCODE    = 0x08,
-    DATA_LEN       = 0x10
-};
 
 class SourceDialog : public QDialog
 {
@@ -36,42 +22,25 @@ public:
     explicit SourceDialog(QWidget *parent = 0);
     ~SourceDialog();
 
-signals:
-
 public slots:
     void readData(QByteArray data);
     void headerLenToggled(bool checked);
     void headerLenChanged(int values);
+    void staticLenChanged(int values);
+    void staticCheckToggled(bool checked);
+    void cmdCheckToggled(bool checked);
+    void idCheckToggled(bool checked);
 
 private:
+    void AddOrRmHeaderType(bool add, quint8 type);
+
+
     ScrollDataLayout *scroll_layout;
+    LabelLayout *scroll_header;
     Ui::SourceDialog *ui;
+    analyzer_header m_header;
 
 };
 
-class ScrollDataLayout : public QHBoxLayout
-{
-    Q_OBJECT
-public:
-    explicit ScrollDataLayout(QWidget *parent = 0);
-    ~ScrollDataLayout();
-
-    void ClearLabels();
-    void AddLabel(QString value, qint8 type);
-    void RemoveLabel();
-
-    void SetData(QByteArray data);
-    void SetLabelType(QLabel *label, quint8 type);
-    quint8 GetTypeForPos(quint32 pos);
-
-public slots:
-    void lenChanged(int len);
-    void fmtChanged(int len);
-
-private:
-    std::vector<QLabel*> m_labels;
-    QSpacerItem *m_spacer;
-    quint8 m_format;
-};
 
 #endif // SOURCEDIALOG_H

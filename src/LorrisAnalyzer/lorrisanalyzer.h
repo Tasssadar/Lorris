@@ -2,6 +2,7 @@
 #define LORRISANALYZER_H
 
 #include "WorkTab/WorkTab.h"
+#include "packet.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -11,14 +12,7 @@ class Parser;
 enum states_
 {
     STATE_DISCONNECTED    = 0x01,
-    STATE_DIALOG          = 0x02,
-};
-
-struct analyzer_packet
-{
-    QByteArray start;
-    QByteArray stop;
-    quint8 lenght;
+    STATE_DIALOG          = 0x02
 };
 
 namespace Ui {

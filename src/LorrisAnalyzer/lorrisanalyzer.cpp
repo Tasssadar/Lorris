@@ -147,8 +147,6 @@ void LorrisAnalyzer::dataStructure(analyzer_packet pkt, QByteArray curData)
 {
     QListView *list = new QListView(this);
     layout_area->insertWidget(0, list);
-    m_parser->setStructure(pkt);
-
 
     QStringListModel *model = new QStringListModel();
     QStringList stringlist;

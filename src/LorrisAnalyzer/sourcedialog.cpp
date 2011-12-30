@@ -8,16 +8,26 @@
 #include "sourcedialog.h"
 #include "WorkTab/WorkTab.h"
 #include "ui_sourcedialog.h"
+#include "labellayout.h"
+#include "packet.h"
 
 SourceDialog::SourceDialog(QWidget *parent) :
     QDialog(parent),ui(new Ui::SourceDialog)
 {
     ui->setupUi(this);
+    setFixedSize(width(), height());
 
     QWidget *w = new QWidget();
-    scroll_layout = new ScrollDataLayout(w);
+    scroll_layout = new ScrollDataLayout(&m_header, false, w);
 
     QScrollArea *area = findChild<QScrollArea*>("data_scroll");
+    area->setWidget(w);
+
+    w = new QWidget();
+    scroll_header = new LabelLayout(&m_header, true, w);
+    connect(scroll_header, SIGNAL(orderChanged()), scroll_layout, SLOT(UpdateTypes()));
+
+    area = findChild<QScrollArea*>("header_scroll");
     area->setWidget(w);
 
     QSpinBox *len_static = findChild<QSpinBox*>("len_box");
@@ -31,16 +41,59 @@ SourceDialog::SourceDialog(QWidget *parent) :
 
     QSpinBox *header_len_box = findChild<QSpinBox*>("header_len_box");
     connect(header_len_box, SIGNAL(valueChanged(int)), this, SLOT(headerLenChanged(int)));
+
+    QCheckBox *static_check = findChild<QCheckBox*>("static_check");
+    connect(static_check, SIGNAL(toggled(bool)), this, SLOT(staticCheckToggled(bool)));
+
+    QCheckBox *cmd_check = findChild<QCheckBox*>("cmd_check");
+    connect(cmd_check, SIGNAL(toggled(bool)), this, SLOT(cmdCheckToggled(bool)));
+
+    QCheckBox *id_check = findChild<QCheckBox*>("id_check");
+    connect(id_check, SIGNAL(toggled(bool)), this, SLOT(idCheckToggled(bool)));
+
+    QSpinBox *static_len_box = findChild<QSpinBox*>("static_len_box");
+    connect(static_len_box, SIGNAL(valueChanged(int)), this, SLOT(staticLenChanged(int)));
 }
 
 SourceDialog::~SourceDialog()
 {
     delete ui;
+    QObject *w = scroll_layout->parent();
+    delete scroll_layout;
+    delete w;
+    w = scroll_header->parent();
+    delete scroll_header;
+    delete w;
 }
 
 void SourceDialog::readData(QByteArray data)
 {
     scroll_layout->SetData(data);
+}
+
+void SourceDialog::AddOrRmHeaderType(bool add, quint8 type)
+{
+    if(add)
+    {
+        QString text = "";
+        switch(type)
+        {
+            case DATA_LEN:       text = tr("Length"); break;
+            case DATA_STATIC:    text = tr("Static"); break;
+            case DATA_DEVICE_ID: text = tr("ID");     break;
+            case DATA_OPCODE:    text = tr("Cmd");    break;
+        }
+        scroll_header->AddLabel(text, (DATA_HEADER | type));
+        m_header.data_mask |= type;
+        m_header.AddOrder(type);
+    }
+    else
+    {
+        scroll_header->RemoveLabel(quint8(DATA_HEADER | type));
+        m_header.data_mask &= ~(type);
+        m_header.RmOrder(type);
+    }
+    scroll_layout->UpdateTypes();
 }
 
 void SourceDialog::headerLenToggled(bool checked)
@@ -50,6 +103,7 @@ void SourceDialog::headerLenToggled(bool checked)
         QRadioButton *len_static = findChild<QRadioButton*>("len_static");
         len_static->setChecked(true);
     }
+    AddOrRmHeaderType(checked, DATA_LEN);
 }
 
 void SourceDialog::headerLenChanged(int value)
@@ -59,119 +113,30 @@ void SourceDialog::headerLenChanged(int value)
         QCheckBox *static_check = findChild<QCheckBox*>("static_check");
         static_check->setChecked(true);
     }
+    m_header.length = value;
+    if(scroll_layout->GetLabelCount() < value)
+        scroll_layout->lenChanged(value);
+    scroll_layout->UpdateTypes();
 }
 
-ScrollDataLayout::ScrollDataLayout(QWidget *parent) : QHBoxLayout(parent)
+void SourceDialog::staticCheckToggled(bool checked)
 {
-    setSizeConstraint(QLayout::SetMinAndMaxSize);
-    m_spacer = new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    addSpacerItem(m_spacer);
-    m_format = FORMAT_HEX;
+    AddOrRmHeaderType(checked, DATA_STATIC);
 }
 
-ScrollDataLayout::~ScrollDataLayout()
+void SourceDialog::cmdCheckToggled(bool checked)
 {
-    ClearLabels();
-    removeItem(m_spacer);
-    delete m_spacer;
+    AddOrRmHeaderType(checked, DATA_OPCODE);
 }
 
-void ScrollDataLayout::ClearLabels()
+void SourceDialog::idCheckToggled(bool checked)
 {
-    for(quint16 i = 0; i < m_labels.size(); ++i)
-    {
-        removeWidget(m_labels[i]);
-        delete m_labels[i];
-    }
-    m_labels.clear();
+    AddOrRmHeaderType(checked, DATA_DEVICE_ID);
 }
 
-void ScrollDataLayout::AddLabel(QString value, qint8 type)
+void SourceDialog::staticLenChanged(int value)
 {
-    if(type == -1)
-        type = GetTypeForPos(m_labels.size());
-
-    QLabel *label = new QLabel(value);
-    label->setFixedWidth(50);
-    label->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    SetLabelType(label, type);
-    label->setAlignment(Qt::AlignCenter);
-
-    QFont font("Monospace");
-    font.setStyleHint(QFont::TypeWriter);
-    label->setFont(font);
-
-    insertWidget(m_labels.size(), label);
-    m_labels.push_back(label);
+    m_header.static_len = value;
+    scroll_layout->UpdateTypes();
 }
 
-// Remove rightmost label
-void ScrollDataLayout::RemoveLabel()
-{
-    quint16 index = m_labels.size()-1;
-    removeWidget(m_labels[index]);
-    delete m_labels[index];
-    m_labels.pop_back();
-}
-
-void ScrollDataLayout::SetLabelType(QLabel *label, quint8 type)
-{
-    QString css;
-    switch(type)
-    {
-        case DATA_BODY:
-            css = "border: 2px solid black; background-color: #00FFFB";
-            break;
-        case DATA_HEADER:
-            css = "border: 2px solid orange; ";
-            break;
-    }
-    if(type & DATA_DEVICE_ID)
-        css += "background-color: #00FF4C";
-    else if(type & DATA_OPCODE)
-        css += "background-color: #E5FF00";
-    else if(type & DATA_LEN)
-        css += "background-color: #FFCC66";
-
-    label->setStyleSheet(css);
-}
-
-// TODO: implement
-quint8 ScrollDataLayout::GetTypeForPos(quint32 pos)
-{
-    return DATA_BODY;
-}
-
-void ScrollDataLayout::lenChanged(int len)
-{
-    if(len == m_labels.size())
-        return;
-
-    while(m_labels.size() != len)
-    {
-        if((uint)len > m_labels.size())
-            AddLabel("NULL", -1);
-        else
-            RemoveLabel();
-    }
-}
-
-void ScrollDataLayout::fmtChanged(int len)
-{
-    m_format = len;
-}
-
-void ScrollDataLayout::SetData(QByteArray data)
-{
-    QString value;
-    for(quint32 i = 0; i < data.length() && i < m_labels.size(); ++i)
-    {
-        switch(m_format)
-        {
-            case FORMAT_HEX:    value = Utils::hexToString((quint8)data[i], true); break;
-            case FORMAT_BYTE:   value = QString::number((int)data[i]);             break;
-            case FORMAT_STRING: value = Utils::parseChar(data[i]);                 break;
-        }
-        m_labels[i]->setText(value);
-    }
-}
