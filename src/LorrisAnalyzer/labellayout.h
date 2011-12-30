@@ -61,7 +61,7 @@ public slots:
 
 protected:
     void SetLabelType(QLabel *label, quint8 type);
-    quint8 GetTypeForPos(quint32 pos);
+    virtual quint8 GetTypeForPos(quint32 pos);
 
     std::vector<QLabel*> m_labels;
     analyzer_header *m_header;
@@ -82,6 +82,9 @@ public:
 
 public slots:
     void fmtChanged(int len);
+
+protected:
+    quint8 GetTypeForPos(quint32 pos);
 
 private:
     quint8 m_format;

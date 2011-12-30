@@ -53,6 +53,9 @@ SourceDialog::SourceDialog(QWidget *parent) :
 
     QSpinBox *static_len_box = findChild<QSpinBox*>("static_len_box");
     connect(static_len_box, SIGNAL(valueChanged(int)), this, SLOT(staticLenChanged(int)));
+
+    QComboBox *len_fmt_box = findChild<QComboBox*>("len_fmt_box");
+    connect(len_fmt_box, SIGNAL(currentIndexChanged(int)), this, SLOT(lenFmtChanged(int)));
 }
 
 SourceDialog::~SourceDialog()
@@ -140,3 +143,8 @@ void SourceDialog::staticLenChanged(int value)
     scroll_layout->UpdateTypes();
 }
 
+void SourceDialog::lenFmtChanged(int index)
+{
+    m_header.len_fmt = index;
+    scroll_layout->UpdateTypes();
+}

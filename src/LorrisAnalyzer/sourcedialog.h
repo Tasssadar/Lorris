@@ -30,6 +30,7 @@ public slots:
     void staticCheckToggled(bool checked);
     void cmdCheckToggled(bool checked);
     void idCheckToggled(bool checked);
+    void lenFmtChanged(int index);
 
 private:
     void AddOrRmHeaderType(bool add, quint8 type);

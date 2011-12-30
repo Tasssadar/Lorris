@@ -106,36 +106,9 @@ void LabelLayout::SetLabelType(QLabel *label, quint8 type)
 quint8 LabelLayout::GetTypeForPos(quint32 pos)
 {
     if(pos < m_header->length)
-    {
-        quint8 type = DATA_HEADER;
-        quint8 pos_h = 0;
-        for(quint8 i = 0; i < 4; ++i)
-        {
-            switch(m_header->order[i])
-            {
-                case DATA_STATIC:
-                    pos_h += m_header->static_len;
-                    break;
-                case DATA_LEN:
-                    pos_h += (1 << m_header->len_fmt);
-                    break;
-                case DATA_DEVICE_ID:
-                case DATA_OPCODE:
-                    ++pos_h;
-                    break;
-                default:
-                    return type;
-            }
-            if(pos < pos_h)
-            {
-                type |= m_header->order[i];
-                break;
-            }
-        }
-
-        return type;
-    }
-    return DATA_BODY;
+        return (DATA_HEADER | m_header->order[pos]);
+    else
+        return DATA_BODY;
 }
 
 void LabelLayout::UpdateTypes()
@@ -174,6 +147,41 @@ void ScrollDataLayout::fmtChanged(int len)
     m_format = len;
 }
 
+quint8 ScrollDataLayout::GetTypeForPos(quint32 pos)
+{
+    if(pos < m_header->length)
+    {
+        quint8 type = DATA_HEADER;
+        quint8 pos_h = 0;
+        for(quint8 i = 0; i < 4; ++i)
+        {
+            switch(m_header->order[i])
+            {
+                case DATA_STATIC:
+                    pos_h += m_header->static_len;
+                    break;
+                case DATA_LEN:
+                    pos_h += (1 << m_header->len_fmt);
+                    break;
+                case DATA_DEVICE_ID:
+                case DATA_OPCODE:
+                    ++pos_h;
+                    break;
+                default:
+                    return type;
+            }
+            if(pos < pos_h)
+            {
+                type |= m_header->order[i];
+                break;
+            }
+        }
+
+        return type;
+    }
+    return DATA_BODY;
+}
+
 void ScrollDataLayout::SetData(QByteArray data)
 {
     QString value;
@@ -203,7 +211,6 @@ void ScrollDataLayout::SetData(QByteArray data)
             switch(m_header->len_fmt)
             {
                 case 0:
-
                     lenChanged(m_header->length + (int)data[pos_h-1]);
                     break;
                 //TODO: implement

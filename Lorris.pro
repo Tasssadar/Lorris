@@ -36,10 +36,7 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisTerminal/eeprom.cpp \
     src/LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     src/LorrisAnalyzer/lorrisanalyzer.cpp \
-    src/LorrisAnalyzer/widgets/analyzerwidget.cpp \
     src/LorrisAnalyzer/parser.cpp \
-    src/LorrisAnalyzer/datawidget.cpp \
-    src/LorrisAnalyzer/widgets/textwidget.cpp \
     src/LorrisAnalyzer/sourcedialog.cpp \
     src/utils.cpp \
     src/LorrisAnalyzer/labellayout.cpp \
@@ -78,11 +75,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
     src/LorrisAnalyzer/lorrisanalyzerinfo.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
-    src/LorrisAnalyzer/widgets/analyzerwidget.h \
     src/LorrisAnalyzer/parser.h \
     src/common.h \
-    src/LorrisAnalyzer/datawidget.h \
-    src/LorrisAnalyzer/widgets/textwidget.h \
     src/LorrisAnalyzer/sourcedialog.h \
     src/utils.h \
     src/LorrisAnalyzer/labellayout.h \
@@ -142,6 +136,12 @@ macx {
 FORMS += \
     src/LorrisAnalyzer/sourcedialog.ui \
     src/LorrisAnalyzer/lorrisanalyzer.ui
+
+
+
+
+
+
 
 
 

@@ -27,26 +27,19 @@ class LorrisAnalyzer : public WorkTab
         explicit LorrisAnalyzer();
         virtual ~LorrisAnalyzer();
 
+    public slots:
         void onTabShow();
 
     private slots:
         void connectButton();
-        void textLabelButton();
-        void packetLenChanged(int val);
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
 
-        void dataStructure(analyzer_packet pkt, QByteArray curData);
-
     private:
         void readData(QByteArray data);
 
-        QVBoxLayout *layout;
-        QHBoxLayout *layout_area;
-        QMdiArea *m_area;
         quint16 m_state;
-        Parser *m_parser;
         Ui::LorrisAnalyzer *ui;
 };
 
