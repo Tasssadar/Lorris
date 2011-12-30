@@ -14,11 +14,17 @@ enum DataType
     DATA_STATIC    = 0x20
 };
 
+// analyzer_header & analyzer_packet contain only structure
 struct analyzer_header
 {
     analyzer_header()
     {
         Reset();
+    }
+
+    analyzer_header(analyzer_header *h)
+    {
+        Copy(h);
     }
 
     void Reset()
@@ -27,8 +33,20 @@ struct analyzer_header
         data_mask = 0;
         static_len = 1;
         len_fmt = 0;
+        packet_length = 0;
         for(quint8 i = 0; i < 4; ++i)
             order[i] = 0;
+    }
+
+    void Copy(analyzer_header *h)
+    {
+        length = h->length;
+        data_mask = h->data_mask;
+        static_len = h->static_len;
+        len_fmt = h->len_fmt;
+        packet_length = h->packet_length;
+        for(quint8 i = 0; i < 4; ++i)
+            order[i] = h->order[i];
     }
 
     void AddOrder(quint8 mask)
@@ -46,19 +64,53 @@ struct analyzer_header
     }
 
     quint32 length;
+    quint32 packet_length; // if packet has static size, it is here
     quint8 data_mask; // from enum DataType
-    quint8 static_len;
+    quint8 static_len; // static data length
     quint8 len_fmt;
     quint8 order[4];
 };
 
+struct analyzer_packet
+{
+    analyzer_packet()
+    {
+        Reset();
+    }
 
-class analyzer_packet
+    analyzer_packet(analyzer_header *h, bool b_e)
+    {
+        header = h;
+        big_endian = b_e;
+    }
+
+    void Reset()
+    {
+        header = NULL;
+        big_endian = true;
+    }
+
+    analyzer_header *header;
+    bool big_endian;
+};
+
+// Real data
+class analyzer_data
 {
 public:
-    analyzer_packet();
+    analyzer_data(analyzer_packet *packet);
 
-    void Reset();
+    void setData(QByteArray data)
+    {
+        m_data = data;
+    }
+    QByteArray getData()
+    {
+        return m_data;
+    }
+
+
+    bool getDeviceId(quint8& id);
 
     quint8  getUInt8 (quint32 pos);
     qint8   getInt8  (quint32 pos);
@@ -71,9 +123,8 @@ public:
     QString getString(quint32 pos);
 
 private:
-    analyzer_header header;
-    QByteArray data;
-    bool big_endian;
+    analyzer_packet *m_packet;
+    QByteArray m_data;
 };
 
 #endif // PACKET_H

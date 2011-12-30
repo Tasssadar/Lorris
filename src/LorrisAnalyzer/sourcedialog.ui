@@ -157,7 +157,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>440</x>
@@ -355,7 +355,7 @@ to change order</string>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="endianBox">
          <item>
           <property name="text">
            <string>Big-endian</string>

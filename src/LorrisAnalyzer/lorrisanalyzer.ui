@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1">
+      <layout class="QVBoxLayout" name="leftVLayout" stretch="0,0,1">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
@@ -72,16 +72,12 @@
         </layout>
        </item>
        <item>
-        <widget class="QTabWidget" name="tabWidget">
-         <property name="currentIndex">
-          <number>-1</number>
+        <widget class="QSlider" name="timeSlider">
+         <property name="maximum">
+          <number>0</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSlider" name="horizontalSlider">
          <property name="value">
-          <number>99</number>
+          <number>0</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

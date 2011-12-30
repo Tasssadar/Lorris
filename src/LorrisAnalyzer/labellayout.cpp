@@ -7,15 +7,19 @@
 #include "common.h"
 #include "packet.h"
 
-LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, QWidget *parent) : QHBoxLayout(parent)
+LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, QWidget *parent) : QHBoxLayout(parent)
 {
     setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_spacer = new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding);
     addSpacerItem(m_spacer);
     m_header = header;
     m_enableReorder = enable_reorder;
+    m_enableDrag = enable_drag;
     if(m_enableReorder)
         ((QWidget*)parent)->setAcceptDrops(true);
+
+    quint16 len = (m_header->data_mask & DATA_LEN) ? m_header->packet_length : m_header->length;
+    lenChanged(len);
 }
 
 LabelLayout::~LabelLayout()
@@ -40,7 +44,7 @@ void LabelLayout::AddLabel(QString value, qint8 type)
     if(type == -1)
         type = GetTypeForPos(m_labels.size());
 
-    DraggableLabel *label = new DraggableLabel(value, m_enableReorder);
+    DraggableLabel *label = new DraggableLabel(value, m_enableReorder, m_enableDrag);
     SetLabelType(label, type);
     label->setObjectName(QString::number(m_labels.size()));
     if(m_enableReorder)
@@ -53,7 +57,7 @@ void LabelLayout::AddLabel(QString value, qint8 type)
 void LabelLayout::RemoveLabel(quint16 index)
 {
     removeWidget(m_labels[index]);
-    delete m_labels[index];
+    m_labels[index]->deleteLater();
 
     std::vector<QLabel*>::iterator itr = m_labels.begin();
     for(quint16 i = 0; i < index; ++i)
@@ -131,8 +135,8 @@ void LabelLayout::lenChanged(int len)
     }
 }
 
-ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, QWidget *parent) :
-    LabelLayout(header, enable_reorder, parent)
+ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, QWidget *parent) :
+    LabelLayout(header, enable_reorder, enable_drag, parent)
 {
     m_format = FORMAT_HEX;
 }
@@ -232,9 +236,10 @@ void ScrollDataLayout::SetData(QByteArray data)
     }
 }
 
-DraggableLabel::DraggableLabel(const QString &text, bool drag, QWidget *parent, Qt::WindowFlags f) :
+DraggableLabel::DraggableLabel(const QString &text, bool drop, bool drag, QWidget *parent, Qt::WindowFlags f) :
     QLabel(text, parent, f)
 {
+    m_drop = drop;
     m_drag = drag;
 
     setFixedWidth(50);
@@ -279,7 +284,7 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 
 void DraggableLabel::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(event->mimeData()->text() == objectName())
+    if(!m_drop || event->mimeData()->text() == objectName())
         return;
     event->acceptProposedAction();
     QString css = styleSheet();
@@ -289,6 +294,8 @@ void DraggableLabel::dragEnterEvent(QDragEnterEvent *event)
 
 void DraggableLabel::dragLeaveEvent(QDragLeaveEvent *event)
 {
+    if(!m_drop)
+        return;
     QString css = styleSheet();
     css.replace(QRegExp("red"), "orange");
     setStyleSheet(css);
@@ -296,6 +303,8 @@ void DraggableLabel::dragLeaveEvent(QDragLeaveEvent *event)
 
 void DraggableLabel::dropEvent(QDropEvent *event)
 {
+    if(!m_drop)
+        return;
     emit changePos(objectName().toInt(), event->mimeData()->text().toInt());
     QString css = styleSheet();
     css.replace(QRegExp("red"), "orange");

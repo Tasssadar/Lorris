@@ -26,7 +26,7 @@ Q_SIGNALS:
     void orderChanged();
 
 public:
-    explicit LabelLayout(analyzer_header *header, bool enable_reorder, QWidget *parent = 0);
+    explicit LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, QWidget *parent = 0);
     ~LabelLayout();
 
     void ClearLabels();
@@ -69,13 +69,14 @@ protected:
 private:
     QSpacerItem *m_spacer;
     bool m_enableReorder;
+    bool m_enableDrag;
 };
 
 class ScrollDataLayout : public LabelLayout
 {
     Q_OBJECT
 public:
-    explicit ScrollDataLayout(analyzer_header *header, bool enable_reorder, QWidget *parent = 0);
+    explicit ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, QWidget *parent = 0);
     ~ScrollDataLayout();
 
     void SetData(QByteArray data);
@@ -97,7 +98,7 @@ Q_SIGNALS:
     void changePos(int this_label, int dragged_label);
 
 public:
-    DraggableLabel(const QString & text, bool drag = false, QWidget * parent = 0, Qt::WindowFlags f = 0 );
+    DraggableLabel(const QString & text, bool drop = false, bool drag = false, QWidget * parent = 0, Qt::WindowFlags f = 0 );
     ~DraggableLabel();
 
 protected:
@@ -108,7 +109,7 @@ protected:
 
 private:
     bool m_drag;
-
+    bool m_drop;
 };
 
 #endif // LABELLAYOUT_H

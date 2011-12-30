@@ -8,11 +8,14 @@
 #include <QListView>
 #include <QStringListModel>
 #include <QSpinBox>
+#include <QSlider>
 
-#include "parser.h"
 #include "lorrisanalyzer.h"
 #include "sourcedialog.h"
 #include "ui_lorrisanalyzer.h"
+#include "packet.h"
+#include "analyzerdatastorage.h"
+#include "structuretabwidget.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
@@ -23,11 +26,26 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 
     QPushButton *addSourceButton = findChild<QPushButton*>("addSourceButton");
     connect(addSourceButton, SIGNAL(clicked()), this, SLOT(onTabShow()));
+
+    timeSlider = findChild<QSlider*>("timeSlider");
+    connect(timeSlider, SIGNAL(valueChanged(int)), this, SLOT(timeSliderMoved(int)));
+
+    m_struc_tabs = new StructureTabWidget(this);
+    QVBoxLayout *leftVLayout = findChild<QVBoxLayout*>("leftVLayout");
+    leftVLayout->insertWidget(1, m_struc_tabs);
+
+    m_storage = NULL;
+    m_packet = NULL;
+    m_state = 0;
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
 {
     delete ui;
+    delete m_storage;
+    delete m_packet->header;
+    delete m_packet;
+    delete m_struc_tabs;
 }
 
 void LorrisAnalyzer::connectButton()
@@ -84,16 +102,50 @@ void LorrisAnalyzer::connectedStatus(bool connected)
 
 void LorrisAnalyzer::readData(QByteArray data)
 {
-    if(m_state & STATE_DIALOG)
+    if((m_state & STATE_DIALOG) != 0 || !m_packet)
         return;
+
+    analyzer_data *a_data = m_storage->addData(data);
+    if(!a_data)
+        return;
+
+    bool update = timeSlider->value() == timeSlider->maximum();
+    timeSlider->setMaximum(m_storage->getSize());
+    if(update)
+        timeSlider->setValue(m_storage->getSize());
 }
 
 void LorrisAnalyzer::onTabShow()
 {
+    m_state |= STATE_DIALOG;
     SourceDialog *d = new SourceDialog(this);
     connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
-    d->exec();
+
+    analyzer_packet *packet = d->getStructure();
     delete d;
+
+    if(!packet)
+        return;
+
+    if(m_packet)
+    {
+        delete m_packet->header;
+        delete m_packet;
+        delete m_storage;
+    }
+    m_storage = new AnalyzerDataStorage();
+
+    m_struc_tabs->removeAll();
+    m_struc_tabs->setHeader(packet->header);
+    m_struc_tabs->addDevice();
+
+    m_storage->setPacket(packet);
+    m_packet = packet;
+    m_state &= ~(STATE_DIALOG);
 }
 
-
+void LorrisAnalyzer::timeSliderMoved(int value)
+{
+    if(value != 0)
+        m_struc_tabs->handleData(m_storage->get(value-1));
+}

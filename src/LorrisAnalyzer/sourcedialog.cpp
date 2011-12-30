@@ -18,13 +18,13 @@ SourceDialog::SourceDialog(QWidget *parent) :
     setFixedSize(width(), height());
 
     QWidget *w = new QWidget();
-    scroll_layout = new ScrollDataLayout(&m_header, false, w);
+    scroll_layout = new ScrollDataLayout(&m_header, false, false, w);
 
     QScrollArea *area = findChild<QScrollArea*>("data_scroll");
     area->setWidget(w);
 
     w = new QWidget();
-    scroll_header = new LabelLayout(&m_header, true, w);
+    scroll_header = new LabelLayout(&m_header, true, true, w);
     connect(scroll_header, SIGNAL(orderChanged()), scroll_layout, SLOT(UpdateTypes()));
 
     area = findChild<QScrollArea*>("header_scroll");
@@ -56,6 +56,8 @@ SourceDialog::SourceDialog(QWidget *parent) :
 
     QComboBox *len_fmt_box = findChild<QComboBox*>("len_fmt_box");
     connect(len_fmt_box, SIGNAL(currentIndexChanged(int)), this, SLOT(lenFmtChanged(int)));
+
+    setted = true;
 }
 
 SourceDialog::~SourceDialog()
@@ -147,4 +149,19 @@ void SourceDialog::lenFmtChanged(int index)
 {
     m_header.len_fmt = index;
     scroll_layout->UpdateTypes();
+}
+
+analyzer_packet *SourceDialog::getStructure()
+{
+    exec();
+    if(!setted)
+        return NULL;
+
+    QComboBox *endianBox = findChild<QComboBox*>("endianBox");
+    bool big_endian = endianBox->currentIndex() == 0;
+
+    QSpinBox *len_static = findChild<QSpinBox*>("len_box");
+    m_header.packet_length = len_static->value();
+
+    return new analyzer_packet(new analyzer_header(&m_header), big_endian);
 }

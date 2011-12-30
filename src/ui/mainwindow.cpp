@@ -79,10 +79,6 @@ MainWindow::~MainWindow()
     //delete singletons
     WorkTabMgr::Destroy();
     ConnectionMgr::Destroy();
-
-    const QList<QObject*> list = children();
-    for(QList<QObject*>::const_iterator it = list.begin(); it != list.end(); ++it)
-        delete *it; 
 }
 
 QString MainWindow::getVersionString()

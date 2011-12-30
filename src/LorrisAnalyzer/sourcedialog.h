@@ -22,6 +22,8 @@ public:
     explicit SourceDialog(QWidget *parent = 0);
     ~SourceDialog();
 
+    analyzer_packet *getStructure();
+
 public slots:
     void readData(QByteArray data);
     void headerLenToggled(bool checked);
@@ -40,7 +42,7 @@ private:
     LabelLayout *scroll_header;
     Ui::SourceDialog *ui;
     analyzer_header m_header;
-
+    bool setted;
 };
 
 
