@@ -10,9 +10,11 @@ CmdTabWidget::CmdTabWidget(analyzer_header *header, QWidget *parent) :
 {
     setTabPosition(QTabWidget::South);
 
-    QAction *new_device_act = new QAction(tr("Add command"), this);
-    connect(new_device_act, SIGNAL(triggered()), this, SLOT(newCommand()));
-    addAction(new_device_act);
+    QAction *new_cmd_act = new QAction(tr("Add command"), this);
+    if(!(header->data_mask & DATA_OPCODE))
+        new_cmd_act->setEnabled(false);
+    connect(new_cmd_act, SIGNAL(triggered()), this, SLOT(newCommand()));
+    addAction(new_cmd_act);
 
     m_add_all_act = new QAction(tr("Add \"All commands\" tab"), this);
     m_add_all_act->setEnabled(false);

@@ -19,7 +19,7 @@ public:
     explicit DeviceTabWidget(QWidget *parent = 0);
     ~DeviceTabWidget();
 
-    void setHeader(analyzer_header *h) { m_header = h; }
+    void setHeader(analyzer_header *h);
     void addDevice(bool all_devices = true, quint8 id = 0);
     void setEnableIds(bool enable) { m_id_enabled = enable; }
     void handleData(analyzer_data *data);

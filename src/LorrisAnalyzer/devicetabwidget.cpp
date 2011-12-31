@@ -37,8 +37,13 @@ DeviceTabWidget::~DeviceTabWidget()
         removeAction(*itr);
         delete *itr;
     }
-
     removeAll();
+}
+
+void DeviceTabWidget::setHeader(analyzer_header *h)
+{
+    m_header = h;
+    (*actions().begin())->setEnabled(m_header->data_mask & DATA_DEVICE_ID);
 }
 
 void DeviceTabWidget::removeAll()
