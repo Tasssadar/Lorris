@@ -15,7 +15,7 @@
 #include "ui_lorrisanalyzer.h"
 #include "packet.h"
 #include "analyzerdatastorage.h"
-#include "structuretabwidget.h"
+#include "devicetabwidget.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
@@ -30,9 +30,9 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     timeSlider = findChild<QSlider*>("timeSlider");
     connect(timeSlider, SIGNAL(valueChanged(int)), this, SLOT(timeSliderMoved(int)));
 
-    m_struc_tabs = new StructureTabWidget(this);
+    m_dev_tabs = new DeviceTabWidget(this);
     QVBoxLayout *leftVLayout = findChild<QVBoxLayout*>("leftVLayout");
-    leftVLayout->insertWidget(1, m_struc_tabs);
+    leftVLayout->insertWidget(1, m_dev_tabs);
 
     m_storage = NULL;
     m_packet = NULL;
@@ -45,7 +45,7 @@ LorrisAnalyzer::~LorrisAnalyzer()
     delete m_storage;
     delete m_packet->header;
     delete m_packet;
-    delete m_struc_tabs;
+    delete m_dev_tabs;
 }
 
 void LorrisAnalyzer::connectButton()
@@ -135,9 +135,9 @@ void LorrisAnalyzer::onTabShow()
     }
     m_storage = new AnalyzerDataStorage();
 
-    m_struc_tabs->removeAll();
-    m_struc_tabs->setHeader(packet->header);
-    m_struc_tabs->addDevice();
+    m_dev_tabs->removeAll();
+    m_dev_tabs->setHeader(packet->header);
+    m_dev_tabs->addDevice();
 
     m_storage->setPacket(packet);
     m_packet = packet;
@@ -147,5 +147,5 @@ void LorrisAnalyzer::onTabShow()
 void LorrisAnalyzer::timeSliderMoved(int value)
 {
     if(value != 0)
-        m_struc_tabs->handleData(m_storage->get(value-1));
+        m_dev_tabs->handleData(m_storage->get(value-1));
 }

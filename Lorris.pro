@@ -41,7 +41,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/labellayout.cpp \
     src/LorrisAnalyzer/packet.cpp \
     src/LorrisAnalyzer/analyzerdatastorage.cpp \
-    src/LorrisAnalyzer/structuretabwidget.cpp
+    src/LorrisAnalyzer/devicetabwidget.cpp \
+    src/LorrisAnalyzer/cmdtabwidget.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -82,7 +83,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/labellayout.h \
     src/LorrisAnalyzer/packet.h \
     src/LorrisAnalyzer/analyzerdatastorage.h \
-    src/LorrisAnalyzer/structuretabwidget.h
+    src/LorrisAnalyzer/devicetabwidget.h \
+    src/LorrisAnalyzer/cmdtabwidget.h
 QMAKE_LIBDIR += dep/qwt/lib
 
 # LIBS += -lqwt
@@ -138,27 +140,3 @@ macx {
 FORMS += \
     src/LorrisAnalyzer/sourcedialog.ui \
     src/LorrisAnalyzer/lorrisanalyzer.ui
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

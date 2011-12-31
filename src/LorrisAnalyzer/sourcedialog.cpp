@@ -3,6 +3,7 @@
 #include <QSizePolicy>
 #include <QScrollArea>
 #include <QSpacerItem>
+#include <QDialogButtonBox>
 
 #include "common.h"
 #include "sourcedialog.h"
@@ -57,7 +58,10 @@ SourceDialog::SourceDialog(QWidget *parent) :
     QComboBox *len_fmt_box = findChild<QComboBox*>("len_fmt_box");
     connect(len_fmt_box, SIGNAL(currentIndexChanged(int)), this, SLOT(lenFmtChanged(int)));
 
-    setted = true;
+    QDialogButtonBox *ok_close_bBox = findChild<QDialogButtonBox*>("ok_close_bBox");
+    connect(ok_close_bBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(butonnBoxClicked(QAbstractButton*)));
+
+    setted = false;
 }
 
 SourceDialog::~SourceDialog()
@@ -69,6 +73,14 @@ SourceDialog::~SourceDialog()
     w = scroll_header->parent();
     delete scroll_header;
     delete w;
+}
+
+void SourceDialog::butonnBoxClicked(QAbstractButton *b)
+{
+    QDialogButtonBox *ok_close_bBox = findChild<QDialogButtonBox*>("ok_close_bBox");
+    if(ok_close_bBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
+        setted = true;
+    close();
 }
 
 void SourceDialog::readData(QByteArray data)

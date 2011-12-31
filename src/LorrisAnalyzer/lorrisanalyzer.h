@@ -9,7 +9,7 @@ class QHBoxLayout;
 class QMdiArea;
 class AnalyzerDataStorage;
 class QSlider;
-class StructureTabWidget;
+class DeviceTabWidget;
 struct analyzer_packet;
 
 enum states_
@@ -48,7 +48,7 @@ class LorrisAnalyzer : public WorkTab
         AnalyzerDataStorage *m_storage;
         QSlider *timeSlider;
         analyzer_packet *m_packet;
-        StructureTabWidget *m_struc_tabs;
+        DeviceTabWidget *m_dev_tabs;
 };
 
 #endif // LORRISANALYZER_H

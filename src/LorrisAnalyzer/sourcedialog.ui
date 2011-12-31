@@ -411,17 +411,20 @@ to change order</string>
     </item>
    </widget>
   </widget>
-  <widget class="QDialogButtonBox" name="buttonBox">
+  <widget class="QDialogButtonBox" name="ok_close_bBox">
    <property name="geometry">
     <rect>
-     <x>579</x>
+     <x>539</x>
      <y>350</y>
-     <width>141</width>
+     <width>181</width>
      <height>25</height>
     </rect>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Ok</set>
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+   <property name="centerButtons">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

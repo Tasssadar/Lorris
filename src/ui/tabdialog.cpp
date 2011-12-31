@@ -28,6 +28,7 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
         pluginsBox->addItem((*i)->GetName());
     connect(pluginsBox, SIGNAL(currentRowChanged(int)), this, SLOT(PluginSelected(int)));
 
+
     QLabel *desc = new QLabel(this);
     desc->setObjectName("pluginDesc");
     desc->setFixedWidth(430);
@@ -57,6 +58,8 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
     secondCol->addLayout(conOptions);
     layout->addWidget(create);
     setLayout(layout);
+
+    pluginsBox->setCurrentRow(0);
 }
 
 TabDialog::~TabDialog()

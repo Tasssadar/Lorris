@@ -33,6 +33,33 @@ bool analyzer_data::getDeviceId(quint8& id)
     return false;
 }
 
+bool analyzer_data::getCmd(quint8 &cmd)
+{
+    if(!(m_packet->header->data_mask & DATA_OPCODE))
+        return false;
+
+    quint16 pos = 0;
+    for(quint8 i = 0; i < 4; ++i)
+    {
+        switch(m_packet->header->order[i])
+        {
+            case DATA_STATIC:
+                pos += m_packet->header->static_len;
+                break;
+            case DATA_LEN:
+                pos += (1 << m_packet->header->len_fmt);
+                break;
+            case DATA_DEVICE_ID:
+                ++pos;
+                break;
+            case DATA_OPCODE:
+                cmd = (quint8)m_data[pos];
+                return true;
+        }
+    }
+    return false;
+}
+
 quint8 analyzer_data::getUInt8(quint32 pos)
 {
     if(pos >= m_data.length())

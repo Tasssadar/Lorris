@@ -111,6 +111,7 @@ public:
 
 
     bool getDeviceId(quint8& id);
+    bool getCmd(quint8& cmd);
 
     quint8  getUInt8 (quint32 pos);
     qint8   getInt8  (quint32 pos);

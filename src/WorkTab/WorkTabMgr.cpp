@@ -11,9 +11,9 @@
 WorkTabMgr::WorkTabMgr()
 {
     //put ALL plugins into this vector
-    m_workTabInfos.push_back(new LorrisProbeInfo);
-    m_workTabInfos.push_back(new LorrisTerminalInfo);
     m_workTabInfos.push_back(new LorrisAnalyzerInfo);
+    //m_workTabInfos.push_back(new LorrisProbeInfo);
+    m_workTabInfos.push_back(new LorrisTerminalInfo);
 
     tabIdCounter = 0;
     tabWidget = NULL;

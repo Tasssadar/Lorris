@@ -14,6 +14,7 @@ class ScrollDataLayout;
 class LabelLayout;
 class QSpacerItem;
 class QLabel;
+class QAbstractButton;
 
 class SourceDialog : public QDialog
 {
@@ -33,6 +34,7 @@ public slots:
     void cmdCheckToggled(bool checked);
     void idCheckToggled(bool checked);
     void lenFmtChanged(int index);
+    void butonnBoxClicked(QAbstractButton *b);
 
 private:
     void AddOrRmHeaderType(bool add, quint8 type);
