@@ -20,7 +20,7 @@ CONFIG(debug, debug|release) {
     TARGET = qserialdeviced
 } else {
     DESTDIR = build/release
-    TARGET = qserialdevice
+    TARGET = qserialdeviced
 }
 
 win32 {
