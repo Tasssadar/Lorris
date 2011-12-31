@@ -23,7 +23,7 @@ QString Utils::parseChar(char c)
 
 quint16 Utils::swapEndian16(quint16 x)
 {
-    x = quint16((x >> 8) | (x << 8));
+    return ((x >> 8) | (x << 8));
 }
 
 

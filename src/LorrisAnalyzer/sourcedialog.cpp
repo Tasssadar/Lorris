@@ -131,7 +131,7 @@ void SourceDialog::headerLenChanged(int value)
         static_check->setChecked(true);
     }
     m_header.length = value;
-    if(scroll_layout->GetLabelCount() < value)
+    if(scroll_layout->GetLabelCount() < (quint32)value)
         scroll_layout->lenChanged(value);
     scroll_layout->UpdateTypes();
 }

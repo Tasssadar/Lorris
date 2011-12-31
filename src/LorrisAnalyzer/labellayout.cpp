@@ -123,10 +123,10 @@ void LabelLayout::UpdateTypes()
 
 void LabelLayout::lenChanged(int len)
 {
-    if(len < 0 || len == m_labels.size())
+    if(len < 0 || len == (quint16)m_labels.size())
         return;
 
-    while(m_labels.size() != len)
+    while(m_labels.size() != (quint16)len)
     {
         if((uint)len > m_labels.size())
             AddLabel("NULL", -1);
@@ -224,7 +224,7 @@ void ScrollDataLayout::SetData(QByteArray data)
             }
         }
     }
-    for(quint32 i = 0; i < data.length() && i < m_labels.size(); ++i)
+    for(quint32 i = 0; i < (quint32)data.length() && i < m_labels.size(); ++i)
     {
         switch(m_format)
         {
@@ -292,7 +292,7 @@ void DraggableLabel::dragEnterEvent(QDragEnterEvent *event)
     setStyleSheet(css);
 }
 
-void DraggableLabel::dragLeaveEvent(QDragLeaveEvent *event)
+void DraggableLabel::dragLeaveEvent(QDragLeaveEvent */*event*/)
 {
     if(!m_drop)
         return;
