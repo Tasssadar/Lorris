@@ -23,5 +23,4 @@ void Connection::SendData(QByteArray /*data*/)
 
 void Connection::OpenConcurrent()
 {
-    emit connectResult(this, false);
 }

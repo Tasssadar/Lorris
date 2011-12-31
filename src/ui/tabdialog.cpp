@@ -11,6 +11,7 @@
 #include "tabdialog.h"
 #include "mainwindow.h"
 #include "connection/serialport.h"
+#include "connection/fileconnection.h"
 
 TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
 {
@@ -150,7 +151,12 @@ void TabDialog::CreateTab()
         case CONNECTION_FILE:
         {
             tab = info->GetNewTab();
-            Connection *con = new Connection();
+            FileConnection *con = (FileConnection*)sConMgr.FindConnection(CONNECTION_FILE, "");
+            if(!con)
+            {
+                con = new FileConnection();
+                sConMgr.AddCon(CONNECTION_FILE, con);
+            }
             tab->setConnection(con);
             sWorkTabMgr.AddWorkTab(tab, info->GetName());
             close();

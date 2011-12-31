@@ -17,6 +17,7 @@
 #include "analyzerdatastorage.h"
 #include "devicetabwidget.h"
 #include "analyzermdi.h"
+#include "connection/connectionmgr.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
@@ -131,6 +132,12 @@ void LorrisAnalyzer::readData(QByteArray data)
 
 void LorrisAnalyzer::onTabShow()
 {
+    if(m_con->getType() == CONNECTION_FILE)
+    {
+        loadDataButton();
+        return;
+    }
+
     m_state |= STATE_DIALOG;
     SourceDialog *d = new SourceDialog(this);
     connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
