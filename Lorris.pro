@@ -4,8 +4,8 @@
 QT += network gui core
 CONFIG += qwt
 TARGET = Lorris
-CONFIG(debug, debug|release):DESTDIR = bin/debug
-else:DESTDIR = bin/release
+CONFIG(debug, debug|release):DESTDIR = $$PWD/bin/debug
+else:DESTDIR = $$PWD/bin/release
 TRANSLATIONS = translations/Lorris.cs_CZ.ts
 TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
@@ -25,6 +25,11 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisTerminal/lorristerminalinfo.cpp \
     src/connection/connection.cpp \
     src/connection/serialport.cpp \
+    dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator.cpp \
+    dep/qserialdevice/src/qserialdevice/nativeserialengine.cpp \
+    dep/qserialdevice/src/qserialdevice/abstractserialnotifier.cpp \
+    dep/qserialdevice/src/qserialdevice/abstractserialengine.cpp \
+    dep/qserialdevice/src/qserialdevice/abstractserial.cpp \
     src/LorrisTerminal/hexfile.cpp \
     src/LorrisTerminal/terminal.cpp \
     src/connection/serialportthread.cpp \
@@ -56,6 +61,17 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisTerminal/lorristerminalinfo.h \
     src/connection/connection.h \
     src/connection/serialport.h \
+    dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p.h \
+    dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator.h \
+    dep/qserialdevice/src/qserialdevice/nativeserialnotifier.h \
+    dep/qserialdevice/src/qserialdevice/nativeserialengine_p.h \
+    dep/qserialdevice/src/qserialdevice/nativeserialengine.h \
+    dep/qserialdevice/src/qserialdevice/abstractserialnotifier.h \
+    dep/qserialdevice/src/qserialdevice/abstractserialengine_p.h \
+    dep/qserialdevice/src/qserialdevice/abstractserialengine.h \
+    dep/qserialdevice/src/qserialdevice/abstractserial_p.h \
+    dep/qserialdevice/src/qserialdevice/abstractserial.h \
+    dep/qserialdevice/src/qserialdevice_global.h \
     src/LorrisTerminal/hexfile.h \
     src/LorrisTerminal/deviceinfo.h \
     src/LorrisTerminal/terminal.h \
@@ -75,18 +91,33 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/analyzermdi.h \
     src/LorrisAnalyzer/DataWidgets/datawidget.h \
     src/connection/fileconnection.h
-QMAKE_LIBDIR += dep/qwt/lib
 
-# LIBS += -lqwt
-OBJECTS_DIR = obj
-MOC_DIR = moc
-win32 { 
+OBJECTS_DIR = $$PWD/obj
+MOC_DIR = $$PWD/moc
+win32 {
     LIBS += -lsetupapi \
         -luuid \
         -ladvapi32
+    SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_win.cpp \
+        dep/qserialdevice/src/qserialdevice/nativeserialnotifier_win.cpp \
+        dep/qserialdevice/src/qserialdevice/nativeserialengine_win.cpp
+    HEADERS += dep/qserialdevice/src/qwineventnotifier_p.h
+    QMAKE_POST_LINK = mkdir \
+        "$$DESTDIR/translations" \
+        & \
+        copy \
+        /y \
+        translations\\*.qm \
+        "$$DESTDIR/translations/"
 }
-unix:!macx { 
+unix:!macx {
     LIBS += -ludev
+    SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_unix.cpp \
+        dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
+        dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp \
+        dep/qserialdevice/src/unix/ttylocker.cpp
+    HEADERS += dep/qserialdevice/src/unix/ttylocker.h \
+        dep/qserialdevice/src/unix/qcore_unix_p.h
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -94,7 +125,7 @@ unix:!macx {
         translations/*.qm \
         "$$DESTDIR/translations/"
 }
-macx { 
+macx {
     LIBS += -framework \
         IOKit \
         -framework \
@@ -114,17 +145,3 @@ FORMS += \
     src/LorrisAnalyzer/sourcedialog.ui \
     src/LorrisAnalyzer/lorrisanalyzer.ui
 
-
-
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/dep/qserialdevice/src/build/release/ -lqserialdeviced
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/dep/qserialdevice/src/build/debug/ -lqserialdeviced
-else:unix:!symbian:CONFIG(debug, debug|release): LIBS += -L$$PWD/dep/qserialdevice/src/build/debug/ -lqserialdeviced
-else:unix:!symbian:CONFIG(release, debug|release): LIBS += -L$$PWD/dep/qserialdevice/src/build/release/ -lqserialdeviced
-
-INCLUDEPATH += $$PWD/dep/qserialdevice/src
-DEPENDPATH += $$PWD/dep/qserialdevice/src
-
-win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/dep/qserialdevice/src/build/release/qserialdeviced.lib
-else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/dep/qserialdevice/src/build/debug/qserialdeviced.lib
-else:unix:!symbian:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/dep/qserialdevice/src/build/release/libqserialdeviced.a
-else:unix:!symbian:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/dep/qserialdevice/src/build/debug/libqserialdeviced.a
