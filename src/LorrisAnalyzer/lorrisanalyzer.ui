@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0">
      <item>
-      <layout class="QVBoxLayout" name="leftVLayout" stretch="0,0,1">
+      <layout class="QVBoxLayout" name="leftVLayout" stretch="0,0">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
@@ -53,6 +53,20 @@
           <widget class="QPushButton" name="addSourceButton">
            <property name="text">
             <string>New source</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="saveDataButton">
+           <property name="text">
+            <string>Save data</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="loadDataButton">
+           <property name="text">
+            <string>Load data</string>
            </property>
           </widget>
          </item>
@@ -96,16 +110,6 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QMdiArea" name="mdiArea">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item>
@@ -144,7 +148,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>mdiArea</zorder>
  </widget>
  <resources/>
  <connections/>

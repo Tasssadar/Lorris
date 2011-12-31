@@ -79,7 +79,7 @@ void TabDialog::PluginSelected(int index)
     conBox->clear();
     if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem(tr("Socket"), CONNECTION_SOCKET);
     if(conn & CON_MSK(CONNECTION_SERIAL_PORT)) conBox->addItem(tr("Serial port"), CONNECTION_SERIAL_PORT);
-    if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem(tr("File"), CONNECTION_FILE);
+    if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem(tr("None (Load data from File)"), CONNECTION_FILE);
 }
 
 void TabDialog::FillConOptions(int index)
@@ -140,17 +140,31 @@ void TabDialog::CreateTab()
     switch(conBox->itemData(conBox->currentIndex()).toInt())
     {
         case CONNECTION_SERIAL_PORT:
+        {
             tab = ConnectSP(info);
             if(!tab)
                 return;
             tab->onTabShow();
             break;
+        }
+        case CONNECTION_FILE:
+        {
+            tab = info->GetNewTab();
+            Connection *con = new Connection();
+            tab->setConnection(con);
+            sWorkTabMgr.AddWorkTab(tab, info->GetName());
+            close();
+            tab->onTabShow();
+            break;
+        }
         default:    // TODO: other connection types
+        {
             tab = info->GetNewTab();
             sWorkTabMgr.AddWorkTab(tab, info->GetName());
             close();
             tab->onTabShow();
             return;
+        }
     }
     close();
 }

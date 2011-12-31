@@ -16,16 +16,25 @@
 #include "packet.h"
 #include "analyzerdatastorage.h"
 #include "devicetabwidget.h"
+#include "analyzermdi.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
     ui->setupUi(this);
+
+    m_storage = new AnalyzerDataStorage();
 
     QPushButton *connectButton = findChild<QPushButton*>("connectButton");
     connect(connectButton, SIGNAL(clicked()), this, SLOT(connectButton()));
 
     QPushButton *addSourceButton = findChild<QPushButton*>("addSourceButton");
     connect(addSourceButton, SIGNAL(clicked()), this, SLOT(onTabShow()));
+
+    QPushButton *saveDataButton = findChild<QPushButton*>("saveDataButton");
+    connect(saveDataButton, SIGNAL(clicked()), m_storage, SLOT(SaveToFile()));
+
+    QPushButton *loadDataButton = findChild<QPushButton*>("loadDataButton");
+    connect(loadDataButton, SIGNAL(clicked()), this, SLOT(loadDataButton()));
 
     timeSlider = findChild<QSlider*>("timeSlider");
     connect(timeSlider, SIGNAL(valueChanged(int)), this, SLOT(timeSliderMoved(int)));
@@ -34,7 +43,12 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     QVBoxLayout *leftVLayout = findChild<QVBoxLayout*>("leftVLayout");
     leftVLayout->insertWidget(1, m_dev_tabs);
 
-    m_storage = NULL;
+    m_mdi = new AnalyzerMdi(this);
+    leftVLayout->addWidget(m_mdi, 1);
+
+    QLabel *label = new QLabel("aa", this);
+    QMdiSubWindow *win = m_mdi->addSubWindow(label);
+
     m_packet = NULL;
     m_state = 0;
 }
@@ -131,9 +145,8 @@ void LorrisAnalyzer::onTabShow()
     {
         delete m_packet->header;
         delete m_packet;
-        delete m_storage;
     }
-    m_storage = new AnalyzerDataStorage();
+    m_storage->Clear();
 
     m_dev_tabs->removeAll();
     m_dev_tabs->setHeader(packet->header);
@@ -148,4 +161,19 @@ void LorrisAnalyzer::timeSliderMoved(int value)
 {
     if(value != 0)
         m_dev_tabs->handleData(m_storage->get(value-1));
+}
+
+void LorrisAnalyzer::loadDataButton()
+{
+    analyzer_packet *packet = m_storage->loadFromFile();
+    if(!packet)
+        return;
+    m_packet = packet;
+
+    m_dev_tabs->removeAll();
+    m_dev_tabs->setHeader(packet->header);
+    m_dev_tabs->addDevice();
+
+    timeSlider->setMaximum(m_storage->getSize());
+    timeSlider->setValue(m_storage->getSize());
 }

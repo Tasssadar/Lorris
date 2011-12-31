@@ -140,17 +140,17 @@
        </property>
        <item>
         <property name="text">
-         <string>uint8</string>
+         <string>8bit</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>uint16</string>
+         <string>16bit</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>uint32</string>
+         <string>32bit</string>
         </property>
        </item>
       </widget>

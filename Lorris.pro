@@ -42,7 +42,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/packet.cpp \
     src/LorrisAnalyzer/analyzerdatastorage.cpp \
     src/LorrisAnalyzer/devicetabwidget.cpp \
-    src/LorrisAnalyzer/cmdtabwidget.cpp
+    src/LorrisAnalyzer/cmdtabwidget.cpp \
+    src/LorrisAnalyzer/analyzermdi.cpp \
+    src/LorrisAnalyzer/DataWidgets/datawidget.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -84,7 +86,9 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/packet.h \
     src/LorrisAnalyzer/analyzerdatastorage.h \
     src/LorrisAnalyzer/devicetabwidget.h \
-    src/LorrisAnalyzer/cmdtabwidget.h
+    src/LorrisAnalyzer/cmdtabwidget.h \
+    src/LorrisAnalyzer/analyzermdi.h \
+    src/LorrisAnalyzer/DataWidgets/datawidget.h
 QMAKE_LIBDIR += dep/qwt/lib
 
 # LIBS += -lqwt

@@ -12,7 +12,7 @@ enum ConnectionType
 {
     CONNECTION_SOCKET      = 0,
     CONNECTION_SERIAL_PORT = 1,
-    CONNECTION_FILE        = 2,
+    CONNECTION_FILE        = 2
 };
 
 #define MAX_CON_TYPE 3

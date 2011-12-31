@@ -4,13 +4,16 @@
 #include <QTypeInfo>
 #include <vector>
 #include <QByteArray>
+#include <QObject>
 
 #include "packet.h"
 
-class AnalyzerDataStorage
+class AnalyzerDataStorage : public QObject
 {
+    Q_OBJECT
+
 public:
-    AnalyzerDataStorage();
+    explicit AnalyzerDataStorage();
     ~AnalyzerDataStorage();
 
     void setPacket(analyzer_packet *packet)
@@ -18,9 +21,15 @@ public:
         m_packet = packet;
     }
 
+    void Clear();
+
     analyzer_data *addData(QByteArray data);
     quint32 getSize() { return m_size; }
     analyzer_data *get(quint32 index) { return m_data[index]; }
+    analyzer_packet *loadFromFile();
+
+public slots:
+    void SaveToFile();
 
 private:
     std::vector<analyzer_data*> m_data;

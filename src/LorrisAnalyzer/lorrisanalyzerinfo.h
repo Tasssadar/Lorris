@@ -12,7 +12,7 @@ public:
     WorkTab *GetNewTab();
     QString GetName();
     QString GetDescription();
-    quint8 GetConType() { return (CON_MSK(CONNECTION_SOCKET) | CON_MSK(CONNECTION_SERIAL_PORT)); }
+    quint8 GetConType() { return (CON_MSK(CONNECTION_FILE) | CON_MSK(CONNECTION_SERIAL_PORT)); }
 };
 
 #endif // LORRISANALYZERINFO_H

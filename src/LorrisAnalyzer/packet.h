@@ -100,18 +100,12 @@ class analyzer_data
 public:
     analyzer_data(analyzer_packet *packet);
 
-    void setData(QByteArray data)
-    {
-        m_data = data;
-    }
-    QByteArray getData()
-    {
-        return m_data;
-    }
-
+    void setData(QByteArray data) { m_data = data; }
+    QByteArray getData() { return m_data; }
 
     bool getDeviceId(quint8& id);
     bool getCmd(quint8& cmd);
+    quint16 getHeaderDataPos(quint8 type);
 
     quint8  getUInt8 (quint32 pos);
     qint8   getInt8  (quint32 pos);
