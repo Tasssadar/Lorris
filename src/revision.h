@@ -1,4 +1,4 @@
 #ifndef REVISION_H
 #define REVISION_H
- #define REVISION 38
+ #define REVISION 39
 #endif // REVISION_H

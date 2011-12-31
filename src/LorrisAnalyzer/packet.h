@@ -123,6 +123,8 @@ public:
     qint64  getInt64 (quint32 pos);
     QString getString(quint32 pos);
 
+    template<class T> void getInt(T& val, quint32 pos);
+
 private:
     analyzer_packet *m_packet;
     QByteArray m_data;
