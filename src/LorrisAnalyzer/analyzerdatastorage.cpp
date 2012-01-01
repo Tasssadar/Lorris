@@ -2,7 +2,6 @@
 #include <QMessageBox>
 #include "analyzerdatastorage.h"
 
-
 static const char *ANALYZER_DATA_FORMAT = "v1";
 static const char ANALYZER_DATA_MAGIC[] = { 0xFF, 0x80, 0x68 };
 
@@ -69,7 +68,7 @@ void AnalyzerDataStorage::SaveToFile()
 
     //Packet
     itr = (char*)&m_packet->big_endian;
-    file->write(itr, sizeof(analyzer_packet)-sizeof(analyzer_header*));
+    file->write(itr, sizeof(bool));
 
     quint32 packetCount = m_data.size();
     file->write((char*)&packetCount, sizeof(quint32));
@@ -159,7 +158,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile()
 
     //Packet
     itr = (char*)&m_packet->big_endian;
-    file->read(itr, sizeof(analyzer_packet)-sizeof(analyzer_header*));
+    file->read(itr, sizeof(bool));
 
     //Data
     quint32 packetCount = 0;
