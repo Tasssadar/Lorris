@@ -6,6 +6,9 @@
 #include <vector>
 #include <QLabel>
 
+class CmdTabWidget;
+class DeviceTabWidget;
+
 struct analyzer_header;
 class QLabel;
 class QString;
@@ -26,7 +29,8 @@ Q_SIGNALS:
     void orderChanged();
 
 public:
-    explicit LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, QWidget *parent = 0);
+    explicit LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
+                         CmdTabWidget *cmd = NULL, DeviceTabWidget *dev = NULL, QWidget *parent = 0);
     ~LabelLayout();
 
     void ClearLabels();
@@ -54,6 +58,9 @@ public:
         return m_labels.size();
     }
 
+    CmdTabWidget *getCmdTab() { return cmd_w; }
+    DeviceTabWidget *getDeviceTab() { return dev_w; }
+
 public slots:
     void lenChanged(int len);
     void changePos(int this_label, int dragged_label);
@@ -70,13 +77,17 @@ private:
     QSpacerItem *m_spacer;
     bool m_enableReorder;
     bool m_enableDrag;
+
+    CmdTabWidget *cmd_w;
+    DeviceTabWidget *dev_w;
 };
 
 class ScrollDataLayout : public LabelLayout
 {
     Q_OBJECT
 public:
-    explicit ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, QWidget *parent = 0);
+    explicit ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
+                              CmdTabWidget *cmd = NULL, DeviceTabWidget *dev = NULL, QWidget *parent = 0);
     ~ScrollDataLayout();
 
     void SetData(QByteArray data);
@@ -89,6 +100,7 @@ protected:
 
 private:
     quint8 m_format;
+
 };
 
 class DraggableLabel : public QLabel
@@ -98,7 +110,8 @@ Q_SIGNALS:
     void changePos(int this_label, int dragged_label);
 
 public:
-    DraggableLabel(const QString & text, bool drop = false, bool drag = false, QWidget * parent = 0, Qt::WindowFlags f = 0 );
+    DraggableLabel(const QString & text, bool drop = false, bool drag = false,
+                   LabelLayout *l = NULL, QWidget * parent = 0, Qt::WindowFlags f = 0 );
     ~DraggableLabel();
 
 protected:
@@ -110,6 +123,7 @@ protected:
 private:
     bool m_drag;
     bool m_drop;
+    LabelLayout *layout;
 };
 
 #endif // LABELLAYOUT_H

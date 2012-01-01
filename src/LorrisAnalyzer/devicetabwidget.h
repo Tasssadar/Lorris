@@ -13,6 +13,10 @@ class QAction;
 class DeviceTabWidget : public QTabWidget
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void updateData();
+
 public:
     typedef std::map<quint8,CmdTabWidget*> dev_map;
 
@@ -22,9 +26,11 @@ public:
     void setHeader(analyzer_header *h);
     void addDevice(bool all_devices = true, quint8 id = 0);
     void setEnableIds(bool enable) { m_id_enabled = enable; }
-    void handleData(analyzer_data *data);
-
+    qint16 getCurrentDevice();
     void removeAll();
+
+public slots:
+    void handleData(analyzer_data *data);
 
 private slots:
     void newDevice();

@@ -10,7 +10,7 @@ class QMdiArea;
 class AnalyzerDataStorage;
 class QSlider;
 class DeviceTabWidget;
-class AnalyzerMdi;
+class AnalyzerDataArea;
 struct analyzer_packet;
 
 enum states_
@@ -27,12 +27,16 @@ class LorrisAnalyzer : public WorkTab
 {
     Q_OBJECT
 
+    Q_SIGNALS:
+        void newData(analyzer_data *data);
+
     public:
         explicit LorrisAnalyzer();
         virtual ~LorrisAnalyzer();
 
     public slots:
         void onTabShow();
+        void updateData();
 
     private slots:
         void connectButton();
@@ -51,7 +55,7 @@ class LorrisAnalyzer : public WorkTab
         QSlider *timeSlider;
         analyzer_packet *m_packet;
         DeviceTabWidget *m_dev_tabs;
-        AnalyzerMdi *m_mdi;
+        AnalyzerDataArea *m_data_area;
 };
 
 #endif // LORRISANALYZER_H

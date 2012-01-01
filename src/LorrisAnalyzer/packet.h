@@ -117,11 +117,33 @@ public:
     qint64  getInt64 (quint32 pos);
     QString getString(quint32 pos);
 
-    template<class T> void getInt(T& val, quint32 pos);
-
+    template<class T>
+    void getInt(T& val, bool sign, quint8 bytes, quint32 pos);
 private:
+    template<class T> void __getInt(T& val, quint32 pos);
+
     analyzer_packet *m_packet;
     QByteArray m_data;
 };
+
+template<class T>
+void analyzer_data::getInt(T& val, bool sign, quint8 bytes, quint32 pos)
+{
+    if(!sign)
+        bytes += 10;
+
+    switch(bytes)
+    {
+        case 1: val = getInt8(pos);  return;
+        case 2: val = getInt16(pos); return;
+        case 4: val = getInt32(pos); return;
+        case 8: val = getInt64(pos); return;
+
+        case 11: val = getUInt8(pos);  return;
+        case 12: val = getUInt16(pos); return;
+        case 14: val = getUInt32(pos); return;
+        case 18: val = getUInt64(pos); return;
+    }
+}
 
 #endif // PACKET_H

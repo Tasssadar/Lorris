@@ -8,7 +8,6 @@
 #include "labellayout.h"
 #include "packet.h"
 
-
 struct CmdTabInfo
 {
     CmdTabInfo(QScrollArea *area, ScrollDataLayout *layout)
@@ -29,10 +28,14 @@ struct CmdTabInfo
 class CmdTabWidget : public QTabWidget
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void updateData();
+
 public:
     typedef std::map<quint8,CmdTabInfo*> cmd_map;
 
-    explicit CmdTabWidget(analyzer_header *header, QWidget *parent = 0);
+    explicit CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent = 0);
     ~CmdTabWidget();
 
     void removeAll();
@@ -42,6 +45,7 @@ public:
     {
         m_enableCmds = enable;
     }
+    qint16 getCurrentCmd();
 
 private slots:
     void newCommand();
@@ -54,6 +58,7 @@ private:
     analyzer_header *m_header;
     QAction *m_add_all_act;
     CmdTabInfo *m_all_cmds;
+    DeviceTabWidget *m_devTab;
 };
 
 #endif // CMDTABWIDGET_H

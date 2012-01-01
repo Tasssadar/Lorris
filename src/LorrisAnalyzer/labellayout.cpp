@@ -6,8 +6,10 @@
 #include "sourcedialog.h"
 #include "common.h"
 #include "packet.h"
+#include "devicetabwidget.h"
+#include "cmdtabwidget.h"
 
-LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, QWidget *parent) : QHBoxLayout(parent)
+LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, CmdTabWidget *cmd, DeviceTabWidget *dev, QWidget *parent) : QHBoxLayout(parent)
 {
     setSizeConstraint(QLayout::SetMinAndMaxSize);
     m_spacer = new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -20,6 +22,8 @@ LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enab
 
     quint16 len = (m_header->data_mask & DATA_LEN) ? m_header->packet_length : m_header->length;
     lenChanged(len);
+    cmd_w = cmd;
+    dev_w = dev;
 }
 
 LabelLayout::~LabelLayout()
@@ -44,7 +48,7 @@ void LabelLayout::AddLabel(QString value, qint8 type)
     if(type == -1)
         type = GetTypeForPos(m_labels.size());
 
-    DraggableLabel *label = new DraggableLabel(value, m_enableReorder, m_enableDrag);
+    DraggableLabel *label = new DraggableLabel(value, m_enableReorder, m_enableDrag, this);
     SetLabelType(label, type);
     label->setObjectName(QString::number(m_labels.size()));
     if(m_enableReorder)
@@ -135,8 +139,9 @@ void LabelLayout::lenChanged(int len)
     }
 }
 
-ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, QWidget *parent) :
-    LabelLayout(header, enable_reorder, enable_drag, parent)
+ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
+                                   CmdTabWidget *cmd, DeviceTabWidget *dev, QWidget *parent) :
+                                   LabelLayout(header, enable_reorder, enable_drag, cmd, dev, parent)
 {
     m_format = FORMAT_HEX;
 }
@@ -236,7 +241,8 @@ void ScrollDataLayout::SetData(QByteArray data)
     }
 }
 
-DraggableLabel::DraggableLabel(const QString &text, bool drop, bool drag, QWidget *parent, Qt::WindowFlags f) :
+DraggableLabel::DraggableLabel(const QString &text, bool drop, bool drag,
+                               LabelLayout *l, QWidget *parent, Qt::WindowFlags f) :
     QLabel(text, parent, f)
 {
     m_drop = drop;
@@ -250,6 +256,8 @@ DraggableLabel::DraggableLabel(const QString &text, bool drop, bool drag, QWidge
     font.setStyleHint(QFont::TypeWriter);
     setFont(font);
     setAcceptDrops(true);
+
+    layout = l;
 }
 
 DraggableLabel::~DraggableLabel()
@@ -269,7 +277,14 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
     {
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
-        mimeData->setText(objectName());
+        if(m_drag && !m_drop && layout)
+        {
+            mimeData->setText(objectName() + " " +
+                              QString::number(layout->getDeviceTab()->getCurrentDevice()) + " " +
+                              QString::number(layout->getCmdTab()->getCurrentCmd()));
+        }
+        else
+            mimeData->setText(objectName());
         drag->setMimeData(mimeData);
 
         QPixmap pixmap(size());

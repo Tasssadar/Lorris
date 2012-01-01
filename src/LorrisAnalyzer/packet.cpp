@@ -66,7 +66,7 @@ qint8 analyzer_data::getInt8(quint32 pos)
 quint16 analyzer_data::getUInt16(quint32 pos)
 {
     quint16 val = 0;
-    getInt(val, pos);
+    __getInt(val, pos);
 
     if(!m_packet->big_endian)
         val = Utils::swapEndian16(val);
@@ -76,7 +76,7 @@ quint16 analyzer_data::getUInt16(quint32 pos)
 qint16 analyzer_data::getInt16(quint32 pos)
 {
     qint16 val = 0;
-    getInt(val, pos);
+    __getInt(val, pos);
 
     if(!m_packet->big_endian)
         val = Utils::swapEndian16(val);
@@ -86,7 +86,7 @@ qint16 analyzer_data::getInt16(quint32 pos)
 quint32 analyzer_data::getUInt32(quint32 pos)
 {
     quint32 val = 0;
-    getInt(val, pos);
+    __getInt(val, pos);
 
     if(!m_packet->big_endian)
         val = Utils::swapEndian32(val);
@@ -96,7 +96,7 @@ quint32 analyzer_data::getUInt32(quint32 pos)
 qint32 analyzer_data::getInt32(quint32 pos)
 {
     qint32 val = 0;
-    getInt(val, pos);
+    __getInt(val, pos);
 
     if(!m_packet->big_endian)
         val = Utils::swapEndian32(val);
@@ -106,7 +106,7 @@ qint32 analyzer_data::getInt32(quint32 pos)
 quint64 analyzer_data::getUInt64(quint32 pos)
 {
     quint64 val = 0;
-    getInt(val, pos);
+    __getInt(val, pos);
 
     if(!m_packet->big_endian)
         val = Utils::swapEndian64(val);
@@ -116,7 +116,7 @@ quint64 analyzer_data::getUInt64(quint32 pos)
 qint64 analyzer_data::getInt64(quint32 pos)
 {
     qint64 val = 0;
-    getInt(val, pos);
+    __getInt(val, pos);
 
     if(!m_packet->big_endian)
         val = Utils::swapEndian64(val);
@@ -124,7 +124,7 @@ qint64 analyzer_data::getInt64(quint32 pos)
 }
 
 template<class T>
-void analyzer_data::getInt(T& val, quint32 pos)
+void analyzer_data::__getInt(T& val, quint32 pos)
 {
     if(pos+sizeof(val) > (quint32)m_data.length())
         return;

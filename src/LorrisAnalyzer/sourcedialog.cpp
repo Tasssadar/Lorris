@@ -19,13 +19,13 @@ SourceDialog::SourceDialog(QWidget *parent) :
     setFixedSize(width(), height());
 
     QWidget *w = new QWidget();
-    scroll_layout = new ScrollDataLayout(&m_header, false, false, w);
+    scroll_layout = new ScrollDataLayout(&m_header, false, false, NULL, NULL, w);
 
     QScrollArea *area = findChild<QScrollArea*>("data_scroll");
     area->setWidget(w);
 
     w = new QWidget();
-    scroll_header = new LabelLayout(&m_header, true, true, w);
+    scroll_header = new LabelLayout(&m_header, true, true, NULL, NULL, w);
     connect(scroll_header, SIGNAL(orderChanged()), scroll_layout, SLOT(UpdateTypes()));
 
     area = findChild<QScrollArea*>("header_scroll");

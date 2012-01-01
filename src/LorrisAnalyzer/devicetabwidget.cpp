@@ -8,6 +8,7 @@
 #include "devicetabwidget.h"
 #include "labellayout.h"
 #include "common.h"
+#include "lorrisanalyzer.h"
 
 DeviceTabWidget::DeviceTabWidget(QWidget *parent) :
     QTabWidget(parent)
@@ -57,8 +58,16 @@ void DeviceTabWidget::removeAll()
 
 void DeviceTabWidget::addDevice(bool all_devices, quint8 id)
 {
-    CmdTabWidget *cmd_tab = new CmdTabWidget(m_header, this);
+    if(!all_devices)
+    {
+       dev_map::iterator itr = m_devices.find(id);
+       if(itr != m_devices.end())
+           return;
+    }
+
+    CmdTabWidget *cmd_tab = new CmdTabWidget(m_header, this, this);
     cmd_tab->addCommand();
+    connect(cmd_tab, SIGNAL(updateData()), this, SIGNAL(updateData()));
 
     QString name;
     int index;
@@ -128,6 +137,7 @@ void DeviceTabWidget::newDevice()
     m_id_enabled = true;
     addDevice(false, res);
     setTabsClosable(true);
+    emit updateData();
 }
 
 void DeviceTabWidget::tabClose(int index)
@@ -167,4 +177,18 @@ void DeviceTabWidget::addAllDevices()
     addDevice();
     if(count() > 1)
         setTabsClosable(true);
+    emit updateData();
+}
+
+qint16 DeviceTabWidget::getCurrentDevice()
+{
+    int index = currentIndex();
+    if(index == 0 && m_all_devices)
+        return -1;
+
+    QWidget *w = widget(index);
+    for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
+        if(itr->second == w)
+            return itr->first;
+    return -1;
 }

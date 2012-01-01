@@ -16,8 +16,10 @@
 #include "packet.h"
 #include "analyzerdatastorage.h"
 #include "devicetabwidget.h"
-#include "analyzermdi.h"
+#include "analyzerdataarea.h"
 #include "connection/connectionmgr.h"
+#include "DataWidgets/datawidget.h"
+#include "DataWidgets/numberwidget.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
@@ -44,11 +46,19 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     QVBoxLayout *leftVLayout = findChild<QVBoxLayout*>("leftVLayout");
     leftVLayout->insertWidget(1, m_dev_tabs);
 
-    m_mdi = new AnalyzerMdi(this);
-    leftVLayout->addWidget(m_mdi, 1);
+    connect(this, SIGNAL(newData(analyzer_data*)), m_dev_tabs, SLOT(handleData(analyzer_data*)));
+    connect(m_dev_tabs, SIGNAL(updateData()), this, SLOT(updateData()));
 
-    QLabel *label = new QLabel("aa", this);
-    QMdiSubWindow *win = m_mdi->addSubWindow(label);
+    m_data_area = new AnalyzerDataArea(this);
+    QHBoxLayout *bottomHLayout = findChild<QHBoxLayout*>("bottomHLayout");
+    bottomHLayout->insertWidget(0, m_data_area, 5);
+    bottomHLayout->setStretch(1, 1);
+    connect(m_data_area, SIGNAL(updateData()), this, SLOT(updateData()));
+
+    QScrollArea *widgetsScrollArea = findChild<QScrollArea*>("widgetsScrollArea");
+    QWidget *tmp = new QWidget(this);
+    new NumberWidgetAddBtn(tmp);
+    widgetsScrollArea->setWidget(tmp);
 
     m_packet = NULL;
     m_state = 0;
@@ -58,8 +68,11 @@ LorrisAnalyzer::~LorrisAnalyzer()
 {
     delete ui;
     delete m_storage;
-    delete m_packet->header;
-    delete m_packet;
+    if(m_packet)
+    {
+        delete m_packet->header;
+        delete m_packet;
+    }
     delete m_dev_tabs;
 }
 
@@ -167,7 +180,12 @@ void LorrisAnalyzer::onTabShow()
 void LorrisAnalyzer::timeSliderMoved(int value)
 {
     if(value != 0)
-        m_dev_tabs->handleData(m_storage->get(value-1));
+        updateData();
+}
+
+void LorrisAnalyzer::updateData()
+{
+    emit newData(m_storage->get(timeSlider->value()-1));
 }
 
 void LorrisAnalyzer::loadDataButton()

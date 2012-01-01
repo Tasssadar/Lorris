@@ -5,7 +5,7 @@
 #include "cmdtabwidget.h"
 #include "common.h"
 
-CmdTabWidget::CmdTabWidget(analyzer_header *header, QWidget *parent) :
+CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent) :
     QTabWidget(parent)
 {
     setTabPosition(QTabWidget::South);
@@ -28,6 +28,7 @@ CmdTabWidget::CmdTabWidget(analyzer_header *header, QWidget *parent) :
     m_enableCmds = false;
     m_header = header;
     m_all_cmds = NULL;
+    m_devTab = device;
 }
 
 CmdTabWidget::~CmdTabWidget()
@@ -55,8 +56,14 @@ void CmdTabWidget::removeAll()
 
 void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
 {
+    if(!add_all_cmds)
+    {
+       cmd_map::iterator itr = m_cmds.find(id);
+       if(itr != m_cmds.end())
+           return;
+    }
     QWidget *w = new QWidget();
-    ScrollDataLayout *layout = new ScrollDataLayout(m_header, false, true, w);
+    ScrollDataLayout *layout = new ScrollDataLayout(m_header, false, true, this, m_devTab, w);
     QScrollArea *area = new QScrollArea(this);
     area->setWidget(w);
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -129,6 +136,7 @@ void CmdTabWidget::newCommand()
     addCommand(false, res);
     m_enableCmds = true;
     setTabsClosable(true);
+    emit updateData();
 }
 
 void CmdTabWidget::addAllCmds()
@@ -137,6 +145,7 @@ void CmdTabWidget::addAllCmds()
     addCommand();
     if(count() > 1)
         setTabsClosable(true);
+    emit updateData();
 }
 
 void CmdTabWidget::tabClose(int index)
@@ -168,4 +177,17 @@ void CmdTabWidget::tabClose(int index)
         if(m_all_cmds)
             m_enableCmds = false;
     }
+}
+
+qint16 CmdTabWidget::getCurrentCmd()
+{
+    int index = currentIndex();
+    if(index == 0 && m_all_cmds)
+        return -1;
+
+    QWidget *w = widget(index);
+    for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
+        if(itr->second->a == w)
+            return itr->first;
+    return -1;
 }

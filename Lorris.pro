@@ -1,8 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2011-05-30T19:16:22
 # -------------------------------------------------
-QT += network gui core
-CONFIG += qwt
+QT += gui core
 TARGET = Lorris
 CONFIG(debug, debug|release):DESTDIR = $$PWD/bin/debug
 else:DESTDIR = $$PWD/bin/release
@@ -43,9 +42,10 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/analyzerdatastorage.cpp \
     src/LorrisAnalyzer/devicetabwidget.cpp \
     src/LorrisAnalyzer/cmdtabwidget.cpp \
-    src/LorrisAnalyzer/analyzermdi.cpp \
+    src/connection/fileconnection.cpp \
+    src/LorrisAnalyzer/analyzerdataarea.cpp \
     src/LorrisAnalyzer/DataWidgets/datawidget.cpp \
-    src/connection/fileconnection.cpp
+    src/LorrisAnalyzer/DataWidgets/numberwidget.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -88,9 +88,10 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/analyzerdatastorage.h \
     src/LorrisAnalyzer/devicetabwidget.h \
     src/LorrisAnalyzer/cmdtabwidget.h \
-    src/LorrisAnalyzer/analyzermdi.h \
+    src/connection/fileconnection.h \
+    src/LorrisAnalyzer/analyzerdataarea.h \
     src/LorrisAnalyzer/DataWidgets/datawidget.h \
-    src/connection/fileconnection.h
+    src/LorrisAnalyzer/DataWidgets/numberwidget.h
 
 OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc
@@ -110,7 +111,7 @@ win32 {
         translations\\*.qm \
         "$$DESTDIR/translations/"
 }
-unix:!macx {
+unix:!macx:!symbian {
     LIBS += -ludev
     SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_unix.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
@@ -144,4 +145,7 @@ macx {
 FORMS += \
     src/LorrisAnalyzer/sourcedialog.ui \
     src/LorrisAnalyzer/lorrisanalyzer.ui
+
+RESOURCES += \
+    src/LorrisAnalyzer/icons.qrc
 
