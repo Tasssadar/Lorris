@@ -69,7 +69,7 @@ void NumberWidget::setUp()
     fmtAction[0]->setChecked(true);
     connect(signalMapFmt, SIGNAL(mapped(int)), SLOT(fmtSelected(int)));
 
-    levelAction = new QAction("Level off", this);
+    levelAction = new QAction(tr("Level off"), this);
     levelAction->setCheckable(true);
     levelAction->setChecked(true);
     contextMenu->addAction(levelAction);
@@ -151,7 +151,7 @@ void NumberWidget::levelSelected()
 
 NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
-    setText("Number");
+    setText(tr("Number"));
     setIconSize(QSize(17, 17));
     setIcon(QIcon(":/dataWidgetIcons/num.png"));
 

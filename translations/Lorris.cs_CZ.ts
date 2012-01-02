@@ -10,6 +10,92 @@
     </message>
 </context>
 <context>
+    <name>CmdTabWidget</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="13"/>
+        <source>Add command</source>
+        <translation>Přidat příkaz</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="19"/>
+        <source>Add &quot;All commands&quot; tab</source>
+        <translation>Přidat záložku &quot;Všechny příkazy&quot;</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="75"/>
+        <source>Command</source>
+        <translation>Příkaz</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="81"/>
+        <source>All commands</source>
+        <translation>Všechny příkazy</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="106"/>
+        <source>New command</source>
+        <translation>Nový příkaz</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="107"/>
+        <source>Command (hex or normal number):</source>
+        <translation>Příkaz (hex nebo normální číslo):</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="129"/>
+        <source>Error!</source>
+        <translation>Chyba!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="130"/>
+        <source>Wrong format, must be 8bit hex or normal number</source>
+        <translation>Špatný formát, musí být 8 bitový hex nebo normální číslo</translation>
+    </message>
+</context>
+<context>
+    <name>DeviceTabWidget</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="18"/>
+        <source>Add device</source>
+        <translation>Přidat zařízení</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="22"/>
+        <source>Add &quot;All devices&quot; tab</source>
+        <translation>Přidat záložku &quot;Všechny zařízení&quot;</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="76"/>
+        <source>Device</source>
+        <translation>Zařízení</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="82"/>
+        <source>All devices</source>
+        <translation>Všechna zařízení</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="107"/>
+        <source>New device</source>
+        <translation>Nové zařízení</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="108"/>
+        <source>Device ID (hex or normal number):</source>
+        <translation>ID zařízení (hex nebo normální číslo):</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="130"/>
+        <source>Error!</source>
+        <translation>Chyba!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="131"/>
+        <source>Wrong format, must be 8bit hex or normal number</source>
+        <translation>Špatný formát, musí být 8 bitový hex nebo normální číslo</translation>
+    </message>
+</context>
+<context>
     <name>HomeTab</name>
     <message>
         <location filename="../src/ui/HomeTab.cpp" line="11"/>
@@ -20,36 +106,67 @@
 <context>
     <name>LorrisAnalyzer</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="27"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="108"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="20"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="28"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="125"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="31"/>
-        <source>New data source</source>
-        <translation>Nový zdroj dat</translation>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="51"/>
+        <source>New source</source>
+        <translation>Nový zdroj</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="70"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="58"/>
+        <source>Save data</source>
+        <translation>Uložit data</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="65"/>
+        <source>Load data</source>
+        <translation>Otevřít data</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="114"/>
+        <source> of 0</source>
+        <translation> z 0</translation>
+    </message>
+    <message>
+        <source>New data source</source>
+        <translation type="obsolete">Nový zdroj dat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="87"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="91"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="113"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="97"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="108"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="130"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="95"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="112"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="96"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="113"/>
         <source>Can&apos;t open connection!</source>
         <translation>Nemůžu se připojit!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="146"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="221"/>
+        <source> of </source>
+        <translation> z </translation>
     </message>
 </context>
 <context>
@@ -238,32 +355,32 @@
         <translation>O Lorris..</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="117"/>
+        <location filename="../src/ui/mainwindow.cpp" line="113"/>
         <source>Exit Lorris?</source>
         <translation>Ukončit Lorris?</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="118"/>
+        <location filename="../src/ui/mainwindow.cpp" line="114"/>
         <source>Do you really want to leave Lorris?</source>
         <translation>Opravdu chcete ukončit Lorris?</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="119"/>
+        <location filename="../src/ui/mainwindow.cpp" line="115"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="120"/>
+        <location filename="../src/ui/mainwindow.cpp" line="116"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="140"/>
+        <location filename="../src/ui/mainwindow.cpp" line="136"/>
         <source>About Lorris</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="141"/>
+        <location filename="../src/ui/mainwindow.cpp" line="137"/>
         <source>Lorris revision </source>
         <translation>Lorris v revizi </translation>
     </message>
@@ -271,50 +388,91 @@
 <context>
     <name>NewSourceDialog</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="25"/>
         <source>Set packet lenght and start transmiting packets.</source>
-        <translation>Nastavte délku packetu a začněte posílat data.</translation>
+        <translation type="obsolete">Nastavte délku packetu a začněte posílat data.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="27"/>
         <source>Packet lenght</source>
-        <translation>Délka packetu</translation>
+        <translation type="obsolete">Délka packetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="33"/>
         <source>Start bytes: </source>
-        <translation>Start byty: </translation>
+        <translation type="obsolete">Start byty: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="38"/>
         <source>Stop bytes: </source>
-        <translation>Stop byty: </translation>
+        <translation type="obsolete">Stop byty: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="53"/>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="170"/>
         <source>Pause</source>
-        <translation>Zmrazit</translation>
+        <translation type="obsolete">Zmrazit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="58"/>
         <source>Hex</source>
-        <translation>Hex</translation>
+        <translation type="obsolete">Hex</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="60"/>
         <source>Text</source>
-        <translation>Text</translation>
+        <translation type="obsolete">Text</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="64"/>
         <source>Next</source>
-        <translation>Další</translation>
+        <translation type="obsolete">Další</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/newsourcedialog.cpp" line="168"/>
         <source>Unpause</source>
-        <translation>Odmrazit</translation>
+        <translation type="obsolete">Odmrazit</translation>
+    </message>
+</context>
+<context>
+    <name>NumberWidget</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="43"/>
+        <source>Size</source>
+        <translation>Velikost</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="44"/>
+        <source>Format</source>
+        <translation>Formát</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="50"/>
+        <source>un</source>
+        <translation>un</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="50"/>
+        <source>signed </source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="51"/>
+        <source> bits</source>
+        <translation> bit</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="63"/>
+        <source>Decimal</source>
+        <translation>Desítkový</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="63"/>
+        <source>Hex</source>
+        <translation>Hexadecimální</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="72"/>
+        <source>Level off</source>
+        <translation>Zarovnat</translation>
+    </message>
+</context>
+<context>
+    <name>NumberWidgetAddBtn</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="154"/>
+        <source>Number</source>
+        <translation>Číslo</translation>
     </message>
 </context>
 <context>
@@ -861,15 +1019,46 @@
         <translation>Exportovat EEPROM</translation>
     </message>
     <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="42"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="90"/>
+        <source>Lorris data file (*.ldta)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="43"/>
+        <source>Export Data</source>
+        <translation>Export dat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="51"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="99"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="116"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="132"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="30"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="82"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="52"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="31"/>
         <source>Can&apos;t create/open file!</source>
         <translation>Nemůžu vytvořit/otevřít soubor!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="91"/>
+        <source>Import Data</source>
+        <translation>Import dat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="117"/>
+        <source>Data file has different version of structure!</source>
+        <translation>Datový soubor má rozdílnou verzi struktury!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="133"/>
+        <source>Data file has wrong magic!</source>
+        <translation>Data mají špatné magic číslo!</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="76"/>
@@ -877,6 +1066,7 @@
         <translation>Importovat EEPROM</translation>
     </message>
     <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="100"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="83"/>
         <location filename="../src/LorrisTerminal/hexfile.cpp" line="22"/>
         <source>Can&apos;t open file!</source>
@@ -948,55 +1138,182 @@
     </message>
 </context>
 <context>
+    <name>SourceDialog</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="20"/>
+        <source>Dialog</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="32"/>
+        <source>Header</source>
+        <translation>Hlavička</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="47"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="98"/>
+        <source>Length</source>
+        <translation>Délka</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="69"/>
+        <source>Content</source>
+        <translation>Obsah</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="81"/>
+        <source>Static data (start bytes, etc)</source>
+        <translation>Statická data (start byty apod.)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="91"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="261"/>
+        <source>Packet length</source>
+        <translation>Délka packetu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="98"/>
+        <source>Command (opcode)</source>
+        <translation>Příkaz (opcode)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="105"/>
+        <source>Device ID</source>
+        <translation>ID zařízení</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="143"/>
+        <source>8bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="148"/>
+        <source>16bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="153"/>
+        <source>32bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="193"/>
+        <source>Hint: Use drag &amp; drop
+to change order</source>
+        <translation>Použijte drag &amp; drop
+ke změně uspořádání</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="214"/>
+        <source>Packet Data</source>
+        <translation>Data packetu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="273"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="99"/>
+        <source>Static</source>
+        <translation>Statická</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="283"/>
+        <source>Dynamic</source>
+        <translation>Dynamická</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="333"/>
+        <source>Endianess</source>
+        <translation>Endian</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="361"/>
+        <source>Big-endian</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="366"/>
+        <source>Little endian</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="399"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="404"/>
+        <source>Byte</source>
+        <translation>Číslo</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="409"/>
+        <source>String</source>
+        <translation>Text</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="100"/>
+        <source>ID</source>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="101"/>
+        <source>Cmd</source>
+        <translation>Příkaz</translation>
+    </message>
+</context>
+<context>
     <name>TabDialog</name>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="39"/>
+        <location filename="../src/ui/tabdialog.cpp" line="41"/>
         <source>Connection: </source>
         <translation>Připojení: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="47"/>
-        <location filename="../src/ui/tabdialog.cpp" line="205"/>
+        <location filename="../src/ui/tabdialog.cpp" line="49"/>
+        <location filename="../src/ui/tabdialog.cpp" line="232"/>
         <source>Create tab</source>
         <translation>Vytvořit panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="77"/>
+        <location filename="../src/ui/tabdialog.cpp" line="81"/>
         <source>Socket</source>
         <translation>Socket</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="78"/>
+        <location filename="../src/ui/tabdialog.cpp" line="82"/>
         <source>Serial port</source>
         <translation>Sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="79"/>
         <source>File</source>
-        <translation>Soubor</translation>
+        <translation type="obsolete">Soubor</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="94"/>
+        <location filename="../src/ui/tabdialog.cpp" line="83"/>
+        <source>None (Load data from File)</source>
+        <translation>Žádné (Načíst data ze souboru)</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabdialog.cpp" line="98"/>
         <source>Port: </source>
         <translation>Port: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="112"/>
+        <location filename="../src/ui/tabdialog.cpp" line="116"/>
         <source>Baud Rate: </source>
         <translation>Rychlost: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="173"/>
+        <location filename="../src/ui/tabdialog.cpp" line="199"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="209"/>
+        <location filename="../src/ui/tabdialog.cpp" line="236"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="210"/>
+        <location filename="../src/ui/tabdialog.cpp" line="237"/>
         <source>Error opening serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
     </message>
