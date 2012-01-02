@@ -28,6 +28,8 @@ private:
     quint32 getNewId() { return m_widgetIdCounter++; }
     DataWidget *newWidget(quint8 type);
 
+    void fixWidgetPos(QPoint& pos, QWidget *w);
+
     w_map m_widgets;
     quint32 m_widgetIdCounter;
 };

@@ -28,7 +28,10 @@ void AnalyzerDataArea::dropEvent(QDropEvent *event)
         return;
     w->setUp();
 
-    w->move(event->pos());
+
+    QPoint newPos(event->pos());
+    fixWidgetPos(newPos, w);
+    w->move(newPos);
     w->show();
 
     quint32 id = getNewId();
@@ -64,4 +67,16 @@ void AnalyzerDataArea::removeWidget(quint32 id)
         return;
     delete itr->second;
     m_widgets.erase(itr);
+}
+
+void AnalyzerDataArea::fixWidgetPos(QPoint &pos, QWidget *w)
+{
+    int x = pos.x() + w->width();
+    int y = pos.y() + w->height();
+
+    if(x > width())
+        pos.setX(width() - w->width());
+
+    if(y > height())
+        pos.setY(height() - w->height());
 }
