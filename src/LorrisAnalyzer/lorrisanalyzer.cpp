@@ -42,6 +42,9 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     timeSlider = findChild<QSlider*>("timeSlider");
     connect(timeSlider, SIGNAL(valueChanged(int)), this, SLOT(timeSliderMoved(int)));
 
+    timeBox = findChild<QSpinBox*>("timeBox");
+    connect(timeBox, SIGNAL(valueChanged(int)), this, SLOT(timeBoxChanged(int)));
+
     m_dev_tabs = new DeviceTabWidget(this);
     QVBoxLayout *leftVLayout = findChild<QVBoxLayout*>("leftVLayout");
     leftVLayout->insertWidget(1, m_dev_tabs);
@@ -139,8 +142,13 @@ void LorrisAnalyzer::readData(QByteArray data)
 
     bool update = timeSlider->value() == timeSlider->maximum();
     timeSlider->setMaximum(m_storage->getSize());
+    timeBox->setMaximum(m_storage->getSize());
+    timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
     if(update)
+    {
         timeSlider->setValue(m_storage->getSize());
+        timeBox->setValue(m_storage->getSize());
+    }
 }
 
 void LorrisAnalyzer::onTabShow()
@@ -181,6 +189,14 @@ void LorrisAnalyzer::timeSliderMoved(int value)
 {
     if(value != 0)
         updateData();
+
+    if(timeSlider->isSliderDown())
+        timeBox->setValue(value);
+}
+
+void LorrisAnalyzer::timeBoxChanged(int value)
+{
+    timeSlider->setValue(value);
 }
 
 void LorrisAnalyzer::updateData()
@@ -201,4 +217,7 @@ void LorrisAnalyzer::loadDataButton()
 
     timeSlider->setMaximum(m_storage->getSize());
     timeSlider->setValue(m_storage->getSize());
+    timeBox->setMaximum(m_storage->getSize());
+    timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
+    timeBox->setValue(m_storage->getSize());
 }

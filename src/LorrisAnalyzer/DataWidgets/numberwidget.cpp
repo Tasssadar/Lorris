@@ -152,7 +152,9 @@ void NumberWidget::levelSelected()
 NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText("Number");
-    setIcon(QIcon(":/icons/num.png"));
+    setIconSize(QSize(17, 17));
+    setIcon(QIcon(":/dataWidgetIcons/num.png"));
+
     m_widgetType = WIDGET_NUMBERS;
 }
 
@@ -162,7 +164,7 @@ NumberWidgetAddBtn::~NumberWidgetAddBtn()
 
 QPixmap NumberWidgetAddBtn::getRender()
 {
-    NumberWidget *w = new NumberWidget();
+    NumberWidget *w = new NumberWidget(this);
     QPixmap map(w->size());
     w->render(&map);
     delete w;

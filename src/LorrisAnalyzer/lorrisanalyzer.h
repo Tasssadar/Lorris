@@ -11,6 +11,7 @@ class AnalyzerDataStorage;
 class QSlider;
 class DeviceTabWidget;
 class AnalyzerDataArea;
+class QSpinBox;
 struct analyzer_packet;
 
 enum states_
@@ -45,6 +46,7 @@ class LorrisAnalyzer : public WorkTab
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
         void timeSliderMoved(int value);
+        void timeBoxChanged(int value);
 
     private:
         void readData(QByteArray data);
@@ -53,6 +55,7 @@ class LorrisAnalyzer : public WorkTab
         Ui::LorrisAnalyzer *ui;
         AnalyzerDataStorage *m_storage;
         QSlider *timeSlider;
+        QSpinBox *timeBox;
         analyzer_packet *m_packet;
         DeviceTabWidget *m_dev_tabs;
         AnalyzerDataArea *m_data_area;

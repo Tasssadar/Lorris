@@ -147,5 +147,5 @@ FORMS += \
     src/LorrisAnalyzer/lorrisanalyzer.ui
 
 RESOURCES += \
-    src/LorrisAnalyzer/icons.qrc
+    src/LorrisAnalyzer/DataWidgetIcons.qrc
 
