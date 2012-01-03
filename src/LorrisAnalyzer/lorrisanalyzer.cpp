@@ -46,6 +46,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(timeBox, SIGNAL(valueChanged(int)), this, SLOT(timeBoxChanged(int)));
 
     m_dev_tabs = new DeviceTabWidget(this);
+
     QVBoxLayout *leftVLayout = findChild<QVBoxLayout*>("leftVLayout");
     leftVLayout->insertWidget(1, m_dev_tabs);
 

@@ -3,6 +3,7 @@
 
 #include <QTypeInfo>
 #include <QByteArray>
+#include <algorithm>
 
 enum DataType
 {
@@ -107,43 +108,44 @@ public:
     bool getCmd(quint8& cmd);
     quint16 getHeaderDataPos(quint8 type);
 
-    quint8  getUInt8 (quint32 pos);
-    qint8   getInt8  (quint32 pos);
-    quint16 getUInt16(quint32 pos);
-    qint16  getInt16 (quint32 pos);
-    quint32 getUInt32(quint32 pos);
-    qint32  getInt32 (quint32 pos);
-    quint64 getUInt64(quint32 pos);
-    qint64  getInt64 (quint32 pos);
+    quint8   getUInt8  (quint32 pos) { return read<quint8> (pos); }
+    qint8    getInt8   (quint32 pos) { return read<qint8>  (pos); }
+    quint16  getUInt16 (quint32 pos) { return read<quint16>(pos); }
+    qint16   getInt16  (quint32 pos) { return read<qint16> (pos); }
+    quint32  getUInt32 (quint32 pos) { return read<quint32>(pos); }
+    qint32   getInt32  (quint32 pos) { return read<qint32> (pos); }
+    quint64  getUInt64 (quint32 pos) { return read<quint64>(pos); }
+    qint64   getInt64  (quint32 pos) { return read<qint64> (pos); }
+    float    getFloat  (quint32 pos) { return read<float>  (pos); }
+    double   getDouble (quint32 pos) { return read<double> (pos); }
+
     QString getString(quint32 pos);
 
-    template<class T>
-    void getInt(T& val, bool sign, quint8 bytes, quint32 pos);
-private:
-    template<class T> void __getInt(T& val, quint32 pos);
+    template <typename T> T read(quint32 pos);
+    template <typename T> inline void switch_endian(char *val);
 
+private:
     analyzer_packet *m_packet;
     QByteArray m_data;
 };
 
-template<class T>
-void analyzer_data::getInt(T& val, bool sign, quint8 bytes, quint32 pos)
+template <typename T>
+void analyzer_data::switch_endian(char *val)
 {
-    if(!sign)
-        bytes += 10;
+    for(qint8 i = sizeof(T); i > 0; i -= 2, ++val)
+        std::swap(*val, *(val + i - 1));
+}
 
-    switch(bytes)
-    {
-        case 1: val = getInt8(pos);  return;
-        case 2: val = getInt16(pos); return;
-        case 4: val = getInt32(pos); return;
-        case 8: val = getInt64(pos); return;
+template <typename T>
+T analyzer_data::read(quint32 pos)
+{
+    if(pos+sizeof(T) > (quint32)m_data.length())
+        throw "Cannot read beyond data size!";
 
-        case 11: val = getUInt8(pos);  return;
-        case 12: val = getUInt16(pos); return;
-        case 14: val = getUInt32(pos); return;
-        case 18: val = getUInt64(pos); return;
-    }
+    T val = *((T const*)&m_data.data()[pos]);
+    if(m_packet->big_endian)
+        switch_endian<T>((char*)&val);
+    return val;
 }
 
 #endif // PACKET_H

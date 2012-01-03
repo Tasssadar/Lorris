@@ -5,6 +5,32 @@
 
 class QMenu;
 
+enum NumberTypes
+{
+    NUM_UINT8,
+    NUM_UINT16,
+    NUM_UINT32,
+    NUM_UINT64,
+
+    NUM_INT8,
+    NUM_INT16,
+    NUM_INT32,
+    NUM_INT64,
+
+    NUM_FLOAT,
+    NUM_DOUBLE,
+
+    NUM_COUNT
+};
+
+enum NumberFormats
+{
+    FMT_DECIMAL,
+    FMT_EXPONENT,
+    FMT_HEX,
+    FMT_COUNT
+};
+
 class NumberWidget : public DataWidget
 {
     Q_OBJECT
@@ -25,15 +51,14 @@ private slots:
 
 private:
      QLabel *num;
-     bool sign;
-     quint8 bytes;
-     bool hex;
+     quint8 numberType;
+     quint8 format;
      bool level;
      QMenu *contextMenu;
      QMenu *bitsMenu;
      QMenu *formatMenu;
-     QAction *bitsAction[8];
-     QAction *fmtAction[2];
+     QAction *bitsAction[NUM_COUNT];
+     QAction *fmtAction[FMT_COUNT];
      QAction *levelAction;
 };
 

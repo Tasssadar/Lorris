@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/dataWidgetIcons">
-        <file>icons/num.png</file>
+        <file alias="num.png">icons/num.png</file>
     </qresource>
 </RCC>
