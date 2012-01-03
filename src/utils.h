@@ -8,9 +8,15 @@ class Utils
 public:
     static QString hexToString(quint8 data, bool withZeroEx = false);
     static QString parseChar(char c);
-    static quint16 swapEndian16(quint16 x);
-    static quint32 swapEndian32(quint32 x);
-    static quint64 swapEndian64(quint64 x);
+    template <typename T> static inline void swapEndian(char *val);
 };
+
+template <typename T>
+void Utils::swapEndian(char *val)
+{
+    for(qint8 i = sizeof(T); i > 0; i -= 2, ++val)
+        std::swap(*val, *(val + i - 1));
+}
+
 
 #endif // NUM_FUNC_H

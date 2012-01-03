@@ -5,6 +5,8 @@
 #include <QByteArray>
 #include <algorithm>
 
+#include "common.h"
+
 enum DataType
 {
     DATA_BODY      = 0x01,
@@ -122,19 +124,11 @@ public:
     QString getString(quint32 pos);
 
     template <typename T> T read(quint32 pos);
-    template <typename T> inline void switch_endian(char *val);
 
 private:
     analyzer_packet *m_packet;
     QByteArray m_data;
 };
-
-template <typename T>
-void analyzer_data::switch_endian(char *val)
-{
-    for(qint8 i = sizeof(T); i > 0; i -= 2, ++val)
-        std::swap(*val, *(val + i - 1));
-}
 
 template <typename T>
 T analyzer_data::read(quint32 pos)
@@ -144,7 +138,7 @@ T analyzer_data::read(quint32 pos)
 
     T val = *((T const*)&m_data.data()[pos]);
     if(m_packet->big_endian)
-        switch_endian<T>((char*)&val);
+        Utils::swapEndian<T>((char*)&val);
     return val;
 }
 

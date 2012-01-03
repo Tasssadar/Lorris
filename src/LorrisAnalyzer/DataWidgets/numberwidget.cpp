@@ -37,6 +37,7 @@ void NumberWidget::setUp()
     DataWidget::setUp();
 
     numberType = NUM_UINT8;
+    format = FMT_DECIMAL;
     level = false;
 
     contextMenu = new QMenu(this);
@@ -75,7 +76,7 @@ void NumberWidget::setUp()
     bitsAction[0]->setChecked(true);
     connect(signalMapBits, SIGNAL(mapped(int)), SLOT(bitsSelected(int)));
 
-    static const QString format[] =
+    static const QString formatStr[] =
     {
         tr("Decimal"),
         tr("Decimal (w/ exponent)"),
@@ -85,7 +86,7 @@ void NumberWidget::setUp()
     QSignalMapper *signalMapFmt = new QSignalMapper(this);
     for(quint8 i = 0; i < FMT_COUNT; ++i)
     {
-        fmtAction[i] = new QAction(format[i], this);
+        fmtAction[i] = new QAction(formatStr[i], this);
         fmtAction[i]->setCheckable(true);
         formatMenu->addAction(fmtAction[i]);
         signalMapFmt->setMapping(fmtAction[i], i);
@@ -166,8 +167,7 @@ void NumberWidget::processData(analyzer_data *data)
 
 void NumberWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if(m_assigned)
-        contextMenu->exec(event->globalPos());
+    contextMenu->exec(event->globalPos());
 }
 
 void NumberWidget::fmtSelected(int i)
