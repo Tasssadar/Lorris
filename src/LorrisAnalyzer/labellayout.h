@@ -90,7 +90,7 @@ public:
                               CmdTabWidget *cmd = NULL, DeviceTabWidget *dev = NULL, QWidget *parent = 0);
     ~ScrollDataLayout();
 
-    void SetData(QByteArray data);
+    void SetData(const QByteArray &data);
 
 public slots:
     void fmtChanged(int len);

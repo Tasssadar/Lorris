@@ -22,7 +22,7 @@ bool SerialPort::Open()
     return false;
 }
 
-void SerialPort::dataReadSer(QByteArray data)
+void SerialPort::dataReadSer(const QByteArray& data)
 {
     emit dataRead(data);
 }
@@ -49,7 +49,7 @@ void SerialPort::Close()
     opened = false;
 }
 
-void SerialPort::SendData(QByteArray data)
+void SerialPort::SendData(const QByteArray& data)
 {
     if(opened)
         thread->Send(data);

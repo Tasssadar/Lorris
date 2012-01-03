@@ -49,7 +49,7 @@ class LorrisAnalyzer : public WorkTab
         void timeBoxChanged(int value);
 
     private:
-        void readData(QByteArray data);
+        void readData(const QByteArray& data);
 
         quint16 m_state;
         Ui::LorrisAnalyzer *ui;

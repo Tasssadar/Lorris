@@ -26,7 +26,7 @@ class WorkTab : public QWidget
         virtual void onTabShow();
 
     protected slots:
-        virtual void readData(QByteArray data);
+        virtual void readData(const QByteArray &data);
         virtual void connectedStatus(bool connected);
 
     protected:

@@ -21,7 +21,7 @@ public:
     ~SerialPortThread();
 
     bool Open();
-    void Send(QByteArray data);
+    void Send(const QByteArray &data);
 
     void run();
 

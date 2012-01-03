@@ -191,7 +191,7 @@ quint8 ScrollDataLayout::GetTypeForPos(quint32 pos)
     return DATA_BODY;
 }
 
-void ScrollDataLayout::SetData(QByteArray data)
+void ScrollDataLayout::SetData(const QByteArray& data)
 {
     QString value;
     if(m_header->data_mask & DATA_LEN)

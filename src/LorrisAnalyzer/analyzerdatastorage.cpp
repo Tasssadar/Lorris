@@ -23,7 +23,7 @@ void AnalyzerDataStorage::Clear()
     m_data.clear();
 }
 
-analyzer_data *AnalyzerDataStorage::addData(QByteArray data)
+analyzer_data *AnalyzerDataStorage::addData(const QByteArray& data)
 {
     if(!m_packet)
         return NULL;

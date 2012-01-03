@@ -16,7 +16,7 @@ bool Connection::Open()
     return false;
 }
 
-void Connection::SendData(QByteArray /*data*/)
+void Connection::SendData(const QByteArray& /*data*/)
 {
 
 }

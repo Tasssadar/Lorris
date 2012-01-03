@@ -11,7 +11,7 @@ class Connection : public QObject
     Q_OBJECT
 
 Q_SIGNALS:
-    void dataRead(QByteArray data);
+    void dataRead(const QByteArray& data);
     void connectResult(Connection *con, bool open);
     void connected(bool connected);
 
@@ -25,7 +25,7 @@ public:
     virtual bool Open();
     virtual void OpenConcurrent();
     virtual void Close() { }
-    virtual void SendData(QByteArray data);
+    virtual void SendData(const QByteArray &data);
 
     bool isOpen() { return opened; }
 

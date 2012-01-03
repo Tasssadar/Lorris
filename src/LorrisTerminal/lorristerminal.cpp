@@ -364,7 +364,7 @@ void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
     }
 }
 
-void LorrisTerminal::readData(QByteArray data)
+void LorrisTerminal::readData(const QByteArray& data)
 {
     if((m_state & STATE_STOPPING1) && data[0] == char(20))
     {

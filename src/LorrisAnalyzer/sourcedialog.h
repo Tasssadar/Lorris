@@ -26,7 +26,7 @@ public:
     analyzer_packet *getStructure();
 
 public slots:
-    void readData(QByteArray data);
+    void readData(const QByteArray& data);
     void headerLenToggled(bool checked);
     void headerLenChanged(int values);
     void staticLenChanged(int values);

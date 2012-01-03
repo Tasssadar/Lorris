@@ -137,7 +137,7 @@ void LorrisAnalyzer::connectedStatus(bool connected)
     }
 }
 
-void LorrisAnalyzer::readData(QByteArray data)
+void LorrisAnalyzer::readData(const QByteArray& data)
 {
     if((m_state & STATE_DIALOG) != 0 || !m_packet)
         return;

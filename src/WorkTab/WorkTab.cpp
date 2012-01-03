@@ -20,7 +20,7 @@ WorkTab::~WorkTab()
     }
 }
 
-void WorkTab::readData(QByteArray /*data*/)
+void WorkTab::readData(const QByteArray& /*data*/)
 {
 
 }

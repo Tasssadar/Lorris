@@ -16,7 +16,7 @@ SerialPortThread::~SerialPortThread()
 
 }
 
-void SerialPortThread::Send(QByteArray data)
+void SerialPortThread::Send(const QByteArray& data)
 {
     if(runTh && m_port)
     {

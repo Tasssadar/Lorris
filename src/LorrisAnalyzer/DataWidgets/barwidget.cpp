@@ -49,8 +49,8 @@ void BarWidget::setUp()
 
     QSignalMapper *signalMapBits = new QSignalMapper(this);
 
-    quint8 y,i = 0;
-    for(; i < NUM_COUNT; ++i)
+    quint8 y,i;
+    for(y = i = 0; i < NUM_COUNT; ++i)
     {
         if(i == 2)
             bitsMenu->addSeparator();
@@ -60,7 +60,6 @@ void BarWidget::setUp()
             bitsAction[i] = NULL;
             continue;
         }
-
 
         bitsAction[i] = new QAction(dataTypes[y], this);
         bitsAction[i]->setCheckable(true);
@@ -145,6 +144,7 @@ void BarWidget::rangeSelected()
         m_bar->setMinimum(dialog->getMin());
     }
     delete dialog;
+    emit updateData();
 }
 
 BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

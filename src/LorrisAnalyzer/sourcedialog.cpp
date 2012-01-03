@@ -83,7 +83,7 @@ void SourceDialog::butonnBoxClicked(QAbstractButton *b)
     close();
 }
 
-void SourceDialog::readData(QByteArray data)
+void SourceDialog::readData(const QByteArray& data)
 {
     scroll_layout->SetData(data);
 }

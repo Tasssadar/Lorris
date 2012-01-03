@@ -20,7 +20,7 @@ public:
 
     bool Open();
     void Close();
-    void SendData(QByteArray data);
+    void SendData(const QByteArray &data);
     void SetNameAndRate(QString name, AbstractSerial::BaudRate rate)
     {
         m_idString = name;
@@ -29,7 +29,7 @@ public:
     void OpenConcurrent();
 
 private slots:
-    void dataReadSer(QByteArray data);
+    void dataReadSer(const QByteArray& data);
     void connectResultSer(bool opened);
 
 private:

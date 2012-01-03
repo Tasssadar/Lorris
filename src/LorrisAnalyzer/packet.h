@@ -104,7 +104,7 @@ public:
     analyzer_data(analyzer_packet *packet);
 
     void setData(QByteArray data) { m_data = data; }
-    QByteArray getData() { return m_data; }
+    const QByteArray& getData() { return m_data; }
 
     bool getDeviceId(quint8& id);
     bool getCmd(quint8& cmd);

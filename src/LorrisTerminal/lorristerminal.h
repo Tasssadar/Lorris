@@ -55,7 +55,7 @@ private slots:
     void eepromButton();
     void eepromImportButton();
 
-    void readData(QByteArray data);
+    void readData(const QByteArray& data);
     void sendKeyEvent(QByteArray key);
     void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);

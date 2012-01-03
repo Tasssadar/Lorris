@@ -23,7 +23,7 @@ public:
 
     void Clear();
 
-    analyzer_data *addData(QByteArray data);
+    analyzer_data *addData(const QByteArray &data);
     quint32 getSize() { return m_size; }
     analyzer_data *get(quint32 index) { return m_data[index]; }
     analyzer_packet *loadFromFile();
