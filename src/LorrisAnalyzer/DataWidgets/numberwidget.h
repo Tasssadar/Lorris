@@ -5,24 +5,6 @@
 
 class QMenu;
 
-enum NumberTypes
-{
-    NUM_UINT8,
-    NUM_UINT16,
-    NUM_UINT32,
-    NUM_UINT64,
-
-    NUM_INT8,
-    NUM_INT16,
-    NUM_INT32,
-    NUM_INT64,
-
-    NUM_FLOAT,
-    NUM_DOUBLE,
-
-    NUM_COUNT
-};
-
 enum NumberFormats
 {
     FMT_DECIMAL,
@@ -55,8 +37,6 @@ private:
      quint8 format;
      bool level;
      QMenu *contextMenu;
-     QMenu *bitsMenu;
-     QMenu *formatMenu;
      QAction *bitsAction[NUM_COUNT];
      QAction *fmtAction[FMT_COUNT];
      QAction *levelAction;

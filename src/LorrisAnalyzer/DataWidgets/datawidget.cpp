@@ -37,6 +37,7 @@ DataWidget::DataWidget(QWidget *parent) :
 
     setFrameStyle(QFrame::Box | QFrame::Plain);
     setLineWidth(2);
+
 }
 
 DataWidget::~DataWidget()
@@ -122,6 +123,7 @@ void DataWidget::processData(analyzer_data */*data*/)
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 {
     setFlat(true);
+    setStyleSheet("text-align: left");
 }
 
 DataWidgetAddBtn::~DataWidgetAddBtn()

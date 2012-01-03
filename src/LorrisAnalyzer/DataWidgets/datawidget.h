@@ -10,7 +10,26 @@
 
 enum WidgetTypes
 {
-    WIDGET_NUMBERS
+    WIDGET_NUMBERS,
+    WIDGET_BAR
+};
+
+enum NumberTypes
+{
+    NUM_UINT8,
+    NUM_UINT16,
+    NUM_UINT32,
+    NUM_UINT64,
+
+    NUM_INT8,
+    NUM_INT16,
+    NUM_INT32,
+    NUM_INT64,
+
+    NUM_FLOAT,
+    NUM_DOUBLE,
+
+    NUM_COUNT
 };
 
 struct data_widget_info
@@ -50,31 +69,26 @@ public slots:
 protected:
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent * event);
-    virtual void dragEnterEvent(QDragEnterEvent *event);
-    virtual void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+
 
     virtual void processData(analyzer_data *data);
 
     void setTitle(QString title);
-    void addLayout(QLayout *layout)
-    {
-        layout->addItem(layout);
-    }
-    void addWidget(QWidget *w)
-    {
-        layout->addWidget(w);
-    }
 
     quint8 m_widgetType;
     data_widget_info m_info;
     bool m_assigned;
+
+    QVBoxLayout *layout;
 
 private:
     inline bool iw(int w) { return w + width() > ((QWidget*)parent())->width(); }
     inline bool ih(int h) { return h + height() > ((QWidget*)parent())->height(); }
 
     QPoint mOrigin;
-    QVBoxLayout *layout;
+
     quint32 m_id;
 };
 

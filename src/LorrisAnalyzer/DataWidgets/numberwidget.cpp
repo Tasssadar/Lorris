@@ -15,21 +15,20 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 
     num = new QLabel("0", this);
     num->setAlignment(Qt::AlignCenter);
+    num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
     QFont font("Monospace");
     font.setStyleHint(QFont::Monospace);
     font.setPointSize(20);
     num->setFont(font);
-    addWidget(num);
+    layout->addWidget(num);
     adjustSize();
 
-    contextMenu = bitsMenu = formatMenu = NULL;
+    contextMenu = NULL;
 }
 
 NumberWidget::~NumberWidget()
 {
-    delete bitsMenu;
-    delete formatMenu;
     delete contextMenu;
 }
 
@@ -42,8 +41,8 @@ void NumberWidget::setUp()
     level = false;
 
     contextMenu = new QMenu(this);
-    bitsMenu = contextMenu->addMenu(tr("Data type"));
-    formatMenu = contextMenu->addMenu(tr("Format"));
+    QMenu *bitsMenu = contextMenu->addMenu(tr("Data type"));
+    QMenu *formatMenu = contextMenu->addMenu(tr("Format"));
 
     static const QString dataTypes[] =
     {

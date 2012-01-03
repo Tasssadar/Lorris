@@ -2,6 +2,7 @@
 
 #include "analyzerdataarea.h"
 #include "DataWidgets/numberwidget.h"
+#include "DataWidgets/barwidget.h"
 #include "lorrisanalyzer.h"
 
 AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
@@ -56,6 +57,7 @@ DataWidget *AnalyzerDataArea::newWidget(quint8 type)
     switch(type)
     {
         case WIDGET_NUMBERS: return new NumberWidget(this);
+        case WIDGET_BAR:     return new BarWidget(this);
     }
     return NULL;
 }

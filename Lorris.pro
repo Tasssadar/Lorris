@@ -45,7 +45,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/connection/fileconnection.cpp \
     src/LorrisAnalyzer/analyzerdataarea.cpp \
     src/LorrisAnalyzer/DataWidgets/datawidget.cpp \
-    src/LorrisAnalyzer/DataWidgets/numberwidget.cpp
+    src/LorrisAnalyzer/DataWidgets/numberwidget.cpp \
+    src/LorrisAnalyzer/DataWidgets/barwidget.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -91,7 +92,8 @@ HEADERS += src/ui/mainwindow.h \
     src/connection/fileconnection.h \
     src/LorrisAnalyzer/analyzerdataarea.h \
     src/LorrisAnalyzer/DataWidgets/datawidget.h \
-    src/LorrisAnalyzer/DataWidgets/numberwidget.h
+    src/LorrisAnalyzer/DataWidgets/numberwidget.h \
+    src/LorrisAnalyzer/DataWidgets/barwidget.h
 
 OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc
@@ -137,7 +139,8 @@ macx {
 
 FORMS += \
     src/LorrisAnalyzer/sourcedialog.ui \
-    src/LorrisAnalyzer/lorrisanalyzer.ui
+    src/LorrisAnalyzer/lorrisanalyzer.ui \
+    src/LorrisAnalyzer/DataWidgets/rangeselectdialog.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc

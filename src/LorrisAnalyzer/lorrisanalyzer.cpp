@@ -20,6 +20,7 @@
 #include "connection/connectionmgr.h"
 #include "DataWidgets/datawidget.h"
 #include "DataWidgets/numberwidget.h"
+#include "DataWidgets/barwidget.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
@@ -61,7 +62,11 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 
     QScrollArea *widgetsScrollArea = findChild<QScrollArea*>("widgetsScrollArea");
     QWidget *tmp = new QWidget(this);
-    new NumberWidgetAddBtn(tmp);
+    QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
+    widgetBtnL->addWidget(new NumberWidgetAddBtn(tmp));
+    widgetBtnL->addWidget(new BarWidgetAddBtn(tmp));
+
+    widgetBtnL->addWidget(new QWidget(tmp), 4);
     widgetsScrollArea->setWidget(tmp);
 
     m_packet = NULL;
