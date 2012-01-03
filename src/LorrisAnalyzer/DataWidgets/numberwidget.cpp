@@ -16,7 +16,8 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
     num = new QLabel("0", this);
     num->setAlignment(Qt::AlignCenter);
 
-    QFont font;
+    QFont font("Monospace");
+    font.setStyleHint(QFont::Monospace);
     font.setPointSize(20);
     num->setFont(font);
     addWidget(num);

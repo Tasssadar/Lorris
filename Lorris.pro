@@ -103,13 +103,6 @@ win32 {
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_win.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialengine_win.cpp
     HEADERS += dep/qserialdevice/src/qwineventnotifier_p.h
-    QMAKE_POST_LINK = mkdir \
-        "$$DESTDIR/translations" \
-        & \
-        copy \
-        /y \
-        translations\\*.qm \
-        "$$DESTDIR/translations/"
 }
 unix:!macx:!symbian {
     LIBS += -ludev

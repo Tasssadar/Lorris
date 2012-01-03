@@ -253,7 +253,7 @@ DraggableLabel::DraggableLabel(const QString &text, bool drop, bool drag,
     setAlignment(Qt::AlignCenter);
 
     QFont font("Monospace");
-    font.setStyleHint(QFont::TypeWriter);
+    font.setStyleHint(QFont::Monospace);
     setFont(font);
     setAcceptDrops(true);
 

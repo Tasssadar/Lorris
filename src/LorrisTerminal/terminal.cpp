@@ -19,7 +19,7 @@ Terminal::Terminal(QWidget *parent) : QPlainTextEdit(parent)
     setPalette(palette);
 
     QFont font("Monospace");
-    font.setStyleHint(QFont::TypeWriter);
+    font.setStyleHint(QFont::Monospace);
     setFont(font);
 }
 
