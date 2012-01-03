@@ -30,7 +30,7 @@ private slots:
     void stop();
 
 private:
-    bool runTh;
+    volatile bool runTh;
     AbstractSerial *m_port;
     AbstractSerial::BaudRate m_rate;
     QString devName;

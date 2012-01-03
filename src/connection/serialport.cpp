@@ -43,6 +43,8 @@ void SerialPort::Close()
     if(thread)
     {
         emit stopThread();
+        thread->wait();
+        delete thread;
         thread = NULL;
         emit connected(false);
     }
@@ -58,7 +60,11 @@ void SerialPort::SendData(const QByteArray& data)
 void SerialPort::OpenConcurrent()
 {
     if(thread)
+    {
         emit stopThread();
+        thread->wait();
+        delete thread;
+    }
     thread = new SerialPortThread(m_idString, m_rate, this);
     connect(thread, SIGNAL(dataRead(QByteArray)), this, SLOT(dataReadSer(QByteArray)));
     connect(thread, SIGNAL(connectResult(bool)), this, SLOT(connectResultSer(bool)));

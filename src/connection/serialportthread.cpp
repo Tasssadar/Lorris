@@ -59,7 +59,7 @@ void SerialPortThread::run()
     if(!opened)
         return;
 
-    connect(m_con, SIGNAL(stopThread()), this, SLOT(stop()), Qt::QueuedConnection);
+    connect(m_con, SIGNAL(stopThread()), this, SLOT(stop()));
 
     while(runTh)
     {
@@ -75,7 +75,6 @@ void SerialPortThread::run()
     m_port->close();
     delete m_port;
     m_port = NULL;
-    deleteLater();
 }
 
 void SerialPortThread::stop()
