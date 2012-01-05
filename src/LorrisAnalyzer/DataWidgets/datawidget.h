@@ -89,7 +89,7 @@ protected:
 
     virtual void processData(analyzer_data *data);
 
-    void setTitle(QString title);
+    inline void setTitle(QString title);
 
     quint8 m_widgetType;
     data_widget_info m_info;
@@ -100,6 +100,7 @@ protected:
 
 private slots:
     void lockTriggered();
+    void setTitleTriggered();
 
 private:
     inline bool iw(int w) { return w + width() > ((QWidget*)parent())->width(); }

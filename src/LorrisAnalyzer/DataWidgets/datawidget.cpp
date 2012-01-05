@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QDrag>
 #include <QMenu>
+#include <QInputDialog>
 
 #include "datawidget.h"
 #include "WorkTab/WorkTab.h"
@@ -61,6 +62,10 @@ void DataWidget::setUp()
     connect(m_lockAction, SIGNAL(triggered()), this, SLOT(lockTriggered()));
     contextMenu->addAction(m_lockAction);
 
+    QAction *setTitleAct = new QAction(tr("Set title"), this);
+    connect(setTitleAct, SIGNAL(triggered()), this, SLOT(setTitleTriggered()));
+    contextMenu->addAction(setTitleAct);
+
     contextMenu->addSeparator();
     setContextMenuPolicy(Qt::DefaultContextMenu);
 }
@@ -68,7 +73,7 @@ void DataWidget::setUp()
 void DataWidget::setTitle(QString title)
 {
     QLabel *titleLabel = findChild<QLabel*>("titleLabel");
-    titleLabel->setText(title);
+    titleLabel->setText(" " + title);
 }
 
 void DataWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -216,6 +221,14 @@ void DataWidget::lockTriggered()
     m_locked = !m_locked;
     m_lockAction->setChecked(m_locked);
     m_closeLabel->setLocked(m_locked);
+}
+
+void DataWidget::setTitleTriggered()
+{
+    QString title = QInputDialog::getText(this, tr("Set widget title"), tr("Enter title:"));
+    if(title.length() == 0)
+        return;
+    setTitle(title);
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
