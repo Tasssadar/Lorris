@@ -25,13 +25,11 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
     layout->addWidget(num);
     adjustSize();
     setMinimumSize(size());
-
-    contextMenu = NULL;
 }
 
 NumberWidget::~NumberWidget()
 {
-    delete contextMenu;
+
 }
 
 void NumberWidget::setUp()
@@ -42,7 +40,6 @@ void NumberWidget::setUp()
     format = FMT_DECIMAL;
     level = false;
 
-    contextMenu = new QMenu(this);
     QMenu *bitsMenu = contextMenu->addMenu(tr("Data type"));
     QMenu *formatMenu = contextMenu->addMenu(tr("Format"));
 
@@ -102,8 +99,6 @@ void NumberWidget::setUp()
     levelAction->setCheckable(true);
     contextMenu->addAction(levelAction);
     connect(levelAction, SIGNAL(triggered()), this, SLOT(levelSelected()));
-
-    setContextMenuPolicy(Qt::DefaultContextMenu);
 }
 
 void NumberWidget::processData(analyzer_data *data)
@@ -164,11 +159,6 @@ void NumberWidget::processData(analyzer_data *data)
         }
     }
     num->setText(format == FMT_HEX ? "0x" % n.toUpper() : n);
-}
-
-void NumberWidget::contextMenuEvent ( QContextMenuEvent * event )
-{
-    contextMenu->exec(event->globalPos());
 }
 
 void NumberWidget::fmtSelected(int i)

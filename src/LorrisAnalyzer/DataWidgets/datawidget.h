@@ -51,6 +51,8 @@ struct data_widget_info
     quint32 pos;
 };
 
+class CloseLabel;
+
 class DataWidget : public QFrame
 {
     Q_OBJECT
@@ -83,6 +85,7 @@ protected:
     void mouseMoveEvent(QMouseEvent * event);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
+    void contextMenuEvent ( QContextMenuEvent * event );
 
     virtual void processData(analyzer_data *data);
 
@@ -93,6 +96,10 @@ protected:
     bool m_assigned;
 
     QVBoxLayout *layout;
+    QMenu *contextMenu;
+
+private slots:
+    void lockTriggered();
 
 private:
     inline bool iw(int w) { return w + width() > ((QWidget*)parent())->width(); }
@@ -103,7 +110,11 @@ private:
 
     QPoint mOrigin;
     quint8 m_dragAction;
+    bool m_locked;
 
+    QAction *m_lockAction;
+
+    CloseLabel *m_closeLabel;
     quint32 m_id;
 };
 
@@ -128,8 +139,13 @@ class CloseLabel : public QLabel
 public:
     explicit CloseLabel(QWidget *parent);
 
+    void setLocked(bool locked);
+
 protected:
     void mousePressEvent(QMouseEvent *event);
+
+private:
+    bool m_locked;
 
 };
 

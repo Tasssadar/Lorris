@@ -24,7 +24,6 @@ public:
 
 protected:
      void processData(analyzer_data *data);
-     void contextMenuEvent ( QContextMenuEvent * event );
      void resizeEvent ( QResizeEvent * event );
 
 private slots:
@@ -37,7 +36,7 @@ private:
      quint8 numberType;
      quint8 format;
      bool level;
-     QMenu *contextMenu;
+
      QAction *bitsAction[NUM_COUNT];
      QAction *fmtAction[FMT_COUNT];
      QAction *levelAction;

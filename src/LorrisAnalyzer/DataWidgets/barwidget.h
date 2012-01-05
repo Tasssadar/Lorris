@@ -17,9 +17,6 @@ public:
     void setUp();
     void processData(analyzer_data *data);
 
-protected:
-    void contextMenuEvent ( QContextMenuEvent * event );
-
 private slots:
     void bitsSelected(int i);
     void rangeSelected();
@@ -30,7 +27,6 @@ private:
     qint64 m_max;
     quint8 m_numberType;
 
-    QMenu *contextMenu;
     QAction *bitsAction[NUM_COUNT];
     QAction *rangeAction;
 };

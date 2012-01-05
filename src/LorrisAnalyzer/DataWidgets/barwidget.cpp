@@ -35,7 +35,6 @@ void BarWidget::setUp()
     m_max = 1000;
     m_numberType = NUM_UINT8;
 
-    contextMenu = new QMenu(this);
     QMenu *bitsMenu = contextMenu->addMenu(tr("Data type"));
 
     static const QString dataTypes[] =
@@ -75,8 +74,6 @@ void BarWidget::setUp()
     rangeAction = new QAction(tr("Set range"), this);
     contextMenu->addAction(rangeAction);
     connect(rangeAction, SIGNAL(triggered()), this, SLOT(rangeSelected()));
-
-    setContextMenuPolicy(Qt::DefaultContextMenu);
 }
 
 void BarWidget::processData(analyzer_data *data)
@@ -98,11 +95,6 @@ void BarWidget::processData(analyzer_data *data)
         return;
     }
     m_bar->setValue(value);
-}
-
-void BarWidget::contextMenuEvent ( QContextMenuEvent * event )
-{
-    contextMenu->exec(event->globalPos());
 }
 
 void BarWidget::bitsSelected(int i)

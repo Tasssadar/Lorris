@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QMouseEvent>
 #include <QDrag>
+#include <QMenu>
 
 #include "datawidget.h"
 #include "WorkTab/WorkTab.h"
@@ -20,14 +21,14 @@ DataWidget::DataWidget(QWidget *parent) :
     title->setStyleSheet("border-right: 1px solid black; border-bottom: 1px solid black");
     title->setAlignment(Qt::AlignVCenter);
 
-    CloseLabel *close = new CloseLabel(this);
+    m_closeLabel = new CloseLabel(this);
 
     QFrame *sepV = new QFrame(this);
     sepV->setFrameStyle(QFrame::HLine | QFrame::Plain);
     sepV->setLineWidth(1);
 
     title_bar->addWidget(title, 1);
-    title_bar->addWidget(close, 0);
+    title_bar->addWidget(m_closeLabel, 0);
 
     layout->setMargin(0);
     title_bar->setMargin(0);
@@ -38,6 +39,8 @@ DataWidget::DataWidget(QWidget *parent) :
     setFrameStyle(QFrame::Box | QFrame::Plain);
     setLineWidth(1);
     setMidLineWidth(2);
+
+    contextMenu = NULL;
 }
 
 DataWidget::~DataWidget()
@@ -50,12 +53,27 @@ void DataWidget::setUp()
 {
     setAcceptDrops(true);
     m_assigned = false;
+    m_locked = false;
+    contextMenu = new QMenu(this);
+
+    m_lockAction = new QAction(tr("Lock"), this);
+    m_lockAction->setCheckable(true);
+    connect(m_lockAction, SIGNAL(triggered()), this, SLOT(lockTriggered()));
+    contextMenu->addAction(m_lockAction);
+
+    contextMenu->addSeparator();
+    setContextMenuPolicy(Qt::DefaultContextMenu);
 }
 
 void DataWidget::setTitle(QString title)
 {
     QLabel *titleLabel = findChild<QLabel*>("titleLabel");
     titleLabel->setText(title);
+}
+
+void DataWidget::contextMenuEvent ( QContextMenuEvent * event )
+{
+    contextMenu->exec(event->globalPos());
 }
 
 void DataWidget::mousePressEvent( QMouseEvent* e )
@@ -66,7 +84,8 @@ void DataWidget::mousePressEvent( QMouseEvent* e )
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
 {
-    if( e->buttons() & Qt::LeftButton ) //dragging
+
+    if(!m_locked && (e->buttons() & Qt::LeftButton)) //dragging
     {
         if(m_dragAction == DRAG_MOVE)
             dragMove(e);
@@ -77,7 +96,7 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
 
 void DataWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(event->mimeData()->text().at(0) == 'w')
+    if(m_locked || event->mimeData()->text().at(0) == 'w')
     {
         QFrame::dragEnterEvent(event);
         return;
@@ -87,6 +106,8 @@ void DataWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void DataWidget::dropEvent(QDropEvent *event)
 {
+    if(m_locked)
+        return;
     event->acceptProposedAction();
 
     QStringList data = event->mimeData()->text().split(" ");
@@ -190,6 +211,13 @@ void DataWidget::processData(analyzer_data */*data*/)
 
 }
 
+void DataWidget::lockTriggered()
+{
+    m_locked = !m_locked;
+    m_lockAction->setChecked(m_locked);
+    m_closeLabel->setLocked(m_locked);
+}
+
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 {
     setFlat(true);
@@ -221,19 +249,26 @@ QPixmap DataWidgetAddBtn::getRender()
     return QPixmap();
 }
 
-CloseLabel::CloseLabel(QWidget *parent) : QLabel(" X ", parent)
+CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
 {
     setObjectName("closeLabel");
     setStyleSheet("border-bottom: 1px solid black");
     setAlignment(Qt::AlignVCenter);
+    setLocked(false);
 }
 
 void CloseLabel::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (!m_locked && event->button() == Qt::LeftButton)
         ((AnalyzerDataArea*)parent()->parent())->removeWidget(((DataWidget*)parent())->getId());
     else
         QLabel::mousePressEvent(event);
+}
+
+void CloseLabel::setLocked(bool locked)
+{
+    m_locked = locked;
+    setText(locked ? tr(" [L] ") : " X ");
 }
 
 
