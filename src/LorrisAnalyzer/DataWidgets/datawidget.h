@@ -12,6 +12,7 @@ enum WidgetTypes
 {
     WIDGET_NUMBERS,
     WIDGET_BAR
+    //TODO: graf, barva, X Y mapa, rafickovej ukazatel, timestamp
 };
 
 enum NumberTypes
@@ -31,6 +32,17 @@ enum NumberTypes
 
     NUM_COUNT
 };
+
+enum DragActions
+{
+    DRAG_MOVE       = 0x01,
+    DRAG_RES_LEFT   = 0x02,
+    DRAG_RES_RIGHT  = 0x04,
+    //DRAG_RES_TOP    = 0x08, // Unused
+    DRAG_RES_BOTTOM = 0x10
+};
+
+#define RESIZE_BORDER 15 // number of pixels from every side which counts as resize drag
 
 struct data_widget_info
 {
@@ -72,7 +84,6 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
 
-
     virtual void processData(analyzer_data *data);
 
     void setTitle(QString title);
@@ -86,8 +97,12 @@ protected:
 private:
     inline bool iw(int w) { return w + width() > ((QWidget*)parent())->width(); }
     inline bool ih(int h) { return h + height() > ((QWidget*)parent())->height(); }
+    quint8 getDragAction(const QPoint& clickPos);
+    void dragResize(QMouseEvent* e);
+    void dragMove(QMouseEvent* e);
 
     QPoint mOrigin;
+    quint8 m_dragAction;
 
     quint32 m_id;
 };

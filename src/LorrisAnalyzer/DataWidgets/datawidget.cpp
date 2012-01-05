@@ -36,8 +36,8 @@ DataWidget::DataWidget(QWidget *parent) :
     layout->addWidget(sepV);
 
     setFrameStyle(QFrame::Box | QFrame::Plain);
-    setLineWidth(2);
-
+    setLineWidth(1);
+    setMidLineWidth(2);
 }
 
 DataWidget::~DataWidget()
@@ -60,18 +60,18 @@ void DataWidget::setTitle(QString title)
 
 void DataWidget::mousePressEvent( QMouseEvent* e )
 {
-    mOrigin = e->globalPos();  //mOrigin is a QPoint member
+    m_dragAction = getDragAction(e->pos());
+    mOrigin = e->globalPos();
 }
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
 {
     if( e->buttons() & Qt::LeftButton ) //dragging
     {
-        QPoint n =  pos() + ( e->globalPos() - mOrigin );
-        if(n.x() < 0 || n.y() < 0 || iw(n.x()) || ih(n.y()))
-            return;
-        move(n);
-        mOrigin = e->globalPos();
+        if(m_dragAction == DRAG_MOVE)
+            dragMove(e);
+        else
+            dragResize(e);
     }
 }
 
@@ -96,6 +96,76 @@ void DataWidget::dropEvent(QDropEvent *event)
     setInfo(device, cmd, pos);
     m_assigned = true;
     emit updateData();
+}
+
+quint8 DataWidget::getDragAction(const QPoint &clickPos)
+{
+    quint8 res = 0;
+    int x = clickPos.x();
+    int y = clickPos.y();
+
+    if(x < RESIZE_BORDER)
+        res |= DRAG_RES_LEFT;
+    else if(x > width() - RESIZE_BORDER)
+        res |= DRAG_RES_RIGHT;
+
+    if(y > height() - RESIZE_BORDER)
+        res |= DRAG_RES_BOTTOM;
+
+    if(res == 0)
+        res = DRAG_MOVE;
+    return res;
+}
+
+void DataWidget::dragResize(QMouseEvent* e)
+{
+    int w = width();
+    int h = height();
+    int x = pos().x();
+    int y = pos().y();
+    int gx = x + e->pos().x();
+
+    if(m_dragAction & DRAG_RES_LEFT)
+    {
+        w += x - gx;
+        x = gx;
+    }
+    else if(m_dragAction & DRAG_RES_RIGHT)
+        w = e->pos().x();
+
+    if(m_dragAction & DRAG_RES_BOTTOM)
+        h = e->pos().y();
+
+    int parW = ((QWidget*)parent())->width();
+    int parH = ((QWidget*)parent())->height();
+    if(w < minimumWidth() || x < 0 || x + w > parW)
+    {
+        w = width();
+        x = pos().x();
+    }
+
+    if(h < minimumHeight() || y < 0 || y + h > parH)
+    {
+        h = height();
+        y = pos().y();
+    }
+
+    resize(w, h);
+    move(x, y);
+}
+
+void DataWidget::dragMove(QMouseEvent *e)
+{
+    QPoint n = pos() + ( e->globalPos() - mOrigin );
+
+    if(n.x() < 0 || iw(n.x()))
+        n.setX(pos().x());
+
+    if(n.y() < 0 || ih(n.y()))
+        n.setY(pos().y());
+
+    move(n);
+    mOrigin = e->globalPos();
 }
 
 void DataWidget::newData(analyzer_data *data)

@@ -24,6 +24,7 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     bar_l->addWidget(m_bar);
     layout->addLayout(bar_l);
     adjustSize();
+    setMinimumSize(size());
 }
 
 void BarWidget::setUp()
@@ -164,7 +165,6 @@ QPixmap BarWidgetAddBtn::getRender()
     delete w;
     return map;
 }
-
 
 RangeSelectDialog::RangeSelectDialog(int val_min, int val_max, int max, int min, QWidget *parent) : QDialog(parent), ui(new Ui::RangeSelectDialog)
 {

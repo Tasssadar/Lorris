@@ -15,14 +15,16 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 
     num = new QLabel("0", this);
     num->setAlignment(Qt::AlignCenter);
-    num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+    // FIXME
+    //num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
     QFont font("Monospace");
     font.setStyleHint(QFont::Monospace);
-    font.setPointSize(20);
+    font.setPixelSize(20);
     num->setFont(font);
     layout->addWidget(num);
     adjustSize();
+    setMinimumSize(size());
 
     contextMenu = NULL;
 }
@@ -162,7 +164,6 @@ void NumberWidget::processData(analyzer_data *data)
         }
     }
     num->setText(format == FMT_HEX ? "0x" % n.toUpper() : n);
-    adjustSize();
 }
 
 void NumberWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -198,6 +199,16 @@ void NumberWidget::levelSelected()
     level = !level;
     levelAction->setChecked(level);
     emit updateData();
+}
+
+void NumberWidget::resizeEvent(QResizeEvent *event)
+{
+    if(event->oldSize().height() < minimumHeight())
+        return;
+    QFont f = num->font();
+    f.setPixelSize(f.pixelSize() + event->size().height() - event->oldSize().height());
+    num->setFont(f);
+    DataWidget::resizeEvent(event);
 }
 
 NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     setWindowTitle(getVersionString());
-    setMinimumSize(700, 500);
+    setMinimumSize(600, 500);
     setWindowState(Qt::WindowMaximized);
 
     // menu bar

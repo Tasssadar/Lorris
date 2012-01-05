@@ -207,7 +207,9 @@ void LorrisAnalyzer::timeBoxChanged(int value)
 
 void LorrisAnalyzer::updateData()
 {
-    emit newData(m_storage->get(timeSlider->value()-1));
+    int val = timeSlider->value();
+    if(val != 0)
+        emit newData(m_storage->get(val-1));
 }
 
 void LorrisAnalyzer::loadDataButton()

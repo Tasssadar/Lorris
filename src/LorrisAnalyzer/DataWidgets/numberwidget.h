@@ -25,6 +25,7 @@ public:
 protected:
      void processData(analyzer_data *data);
      void contextMenuEvent ( QContextMenuEvent * event );
+     void resizeEvent ( QResizeEvent * event );
 
 private slots:
      void fmtSelected(int i);
