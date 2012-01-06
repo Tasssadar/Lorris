@@ -19,14 +19,19 @@ public:
     ~AnalyzerDataArea();
 
     void removeWidget(quint32 id);
+
+    void SaveWidgets(QFile *file);
+    void LoadWidgets(QFile *file, bool skip);
     
 protected:
     void dropEvent ( QDropEvent * event );
     void dragEnterEvent( QDragEnterEvent *event );
 
 private:
-    quint32 getNewId() { return m_widgetIdCounter++; }
     DataWidget *newWidget(quint8 type);
+    DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
+
+    quint32 getNewId() { return m_widgetIdCounter++; }
 
     void fixWidgetPos(QPoint& pos, QWidget *w);
 

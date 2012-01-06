@@ -21,6 +21,8 @@ public:
     ~NumberWidget();
 
     void setUp();
+    void saveWidgetInfo(QFile *file);
+    void loadWidgetInfo(QFile *file);
 
 protected:
      void processData(analyzer_data *data);

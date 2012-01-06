@@ -4,6 +4,7 @@
 #include <QInputDialog>
 #include <QDir>
 #include <QMessageBox>
+#include <QFile>
 
 #include "devicetabwidget.h"
 #include "labellayout.h"
@@ -56,14 +57,16 @@ void DeviceTabWidget::removeAll()
     clear();
 }
 
-void DeviceTabWidget::addDevice(bool all_devices, quint8 id)
+CmdTabWidget *DeviceTabWidget::addDevice(bool all_devices, quint8 id)
 {
     if(!all_devices)
     {
        dev_map::iterator itr = m_devices.find(id);
        if(itr != m_devices.end())
-           return;
+           return NULL;
     }
+    else if(m_all_devices)
+        return NULL;
 
     CmdTabWidget *cmd_tab = new CmdTabWidget(m_header, this, this);
     cmd_tab->addCommand();
@@ -84,6 +87,7 @@ void DeviceTabWidget::addDevice(bool all_devices, quint8 id)
         index = insertTab(0, cmd_tab, name);
     }
     setCurrentIndex(index);
+    return cmd_tab;
 }
 
 void DeviceTabWidget::handleData(analyzer_data *data)
@@ -191,4 +195,54 @@ qint16 DeviceTabWidget::getCurrentDevice()
         if(itr->second == w)
             return itr->first;
     return -1;
+}
+
+void DeviceTabWidget::Save(QFile *file)
+{
+    quint32 count = m_devices.size();
+    if(m_all_devices)
+        ++count;
+    file->write((char*)&count, sizeof(quint32));
+
+    qint16 id;
+    if(m_all_devices)
+    {
+        id = -1;
+        file->write((char*)&id, sizeof(qint16));
+        m_all_devices->Save(file);
+    }
+
+    for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
+    {
+        id = itr->first;
+        file->write((char*)&id, sizeof(qint16));
+        itr->second->Save(file);
+    }
+}
+
+void DeviceTabWidget::Load(QFile *file, bool skip)
+{
+    removeAll();
+
+    quint32 count = 0;
+    file->read((char*)&count, sizeof(quint32));
+
+    qint16 id;
+    for(quint32 i = 0; i < count; ++i)
+    {
+        file->read((char*)&id, sizeof(qint16));
+        if(id == -1)
+        {
+           addAllDevices();
+           m_all_devices->Load(file, skip);
+        }
+        else
+        {
+            m_id_enabled = true;
+            setTabsClosable(true);
+            CmdTabWidget *tab = addDevice(false, id);
+            if(tab)
+                tab->Load(file, skip);
+        }
+    }
 }

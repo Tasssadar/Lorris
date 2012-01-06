@@ -1,8 +1,11 @@
 #include <QFileDialog>
 #include <QMessageBox>
-#include "analyzerdatastorage.h"
 
-static const char *ANALYZER_DATA_FORMAT = "v1";
+#include "analyzerdatastorage.h"
+#include "analyzerdataarea.h"
+#include "devicetabwidget.h"
+
+static const char *ANALYZER_DATA_FORMAT = "v2";
 static const char ANALYZER_DATA_MAGIC[] = { 0xFF, 0x80, 0x68 };
 
 AnalyzerDataStorage::AnalyzerDataStorage()
@@ -34,7 +37,7 @@ analyzer_data *AnalyzerDataStorage::addData(const QByteArray& data)
     return a_data;
 }
 
-void AnalyzerDataStorage::SaveToFile()
+void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *devices)
 {
     if(!m_packet)
         return;
@@ -70,6 +73,9 @@ void AnalyzerDataStorage::SaveToFile()
     itr = (char*)&m_packet->big_endian;
     file->write(itr, sizeof(bool));
 
+    //Devices and commands
+    devices->Save(file);
+
     quint32 packetCount = m_data.size();
     file->write((char*)&packetCount, sizeof(quint32));
 
@@ -81,14 +87,23 @@ void AnalyzerDataStorage::SaveToFile()
         file->write(m_data[i]->getData());
     }
 
+    //Widgets
+    area->SaveWidgets(file);
+
     file->close();
     delete file;
 }
 
-analyzer_packet *AnalyzerDataStorage::loadFromFile()
+analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices)
 {
-    QString filters = QObject::tr("Lorris data file (*.ldta)");
-    QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"), "", filters);
+    QString filename;
+    if(name)
+        filename = *name;
+    else
+    {
+        QString filters = QObject::tr("Lorris data file (*.ldta)");
+        filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"), "", filters);
+    }
 
     QFile *file = new QFile(filename);
     if(!file->open(QIODevice::ReadOnly))
@@ -141,38 +156,58 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile()
     }
     delete[] itr;
 
-    if(m_packet)
-    {
-        delete m_packet->header;
-        delete m_packet;
-    }
-
     Clear();
 
     analyzer_header *header = new analyzer_header();
-    m_packet = new analyzer_packet(header, true);
+    analyzer_packet *packet = new analyzer_packet(header, true);
 
     //Header
     itr = (char*)&header->length;
     file->read(itr, sizeof(analyzer_header));
 
     //Packet
-    itr = (char*)&m_packet->big_endian;
+    itr = (char*)&packet->big_endian;
     file->read(itr, sizeof(bool));
+
+    if(load & STORAGE_STRUCTURE)
+    {
+        if(m_packet)
+        {
+            delete m_packet->header;
+            delete m_packet;
+        }
+        m_packet = packet;
+    }
+
+    //Devices and commands
+    devices->setHeader(header);
+    devices->Load(file, !(load & STORAGE_STRUCTURE));
 
     //Data
     quint32 packetCount = 0;
     file->read((char*)&packetCount, sizeof(quint32));
 
+    QByteArray data;
     for(quint32 i = 0; i < packetCount; ++i)
     {
         quint32 len = 0;
         file->read((char*)&len, sizeof(quint32));
-        addData(file->read(len));
+        data = file->read(len);
+        if(load & STORAGE_DATA)
+            addData(data);
     }
+
+    //Widgets
+    area->LoadWidgets(file, !(load & STORAGE_WIDGETS));
 
     file->close();
     delete file;
+
+    if(!(load & STORAGE_STRUCTURE))
+    {
+        delete packet->header;
+        delete header;
+    }
 
     return m_packet;
 }

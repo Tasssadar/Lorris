@@ -1,6 +1,7 @@
 #include <QAction>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QFile>
 
 #include "cmdtabwidget.h"
 #include "common.h"
@@ -62,6 +63,8 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
        if(itr != m_cmds.end())
            return;
     }
+    else if(m_all_cmds)
+        return;
     QWidget *w = new QWidget();
     ScrollDataLayout *layout = new ScrollDataLayout(m_header, false, true, this, m_devTab, w);
     QScrollArea *area = new QScrollArea(this);
@@ -190,4 +193,45 @@ qint16 CmdTabWidget::getCurrentCmd()
         if(itr->second->a == w)
             return itr->first;
     return -1;
+}
+
+void CmdTabWidget::Save(QFile *file)
+{
+    quint32 size = m_cmds.size();
+    if(m_all_cmds)
+        ++size;
+    file->write((char*)&size, sizeof(quint32));
+
+    qint16 id;
+    if(m_all_cmds)
+    {
+        id = -1;
+        file->write((char*)&id, sizeof(qint16));
+    }
+
+    for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
+    {
+        id = itr->first;
+        file->write((char*)&id, sizeof(qint16));
+    }
+}
+
+void CmdTabWidget::Load(QFile *file, bool /*skip*/)
+{
+    quint32 count = 0;
+    file->read((char*)&count, sizeof(quint32));
+
+    qint16 id;
+    for(quint32 i = 0; i < count; ++i)
+    {
+        file->read((char*)&id, sizeof(qint16));
+        if(id == -1)
+            addAllCmds();
+        else
+        {
+            addCommand(false, id);
+            m_enableCmds = true;
+            setTabsClosable(true);
+        }
+    }
 }

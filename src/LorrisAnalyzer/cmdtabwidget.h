@@ -8,6 +8,8 @@
 #include "labellayout.h"
 #include "packet.h"
 
+class QFile;
+
 struct CmdTabInfo
 {
     CmdTabInfo(QScrollArea *area, ScrollDataLayout *layout)
@@ -46,6 +48,8 @@ public:
         m_enableCmds = enable;
     }
     qint16 getCurrentCmd();
+    void Save(QFile *file);
+    void Load(QFile *file, bool skip);
 
 private slots:
     void newCommand();

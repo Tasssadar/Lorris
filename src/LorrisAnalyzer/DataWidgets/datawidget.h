@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QLabel>
+#include <QFile>
 
 #include "../packet.h"
 
@@ -46,9 +47,9 @@ enum DragActions
 
 struct data_widget_info
 {
+    quint32 pos;
     qint16 device;
     qint16 command;
-    quint32 pos;
 };
 
 class CloseLabel;
@@ -77,6 +78,9 @@ public:
     }
     data_widget_info getInfo() { return m_info; }
 
+    virtual void saveWidgetInfo(QFile *file);
+    virtual void loadWidgetInfo(QFile *file);
+
 public slots:
     void newData(analyzer_data *data);
 
@@ -89,7 +93,8 @@ protected:
 
     virtual void processData(analyzer_data *data);
 
-    inline void setTitle(QString title);
+    void setTitle(QString title);
+    QString getTitle();
 
     quint8 m_widgetType;
     data_widget_info m_info;

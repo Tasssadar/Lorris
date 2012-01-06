@@ -21,6 +21,7 @@
 #include "DataWidgets/datawidget.h"
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
+#include "sourceselectdialog.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
@@ -35,7 +36,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(addSourceButton, SIGNAL(clicked()), this, SLOT(onTabShow()));
 
     QPushButton *saveDataButton = findChild<QPushButton*>("saveDataButton");
-    connect(saveDataButton, SIGNAL(clicked()), m_storage, SLOT(SaveToFile()));
+    connect(saveDataButton, SIGNAL(clicked()), this, SLOT(saveDataButton()));
 
     QPushButton *loadDataButton = findChild<QPushButton*>("loadDataButton");
     connect(loadDataButton, SIGNAL(clicked()), this, SLOT(loadDataButton()));
@@ -159,36 +160,50 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
 void LorrisAnalyzer::onTabShow()
 {
+    SourceSelectDialog *s = new SourceSelectDialog(this);
+
     if(m_con->getType() == CONNECTION_FILE)
+        s->DisableNew();
+
+    qint8 res = s->get();
+    switch(res)
     {
-        loadDataButton();
-        return;
+        case -1: break;
+        case 0:
+        {
+            QString file = s->getFileName();
+            quint8 mask = s->getDataMask();
+            load(&file, mask);
+            break;
+        }
+        case 1:
+        {
+            SourceDialog *d = new SourceDialog(this);
+            m_state |= STATE_DIALOG;
+            connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
+
+            analyzer_packet *packet = d->getStructure();
+            delete d;
+            m_state &= ~(STATE_DIALOG);
+            if(!packet)
+                return;
+
+            if(m_packet)
+            {
+                delete m_packet->header;
+                delete m_packet;
+            }
+            m_storage->Clear();
+            m_dev_tabs->removeAll();
+            m_dev_tabs->setHeader(packet->header);
+            m_dev_tabs->addDevice();
+
+            m_storage->setPacket(packet);
+            m_packet = packet;
+            break;
+        }
     }
-
-    m_state |= STATE_DIALOG;
-    SourceDialog *d = new SourceDialog(this);
-    connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
-
-    analyzer_packet *packet = d->getStructure();
-    delete d;
-
-    if(!packet)
-        return;
-
-    if(m_packet)
-    {
-        delete m_packet->header;
-        delete m_packet;
-    }
-    m_storage->Clear();
-
-    m_dev_tabs->removeAll();
-    m_dev_tabs->setHeader(packet->header);
-    m_dev_tabs->addDevice();
-
-    m_storage->setPacket(packet);
-    m_packet = packet;
-    m_state &= ~(STATE_DIALOG);
+    delete s;
 }
 
 void LorrisAnalyzer::timeSliderMoved(int value)
@@ -214,18 +229,31 @@ void LorrisAnalyzer::updateData()
 
 void LorrisAnalyzer::loadDataButton()
 {
-    analyzer_packet *packet = m_storage->loadFromFile();
+    load(NULL, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS));
+}
+
+void LorrisAnalyzer::load(QString *name, quint8 mask)
+{
+    analyzer_packet *packet = m_storage->loadFromFile(name, mask, m_data_area, m_dev_tabs);
     if(!packet)
         return;
     m_packet = packet;
 
-    m_dev_tabs->removeAll();
-    m_dev_tabs->setHeader(packet->header);
-    m_dev_tabs->addDevice();
+    if(!m_dev_tabs->count())
+    {
+        m_dev_tabs->removeAll();
+        m_dev_tabs->setHeader(packet->header);
+        m_dev_tabs->addDevice();
+    }
 
     timeSlider->setMaximum(m_storage->getSize());
     timeSlider->setValue(m_storage->getSize());
     timeBox->setMaximum(m_storage->getSize());
     timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
     timeBox->setValue(m_storage->getSize());
+}
+
+void LorrisAnalyzer::saveDataButton()
+{
+    m_storage->SaveToFile(m_data_area, m_dev_tabs);
 }

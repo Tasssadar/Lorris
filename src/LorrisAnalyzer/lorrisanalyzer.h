@@ -42,6 +42,7 @@ class LorrisAnalyzer : public WorkTab
     private slots:
         void connectButton();
         void loadDataButton();
+        void saveDataButton();
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
@@ -50,6 +51,7 @@ class LorrisAnalyzer : public WorkTab
 
     private:
         void readData(const QByteArray& data);
+        void load(QString *name, quint8 mask);
 
         quint16 m_state;
         Ui::LorrisAnalyzer *ui;

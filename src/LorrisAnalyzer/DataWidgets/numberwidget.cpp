@@ -201,6 +201,34 @@ void NumberWidget::resizeEvent(QResizeEvent *event)
     DataWidget::resizeEvent(event);
 }
 
+void NumberWidget::saveWidgetInfo(QFile *file)
+{
+    DataWidget::saveWidgetInfo(file);
+
+    // data type
+    file->write((char*)&numberType, sizeof(numberType));
+
+    // Format
+    file->write((char*)&format, sizeof(format));
+
+    // Level off
+    file->write((char*)&level, sizeof(level));
+}
+
+void NumberWidget::loadWidgetInfo(QFile *file)
+{
+    DataWidget::loadWidgetInfo(file);
+
+    // data type
+    file->read((char*)&numberType, sizeof(numberType));
+
+    // Format
+    file->read((char*)&format, sizeof(format));
+
+    // Level off
+    file->read((char*)&level, sizeof(level));
+}
+
 NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText(tr("Number"));

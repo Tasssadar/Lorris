@@ -9,6 +9,7 @@
 #include "cmdtabwidget.h"
 
 class QAction;
+class QFile;
 
 class DeviceTabWidget : public QTabWidget
 {
@@ -24,10 +25,12 @@ public:
     ~DeviceTabWidget();
 
     void setHeader(analyzer_header *h);
-    void addDevice(bool all_devices = true, quint8 id = 0);
+    CmdTabWidget *addDevice(bool all_devices = true, quint8 id = 0);
     void setEnableIds(bool enable) { m_id_enabled = enable; }
     qint16 getCurrentDevice();
     void removeAll();
+    void Save(QFile *file);
+    void Load(QFile *file, bool skip);
 
 public slots:
     void handleData(analyzer_data *data);

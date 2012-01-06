@@ -24,16 +24,24 @@ void AnalyzerDataArea::dropEvent(QDropEvent *event)
 {
     QString data = event->mimeData()->text().remove(0, 1);
     quint8 type = data.toInt();
+
+    addWidget(event->pos(), type);
+
+    event->acceptProposedAction();
+}
+
+DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
+{
     DataWidget *w = newWidget(type);
     if(!w)
-        return;
+        return NULL;
     w->setUp();
 
 
-    QPoint newPos(event->pos());
-    fixWidgetPos(newPos, w);
-    w->move(newPos);
-    w->show();
+    fixWidgetPos(pos, w);
+    w->move(pos);
+    if(show)
+        w->show();
 
     quint32 id = getNewId();
     w->setId(id);
@@ -41,7 +49,7 @@ void AnalyzerDataArea::dropEvent(QDropEvent *event)
 
     connect(((LorrisAnalyzer*)parent()), SIGNAL(newData(analyzer_data*)), w, SLOT(newData(analyzer_data*)));
     connect(w, SIGNAL(updateData()), this, SIGNAL(updateData()));
-    event->acceptProposedAction();
+    return w;
 }
 
 void AnalyzerDataArea::dragEnterEvent(QDragEnterEvent *event)
@@ -81,4 +89,39 @@ void AnalyzerDataArea::fixWidgetPos(QPoint &pos, QWidget *w)
 
     if(y > height())
         pos.setY(height() - w->height());
+}
+
+void AnalyzerDataArea::SaveWidgets(QFile *file)
+{
+    // write widget count
+    quint32 count = m_widgets.size();
+    file->write((char*)&count, sizeof(quint32));
+
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+        itr->second->saveWidgetInfo(file);
+}
+
+void AnalyzerDataArea::LoadWidgets(QFile *file, bool skip)
+{
+    quint32 count = 0;
+    file->read((char*)&count, sizeof(quint32));
+
+    for(quint32 i = 0; i < count; ++i)
+    {
+        // type
+        quint8 type = 0;
+        file->read((char*)&type, sizeof(quint8));
+
+        // pos and size
+        int val[4];
+        file->read((char*)&val, sizeof(val));
+
+        DataWidget *w = addWidget(QPoint(val[0], val[1]), type, !skip);
+        if(!w)
+            continue;
+        w->resize(val[2], val[3]);
+        w->loadWidgetInfo(file);
+        if(skip)
+            removeWidget(w->getId());
+    }
 }

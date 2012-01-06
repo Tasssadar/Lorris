@@ -76,6 +76,12 @@ void DataWidget::setTitle(QString title)
     titleLabel->setText(" " + title);
 }
 
+QString DataWidget::getTitle()
+{
+    QLabel *titleLabel = findChild<QLabel*>("titleLabel");
+    return titleLabel->text().right(titleLabel->text().length() - 1);
+}
+
 void DataWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     contextMenu->exec(event->globalPos());
@@ -228,6 +234,45 @@ void DataWidget::setTitleTriggered()
     QString title = QInputDialog::getText(this, tr("Set widget title"), tr("Enter title:"));
     if(title.length() == 0)
         return;
+    setTitle(title);
+}
+
+void DataWidget::saveWidgetInfo(QFile *file)
+{
+    char *p = NULL;
+
+    // widget type
+    p = (char*)&m_widgetType;
+    file->write(p, sizeof(m_widgetType));
+
+    // widget pos and size
+    int val[] = { pos().x(), pos().y(), width(), height() };
+    file->write((char*)&val, sizeof(val));
+
+    // data info
+    p = (char*)&m_info.pos;
+    file->write(p, sizeof(m_info));
+
+    // title
+    QByteArray title = getTitle().toAscii();
+    quint32 size = title.length();
+    file->write((char*)&size, sizeof(quint32));
+    file->write(title.data());
+}
+
+void DataWidget::loadWidgetInfo(QFile *file)
+{
+    // data info
+    char *p = (char*)&m_info.pos;
+    file->read(p, sizeof(m_info));
+
+    m_assigned = true;
+
+    // title
+    quint32 size = 0;
+    file->read((char*)&size, sizeof(quint32));
+
+    QString title(file->read(size));
     setTitle(title);
 }
 

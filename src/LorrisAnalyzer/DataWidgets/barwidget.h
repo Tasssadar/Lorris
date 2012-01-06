@@ -16,6 +16,8 @@ public:
 
     void setUp();
     void processData(analyzer_data *data);
+    void saveWidgetInfo(QFile *file);
+    void loadWidgetInfo(QFile *file);
 
 private slots:
     void bitsSelected(int i);

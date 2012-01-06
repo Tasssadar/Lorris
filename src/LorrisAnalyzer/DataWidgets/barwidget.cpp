@@ -140,6 +140,36 @@ void BarWidget::rangeSelected()
     emit updateData();
 }
 
+void BarWidget::saveWidgetInfo(QFile *file)
+{
+    DataWidget::saveWidgetInfo(file);
+
+    // data type
+    file->write((char*)&m_numberType, sizeof(m_numberType));
+
+    // range
+    qint32 min = m_bar->minimum();
+    qint32 max = m_bar->maximum();
+    file->write((char*)&min, sizeof(qint32));
+    file->write((char*)&max, sizeof(qint32));
+}
+
+void BarWidget::loadWidgetInfo(QFile *file)
+{
+    DataWidget::loadWidgetInfo(file);
+
+    // data type
+    file->read((char*)&m_numberType, sizeof(m_numberType));
+
+    // range
+    qint32 min = 0;
+    qint32 max = 0;
+    file->read((char*)&min, sizeof(qint32));
+    file->read((char*)&max, sizeof(qint32));
+    m_bar->setMaximum(max);
+    m_bar->setMinimum(min);
+}
+
 BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText(tr("Bar"));
