@@ -91,11 +91,11 @@ void DataWidget::mousePressEvent( QMouseEvent* e )
 {
     m_dragAction = getDragAction(e->pos());
     mOrigin = e->globalPos();
+
 }
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
 {
-
     if(!m_locked && (e->buttons() & Qt::LeftButton)) //dragging
     {
         if(m_dragAction == DRAG_MOVE)
@@ -103,6 +103,7 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
         else
             dragResize(e);
     }
+    QWidget::mouseMoveEvent(e);
 }
 
 void DataWidget::dragEnterEvent(QDragEnterEvent *event)
@@ -253,6 +254,10 @@ void DataWidget::saveWidgetInfo(QFile *file)
     p = (char*)&m_info.pos;
     file->write(p, sizeof(m_info));
 
+    // locked
+    p = (char*)&m_locked;
+    file->write(p, sizeof(m_locked));
+
     // title
     QByteArray title = getTitle().toAscii();
     quint32 size = title.length();
@@ -267,6 +272,10 @@ void DataWidget::loadWidgetInfo(QFile *file)
     file->read(p, sizeof(m_info));
 
     m_assigned = true;
+
+    // Locked
+    p = (char*)&m_locked;
+    file->read(p, sizeof(m_locked));
 
     // title
     quint32 size = 0;
