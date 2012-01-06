@@ -61,7 +61,7 @@ void LabelLayout::AddLabel(QString value, qint8 type)
 void LabelLayout::RemoveLabel(quint16 index)
 {
     removeWidget(m_labels[index]);
-    m_labels[index]->deleteLater();
+    delete m_labels[index];
 
     std::vector<QLabel*>::iterator itr = m_labels.begin();
     for(quint16 i = 0; i < index; ++i)
@@ -137,6 +137,16 @@ void LabelLayout::lenChanged(int len)
         else
             RemoveLabel();
     }
+}
+
+QPoint LabelLayout::getLabelPos(quint32 pos)
+{
+    if(m_labels.size() <= pos)
+        return QPoint();
+    QPoint w_pos = m_labels[pos]->mapToGlobal(QPoint(0, 0));
+    w_pos.ry() += m_labels[pos]->height();
+    w_pos.rx() += m_labels[pos]->width()/2;
+    return w_pos;
 }
 
 ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,

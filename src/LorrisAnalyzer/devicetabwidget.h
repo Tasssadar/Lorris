@@ -11,6 +11,8 @@
 class QAction;
 class QFile;
 
+struct data_widget_info;
+
 class DeviceTabWidget : public QTabWidget
 {
     Q_OBJECT
@@ -31,6 +33,8 @@ public:
     void removeAll();
     void Save(QFile *file);
     void Load(QFile *file, bool skip);
+
+    QPoint getBytePos(const data_widget_info& info);
 
 public slots:
     void handleData(analyzer_data *data);

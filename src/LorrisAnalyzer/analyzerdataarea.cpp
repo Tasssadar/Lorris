@@ -11,6 +11,7 @@ AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
     setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
     setAcceptDrops(true);
     m_widgetIdCounter = 0;
+    setMouseTracking(true);
 }
 
 AnalyzerDataArea::~AnalyzerDataArea()
@@ -124,4 +125,14 @@ void AnalyzerDataArea::LoadWidgets(QFile *file, bool skip)
         if(skip)
             removeWidget(w->getId());
     }
+}
+
+DataWidget *AnalyzerDataArea::isMouseInWidget()
+{
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+    {
+        if(itr->second->isMouseIn())
+            return itr->second;
+    }
+    return NULL;
 }

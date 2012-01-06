@@ -9,6 +9,9 @@
 #include <QStringListModel>
 #include <QSpinBox>
 #include <QSlider>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QPainter>
 
 #include "lorrisanalyzer.h"
 #include "sourcedialog.h"
@@ -70,8 +73,12 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     widgetsScrollArea->setWidget(tmp);
 
+    setMouseTracking(true);
+
     m_packet = NULL;
     m_state = 0;
+    shiftPressed = false;
+    lineShowed = false;
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -223,6 +230,7 @@ void LorrisAnalyzer::timeBoxChanged(int value)
 void LorrisAnalyzer::updateData()
 {
     int val = timeSlider->value();
+
     if(val != 0)
         emit newData(m_storage->get(val-1));
 }
@@ -256,4 +264,73 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
 void LorrisAnalyzer::saveDataButton()
 {
     m_storage->SaveToFile(m_data_area, m_dev_tabs);
+}
+
+void LorrisAnalyzer::mouseMoveEvent(QMouseEvent *event)
+{
+    if(!(event->modifiers() & Qt::ShiftModifier))
+    {
+        WorkTab::mouseMoveEvent(event);
+        return;
+    }
+
+    bool do_update;
+    if(DataWidget *w = m_data_area->isMouseInWidget())
+    {
+        QPoint start = m_dev_tabs->getBytePos(w->getInfo());
+        if(start.isNull())
+            return;
+        start -= mapToGlobal(pos());
+        QPoint stop(w->mapToGlobal(QPoint(0,0)) - mapToGlobal(pos()));
+        stop.rx() += w->width()/2;
+
+        do_update = !lineShowed;
+        if(connectLine.p1() != start || connectLine.p2() != stop)
+        {
+            do_update = true;
+            connectLine.setPoints(start, stop);
+        }
+        lineShowed = true;
+    }
+    else
+    {
+        do_update = lineShowed;
+        lineShowed = false;
+    }
+
+    if(do_update)
+        update();
+}
+
+void LorrisAnalyzer::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Shift)
+    {
+        QMouseEvent *ev = new QMouseEvent(QEvent::None, QCursor::pos(), Qt::NoButton, Qt::NoButton, Qt::ShiftModifier);
+        mouseMoveEvent(ev);
+        shiftPressed = true;
+    }
+}
+
+void LorrisAnalyzer::keyReleaseEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Shift)
+    {
+        connectLine.setLine(0, 0, 0, 0);
+        update();
+        shiftPressed = false;
+    }
+}
+
+void LorrisAnalyzer::paintEvent(QPaintEvent * event)
+{
+    if(shiftPressed && lineShowed)
+    {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setPen(QPen(Qt::red, 3));
+        painter.drawLine(connectLine);
+    }
+    else
+        QWidget::paintEvent(event);
 }

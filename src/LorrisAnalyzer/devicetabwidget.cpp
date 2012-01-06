@@ -9,6 +9,7 @@
 #include "devicetabwidget.h"
 #include "labellayout.h"
 #include "common.h"
+#include "DataWidgets/datawidget.h"
 #include "lorrisanalyzer.h"
 
 DeviceTabWidget::DeviceTabWidget(QWidget *parent) :
@@ -245,4 +246,22 @@ void DeviceTabWidget::Load(QFile *file, bool skip)
                 tab->Load(file, skip);
         }
     }
+}
+
+QPoint DeviceTabWidget::getBytePos(const data_widget_info& info)
+{
+    if(m_all_devices && info.device == -1)
+    {
+        setCurrentIndex(0);
+        return m_all_devices->getBytePos(info);
+    }
+    for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
+    {
+        if(itr->first == info.device)
+        {
+            setCurrentIndex(indexOf(itr->second));
+            return itr->second->getBytePos(info);
+        }
+    }
+    return QPoint();
 }

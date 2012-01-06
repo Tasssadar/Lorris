@@ -39,6 +39,12 @@ class LorrisAnalyzer : public WorkTab
         void onTabShow();
         void updateData();
 
+    protected:
+        void mouseMoveEvent(QMouseEvent *event);
+        void keyPressEvent(QKeyEvent *event);
+        void keyReleaseEvent(QKeyEvent *event);
+        void paintEvent(QPaintEvent *event);
+
     private slots:
         void connectButton();
         void loadDataButton();
@@ -54,6 +60,8 @@ class LorrisAnalyzer : public WorkTab
         void load(QString *name, quint8 mask);
 
         quint16 m_state;
+        bool shiftPressed;
+        bool lineShowed;
         Ui::LorrisAnalyzer *ui;
         AnalyzerDataStorage *m_storage;
         QSlider *timeSlider;
@@ -61,6 +69,7 @@ class LorrisAnalyzer : public WorkTab
         analyzer_packet *m_packet;
         DeviceTabWidget *m_dev_tabs;
         AnalyzerDataArea *m_data_area;
+        QLine connectLine;
 };
 
 #endif // LORRISANALYZER_H

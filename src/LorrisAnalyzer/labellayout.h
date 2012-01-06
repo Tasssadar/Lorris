@@ -58,6 +58,8 @@ public:
         return m_labels.size();
     }
 
+    QPoint getLabelPos(quint32 pos);
+
     CmdTabWidget *getCmdTab() { return cmd_w; }
     DeviceTabWidget *getDeviceTab() { return dev_w; }
 

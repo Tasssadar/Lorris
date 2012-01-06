@@ -70,13 +70,15 @@ public:
     void setId(quint32 id) { m_id = id; }
     quint32 getId() { return m_id; }
 
+    bool isMouseIn() { return m_mouseIn; }
+
     void setInfo(qint16 device, qint16 command, quint32 pos)
     {
         m_info.device = device;
         m_info.command = command;
         m_info.pos = pos;
     }
-    data_widget_info getInfo() { return m_info; }
+    const data_widget_info& getInfo() { return m_info; }
 
     virtual void saveWidgetInfo(QFile *file);
     virtual void loadWidgetInfo(QFile *file);
@@ -90,6 +92,8 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void contextMenuEvent ( QContextMenuEvent * event );
+    void enterEvent(QEvent *);
+    void leaveEvent(QEvent *);
 
     virtual void processData(analyzer_data *data);
 
@@ -117,6 +121,7 @@ private:
     QPoint mOrigin;
     quint8 m_dragAction;
     bool m_locked;
+    bool m_mouseIn;
 
     QAction *m_lockAction;
 

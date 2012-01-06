@@ -5,6 +5,7 @@
 
 #include "cmdtabwidget.h"
 #include "common.h"
+#include "DataWidgets/datawidget.h"
 
 CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent) :
     QTabWidget(parent)
@@ -234,4 +235,23 @@ void CmdTabWidget::Load(QFile *file, bool /*skip*/)
             setTabsClosable(true);
         }
     }
+}
+
+QPoint CmdTabWidget::getBytePos(const data_widget_info& info)
+{
+    if(m_all_cmds && info.command == -1)
+    {
+        setCurrentIndex(0);
+        return m_all_cmds->l->getLabelPos(info.pos);
+    }
+
+    for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
+    {
+        if(itr->first == info.command)
+        {
+            setCurrentIndex(indexOf(itr->second->a));
+            return itr->second->l->getLabelPos(info.pos);
+        }
+    }
+    return QPoint();
 }

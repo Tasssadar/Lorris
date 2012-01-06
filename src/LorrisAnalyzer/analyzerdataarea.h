@@ -22,6 +22,8 @@ public:
 
     void SaveWidgets(QFile *file);
     void LoadWidgets(QFile *file, bool skip);
+
+    DataWidget *isMouseInWidget();
     
 protected:
     void dropEvent ( QDropEvent * event );

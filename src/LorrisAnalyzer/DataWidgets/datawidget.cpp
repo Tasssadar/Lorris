@@ -56,6 +56,7 @@ void DataWidget::setUp()
     m_assigned = false;
     m_locked = false;
     contextMenu = new QMenu(this);
+    m_mouseIn = false;
 
     m_lockAction = new QAction(tr("Lock"), this);
     m_lockAction->setCheckable(true);
@@ -68,6 +69,8 @@ void DataWidget::setUp()
 
     contextMenu->addSeparator();
     setContextMenuPolicy(Qt::DefaultContextMenu);
+
+    setMouseTracking(true);
 }
 
 void DataWidget::setTitle(QString title)
@@ -91,19 +94,29 @@ void DataWidget::mousePressEvent( QMouseEvent* e )
 {
     m_dragAction = getDragAction(e->pos());
     mOrigin = e->globalPos();
-
 }
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
 {
-    if(!m_locked && (e->buttons() & Qt::LeftButton)) //dragging
+    if(!m_locked && e->buttons() == Qt::LeftButton) //dragging
     {
         if(m_dragAction == DRAG_MOVE)
             dragMove(e);
         else
             dragResize(e);
     }
+
     QWidget::mouseMoveEvent(e);
+}
+
+void DataWidget::enterEvent(QEvent *)
+{
+    m_mouseIn = true;
+}
+
+void DataWidget::leaveEvent(QEvent *)
+{
+    m_mouseIn = false;
 }
 
 void DataWidget::dragEnterEvent(QDragEnterEvent *event)
@@ -276,6 +289,8 @@ void DataWidget::loadWidgetInfo(QFile *file)
     // Locked
     p = (char*)&m_locked;
     file->read(p, sizeof(m_locked));
+    m_lockAction->setChecked(m_locked);
+    m_closeLabel->setLocked(m_locked);
 
     // title
     quint32 size = 0;

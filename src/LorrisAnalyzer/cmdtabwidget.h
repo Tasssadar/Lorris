@@ -9,6 +9,7 @@
 #include "packet.h"
 
 class QFile;
+struct data_widget_info;
 
 struct CmdTabInfo
 {
@@ -50,6 +51,8 @@ public:
     qint16 getCurrentCmd();
     void Save(QFile *file);
     void Load(QFile *file, bool skip);
+
+    QPoint getBytePos(const data_widget_info& info);
 
 private slots:
     void newCommand();
