@@ -70,6 +70,7 @@ class DataWidget : public QFrame
 
 Q_SIGNALS:
     void updateData();
+    void mouseStatus(bool in, const data_widget_info& info);
 
 public:
     explicit DataWidget(QWidget *parent = 0);

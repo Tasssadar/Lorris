@@ -63,6 +63,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     bottomHLayout->insertWidget(0, m_data_area, 5);
     bottomHLayout->setStretch(1, 1);
     connect(m_data_area, SIGNAL(updateData()), this, SLOT(updateData()));
+    connect(m_data_area, SIGNAL(mouseStatus(bool,data_widget_info)), this, SLOT(widgetMouseStatus(bool,data_widget_info)));
 
     QScrollArea *widgetsScrollArea = findChild<QScrollArea*>("widgetsScrollArea");
     QWidget *tmp = new QWidget(this);
@@ -72,8 +73,6 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     widgetsScrollArea->setWidget(tmp);
-
-    setMouseTracking(true);
 
     m_packet = NULL;
     m_state = 0;
@@ -265,47 +264,24 @@ void LorrisAnalyzer::saveDataButton()
     m_storage->SaveToFile(m_data_area, m_dev_tabs);
 }
 
-void LorrisAnalyzer::mouseMoveEvent(QMouseEvent *event)
+void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info)
 {
-    if(!(event->modifiers() & Qt::ShiftModifier))
+    if(in)
     {
-        WorkTab::mouseMoveEvent(event);
-        return;
-    }
-
-    if(DataWidget *w = m_data_area->isMouseInWidget())
-    {
-        if(highlightInfoNotNull && highlightInfo != w->getInfo())
+        if(highlightInfoNotNull && highlightInfo != info)
             m_dev_tabs->setHighlightPos(highlightInfo, false);
 
-        bool found = m_dev_tabs->setHighlightPos(w->getInfo(), true);
+        bool found = m_dev_tabs->setHighlightPos(info, true);
 
-        if(!found)
+        if(found)
+        {
+            highlightInfo = info;
+            highlightInfoNotNull = true;
             return;
-
-        highlightInfo = w->getInfo();
-        highlightInfoNotNull = true;
+        }
     }
-    else if(highlightInfoNotNull)
-    {
-        m_dev_tabs->setHighlightPos(highlightInfo, false);
-        highlightInfoNotNull = false;
-    }
-}
 
-void LorrisAnalyzer::keyPressEvent(QKeyEvent *event)
-{
-    if(event->key() == Qt::Key_Shift)
-    {
-        QMouseEvent *ev = new QMouseEvent(QEvent::None, QCursor::pos(), Qt::NoButton, Qt::NoButton, Qt::ShiftModifier);
-        mouseMoveEvent(ev);
-        delete ev;
-    }
-}
-
-void LorrisAnalyzer::keyReleaseEvent(QKeyEvent *event)
-{
-    if(highlightInfoNotNull && event->key() == Qt::Key_Shift)
+    if(highlightInfoNotNull)
     {
         m_dev_tabs->setHighlightPos(highlightInfo, false);
         highlightInfoNotNull = false;

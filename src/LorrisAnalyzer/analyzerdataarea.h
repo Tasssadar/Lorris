@@ -11,6 +11,7 @@ class AnalyzerDataArea : public QFrame
 
 Q_SIGNALS:
     void updateData();
+    void mouseStatus(bool in, const data_widget_info& info);
 
 public:
     typedef std::map<quint32, DataWidget*> w_map;
@@ -22,8 +23,6 @@ public:
 
     void SaveWidgets(QFile *file);
     void LoadWidgets(QFile *file, bool skip);
-
-    DataWidget *isMouseInWidget();
     
 protected:
     void dropEvent ( QDropEvent * event );

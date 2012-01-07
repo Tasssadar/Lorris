@@ -4,7 +4,6 @@
 #include <QHBoxLayout>
 #include <QWidget>
 #include <vector>
-#include <QLabel>
 
 class CmdTabWidget;
 class DeviceTabWidget;
@@ -106,19 +105,23 @@ private:
 
 };
 
-class DraggableLabel : public QLabel
+class DraggableLabel : public QWidget
 {
     Q_OBJECT
 Q_SIGNALS:
     void changePos(int this_label, int dragged_label);
 
 public:
-    DraggableLabel(const QString & text, bool drop = false, bool drag = false,
-                   LabelLayout *l = NULL, QWidget * parent = 0, Qt::WindowFlags f = 0 );
+    DraggableLabel(const QString & text, quint32 pos, bool drop = false,
+                   bool drag = false, LabelLayout *l = NULL, QWidget *parent = 0, Qt::WindowFlags = 0);
     ~DraggableLabel();
 
     bool isHighligted() { return m_highlighted; }
-    void setHighlighted(bool highlight) { m_highlighted = highlight; }
+    void setHighlighted(bool highlight);
+
+    void setLabelStyleSheet(const QString &css);
+    void setLabelText(const QString& text);
+    void setPos(quint32 pos);
 
 protected:
     void mousePressEvent ( QMouseEvent * event );
@@ -130,7 +133,10 @@ private:
     bool m_drag;
     bool m_drop;
     bool m_highlighted;
-    LabelLayout *layout;
+    LabelLayout *labelLayout;
+
+    QLabel *valueLabel;
+    QLabel *posLabel;
 };
 
 #endif // LABELLAYOUT_H

@@ -39,11 +39,7 @@ class LorrisAnalyzer : public WorkTab
     public slots:
         void onTabShow();
         void updateData();
-
-    protected:
-        void mouseMoveEvent(QMouseEvent *event);
-        void keyPressEvent(QKeyEvent *event);
-        void keyReleaseEvent(QKeyEvent *event);
+        void widgetMouseStatus(bool in, const data_widget_info& info);
 
     private slots:
         void connectButton();

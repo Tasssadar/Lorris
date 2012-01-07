@@ -1,4 +1,4 @@
-
+#include <QLabel>
 #include <QMouseEvent>
 #include <QDrag>
 
@@ -48,7 +48,7 @@ void LabelLayout::AddLabel(QString value, qint8 type)
     if(type == -1)
         type = GetTypeForPos(m_labels.size());
 
-    DraggableLabel *label = new DraggableLabel(value, m_enableReorder, m_enableDrag, this);
+    DraggableLabel *label = new DraggableLabel(value, m_labels.size(), m_enableReorder, m_enableDrag, this);
     SetLabelType(label, type);
     label->setObjectName(QString::number(m_labels.size()));
     if(m_enableReorder)
@@ -69,7 +69,10 @@ void LabelLayout::RemoveLabel(quint16 index)
     m_labels.erase(itr);
 
     for(quint16 i = 0; i < m_labels.size(); ++i)
+    {
         m_labels[i]->setObjectName(QString::number(i));
+        m_labels[i]->setPos(i);
+    }
 }
 
 void LabelLayout::changePos(int this_label, int dragged_label)
@@ -79,6 +82,8 @@ void LabelLayout::changePos(int this_label, int dragged_label)
     m_labels[dragged_label] = label;
     m_labels[this_label]->setObjectName(QString::number(this_label));
     m_labels[dragged_label]->setObjectName(QString::number(dragged_label));
+    m_labels[this_label]->setPos(this_label);
+    m_labels[dragged_label]->setPos(dragged_label);
 
     quint8 type = m_header->order[this_label];
     m_header->order[this_label] = m_header->order[dragged_label];
@@ -99,11 +104,7 @@ void LabelLayout::SetLabelType(DraggableLabel *label, quint8 type)
 {
     QString css;
     if(type == DATA_BODY)
-    {
         css = "border: 2px solid black; background-color: #00FFFB";
-        if(label->isHighligted())
-            css.replace("black", "red");
-    }
     else if(type & DATA_HEADER)
     {
          css = "border: 2px solid orange; background-color: ";
@@ -111,13 +112,8 @@ void LabelLayout::SetLabelType(DraggableLabel *label, quint8 type)
          else if(type & DATA_OPCODE)     css += "#E5FF00";
          else if(type & DATA_LEN)        css += "#FFCC66";
          else if(type & DATA_STATIC)     css += "#FF99FF";
-
-         if(label->isHighligted())
-             css.replace("orange", "red");
     }
-    if(label->isHighligted())
-        css.replace("2px", "4px");
-    label->setStyleSheet(css);
+    label->setLabelStyleSheet(css);
 }
 
 quint8 LabelLayout::GetTypeForPos(quint32 pos)
@@ -153,7 +149,6 @@ bool LabelLayout::setHightlightLabel(quint32 pos, bool highlight)
     if(m_labels.size() <= pos)
         return false;
     m_labels[pos]->setHighlighted(highlight);
-    SetLabelType(m_labels[pos], GetTypeForPos(pos));
     return true;
 }
 
@@ -255,27 +250,47 @@ void ScrollDataLayout::SetData(const QByteArray& data)
             case FORMAT_BYTE:   value = QString::number((int)data[i]);             break;
             case FORMAT_STRING: value = Utils::parseChar(data[i]);                 break;
         }
-        m_labels[i]->setText(value);
+        m_labels[i]->setLabelText(value);
     }
 }
 
-DraggableLabel::DraggableLabel(const QString &text, bool drop, bool drag,
+DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool drag,
                                LabelLayout *l, QWidget *parent, Qt::WindowFlags f) :
-    QLabel(text, parent, f)
+    QWidget(parent, f)
 {
-    m_drop = drop;
-    m_drag = drag;
-
     setFixedWidth(50);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    setAlignment(Qt::AlignCenter);
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+
+    valueLabel = new QLabel(text, this);
+    valueLabel->setAlignment(Qt::AlignCenter);
 
     QFont font("Monospace");
     font.setStyleHint(QFont::Monospace);
-    setFont(font);
-    setAcceptDrops(true);
+    valueLabel->setFont(font);
+    valueLabel->setAcceptDrops(true);
+
+    layout->setSpacing(0);
+    layout->setMargin(0);
+    layout->addWidget(valueLabel, 2);
+
+    if(!drop || !drag)
+    {
+        posLabel = new QLabel(QString::number(pos), this);
+        posLabel->setAlignment(Qt::AlignCenter);
+        font = posLabel->font();
+        font.setPointSize(6);
+        posLabel->setFont(font);
+        layout->addWidget(posLabel);
+    }else posLabel = NULL;
+
     m_highlighted = false;
-    layout = l;
+    labelLayout = l;
+    m_drop = drop;
+    m_drag = drag;
+
+    setAcceptDrops(true);
 }
 
 DraggableLabel::~DraggableLabel()
@@ -283,11 +298,27 @@ DraggableLabel::~DraggableLabel()
 
 }
 
+void DraggableLabel::setLabelStyleSheet(const QString& css)
+{
+    valueLabel->setStyleSheet(css);
+}
+
+void DraggableLabel::setLabelText(const QString& text)
+{
+    valueLabel->setText(text);
+}
+
+void DraggableLabel::setPos(quint32 pos)
+{
+    if(posLabel)
+        posLabel->setText(QString::number(pos));
+}
+
 void DraggableLabel::mousePressEvent(QMouseEvent *event)
 {
     if(!m_drag)
     {
-        QLabel::mousePressEvent(event);
+        QWidget::mousePressEvent(event);
         return;
     }
 
@@ -295,11 +326,11 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
     {
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
-        if(m_drag && !m_drop && layout)
+        if(m_drag && !m_drop && labelLayout)
         {
             mimeData->setText(objectName() + " " +
-                              QString::number(layout->getDeviceTab()->getCurrentDevice()) + " " +
-                              QString::number(layout->getCmdTab()->getCurrentCmd()));
+                              QString::number(labelLayout->getDeviceTab()->getCurrentDevice()) + " " +
+                              QString::number(labelLayout->getCmdTab()->getCurrentCmd()));
         }
         else
             mimeData->setText(objectName());
@@ -320,18 +351,18 @@ void DraggableLabel::dragEnterEvent(QDragEnterEvent *event)
     if(!m_drop || event->mimeData()->text() == objectName())
         return;
     event->acceptProposedAction();
-    QString css = styleSheet();
+    QString css = valueLabel->styleSheet();
     css.replace(QRegExp("orange"), "red");
-    setStyleSheet(css);
+    valueLabel->setStyleSheet(css);
 }
 
 void DraggableLabel::dragLeaveEvent(QDragLeaveEvent */*event*/)
 {
     if(!m_drop)
         return;
-    QString css = styleSheet();
+    QString css = valueLabel->styleSheet();
     css.replace(QRegExp("red"), "orange");
-    setStyleSheet(css);
+    valueLabel->setStyleSheet(css);
 }
 
 void DraggableLabel::dropEvent(QDropEvent *event)
@@ -339,10 +370,19 @@ void DraggableLabel::dropEvent(QDropEvent *event)
     if(!m_drop)
         return;
     emit changePos(objectName().toInt(), event->mimeData()->text().toInt());
-    QString css = styleSheet();
+    QString css = valueLabel->styleSheet();
     css.replace(QRegExp("red"), "orange");
-    setStyleSheet(css);
+    valueLabel->setStyleSheet(css);
 
     event->acceptProposedAction();
+}
+
+void DraggableLabel::setHighlighted(bool highlight)
+{
+    m_highlighted = highlight;
+    if(highlight)
+        setStyleSheet("background-color: red");
+    else
+        setStyleSheet("");
 }
 

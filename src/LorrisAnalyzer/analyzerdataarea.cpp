@@ -11,7 +11,6 @@ AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
     setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
     setAcceptDrops(true);
     m_widgetIdCounter = 0;
-    setMouseTracking(true);
 }
 
 AnalyzerDataArea::~AnalyzerDataArea()
@@ -50,6 +49,7 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
 
     connect(((LorrisAnalyzer*)parent()), SIGNAL(newData(analyzer_data*)), w, SLOT(newData(analyzer_data*)));
     connect(w, SIGNAL(updateData()), this, SIGNAL(updateData()));
+    connect(w, SIGNAL(mouseStatus(bool,data_widget_info)), this, SIGNAL(mouseStatus(bool,data_widget_info)));
     return w;
 }
 
@@ -125,14 +125,4 @@ void AnalyzerDataArea::LoadWidgets(QFile *file, bool skip)
         if(skip)
             removeWidget(w->getId());
     }
-}
-
-DataWidget *AnalyzerDataArea::isMouseInWidget()
-{
-    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
-    {
-        if(itr->second->isMouseIn())
-            return itr->second;
-    }
-    return NULL;
 }

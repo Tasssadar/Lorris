@@ -105,17 +105,20 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
         else
             dragResize(e);
     }
-
     QWidget::mouseMoveEvent(e);
 }
 
 void DataWidget::enterEvent(QEvent *)
 {
+    if(m_assigned)
+        emit mouseStatus(true, m_info);
     m_mouseIn = true;
 }
 
 void DataWidget::leaveEvent(QEvent *)
 {
+    if(m_assigned)
+        emit mouseStatus(false, m_info);
     m_mouseIn = false;
 }
 
