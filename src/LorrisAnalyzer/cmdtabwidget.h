@@ -52,7 +52,7 @@ public:
     void Save(QFile *file);
     void Load(QFile *file, bool skip);
 
-    QPoint getBytePos(const data_widget_info& info);
+    bool setHighlightPos(const data_widget_info& info, bool highlight);
 
 private slots:
     void newCommand();

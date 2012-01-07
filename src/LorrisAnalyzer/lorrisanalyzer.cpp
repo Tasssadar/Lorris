@@ -77,8 +77,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 
     m_packet = NULL;
     m_state = 0;
-    shiftPressed = false;
-    lineShowed = false;
+    highlightInfoNotNull = false;
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -274,32 +273,24 @@ void LorrisAnalyzer::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
-    bool do_update;
     if(DataWidget *w = m_data_area->isMouseInWidget())
     {
-        QPoint start = m_dev_tabs->getBytePos(w->getInfo());
-        if(start.isNull())
+        if(highlightInfoNotNull && highlightInfo != w->getInfo())
+            m_dev_tabs->setHighlightPos(highlightInfo, false);
+
+        bool found = m_dev_tabs->setHighlightPos(w->getInfo(), true);
+
+        if(!found)
             return;
-        start -= mapToGlobal(pos());
-        QPoint stop(w->mapToGlobal(QPoint(0,0)) - mapToGlobal(pos()));
-        stop.rx() += w->width()/2;
 
-        do_update = !lineShowed;
-        if(connectLine.p1() != start || connectLine.p2() != stop)
-        {
-            do_update = true;
-            connectLine.setPoints(start, stop);
-        }
-        lineShowed = true;
+        highlightInfo = w->getInfo();
+        highlightInfoNotNull = true;
     }
-    else
+    else if(highlightInfoNotNull)
     {
-        do_update = lineShowed;
-        lineShowed = false;
+        m_dev_tabs->setHighlightPos(highlightInfo, false);
+        highlightInfoNotNull = false;
     }
-
-    if(do_update)
-        update();
 }
 
 void LorrisAnalyzer::keyPressEvent(QKeyEvent *event)
@@ -308,29 +299,15 @@ void LorrisAnalyzer::keyPressEvent(QKeyEvent *event)
     {
         QMouseEvent *ev = new QMouseEvent(QEvent::None, QCursor::pos(), Qt::NoButton, Qt::NoButton, Qt::ShiftModifier);
         mouseMoveEvent(ev);
-        shiftPressed = true;
+        delete ev;
     }
 }
 
 void LorrisAnalyzer::keyReleaseEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key_Shift)
+    if(highlightInfoNotNull && event->key() == Qt::Key_Shift)
     {
-        connectLine.setLine(0, 0, 0, 0);
-        update();
-        shiftPressed = false;
+        m_dev_tabs->setHighlightPos(highlightInfo, false);
+        highlightInfoNotNull = false;
     }
-}
-
-void LorrisAnalyzer::paintEvent(QPaintEvent * event)
-{
-    if(shiftPressed && lineShowed)
-    {
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing, true);
-        painter.setPen(QPen(Qt::red, 3));
-        painter.drawLine(connectLine);
-    }
-    else
-        QWidget::paintEvent(event);
 }

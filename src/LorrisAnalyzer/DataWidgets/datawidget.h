@@ -50,6 +50,16 @@ struct data_widget_info
     quint32 pos;
     qint16 device;
     qint16 command;
+
+    bool operator==(const data_widget_info& other)
+    {
+        return (other.pos == pos && other.device == device && other.command == command);
+    }
+
+    bool operator!=(const data_widget_info& other)
+    {
+        return (other.pos != pos || other.device != device || other.command != command);
+    }
 };
 
 class CloseLabel;

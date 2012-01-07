@@ -14,6 +14,7 @@ class QLabel;
 class QString;
 class QByteArray;
 class QSpacerItem;
+class DraggableLabel;
 
 enum DataFormat
 {
@@ -58,7 +59,7 @@ public:
         return m_labels.size();
     }
 
-    QPoint getLabelPos(quint32 pos);
+    bool setHightlightLabel(quint32 pos, bool highlight);
 
     CmdTabWidget *getCmdTab() { return cmd_w; }
     DeviceTabWidget *getDeviceTab() { return dev_w; }
@@ -69,10 +70,10 @@ public slots:
     void UpdateTypes();
 
 protected:
-    void SetLabelType(QLabel *label, quint8 type);
+    void SetLabelType(DraggableLabel *label, quint8 type);
     virtual quint8 GetTypeForPos(quint32 pos);
 
-    std::vector<QLabel*> m_labels;
+    std::vector<DraggableLabel*> m_labels;
     analyzer_header *m_header;
 
 private:
@@ -116,6 +117,9 @@ public:
                    LabelLayout *l = NULL, QWidget * parent = 0, Qt::WindowFlags f = 0 );
     ~DraggableLabel();
 
+    bool isHighligted() { return m_highlighted; }
+    void setHighlighted(bool highlight) { m_highlighted = highlight; }
+
 protected:
     void mousePressEvent ( QMouseEvent * event );
     void dragEnterEvent( QDragEnterEvent *event );
@@ -125,6 +129,7 @@ protected:
 private:
     bool m_drag;
     bool m_drop;
+    bool m_highlighted;
     LabelLayout *layout;
 };
 

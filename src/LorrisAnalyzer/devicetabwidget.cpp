@@ -248,20 +248,20 @@ void DeviceTabWidget::Load(QFile *file, bool skip)
     }
 }
 
-QPoint DeviceTabWidget::getBytePos(const data_widget_info& info)
+bool DeviceTabWidget::setHighlightPos(const data_widget_info& info, bool highlight)
 {
     if(m_all_devices && info.device == -1)
     {
         setCurrentIndex(0);
-        return m_all_devices->getBytePos(info);
+        return m_all_devices->setHighlightPos(info, highlight);
     }
     for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
     {
         if(itr->first == info.device)
         {
             setCurrentIndex(indexOf(itr->second));
-            return itr->second->getBytePos(info);
+            return itr->second->setHighlightPos(info, highlight);
         }
     }
-    return QPoint();
+    return false;
 }

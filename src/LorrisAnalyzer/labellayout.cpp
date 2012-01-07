@@ -63,7 +63,7 @@ void LabelLayout::RemoveLabel(quint16 index)
     removeWidget(m_labels[index]);
     delete m_labels[index];
 
-    std::vector<QLabel*>::iterator itr = m_labels.begin();
+    std::vector<DraggableLabel*>::iterator itr = m_labels.begin();
     for(quint16 i = 0; i < index; ++i)
         ++itr;
     m_labels.erase(itr);
@@ -74,7 +74,7 @@ void LabelLayout::RemoveLabel(quint16 index)
 
 void LabelLayout::changePos(int this_label, int dragged_label)
 {
-    QLabel *label = m_labels[this_label];
+    DraggableLabel *label = m_labels[this_label];
     m_labels[this_label] = m_labels[dragged_label];
     m_labels[dragged_label] = label;
     m_labels[this_label]->setObjectName(QString::number(this_label));
@@ -95,11 +95,15 @@ void LabelLayout::changePos(int this_label, int dragged_label)
     emit orderChanged();
 }
 
-void LabelLayout::SetLabelType(QLabel *label, quint8 type)
+void LabelLayout::SetLabelType(DraggableLabel *label, quint8 type)
 {
     QString css;
     if(type == DATA_BODY)
+    {
         css = "border: 2px solid black; background-color: #00FFFB";
+        if(label->isHighligted())
+            css.replace("black", "red");
+    }
     else if(type & DATA_HEADER)
     {
          css = "border: 2px solid orange; background-color: ";
@@ -107,7 +111,12 @@ void LabelLayout::SetLabelType(QLabel *label, quint8 type)
          else if(type & DATA_OPCODE)     css += "#E5FF00";
          else if(type & DATA_LEN)        css += "#FFCC66";
          else if(type & DATA_STATIC)     css += "#FF99FF";
+
+         if(label->isHighligted())
+             css.replace("orange", "red");
     }
+    if(label->isHighligted())
+        css.replace("2px", "4px");
     label->setStyleSheet(css);
 }
 
@@ -139,14 +148,13 @@ void LabelLayout::lenChanged(int len)
     }
 }
 
-QPoint LabelLayout::getLabelPos(quint32 pos)
+bool LabelLayout::setHightlightLabel(quint32 pos, bool highlight)
 {
     if(m_labels.size() <= pos)
-        return QPoint();
-    QPoint w_pos = m_labels[pos]->mapToGlobal(QPoint(0, 0));
-    w_pos.ry() += m_labels[pos]->height();
-    w_pos.rx() += m_labels[pos]->width()/2;
-    return w_pos;
+        return false;
+    m_labels[pos]->setHighlighted(highlight);
+    SetLabelType(m_labels[pos], GetTypeForPos(pos));
+    return true;
 }
 
 ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
@@ -266,7 +274,7 @@ DraggableLabel::DraggableLabel(const QString &text, bool drop, bool drag,
     font.setStyleHint(QFont::Monospace);
     setFont(font);
     setAcceptDrops(true);
-
+    m_highlighted = false;
     layout = l;
 }
 

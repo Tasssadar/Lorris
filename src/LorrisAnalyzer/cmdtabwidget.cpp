@@ -237,12 +237,12 @@ void CmdTabWidget::Load(QFile *file, bool /*skip*/)
     }
 }
 
-QPoint CmdTabWidget::getBytePos(const data_widget_info& info)
+bool CmdTabWidget::setHighlightPos(const data_widget_info& info, bool highlight)
 {
     if(m_all_cmds && info.command == -1)
     {
         setCurrentIndex(0);
-        return m_all_cmds->l->getLabelPos(info.pos);
+        return m_all_cmds->l->setHightlightLabel(info.pos, highlight);
     }
 
     for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
@@ -250,8 +250,8 @@ QPoint CmdTabWidget::getBytePos(const data_widget_info& info)
         if(itr->first == info.command)
         {
             setCurrentIndex(indexOf(itr->second->a));
-            return itr->second->l->getLabelPos(info.pos);
+            return itr->second->l->setHightlightLabel(info.pos, highlight);
         }
     }
-    return QPoint();
+    return false;
 }

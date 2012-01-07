@@ -3,6 +3,7 @@
 
 #include "WorkTab/WorkTab.h"
 #include "packet.h"
+#include "DataWidgets/datawidget.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -43,7 +44,6 @@ class LorrisAnalyzer : public WorkTab
         void mouseMoveEvent(QMouseEvent *event);
         void keyPressEvent(QKeyEvent *event);
         void keyReleaseEvent(QKeyEvent *event);
-        void paintEvent(QPaintEvent *event);
 
     private slots:
         void connectButton();
@@ -60,8 +60,8 @@ class LorrisAnalyzer : public WorkTab
         void load(QString *name, quint8 mask);
 
         quint16 m_state;
-        bool shiftPressed;
-        bool lineShowed;
+        bool highlightInfoNotNull;
+        data_widget_info highlightInfo;
         Ui::LorrisAnalyzer *ui;
         AnalyzerDataStorage *m_storage;
         QSlider *timeSlider;
@@ -69,7 +69,6 @@ class LorrisAnalyzer : public WorkTab
         analyzer_packet *m_packet;
         DeviceTabWidget *m_dev_tabs;
         AnalyzerDataArea *m_data_area;
-        QLine connectLine;
 };
 
 #endif // LORRISANALYZER_H
