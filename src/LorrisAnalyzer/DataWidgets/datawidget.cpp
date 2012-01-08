@@ -10,6 +10,7 @@
 #include "datawidget.h"
 #include "WorkTab/WorkTab.h"
 #include "../analyzerdataarea.h"
+#include "../analyzerdatafile.h"
 
 DataWidget::DataWidget(QWidget *parent) :
     QFrame(parent)
@@ -254,53 +255,68 @@ void DataWidget::setTitleTriggered()
     setTitle(title);
 }
 
-void DataWidget::saveWidgetInfo(QFile *file)
+void DataWidget::saveWidgetInfo(AnalyzerDataFile *file)
 {
     char *p = NULL;
 
     // widget type
+    file->writeBlockIdentifier("widgetType");
     p = (char*)&m_widgetType;
     file->write(p, sizeof(m_widgetType));
 
     // widget pos and size
+    file->writeBlockIdentifier("widgetPosSize");
     int val[] = { pos().x(), pos().y(), width(), height() };
     file->write((char*)&val, sizeof(val));
 
     // data info
+    file->writeBlockIdentifier("widgetDataInfo");
     p = (char*)&m_info.pos;
     file->write(p, sizeof(m_info));
 
     // locked
+    file->writeBlockIdentifier("widgetLocked");
     p = (char*)&m_locked;
     file->write(p, sizeof(m_locked));
 
     // title
+    file->writeBlockIdentifier("widgetTitle");
     QByteArray title = getTitle().toAscii();
     quint32 size = title.length();
     file->write((char*)&size, sizeof(quint32));
     file->write(title.data());
 }
 
-void DataWidget::loadWidgetInfo(QFile *file)
+void DataWidget::loadWidgetInfo(AnalyzerDataFile *file)
 {
     // data info
-    char *p = (char*)&m_info.pos;
-    file->read(p, sizeof(m_info));
+    char *p = NULL;
+    if(file->seekToNextBlock("widgetDataInfo", BLOCK_WIDGET))
+    {
+        p = (char*)&m_info.pos;
+        file->read(p, sizeof(m_info));
 
-    m_assigned = true;
+        m_assigned = true;
+    }
 
     // Locked
-    p = (char*)&m_locked;
-    file->read(p, sizeof(m_locked));
-    m_lockAction->setChecked(m_locked);
-    m_closeLabel->setLocked(m_locked);
+    if(file->seekToNextBlock("widgetLocked", BLOCK_WIDGET))
+    {
+        p = (char*)&m_locked;
+        file->read(p, sizeof(m_locked));
+        m_lockAction->setChecked(m_locked);
+        m_closeLabel->setLocked(m_locked);
+    }
 
     // title
-    quint32 size = 0;
-    file->read((char*)&size, sizeof(quint32));
+    if(file->seekToNextBlock("widgetTitle", BLOCK_WIDGET))
+    {
+        quint32 size = 0;
+        file->read((char*)&size, sizeof(quint32));
 
-    QString title(file->read(size));
-    setTitle(title);
+        QString title(file->read(size));
+        setTitle(title);
+    }
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)

@@ -8,6 +8,7 @@
 
 #include "barwidget.h"
 #include "ui_rangeselectdialog.h"
+#include "../analyzerdatafile.h"
 
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -34,8 +35,10 @@ void BarWidget::setUp()
     m_min = 0;
     m_max = 1000;
     m_numberType = NUM_UINT8;
+    m_rotation = 0;
 
     QMenu *bitsMenu = contextMenu->addMenu(tr("Data type"));
+    QMenu *rotMenu = contextMenu->addMenu(tr("Rotation"));
 
     static const QString dataTypes[] =
     {
@@ -70,6 +73,24 @@ void BarWidget::setUp()
     }
     bitsAction[0]->setChecked(true);
     connect(signalMapBits, SIGNAL(mapped(int)), SLOT(bitsSelected(int)));
+
+    QSignalMapper *signalMapRot = new QSignalMapper(this);
+
+    static const QString rotText[]=
+    {
+        tr("Vertical"),
+        tr("Horizontal")
+    };
+    for(i = 0; i < 2; ++i)
+    {
+        rotAction[i] = new QAction(rotText[i], this);
+        rotAction[i]->setCheckable(true);
+        rotMenu->addAction(rotAction[i]);
+        signalMapRot->setMapping(rotAction[i], i);
+        connect(rotAction[i], SIGNAL(triggered()), signalMapRot, SLOT(map()));
+    }
+    rotationSelected(0);
+    connect(signalMapRot, SIGNAL(mapped(int)), SLOT(rotationSelected(int)));
 
     rangeAction = new QAction(tr("Set range"), this);
     contextMenu->addAction(rangeAction);
@@ -140,34 +161,92 @@ void BarWidget::rangeSelected()
     emit updateData();
 }
 
-void BarWidget::saveWidgetInfo(QFile *file)
+void BarWidget::rotationSelected(int i)
+{
+    for(quint8 y = 0; y < 2; ++y)
+        rotAction[y]->setChecked(y == i);
+
+    m_rotation = i;
+
+    bool horizontal = false;
+    //bool switchSides = false;
+    switch(i)
+    {
+        case 0: break;
+        case 1:
+            horizontal = true;
+            break;
+        case 2:
+            //switchSides = true;
+            break;
+        case 3:
+            //horizontal = switchSides = true;
+            break;
+
+    }
+    //FIXME: not working?
+    //m_bar->setInvertedAppearance(switchSides);
+    m_bar->setOrientation(horizontal ? Qt::Horizontal : Qt::Vertical);
+
+    setMinimumSize(0, 0);
+    resize(0, 0);
+    adjustSize();
+    setMinimumSize(size());
+
+    if(i == 0)
+        setMaximumSize(width(), 16777215);
+    else
+        setMaximumSize(16777215, height());
+}
+
+void BarWidget::saveWidgetInfo(AnalyzerDataFile *file)
 {
     DataWidget::saveWidgetInfo(file);
 
     // data type
+    file->writeBlockIdentifier("barWType");
     file->write((char*)&m_numberType, sizeof(m_numberType));
 
     // range
+    file->writeBlockIdentifier("barWRange");
     qint32 min = m_bar->minimum();
     qint32 max = m_bar->maximum();
     file->write((char*)&min, sizeof(qint32));
     file->write((char*)&max, sizeof(qint32));
+
+    //rotation
+    file->writeBlockIdentifier("barWRotation");
+    file->write((char*)&m_rotation, sizeof(m_rotation));
 }
 
-void BarWidget::loadWidgetInfo(QFile *file)
+void BarWidget::loadWidgetInfo(AnalyzerDataFile *file)
 {
     DataWidget::loadWidgetInfo(file);
 
     // data type
-    file->read((char*)&m_numberType, sizeof(m_numberType));
+    if(file->seekToNextBlock("barWType", BLOCK_WIDGET))
+    {
+        file->read((char*)&m_numberType, sizeof(m_numberType));
+        bitsSelected(m_numberType);
+    }
 
     // range
-    qint32 min = 0;
-    qint32 max = 0;
-    file->read((char*)&min, sizeof(qint32));
-    file->read((char*)&max, sizeof(qint32));
-    m_bar->setMaximum(max);
-    m_bar->setMinimum(min);
+    if(file->seekToNextBlock("barWRange", BLOCK_WIDGET))
+    {
+        qint32 min = 0;
+        qint32 max = 0;
+        file->read((char*)&min, sizeof(qint32));
+        file->read((char*)&max, sizeof(qint32));
+        m_bar->setMaximum(max);
+        m_bar->setMinimum(min);
+    }
+
+    //rotation
+    if(file->seekToNextBlock("barWRotation", BLOCK_WIDGET))
+    {
+        file->read((char*)&m_rotation, sizeof(m_rotation));
+        rotationSelected(m_rotation);
+    }
 }
 
 BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

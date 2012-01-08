@@ -6,6 +6,7 @@
 #include "cmdtabwidget.h"
 #include "common.h"
 #include "DataWidgets/datawidget.h"
+#include "analyzerdatafile.h"
 
 CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent) :
     QTabWidget(parent)
@@ -197,7 +198,7 @@ qint16 CmdTabWidget::getCurrentCmd()
     return -1;
 }
 
-void CmdTabWidget::Save(QFile *file)
+void CmdTabWidget::Save(AnalyzerDataFile *file)
 {
     quint32 size = m_cmds.size();
     if(m_all_cmds)
@@ -208,17 +209,19 @@ void CmdTabWidget::Save(QFile *file)
     if(m_all_cmds)
     {
         id = -1;
+        file->writeBlockIdentifier(BLOCK_CMD_TAB);
         file->write((char*)&id, sizeof(qint16));
     }
 
     for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
     {
         id = itr->first;
+        file->writeBlockIdentifier(BLOCK_CMD_TAB);
         file->write((char*)&id, sizeof(qint16));
     }
 }
 
-void CmdTabWidget::Load(QFile *file, bool /*skip*/)
+void CmdTabWidget::Load(AnalyzerDataFile *file, bool /*skip*/)
 {
     quint32 count = 0;
     file->read((char*)&count, sizeof(quint32));
@@ -226,6 +229,8 @@ void CmdTabWidget::Load(QFile *file, bool /*skip*/)
     qint16 id;
     for(quint32 i = 0; i < count; ++i)
     {
+        if(!file->seekToNextBlock(BLOCK_CMD_TAB, BLOCK_CMD_TABS))
+            break;
         file->read((char*)&id, sizeof(qint16));
         if(id == -1)
             addAllCmds();

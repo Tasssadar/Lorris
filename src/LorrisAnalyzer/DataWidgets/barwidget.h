@@ -16,12 +16,13 @@ public:
 
     void setUp();
     void processData(analyzer_data *data);
-    void saveWidgetInfo(QFile *file);
-    void loadWidgetInfo(QFile *file);
+    void saveWidgetInfo(AnalyzerDataFile *file);
+    void loadWidgetInfo(AnalyzerDataFile *file);
 
 private slots:
     void bitsSelected(int i);
     void rangeSelected();
+    void rotationSelected(int i);
 
 private:
     QProgressBar *m_bar;
@@ -30,7 +31,9 @@ private:
     quint8 m_numberType;
 
     QAction *bitsAction[NUM_COUNT];
+    QAction *rotAction[4];
     QAction *rangeAction;
+    quint8 m_rotation;
 };
 
 class BarWidgetAddBtn : public DataWidgetAddBtn

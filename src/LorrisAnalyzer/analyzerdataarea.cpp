@@ -4,6 +4,7 @@
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
 #include "lorrisanalyzer.h"
+#include "analyzerdatafile.h"
 
 AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
     QFrame(parent)
@@ -32,7 +33,7 @@ void AnalyzerDataArea::dropEvent(QDropEvent *event)
 
 DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
 {
-    DataWidget *w = newWidget(type);
+    DataWidget *w = newWidget(type, this);
     if(!w)
         return NULL;
     w->setUp();
@@ -61,12 +62,12 @@ void AnalyzerDataArea::dragEnterEvent(QDragEnterEvent *event)
         QFrame::dragEnterEvent(event);
 }
 
-DataWidget *AnalyzerDataArea::newWidget(quint8 type)
+DataWidget *AnalyzerDataArea::newWidget(quint8 type, QWidget *parent)
 {
     switch(type)
     {
-        case WIDGET_NUMBERS: return new NumberWidget(this);
-        case WIDGET_BAR:     return new BarWidget(this);
+        case WIDGET_NUMBERS: return new NumberWidget(parent);
+        case WIDGET_BAR:     return new BarWidget(parent);
     }
     return NULL;
 }
@@ -92,28 +93,37 @@ void AnalyzerDataArea::fixWidgetPos(QPoint &pos, QWidget *w)
         pos.setY(height() - w->height());
 }
 
-void AnalyzerDataArea::SaveWidgets(QFile *file)
+void AnalyzerDataArea::SaveWidgets(AnalyzerDataFile *file)
 {
     // write widget count
     quint32 count = m_widgets.size();
     file->write((char*)&count, sizeof(quint32));
 
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+    {
+        file->writeBlockIdentifier(BLOCK_WIDGET);
         itr->second->saveWidgetInfo(file);
+    }
 }
 
-void AnalyzerDataArea::LoadWidgets(QFile *file, bool skip)
+void AnalyzerDataArea::LoadWidgets(AnalyzerDataFile *file, bool skip)
 {
     quint32 count = 0;
     file->read((char*)&count, sizeof(quint32));
 
     for(quint32 i = 0; i < count; ++i)
     {
+        if(!file->seekToNextBlock(BLOCK_WIDGET, 0))
+            break;
         // type
+        if(!file->seekToNextBlock("widgetType", BLOCK_WIDGET))
+            break;
         quint8 type = 0;
         file->read((char*)&type, sizeof(quint8));
 
         // pos and size
+        if(!file->seekToNextBlock("widgetPosSize", BLOCK_WIDGET))
+            break;
         int val[4];
         file->read((char*)&val, sizeof(val));
 

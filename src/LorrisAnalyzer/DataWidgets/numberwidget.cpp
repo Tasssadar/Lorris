@@ -7,6 +7,7 @@
 #include <QSignalMapper>
 
 #include "numberwidget.h"
+#include "../analyzerdatafile.h"
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -201,32 +202,47 @@ void NumberWidget::resizeEvent(QResizeEvent *event)
     DataWidget::resizeEvent(event);
 }
 
-void NumberWidget::saveWidgetInfo(QFile *file)
+void NumberWidget::saveWidgetInfo(AnalyzerDataFile *file)
 {
     DataWidget::saveWidgetInfo(file);
 
     // data type
+    file->writeBlockIdentifier("numWType");
     file->write((char*)&numberType, sizeof(numberType));
 
     // Format
+    file->writeBlockIdentifier("numWFormat");
     file->write((char*)&format, sizeof(format));
 
     // Level off
+    file->writeBlockIdentifier("numWLevel");
     file->write((char*)&level, sizeof(level));
 }
 
-void NumberWidget::loadWidgetInfo(QFile *file)
+void NumberWidget::loadWidgetInfo(AnalyzerDataFile *file)
 {
     DataWidget::loadWidgetInfo(file);
 
     // data type
-    file->read((char*)&numberType, sizeof(numberType));
+    if(file->seekToNextBlock("numWType", BLOCK_WIDGET))
+    {
+        file->read((char*)&numberType, sizeof(numberType));
+        bitsSelected(numberType);
+    }
 
     // Format
-    file->read((char*)&format, sizeof(format));
+    if(file->seekToNextBlock("numWFormat", BLOCK_WIDGET))
+    {
+        file->read((char*)&format, sizeof(format));
+        fmtSelected(format);
+    }
 
     // Level off
-    file->read((char*)&level, sizeof(level));
+    if(file->seekToNextBlock("numWLevel", BLOCK_WIDGET))
+    {
+        file->read((char*)&level, sizeof(level));
+        levelAction->setChecked(level);
+    }
 }
 
 NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

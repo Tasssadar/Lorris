@@ -17,6 +17,7 @@ enum StorageDataType
 
 class AnalyzerDataArea;
 class DeviceTabWidget;
+class QFile;
 
 class AnalyzerDataStorage : public QObject
 {
@@ -42,6 +43,8 @@ public slots:
     void SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *devices);
 
 private:
+    bool checkMagic(QFile *file);
+
     std::vector<analyzer_data*> m_data;
     analyzer_packet *m_packet;
     quint32 m_size;

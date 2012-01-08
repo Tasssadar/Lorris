@@ -63,6 +63,7 @@ struct data_widget_info
 };
 
 class CloseLabel;
+class AnalyzerDataFile;
 
 class DataWidget : public QFrame
 {
@@ -91,8 +92,8 @@ public:
     }
     const data_widget_info& getInfo() { return m_info; }
 
-    virtual void saveWidgetInfo(QFile *file);
-    virtual void loadWidgetInfo(QFile *file);
+    virtual void saveWidgetInfo(AnalyzerDataFile *file);
+    virtual void loadWidgetInfo(AnalyzerDataFile *file);
 
 public slots:
     void newData(analyzer_data *data);

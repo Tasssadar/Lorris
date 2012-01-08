@@ -4,8 +4,9 @@
 #include "analyzerdatastorage.h"
 #include "analyzerdataarea.h"
 #include "devicetabwidget.h"
+#include "analyzerdatafile.h"
 
-static const char *ANALYZER_DATA_FORMAT = "v3";
+static const char *ANALYZER_DATA_FORMAT = "v4";
 static const char ANALYZER_DATA_MAGIC[] = { 0xFF, 0x80, 0x68 };
 
 AnalyzerDataStorage::AnalyzerDataStorage()
@@ -45,7 +46,7 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     QString filters = QObject::tr("Lorris data file (*.ldta)");
     QString filename = QFileDialog::getSaveFileName(NULL, QObject::tr("Export Data"), "", filters);
 
-    QFile *file = new QFile(filename);
+    AnalyzerDataFile *file = new AnalyzerDataFile(filename);
     if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         if(filename != "")
@@ -74,12 +75,15 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     file->write(itr, sizeof(bool));
 
     //Devices and commands
+    file->writeBlockIdentifier(BLOCK_DEVICE_TABS);
     devices->Save(file);
+
+    //Data
+    file->writeBlockIdentifier(BLOCK_DATA);
 
     quint32 packetCount = m_data.size();
     file->write((char*)&packetCount, sizeof(quint32));
 
-    //Data
     for(quint32 i = 0; i < m_data.size(); ++i)
     {
         quint32 len = m_data[i]->getData().length();
@@ -88,6 +92,7 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     }
 
     //Widgets
+    file->writeBlockIdentifier(BLOCK_WIDGETS);
     area->SaveWidgets(file);
 
     file->close();
@@ -105,7 +110,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"), "", filters);
     }
 
-    QFile *file = new QFile(filename);
+    AnalyzerDataFile *file = new AnalyzerDataFile(filename);
     if(!file->open(QIODevice::ReadOnly))
     {
         if(filename != "")
@@ -137,24 +142,20 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         delete file;
         return NULL;
     }
-
-    file->read(itr, 3);
-    for(quint8 i = 0; i < 3; ++i)
-    {
-        if(itr[i] != ANALYZER_DATA_MAGIC[i])
-        {
-            QMessageBox *box = new QMessageBox();
-            box->setWindowTitle(QObject::tr("Error!"));
-            box->setText(QObject::tr("Data file has wrong magic!"));
-            box->setIcon(QMessageBox::Critical);
-            box->exec();
-            delete box;
-            file->close();
-            delete file;
-            return NULL;
-        }
-    }
     delete[] itr;
+
+    if(!checkMagic(file))
+    {
+        QMessageBox *box = new QMessageBox();
+        box->setWindowTitle(QObject::tr("Error!"));
+        box->setText(QObject::tr("Data file has wrong magic!"));
+        box->setIcon(QMessageBox::Critical);
+        box->exec();
+        delete box;
+        file->close();
+        delete file;
+        return NULL;
+    }
 
     Clear();
 
@@ -184,21 +185,25 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     devices->Load(file, !(load & STORAGE_STRUCTURE));
 
     //Data
-    quint32 packetCount = 0;
-    file->read((char*)&packetCount, sizeof(quint32));
-
-    QByteArray data;
-    for(quint32 i = 0; i < packetCount; ++i)
+    if(file->seekToNextBlock(BLOCK_DATA, 0))
     {
-        quint32 len = 0;
-        file->read((char*)&len, sizeof(quint32));
-        data = file->read(len);
-        if(load & STORAGE_DATA)
-            addData(data);
+        quint32 packetCount = 0;
+        file->read((char*)&packetCount, sizeof(quint32));
+
+        QByteArray data;
+        for(quint32 i = 0; i < packetCount; ++i)
+        {
+            quint32 len = 0;
+            file->read((char*)&len, sizeof(quint32));
+            data = file->read(len);
+            if(load & STORAGE_DATA)
+                addData(data);
+        }
     }
 
     //Widgets
-    area->LoadWidgets(file, !(load & STORAGE_WIDGETS));
+    if(file->seekToNextBlock(BLOCK_WIDGETS, 0))
+        area->LoadWidgets(file, !(load & STORAGE_WIDGETS));
 
     file->close();
     delete file;
@@ -210,4 +215,20 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     }
 
     return m_packet;
+}
+
+bool AnalyzerDataStorage::checkMagic(QFile *file)
+{
+    char *itr = new char[3];
+    file->read(itr, 3);
+    for(quint8 i = 0; i < 3; ++i)
+    {
+        if(itr[i] != ANALYZER_DATA_MAGIC[i])
+        {
+            delete[] itr;
+            return false;
+        }
+    }
+    delete[] itr;
+    return true;
 }

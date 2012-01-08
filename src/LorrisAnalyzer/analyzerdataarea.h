@@ -5,6 +5,8 @@
 #include <map>
 #include "DataWidgets/datawidget.h"
 
+class AnalyzerDataFile;
+
 class AnalyzerDataArea : public QFrame
 {
     Q_OBJECT
@@ -21,15 +23,15 @@ public:
 
     void removeWidget(quint32 id);
 
-    void SaveWidgets(QFile *file);
-    void LoadWidgets(QFile *file, bool skip);
+    void SaveWidgets(AnalyzerDataFile *file);
+    void LoadWidgets(AnalyzerDataFile *file, bool skip);
+    static DataWidget *newWidget(quint8 type, QWidget *parent);
     
 protected:
     void dropEvent ( QDropEvent * event );
     void dragEnterEvent( QDragEnterEvent *event );
 
 private:
-    DataWidget *newWidget(quint8 type);
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
 
     quint32 getNewId() { return m_widgetIdCounter++; }
