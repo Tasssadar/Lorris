@@ -48,8 +48,8 @@ quint8 ShupitoPacket::addData(const QByteArray& data)
 
     if(itr == 0)
     {
-        if(quint8(data[read]) == 0x80)
-            m_data[itr++] = data[read++];
+        if(quint8(data[read++]) == 0x80)
+            m_data[itr++] = 0x80;
         else
             return 0;
     }
