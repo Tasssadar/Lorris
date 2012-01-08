@@ -47,7 +47,11 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/datawidget.cpp \
     src/LorrisAnalyzer/DataWidgets/numberwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/barwidget.cpp \
-    src/LorrisAnalyzer/sourceselectdialog.cpp
+    src/LorrisAnalyzer/sourceselectdialog.cpp \
+    src/LorrisShupito/lorrisshupito.cpp \
+    src/LorrisShupito/lorrisshupitoinfo.cpp \
+    src/LorrisShupito/shupito.cpp \
+    src/LorrisShupito/shupitodesc.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -95,7 +99,11 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/datawidget.h \
     src/LorrisAnalyzer/DataWidgets/numberwidget.h \
     src/LorrisAnalyzer/DataWidgets/barwidget.h \
-    src/LorrisAnalyzer/sourceselectdialog.h
+    src/LorrisAnalyzer/sourceselectdialog.h \
+    src/LorrisShupito/lorrisshupito.h \
+    src/LorrisShupito/lorrisshupitoinfo.h \
+    src/LorrisShupito/shupito.h \
+    src/LorrisShupito/shupitodesc.h
 
 OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc
@@ -143,7 +151,8 @@ FORMS += \
     src/LorrisAnalyzer/sourcedialog.ui \
     src/LorrisAnalyzer/lorrisanalyzer.ui \
     src/LorrisAnalyzer/DataWidgets/rangeselectdialog.ui \
-    src/LorrisAnalyzer/sourceselectdialog.ui
+    src/LorrisAnalyzer/sourceselectdialog.ui \
+    src/LorrisShupito/lorrisshupito.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc
