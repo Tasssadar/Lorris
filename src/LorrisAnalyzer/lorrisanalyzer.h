@@ -1,6 +1,8 @@
 #ifndef LORRISANALYZER_H
 #define LORRISANALYZER_H
 
+#include <QMutex>
+
 #include "WorkTab/WorkTab.h"
 #include "packet.h"
 #include "DataWidgets/datawidget.h"
@@ -63,6 +65,7 @@ class LorrisAnalyzer : public WorkTab
         QSlider *timeSlider;
         QSpinBox *timeBox;
         analyzer_packet *m_packet;
+        analyzer_data *m_curData;
         DeviceTabWidget *m_dev_tabs;
         AnalyzerDataArea *m_data_area;
 };

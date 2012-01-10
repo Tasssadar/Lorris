@@ -12,15 +12,24 @@
 LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, CmdTabWidget *cmd, DeviceTabWidget *dev, QWidget *parent) : QHBoxLayout(parent)
 {
     setSizeConstraint(QLayout::SetMinAndMaxSize);
-    m_spacer = new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    addSpacerItem(m_spacer);
+
+    if(enable_reorder && enable_drag)
+    {
+        m_spacer_l = new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding);
+        addSpacerItem(m_spacer_l);
+    }
+    else m_spacer_l = NULL;
+
+    m_spacer_r = new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    addSpacerItem(m_spacer_r);
+
     m_header = header;
     m_enableReorder = enable_reorder;
     m_enableDrag = enable_drag;
     if(m_enableReorder)
         ((QWidget*)parent)->setAcceptDrops(true);
 
-    quint16 len = (m_header->data_mask & DATA_LEN) ? m_header->packet_length : m_header->length;
+    quint16 len = (m_header->data_mask & DATA_LEN) ? m_header->length : m_header->packet_length;
     lenChanged(len);
     cmd_w = cmd;
     dev_w = dev;
@@ -29,8 +38,10 @@ LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enab
 LabelLayout::~LabelLayout()
 {
     ClearLabels();
-    removeItem(m_spacer);
-    delete m_spacer;
+    removeItem(m_spacer_r);
+    removeItem(m_spacer_l);
+    delete m_spacer_r;
+    delete m_spacer_l;
 }
 
 void LabelLayout::ClearLabels()
@@ -54,7 +65,7 @@ void LabelLayout::AddLabel(QString value, qint8 type)
     if(m_enableReorder)
         connect(label, SIGNAL(changePos(int,int)), this, SLOT(changePos(int,int)));
 
-    insertWidget(m_labels.size(), label);
+    insertWidget(getFirstLabelPos(true), label);
     m_labels.push_back(label);
 }
 
@@ -73,6 +84,13 @@ void LabelLayout::RemoveLabel(quint16 index)
         m_labels[i]->setObjectName(QString::number(i));
         m_labels[i]->setPos(i);
     }
+}
+
+QString LabelLayout::getLabelText(quint32 index)
+{
+    if(index >= m_labels.size())
+        return "";
+    return m_labels[index]->GetText();
 }
 
 void LabelLayout::changePos(int this_label, int dragged_label)
@@ -95,7 +113,7 @@ void LabelLayout::changePos(int this_label, int dragged_label)
     for(quint16 i = 0; i < m_labels.size(); ++i)
     {
         SetLabelType(m_labels[i], GetTypeForPos(i));
-        insertWidget(i, m_labels[i]);
+        insertWidget(getFirstLabelPos(false) + i, m_labels[i]);
     }
     emit orderChanged();
 }
@@ -384,5 +402,10 @@ void DraggableLabel::setHighlighted(bool highlight)
         setStyleSheet("background-color: red");
     else
         setStyleSheet("");
+}
+
+QString DraggableLabel::GetText()
+{
+    return valueLabel->text();
 }
 

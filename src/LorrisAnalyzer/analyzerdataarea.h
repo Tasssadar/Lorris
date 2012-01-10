@@ -21,6 +21,8 @@ public:
     explicit AnalyzerDataArea(QWidget *parent = 0);
     ~AnalyzerDataArea();
 
+    void clear();
+
     void removeWidget(quint32 id);
 
     void SaveWidgets(AnalyzerDataFile *file);

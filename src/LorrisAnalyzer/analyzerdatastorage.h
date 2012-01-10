@@ -34,7 +34,7 @@ public:
 
     void Clear();
 
-    analyzer_data *addData(const QByteArray &data);
+    void addData(analyzer_data *data);
     quint32 getSize() { return m_size; }
     analyzer_data *get(quint32 index) { return m_data[index]; }
     analyzer_packet *loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices);

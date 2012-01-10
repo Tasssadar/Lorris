@@ -16,6 +16,11 @@ AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
 
 AnalyzerDataArea::~AnalyzerDataArea()
 {
+    clear();
+}
+
+void AnalyzerDataArea::clear()
+{
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         delete itr->second;
     m_widgets.clear();
@@ -108,6 +113,8 @@ void AnalyzerDataArea::SaveWidgets(AnalyzerDataFile *file)
 
 void AnalyzerDataArea::LoadWidgets(AnalyzerDataFile *file, bool skip)
 {
+    clear();
+
     quint32 count = 0;
     file->read((char*)&count, sizeof(quint32));
 

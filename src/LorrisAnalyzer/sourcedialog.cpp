@@ -4,6 +4,7 @@
 #include <QScrollArea>
 #include <QSpacerItem>
 #include <QDialogButtonBox>
+#include <QListWidget>
 
 #include "common.h"
 #include "sourcedialog.h"
@@ -62,6 +63,7 @@ SourceDialog::SourceDialog(QWidget *parent) :
     connect(ok_close_bBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(butonnBoxClicked(QAbstractButton*)));
 
     setted = false;
+    setFirst = false;
 }
 
 SourceDialog::~SourceDialog()
@@ -86,31 +88,47 @@ void SourceDialog::butonnBoxClicked(QAbstractButton *b)
 void SourceDialog::readData(const QByteArray& data)
 {
     scroll_layout->SetData(data);
+    if(setFirst)
+    {
+        setFirst = false;
+        QListWidget *list = findChild<QListWidget*>("staticList");
+        QString text = Utils::hexToString((quint8)data[0], true);
+        QListWidgetItem *item = new QListWidgetItem(text, list);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        list->addItem(item);
+    }
 }
 
 void SourceDialog::AddOrRmHeaderType(bool add, quint8 type)
 {
     if(add)
+    {        
+        m_header.data_mask |= type;
+        m_header.AddOrder(type);
+    }
+    else
+    {
+        m_header.data_mask &= ~(type);
+        m_header.RmOrder(type);
+    }
+
+    scroll_header->parentWidget()->setUpdatesEnabled(false);
+    scroll_header->ClearLabels();
+
+    for(quint8 i = 0; i < 4 && m_header.order[i] != 0; ++i)
     {
         QString text = "";
-        switch(type)
+        switch(m_header.order[i])
         {
             case DATA_LEN:       text = tr("Length"); break;
             case DATA_STATIC:    text = tr("Static"); break;
             case DATA_DEVICE_ID: text = tr("ID");     break;
             case DATA_OPCODE:    text = tr("Cmd");    break;
         }
-        scroll_header->AddLabel(text, (DATA_HEADER | type));
-        m_header.data_mask |= type;
-        m_header.AddOrder(type);
-    }
-    else
-    {
-        scroll_header->RemoveLabel(quint8(DATA_HEADER | type));
-        m_header.data_mask &= ~(type);
-        m_header.RmOrder(type);
+        scroll_header->AddLabel(text, (DATA_HEADER | m_header.order[i]));
     }
     scroll_layout->UpdateTypes();
+    scroll_header->parentWidget()->setUpdatesEnabled(true);
 }
 
 void SourceDialog::headerLenToggled(bool checked)
@@ -139,6 +157,12 @@ void SourceDialog::headerLenChanged(int value)
 void SourceDialog::staticCheckToggled(bool checked)
 {
     AddOrRmHeaderType(checked, DATA_STATIC);
+    if(checked)
+    {
+        QListWidget *list = findChild<QListWidget*>("staticList");
+        if(list->count() == 0)
+            setFirst = true;
+    }
 }
 
 void SourceDialog::cmdCheckToggled(bool checked)
@@ -155,6 +179,22 @@ void SourceDialog::staticLenChanged(int value)
 {
     m_header.static_len = value;
     scroll_layout->UpdateTypes();
+
+    QListWidget *list = findChild<QListWidget*>("staticList");
+    while(list->count() != value)
+    {
+        if(list->count() < value)
+        {
+            QString text = scroll_layout->getLabelText(list->count());
+            if(text.length() == 0)
+                text = "0x00";
+            QListWidgetItem *item = new QListWidgetItem(text, list);
+            item->setFlags(item->flags() | Qt::ItemIsEditable);
+            list->addItem(item);
+        }
+        else
+            list->takeItem(list->count() - 1);
+    }
 }
 
 void SourceDialog::lenFmtChanged(int index)
@@ -175,5 +215,20 @@ analyzer_packet *SourceDialog::getStructure()
     QSpinBox *len_static = findChild<QSpinBox*>("len_box");
     m_header.packet_length = len_static->value();
 
-    return new analyzer_packet(new analyzer_header(&m_header), big_endian);
+    quint8 *static_data = NULL;
+    if(m_header.data_mask & DATA_STATIC)
+    {
+        static_data = new quint8[m_header.static_len];
+        QListWidget *list = findChild<QListWidget*>("staticList");
+        for(quint8 i = 0; i < list->count(); ++i)
+        {
+            QString text = list->item(i)->text();
+            if(text.contains("0x", Qt::CaseInsensitive))
+                static_data[i] = text.toInt(NULL, 16);
+            else
+                static_data[i] = text.toInt();
+        }
+    }
+
+    return new analyzer_packet(new analyzer_header(&m_header), big_endian, static_data);
 }

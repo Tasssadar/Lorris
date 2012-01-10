@@ -5,6 +5,7 @@
 
 enum DataBlocks
 {
+    BLOCK_STATIC_DATA,
     BLOCK_DEVICE_TABS,
     BLOCK_DEVICE_TAB,
     BLOCK_CMD_TABS,

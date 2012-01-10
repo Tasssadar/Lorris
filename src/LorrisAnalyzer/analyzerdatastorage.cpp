@@ -22,20 +22,18 @@ AnalyzerDataStorage::~AnalyzerDataStorage()
 
 void AnalyzerDataStorage::Clear()
 {
+    m_size = 0;
     for(quint32 i = 0; i < m_data.size(); ++i)
         delete m_data[i];
     m_data.clear();
 }
 
-analyzer_data *AnalyzerDataStorage::addData(const QByteArray& data)
+void AnalyzerDataStorage::addData(analyzer_data *data)
 {
     if(!m_packet)
-        return NULL;
-    analyzer_data *a_data = new analyzer_data(m_packet);
-    a_data->setData(data);
-    m_data.push_back(a_data);
+        return;
+    m_data.push_back(data);
     ++m_size;
-    return a_data;
 }
 
 void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *devices)
@@ -73,6 +71,19 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     //Packet
     itr = (char*)&m_packet->big_endian;
     file->write(itr, sizeof(bool));
+
+    //header static data
+    file->writeBlockIdentifier(BLOCK_STATIC_DATA);
+    if(m_packet->static_data)
+    {
+        file->write((char*)&m_packet->header->static_len, sizeof(m_packet->header->static_len));
+        file->write((char*)m_packet->static_data, m_packet->header->static_len);
+    }
+    else
+    {
+        char i = 0;
+        file->write(&i, 1);
+    }
 
     //Devices and commands
     file->writeBlockIdentifier(BLOCK_DEVICE_TABS);
@@ -160,7 +171,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     Clear();
 
     analyzer_header *header = new analyzer_header();
-    analyzer_packet *packet = new analyzer_packet(header, true);
+    analyzer_packet *packet = new analyzer_packet(header, true, NULL);
 
     //Header
     itr = (char*)&header->length;
@@ -180,9 +191,22 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         m_packet = packet;
     }
 
+    //header static data
+    if(file->seekToNextBlock(BLOCK_STATIC_DATA, BLOCK_DEVICE_TABS))
+    {
+        quint8 static_len = 0;
+        file->read((char*)&static_len, sizeof(quint8));
+        if(static_len)
+        {
+            m_packet->static_data = new quint8[static_len];
+            file->read((char*)m_packet->static_data, static_len);
+        }
+    }
+
     //Devices and commands
     devices->setHeader(header);
-    devices->Load(file, !(load & STORAGE_STRUCTURE));
+    if(file->seekToNextBlock(BLOCK_DEVICE_TABS, BLOCK_DATA))
+        devices->Load(file, !(load & STORAGE_STRUCTURE));
 
     //Data
     if(file->seekToNextBlock(BLOCK_DATA, 0))
@@ -196,8 +220,13 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
             quint32 len = 0;
             file->read((char*)&len, sizeof(quint32));
             data = file->read(len);
+
             if(load & STORAGE_DATA)
-                addData(data);
+            {
+                analyzer_data *a_data = new analyzer_data(m_packet);
+                a_data->setData(data);
+                addData(a_data);
+            }
         }
     }
 

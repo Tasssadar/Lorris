@@ -4,6 +4,72 @@
 analyzer_data::analyzer_data(analyzer_packet *packet)
 {
     m_packet = packet;
+    if(m_packet->static_data)
+        m_static_data = QByteArray((char*)m_packet->static_data, m_packet->header->static_len);
+    else
+        m_static_data = QByteArray();
+    itr = 0;
+    m_forceValid = false;
+}
+
+quint32 analyzer_data::addData(QByteArray data)
+{
+    quint32 read = 0;
+    for(; itr < (quint32)m_static_data.length() && read < (quint32)data.length();)
+    {
+        if(data[read] != m_static_data[itr])
+            return 0;
+        m_data[itr++] = data[read++];
+    }
+
+    quint32 len = getLenght();
+    quint32 var_len = 0;
+    quint8 lenRead = (m_packet->header->data_mask & DATA_LEN);
+
+    for(quint32 i = itr; i < len && read < (quint32)data.length(); ++i)
+    {
+        if(lenRead == DATA_LEN && getLenFromHeader(var_len))
+        {
+            len += var_len;
+            lenRead = 0;
+        }
+
+        m_data[itr++] = data[read++];
+    }
+    return read;
+}
+
+quint32 analyzer_data::getLenght()
+{
+    if(m_packet->header->data_mask & DATA_LEN)
+    {
+        quint32 res = 0;
+        if(getLenFromHeader(res))
+            return res + m_packet->header->length;
+        else
+            return m_packet->header->length;
+    }
+    else
+        return m_packet->header->packet_length;
+}
+
+bool analyzer_data::isValid()
+{
+    if(m_forceValid)
+        return true;
+
+    if(itr < (quint32)m_static_data.length())
+        return false;
+
+    for(quint8 i = 0; i < m_static_data.length(); ++i)
+    {
+        if(m_data[i] != m_static_data[i])
+            return false;
+    }
+
+    if(itr != getLenght())
+        return false;
+    return true;
 }
 
 bool analyzer_data::getDeviceId(quint8& id)
@@ -21,6 +87,30 @@ bool analyzer_data::getCmd(quint8 &cmd)
         return false;
 
     cmd = (quint8)m_data[getHeaderDataPos(DATA_OPCODE)];
+    return true;
+}
+
+bool analyzer_data::getLenFromHeader(quint32& len)
+{
+    if(!(m_packet->header->data_mask & DATA_LEN))
+        return false;
+
+    try
+    {
+        quint32 pos = getHeaderDataPos(DATA_LEN);
+        switch(m_packet->header->len_fmt)
+        {
+            case 0: len = getUInt8(pos);  break;
+            case 1: len = getUInt16(pos); break;
+            case 2: len = getUInt32(pos); break;
+            default: return false;
+        }
+    }
+    catch(const char*)
+    {
+        return false;
+    }
+
     return true;
 }
 

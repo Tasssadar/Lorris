@@ -77,6 +77,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     m_packet = NULL;
     m_state = 0;
     highlightInfoNotNull = false;
+    m_curData = NULL;
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -148,9 +149,31 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     if((m_state & STATE_DIALOG) != 0 || !m_packet)
         return;
 
-    analyzer_data *a_data = m_storage->addData(data);
-    if(!a_data)
-        return;
+    if(!m_curData)
+        m_curData = new analyzer_data(m_packet);
+
+    QByteArray dta = data;
+    static bool first = true;
+    quint32 curRead = 0;
+
+    while(dta.length() != 0)
+    {
+        if(first || curRead == 0)
+        {
+            int index = dta.indexOf(m_curData->getStaticData());
+            if(index == -1)
+                break;
+            dta.remove(0, index);
+            first = false;
+        }
+        curRead = m_curData->addData(dta);
+        dta.remove(0, curRead);
+        if(m_curData->isValid())
+        {
+            m_storage->addData(m_curData);
+            m_curData = new analyzer_data(m_packet);
+        }
+    }
 
     bool update = timeSlider->value() == timeSlider->maximum();
     timeSlider->setMaximum(m_storage->getSize());
@@ -165,6 +188,7 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
 void LorrisAnalyzer::onTabShow()
 {
+    m_state |= STATE_DIALOG;
     SourceSelectDialog *s = new SourceSelectDialog(this);
 
     if(m_con->getType() == CONNECTION_FILE)
@@ -173,7 +197,9 @@ void LorrisAnalyzer::onTabShow()
     qint8 res = s->get();
     switch(res)
     {
-        case -1: break;
+        case -1:
+            m_state &= ~(STATE_DIALOG);
+            break;
         case 0:
         {
             QString file = s->getFileName();
@@ -189,22 +215,27 @@ void LorrisAnalyzer::onTabShow()
 
             analyzer_packet *packet = d->getStructure();
             delete d;
-            m_state &= ~(STATE_DIALOG);
-            if(!packet)
-                return;
 
-            if(m_packet)
             {
-                delete m_packet->header;
-                delete m_packet;
-            }
-            m_storage->Clear();
-            m_dev_tabs->removeAll();
-            m_dev_tabs->setHeader(packet->header);
-            m_dev_tabs->addDevice();
+                m_curData = new analyzer_data(packet);
+                m_state &= ~(STATE_DIALOG);
+                if(!packet)
+                    return;
 
-            m_storage->setPacket(packet);
-            m_packet = packet;
+                if(m_packet)
+                {
+                    delete m_packet->header;
+                    delete m_packet;
+                }
+                m_data_area->clear();
+                m_storage->Clear();
+                m_dev_tabs->removeAll();
+                m_dev_tabs->setHeader(packet->header);
+                m_dev_tabs->addDevice();
+
+                m_storage->setPacket(packet);
+                m_packet = packet;
+            }
             break;
         }
     }
@@ -229,7 +260,7 @@ void LorrisAnalyzer::updateData()
 {
     int val = timeSlider->value();
 
-    if(val != 0)
+    if(val != 0 && (quint32)val <= m_storage->getSize())
         emit newData(m_storage->get(val-1));
 }
 
@@ -243,7 +274,10 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     analyzer_packet *packet = m_storage->loadFromFile(name, mask, m_data_area, m_dev_tabs);
     if(!packet)
         return;
+
+    // old packet deleted in AnalyzerDataStorage::loadFromFile()
     m_packet = packet;
+    m_curData = new analyzer_data(m_packet);
 
     if(!m_dev_tabs->count())
     {
@@ -257,6 +291,7 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     timeBox->setMaximum(m_storage->getSize());
     timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
     timeBox->setValue(m_storage->getSize());
+    m_state &= ~(STATE_DIALOG);
 }
 
 void LorrisAnalyzer::saveDataButton()
