@@ -217,10 +217,11 @@ void LorrisAnalyzer::onTabShow()
             delete d;
 
             {
-                m_curData = new analyzer_data(packet);
                 m_state &= ~(STATE_DIALOG);
                 if(!packet)
                     return;
+
+                m_curData = new analyzer_data(packet);
 
                 if(m_packet)
                 {
