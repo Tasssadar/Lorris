@@ -24,6 +24,7 @@
 #include "DataWidgets/datawidget.h"
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
+#include "DataWidgets/colorwidget.h"
 #include "sourceselectdialog.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
@@ -70,6 +71,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
     widgetBtnL->addWidget(new NumberWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new BarWidgetAddBtn(tmp));
+    widgetBtnL->addWidget(new ColorWidgetAddBtn(tmp));
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     widgetsScrollArea->setWidget(tmp);

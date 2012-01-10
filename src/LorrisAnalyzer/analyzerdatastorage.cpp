@@ -144,14 +144,11 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     if(itr[0] != ANALYZER_DATA_FORMAT[0] || itr[1] != ANALYZER_DATA_FORMAT[1])
     {
         QMessageBox *box = new QMessageBox();
-        box->setWindowTitle(QObject::tr("Error!"));
-        box->setText(QObject::tr("Data file has different version of structure!"));
-        box->setIcon(QMessageBox::Critical);
+        box->setWindowTitle(QObject::tr("Warning!"));
+        box->setText(QObject::tr("You are opening file with old structure format, some things may be messed up!"));
+        box->setIcon(QMessageBox::Warning);
         box->exec();
         delete box;
-        file->close();
-        delete file;
-        return NULL;
     }
     delete[] itr;
 

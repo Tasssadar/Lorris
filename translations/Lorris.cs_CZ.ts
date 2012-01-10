@@ -65,7 +65,7 @@
 <context>
     <name>BarWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="254"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="259"/>
         <source>Bar</source>
         <translation></translation>
     </message>
@@ -119,6 +119,14 @@
         <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="136"/>
         <source>Wrong format, must be 8bit hex or normal number</source>
         <translation>Špatný formát, musí být 8 bitový hex nebo normální číslo</translation>
+    </message>
+</context>
+<context>
+    <name>ColorWidgetAddBtn</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="55"/>
+        <source>Color</source>
+        <translation>Barva</translation>
     </message>
 </context>
 <context>
@@ -204,7 +212,7 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="28"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="138"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="140"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
@@ -229,30 +237,30 @@
         <translation> z 0</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="100"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="102"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="110"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="121"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="143"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="112"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="123"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="145"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="125"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="127"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="126"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="128"/>
         <source>Can&apos;t open connection!</source>
         <translation>Nemůžu se připojit!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="181"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="293"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="183"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="295"/>
         <source> of </source>
         <translation> z </translation>
     </message>
@@ -1118,8 +1126,7 @@
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="53"/>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="130"/>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="147"/>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="161"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="158"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="52"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="30"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="82"/>
@@ -1139,12 +1146,17 @@
         <translation>Import dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="148"/>
-        <source>Data file has different version of structure!</source>
-        <translation>Datový soubor má rozdílnou verzi struktury!</translation>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="147"/>
+        <source>Warning!</source>
+        <translation>Pozor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="162"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="148"/>
+        <source>You are opening file with old structure format, some things may be messed up!</source>
+        <translation>Otevíráte soubor staré verze, něco může být rozbité!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="159"/>
         <source>Data file has wrong magic!</source>
         <translation>Data mají špatné magic číslo!</translation>
     </message>
@@ -1223,7 +1235,7 @@
     <message>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="53"/>
         <source>You have to select at least one thing to load.</source>
-        <translation type="unfinished"></translation>
+        <translation>Musíte vybrat alespoň jednu věc k načtení.</translation>
     </message>
 </context>
 <context>

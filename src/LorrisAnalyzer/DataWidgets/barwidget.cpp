@@ -166,6 +166,21 @@ void BarWidget::rotationSelected(int i)
     for(quint8 y = 0; y < 2; ++y)
         rotAction[y]->setChecked(y == i);
 
+    rotate(i);
+
+    setMinimumSize(0, 0);
+    resize(0, 0);
+    adjustSize();
+    setMinimumSize(size());
+
+    if(i == 0)
+        setMaximumSize(width(), 16777215);
+    else
+        setMaximumSize(16777215, height());
+}
+
+void BarWidget::rotate(int i)
+{
     m_rotation = i;
 
     bool horizontal = false;
@@ -187,16 +202,6 @@ void BarWidget::rotationSelected(int i)
     //FIXME: not working?
     //m_bar->setInvertedAppearance(switchSides);
     m_bar->setOrientation(horizontal ? Qt::Horizontal : Qt::Vertical);
-
-    setMinimumSize(0, 0);
-    resize(0, 0);
-    adjustSize();
-    setMinimumSize(size());
-
-    if(i == 0)
-        setMaximumSize(width(), 16777215);
-    else
-        setMaximumSize(16777215, height());
 }
 
 void BarWidget::saveWidgetInfo(AnalyzerDataFile *file)
@@ -245,7 +250,7 @@ void BarWidget::loadWidgetInfo(AnalyzerDataFile *file)
     if(file->seekToNextBlock("barWRotation", BLOCK_WIDGET))
     {
         file->read((char*)&m_rotation, sizeof(m_rotation));
-        rotationSelected(m_rotation);
+        rotate(m_rotation);
     }
 }
 

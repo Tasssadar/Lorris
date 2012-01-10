@@ -12,7 +12,8 @@
 enum WidgetTypes
 {
     WIDGET_NUMBERS,
-    WIDGET_BAR
+    WIDGET_BAR,
+    WIDGET_COLOR
     //TODO: graf, barva, X Y mapa, rafickovej ukazatel, timestamp
 };
 

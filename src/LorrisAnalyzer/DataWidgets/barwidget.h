@@ -25,6 +25,8 @@ private slots:
     void rotationSelected(int i);
 
 private:
+    void rotate(int i);
+
     QProgressBar *m_bar;
     qint64 m_min;
     qint64 m_max;

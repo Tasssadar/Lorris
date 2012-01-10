@@ -254,10 +254,6 @@ NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(paren
     m_widgetType = WIDGET_NUMBERS;
 }
 
-NumberWidgetAddBtn::~NumberWidgetAddBtn()
-{
-}
-
 QPixmap NumberWidgetAddBtn::getRender()
 {
     NumberWidget *w = new NumberWidget(this);
