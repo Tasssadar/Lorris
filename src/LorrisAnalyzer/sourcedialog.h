@@ -45,6 +45,7 @@ private:
     Ui::SourceDialog *ui;
     analyzer_header m_header;
     bool setted;
+    bool setFirst;
 };
 
 

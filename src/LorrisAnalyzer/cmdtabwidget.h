@@ -8,7 +8,7 @@
 #include "labellayout.h"
 #include "packet.h"
 
-class QFile;
+class AnalyzerDataFile;
 struct data_widget_info;
 
 struct CmdTabInfo
@@ -49,8 +49,8 @@ public:
         m_enableCmds = enable;
     }
     qint16 getCurrentCmd();
-    void Save(QFile *file);
-    void Load(QFile *file, bool skip);
+    void Save(AnalyzerDataFile *file);
+    void Load(AnalyzerDataFile *file, bool skip);
 
     bool setHighlightPos(const data_widget_info& info, bool highlight);
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>743</width>
-    <height>380</height>
+    <height>505</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
      <x>10</x>
      <y>180</y>
      <width>721</width>
-     <height>171</height>
+     <height>321</height>
     </rect>
    </property>
    <property name="title">
@@ -34,8 +34,8 @@
    <widget class="QWidget" name="layoutWidget1">
     <property name="geometry">
      <rect>
-      <x>11</x>
-      <y>21</y>
+      <x>20</x>
+      <y>30</y>
       <width>114</width>
       <height>26</height>
      </rect>
@@ -56,10 +56,10 @@
    <widget class="QWidget" name="layoutWidget2">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>60</y>
+      <x>19</x>
+      <y>69</y>
       <width>278</width>
-      <height>100</height>
+      <height>111</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -74,7 +74,7 @@
       </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,1,1,1">
        <item>
         <widget class="QCheckBox" name="static_check">
          <property name="text">
@@ -113,8 +113,8 @@
    <widget class="QWidget" name="layoutWidget3">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>60</y>
+      <x>299</x>
+      <y>69</y>
       <width>87</width>
       <height>55</height>
      </rect>
@@ -160,13 +160,23 @@
    <widget class="QWidget" name="layoutWidget4">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>450</x>
       <y>60</y>
-      <width>231</width>
-      <height>102</height>
+      <width>261</width>
+      <height>122</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_5">
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Block order:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QScrollArea" name="header_scroll">
        <property name="horizontalScrollBarPolicy">
@@ -180,7 +190,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>223</width>
+          <width>253</width>
           <height>58</height>
          </rect>
         </property>
@@ -192,6 +202,70 @@
        <property name="text">
         <string>Hint: Use drag &amp; drop
 to change order</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QDialogButtonBox" name="ok_close_bBox">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>290</y>
+      <width>181</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="standardButtons">
+     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+    </property>
+    <property name="centerButtons">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>701</width>
+      <height>106</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_8">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Static data:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="staticList">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
+       <property name="flow">
+        <enum>QListView::LeftToRight</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Changeable by double-click</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -219,7 +293,7 @@ to change order</string>
       <x>10</x>
       <y>20</y>
       <width>701</width>
-      <height>81</height>
+      <height>91</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -240,7 +314,7 @@ to change order</string>
        <x>0</x>
        <y>0</y>
        <width>695</width>
-       <height>58</height>
+       <height>68</height>
       </rect>
      </property>
     </widget>
@@ -251,7 +325,7 @@ to change order</string>
       <x>10</x>
       <y>110</y>
       <width>571</width>
-      <height>67</height>
+      <height>61</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -411,22 +485,6 @@ to change order</string>
     </item>
    </widget>
   </widget>
-  <widget class="QDialogButtonBox" name="ok_close_bBox">
-   <property name="geometry">
-    <rect>
-     <x>539</x>
-     <y>350</y>
-     <width>181</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-   <property name="centerButtons">
-    <bool>false</bool>
-   </property>
-  </widget>
  </widget>
  <resources/>
  <connections>
@@ -523,6 +581,22 @@ to change order</string>
     <hint type="destinationlabel">
      <x>156</x>
      <y>161</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>static_check</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>staticList</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>188</x>
+     <y>252</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>188</x>
+     <y>290</y>
     </hint>
    </hints>
   </connection>

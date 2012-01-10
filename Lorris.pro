@@ -51,7 +51,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/lorrisshupito.cpp \
     src/LorrisShupito/lorrisshupitoinfo.cpp \
     src/LorrisShupito/shupito.cpp \
-    src/LorrisShupito/shupitodesc.cpp
+    src/LorrisShupito/shupitodesc.cpp \
+    src/LorrisAnalyzer/analyzerdatafile.cpp \
+    src/LorrisAnalyzer/DataWidgets/colorwidget.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -103,7 +105,9 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/lorrisshupito.h \
     src/LorrisShupito/lorrisshupitoinfo.h \
     src/LorrisShupito/shupito.h \
-    src/LorrisShupito/shupitodesc.h
+    src/LorrisShupito/shupitodesc.h \
+    src/LorrisAnalyzer/analyzerdatafile.h \
+    src/LorrisAnalyzer/DataWidgets/colorwidget.h
 
 OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc

@@ -58,6 +58,8 @@ public:
         return m_labels.size();
     }
 
+    QString getLabelText(quint32 index);
+
     bool setHightlightLabel(quint32 pos, bool highlight);
 
     CmdTabWidget *getCmdTab() { return cmd_w; }
@@ -75,8 +77,17 @@ protected:
     std::vector<DraggableLabel*> m_labels;
     analyzer_header *m_header;
 
+    inline quint32 getFirstLabelPos(bool withLabelsSize)
+    {
+        quint32 res = m_spacer_l ? 1 : 0;
+        if(withLabelsSize)
+            res += m_labels.size();
+        return res;
+    }
+
 private:
-    QSpacerItem *m_spacer;
+    QSpacerItem *m_spacer_r;
+    QSpacerItem *m_spacer_l;
     bool m_enableReorder;
     bool m_enableDrag;
 
@@ -122,6 +133,8 @@ public:
     void setLabelStyleSheet(const QString &css);
     void setLabelText(const QString& text);
     void setPos(quint32 pos);
+
+    QString GetText();
 
 protected:
     void mousePressEvent ( QMouseEvent * event );

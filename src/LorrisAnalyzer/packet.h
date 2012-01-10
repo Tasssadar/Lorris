@@ -61,9 +61,16 @@ struct analyzer_header
 
     void RmOrder(quint8 mask)
     {
-        quint8 i = 0;
-        while(order[i] != mask) { ++i; }
-        order[i] = 0;
+        quint8 tmpOrder[4];
+        std::copy(order, order + 4, tmpOrder);
+        std::fill(order, order + 4, 0);
+
+        for(quint8 i = 0, y = 0; i < 4; ++i)
+        {
+            if(tmpOrder[i] == mask || tmpOrder[i] == 0)
+                continue;
+            order[y++] = tmpOrder[i];
+        }
     }
 
     quint32 length;
@@ -81,20 +88,28 @@ struct analyzer_packet
         Reset();
     }
 
-    analyzer_packet(analyzer_header *h, bool b_e)
+    analyzer_packet(analyzer_header *h, bool b_e, quint8 *s_d)
     {
         header = h;
         big_endian = b_e;
+        static_data = s_d;
+    }
+
+    ~analyzer_packet()
+    {
+        delete[] static_data;
     }
 
     void Reset()
     {
+        static_data = NULL;
         header = NULL;
         big_endian = true;
     }
 
     analyzer_header *header;
     bool big_endian;
+    quint8 *static_data;
 };
 
 // Real data
@@ -103,11 +118,22 @@ class analyzer_data
 public:
     analyzer_data(analyzer_packet *packet);
 
-    void setData(QByteArray data) { m_data = data; }
+    void setData(QByteArray data)
+    {
+        m_data = data;
+        m_forceValid = true;
+    }
+    quint32 addData(QByteArray data);
+
     const QByteArray& getData() { return m_data; }
+    const QByteArray& getStaticData() { return m_static_data; }
+
+    bool isValid();
 
     bool getDeviceId(quint8& id);
     bool getCmd(quint8& cmd);
+    bool getLenFromHeader(quint32& len);
+    quint32 getLenght();
     quint16 getHeaderDataPos(quint8 type);
 
     quint8   getUInt8  (quint32 pos) { return read<quint8> (pos); }
@@ -128,6 +154,9 @@ public:
 private:
     analyzer_packet *m_packet;
     QByteArray m_data;
+    QByteArray m_static_data;
+    quint32 itr;
+    bool m_forceValid;
 };
 
 template <typename T>

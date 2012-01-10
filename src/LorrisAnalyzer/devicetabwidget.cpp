@@ -11,6 +11,7 @@
 #include "common.h"
 #include "DataWidgets/datawidget.h"
 #include "lorrisanalyzer.h"
+#include "analyzerdatafile.h"
 
 DeviceTabWidget::DeviceTabWidget(QWidget *parent) :
     QTabWidget(parent)
@@ -55,6 +56,7 @@ void DeviceTabWidget::removeAll()
         delete itr->second;
     m_devices.clear();
     delete m_all_devices;
+    m_all_devices = NULL;
     clear();
 }
 
@@ -198,7 +200,7 @@ qint16 DeviceTabWidget::getCurrentDevice()
     return -1;
 }
 
-void DeviceTabWidget::Save(QFile *file)
+void DeviceTabWidget::Save(AnalyzerDataFile *file)
 {
     quint32 count = m_devices.size();
     if(m_all_devices)
@@ -209,19 +211,23 @@ void DeviceTabWidget::Save(QFile *file)
     if(m_all_devices)
     {
         id = -1;
+        file->writeBlockIdentifier(BLOCK_DEVICE_TAB);
         file->write((char*)&id, sizeof(qint16));
+        file->writeBlockIdentifier(BLOCK_CMD_TABS);
         m_all_devices->Save(file);
     }
 
     for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
     {
         id = itr->first;
+        file->writeBlockIdentifier(BLOCK_DEVICE_TAB);
         file->write((char*)&id, sizeof(qint16));
+        file->writeBlockIdentifier(BLOCK_CMD_TABS);
         itr->second->Save(file);
     }
 }
 
-void DeviceTabWidget::Load(QFile *file, bool skip)
+void DeviceTabWidget::Load(AnalyzerDataFile *file, bool skip)
 {
     removeAll();
 
@@ -231,7 +237,13 @@ void DeviceTabWidget::Load(QFile *file, bool skip)
     qint16 id;
     for(quint32 i = 0; i < count; ++i)
     {
+        if(!file->seekToNextBlock(BLOCK_DEVICE_TAB, 0))
+            break;
         file->read((char*)&id, sizeof(qint16));
+
+        if(!file->seekToNextBlock(BLOCK_CMD_TABS, BLOCK_DEVICE_TAB))
+            break;
+
         if(id == -1)
         {
            addAllDevices();

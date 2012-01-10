@@ -21,8 +21,8 @@ public:
     ~NumberWidget();
 
     void setUp();
-    void saveWidgetInfo(QFile *file);
-    void loadWidgetInfo(QFile *file);
+    void saveWidgetInfo(AnalyzerDataFile *file);
+    void loadWidgetInfo(AnalyzerDataFile *file);
 
 protected:
      void processData(analyzer_data *data);
@@ -49,7 +49,6 @@ class NumberWidgetAddBtn : public DataWidgetAddBtn
     Q_OBJECT
 public:
     NumberWidgetAddBtn(QWidget *parent = 0);
-    ~NumberWidgetAddBtn();
 
 protected:
     QPixmap getRender();
