@@ -1,0 +1,30 @@
+    Lorris - GUI tool for robotics (at least until I think of something which suits more)
+             https://github.com/Tasssadar/Lorris
+
+    Copyright (C) 2012 Vojtěch Boček
+    Contact: <vbocek@gmail.com>
+            https://github.com/Tasssadar
+
+    Lorris is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Lorris is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
+
+
+    Lorris uses following libraries:
+        Qt Framework(http://qt.nokia.com/), the cross-platform application and UI framework,
+            which is distributed under the GNU LGPL v2.1
+
+        Qwt(http://qwt.sourceforge.net/), Qt Widgets for Technical Applications,
+            which is distributed under the Qwt license - see dep/qwt/COPYING
+
+        Modified version of QSerialDevice(http://gitorious.org/qserialdevice),
+            a cross-platform library for serial devices (ports) based on Qt4,
+            which is distributed under the GNU GPLv2 - see dep/qserialdevice/copying
