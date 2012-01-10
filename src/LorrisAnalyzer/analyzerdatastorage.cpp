@@ -6,7 +6,7 @@
 #include "devicetabwidget.h"
 #include "analyzerdatafile.h"
 
-static const char *ANALYZER_DATA_FORMAT = "v4";
+static const char *ANALYZER_DATA_FORMAT = "v5";
 static const char ANALYZER_DATA_MAGIC[] = { 0xFF, 0x80, 0x68 };
 
 AnalyzerDataStorage::AnalyzerDataStorage()
