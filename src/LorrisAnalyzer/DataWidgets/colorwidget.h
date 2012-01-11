@@ -26,6 +26,8 @@
 
 #include "datawidget.h"
 
+class QSlider;
+
 class ColorWidget : public DataWidget
 {
     Q_OBJECT
@@ -41,9 +43,22 @@ protected:
      void processData(analyzer_data *data);
 
 private slots:
+     void brightTriggered();
+     void colorTriggered();
+     void brightChanged(int value);
+     void colorChangedR(int value);
+     void colorChangedG(int value);
+     void colorChangedB(int value);
 
 private:
+     void updateColor();
+
      QWidget *m_widget;
+     QHBoxLayout *m_brightness_layout;
+     QHBoxLayout *m_color_layout[3];
+     qint16 m_brightness;
+     qint16 m_color_cor[3];
+     quint8 m_color[3];
 };
 
 class ColorWidgetAddBtn : public DataWidgetAddBtn

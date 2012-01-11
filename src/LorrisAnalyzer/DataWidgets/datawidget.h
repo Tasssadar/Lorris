@@ -31,6 +31,7 @@
 #include <QFile>
 
 #include "../packet.h"
+#include "../analyzerdatafile.h"
 
 enum WidgetTypes
 {

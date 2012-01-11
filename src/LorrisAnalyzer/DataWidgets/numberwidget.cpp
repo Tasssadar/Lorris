@@ -30,7 +30,7 @@
 #include <QSignalMapper>
 
 #include "numberwidget.h"
-#include "../analyzerdatafile.h"
+
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
