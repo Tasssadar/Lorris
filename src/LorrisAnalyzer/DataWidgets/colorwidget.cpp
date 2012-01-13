@@ -60,11 +60,11 @@ void ColorWidget::setUp()
 {
     DataWidget::setUp();
 
-    QAction *brightAct = new QAction(tr("Brightness correction"), this);
+    brightAct = new QAction(tr("Brightness correction"), this);
     brightAct->setCheckable(true);
     connect(brightAct, SIGNAL(triggered()), this, SLOT(brightTriggered()));
 
-    QAction *colorAct = new QAction(tr("Color correction"), this);
+    colorAct = new QAction(tr("Color correction"), this);
     colorAct->setCheckable(true);
     connect(colorAct , SIGNAL(triggered()), this, SLOT(colorTriggered()));
 
@@ -140,7 +140,10 @@ void ColorWidget::loadWidgetInfo(AnalyzerDataFile *file)
         file->read((char*)&m_brightness, sizeof(m_brightness));
         file->read(&showed, 1);
         if(showed)
+        {
             brightTriggered();
+            brightAct->setChecked(true);
+        }
     }
 
 
@@ -150,7 +153,10 @@ void ColorWidget::loadWidgetInfo(AnalyzerDataFile *file)
         file->read((char*)&m_color_cor[0], sizeof(qint16)*3);
         file->read(&showed, 1);
         if(showed)
+        {
+            colorAct->setChecked(true);
             colorTriggered();
+        }
     }
     updateColor();
 }

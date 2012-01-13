@@ -41,18 +41,16 @@ SerialPortThread::~SerialPortThread()
 
 void SerialPortThread::Send(const QByteArray& data)
 {
+    m_portMutex.lock();
     if(runTh && m_port)
-    {
-        m_portMutex.lock();
         m_port->write(data);
-        m_portMutex.unlock();
-    }
+    m_portMutex.unlock();
 }
 
 bool SerialPortThread::Open()
 {
     m_port = new AbstractSerial();
-    connect(m_port, SIGNAL(signalStatus(const QString, QDateTime)), this, SLOT(viewStateSlot(QString, QDateTime)), Qt::QueuedConnection);
+    //connect(m_port, SIGNAL(signalStatus(const QString, QDateTime)), this, SLOT(viewStateSlot(QString, QDateTime)), Qt::QueuedConnection);
 
     m_port->setDeviceName(devName);
     m_port->enableEmitStatus(true);
@@ -84,20 +82,31 @@ void SerialPortThread::run()
 
     connect(m_con, SIGNAL(stopThread()), this, SLOT(stop()));
 
+    quint64 avail = 0;
+    QByteArray ba;
     while(runTh)
     {
         m_portMutex.lock();
-        if(m_port->bytesAvailable() > 0)
-        {
-            QByteArray ba = m_port->readAll();
-            emit dataRead(ba);
-        }
+
+        avail = m_port->bytesAvailable();
+        if(avail > 0)
+            ba = m_port->readAll();
+
         m_portMutex.unlock();
-        msleep(10);
+
+        if(avail > 0)
+            emit dataRead(ba);
+
+        msleep(50);
     }
+
+    m_portMutex.lock();
+
     m_port->close();
     delete m_port;
     m_port = NULL;
+
+    m_portMutex.unlock();
 }
 
 void SerialPortThread::stop()

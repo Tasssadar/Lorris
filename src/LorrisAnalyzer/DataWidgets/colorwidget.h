@@ -59,7 +59,9 @@ private:
      qint16 m_brightness;
      qint16 m_color_cor[3];
      quint8 m_color[3];
-};
+     QAction *brightAct;
+     QAction *colorAct;
+}
 
 class ColorWidgetAddBtn : public DataWidgetAddBtn
 {
