@@ -94,8 +94,6 @@ private slots:
 
 private:
     Ui::RangeSelectDialog *ui;
-    QSpinBox *m_min;
-    QSpinBox *m_max;
     int m_minRes;
     int m_maxRes;
     bool m_res;

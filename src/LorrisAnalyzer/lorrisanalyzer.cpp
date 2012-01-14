@@ -54,42 +54,29 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
     ui->setupUi(this);
 
-    m_storage = new AnalyzerDataStorage();
+    connect(ui->connectButton, SIGNAL(clicked()), this, SLOT(connectButton()));
+    connect(ui->addSourceButton, SIGNAL(clicked()), this, SLOT(onTabShow()));
+    connect(ui->saveDataButton, SIGNAL(clicked()), this, SLOT(saveDataButton()));
+    connect(ui->loadDataButton, SIGNAL(clicked()), this, SLOT(loadDataButton()));
+    connect(ui->collapseTop, SIGNAL(clicked()), this, SLOT(collapseTopButton()));
+    connect(ui->collapseRight, SIGNAL(clicked()), this, SLOT(collapseRightButton()));
+    connect(ui->timeSlider, SIGNAL(valueChanged(int)), this, SLOT(timeSliderMoved(int)));
+    connect(ui->timeBox, SIGNAL(valueChanged(int)), this, SLOT(timeBoxChanged(int)));
 
-    QPushButton *connectButton = findChild<QPushButton*>("connectButton");
-    connect(connectButton, SIGNAL(clicked()), this, SLOT(connectButton()));
-
-    QPushButton *addSourceButton = findChild<QPushButton*>("addSourceButton");
-    connect(addSourceButton, SIGNAL(clicked()), this, SLOT(onTabShow()));
-
-    QPushButton *saveDataButton = findChild<QPushButton*>("saveDataButton");
-    connect(saveDataButton, SIGNAL(clicked()), this, SLOT(saveDataButton()));
-
-    QPushButton *loadDataButton = findChild<QPushButton*>("loadDataButton");
-    connect(loadDataButton, SIGNAL(clicked()), this, SLOT(loadDataButton()));
-
-    timeSlider = findChild<QSlider*>("timeSlider");
-    connect(timeSlider, SIGNAL(valueChanged(int)), this, SLOT(timeSliderMoved(int)));
-
-    timeBox = findChild<QSpinBox*>("timeBox");
-    connect(timeBox, SIGNAL(valueChanged(int)), this, SLOT(timeBoxChanged(int)));
+    m_storage = new AnalyzerDataStorage(this);
 
     m_dev_tabs = new DeviceTabWidget(this);
-
-    QVBoxLayout *leftVLayout = findChild<QVBoxLayout*>("leftVLayout");
-    leftVLayout->insertWidget(1, m_dev_tabs);
+    ui->leftVLayout->insertWidget(1, m_dev_tabs);
 
     connect(this, SIGNAL(newData(analyzer_data*)), m_dev_tabs, SLOT(handleData(analyzer_data*)));
     connect(m_dev_tabs, SIGNAL(updateData()), this, SLOT(updateData()));
 
     m_data_area = new AnalyzerDataArea(this);
-    QHBoxLayout *bottomHLayout = findChild<QHBoxLayout*>("bottomHLayout");
-    bottomHLayout->insertWidget(0, m_data_area, 5);
-    bottomHLayout->setStretch(1, 1);
+    ui->bottomHLayout->insertWidget(0, m_data_area, 4);
+    ui->bottomHLayout->setStretch(1, 1);
     connect(m_data_area, SIGNAL(updateData()), this, SLOT(updateData()));
     connect(m_data_area, SIGNAL(mouseStatus(bool,data_widget_info)), this, SLOT(widgetMouseStatus(bool,data_widget_info)));
 
-    QScrollArea *widgetsScrollArea = findChild<QScrollArea*>("widgetsScrollArea");
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
     widgetBtnL->addWidget(new NumberWidgetAddBtn(tmp));
@@ -97,7 +84,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     widgetBtnL->addWidget(new ColorWidgetAddBtn(tmp));
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
-    widgetsScrollArea->setWidget(tmp);
+    ui->widgetsScrollArea->setWidget(tmp);
 
     m_packet = NULL;
     m_state = 0;
@@ -119,11 +106,10 @@ LorrisAnalyzer::~LorrisAnalyzer()
 
 void LorrisAnalyzer::connectButton()
 {
-    QPushButton *connectButt = findChild<QPushButton *>("connectButton");
     if(m_state & STATE_DISCONNECTED)
     {
-        connectButt->setText(tr("Connecting..."));
-        connectButt->setEnabled(false);
+        ui->connectButton->setText(tr("Connecting..."));
+        ui->connectButton->setEnabled(false);
         connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
         m_con->OpenConcurrent();
     }
@@ -132,18 +118,17 @@ void LorrisAnalyzer::connectButton()
         m_con->Close();
         m_state |= STATE_DISCONNECTED;
 
-        connectButt->setText(tr("Connect"));
+        ui->connectButton->setText(tr("Connect"));
     }
 }
 
 void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
 {
     disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-    QPushButton *button = findChild<QPushButton *>("connectButton");
-    button->setEnabled(true);
+    ui->connectButton->setEnabled(true);
     if(!result)
     {
-        button->setText(tr("Connect"));
+        ui->connectButton->setText(tr("Connect"));
 
         QMessageBox *box = new QMessageBox(this);
         box->setIcon(QMessageBox::Critical);
@@ -156,16 +141,15 @@ void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
 
 void LorrisAnalyzer::connectedStatus(bool connected)
 {
-    QPushButton *button = findChild<QPushButton *>("connectButton");
     if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
-        button->setText(tr("Disconnect"));
+        ui->connectButton->setText(tr("Disconnect"));
     }
     else
     {
         m_state |= STATE_DISCONNECTED;
-        button->setText(tr("Connect"));
+        ui->connectButton->setText(tr("Connect"));
     }
 }
 
@@ -200,14 +184,14 @@ void LorrisAnalyzer::readData(const QByteArray& data)
         }
     }
 
-    bool update = timeSlider->value() == timeSlider->maximum();
-    timeSlider->setMaximum(m_storage->getSize());
-    timeBox->setMaximum(m_storage->getSize());
-    timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
+    bool update = ui->timeSlider->value() == ui->timeSlider->maximum();
+    ui->timeSlider->setMaximum(m_storage->getSize());
+    ui->timeBox->setMaximum(m_storage->getSize());
+    ui->timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
     if(update)
     {
-        timeSlider->setValue(m_storage->getSize());
-        timeBox->setValue(m_storage->getSize());
+        ui->timeSlider->setValue(m_storage->getSize());
+        ui->timeBox->setValue(m_storage->getSize());
     }
 }
 
@@ -273,18 +257,18 @@ void LorrisAnalyzer::timeSliderMoved(int value)
     if(value != 0)
         updateData();
 
-    if(timeSlider->isSliderDown())
-        timeBox->setValue(value);
+    if(ui->timeSlider->isSliderDown())
+        ui->timeBox->setValue(value);
 }
 
 void LorrisAnalyzer::timeBoxChanged(int value)
 {
-    timeSlider->setValue(value);
+    ui->timeSlider->setValue(value);
 }
 
 void LorrisAnalyzer::updateData()
 {
-    int val = timeSlider->value();
+    int val = ui->timeSlider->value();
 
     if(val != 0 && (quint32)val <= m_storage->getSize())
         emit newData(m_storage->get(val-1));
@@ -312,11 +296,11 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
         m_dev_tabs->addDevice();
     }
 
-    timeSlider->setMaximum(m_storage->getSize());
-    timeSlider->setValue(m_storage->getSize());
-    timeBox->setMaximum(m_storage->getSize());
-    timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
-    timeBox->setValue(m_storage->getSize());
+    ui->timeSlider->setMaximum(m_storage->getSize());
+    ui->timeSlider->setValue(m_storage->getSize());
+    ui->timeBox->setMaximum(m_storage->getSize());
+    ui->timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
+    ui->timeBox->setValue(m_storage->getSize());
     m_state &= ~(STATE_DIALOG);
 }
 
@@ -346,5 +330,53 @@ void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info)
     {
         m_dev_tabs->setHighlightPos(highlightInfo, false);
         highlightInfoNotNull = false;
+    }
+}
+
+void LorrisAnalyzer::collapseTopButton()
+{
+    setTopVisibility(!m_dev_tabs->isVisible());
+}
+
+void LorrisAnalyzer::collapseRightButton()
+{
+    setRightVisibility(!ui->widgetsScrollArea->isVisible());
+}
+
+bool LorrisAnalyzer::isTopVisible()
+{
+    return m_dev_tabs->isVisible();
+}
+
+bool LorrisAnalyzer::isRightVisible()
+{
+    return ui->widgetsScrollArea->isVisible();
+}
+
+void LorrisAnalyzer::setTopVisibility(bool visible)
+{
+    if(visible)
+    {
+        m_dev_tabs->show();
+        ui->collapseTop->setText("^");
+    }
+    else
+    {
+        m_dev_tabs->hide();
+        ui->collapseTop->setText("v");
+    }
+}
+
+void LorrisAnalyzer::setRightVisibility(bool visible)
+{
+    if(visible)
+    {
+        ui->widgetsScrollArea->show();
+        ui->collapseRight->setText(">");
+    }
+    else
+    {
+        ui->widgetsScrollArea->hide();
+        ui->collapseRight->setText("<");
     }
 }

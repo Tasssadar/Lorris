@@ -28,14 +28,16 @@
 #include "analyzerdataarea.h"
 #include "devicetabwidget.h"
 #include "analyzerdatafile.h"
+#include "lorrisanalyzer.h"
 
-static const char *ANALYZER_DATA_FORMAT = "v5";
+static const char *ANALYZER_DATA_FORMAT = "v6";
 static const char ANALYZER_DATA_MAGIC[] = { 0xFF, 0x80, 0x68 };
 
-AnalyzerDataStorage::AnalyzerDataStorage()
+AnalyzerDataStorage::AnalyzerDataStorage(LorrisAnalyzer *analyzer)
 {
     m_packet = NULL;
     m_size = 0;
+    m_analyzer = analyzer;
 }
 
 AnalyzerDataStorage::~AnalyzerDataStorage()
@@ -94,6 +96,13 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     //Packet
     itr = (char*)&m_packet->big_endian;
     file->write(itr, sizeof(bool));
+
+    //collapse status
+    file->writeBlockIdentifier(BLOCK_COLLAPSE_STATUS);
+    char dta = m_analyzer->isTopVisible();
+    file->write(&dta, 1);
+    dta = m_analyzer->isRightVisible();
+    file->write(&dta, 1);
 
     //header static data
     file->writeBlockIdentifier(BLOCK_STATIC_DATA);
@@ -211,6 +220,18 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         m_packet = packet;
     }
 
+    //collapse status
+    if(file->seekToNextBlock(BLOCK_COLLAPSE_STATUS, BLOCK_STATIC_DATA))
+    {
+        bool status;
+
+        file->read((char*)&status, 1);
+        m_analyzer->setTopVisibility(status);
+
+        file->read((char*)&status, 1);
+        m_analyzer->setRightVisibility(status);
+    }
+
     //header static data
     if(file->seekToNextBlock(BLOCK_STATIC_DATA, BLOCK_DEVICE_TABS))
     {
@@ -222,6 +243,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
             file->read((char*)m_packet->static_data, static_len);
         }
     }
+
 
     //Devices and commands
     devices->setHeader(header);

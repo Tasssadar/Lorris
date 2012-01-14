@@ -41,13 +41,14 @@ enum StorageDataType
 class AnalyzerDataArea;
 class DeviceTabWidget;
 class QFile;
+class LorrisAnalyzer;
 
 class AnalyzerDataStorage : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit AnalyzerDataStorage();
+    explicit AnalyzerDataStorage(LorrisAnalyzer *analyzer);
     ~AnalyzerDataStorage();
 
     void setPacket(analyzer_packet *packet)
@@ -71,6 +72,7 @@ private:
     std::vector<analyzer_data*> m_data;
     analyzer_packet *m_packet;
     quint32 m_size;
+    LorrisAnalyzer *m_analyzer;
 };
 
 #endif // ANALYZERDATASTORAGE_H

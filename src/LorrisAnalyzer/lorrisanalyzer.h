@@ -38,6 +38,7 @@ class QSlider;
 class DeviceTabWidget;
 class AnalyzerDataArea;
 class QSpinBox;
+class QScrollArea;
 struct analyzer_packet;
 
 enum states_
@@ -61,6 +62,11 @@ class LorrisAnalyzer : public WorkTab
         explicit LorrisAnalyzer();
         virtual ~LorrisAnalyzer();
 
+        bool isTopVisible();
+        bool isRightVisible();
+        void setTopVisibility(bool visible);
+        void setRightVisibility(bool visible);
+
     public slots:
         void onTabShow();
         void updateData();
@@ -70,6 +76,9 @@ class LorrisAnalyzer : public WorkTab
         void connectButton();
         void loadDataButton();
         void saveDataButton();
+
+        void collapseTopButton();
+        void collapseRightButton();
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
@@ -85,8 +94,6 @@ class LorrisAnalyzer : public WorkTab
         data_widget_info highlightInfo;
         Ui::LorrisAnalyzer *ui;
         AnalyzerDataStorage *m_storage;
-        QSlider *timeSlider;
-        QSpinBox *timeBox;
         analyzer_packet *m_packet;
         analyzer_data *m_curData;
         DeviceTabWidget *m_dev_tabs;

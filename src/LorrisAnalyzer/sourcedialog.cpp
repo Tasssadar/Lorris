@@ -45,45 +45,24 @@ SourceDialog::SourceDialog(QWidget *parent) :
     QWidget *w = new QWidget();
     scroll_layout = new ScrollDataLayout(&m_header, false, false, NULL, NULL, w);
 
-    QScrollArea *area = findChild<QScrollArea*>("data_scroll");
-    area->setWidget(w);
+    ui->data_scroll->setWidget(w);
 
     w = new QWidget();
     scroll_header = new LabelLayout(&m_header, true, true, NULL, NULL, w);
     connect(scroll_header, SIGNAL(orderChanged()), scroll_layout, SLOT(UpdateTypes()));
 
-    area = findChild<QScrollArea*>("header_scroll");
-    area->setWidget(w);
+    ui->header_scroll->setWidget(w);
 
-    QSpinBox *len_static = findChild<QSpinBox*>("len_box");
-    connect(len_static, SIGNAL(valueChanged(int)), scroll_layout, SLOT(lenChanged(int)));
-
-    QComboBox *fmt_combo = findChild<QComboBox*>("fmt_combo");
-    connect(fmt_combo, SIGNAL(currentIndexChanged(int)), scroll_layout, SLOT(fmtChanged(int)));
-
-    QCheckBox *len_check = findChild<QCheckBox*>("len_check");
-    connect(len_check, SIGNAL(toggled(bool)), this, SLOT(headerLenToggled(bool)));
-
-    QSpinBox *header_len_box = findChild<QSpinBox*>("header_len_box");
-    connect(header_len_box, SIGNAL(valueChanged(int)), this, SLOT(headerLenChanged(int)));
-
-    QCheckBox *static_check = findChild<QCheckBox*>("static_check");
-    connect(static_check, SIGNAL(toggled(bool)), this, SLOT(staticCheckToggled(bool)));
-
-    QCheckBox *cmd_check = findChild<QCheckBox*>("cmd_check");
-    connect(cmd_check, SIGNAL(toggled(bool)), this, SLOT(cmdCheckToggled(bool)));
-
-    QCheckBox *id_check = findChild<QCheckBox*>("id_check");
-    connect(id_check, SIGNAL(toggled(bool)), this, SLOT(idCheckToggled(bool)));
-
-    QSpinBox *static_len_box = findChild<QSpinBox*>("static_len_box");
-    connect(static_len_box, SIGNAL(valueChanged(int)), this, SLOT(staticLenChanged(int)));
-
-    QComboBox *len_fmt_box = findChild<QComboBox*>("len_fmt_box");
-    connect(len_fmt_box, SIGNAL(currentIndexChanged(int)), this, SLOT(lenFmtChanged(int)));
-
-    QDialogButtonBox *ok_close_bBox = findChild<QDialogButtonBox*>("ok_close_bBox");
-    connect(ok_close_bBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(butonnBoxClicked(QAbstractButton*)));
+    connect(ui->len_static, SIGNAL(valueChanged(int)), scroll_layout, SLOT(lenChanged(int)));
+    connect(ui->fmt_combo, SIGNAL(currentIndexChanged(int)), scroll_layout, SLOT(fmtChanged(int)));
+    connect(ui->len_check, SIGNAL(toggled(bool)), this, SLOT(headerLenToggled(bool)));
+    connect(ui->header_len_box, SIGNAL(valueChanged(int)), this, SLOT(headerLenChanged(int)));
+    connect(ui->static_check, SIGNAL(toggled(bool)), this, SLOT(staticCheckToggled(bool)));
+    connect(ui->cmd_check, SIGNAL(toggled(bool)), this, SLOT(cmdCheckToggled(bool)));
+    connect(ui->id_check, SIGNAL(toggled(bool)), this, SLOT(idCheckToggled(bool)));
+    connect(ui->static_len_box, SIGNAL(valueChanged(int)), this, SLOT(staticLenChanged(int)));
+    connect(ui->len_fmt_box, SIGNAL(currentIndexChanged(int)), this, SLOT(lenFmtChanged(int)));
+    connect(ui->ok_close_bBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(butonnBoxClicked(QAbstractButton*)));
 
     setted = false;
     setFirst = false;
@@ -102,8 +81,7 @@ SourceDialog::~SourceDialog()
 
 void SourceDialog::butonnBoxClicked(QAbstractButton *b)
 {
-    QDialogButtonBox *ok_close_bBox = findChild<QDialogButtonBox*>("ok_close_bBox");
-    if(ok_close_bBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
+    if(ui->ok_close_bBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
         setted = true;
     close();
 }
@@ -114,11 +92,10 @@ void SourceDialog::readData(const QByteArray& data)
     if(setFirst)
     {
         setFirst = false;
-        QListWidget *list = findChild<QListWidget*>("staticList");
         QString text = Utils::hexToString((quint8)data[0], true);
-        QListWidgetItem *item = new QListWidgetItem(text, list);
+        QListWidgetItem *item = new QListWidgetItem(text, ui->staticList);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
-        list->addItem(item);
+        ui->staticList->addItem(item);
     }
 }
 
@@ -157,20 +134,15 @@ void SourceDialog::AddOrRmHeaderType(bool add, quint8 type)
 void SourceDialog::headerLenToggled(bool checked)
 {
     if(!checked)
-    {
-        QRadioButton *len_static = findChild<QRadioButton*>("len_static");
-        len_static->setChecked(true);
-    }
+        ui->len_static->setChecked(true);
     AddOrRmHeaderType(checked, DATA_LEN);
 }
 
 void SourceDialog::headerLenChanged(int value)
 {
     if(value > 0)
-    {
-        QCheckBox *static_check = findChild<QCheckBox*>("static_check");
-        static_check->setChecked(true);
-    }
+        ui->static_check->setChecked(true);
+
     m_header.length = value;
     if(scroll_layout->GetLabelCount() < (quint32)value)
         scroll_layout->lenChanged(value);
@@ -182,8 +154,7 @@ void SourceDialog::staticCheckToggled(bool checked)
     AddOrRmHeaderType(checked, DATA_STATIC);
     if(checked)
     {
-        QListWidget *list = findChild<QListWidget*>("staticList");
-        if(list->count() == 0)
+        if(ui->staticList->count() == 0)
             setFirst = true;
     }
 }
@@ -203,20 +174,19 @@ void SourceDialog::staticLenChanged(int value)
     m_header.static_len = value;
     scroll_layout->UpdateTypes();
 
-    QListWidget *list = findChild<QListWidget*>("staticList");
-    while(list->count() != value)
+    while(ui->staticList->count() != value)
     {
-        if(list->count() < value)
+        if(ui->staticList->count() < value)
         {
-            QString text = scroll_layout->getLabelText(list->count());
+            QString text = scroll_layout->getLabelText(ui->staticList->count());
             if(text.length() == 0)
                 text = "0x00";
-            QListWidgetItem *item = new QListWidgetItem(text, list);
+            QListWidgetItem *item = new QListWidgetItem(text, ui->staticList);
             item->setFlags(item->flags() | Qt::ItemIsEditable);
-            list->addItem(item);
+            ui->staticList->addItem(item);
         }
         else
-            list->takeItem(list->count() - 1);
+            ui->staticList->takeItem(ui->staticList->count() - 1);
     }
 }
 
@@ -232,20 +202,17 @@ analyzer_packet *SourceDialog::getStructure()
     if(!setted)
         return NULL;
 
-    QComboBox *endianBox = findChild<QComboBox*>("endianBox");
-    bool big_endian = endianBox->currentIndex() == 0;
+    bool big_endian = ui->endianBox->currentIndex() == 0;
 
-    QSpinBox *len_static = findChild<QSpinBox*>("len_box");
-    m_header.packet_length = len_static->value();
+    m_header.packet_length = ui->len_box->value();
 
     quint8 *static_data = NULL;
     if(m_header.data_mask & DATA_STATIC)
     {
         static_data = new quint8[m_header.static_len];
-        QListWidget *list = findChild<QListWidget*>("staticList");
-        for(quint8 i = 0; i < list->count(); ++i)
+        for(quint8 i = 0; i < ui->staticList->count(); ++i)
         {
-            QString text = list->item(i)->text();
+            QString text = ui->staticList->item(i)->text();
             if(text.contains("0x", Qt::CaseInsensitive))
                 static_data[i] = text.toInt(NULL, 16);
             else

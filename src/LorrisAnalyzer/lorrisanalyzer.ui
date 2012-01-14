@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="leftVLayout" stretch="0,0,1">
+  <layout class="QVBoxLayout" name="leftVLayout" stretch="0,0,0,4">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -82,6 +82,25 @@
     </layout>
    </item>
    <item>
+    <widget class="QPushButton" name="collapseTop">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">padding: 0px</string>
+     </property>
+     <property name="text">
+      <string notr="true">^</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QSlider" name="timeSlider">
@@ -123,6 +142,25 @@
    <item>
     <layout class="QHBoxLayout" name="bottomHLayout">
      <item>
+      <widget class="QPushButton" name="collapseRight">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 0px</string>
+       </property>
+       <property name="text">
+        <string notr="true">&gt;</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
        <item>
         <widget class="QScrollArea" name="widgetsScrollArea">
@@ -134,8 +172,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>647</width>
-            <height>275</height>
+            <width>629</width>
+            <height>253</height>
            </rect>
           </property>
          </widget>

@@ -299,20 +299,17 @@ RangeSelectDialog::RangeSelectDialog(int val_min, int val_max, int max, int min,
 {
     ui->setupUi(this);
 
-    m_max = findChild<QSpinBox*>("maxBox");
-    m_min = findChild<QSpinBox*>("minBox");
-    connect(m_max, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
-    connect(m_min, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
+    connect(ui->maxBox, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
+    connect(ui->minBox, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
 
-    m_max->setMaximum(max);
-    m_max->setMinimum(min);
-    m_min->setMaximum(max);
-    m_min->setMinimum(min);
-    m_max->setValue(val_max);
-    m_min->setValue(val_min);
+    ui->maxBox->setMaximum(max);
+    ui->maxBox->setMinimum(min);
+    ui->minBox->setMaximum(max);
+    ui->minBox->setMinimum(min);
+    ui->maxBox->setValue(val_max);
+    ui->minBox->setValue(val_min);
 
-    QDialogButtonBox *box = findChild<QDialogButtonBox*>("buttonBox");
-    connect(box, SIGNAL(clicked(QAbstractButton*)), this, SLOT(boxClicked(QAbstractButton*)));
+    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(boxClicked(QAbstractButton*)));
 
     m_res = false;
 
@@ -327,19 +324,18 @@ RangeSelectDialog::~RangeSelectDialog()
 void RangeSelectDialog::maxChanged(int value)
 {
     m_maxRes = value;
-    m_min->setMaximum(value);
+    ui->minBox->setMaximum(value);
 }
 
 void RangeSelectDialog::minChanged(int value)
 {
     m_minRes = value;
-    m_max->setMinimum(value);
+    ui->maxBox->setMinimum(value);
 }
 
 void RangeSelectDialog::boxClicked(QAbstractButton *b)
 {
-    QDialogButtonBox *buttonBox = findChild<QDialogButtonBox*>("buttonBox");
-    if(buttonBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
+    if(ui->buttonBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
         m_res = true;
     close();
 }
