@@ -37,8 +37,9 @@ enum WidgetTypes
 {
     WIDGET_NUMBERS,
     WIDGET_BAR,
-    WIDGET_COLOR
-    //TODO: graf, barva, X Y mapa, rafickovej ukazatel, timestamp
+    WIDGET_COLOR,
+    WIDGET_GRAPH
+    //TODO: X Y mapa, rafickovej ukazatel, timestamp
 };
 
 enum NumberTypes
@@ -97,6 +98,7 @@ class DataWidget : public QFrame
 Q_SIGNALS:
     void updateData();
     void mouseStatus(bool in, const data_widget_info& info);
+    void removeWidget(quint32 id);
 
 public:
     explicit DataWidget(QWidget *parent = 0);
@@ -104,7 +106,7 @@ public:
 
     virtual void setUp();
 
-    void setId(quint32 id) { m_id = id; }
+    void setId(quint32 id);
     quint32 getId() { return m_id; }
 
     bool isMouseIn() { return m_mouseIn; }
@@ -135,6 +137,7 @@ protected:
     virtual void processData(analyzer_data *data);
 
     void setTitle(QString title);
+    void setIcon(QString path);
     QString getTitle();
 
     quint8 m_widgetType;
@@ -151,6 +154,25 @@ private slots:
 private:
     inline bool iw(int w) { return w + width() > ((QWidget*)parent())->width(); }
     inline bool ih(int h) { return h + height() > ((QWidget*)parent())->height(); }
+
+    inline int getWPosInside(int w)
+    {
+        if(ih(w))
+            return ((QWidget*)parent())->width() - width();
+        else if(w < 0)
+            return 0;
+        return w;
+    }
+
+    inline int getHPosInside(int h)
+    {
+        if(ih(h))
+            return ((QWidget*)parent())->height() - height();
+        else if(h < 0)
+            return 0;
+        return h;
+    }
+
     quint8 getDragAction(const QPoint& clickPos);
     void dragResize(QMouseEvent* e);
     void dragMove(QMouseEvent* e);
@@ -161,8 +183,9 @@ private:
     bool m_mouseIn;
 
     QAction *m_lockAction;
-
     CloseLabel *m_closeLabel;
+    QLabel *m_icon_widget;
+    QLabel *m_title_label;
     quint32 m_id;
 };
 
@@ -184,17 +207,22 @@ protected:
 class CloseLabel : public QLabel
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void removeWidget(quint32 id);
+
 public:
     explicit CloseLabel(QWidget *parent);
 
     void setLocked(bool locked);
+    void setId(quint32 id) { m_id = id; }
 
 protected:
     void mousePressEvent(QMouseEvent *event);
 
 private:
     bool m_locked;
-
+    quint32 m_id;
 };
 
 #endif // DATAWIDGET_H

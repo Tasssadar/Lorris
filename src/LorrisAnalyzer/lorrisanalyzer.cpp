@@ -48,6 +48,7 @@
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
 #include "DataWidgets/colorwidget.h"
+#include "DataWidgets/graphwidget.h"
 #include "sourceselectdialog.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
@@ -66,6 +67,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     m_storage = new AnalyzerDataStorage(this);
 
     m_dev_tabs = new DeviceTabWidget(this);
+    m_dev_tabs->addDevice();
     ui->leftVLayout->insertWidget(1, m_dev_tabs);
 
     connect(this, SIGNAL(newData(analyzer_data*)), m_dev_tabs, SLOT(handleData(analyzer_data*)));
@@ -82,6 +84,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     widgetBtnL->addWidget(new NumberWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new BarWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new ColorWidgetAddBtn(tmp));
+    widgetBtnL->addWidget(new GraphWidgetAddBtn(tmp));
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);

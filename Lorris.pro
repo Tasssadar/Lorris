@@ -5,6 +5,9 @@ QT += gui core
 TARGET = Lorris
 CONFIG(debug, debug|release):DESTDIR = $$PWD/bin/debug
 else:DESTDIR = $$PWD/bin/release
+
+CONFIG += qwt
+
 TRANSLATIONS = translations/Lorris.cs_CZ.ts
 TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
@@ -53,7 +56,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/shupito.cpp \
     src/LorrisShupito/shupitodesc.cpp \
     src/LorrisAnalyzer/analyzerdatafile.cpp \
-    src/LorrisAnalyzer/DataWidgets/colorwidget.cpp
+    src/LorrisAnalyzer/DataWidgets/colorwidget.cpp \
+    src/LorrisAnalyzer/DataWidgets/graphwidget.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -107,7 +111,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/shupito.h \
     src/LorrisShupito/shupitodesc.h \
     src/LorrisAnalyzer/analyzerdatafile.h \
-    src/LorrisAnalyzer/DataWidgets/colorwidget.h
+    src/LorrisAnalyzer/DataWidgets/colorwidget.h \
+    src/LorrisAnalyzer/DataWidgets/graphwidget.h
 
 OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc

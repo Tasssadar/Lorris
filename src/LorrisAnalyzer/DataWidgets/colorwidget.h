@@ -69,7 +69,5 @@ class ColorWidgetAddBtn : public DataWidgetAddBtn
 public:
     ColorWidgetAddBtn(QWidget *parent = 0);
 
-protected:
-    QPixmap getRender();
 };
 #endif // COLORWIDGET_H

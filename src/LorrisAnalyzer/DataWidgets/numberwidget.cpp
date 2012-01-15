@@ -35,6 +35,8 @@
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle("NumberWidget");
+    setIcon(":/dataWidgetIcons/num.png");
+
     m_widgetType = WIDGET_NUMBERS;
 
     num = new QLabel("0", this);
@@ -275,13 +277,4 @@ NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(paren
     setIcon(QIcon(":/dataWidgetIcons/num.png"));
 
     m_widgetType = WIDGET_NUMBERS;
-}
-
-QPixmap NumberWidgetAddBtn::getRender()
-{
-    NumberWidget *w = new NumberWidget(this);
-    QPixmap map(w->size());
-    w->render(&map);
-    delete w;
-    return map;
 }

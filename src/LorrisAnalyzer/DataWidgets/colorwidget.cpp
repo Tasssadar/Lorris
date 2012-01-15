@@ -31,7 +31,8 @@
 
 ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle("Color");
+    setTitle(tr("Color"));
+    setIcon(":/dataWidgetIcons/color.png");
 
     m_widgetType = WIDGET_COLOR;
 
@@ -262,13 +263,4 @@ ColorWidgetAddBtn::ColorWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
     setIcon(QIcon(":/dataWidgetIcons/color.png"));
 
     m_widgetType = WIDGET_COLOR;
-}
-
-QPixmap ColorWidgetAddBtn::getRender()
-{
-    ColorWidget *w = new ColorWidget(this);
-    QPixmap map(w->size());
-    w->render(&map);
-    delete w;
-    return map;
 }

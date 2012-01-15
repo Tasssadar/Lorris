@@ -41,10 +41,13 @@ DataWidget::DataWidget(QWidget *parent) :
     layout = new QVBoxLayout(this);
     QHBoxLayout *title_bar = new QHBoxLayout();
 
-    QLabel *title = new QLabel(this);
-    title->setObjectName("titleLabel");
-    title->setStyleSheet("border-right: 1px solid black; border-bottom: 1px solid black");
-    title->setAlignment(Qt::AlignVCenter);
+    m_icon_widget = new QLabel(this);
+    m_icon_widget->setStyleSheet("padding: 2px");
+
+    m_title_label = new QLabel(this);
+    m_title_label->setObjectName("titleLabel");
+    m_title_label->setStyleSheet("border-right: 1px solid black; border-bottom: 1px solid black");
+    m_title_label->setAlignment(Qt::AlignVCenter);
 
     m_closeLabel = new CloseLabel(this);
 
@@ -52,7 +55,8 @@ DataWidget::DataWidget(QWidget *parent) :
     sepV->setFrameStyle(QFrame::HLine | QFrame::Plain);
     sepV->setLineWidth(1);
 
-    title_bar->addWidget(title, 1);
+    title_bar->addWidget(m_icon_widget);
+    title_bar->addWidget(m_title_label, 1);
     title_bar->addWidget(m_closeLabel, 0);
 
     layout->setMargin(0);
@@ -72,6 +76,11 @@ DataWidget::~DataWidget()
 {
     WorkTab::DeleteAllMembers(layout);
     delete layout;
+}
+void DataWidget::setId(quint32 id)
+{
+    m_id = id;
+    m_closeLabel->setId(id);
 }
 
 void DataWidget::setUp()
@@ -95,18 +104,24 @@ void DataWidget::setUp()
     setContextMenuPolicy(Qt::DefaultContextMenu);
 
     setMouseTracking(true);
+
+    connect(m_closeLabel, SIGNAL(removeWidget(quint32)), this, SIGNAL(removeWidget(quint32)));
 }
 
 void DataWidget::setTitle(QString title)
 {
-    QLabel *titleLabel = findChild<QLabel*>("titleLabel");
-    titleLabel->setText(" " + title);
+    m_title_label->setText(title);
 }
 
 QString DataWidget::getTitle()
 {
-    QLabel *titleLabel = findChild<QLabel*>("titleLabel");
-    return titleLabel->text().right(titleLabel->text().length() - 1);
+    return m_title_label->text();
+}
+
+void DataWidget::setIcon(QString path)
+{
+    QIcon icon(path);
+    m_icon_widget->setPixmap(icon.pixmap(16));
 }
 
 void DataWidget::contextMenuEvent ( QContextMenuEvent * event )
@@ -232,10 +247,10 @@ void DataWidget::dragMove(QMouseEvent *e)
     QPoint n = pos() + ( e->globalPos() - mOrigin );
 
     if(n.x() < 0 || iw(n.x()))
-        n.setX(pos().x());
+        n.setX(getWPosInside(n.x()));
 
     if(n.y() < 0 || ih(n.y()))
-        n.setY(pos().y());
+        n.setY(getHPosInside(n.y()));
 
     move(n);
     mOrigin = e->globalPos();
@@ -370,7 +385,14 @@ void DataWidgetAddBtn::mousePressEvent(QMouseEvent *event)
 
 QPixmap DataWidgetAddBtn::getRender()
 {
-    return QPixmap();
+    DataWidget *w = AnalyzerDataArea::newWidget(m_widgetType, this);
+    if(!w)
+        return QPixmap();
+
+    QPixmap map(w->size());
+    w->render(&map);
+    delete w;
+    return map;
 }
 
 CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
@@ -384,7 +406,7 @@ CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
 void CloseLabel::mousePressEvent(QMouseEvent *event)
 {
     if (!m_locked && event->button() == Qt::LeftButton)
-        ((AnalyzerDataArea*)parent()->parent())->removeWidget(((DataWidget*)parent())->getId());
+        emit removeWidget(m_id);
     else
         QLabel::mousePressEvent(event);
 }
@@ -394,5 +416,3 @@ void CloseLabel::setLocked(bool locked)
     m_locked = locked;
     setText(locked ? tr(" [L] ") : " X ");
 }
-
-

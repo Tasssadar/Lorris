@@ -54,6 +54,8 @@ DeviceTabWidget::DeviceTabWidget(QWidget *parent) :
 
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(tabClose(int)));
     m_all_devices = NULL;
+
+    m_header = NULL;
 }
 
 DeviceTabWidget::~DeviceTabWidget()

@@ -46,11 +46,12 @@ public:
 
     void clear();
 
-    void removeWidget(quint32 id);
-
     void SaveWidgets(AnalyzerDataFile *file);
     void LoadWidgets(AnalyzerDataFile *file, bool skip);
     static DataWidget *newWidget(quint8 type, QWidget *parent);
+
+public slots:
+    void removeWidget(quint32 id);
     
 protected:
     void dropEvent ( QDropEvent * event );

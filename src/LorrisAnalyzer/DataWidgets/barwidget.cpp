@@ -36,6 +36,7 @@
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle("BarWidget");
+    setIcon(":/dataWidgetIcons/bar.png");
 
     m_widgetType = WIDGET_BAR;
     m_bar = new QProgressBar(this);
@@ -284,15 +285,6 @@ BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
     setIcon(QIcon(":/dataWidgetIcons/bar.png"));
 
     m_widgetType = WIDGET_BAR;
-}
-
-QPixmap BarWidgetAddBtn::getRender()
-{
-    BarWidget *w = new BarWidget(this);
-    QPixmap map(w->size());
-    w->render(&map);
-    delete w;
-    return map;
 }
 
 RangeSelectDialog::RangeSelectDialog(int val_min, int val_max, int max, int min, QWidget *parent) : QDialog(parent), ui(new Ui::RangeSelectDialog)

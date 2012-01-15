@@ -72,9 +72,6 @@ class NumberWidgetAddBtn : public DataWidgetAddBtn
     Q_OBJECT
 public:
     NumberWidgetAddBtn(QWidget *parent = 0);
-
-protected:
-    QPixmap getRender();
 };
 
 #endif // NUMBERWIDGET_H

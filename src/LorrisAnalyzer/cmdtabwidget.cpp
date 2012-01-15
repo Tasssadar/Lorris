@@ -37,7 +37,7 @@ CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWi
     setTabPosition(QTabWidget::South);
 
     QAction *new_cmd_act = new QAction(tr("Add command"), this);
-    if(!(header->data_mask & DATA_OPCODE))
+    if(!header || !(header->data_mask & DATA_OPCODE))
         new_cmd_act->setEnabled(false);
     connect(new_cmd_act, SIGNAL(triggered()), this, SLOT(newCommand()));
     addAction(new_cmd_act);
@@ -90,12 +90,19 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
     }
     else if(m_all_cmds)
         return;
-    QWidget *w = new QWidget();
-    ScrollDataLayout *layout = new ScrollDataLayout(m_header, false, true, this, m_devTab, w);
+
     QScrollArea *area = new QScrollArea(this);
-    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    area->setWidget(w);
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    ScrollDataLayout *layout = NULL;
+    QWidget *w = new QWidget();
+    if(m_header)
+    {
+
+        layout = new ScrollDataLayout(m_header, false, true, this, m_devTab, w);
+        w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    }
+    area->setWidget(w);
 
     QString name;
     int index;

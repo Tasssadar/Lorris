@@ -27,6 +27,7 @@
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
 #include "DataWidgets/colorwidget.h"
+#include "DataWidgets/graphwidget.h"
 #include "lorrisanalyzer.h"
 #include "analyzerdatafile.h"
 
@@ -80,6 +81,7 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(((LorrisAnalyzer*)parent()), SIGNAL(newData(analyzer_data*)), w, SLOT(newData(analyzer_data*)));
     connect(w, SIGNAL(updateData()), this, SIGNAL(updateData()));
     connect(w, SIGNAL(mouseStatus(bool,data_widget_info)), this, SIGNAL(mouseStatus(bool,data_widget_info)));
+    connect(w, SIGNAL(removeWidget(quint32)), this, SLOT(removeWidget(quint32)));
     return w;
 }
 
@@ -98,6 +100,7 @@ DataWidget *AnalyzerDataArea::newWidget(quint8 type, QWidget *parent)
         case WIDGET_NUMBERS: return new NumberWidget(parent);
         case WIDGET_BAR:     return new BarWidget(parent);
         case WIDGET_COLOR:   return new ColorWidget(parent);
+        case WIDGET_GRAPH:   return new GraphWidget(parent);
     }
     return NULL;
 }

@@ -66,11 +66,7 @@ class BarWidgetAddBtn : public DataWidgetAddBtn
     Q_OBJECT
 public:
     BarWidgetAddBtn(QWidget *parent);
-
-protected:
-    QPixmap getRender();
 };
-
 
 namespace Ui {
   class RangeSelectDialog;
