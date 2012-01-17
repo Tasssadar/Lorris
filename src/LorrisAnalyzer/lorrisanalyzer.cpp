@@ -55,14 +55,14 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
     ui->setupUi(this);
 
-    connect(ui->connectButton, SIGNAL(clicked()), this, SLOT(connectButton()));
-    connect(ui->addSourceButton, SIGNAL(clicked()), this, SLOT(onTabShow()));
-    connect(ui->saveDataButton, SIGNAL(clicked()), this, SLOT(saveDataButton()));
-    connect(ui->loadDataButton, SIGNAL(clicked()), this, SLOT(loadDataButton()));
-    connect(ui->collapseTop, SIGNAL(clicked()), this, SLOT(collapseTopButton()));
-    connect(ui->collapseRight, SIGNAL(clicked()), this, SLOT(collapseRightButton()));
-    connect(ui->timeSlider, SIGNAL(valueChanged(int)), this, SLOT(timeSliderMoved(int)));
-    connect(ui->timeBox, SIGNAL(valueChanged(int)), this, SLOT(timeBoxChanged(int)));
+    connect(ui->connectButton,   SIGNAL(clicked()),         SLOT(connectButton()));
+    connect(ui->addSourceButton, SIGNAL(clicked()),         SLOT(onTabShow()));
+    connect(ui->saveDataButton,  SIGNAL(clicked()),         SLOT(saveDataButton()));
+    connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
+    connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
+    connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearButton()));
+    connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(timeSliderMoved(int)));
+    connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
 
     m_storage = new AnalyzerDataStorage(this);
 
@@ -277,11 +277,6 @@ void LorrisAnalyzer::updateData()
         emit newData(m_storage->get(val-1));
 }
 
-void LorrisAnalyzer::loadDataButton()
-{
-    load(NULL, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS));
-}
-
 void LorrisAnalyzer::load(QString *name, quint8 mask)
 {
     analyzer_packet *packet = m_storage->loadFromFile(name, mask, m_data_area, m_dev_tabs);
@@ -338,48 +333,87 @@ void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info)
 
 void LorrisAnalyzer::collapseTopButton()
 {
-    setTopVisibility(!m_dev_tabs->isVisible());
+    setAreaVisibility(AREA_TOP, !isAreaVisible(AREA_TOP));
 }
 
 void LorrisAnalyzer::collapseRightButton()
 {
-    setRightVisibility(!ui->widgetsScrollArea->isVisible());
+    setAreaVisibility(AREA_RIGHT, !isAreaVisible(AREA_RIGHT));
 }
 
-bool LorrisAnalyzer::isTopVisible()
+bool LorrisAnalyzer::isAreaVisible(hideable_areas area)
 {
-    return m_dev_tabs->isVisible();
-}
-
-bool LorrisAnalyzer::isRightVisible()
-{
-    return ui->widgetsScrollArea->isVisible();
-}
-
-void LorrisAnalyzer::setTopVisibility(bool visible)
-{
-    if(visible)
+    switch(area)
     {
-        m_dev_tabs->show();
-        ui->collapseTop->setText("^");
+        case AREA_TOP:   return m_dev_tabs->isVisible();
+        case AREA_RIGHT: return ui->widgetsScrollArea->isVisible();
     }
-    else
+    return false;
+}
+
+void LorrisAnalyzer::setAreaVisibility(hideable_areas area, bool visible)
+{
+    if(area & AREA_TOP)
     {
-        m_dev_tabs->hide();
-        ui->collapseTop->setText("v");
+        if(visible)
+        {
+            m_dev_tabs->show();
+            ui->collapseTop->setText("^");
+        }
+        else
+        {
+            m_dev_tabs->hide();
+            ui->collapseTop->setText("v");
+        }
+    }
+    if(area & AREA_RIGHT)
+    {
+        if(visible)
+        {
+            ui->widgetsScrollArea->show();
+            ui->collapseRight->setText(">");
+        }
+        else
+        {
+            ui->widgetsScrollArea->hide();
+            ui->collapseRight->setText("<");
+        }
     }
 }
 
-void LorrisAnalyzer::setRightVisibility(bool visible)
+void LorrisAnalyzer::clearButton()
 {
-    if(visible)
+    QMessageBox *box = new QMessageBox(this);
+    box->setWindowTitle(tr("Clear data?"));
+    box->setText(tr("Do you really clear data, widgets and packet structure?"));
+    box->addButton(tr("Yes"), QMessageBox::YesRole);
+    box->addButton(tr("No"), QMessageBox::NoRole);
+    box->setIcon(QMessageBox::Question);
+    int ret = box->exec();
+    delete box;
+
+    if(ret)
+        return;
+
+    analyzer_packet *packet = m_packet;
+    m_packet = NULL;
+
+    m_dev_tabs->removeAll();
+    m_dev_tabs->setHeader(NULL);
+    m_dev_tabs->addDevice();
+
+    m_data_area->clear();
+
+    m_curData = NULL;
+    m_storage->Clear();
+    m_storage->setPacket(NULL);
+
+    ui->timeSlider->setMaximum(0);
+    ui->timeBox->setMaximum(0);
+
+    if(packet)
     {
-        ui->widgetsScrollArea->show();
-        ui->collapseRight->setText(">");
-    }
-    else
-    {
-        ui->widgetsScrollArea->hide();
-        ui->collapseRight->setText("<");
+        delete packet->header;
+        delete packet;
     }
 }

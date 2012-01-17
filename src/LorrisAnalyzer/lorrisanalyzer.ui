@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>665</width>
-    <height>354</height>
+    <width>743</width>
+    <height>367</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -60,13 +60,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="loadDataButton">
-       <property name="text">
-        <string>Load data</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -78,6 +71,13 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="clearButton">
+       <property name="text">
+        <string>Clear</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -172,8 +172,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>629</width>
-            <height>253</height>
+            <width>707</width>
+            <height>266</height>
            </rect>
           </property>
          </widget>

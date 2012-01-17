@@ -139,13 +139,13 @@ bool MainWindow::Quit()
     box->addButton(tr("No"), QMessageBox::NoRole);
     box->setIcon(QMessageBox::Question);
     int ret = box->exec();
+    delete box;
     switch(ret)
     {
         case 0: return true;
         case 1:
         default: return false;
     }
-    delete box;
 }
 
 void MainWindow::QuitButton()

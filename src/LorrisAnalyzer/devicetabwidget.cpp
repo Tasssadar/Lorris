@@ -72,7 +72,8 @@ DeviceTabWidget::~DeviceTabWidget()
 void DeviceTabWidget::setHeader(analyzer_header *h)
 {
     m_header = h;
-    (*actions().begin())->setEnabled(m_header->data_mask & DATA_DEVICE_ID);
+    bool enable = h ? m_header->data_mask & DATA_DEVICE_ID : false;
+    (*actions().begin())->setEnabled(enable);
 }
 
 void DeviceTabWidget::removeAll()

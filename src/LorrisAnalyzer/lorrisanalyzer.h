@@ -47,6 +47,12 @@ enum states_
     STATE_DIALOG          = 0x02
 };
 
+enum hideable_areas
+{
+    AREA_TOP    = 0x01,
+    AREA_RIGHT  = 0x02
+};
+
 namespace Ui {
   class LorrisAnalyzer;
 }
@@ -62,10 +68,8 @@ class LorrisAnalyzer : public WorkTab
         explicit LorrisAnalyzer();
         virtual ~LorrisAnalyzer();
 
-        bool isTopVisible();
-        bool isRightVisible();
-        void setTopVisibility(bool visible);
-        void setRightVisibility(bool visible);
+        bool isAreaVisible(hideable_areas area);
+        void setAreaVisibility(hideable_areas area, bool visible);
 
     public slots:
         void onTabShow();
@@ -74,8 +78,8 @@ class LorrisAnalyzer : public WorkTab
 
     private slots:
         void connectButton();
-        void loadDataButton();
         void saveDataButton();
+        void clearButton();
 
         void collapseTopButton();
         void collapseRightButton();

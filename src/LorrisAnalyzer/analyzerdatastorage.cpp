@@ -99,9 +99,9 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
 
     //collapse status
     file->writeBlockIdentifier(BLOCK_COLLAPSE_STATUS);
-    char dta = m_analyzer->isTopVisible();
+    char dta = m_analyzer->isAreaVisible(AREA_TOP);
     file->write(&dta, 1);
-    dta = m_analyzer->isRightVisible();
+    dta = m_analyzer->isAreaVisible(AREA_RIGHT);
     file->write(&dta, 1);
 
     //header static data
@@ -226,10 +226,10 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         bool status;
 
         file->read((char*)&status, 1);
-        m_analyzer->setTopVisibility(status);
+        m_analyzer->setAreaVisibility(AREA_TOP, status);
 
         file->read((char*)&status, 1);
-        m_analyzer->setRightVisibility(status);
+        m_analyzer->setAreaVisibility(AREA_RIGHT, status);
     }
 
     //header static data
