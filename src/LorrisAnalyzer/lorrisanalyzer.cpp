@@ -48,7 +48,7 @@
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
 #include "DataWidgets/colorwidget.h"
-#include "DataWidgets/graphwidget.h"
+#include "DataWidgets/GraphWidget/graphwidget.h"
 #include "sourceselectdialog.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)

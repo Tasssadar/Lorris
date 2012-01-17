@@ -27,7 +27,7 @@
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
 #include "DataWidgets/colorwidget.h"
-#include "DataWidgets/graphwidget.h"
+#include "DataWidgets/GraphWidget/graphwidget.h"
 #include "lorrisanalyzer.h"
 #include "analyzerdatafile.h"
 

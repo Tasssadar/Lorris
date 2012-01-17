@@ -5,9 +5,10 @@ QT += gui core
 TARGET = Lorris
 CONFIG(debug, debug|release):DESTDIR = $$PWD/bin/debug
 else:DESTDIR = $$PWD/bin/release
-
+OBJECTS_DIR = $$PWD/obj
+MOC_DIR = $$PWD/moc
 CONFIG += qwt
-
+LIBS += -L"$$PWD/dep/qwt/lib"
 TRANSLATIONS = translations/Lorris.cs_CZ.ts
 TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
@@ -118,12 +119,17 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.h
 
-OBJECTS_DIR = $$PWD/obj
-MOC_DIR = $$PWD/moc
 win32 {
+    DEFINES += QT_DLL QWT_DLL
+    QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
+
     LIBS += -lsetupapi \
         -luuid \
-        -ladvapi32
+        -ladvapi32a
+
+    CONFIG(debug, debug|release):LIBS += -lqwtd
+    else:LIBS += -lqwt
+
     SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_win.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_win.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialengine_win.cpp
@@ -171,4 +177,3 @@ FORMS += \
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc
-
