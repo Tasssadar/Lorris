@@ -21,7 +21,16 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define REVISION 71
-#endif // REVISION_H
+#ifndef GRAPH_H
+#define GRAPH_H
+
+#include <qwt_plot.h>
+
+class Graph : public QwtPlot
+{
+    Q_OBJECT
+public:
+    Graph(QWidget *parent = 0);
+};
+
+#endif // GRAPH_H

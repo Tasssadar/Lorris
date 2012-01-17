@@ -57,7 +57,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/shupitodesc.cpp \
     src/LorrisAnalyzer/analyzerdatafile.cpp \
     src/LorrisAnalyzer/DataWidgets/colorwidget.cpp \
-    src/LorrisAnalyzer/DataWidgets/graphwidget.cpp
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -112,7 +114,9 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/shupitodesc.h \
     src/LorrisAnalyzer/analyzerdatafile.h \
     src/LorrisAnalyzer/DataWidgets/colorwidget.h \
-    src/LorrisAnalyzer/DataWidgets/graphwidget.h
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.h \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.h
 
 OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc
@@ -161,7 +165,9 @@ FORMS += \
     src/LorrisAnalyzer/lorrisanalyzer.ui \
     src/LorrisAnalyzer/DataWidgets/rangeselectdialog.ui \
     src/LorrisAnalyzer/sourceselectdialog.ui \
-    src/LorrisShupito/lorrisshupito.ui
+    src/LorrisShupito/lorrisshupito.ui \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc
