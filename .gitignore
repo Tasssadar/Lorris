@@ -17,6 +17,7 @@
 *.so.dbg
 *.bin
 *.gz
+*.pro.user*
 
 #
 # Top-level generic files
@@ -25,6 +26,8 @@ tags
 TAGS
 INSTALL
 !.gitignore
+Makefile
+Makefile.*
 
 # Git stuff
 #
