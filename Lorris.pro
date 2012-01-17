@@ -125,7 +125,7 @@ win32 {
 
     LIBS += -lsetupapi \
         -luuid \
-        -ladvapi32a
+        -ladvapi32
 
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
