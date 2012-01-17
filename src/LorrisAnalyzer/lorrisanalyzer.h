@@ -68,8 +68,8 @@ class LorrisAnalyzer : public WorkTab
         explicit LorrisAnalyzer();
         virtual ~LorrisAnalyzer();
 
-        bool isAreaVisible(hideable_areas area);
-        void setAreaVisibility(hideable_areas area, bool visible);
+        bool isAreaVisible(quint8 area);
+        void setAreaVisibility(quint8 area, bool visible);
 
     public slots:
         void onTabShow();

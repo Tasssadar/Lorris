@@ -341,7 +341,7 @@ void LorrisAnalyzer::collapseRightButton()
     setAreaVisibility(AREA_RIGHT, !isAreaVisible(AREA_RIGHT));
 }
 
-bool LorrisAnalyzer::isAreaVisible(hideable_areas area)
+bool LorrisAnalyzer::isAreaVisible(quint8 area)
 {
     switch(area)
     {
@@ -351,7 +351,7 @@ bool LorrisAnalyzer::isAreaVisible(hideable_areas area)
     return false;
 }
 
-void LorrisAnalyzer::setAreaVisibility(hideable_areas area, bool visible)
+void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
 {
     if(area & AREA_TOP)
     {
@@ -416,4 +416,6 @@ void LorrisAnalyzer::clearButton()
         delete packet->header;
         delete packet;
     }
+
+    setAreaVisibility(AREA_TOP | AREA_RIGHT, true);
 }
