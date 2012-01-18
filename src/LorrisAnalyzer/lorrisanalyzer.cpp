@@ -166,7 +166,7 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
     QByteArray dta = data;
     static bool first = true;
-    quint32 curRead = 0;
+    quint32 curRead = 1;
 
     while(dta.length() != 0)
     {
