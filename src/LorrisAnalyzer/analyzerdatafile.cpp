@@ -58,7 +58,7 @@ bool AnalyzerDataFile::seekToNextBlock(const char *block, qint32 maxDist)
     char* name = getBlockWithFormat(block, lenght);
 
     int index = m_data.indexOf(QByteArray(name, lenght), m_last_block);
-    delete name;
+    delete[] name;
 
     if(index == -1 || (maxDist != 0 && (index - m_last_block) > maxDist))
         return false;
@@ -167,7 +167,7 @@ void AnalyzerDataFile::writeBlockIdentifier(DataBlocks block)
     char* block_name = getBlockName(block);
     if(block_name)
         writeBlockIdentifier(block_name);
-    delete block_name;
+    delete[] block_name;
 }
 
 void AnalyzerDataFile::writeBlockIdentifier(const char *block)

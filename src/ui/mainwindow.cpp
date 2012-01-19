@@ -58,8 +58,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // menu bar
     QMenuBar* menuBar = new QMenuBar(this);
-    QMenu* menuFile = new QMenu(tr("&File"));
-    QMenu* menuHelp = new QMenu(tr("&Help"));
+    QMenu* menuFile = new QMenu(tr("&File"), this);
+    QMenu* menuHelp = new QMenu(tr("&Help"), this);
 
     QAction* actionNewTab = new QAction(tr("&New tab.."), this);
     QAction* actionCloseTab = new QAction(tr("&Close tab"), this);
