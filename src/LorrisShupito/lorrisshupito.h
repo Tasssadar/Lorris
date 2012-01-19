@@ -60,6 +60,8 @@ public:
     LorrisShupito();
     ~LorrisShupito();
 
+    void stopAll();
+
 private slots:
     void connectButton();
     void onTabShow();

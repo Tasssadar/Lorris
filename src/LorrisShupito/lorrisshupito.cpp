@@ -52,6 +52,9 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(m_shupito, SIGNAL(vccValueChanged(quint8,double)), this, SLOT(vccValueChanged(quint8,double)));
     connect(m_shupito, SIGNAL(vddDesc(vdd_setup)), this, SLOT(vddSetup(vdd_setup)));
     connect(m_shupito, SIGNAL(tunnelStatus(bool)), this, SLOT(tunnelStateChanged(bool)));
+
+    m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
+
     m_response = RESPONSE_NONE;
 
     responseTimer = NULL;
@@ -64,6 +67,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
 LorrisShupito::~LorrisShupito()
 {
+    stopAll();
     delete m_shupito;
     delete m_desc;
     delete ui;
@@ -80,6 +84,7 @@ void LorrisShupito::connectButton()
     }
     else
     {
+        stopAll();
         m_con->Close();
         m_state |= STATE_DISCONNECTED;
 
@@ -111,18 +116,43 @@ void LorrisShupito::connectedStatus(bool connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
         ui->connectButton->setText(tr("Disconnect"));
+        stopAll();
+        m_shupito->init(m_con, m_desc);
     }
     else
     {
         m_state |= STATE_DISCONNECTED;
-        ui->connectButton->setText(tr("Connect"));
+        ui->connectButton->setText(tr("Connect"));  
     }
+    ui->tunnelCheck->setEnabled(connected);
+    ui->tunnelSpeedBox->setEnabled(connected);
+    ui->vddBox->setEnabled(connected);
 }
 
 void LorrisShupito::readData(const QByteArray &data)
 {
     QByteArray dta = data;
     m_shupito->readData(data);
+}
+
+void LorrisShupito::stopAll()
+{
+    if(m_tunnel_config)
+    {
+        m_shupito->setTunnelState(false);
+
+        if(!m_tunnel_config->always_active())
+        {
+            sendAndWait(m_tunnel_config->getStateChangeCmd(false).getData(false));
+            m_response = RESPONSE_NONE;
+        }
+    }
+
+    if(m_vdd_config && !m_vdd_config->always_active())
+    {
+        sendAndWait(m_vdd_config->getStateChangeCmd(false).getData(false));
+        m_response = RESPONSE_NONE;
+    }
 }
 
 void LorrisShupito::sendAndWait(const QByteArray &data)
@@ -162,8 +192,8 @@ void LorrisShupito::responseReceived(char error_code)
 
 void LorrisShupito::onTabShow()
 {
-    m_shupito->init(m_con, m_desc);
-    m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
+   // m_shupito->init(m_con, m_desc);
+
 }
 
 void LorrisShupito::descRead()
