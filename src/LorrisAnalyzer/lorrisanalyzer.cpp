@@ -105,6 +105,7 @@ LorrisAnalyzer::~LorrisAnalyzer()
         delete m_packet;
     }
     delete m_dev_tabs;
+    delete m_curData;
 }
 
 void LorrisAnalyzer::connectButton()

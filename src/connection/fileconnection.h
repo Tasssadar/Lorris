@@ -28,6 +28,8 @@
 
 class FileConnection : public Connection
 {
+    Q_OBJECT
+
 public:
     FileConnection();
     ~FileConnection();
