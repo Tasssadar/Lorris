@@ -26,6 +26,7 @@
 
 #include "WorkTab/WorkTab.h"
 #include "shupito.h"
+#include "shupitodesc.h"
 
 enum state
 {
@@ -73,6 +74,8 @@ private slots:
     void vddSetup(const vdd_setup& vs);
     void vddIndexChanged(int index);
 
+    void tunnelSpeedChanged ( const QString & text );
+
 private:
     void sendAndWait(const QByteArray &data);
 
@@ -89,6 +92,9 @@ private:
     vdd_setup m_vdd_setup;
     double m_vcc;
     int lastVccIndex;
+
+    ShupitoDesc::config *m_vdd_config;
+    ShupitoDesc::config *m_tunnel_config;
 };
 
 #endif // LORRISSHUPITO_H

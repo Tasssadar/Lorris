@@ -23,6 +23,8 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <exception>
+#include <stdexcept>
 
 #include "shupito.h"
 #include "lorrisshupito.h"
@@ -91,6 +93,10 @@ Shupito::Shupito(QObject *parent) :
     m_con = NULL;
     m_desc = NULL;
     m_packet = ShupitoPacket();
+
+    m_vdd_config = m_tunnel_config = NULL;
+    m_tunnel_pipe = 0;
+    m_tunnel_speed = 0;
 }
 
 void Shupito::init(Connection *con, ShupitoDesc *desc)
@@ -151,18 +157,23 @@ void Shupito::handlePacket(ShupitoPacket& p)
         case MSG_INFO:
         {
             if(p.getLen() == 1)
-            {
                 emit responseReceived(p.getData()[0]);
-                break;
+            else
+            {
+                m_desc->AddData(p.getData(), p.getLen() < 15);
+                if(p.getLen() < 15)
+                    emit descRead();
             }
-            m_desc->AddData(p.getData(), p.getLen() < 15);
-            if(p.getLen() < 15)
-                emit descRead();
             break;
         }
         case MSG_VCC:
         {
             handleVccPacket(p);
+            break;
+        }
+        case MSG_TUNNEL:
+        {
+            handleTunnelPacket(p);
             break;
         }
     }
@@ -252,5 +263,97 @@ void Shupito::handleVccPacket(ShupitoPacket &p)
 
         emit vddDesc(m_vdd_setup);
     }
+}
+
+void Shupito::handleTunnelPacket(ShupitoPacket &p)
+{
+    if(!m_tunnel_config || p.getOpcode() != m_tunnel_config->cmd || p.getLen() < 2 || p.a(0) != 0)
+        return;
+
+    switch(p.a(1))
+    {
+        // Tunnel list
+        case 0:
+        {
+            std::vector<QString> pipe_names;
+            for(quint8 i = 2; i < p.getLen(); ++i)
+            {
+                if (i + 1 + p.a(i) > p.getLen())
+                    throw std::runtime_error("Invalid response while enumerating pipes.");
+
+                QString pipe_name;
+                for(quint8 j = 0; j < p.a(i); ++j)
+                    pipe_name.append(p.a(i+j+1));
+                pipe_names.push_back(pipe_name);
+
+                i += 1 + p.a(i);
+            }
+            if(!pipe_names.empty())
+            {
+                QString const & name = pipe_names[0];
+
+                QByteArray pkt_data;
+                pkt_data[0] = 0x80;
+                pkt_data[1] = (m_tunnel_config->cmd << 4) | (0x02 + name.length());
+                pkt_data[2] = 0x00;
+                pkt_data[3] = 0x01;
+                pkt_data.append(name);
+
+                m_con->SendData(pkt_data);
+            }
+            break;
+        }
+        // App tunnel activated
+        case 1:
+        {
+            if(p.getLen() == 3)
+            {
+                m_tunnel_pipe = p.a(2);
+                SendSetComSpeed();
+            }
+            break;
+        }
+        //App tunnel disabled
+        case 2:
+        {
+            if(p.getLen() == 3 && p.a(2) == m_tunnel_pipe)
+                m_tunnel_pipe = 0;
+            break;
+        }
+    }
+}
+
+//void send_set_comm_speed()
+void Shupito::SendSetComSpeed()
+{
+    if(!m_tunnel_speed || !m_tunnel_config || m_tunnel_pipe == 0 ||
+       m_tunnel_config->data.size() != 5 || m_tunnel_config->data[0] != 1)
+        return;
+
+    quint32 base_freq = m_tunnel_config->data[1] | (m_tunnel_config->data[2] << 8) |
+            (m_tunnel_config->data[3] << 16) | (m_tunnel_config->data[4] << 24);
+
+    double bsel = ((double)base_freq / m_tunnel_speed) - 1;
+    qint8 bscale = 0;
+
+    while(bscale > -6 && bsel < 2048)
+    {
+        bsel *= 2;
+        --bscale;
+    }
+
+    quint16 res = (quint16)(bsel + 0.5);
+    res |= bscale << 12;
+
+    ShupitoPacket pkt = ShupitoPacket(m_tunnel_config->cmd, 5, 0, 3, m_tunnel_pipe,
+                                      (quint8)res, (quint8)(res >> 8));
+    sendPacket(pkt);
+}
+
+void Shupito::setTunnelSpeed(quint32 speed, bool send)
+{
+    m_tunnel_speed = speed;
+    if(send)
+        SendSetComSpeed();
 }
 

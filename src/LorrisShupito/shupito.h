@@ -33,7 +33,8 @@
 enum Opcodes
 {
     MSG_INFO       = 0x00,
-    MSG_VCC        = 0x0A
+    MSG_VCC        = 0x0A,
+    MSG_TUNNEL     = 0x09
 };
 
 class Connection;
@@ -97,15 +98,29 @@ public:
     void readData(const QByteArray& data);
     void sendPacket(ShupitoPacket& packet);
 
+    void setVddConfig(ShupitoDesc::config *cfg) { m_vdd_config = cfg; }
+    void setTunnelConfig(ShupitoDesc::config *cfg) { m_tunnel_config = cfg; }
+
+    void setTunnelSpeed(quint32 speed, bool send = true);
+
 private:
     void handlePacket(ShupitoPacket& p);
     void handleVccPacket(ShupitoPacket& p);
+    void handleTunnelPacket(ShupitoPacket& p);
+
+    void SendSetComSpeed();
 
     Connection *m_con;
     ShupitoPacket m_packet;
     ShupitoDesc *m_desc;
     QMutex mutex;
     vdd_setup m_vdd_setup;
+
+    ShupitoDesc::config *m_vdd_config;
+    ShupitoDesc::config *m_tunnel_config;
+
+    quint8 m_tunnel_pipe;
+    quint32 m_tunnel_speed;
 };
 
 #endif // SHUPITO_H

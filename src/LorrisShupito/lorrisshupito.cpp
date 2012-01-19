@@ -37,8 +37,8 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 {
     ui->setupUi(this);
 
-    QPushButton *connectButton = findChild<QPushButton*>("connectButton");
-    connect(connectButton, SIGNAL(clicked()), this, SLOT(connectButton()));
+    connect(ui->connectButton, SIGNAL(clicked()), SLOT(connectButton()));
+    connect(ui->tunnelSpeedBox, SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
 
     vccLabel = findChild<QLabel*>("vccLabel");
     vddBox = findChild<QComboBox*>("vddBox");
@@ -55,6 +55,9 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     responseTimer = NULL;
     m_vcc = 0;
     lastVccIndex = 0;
+
+    m_vdd_config = NULL;
+    m_tunnel_config = NULL;
 }
 
 LorrisShupito::~LorrisShupito()
@@ -66,11 +69,10 @@ LorrisShupito::~LorrisShupito()
 
 void LorrisShupito::connectButton()
 {
-    QPushButton *connectButt = findChild<QPushButton *>("connectButton");
     if(m_state & STATE_DISCONNECTED)
     {
-        connectButt->setText(tr("Connecting..."));
-        connectButt->setEnabled(false);
+        ui->connectButton->setText(tr("Connecting..."));
+        ui->connectButton->setEnabled(false);
         connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
         m_con->OpenConcurrent();
     }
@@ -79,18 +81,18 @@ void LorrisShupito::connectButton()
         m_con->Close();
         m_state |= STATE_DISCONNECTED;
 
-        connectButt->setText(tr("Connect"));
+        ui->connectButton->setText(tr("Connect"));
     }
 }
 
 void LorrisShupito::connectionResult(Connection */*con*/,bool result)
 {
     disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-    QPushButton *button = findChild<QPushButton *>("connectButton");
-    button->setEnabled(true);
+
+    ui->connectButton->setEnabled(true);
     if(!result)
     {
-        button->setText(tr("Connect"));
+        ui->connectButton->setText(tr("Connect"));
 
         QMessageBox *box = new QMessageBox(this);
         box->setIcon(QMessageBox::Critical);
@@ -103,16 +105,15 @@ void LorrisShupito::connectionResult(Connection */*con*/,bool result)
 
 void LorrisShupito::connectedStatus(bool connected)
 {
-    QPushButton *button = findChild<QPushButton *>("connectButton");
     if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
-        button->setText(tr("Disconnect"));
+        ui->connectButton->setText(tr("Disconnect"));
     }
     else
     {
         m_state |= STATE_DISCONNECTED;
-        button->setText(tr("Connect"));
+        ui->connectButton->setText(tr("Connect"));
     }
 }
 
@@ -160,6 +161,7 @@ void LorrisShupito::responseReceived(char error_code)
 void LorrisShupito::onTabShow()
 {
     m_shupito->init(m_con, m_desc);
+    m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
 }
 
 void LorrisShupito::descRead()
@@ -171,19 +173,38 @@ void LorrisShupito::descRead()
     for(ShupitoDesc::intf_map::iterator itr = map.begin(); itr != map.end(); ++itr)
         edit->appendPlainText("Got interface GUID: " % itr->first);
 
-    ShupitoDesc::config *vddConfig = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
-    if(vddConfig)
+    m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
+    m_shupito->setVddConfig(m_vdd_config);
+    if(m_vdd_config)
     {
-        if(!vddConfig->always_active())
+        if(!m_vdd_config->always_active())
         {
-            sendAndWait(vddConfig->getStateChangeCmd(true).getData(false));
+            sendAndWait(m_vdd_config->getStateChangeCmd(true).getData(false));
             if(m_response == RESPONSE_GOOD)
                 edit->appendPlainText("VDD started!");
             else
                 edit->appendPlainText("Could not start VDD!");
             m_response = RESPONSE_NONE;
         }
-        ShupitoPacket packet(vddConfig->cmd, 2, 0, 0);
+        ShupitoPacket packet(m_vdd_config->cmd, 2, 0, 0);
+        m_con->SendData(packet.getData(false));
+    }
+
+    m_tunnel_config = m_desc->getConfig("356e9bf7-8718-4965-94a4-0be370c8797c");
+    m_shupito->setTunnelConfig(m_tunnel_config);
+    if(m_tunnel_config)
+    {
+        if(!m_tunnel_config->always_active())
+        {
+            sendAndWait(m_tunnel_config->getStateChangeCmd(true).getData(false));
+            if(m_response == RESPONSE_GOOD)
+                edit->appendPlainText("Tunnel started!");
+            else
+                edit->appendPlainText("Could not start tunnel!");
+            m_response = RESPONSE_NONE;
+        }
+
+        ShupitoPacket packet(m_tunnel_config->cmd, 2, 0, 0);
         m_con->SendData(packet.getData(false));
     }
 }
@@ -248,4 +269,21 @@ void LorrisShupito::vddIndexChanged(int index)
 
     ShupitoPacket p(MSG_VCC, 3, 1, 2, quint8(index));
     m_con->SendData(p.getData(false));
+}
+
+void LorrisShupito::tunnelSpeedChanged(const QString &text)
+{
+    bool ok = false;
+    quint32 speed = 0;
+
+    if(text.length() != 0 && text.length() < 8)
+        speed = text.toInt(&ok);
+
+    if(ok)
+    {
+        ui->tunnelSpeedBox->setStyleSheet("");
+        m_shupito->setTunnelSpeed(speed);
+    }
+    else
+        ui->tunnelSpeedBox->setStyleSheet("background-color: #FF7777");
 }

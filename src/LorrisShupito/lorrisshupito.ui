@@ -24,6 +24,61 @@
       </widget>
      </item>
      <item>
+      <widget class="QComboBox" name="tunnelSpeedBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="minimumContentsLength">
+        <number>1</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>38400</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>57600</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>115200</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>500000</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1000000</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1500000</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2000000</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="tunnelCheck">
+       <property name="text">
+        <string>Enable RS232 tunnel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -62,5 +117,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>tunnelCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>tunnelSpeedBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>287</x>
+     <y>17</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>156</x>
+     <y>17</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
