@@ -74,9 +74,14 @@ DataWidget::DataWidget(QWidget *parent) :
 
 DataWidget::~DataWidget()
 {
+    // Remove highlight from top data widget
+    if(m_mouseIn)
+        emit mouseStatus(false, m_info);
+
     WorkTab::DeleteAllMembers(layout);
     delete layout;
 }
+
 void DataWidget::setId(quint32 id)
 {
     m_id = id;
