@@ -43,12 +43,14 @@ bool ShupitoTunnel::Open()
         return false;
     opened = true;
     emit connected(true);
+    connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
     return true;
 }
 
 void ShupitoTunnel::Close()
 {
     emit connected(false);
+    disconnect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, NULL);
     opened = false;
 }
 

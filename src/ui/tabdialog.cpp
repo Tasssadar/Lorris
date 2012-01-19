@@ -103,14 +103,15 @@ void TabDialog::PluginSelected(int index)
     desc->setText(tabs->at(index)->GetDescription());
 
     conBox->clear();
-    if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem(tr("Socket"), CONNECTION_SOCKET);
-    if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem(tr("None (Load data from File)"), CONNECTION_FILE);
+
     if(conn & CON_MSK(CONNECTION_SERIAL_PORT))
     {
         conBox->addItem(tr("Serial port"), CONNECTION_SERIAL_PORT);
         if(sConMgr.isAnyShupito())
             conBox->addItem(tr("Shupito tunnel"), CONNECTION_SHUPITO);
     }
+    if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem(tr("None (Load data from File)"), CONNECTION_FILE);
+    if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem(tr("Socket"), CONNECTION_SOCKET);
 }
 
 void TabDialog::FillConOptions(int index)

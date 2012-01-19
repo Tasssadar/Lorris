@@ -494,7 +494,7 @@
     <message>
         <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="346"/>
         <source>RS232 tunnel </source>
-        <translation>RS232 tunel</translation>
+        <translation>RS232 tunel </translation>
     </message>
     <message>
         <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="348"/>
