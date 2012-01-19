@@ -35,6 +35,8 @@
 #include "mainwindow.h"
 #include "connection/serialport.h"
 #include "connection/fileconnection.h"
+#include "connection/shupitotunnel.h"
+#include "LorrisShupito/shupito.h"
 
 TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
 {
@@ -88,8 +90,8 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
 
 TabDialog::~TabDialog()
 {
-    WorkTab::DeleteAllMembers(layout);
-    delete layout; 
+   // WorkTab::DeleteAllMembers(layout);
+    //delete layout;
 }
 
 void TabDialog::PluginSelected(int index)
@@ -102,8 +104,13 @@ void TabDialog::PluginSelected(int index)
 
     conBox->clear();
     if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem(tr("Socket"), CONNECTION_SOCKET);
-    if(conn & CON_MSK(CONNECTION_SERIAL_PORT)) conBox->addItem(tr("Serial port"), CONNECTION_SERIAL_PORT);
     if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem(tr("None (Load data from File)"), CONNECTION_FILE);
+    if(conn & CON_MSK(CONNECTION_SERIAL_PORT))
+    {
+        conBox->addItem(tr("Serial port"), CONNECTION_SERIAL_PORT);
+        if(sConMgr.isAnyShupito())
+            conBox->addItem(tr("Shupito tunnel"), CONNECTION_SHUPITO);
+    }
 }
 
 void TabDialog::FillConOptions(int index)
@@ -113,7 +120,7 @@ void TabDialog::FillConOptions(int index)
     switch(conBox->itemData(index).toInt())
     {
         case CONNECTION_SOCKET:
-        case CONNECTION_FILE:
+        case CONNECTION_FILE: // Nothing to do
         default:   // TODO
             return;
         case CONNECTION_SERIAL_PORT:
@@ -153,6 +160,20 @@ void TabDialog::FillConOptions(int index)
             conOptions->addWidget(rateBox);
             break;
         }
+        case CONNECTION_SHUPITO:
+        {
+            QLabel *portLabel = new QLabel(tr("Port: "), NULL, Qt::WindowFlags(0));
+            QComboBox *portBox = new QComboBox(this);
+            portBox->setObjectName("PortBox");
+
+            QStringList shupitoList;
+            sConMgr.GetShupitoIds(shupitoList);
+            portBox->addItems(shupitoList);
+
+            conOptions->addWidget(portLabel);
+            conOptions->addWidget(portBox);
+            break;
+        }
     }
 }
 
@@ -183,6 +204,14 @@ void TabDialog::CreateTab()
             tab->setConnection(con);
             sWorkTabMgr.AddWorkTab(tab, info->GetName());
             close();
+            tab->onTabShow();
+            break;
+        }
+        case CONNECTION_SHUPITO:
+        {
+            tab = ConnectShupito(info);
+            if(!tab)
+                return;
             tab->onTabShow();
             break;
         }
@@ -266,3 +295,31 @@ void TabDialog::serialConResult(Connection *con, bool result)
     tmpTabInfo = NULL;
 }
 
+WorkTab *TabDialog::ConnectShupito(WorkTabInfo *info)
+{
+    QString portName = findChild<QComboBox *>("PortBox")->currentText();
+
+    Shupito *shupito = sConMgr.GetShupito(portName);
+    if(!shupito)
+        return NULL;
+
+    ShupitoTunnel *tunnel = (ShupitoTunnel*)sConMgr.FindConnection(CONNECTION_SHUPITO, portName);
+    if(!tunnel)
+    {
+        tunnel = new ShupitoTunnel();
+        tunnel->setShupito(shupito, portName);
+        if(!tunnel->Open())
+        {
+            delete tunnel;
+            return NULL;
+        }
+        sConMgr.AddCon(CONNECTION_SHUPITO, tunnel);
+    }
+    else if(!tunnel->isOpen() && !tunnel->Open())
+        return NULL;
+
+    WorkTab *tab = info->GetNewTab();
+    sWorkTabMgr.AddWorkTab(tab, info->GetName() + " - " + tunnel->GetIDString());
+    tab->setConnection(tunnel);
+    return tab;
+}

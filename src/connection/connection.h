@@ -42,7 +42,7 @@ public:
     virtual ~Connection();
     explicit Connection();
 
-    quint8 getType() { return m_type; }
+    virtual quint8 getType() { return m_type; }
 
     QString GetIDString() { return m_idString; }
     virtual bool Open();

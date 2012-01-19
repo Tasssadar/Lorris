@@ -21,11 +21,19 @@
 **
 ****************************************************************************/
 
+#include <QStringList>
+
 #include "connectionmgr.h"
 #include "connection.h"
+#include "../LorrisShupito/shupito.h"
 
 ConnectionMgr::ConnectionMgr()
 {
+}
+
+void ConnectionMgr::AddCon(quint8 type, Connection *con)
+{
+    conMap[type][con->GetIDString()] = con;
 }
 
 void ConnectionMgr::RemoveCon(quint8 type, Connection *con)
@@ -33,4 +41,52 @@ void ConnectionMgr::RemoveCon(quint8 type, Connection *con)
     conMap[type].erase(con->GetIDString());
 }
 
+Connection* ConnectionMgr::FindConnection(quint8 type, QString idString)
+{
+    con_map::iterator itr = conMap[type].find(idString);
+    if(itr != conMap[type].end())
+        return itr->second;
+    return NULL;
+}
+
+void ConnectionMgr::AddShupito(QString id, Shupito *s)
+{
+    shupitoMap[id] = s;
+}
+
+void ConnectionMgr::RemoveShupito(QString id)
+{
+    shupitoMap.erase(id);
+}
+
+void ConnectionMgr::RemoveShupito(Shupito *shupito)
+{
+    for(shupito_map::iterator itr = shupitoMap.begin(); itr != shupitoMap.end(); ++itr)
+    {
+        if(itr->second == shupito)
+        {
+            shupitoMap.erase(itr);
+            return;
+        }
+    }
+}
+
+Shupito *ConnectionMgr::GetShupito(QString id)
+{
+    shupito_map::iterator itr = shupitoMap.find(id);
+    if(itr != shupitoMap.end())
+        return itr->second;
+    return NULL;
+}
+
+void ConnectionMgr::GetShupitoIds(QStringList &list)
+{
+    for(shupito_map::iterator itr = shupitoMap.begin(); itr != shupitoMap.end(); ++itr)
+        list.append(itr->first);
+}
+
+bool ConnectionMgr::isAnyShupito()
+{
+    return !shupitoMap.empty();
+}
 

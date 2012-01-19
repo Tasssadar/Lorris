@@ -156,7 +156,7 @@ public:
     bool getDeviceId(quint8& id);
     bool getCmd(quint8& cmd);
     bool getLenFromHeader(quint32& len);
-    quint32 getLenght();
+    quint32 getLenght(bool *readFromHeader = NULL);
     quint16 getHeaderDataPos(quint8 type);
 
     quint8   getUInt8  (quint32 pos) { return read<quint8> (pos); }

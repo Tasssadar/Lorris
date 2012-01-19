@@ -45,13 +45,16 @@ quint32 analyzer_data::addData(QByteArray data)
         m_data[itr++] = data[read++];
     }
 
-    quint32 len = getLenght();
+    bool readFromHeader;
+    quint32 len = getLenght(&readFromHeader);
     quint32 var_len = 0;
+
     quint8 lenRead = (m_packet->header->data_mask & DATA_LEN);
+
 
     for(quint32 i = itr; i < len && read < (quint32)data.length(); ++i)
     {
-        if(lenRead == DATA_LEN && getLenFromHeader(var_len))
+        if(!readFromHeader && lenRead == DATA_LEN && getLenFromHeader(var_len))
         {
             len += var_len;
             lenRead = 0;
@@ -62,15 +65,23 @@ quint32 analyzer_data::addData(QByteArray data)
     return read;
 }
 
-quint32 analyzer_data::getLenght()
+quint32 analyzer_data::getLenght(bool *readFromHeader)
 {
     if(m_packet->header->data_mask & DATA_LEN)
     {
         quint32 res = 0;
         if(getLenFromHeader(res))
+        {
+            if(readFromHeader)
+                *readFromHeader = true;
             return res + m_packet->header->length;
+        }
         else
+        {
+            if(readFromHeader)
+                *readFromHeader = false;
             return m_packet->header->length;
+        }
     }
     else
         return m_packet->header->packet_length;

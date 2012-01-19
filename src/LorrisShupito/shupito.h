@@ -27,6 +27,7 @@
 #include <QObject>
 #include <QByteArray>
 #include <QMutex>
+#include <QTimer>
 
 #include "shupitodesc.h"
 
@@ -55,6 +56,8 @@ public:
     ShupitoPacket(quint8 cmd, quint8 size, ...);
     ShupitoPacket();
 
+    void set(bool resize, quint8 cmd, quint8 size);
+
     QByteArray getData(bool onlyPacketData = true)
     {
         if(onlyPacketData)
@@ -76,6 +79,11 @@ public:
 
     quint8 addData(const QByteArray& data);
 
+    // Returns only data part!
+    quint8 operator[](int i) const { return (quint8)m_data[i+2]; }
+
+    QByteArray &getDataRef() { return m_data; }
+
 private:
     QByteArray m_data;
     quint8 itr;
@@ -90,9 +98,12 @@ Q_SIGNALS:
     void responseReceived(char error_code);
     void vccValueChanged(quint8 id, double value);
     void vddDesc(const vdd_setup& vs);
+    void tunnelData(const QByteArray& data);
+    void tunnelStatus(bool opened);
 
 public:
     explicit Shupito(QObject *parent);
+    ~Shupito();
     void init(Connection *con, ShupitoDesc *desc);
 
     void readData(const QByteArray& data);
@@ -102,6 +113,12 @@ public:
     void setTunnelConfig(ShupitoDesc::config *cfg) { m_tunnel_config = cfg; }
 
     void setTunnelSpeed(quint32 speed, bool send = true);
+    qint16 getTunnelCmd();
+    quint8 getTunnelId() { return m_tunnel_pipe; }
+    void setTunnelState(bool enable);
+
+private slots:
+    void tunnelDataSend();
 
 private:
     void handlePacket(ShupitoPacket& p);
@@ -121,6 +138,8 @@ private:
 
     quint8 m_tunnel_pipe;
     quint32 m_tunnel_speed;
+    QByteArray m_tunnel_data;
+    QTimer m_tunnel_timer;
 };
 
 #endif // SHUPITO_H

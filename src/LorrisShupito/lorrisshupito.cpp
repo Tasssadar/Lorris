@@ -39,6 +39,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
     connect(ui->connectButton, SIGNAL(clicked()), SLOT(connectButton()));
     connect(ui->tunnelSpeedBox, SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
+    connect(ui->tunnelCheck, SIGNAL(clicked(bool)), SLOT(tunnelToggled(bool)));
 
     vccLabel = findChild<QLabel*>("vccLabel");
     vddBox = findChild<QComboBox*>("vddBox");
@@ -50,6 +51,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(m_shupito, SIGNAL(responseReceived(char)), this, SLOT(responseReceived(char)));
     connect(m_shupito, SIGNAL(vccValueChanged(quint8,double)), this, SLOT(vccValueChanged(quint8,double)));
     connect(m_shupito, SIGNAL(vddDesc(vdd_setup)), this, SLOT(vddSetup(vdd_setup)));
+    connect(m_shupito, SIGNAL(tunnelStatus(bool)), this, SLOT(tunnelStateChanged(bool)));
     m_response = RESPONSE_NONE;
 
     responseTimer = NULL;
@@ -62,9 +64,9 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
 LorrisShupito::~LorrisShupito()
 {
-    delete ui;
     delete m_shupito;
     delete m_desc;
+    delete ui;
 }
 
 void LorrisShupito::connectButton()
@@ -166,12 +168,11 @@ void LorrisShupito::onTabShow()
 
 void LorrisShupito::descRead()
 {
-    QPlainTextEdit *edit = findChild<QPlainTextEdit*>("logText");
-    edit->appendPlainText("Device GUID: " % m_desc->getGuid());
+    ui->logText->appendPlainText("Device GUID: " % m_desc->getGuid());
 
     ShupitoDesc::intf_map map = m_desc->getInterfaceMap();
     for(ShupitoDesc::intf_map::iterator itr = map.begin(); itr != map.end(); ++itr)
-        edit->appendPlainText("Got interface GUID: " % itr->first);
+        ui->logText->appendPlainText("Got interface GUID: " % itr->first);
 
     m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
     m_shupito->setVddConfig(m_vdd_config);
@@ -181,9 +182,9 @@ void LorrisShupito::descRead()
         {
             sendAndWait(m_vdd_config->getStateChangeCmd(true).getData(false));
             if(m_response == RESPONSE_GOOD)
-                edit->appendPlainText("VDD started!");
+                ui->logText->appendPlainText("VDD started!");
             else
-                edit->appendPlainText("Could not start VDD!");
+                ui->logText->appendPlainText("Could not start VDD!");
             m_response = RESPONSE_NONE;
         }
         ShupitoPacket packet(m_vdd_config->cmd, 2, 0, 0);
@@ -198,15 +199,15 @@ void LorrisShupito::descRead()
         {
             sendAndWait(m_tunnel_config->getStateChangeCmd(true).getData(false));
             if(m_response == RESPONSE_GOOD)
-                edit->appendPlainText("Tunnel started!");
+                ui->logText->appendPlainText("Tunnel started!");
             else
-                edit->appendPlainText("Could not start tunnel!");
+                ui->logText->appendPlainText("Could not start tunnel!");
             m_response = RESPONSE_NONE;
         }
 
-        ShupitoPacket packet(m_tunnel_config->cmd, 2, 0, 0);
-        m_con->SendData(packet.getData(false));
-    }
+        m_shupito->setTunnelState(true);
+    }else
+        ui->tunnelCheck->setChecked(false);
 }
 
 void LorrisShupito::vccValueChanged(quint8 id, double value)
@@ -286,4 +287,38 @@ void LorrisShupito::tunnelSpeedChanged(const QString &text)
     }
     else
         ui->tunnelSpeedBox->setStyleSheet("background-color: #FF7777");
+}
+
+void LorrisShupito::tunnelToggled(bool enable)
+{
+    if(!m_tunnel_config)
+    {
+        if(enable)
+        {
+            QMessageBox box(this);
+            box.setIcon(QMessageBox::Information);
+            box.setWindowTitle(tr("Unsupported"));
+            box.setText(tr("It looks like your Shupito does not support RS232 tunnel!"));
+            box.exec();
+        }
+        return;
+    }
+    m_shupito->setTunnelState(enable);
+}
+
+void LorrisShupito::tunnelStateChanged(bool opened)
+{
+    if(!m_tunnel_config)
+        return;
+
+
+
+    QString text = tr("RS232 tunnel ");
+    if(opened)
+        text += tr("enabled");
+    else
+        text += tr("disabled");
+
+    ui->logText->appendPlainText(text);
+    ui->tunnelCheck->setChecked(opened);
 }

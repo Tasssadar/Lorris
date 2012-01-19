@@ -51,6 +51,7 @@ private slots:
 
 private:
     WorkTab *ConnectSP(WorkTabInfo *info);
+    WorkTab *ConnectShupito(WorkTabInfo *info);
 
     QVBoxLayout *layout;
     QHBoxLayout *columns;

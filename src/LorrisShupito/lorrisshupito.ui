@@ -26,7 +26,7 @@
      <item>
       <widget class="QComboBox" name="tunnelSpeedBox">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="editable">
         <bool>true</bool>
@@ -75,6 +75,9 @@
       <widget class="QCheckBox" name="tunnelCheck">
        <property name="text">
         <string>Enable RS232 tunnel</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

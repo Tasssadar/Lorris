@@ -60,7 +60,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/colorwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp \
-    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp \
+    src/connection/shupitotunnel.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -117,7 +118,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/colorwidget.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
-    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.h
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.h \
+    src/connection/shupitotunnel.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

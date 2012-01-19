@@ -75,6 +75,8 @@ private slots:
     void vddIndexChanged(int index);
 
     void tunnelSpeedChanged ( const QString & text );
+    void tunnelToggled(bool enable);
+    void tunnelStateChanged(bool opened);
 
 private:
     void sendAndWait(const QByteArray &data);
