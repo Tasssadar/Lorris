@@ -27,7 +27,7 @@
 
 ShupitoTunnel::ShupitoTunnel()
 {
-    m_type = CONNECTION_SERIAL_PORT;
+    m_type = CONNECTION_SHUPITO;
     m_shupito = NULL;
     tunnelActive = true;
 }

@@ -2,6 +2,7 @@
 #define SHUPITOTUNNEL_H
 
 #include "connection.h"
+#include "connectionmgr.h"
 
 class Shupito;
 
@@ -19,6 +20,8 @@ public:
 
     void setShupito(Shupito* s, QString id);
     void SendData(const QByteArray &data);
+
+    quint8 getType() { return CONNECTION_SERIAL_PORT; }
 
 public slots:
     void tunnelStatus(bool opened);
