@@ -43,6 +43,14 @@ WorkTab::~WorkTab()
     }
 }
 
+void WorkTab::setConnection(Connection *con)
+{
+    m_con = con;
+    connect(m_con, SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
+    connect(m_con, SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
+    m_con->AddUsingTab(m_id);
+}
+
 void WorkTab::readData(const QByteArray& /*data*/)
 {
 

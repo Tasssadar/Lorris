@@ -28,5 +28,6 @@
 
 #include "revision.h"
 #include "utils.h"
+#include "config.h"
 
 #endif // COMMON_H

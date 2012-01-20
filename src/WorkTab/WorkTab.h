@@ -25,6 +25,8 @@
 #define WORKTAB_H
 
 #include <QtGui/QWidget>
+
+#include "common.h"
 #include "connection/connection.h"
 
 class WorkTab : public QWidget
@@ -36,13 +38,7 @@ class WorkTab : public QWidget
         void setId(quint16 id) { m_id = id; }
         quint16 getId() { return m_id; }
 
-        void setConnection(Connection *con)
-        {
-            m_con = con;
-            connect(m_con, SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
-            connect(m_con, SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
-            m_con->AddUsingTab(m_id);
-        }
+        void setConnection(Connection *con);
 
         static void DeleteAllMembers(QLayout *layout);
 

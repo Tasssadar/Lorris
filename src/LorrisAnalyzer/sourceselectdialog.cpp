@@ -102,7 +102,9 @@ QString SourceSelectDialog::getFileName()
 void SourceSelectDialog::browse()
 {
     QString filters = QObject::tr("Lorris data file (*.ldta)");
-    QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"), "", filters);
+    QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"),
+                                                    sConfig.get(CFG_STRING_ANALYZER_FOLDER),
+                                                    filters);
 
     ui->contButton->setEnabled(filename.length() != 0);
 
@@ -110,7 +112,7 @@ void SourceSelectDialog::browse()
         return;
 
     ui->fileEdit->setText(filename);
-
+    sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
 }
 
 void SourceSelectDialog::loadRadioToggled(bool toggle)

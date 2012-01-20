@@ -41,6 +41,8 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(ui->tunnelSpeedBox, SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
     connect(ui->tunnelCheck, SIGNAL(clicked(bool)), SLOT(tunnelToggled(bool)));
 
+    ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
+
     vccLabel = findChild<QLabel*>("vccLabel");
     vddBox = findChild<QComboBox*>("vddBox");
 
@@ -192,8 +194,7 @@ void LorrisShupito::responseReceived(char error_code)
 
 void LorrisShupito::onTabShow()
 {
-   // m_shupito->init(m_con, m_desc);
-
+    sConfig.set(CFG_STRING_SHUPITO_PORT, m_con->GetIDString());
 }
 
 void LorrisShupito::descRead()
@@ -223,7 +224,7 @@ void LorrisShupito::descRead()
 
     m_tunnel_config = m_desc->getConfig("356e9bf7-8718-4965-94a4-0be370c8797c");
     m_shupito->setTunnelConfig(m_tunnel_config);
-    if(m_tunnel_config)
+    if(m_tunnel_config && ui->tunnelCheck->isChecked())
     {
         if(!m_tunnel_config->always_active())
         {
@@ -333,7 +334,9 @@ void LorrisShupito::tunnelToggled(bool enable)
         }
         return;
     }
+
     m_shupito->setTunnelState(enable);
+    sConfig.set(CFG_BOOL_SHUPITO_TUNNEL, enable);
 }
 
 void LorrisShupito::tunnelStateChanged(bool opened)
@@ -350,5 +353,6 @@ void LorrisShupito::tunnelStateChanged(bool opened)
         text += tr("disabled");
 
     ui->logText->appendPlainText(text);
-    ui->tunnelCheck->setChecked(opened);
+    if(ui->tunnelCheck->isChecked())
+        ui->tunnelCheck->setEnabled(opened);
 }

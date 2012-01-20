@@ -48,6 +48,7 @@
 #include "WorkTab/WorkTabInfo.h"
 #include "tabdialog.h"
 #include "revision.h"
+#include "config.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -55,6 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle(getVersionString());
     setMinimumSize(600, 500);
     setWindowState(Qt::WindowMaximized);
+
+    // init config now!
+    Config::GetSingleton();
 
     // menu bar
     QMenuBar* menuBar = new QMenuBar(this);
@@ -102,6 +106,7 @@ MainWindow::~MainWindow()
     //delete singletons
     WorkTabMgr::Destroy();
     ConnectionMgr::Destroy();
+    Config::Destroy();
 }
 
 QString MainWindow::getVersionString()

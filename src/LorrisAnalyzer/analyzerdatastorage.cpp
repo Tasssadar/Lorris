@@ -67,7 +67,9 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
         return;
 
     QString filters = QObject::tr("Lorris data file (*.ldta)");
-    QString filename = QFileDialog::getSaveFileName(NULL, QObject::tr("Export Data"), "", filters);
+    QString filename = QFileDialog::getSaveFileName(NULL, QObject::tr("Export Data"),
+                                                    sConfig.get(CFG_STRING_ANALYZER_FOLDER),
+                                                    filters);
 
     AnalyzerDataFile *file = new AnalyzerDataFile(filename);
     if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate))
@@ -84,6 +86,8 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
         delete file;
         return;
     }
+
+    sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
 
     //Magic
     file->write(ANALYZER_DATA_FORMAT);

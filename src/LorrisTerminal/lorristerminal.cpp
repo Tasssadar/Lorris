@@ -123,7 +123,12 @@ LorrisTerminal::~LorrisTerminal()
 
 void LorrisTerminal::browseForHex()
 {
-    hexLine->setText(QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Intel hex file (*.hex)")));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    sConfig.get(CFG_STRING_HEX_FOLDER),
+                                                    tr("Intel hex file (*.hex)"));
+    hexLine->setText(filename);
+    if(filename.length() != 0)
+        sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
 }
 
 void LorrisTerminal::clearButton()

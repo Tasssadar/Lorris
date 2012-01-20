@@ -28,6 +28,7 @@
 #include <QLabel>
 #include <QMessageBox>
 
+#include "common.h"
 #include "WorkTab/WorkTabMgr.h"
 #include "WorkTab/WorkTabInfo.h"
 #include "WorkTab/WorkTab.h"
@@ -85,7 +86,10 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
     layout->addWidget(create);
     setLayout(layout);
 
-    pluginsBox->setCurrentRow(0);
+    quint32 lastSelected = sConfig.get(CFG_QUINT32_TAB_TYPE);
+    if(lastSelected >= sWorkTabMgr.GetWorkTabInfos()->size())
+        lastSelected = 0;
+    pluginsBox->setCurrentRow(lastSelected);
 }
 
 TabDialog::~TabDialog()
@@ -112,6 +116,19 @@ void TabDialog::PluginSelected(int index)
     }
     if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem(tr("None (Load data from File)"), CONNECTION_FILE);
     if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem(tr("Socket"), CONNECTION_SOCKET);
+
+    quint32 lastConn = sConfig.get(CFG_QUINT32_CONNECTION_TYPE);
+    if(lastConn != MAX_CON_TYPE)
+    {
+        for(quint8 i = 0; i < conBox->count(); ++i)
+        {
+            if((quint32)conBox->itemData(i).toInt() == lastConn)
+            {
+                conBox->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
 }
 
 void TabDialog::FillConOptions(int index)
@@ -156,9 +173,33 @@ void TabDialog::FillConOptions(int index)
             rateBox->addItem("1000000", AbstractSerial::BaudRate1000000);
             rateBox->addItem("1500000", AbstractSerial::BaudRate1500000);
             rateBox->addItem("2000000", AbstractSerial::BaudRate2000000);
+
             rateBox->setObjectName("RateBox");
             conOptions->addWidget(rateLabel);
             conOptions->addWidget(rateBox);
+
+            int baud = sConfig.get(CFG_QUINT32_SERIAL_BAUD);
+            for(quint8 i = 0; i < rateBox->count(); ++i)
+            {
+                if(baud == rateBox->itemData(i).toInt())
+                {
+                    rateBox->setCurrentIndex(i);
+                    break;
+                }
+            }
+
+            QString port = sConfig.get(CFG_STRING_SERIAL_PORT);
+            if(port.length() != 0)
+                portBox->setEditText(port);
+
+            port = sConfig.get(CFG_STRING_SHUPITO_PORT);
+            int idx = pluginsBox->currentIndex().row();
+            if(idx >= 0 && idx < (int)sWorkTabMgr.GetWorkTabInfos()->size() && port.length() != 0)
+            {
+                WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos()->at(idx);
+                if(info->GetName().contains("Shupito", Qt::CaseInsensitive))
+                    portBox->setEditText(port);
+            }
             break;
         }
         case CONNECTION_SHUPITO:
@@ -183,14 +224,14 @@ void TabDialog::CreateTab()
     WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos()->at(pluginsBox->currentIndex().row());
     WorkTab *tab = NULL;
 
-    switch(conBox->itemData(conBox->currentIndex()).toInt())
+    int connectionType = conBox->itemData(conBox->currentIndex()).toInt();
+    switch(connectionType)
     {
         case CONNECTION_SERIAL_PORT:
         {
             tab = ConnectSP(info);
             if(!tab)
                 return;
-            tab->onTabShow();
             break;
         }
         case CONNECTION_FILE:
@@ -204,8 +245,6 @@ void TabDialog::CreateTab()
             }
             tab->setConnection(con);
             sWorkTabMgr.AddWorkTab(tab, info->GetName());
-            close();
-            tab->onTabShow();
             break;
         }
         case CONNECTION_SHUPITO:
@@ -213,19 +252,21 @@ void TabDialog::CreateTab()
             tab = ConnectShupito(info);
             if(!tab)
                 return;
-            tab->onTabShow();
             break;
         }
         default:    // TODO: other connection types
         {
             tab = info->GetNewTab();
             sWorkTabMgr.AddWorkTab(tab, info->GetName());
-            close();
-            tab->onTabShow();
-            return;
+            break;
         }
     }
+
+    sConfig.set(CFG_QUINT32_TAB_TYPE, pluginsBox->currentIndex().row());
+    sConfig.set(CFG_QUINT32_CONNECTION_TYPE, connectionType);
+
     close();
+    tab->onTabShow();
 }
 
 WorkTab *TabDialog::ConnectSP(WorkTabInfo *info)
@@ -237,6 +278,9 @@ WorkTab *TabDialog::ConnectSP(WorkTabInfo *info)
     portName = combo->currentText();
     combo = findChild<QComboBox *>("RateBox");
     rate =  AbstractSerial::BaudRate(combo->itemData(combo->currentIndex()).toInt());
+
+    sConfig.set(CFG_STRING_SERIAL_PORT, portName);
+    sConfig.set(CFG_QUINT32_SERIAL_BAUD, (quint32)rate);
 
     SerialPort *port = (SerialPort*)sConMgr.FindConnection(CONNECTION_SERIAL_PORT, portName);
     if(port && port->isOpen())
@@ -277,6 +321,10 @@ void TabDialog::serialConResult(Connection *con, bool result)
         sWorkTabMgr.AddWorkTab(tab, tmpTabInfo->GetName() + " - " + con->GetIDString());
         tab->setConnection(con);
         sConMgr.AddCon(CONNECTION_SERIAL_PORT, con);
+
+        sConfig.set(CFG_QUINT32_TAB_TYPE, pluginsBox->currentIndex().row());
+        sConfig.set(CFG_QUINT32_CONNECTION_TYPE, CONNECTION_SERIAL_PORT);
+
         close();
         tab->onTabShow();
     }

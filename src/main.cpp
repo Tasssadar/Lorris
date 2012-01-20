@@ -31,6 +31,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QCoreApplication::setOrganizationName("-");
+    QCoreApplication::setOrganizationDomain("github.com/Tasssadar");
+    QCoreApplication::setApplicationName("Lorris");
+
     QTranslator translator;
     if(!translator.load("Lorris." + QLocale::system().name(), "translations"))
         translator.load("Lorris." + QLocale::system().name(), "/usr/share/lorris");
