@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "connection/connectionmgr.h"
+#include "qserialdevice/abstractserial.h"
 
 static const QString keys_quint32[CFG_QUINT32_NUM] =
 {
@@ -30,7 +31,7 @@ Config::Config()
     // Fill default values
     m_def_quint32[CFG_QUINT32_CONNECTION_TYPE]     = MAX_CON_TYPE;
     m_def_quint32[CFG_QUINT32_TAB_TYPE]            = 0;
-    m_def_quint32[CFG_QUINT32_SERIAL_BAUD]         = 38400;
+    m_def_quint32[CFG_QUINT32_SERIAL_BAUD]         = AbstractSerial::BaudRate38400;
 
     m_def_string[CFG_STRING_SERIAL_PORT]           = "";
     m_def_string[CFG_STRING_SHUPITO_PORT]          = "";
