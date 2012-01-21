@@ -332,6 +332,8 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
     m_drag = drag;
 
     setAcceptDrops(true);
+
+    this->setAutoFillBackground(true);
 }
 
 DraggableLabel::~DraggableLabel()

@@ -68,6 +68,7 @@ DataWidget::DataWidget(QWidget *parent) :
     setFrameStyle(QFrame::Box | QFrame::Plain);
     setLineWidth(1);
     setMidLineWidth(2);
+    setAutoFillBackground(true);
 
     contextMenu = NULL;
 }

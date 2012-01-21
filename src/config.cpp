@@ -9,6 +9,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "general/connection_type",   // CFG_QUINT32_CONNECTION_TYPE
     "general/tab_type",          // CFG_QUINT32_TAB_TYPE
     "serial_port/baud_rate",     // CFG_QUINT32_SERIAL_BAUD
+    "analyzer/update_time",      // CFG_QUINT32_ANALYZER_UPDATE_TIME
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -32,6 +33,7 @@ Config::Config()
     m_def_quint32[CFG_QUINT32_CONNECTION_TYPE]     = MAX_CON_TYPE;
     m_def_quint32[CFG_QUINT32_TAB_TYPE]            = 0;
     m_def_quint32[CFG_QUINT32_SERIAL_BAUD]         = AbstractSerial::BaudRate38400;
+    m_def_quint32[CFG_QUINT32_ANALYZER_UPDATE_TIME]= 100;
 
     m_def_string[CFG_STRING_SERIAL_PORT]           = "";
     m_def_string[CFG_STRING_SHUPITO_PORT]          = "";

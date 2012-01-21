@@ -25,6 +25,7 @@
 #define LORRISANALYZER_H
 
 #include <QMutex>
+#include <QTime>
 
 #include "WorkTab/WorkTab.h"
 #include "packet.h"
@@ -73,7 +74,7 @@ class LorrisAnalyzer : public WorkTab
 
     public slots:
         void onTabShow();
-        void updateData();
+        void updateData(bool ignoreTime = false);
         void widgetMouseStatus(bool in, const data_widget_info& info);
 
     private slots:
@@ -89,9 +90,16 @@ class LorrisAnalyzer : public WorkTab
         void timeSliderMoved(int value);
         void timeBoxChanged(int value);
 
+        void updateTimeChanged(int value);
+
     private:
         void readData(const QByteArray& data);
         void load(QString *name, quint8 mask);
+
+        inline bool canUpdateUi(bool ignore = false)
+        {
+            return ignore || updateTime.elapsed() > minUpdateDelay;
+        }
 
         quint16 m_state;
         bool highlightInfoNotNull;
@@ -102,6 +110,9 @@ class LorrisAnalyzer : public WorkTab
         analyzer_data *m_curData;
         DeviceTabWidget *m_dev_tabs;
         AnalyzerDataArea *m_data_area;
+
+        QTime updateTime;
+        int minUpdateDelay;
 };
 
 #endif // LORRISANALYZER_H

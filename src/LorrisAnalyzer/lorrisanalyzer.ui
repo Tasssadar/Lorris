@@ -73,6 +73,26 @@
       </spacer>
      </item>
      <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Max UI update frequency</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="updateTimeBox">
+       <property name="suffix">
+        <string> ms</string>
+       </property>
+       <property name="minimum">
+        <number>100</number>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="clearButton">
        <property name="text">
         <string>Clear</string>

@@ -21,6 +21,8 @@
 **
 ****************************************************************************/
 
+#define QT_USE_FAST_CONCATENATION
+
 #include <QDockWidget>
 #include <QMdiArea>
 #include <QLabel>
@@ -55,6 +57,9 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 {
     ui->setupUi(this);
 
+    minUpdateDelay = sConfig.get(CFG_QUINT32_ANALYZER_UPDATE_TIME);
+    ui->updateTimeBox->setValue(minUpdateDelay);
+
     connect(ui->connectButton,   SIGNAL(clicked()),         SLOT(connectButton()));
     connect(ui->addSourceButton, SIGNAL(clicked()),         SLOT(onTabShow()));
     connect(ui->saveDataButton,  SIGNAL(clicked()),         SLOT(saveDataButton()));
@@ -63,6 +68,14 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearButton()));
     connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(timeSliderMoved(int)));
     connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
+    connect(ui->updateTimeBox,   SIGNAL(valueChanged(int)), SLOT(updateTimeChanged(int)));
+
+    // Time box update consumes hilarious CPU time on X11,
+    // this makes it better
+#if defined(Q_WS_X11)
+    ui->timeBox->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+    ui->timeBox->setAttribute(Qt::WA_PaintOnScreen, true);
+#endif
 
     m_storage = new AnalyzerDataStorage(this);
 
@@ -93,6 +106,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     m_state = 0;
     highlightInfoNotNull = false;
     m_curData = NULL;
+
+    updateTime.start();
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -188,15 +203,24 @@ void LorrisAnalyzer::readData(const QByteArray& data)
         }
     }
 
+    if(!canUpdateUi())
+        return;
+
+    this->setUpdatesEnabled(false);
+
+    int size = m_storage->getSize();
     bool update = ui->timeSlider->value() == ui->timeSlider->maximum();
-    ui->timeSlider->setMaximum(m_storage->getSize());
-    ui->timeBox->setMaximum(m_storage->getSize());
-    ui->timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
+
+    ui->timeSlider->setMaximum(size);
+    ui->timeBox->setMaximum(size);
+
+    static const QString ofString = tr(" of ");
+    ui->timeBox->setSuffix(ofString % QString::number(size));
+
     if(update)
-    {
-        ui->timeSlider->setValue(m_storage->getSize());
-        ui->timeBox->setValue(m_storage->getSize());
-    }
+        ui->timeBox->setValue(size);
+
+    this->setUpdatesEnabled(true);
 }
 
 void LorrisAnalyzer::onTabShow()
@@ -258,10 +282,11 @@ void LorrisAnalyzer::onTabShow()
 
 void LorrisAnalyzer::timeSliderMoved(int value)
 {
+    bool down = ui->timeSlider->isSliderDown();
     if(value != 0)
-        updateData();
+        updateData(down);
 
-    if(ui->timeSlider->isSliderDown())
+    if(down)
         ui->timeBox->setValue(value);
 }
 
@@ -270,12 +295,21 @@ void LorrisAnalyzer::timeBoxChanged(int value)
     ui->timeSlider->setValue(value);
 }
 
-void LorrisAnalyzer::updateData()
+void LorrisAnalyzer::updateData(bool ignoreTime)
 {
+    if(!canUpdateUi(ignoreTime))
+        return;
+
+    updateTime.restart();
+
+    this->setUpdatesEnabled(false);
+
     int val = ui->timeSlider->value();
 
     if(val != 0 && (quint32)val <= m_storage->getSize())
         emit newData(m_storage->get(val-1));
+
+    this->setUpdatesEnabled(true);
 }
 
 void LorrisAnalyzer::load(QString *name, quint8 mask)
@@ -298,7 +332,7 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     ui->timeSlider->setMaximum(m_storage->getSize());
     ui->timeSlider->setValue(m_storage->getSize());
     ui->timeBox->setMaximum(m_storage->getSize());
-    ui->timeBox->setSuffix(tr(" of ") + QString::number(m_storage->getSize()));
+    ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage->getSize()));
     ui->timeBox->setValue(m_storage->getSize());
     m_state &= ~(STATE_DIALOG);
 }
@@ -419,4 +453,10 @@ void LorrisAnalyzer::clearButton()
     }
 
     setAreaVisibility(AREA_TOP | AREA_RIGHT, true);
+}
+
+void LorrisAnalyzer::updateTimeChanged(int value)
+{
+    minUpdateDelay = value;
+    sConfig.set(CFG_QUINT32_ANALYZER_UPDATE_TIME, minUpdateDelay);
 }
