@@ -32,6 +32,8 @@ public:
     static QString hexToString(quint8 data, bool withZeroEx = false);
     static QString parseChar(char c);
     template <typename T> static inline void swapEndian(char *val);
+
+    static QString toBase16(quint8 const * first, quint8 const * last);
 };
 
 template <typename T>

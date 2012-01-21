@@ -28,3 +28,7 @@
         Modified version of QSerialDevice(http://gitorious.org/qserialdevice),
             a cross-platform library for serial devices (ports) based on Qt4,
             which is distributed under the GNU GPLv2 - see dep/qserialdevice/copying
+
+        Modified version of QHexEdit2(http://code.google.com/p/qhexedit2/),
+            "QHexEdit is a Binary Edior for Qt",
+            which is distributed under the LGPL v2.1 - see dep/qhexedit2/src/license.txt

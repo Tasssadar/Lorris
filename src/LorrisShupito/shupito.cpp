@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <exception>
 #include <stdexcept>
+#include <QEventLoop>
 
 #include "shupito.h"
 #include "lorrisshupito.h"
@@ -111,6 +112,10 @@ Shupito::Shupito(QObject *parent) :
     m_tunnel_speed = 0;
 
     m_tunnel_timer.setInterval(50);
+
+    responseTimer = NULL;
+    m_wait_cmd = 0xFF;
+    m_wait_type = WAIT_NONE;
 }
 
 Shupito::~Shupito()
@@ -123,6 +128,9 @@ void Shupito::init(Connection *con, ShupitoDesc *desc)
 {
     m_con = con;
     m_desc = desc;
+
+    chip_definition::parse_default_chipsets(m_chip_defs);
+
     ShupitoPacket getInfo(MSG_INFO, 1, 0x00);
     sendPacket(getInfo);
 }
@@ -161,17 +169,105 @@ void Shupito::readData(const QByteArray &data)
 
     for(quint32 i = 0; i < packets.size(); ++i)
         handlePacket(packets[i]);
-
 }
 
-void Shupito::sendPacket(ShupitoPacket& packet)
+ShupitoPacket Shupito::waitForPacket(QByteArray data, quint8 cmd)
 {
-    QByteArray data = packet.getData(false);
+    Q_ASSERT(responseTimer == NULL);
+
+    responseTimer = new QTimer;
+    responseTimer->start(1000);
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+
+    m_wait_cmd = cmd;
+    m_wait_packet = ShupitoPacket();
+    m_wait_type = WAIT_PACKET;
+
+    QEventLoop loop;
+    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+
+    m_con->SendData(data);
+
+    loop.exec();
+
+    delete responseTimer;
+    responseTimer = NULL;
+    m_wait_cmd = 0xFF;
+    m_wait_type = WAIT_NONE;
+
+    return m_wait_packet;
+}
+
+QByteArray Shupito::waitForStream(QByteArray packet, quint8 cmd, quint16 max_packets)
+{
+    Q_ASSERT(responseTimer == NULL);
+
+    responseTimer = new QTimer;
+    responseTimer->start(1000);
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+
+    m_wait_cmd = cmd;
+    m_wait_data.clear();
+    m_wait_type = WAIT_STREAM;
+    m_wait_max_packets = max_packets;
+
+    QEventLoop loop;
+    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+
+    m_con->SendData(packet);
+
+    loop.exec();
+
+    delete responseTimer;
+    responseTimer = NULL;
+    m_wait_cmd = 0xFF;
+    m_wait_type = WAIT_NONE;
+
+    return m_wait_data;
+}
+
+void Shupito::sendPacket(ShupitoPacket packet)
+{
     m_con->SendData(packet.getData(false));
 }
 
 void Shupito::handlePacket(ShupitoPacket& p)
 {
+    switch(m_wait_type)
+    {
+        case WAIT_NONE: break;
+        case WAIT_PACKET:
+        {
+            if(p.getOpcode() == m_wait_cmd)
+            {
+                m_wait_packet = p;
+                m_wait_type = WAIT_NONE;
+                emit packetReveived();
+            }
+            break;
+        }
+        case WAIT_STREAM:
+        {
+            if(p.getOpcode() != m_wait_cmd)
+            {
+                if(--m_wait_max_packets == 0)
+                    emit packetReveived();
+            }
+            else
+            {
+                m_wait_max_packets = 0;
+                responseTimer->start(1000);
+                m_wait_data.append(p.getData());
+                if(p.getLen() < 15)
+                {
+                    m_wait_type = WAIT_NONE;
+                    emit packetReveived();
+                }
+            }
+            break;
+        }
+    }
+
     switch(p.getOpcode())
     {
         case MSG_INFO:

@@ -10,6 +10,8 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "general/tab_type",          // CFG_QUINT32_TAB_TYPE
     "serial_port/baud_rate",     // CFG_QUINT32_SERIAL_BAUD
     "analyzer/update_time",      // CFG_QUINT32_ANALYZER_UPDATE_TIME
+    "shupito/flash_mode",        // CFG_QUINT32_SHUPITO_MODE
+    "shupito/prog_speed",        // CFG_QUINT32_SHUPITO_PRG_SPEED
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -23,6 +25,7 @@ static const QString keys_string[CFG_STRING_NUM] =
 static const QString keys_bool[CFG_BOOL_NUM] =
 {
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
+    "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
 };
 
 Config::Config()
@@ -34,6 +37,8 @@ Config::Config()
     m_def_quint32[CFG_QUINT32_TAB_TYPE]            = 0;
     m_def_quint32[CFG_QUINT32_SERIAL_BAUD]         = AbstractSerial::BaudRate38400;
     m_def_quint32[CFG_QUINT32_ANALYZER_UPDATE_TIME]= 100;
+    m_def_quint32[CFG_QUINT32_SHUPITO_MODE]        = 0;
+    m_def_quint32[CFG_QUINT32_SHUPITO_PRG_SPEED]   = 0;
 
     m_def_string[CFG_STRING_SERIAL_PORT]           = "";
     m_def_string[CFG_STRING_SHUPITO_PORT]          = "";
@@ -41,6 +46,7 @@ Config::Config()
     m_def_string[CFG_STRING_ANALYZER_FOLDER]       = "";
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
+    m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = true;
 }
 
 Config::~Config()

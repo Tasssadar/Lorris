@@ -43,3 +43,15 @@ QString Utils::parseChar(char c)
         default:   return QString((QChar)c);
     }
 }
+
+QString Utils::toBase16(quint8 const * first, quint8 const * last)
+{
+    QString res;
+    for (; first != last; ++first)
+    {
+        static char const digits[] = "0123456789abcdef";
+        res.append(digits[(*first >> 4)]);
+        res.append(digits[(*first & 0xF)]);
+    }
+    return res;
+}

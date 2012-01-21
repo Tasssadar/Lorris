@@ -1,0 +1,54 @@
+Release 0.6.2, 2012-01-21
+-------------------------
+    - Fix issue #4 "Hiding the ascii area doesn't resize the widget properly"
+    - Fix issue #5 "Blinking cursor is displayed even if the control is set to read only"
+
+Release 0.6.1, 2011-10-22
+-------------------------
+    - Fix issue #2 "setData() steals focus"
+    - Fix issue #3 "QHexEdit crashes, when hitting Backspace on the first Byte"
+
+Release 0.6.0, 2011-10-03
+-------------------------
+    - Undo/Redo functioinality
+    - toReadableString(), selectionToReadableString() added
+    - New structure, new classes XByteArray, CharCommands, ArrayCommands
+    - C++ and Python example reflect the new features
+
+Release 0.5.4, 2011-08-31
+-------------------------
+    - New Feature: Property font
+    - Python Example is now identical to C++ Example
+    - Windows and Linux build scripts added
+
+Release 0.5.3, 2011-08-29
+-------------------------
+    - BugFix: recursive call in "qhexedit.cpp" addressOffset()
+    - New Feature: Property readOnly
+
+Release 0.5.2, 2011-08-27
+-------------------------
+QHexEdit
+    - New Feature: Del & Backspace fill with 0x0 in overwrite mode,
+      so data length is here allways constant
+
+Release 0.5.1, 2011-08-27
+-------------------------
+Documentation
+    - Release information corrected
+
+Release 0.5.0, 2011-08-27
+-------------------------
+Example/OptionsDialog:
+    - BugFix: No redefining of signal "accepted"
+    - BugFix: Method "recect" removed
+    - New Feature: Choose selection color
+
+QHexEdit:
+    - New Feature: Select data with mouse and keyboard
+    - New Feature: Cut, Copy and Paste functionality
+    - BugFix: Ensure cursor visible now works properly
+    - BugFix: When using mouse weel, qhexedit looses focus
+    - BugFix: Changed status is independent on the content
+    - Polishing: Nicer colors for highlighting, selection, and address area
+

@@ -13,108 +13,278 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,4,0,0">
      <item>
-      <widget class="QPushButton" name="connectButton">
-       <property name="text">
-        <string>Disconnect</string>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="connectButton">
+         <property name="text">
+          <string>Disconnect</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="methodBox">
+         <item>
+          <property name="text">
+           <string>SPI</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PDI</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>JTAG</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="tunnelSpeedBox">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="minimumContentsLength">
+          <number>1</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>38400</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>57600</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>115200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>500000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1000000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1500000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2000000</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="tunnelCheck">
+         <property name="text">
+          <string>Enable RS232 tunnel</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="vccLabel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="vddBox">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToContents</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Programming speed</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="progSpeedBox">
+         <item>
+          <property name="text">
+           <string>250000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>500000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1000000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2000000</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Chip ID:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="chipIdLabel">
+         <property name="text">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="readButton">
+         <property name="text">
+          <string>Read memory</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="readEEPROM">
+         <property name="text">
+          <string>Read EEPROM</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QTabWidget" name="memTabs">
+       <property name="currentIndex">
+        <number>-1</number>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="tunnelSpeedBox">
-       <property name="enabled">
+      <widget class="QPushButton" name="hideLogBtn">
+       <property name="styleSheet">
+        <string notr="true">padding: 0px</string>
+       </property>
+       <property name="text">
+        <string notr="true">v</string>
+       </property>
+       <property name="flat">
         <bool>true</bool>
        </property>
-       <property name="editable">
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="logText">
+       <property name="readOnly">
         <bool>true</bool>
-       </property>
-       <property name="minimumContentsLength">
-        <number>1</number>
-       </property>
-       <item>
-        <property name="text">
-         <string>38400</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>57600</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>115200</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>500000</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>1000000</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>1500000</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>2000000</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="tunnelCheck">
-       <property name="text">
-        <string>Enable RS232 tunnel</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="vccLabel">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="vddBox">
-       <property name="sizeAdjustPolicy">
-        <enum>QComboBox::AdjustToContents</enum>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="logText">
-     <property name="readOnly">
+    <widget class="QPushButton" name="hideFusesBtn">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">padding: 0px</string>
+     </property>
+     <property name="text">
+      <string notr="true">&gt;</string>
+     </property>
+     <property name="flat">
       <bool>true</bool>
      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Fuses</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

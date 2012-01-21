@@ -30,12 +30,36 @@
 #include <QTimer>
 
 #include "shupitodesc.h"
+#include "chipdefs.h"
 
 enum Opcodes
 {
     MSG_INFO       = 0x00,
     MSG_VCC        = 0x0A,
     MSG_TUNNEL     = 0x09
+};
+
+enum MemoryTypes
+{
+    MEM_FLASH   = 1,
+    MEM_EEPROM  = 2,
+    MEM_FUSES   = 3,
+    MEM_COUNT   = 4
+};
+
+enum Modes
+{
+    MODE_SPI = 0,
+    MODE_PDI,
+    MODE_JTAG,
+    MODE_COUNT
+};
+
+enum WaitTypes
+{
+    WAIT_NONE = 0,
+    WAIT_PACKET,
+    WAIT_STREAM
 };
 
 class Connection;
@@ -80,7 +104,12 @@ public:
     quint8 addData(const QByteArray& data);
 
     // Returns only data part!
-    quint8 operator[](int i) const { return (quint8)m_data[i+2]; }
+    quint8 operator[](int i) const
+    {
+        if(i+2 >= m_data.size())
+            return 0;
+        return (quint8)m_data[i+2];
+    }
 
     QByteArray &getDataRef() { return m_data; }
 
@@ -100,6 +129,7 @@ Q_SIGNALS:
     void vddDesc(const vdd_setup& vs);
     void tunnelData(const QByteArray& data);
     void tunnelStatus(bool opened);
+    void packetReveived();
 
 public:
     explicit Shupito(QObject *parent);
@@ -107,7 +137,9 @@ public:
     void init(Connection *con, ShupitoDesc *desc);
 
     void readData(const QByteArray& data);
-    void sendPacket(ShupitoPacket& packet);
+    void sendPacket(ShupitoPacket packet);
+    ShupitoPacket waitForPacket(QByteArray data, quint8 cmd);
+    QByteArray waitForStream(QByteArray packet, quint8 cmd, quint16 max_packets = 32);
 
     void setVddConfig(ShupitoDesc::config *cfg) { m_vdd_config = cfg; }
     void setTunnelConfig(ShupitoDesc::config *cfg) { m_tunnel_config = cfg; }
@@ -116,6 +148,11 @@ public:
     qint16 getTunnelCmd();
     quint8 getTunnelId() { return m_tunnel_pipe; }
     void setTunnelState(bool enable);
+
+    ShupitoDesc *getDesc() { return m_desc; }
+    void setChipId(QString id) { m_chip_id = id; }
+    const QString& getChipId() { return m_chip_id; }
+    std::vector<chip_definition> &getDefs() { return m_chip_defs; }
 
 private slots:
     void tunnelDataSend();
@@ -140,6 +177,17 @@ private:
     quint32 m_tunnel_speed;
     QByteArray m_tunnel_data;
     QTimer m_tunnel_timer;
+
+    QTimer *responseTimer;
+    ShupitoPacket m_wait_packet;
+    quint8 m_wait_cmd;
+    QByteArray m_wait_data;
+    quint8 m_wait_type;
+    quint16 m_wait_max_packets;
+
+    QString m_chip_id;
+
+    std::vector<chip_definition> m_chip_defs;
 };
 
 #endif // SHUPITO_H

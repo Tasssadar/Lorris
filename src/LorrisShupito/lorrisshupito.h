@@ -45,10 +45,12 @@ namespace Ui {
     class LorrisShupito;
 }
 
-class Shupito;
-class ShupitoDesc;
 class QLabel;
 class QComboBox;
+class QHexEdit;
+class ShupitoMode;
+class chip_definition;
+class QProgressDialog;
 
 class LorrisShupito : public WorkTab
 {
@@ -80,8 +82,23 @@ private slots:
     void tunnelToggled(bool enable);
     void tunnelStateChanged(bool opened);
 
+    void flashModeChanged(int idx);
+    void hideLogBtn();
+
+    void readMemButton();
+    void readEEPROMBtn();
+    void progSpeedChanged(int idx);
+
+    void updateProgressDialog(int value);
+
 private:
     void sendAndWait(const QByteArray &data);
+    void log(const QString& text);
+    bool checkVoltage(bool active);
+    void readMem(quint8 memId);
+    void showProgressDialog(const QString& text, QObject *sender = NULL);
+
+    chip_definition update_chip_description(const QString& chip_id);
 
     Ui::LorrisShupito *ui;
     quint8 m_state;
@@ -89,6 +106,10 @@ private:
     ShupitoDesc *m_desc;
     QTimer *responseTimer;
     volatile quint8 m_response;
+
+    QHexEdit *m_hexAreas[MEM_FUSES];
+    ShupitoMode *m_modes[MODE_COUNT];
+    quint8 m_cur_mode;
 
     QLabel *vccLabel;
     QComboBox *vddBox;
@@ -99,6 +120,8 @@ private:
 
     ShupitoDesc::config *m_vdd_config;
     ShupitoDesc::config *m_tunnel_config;
+
+    QProgressDialog *m_progress_dialog;
 };
 
 #endif // LORRISSHUPITO_H

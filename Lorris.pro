@@ -13,6 +13,7 @@ TRANSLATIONS = translations/Lorris.cs_CZ.ts
 TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
+INCLUDEPATH += dep/qhexedit2/src
 INCLUDEPATH += src
 SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
@@ -62,7 +63,14 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp \
     src/connection/shupitotunnel.cpp \
-    src/config.cpp
+    src/config.cpp \
+    dep/qhexedit2/src/xbytearray.cpp \
+    dep/qhexedit2/src/qhexedit_p.cpp \
+    dep/qhexedit2/src/qhexedit.cpp \
+    dep/qhexedit2/src/commands.cpp \
+    src/LorrisShupito/shupitomode.cpp \
+    src/LorrisShupito/shupitospi.cpp \
+    src/LorrisShupito/chipdefs.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -121,7 +129,14 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.h \
     src/connection/shupitotunnel.h \
-    src/config.h
+    src/config.h \
+    dep/qhexedit2/src/xbytearray.h \
+    dep/qhexedit2/src/qhexedit_p.h \
+    dep/qhexedit2/src/qhexedit.h \
+    dep/qhexedit2/src/commands.h \
+    src/LorrisShupito/shupitomode.h \
+    src/LorrisShupito/shupitospi.h \
+    src/LorrisShupito/chipdefs.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

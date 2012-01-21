@@ -27,21 +27,60 @@
 #include <QTimer>
 #include <stdio.h>
 #include <QComboBox>
+#include <qhexedit.h>
+#include <QByteArray>
+#include <QProgressDialog>
 
 #include "shupito.h"
 #include "lorrisshupito.h"
 #include "ui_lorrisshupito.h"
-
+#include "shupitomode.h"
+#include "chipdefs.h"
 
 LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 {
     ui->setupUi(this);
 
-    connect(ui->connectButton, SIGNAL(clicked()), SLOT(connectButton()));
+    m_cur_mode = sConfig.get(CFG_QUINT32_SHUPITO_MODE);
+    if(m_cur_mode >= MODE_COUNT)
+        m_cur_mode = MODE_SPI;
+
+    ui->methodBox->setCurrentIndex(m_cur_mode);
+
+    int progIdx = sConfig.get(CFG_QUINT32_SHUPITO_PRG_SPEED);
+    if(progIdx < 0 || progIdx >= ui->progSpeedBox->count())
+        progIdx = 0;
+
+    ui->progSpeedBox->setCurrentIndex(progIdx);
+
+    if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_LOG))
+    {
+        ui->logText->setVisible(false);
+        ui->hideLogBtn->setText("^");
+    }
+
+    connect(ui->connectButton,  SIGNAL(clicked()),                SLOT(connectButton()));
     connect(ui->tunnelSpeedBox, SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
-    connect(ui->tunnelCheck, SIGNAL(clicked(bool)), SLOT(tunnelToggled(bool)));
+    connect(ui->tunnelCheck,    SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
+    connect(ui->methodBox,      SIGNAL(currentIndexChanged(int)), SLOT(flashModeChanged(int)));
+    connect(ui->readButton,     SIGNAL(clicked()),                SLOT(readMemButton()));
+    connect(ui->progSpeedBox,   SIGNAL(currentIndexChanged(int)), SLOT(progSpeedChanged(int)));
+    connect(ui->readEEPROM,     SIGNAL(clicked()),                SLOT(readEEPROMBtn()));
+    connect(ui->hideLogBtn,     SIGNAL(clicked()),                SLOT(hideLogBtn()));
 
     ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
+
+    QByteArray data = QByteArray(1024, (char)0xFF);
+    static const QString memNames[] = { tr("Program memory"), tr("EEPROM") };
+    m_hexAreas[0] = NULL;
+    for(quint8 i = 0; i < 2; ++i)
+    {
+        QHexEdit *h = new QHexEdit(this);
+        h->setData(data);
+        h->setReadOnly(true);
+        m_hexAreas[i+1] = h;
+        ui->memTabs->addTab(h, memNames[i]);
+    }
 
     vccLabel = findChild<QLabel*>("vccLabel");
     vddBox = findChild<QComboBox*>("vddBox");
@@ -65,6 +104,11 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
     m_vdd_config = NULL;
     m_tunnel_config = NULL;
+
+    for(quint8 i = 0; i < MODE_COUNT; ++i)
+        m_modes[i] = ShupitoMode::getMode(i, m_shupito);
+
+    m_progress_dialog = NULL;
 }
 
 LorrisShupito::~LorrisShupito()
@@ -73,6 +117,9 @@ LorrisShupito::~LorrisShupito()
     delete m_shupito;
     delete m_desc;
     delete ui;
+
+    for(quint8 i = 0; i < MODE_COUNT; ++i)
+        delete m_modes[i];
 }
 
 void LorrisShupito::connectButton()
@@ -199,11 +246,11 @@ void LorrisShupito::onTabShow()
 
 void LorrisShupito::descRead()
 {
-    ui->logText->appendPlainText("Device GUID: " % m_desc->getGuid());
+    log("Device GUID: " % m_desc->getGuid());
 
     ShupitoDesc::intf_map map = m_desc->getInterfaceMap();
     for(ShupitoDesc::intf_map::iterator itr = map.begin(); itr != map.end(); ++itr)
-        ui->logText->appendPlainText("Got interface GUID: " % itr->first);
+        log("Got interface GUID: " % itr->first);
 
     m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
     m_shupito->setVddConfig(m_vdd_config);
@@ -213,9 +260,9 @@ void LorrisShupito::descRead()
         {
             sendAndWait(m_vdd_config->getStateChangeCmd(true).getData(false));
             if(m_response == RESPONSE_GOOD)
-                ui->logText->appendPlainText("VDD started!");
+                log("VDD started!");
             else
-                ui->logText->appendPlainText("Could not start VDD!");
+                log("Could not start VDD!");
             m_response = RESPONSE_NONE;
         }
         ShupitoPacket packet(m_vdd_config->cmd, 2, 0, 0);
@@ -230,9 +277,9 @@ void LorrisShupito::descRead()
         {
             sendAndWait(m_tunnel_config->getStateChangeCmd(true).getData(false));
             if(m_response == RESPONSE_GOOD)
-                ui->logText->appendPlainText("Tunnel started!");
+                log("Tunnel started!");
             else
-                ui->logText->appendPlainText("Could not start tunnel!");
+                log("Could not start tunnel!");
             m_response = RESPONSE_NONE;
         }
 
@@ -344,15 +391,185 @@ void LorrisShupito::tunnelStateChanged(bool opened)
     if(!m_tunnel_config)
         return;
 
-
-
     QString text = tr("RS232 tunnel ");
     if(opened)
         text += tr("enabled");
     else
         text += tr("disabled");
 
-    ui->logText->appendPlainText(text);
+    log(text);
     if(ui->tunnelCheck->isChecked())
         ui->tunnelCheck->setEnabled(opened);
+}
+
+void LorrisShupito::flashModeChanged(int idx)
+{
+    m_cur_mode = idx;
+    sConfig.set(CFG_QUINT32_SHUPITO_MODE, idx);
+}
+
+void LorrisShupito::readMem(quint8 memId)
+{
+    if(!checkVoltage(true))
+        return;
+
+    try
+    {
+        log("Swithing to flash mode");
+
+        int speed_hz = ui->progSpeedBox->currentText().toInt();
+        m_modes[m_cur_mode]->switchToFlashMode(speed_hz);
+
+        log("Reading device id");
+        QString id = m_modes[m_cur_mode]->readDeviceId();
+        m_shupito->setChipId(id);
+        ui->chipIdLabel->setText(id);
+        log("Got device id: " % id);
+
+        //TODO:
+        //void post_flash_switch_check(), avrclient232.cpp
+
+        log("Reading memory");
+        chip_definition chip = update_chip_description(id);
+
+        static const QString memNames[] = { "", "flash", "eeprom" };
+        showProgressDialog(tr("Reading memory"), m_modes[m_cur_mode]);
+        QByteArray mem = m_modes[m_cur_mode]->readMemory(memNames[memId], chip);
+
+        m_hexAreas[memId]->setData(mem);
+
+        log("Switching to run mode");
+        m_modes[m_cur_mode]->switchToRunMode();
+
+        ui->memTabs->setCurrentIndex(memId - 1);
+    }
+    catch(QString ex)
+    {
+        updateProgressDialog(-1);
+
+        QMessageBox box(this);
+        box.setIcon(QMessageBox::Critical);
+        box.setWindowTitle(tr("Error!"));
+        box.setText(ex);
+        box.exec();
+    }
+}
+
+void LorrisShupito::progSpeedChanged(int idx)
+{
+    sConfig.set(CFG_QUINT32_SHUPITO_PRG_SPEED, idx);
+}
+
+void LorrisShupito::log(const QString &text)
+{
+    ui->logText->appendPlainText(text);
+}
+
+bool LorrisShupito::checkVoltage(bool active)
+{
+    bool error = false;
+    if(active && m_vcc == 0.0)
+        error = true;
+    if(!active && m_vcc != 0.0)
+        error = true;
+
+    if(error)
+    {
+        QMessageBox box(this);
+        box.setIcon(QMessageBox::Critical);
+        box.setWindowTitle(tr("Error!"));
+        if(active)
+            box.setText(tr("No voltage present"));
+        else
+            box.setText("Output voltage detected!");
+        box.exec();
+    }
+    return !error;
+}
+
+// avrflash::chip_definition update_chip_description(std::string const & chip_id), avr232client.cpp
+chip_definition LorrisShupito::update_chip_description(const QString& chip_id)
+{
+    chip_definition cd;
+    cd.setSign(chip_id);
+    chip_definition::update_chipdef(m_shupito->getDefs(), cd);
+
+    if(cd.getName().isEmpty())
+    {
+        if(cd.getSign().isEmpty())
+            ui->chipIdLabel->setText(tr("<unknown>"));
+        else
+            ui->chipIdLabel->setText("<" % cd.getSign() % ">");
+    }
+    else
+    {
+        QString name = cd.getName();
+
+        chip_definition::memorydef *mem = cd.getMemDef("flash");
+        if(mem)
+            name += " flash: " % QString::number(mem->size/1024) % " kb, page: " %
+                    QString::number(mem->pagesize) % " bytes";
+
+        mem = cd.getMemDef("eeprom");
+        if(mem)
+            name += "  EEPROM: " % QString::number(mem->size) % " bytes";
+
+        ui->chipIdLabel->setText(name);
+    }
+    return cd;
+}
+
+void LorrisShupito::showProgressDialog(const QString& text, QObject *sender)
+{
+    Q_ASSERT(!m_progress_dialog);
+
+    m_progress_dialog = new QProgressDialog(this, Qt::CustomizeWindowHint);
+    m_progress_dialog->setWindowTitle(tr("Progress"));
+    m_progress_dialog->setLabelText(text);
+    m_progress_dialog->setMaximum(100);
+    m_progress_dialog->setFixedSize(500, m_progress_dialog->height());
+    m_progress_dialog->open();
+
+    if(sender)
+    {
+        connect(sender, SIGNAL(updateProgressDialog(int)), this, SLOT(updateProgressDialog(int)));
+        connect(m_progress_dialog, SIGNAL(canceled()), sender, SLOT(cancelRequested()));
+    }
+}
+
+void LorrisShupito::updateProgressDialog(int value)
+{
+    if(!m_progress_dialog)
+        return;
+
+    if(value == -1 || value == 100)
+    {
+        m_progress_dialog->close();
+        delete m_progress_dialog;
+        m_progress_dialog = NULL;
+        disconnect(this, SLOT(updateProgressDialog(int)));
+        return;
+    }
+    m_progress_dialog->setValue(value);
+}
+
+void LorrisShupito::readMemButton()
+{
+    readMem(MEM_FLASH);
+}
+
+void LorrisShupito::readEEPROMBtn()
+{
+    readMem(MEM_EEPROM);
+}
+
+void LorrisShupito::hideLogBtn()
+{
+   ui->logText->setVisible(!ui->logText->isVisible());
+   sConfig.set(CFG_BOOL_SHUPITO_SHOW_LOG, ui->logText->isVisible());
+
+   if(ui->logText->isVisible())
+       ui->hideLogBtn->setText("v");
+   else
+       ui->hideLogBtn->setText("^");
 }
