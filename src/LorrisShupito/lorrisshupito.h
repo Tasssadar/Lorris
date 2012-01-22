@@ -101,6 +101,9 @@ private slots:
     void modeSelected(int idx);
     void status(const QString& text);
 
+    void loadFromFile(int memId);
+    void saveToFile(int memId);
+
 private:
     void sendAndWait(const QByteArray &data);
     void log(const QString& text);
@@ -116,6 +119,10 @@ private:
     QAction *m_stop_act;
     QAction *m_restart_act;
     QAction *m_mode_act[MODE_COUNT];
+    QAction *m_load_flash;
+    QAction *m_load_eeprom;
+    QAction *m_save_flash;
+    QAction *m_save_eeprom;
 
     Ui::LorrisShupito *ui;
     quint8 m_state;
@@ -137,8 +144,9 @@ private:
     ShupitoDesc::config *m_tunnel_config;
 
     QProgressDialog *m_progress_dialog;
-
     FuseWidget *m_fuse_widget;
+
+    chip_definition m_cur_def;
 };
 
 #endif // LORRISSHUPITO_H

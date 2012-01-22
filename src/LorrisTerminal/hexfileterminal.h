@@ -36,11 +36,11 @@ struct Page
     std::vector<quint8> data;
 };
 
-class HexFile
+class HexFileTerminal
 {
 public:
-    HexFile();
-    ~HexFile();
+    HexFileTerminal();
+    ~HexFileTerminal();
 
     QString load(QString file);
     QString makePages(DeviceInfo *info);

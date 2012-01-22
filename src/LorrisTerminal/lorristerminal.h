@@ -34,7 +34,7 @@
 
 class QVBoxLayout;
 class QTextEdit;
-class HexFile;
+class HexFileTerminal;
 class Terminal;
 class EEPROM;
 
@@ -103,7 +103,7 @@ private:
     QTimer *stopTimer;
     QTimer *flashTimeoutTimer;
     QByteArray stopCmd;
-    HexFile *hex;
+    HexFileTerminal *hex;
     Terminal *terminal;
 
     quint16 m_state;

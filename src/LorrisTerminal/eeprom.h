@@ -28,7 +28,7 @@
 #include <QWidget>
 
 #include "deviceinfo.h"
-#include "hexfile.h"
+#include "hexfileterminal.h"
 
 class EEPROM
 {

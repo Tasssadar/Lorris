@@ -147,6 +147,7 @@ public:
     bool isReadOnly();
     const QFont &font() const;
     void setFont(const QFont &);
+    void clearDataChanged(); // Lorris change
     /*! \endcond docNever */
 
 public slots:

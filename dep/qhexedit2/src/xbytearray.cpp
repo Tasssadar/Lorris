@@ -68,6 +68,12 @@ void XByteArray::setDataChanged(int i, const QByteArray & state)
     _changedData.replace(i, len, state);
 }
 
+// Lorris change
+void XByteArray::clearDataChanged()
+{
+    _changedData.fill(0);
+}
+
 int XByteArray::realAddressNumbers()
 {
     if (_oldSize != _data.size())

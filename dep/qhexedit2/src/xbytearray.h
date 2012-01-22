@@ -32,6 +32,7 @@ public:
     QByteArray dataChanged(int i, int len);
     void setDataChanged(int i, bool state);
     void setDataChanged(int i, const QByteArray & state);
+    void clearDataChanged(); // Lorris change
 
     int realAddressNumbers();
     int size();

@@ -35,7 +35,7 @@ EEPROM::EEPROM(QWidget *parent, DeviceInfo *info)
 
 EEPROM::~EEPROM()
 {
-    HexFile::deleteAllPages(pages);
+    HexFileTerminal::deleteAllPages(pages);
     delete m_deviceInfo;
 }
 

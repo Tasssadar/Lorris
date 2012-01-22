@@ -34,7 +34,7 @@
 #include <QProgressDialog>
 
 #include "lorristerminal.h"
-#include "hexfile.h"
+#include "hexfileterminal.h"
 #include "deviceinfo.h"
 #include "terminal.h"
 #include "eeprom.h"
@@ -523,7 +523,7 @@ void LorrisTerminal::stopTimerSig()
 void LorrisTerminal::flashButton()
 {
     if(hex) delete hex;
-    hex = new HexFile();
+    hex = new HexFileTerminal();
 
     QString load = hex->load(hexLine->text());
     if(load != "")

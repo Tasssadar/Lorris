@@ -23,7 +23,9 @@ FuseWidget::FuseWidget(QWidget *parent) :
 
     QFrame *line = new QFrame(this);
     line->setFrameStyle(QFrame::HLine | QFrame::Raised);
+
     readFusesBtn = new QPushButton(tr("Read fuses"), this);
+
     QSpacerItem *spacer = new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     m_layout->addWidget(fuses);
@@ -31,8 +33,6 @@ FuseWidget::FuseWidget(QWidget *parent) :
     m_layout->addWidget(readFusesBtn);
     m_layout->addLayout(m_fuse_layout);
     m_layout->addItem(spacer);
-
-    connect(readFusesBtn, SIGNAL(clicked()),  this, SIGNAL(readFuses()));
 
     setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
     setContextMenuPolicy(Qt::DefaultContextMenu);
@@ -48,8 +48,9 @@ FuseWidget::FuseWidget(QWidget *parent) :
     writeAct = contextMenu->addAction("Write fuses");
     writeAct->setEnabled(false);
 
-    connect(read, SIGNAL(triggered()),        this, SIGNAL(readFuses()));
-    connect(rememberAct, SIGNAL(triggered()), this, SLOT(rememberFuses()));
+    connect(read,         SIGNAL(triggered()), this, SIGNAL(readFuses()));
+    connect(rememberAct,  SIGNAL(triggered()), this, SLOT(rememberFuses()));
+    connect(readFusesBtn, SIGNAL(clicked()),   this, SIGNAL(readFuses()));
 
     m_changed = false;
 }

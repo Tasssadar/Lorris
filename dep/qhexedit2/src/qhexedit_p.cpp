@@ -60,6 +60,13 @@ QByteArray QHexEditPrivate::data()
     return _xData.data();
 }
 
+// Lorris change
+void QHexEditPrivate::clearDataChanged()
+{
+    _xData.clearDataChanged();
+    update();
+}
+
 void QHexEditPrivate::setAddressAreaColor(const QColor &color)
 {
     _addressAreaColor = color;

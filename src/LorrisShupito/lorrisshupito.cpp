@@ -38,10 +38,14 @@
 #include "shupitomode.h"
 #include "chipdefs.h"
 #include "fusewidget.h"
+#include "shared/hexfile.h"
 
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
 static const QString colorSavedToFile= "#FFE0E0";
+static const QString memNames[] = { "", "flash", "eeprom" };
+
+static const QString filters = QObject::tr("Intel HEX file (*.hex)");
 
 LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 {
@@ -169,6 +173,32 @@ void LorrisShupito::initMenuBar()
     }
     m_mode_act[m_cur_mode]->setChecked(true);
     connect(signalMap, SIGNAL(mapped(int)), SLOT(modeSelected(int)));
+
+    QMenu *dataBar = new QMenu(tr("Data"), this);
+    m_menus.push_back(dataBar);
+
+    m_load_flash = dataBar->addAction(tr("Load data into flash"));
+    m_load_flash->setShortcut(QKeySequence("Ctrl+O"));
+    m_load_eeprom = dataBar->addAction(tr("Load data into EEPROM"));
+    dataBar->addSeparator();
+
+    m_save_flash = dataBar->addAction(tr("Save flash memory"));
+    m_save_flash->setShortcut(QKeySequence("Ctrl+S"));
+    m_save_eeprom = dataBar->addAction(tr("Save EERPOM"));
+
+    QSignalMapper *signalMapLoad = new QSignalMapper(this);
+    signalMapLoad->setMapping(m_load_flash,  MEM_FLASH);
+    signalMapLoad->setMapping(m_load_eeprom, MEM_EEPROM);
+    connect(signalMapLoad, SIGNAL(mapped(int)), this,          SLOT(loadFromFile(int)));
+    connect(m_load_flash,  SIGNAL(triggered()), signalMapLoad, SLOT(map()));
+    connect(m_load_eeprom, SIGNAL(triggered()), signalMapLoad, SLOT(map()));
+
+    QSignalMapper *signalMapSave = new QSignalMapper(this);
+    signalMapSave->setMapping(m_save_flash,  MEM_FLASH);
+    signalMapSave->setMapping(m_save_eeprom, MEM_EEPROM);
+    connect(signalMapSave, SIGNAL(mapped(int)), this,          SLOT(saveToFile(int)));
+    connect(m_save_flash,  SIGNAL(triggered()), signalMapSave, SLOT(map()));
+    connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
 }
 
 void LorrisShupito::connectButton()
@@ -456,12 +486,15 @@ void LorrisShupito::readMem(quint8 memId)
 
         log("Reading memory");
 
-        static const QString memNames[] = { "", "flash", "eeprom" };
         showProgressDialog(tr("Reading memory"), m_modes[m_cur_mode]);
         QByteArray mem = m_modes[m_cur_mode]->readMemory(memNames[memId], chip);
 
         m_hexAreas[memId]->setData(mem);
         m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
+
+        HexFile f;
+        f.setData(mem);
+        f.SaveToFile("./neco.hex");
 
         if(restart)
         {
@@ -540,6 +573,7 @@ chip_definition LorrisShupito::update_chip_description(const QString& chip_id)
             name += "  EEPROM: " % QString::number(mem->size) % " bytes";
 
         ui->chipIdLabel->setText(name);
+        m_cur_def = cd;
     }
     return cd;
 }
@@ -771,6 +805,70 @@ void LorrisShupito::readFuses()
             m_modes[m_cur_mode]->switchToRunMode();
         }
         status(tr("Fuses had been succesfully read"));
+    }
+    catch(QString ex)
+    {
+        showErrorBox(ex);
+    }
+}
+
+void LorrisShupito::loadFromFile(int memId)
+{
+    QString filename = QFileDialog::getOpenFileName(this, QObject::tr("Import data"),
+                                                    sConfig.get(CFG_SHUPITO_HEX_FOLDER),
+                                                    filters);
+    if(filename.isEmpty())
+        return;
+
+    sConfig.set(CFG_SHUPITO_HEX_FOLDER, filename);
+
+    status("");
+    try
+    {
+        HexFile file;
+
+        file.LoadFromFile(filename);
+
+        quint32 len = 0;
+        if(!m_cur_def.getName().isEmpty())
+        {
+            chip_definition::memorydef *memdef = m_cur_def.getMemDef(memNames[memId]);
+            if(memdef)
+                len = memdef->size;
+        }
+        m_hexAreas[memId]->setData(file.getDataArray(len));
+        m_hexAreas[memId]->setBackgroundColor(colorFromFile);
+
+        status(tr("File loaded"));
+    }
+    catch(QString ex)
+    {
+        showErrorBox(ex);
+    }
+}
+
+void LorrisShupito::saveToFile(int memId)
+{
+    QString filename = QFileDialog::getSaveFileName(this, QObject::tr("Export data"),
+                                                    sConfig.get(CFG_SHUPITO_HEX_FOLDER),
+                                                    filters);
+    if(filename.isEmpty())
+        return;
+
+    sConfig.set(CFG_SHUPITO_HEX_FOLDER, filename);
+
+    status("");
+
+    try
+    {
+        HexFile file;
+        file.setData(m_hexAreas[memId]->data());
+        file.SaveToFile(filename);
+
+        m_hexAreas[memId]->setBackgroundColor(colorFromFile);
+        m_hexAreas[memId]->clearDataChanged();
+
+        status(tr("File saved"));
     }
     catch(QString ex)
     {

@@ -24,19 +24,19 @@
 #include <QFile>
 #include <stdlib.h>
 
-#include "hexfile.h"
+#include "hexfileterminal.h"
 #include "deviceinfo.h"
 
-HexFile::HexFile()
+HexFileTerminal::HexFileTerminal()
 {
 }
 
-HexFile::~HexFile()
+HexFileTerminal::~HexFileTerminal()
 {
-    HexFile::deleteAllPages(pages);
+    HexFileTerminal::deleteAllPages(pages);
 }
 
-QString HexFile::load(QString fileName)
+QString HexFileTerminal::load(QString fileName)
 {
     QFile *file = new QFile(fileName);
     if(!file->open(QIODevice::ReadOnly))
@@ -142,9 +142,9 @@ QString HexFile::load(QString fileName)
     return "";
 }
 
-QString HexFile::makePages(DeviceInfo *info)
+QString HexFileTerminal::makePages(DeviceInfo *info)
 {
-    HexFile::deleteAllPages(pages);
+    HexFileTerminal::deleteAllPages(pages);
     m_pagesItr = 0;
 
     quint16 size = m_buffer.size();
@@ -207,7 +207,7 @@ QString HexFile::makePages(DeviceInfo *info)
     return "";
 }
 
-bool HexFile::patch_page(Page *page,  quint16 patch_pos, quint16 boot_reset, quint16 page_pos)
+bool HexFileTerminal::patch_page(Page *page,  quint16 patch_pos, quint16 boot_reset, quint16 page_pos)
 {
     if (patch_pos == 0)
         return true;

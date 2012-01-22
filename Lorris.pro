@@ -34,7 +34,6 @@ SOURCES += src/ui/mainwindow.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserialnotifier.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserialengine.cpp \
     dep/qserialdevice/src/qserialdevice/abstractserial.cpp \
-    src/LorrisTerminal/hexfile.cpp \
     src/LorrisTerminal/terminal.cpp \
     src/connection/serialportthread.cpp \
     src/LorrisTerminal/eeprom.cpp \
@@ -71,7 +70,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/shupitomode.cpp \
     src/LorrisShupito/shupitospi.cpp \
     src/LorrisShupito/chipdefs.cpp \
-    src/LorrisShupito/fusewidget.cpp
+    src/LorrisShupito/fusewidget.cpp \
+    src/shared/hexfile.cpp \
+    src/LorrisTerminal/hexfileterminal.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -98,7 +99,6 @@ HEADERS += src/ui/mainwindow.h \
     dep/qserialdevice/src/qserialdevice/abstractserial_p.h \
     dep/qserialdevice/src/qserialdevice/abstractserial.h \
     dep/qserialdevice/src/qserialdevice_global.h \
-    src/LorrisTerminal/hexfile.h \
     src/LorrisTerminal/deviceinfo.h \
     src/LorrisTerminal/terminal.h \
     src/connection/serialportthread.h \
@@ -138,7 +138,9 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/shupitomode.h \
     src/LorrisShupito/shupitospi.h \
     src/LorrisShupito/chipdefs.h \
-    src/LorrisShupito/fusewidget.h
+    src/LorrisShupito/fusewidget.h \
+    src/shared/hexfile.h \
+    src/LorrisTerminal/hexfileterminal.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL
