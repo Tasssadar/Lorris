@@ -30,6 +30,7 @@
 #include <qhexedit.h>
 #include <QByteArray>
 #include <QProgressDialog>
+#include <QSignalMapper>
 
 #include "shupito.h"
 #include "lorrisshupito.h"
@@ -49,8 +50,6 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     if(m_cur_mode >= MODE_COUNT)
         m_cur_mode = MODE_SPI;
 
-    ui->methodBox->setCurrentIndex(m_cur_mode);
-
     int progIdx = sConfig.get(CFG_QUINT32_SHUPITO_PRG_SPEED);
     if(progIdx < 0 || progIdx >= ui->progSpeedBox->count())
         progIdx = 0;
@@ -63,17 +62,18 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
         ui->hideLogBtn->setText("^");
     }
 
+    ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
+
     connect(ui->connectButton,  SIGNAL(clicked()),                SLOT(connectButton()));
     connect(ui->tunnelSpeedBox, SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
     connect(ui->tunnelCheck,    SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
-    connect(ui->methodBox,      SIGNAL(currentIndexChanged(int)), SLOT(flashModeChanged(int)));
     connect(ui->readButton,     SIGNAL(clicked()),                SLOT(readMemButton()));
     connect(ui->progSpeedBox,   SIGNAL(currentIndexChanged(int)), SLOT(progSpeedChanged(int)));
     connect(ui->readEEPROM,     SIGNAL(clicked()),                SLOT(readEEPROMBtn()));
     connect(ui->hideLogBtn,     SIGNAL(clicked()),                SLOT(hideLogBtn()));
     connect(ui->eraseBtn,       SIGNAL(clicked()),                SLOT(eraseDevice()));
 
-    ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
+    initMenuBar();
 
     QByteArray data = QByteArray(1024, (char)0xFF);
     static const QString memNames[] = { tr("Program memory"), tr("EEPROM") };
@@ -85,9 +85,6 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
         m_hexAreas[i+1] = h;
         ui->memTabs->addTab(h, memNames[i]);
     }
-
-    vccLabel = findChild<QLabel*>("vccLabel");
-    vddBox = findChild<QComboBox*>("vddBox");
 
     m_shupito = new Shupito(this);
     m_desc = new ShupitoDesc();
@@ -124,6 +121,41 @@ LorrisShupito::~LorrisShupito()
 
     for(quint8 i = 0; i < MODE_COUNT; ++i)
         delete m_modes[i];
+}
+
+void LorrisShupito::initMenuBar()
+{
+    QMenu *chipBar = new QMenu(tr("Chip"), this);
+    m_menus.push_back(chipBar);
+
+    m_start_act = chipBar->addAction(tr("Start chip"));
+    m_stop_act = chipBar->addAction(tr("Stop chip"));
+    m_restart_act = chipBar->addAction(tr("Restart chip"));
+
+    m_start_act->setEnabled(false);
+    m_restart_act->setShortcut(QKeySequence("R"));
+
+    connect(m_start_act,  SIGNAL(triggered()), SLOT(startChip()));
+    connect(m_stop_act,   SIGNAL(triggered()), SLOT(stopChip()));
+    connect(m_restart_act, SIGNAL(triggered()), SLOT(restartChip()));
+
+    QMenu *modeBar = new QMenu(tr("Mode"), this);
+    m_menus.push_back(modeBar);
+
+    static const QString modeNames[] = { "SPI", "PDI", "JTAG" };
+
+    QSignalMapper *signalMap = new QSignalMapper(this);
+
+    for(quint8 i = 0; i < MODE_COUNT; ++i)
+    {
+        m_mode_act[i] = modeBar->addAction(modeNames[i]);
+        m_mode_act[i]->setCheckable(true);
+
+        signalMap->setMapping(m_mode_act[i], i);
+        connect(m_mode_act[i], SIGNAL(triggered()), signalMap, SLOT(map()));
+    }
+    m_mode_act[m_cur_mode]->setChecked(true);
+    connect(signalMap, SIGNAL(mapped(int)), SLOT(modeSelected(int)));
 }
 
 void LorrisShupito::connectButton()
@@ -294,7 +326,7 @@ void LorrisShupito::vccValueChanged(quint8 id, double value)
         m_vcc = value;
         char buff[24];
         sprintf(buff, " %4.2f", value);
-        vccLabel->setText(vccText % QString(buff));
+        ui->vccLabel->setText(vccText % QString(buff));
     }
 }
 
@@ -303,9 +335,9 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
 {
     m_vdd_setup = vs;
 
-    disconnect(vddBox, SIGNAL(currentIndexChanged(int)), 0, 0);
+    disconnect(ui->vddBox, SIGNAL(currentIndexChanged(int)), 0, 0);
 
-    vddBox->clear();
+    ui->vddBox->clear();
 
     if(vs.empty())
     {
@@ -314,12 +346,12 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
     }
 
     for(quint8 i = 0; i < vs[0].drives.size(); ++i)
-        vddBox->addItem(vs[0].drives[i]);
+        ui->vddBox->addItem(vs[0].drives[i]);
     lastVccIndex = vs[0].current_drive;
-    vddBox->setCurrentIndex(vs[0].current_drive);
+    ui->vddBox->setCurrentIndex(vs[0].current_drive);
     vccText = vs[0].name;
 
-    connect(vddBox, SIGNAL(currentIndexChanged(int)), this, SLOT(vddIndexChanged(int)));
+    connect(ui->vddBox, SIGNAL(currentIndexChanged(int)), this, SLOT(vddIndexChanged(int)));
 }
 
 void LorrisShupito::vddIndexChanged(int index)
@@ -329,7 +361,7 @@ void LorrisShupito::vddIndexChanged(int index)
 
     if(lastVccIndex == 0 && index > 0 && m_vcc != 0)
     {
-        vddBox->setCurrentIndex(0);
+        ui->vddBox->setCurrentIndex(0);
         showErrorBox(tr("Can't set output VCC, voltage detected!"));
         return;
     }
@@ -386,16 +418,17 @@ void LorrisShupito::tunnelStateChanged(bool opened)
         ui->tunnelCheck->setEnabled(opened);
 }
 
-void LorrisShupito::flashModeChanged(int idx)
+void LorrisShupito::modeSelected(int idx)
 {
     if(!m_modes[idx])
-    {
         showErrorBox(tr("This mode is unsupported by Lorris, for now."));
-        ui->methodBox->setCurrentIndex(0);
-        return;
+    else
+    {
+        m_cur_mode = idx;
+        sConfig.set(CFG_QUINT32_SHUPITO_MODE, idx);
     }
-    m_cur_mode = idx;
-    sConfig.set(CFG_QUINT32_SHUPITO_MODE, idx);
+    for(quint8 i = 0; i < MODE_COUNT; ++i)
+        m_mode_act[i]->setChecked(i == m_cur_mode);
 }
 
 void LorrisShupito::readMem(quint8 memId)
@@ -405,6 +438,7 @@ void LorrisShupito::readMem(quint8 memId)
 
     try
     {
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
         chip_definition chip = switchToFlashAndGetId();
 
         log("Reading memory");
@@ -416,8 +450,11 @@ void LorrisShupito::readMem(quint8 memId)
         m_hexAreas[memId]->setData(mem);
         m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
 
-        log("Switching to run mode");
-        m_modes[m_cur_mode]->switchToRunMode();
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
 
         ui->memTabs->setCurrentIndex(memId - 1);
     }
@@ -594,14 +631,19 @@ void LorrisShupito::eraseDevice()
 
     try
     {
-        chip_definition chip = switchToFlashAndGetId();
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
+
+        switchToFlashAndGetId();
 
         log("Erasing device");
         showProgressDialog(tr("Erasing chip..."));
         m_modes[m_cur_mode]->erase_device();
 
-        log("Switching to run mode");
-        m_modes[m_cur_mode]->switchToRunMode();
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
 
         updateProgressDialog(-1);
     }
@@ -617,4 +659,49 @@ void LorrisShupito::eraseDevice()
     succesBox.setWindowTitle(tr("Succes!"));
     succesBox.setText(tr("Chip was succesfuly erased!"));
     succesBox.exec();
+}
+
+void LorrisShupito::startChip()
+{
+    if(!checkVoltage(true))
+        return;
+
+    try
+    {
+        log("Switching to run mode");
+        m_modes[m_cur_mode]->switchToRunMode();
+    }
+    catch(QString ex)
+    {
+        showErrorBox(ex);
+    }
+    m_start_act->setEnabled(false);
+    m_stop_act->setEnabled(true);
+}
+
+void LorrisShupito::stopChip()
+{
+    if(!checkVoltage(true))
+        return;
+
+    try
+    {
+        log("Swithing to flash mode");
+        switchToFlashAndGetId();
+    }
+    catch(QString ex)
+    {
+        showErrorBox(ex);
+    }
+    m_start_act->setEnabled(true);
+    m_stop_act->setEnabled(false);
+}
+
+void LorrisShupito::restartChip()
+{
+    if(!checkVoltage(true))
+        return;
+
+    stopChip();
+    startChip();
 }

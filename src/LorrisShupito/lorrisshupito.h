@@ -82,7 +82,6 @@ private slots:
     void tunnelToggled(bool enable);
     void tunnelStateChanged(bool opened);
 
-    void flashModeChanged(int idx);
     void hideLogBtn();
 
     void readMemButton();
@@ -92,6 +91,12 @@ private slots:
 
     void updateProgressDialog(int value);
 
+    void startChip();
+    void stopChip();
+    void restartChip();
+
+    void modeSelected(int idx);
+
 private:
     void sendAndWait(const QByteArray &data);
     void log(const QString& text);
@@ -99,10 +104,14 @@ private:
     void readMem(quint8 memId);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     void showErrorBox(const QString& text);
-
     chip_definition switchToFlashAndGetId();
-
     chip_definition update_chip_description(const QString& chip_id);
+    void initMenuBar();
+
+    QAction *m_start_act;
+    QAction *m_stop_act;
+    QAction *m_restart_act;
+    QAction *m_mode_act[MODE_COUNT];
 
     Ui::LorrisShupito *ui;
     quint8 m_state;
@@ -115,8 +124,6 @@ private:
     ShupitoMode *m_modes[MODE_COUNT];
     quint8 m_cur_mode;
 
-    QLabel *vccLabel;
-    QComboBox *vddBox;
     QString vccText;
     vdd_setup m_vdd_setup;
     double m_vcc;

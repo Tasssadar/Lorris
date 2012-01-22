@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>798</width>
+    <width>816</width>
     <height>372</height>
    </rect>
   </property>
@@ -23,6 +23,37 @@
          <property name="text">
           <string>Disconnect</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Programming speed:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="progSpeedBox">
+         <item>
+          <property name="text">
+           <string>250000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>500000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1000000</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2000000</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -122,60 +153,17 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Mode:</string>
+          <string>Chip ID:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="methodBox">
-         <item>
-          <property name="text">
-           <string>SPI</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PDI</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>JTAG</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="chipIdLabel">
          <property name="text">
-          <string>Programming speed:</string>
+          <string notr="true"/>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="progSpeedBox">
-         <item>
-          <property name="text">
-           <string>250000</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>500000</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>1000000</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>2000000</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item>
@@ -211,37 +199,6 @@
           <string>Read EEPROM</string>
          </property>
         </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Chip ID:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="chipIdLabel">
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </item>
