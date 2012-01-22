@@ -45,6 +45,14 @@ class WorkTabMgr : public Singleton<WorkTabMgr>
         std::vector<WorkTabInfo*> *GetWorkTabInfos();
         quint16 AddWorkTab(WorkTab *tab, QString label);
 
+        WorkTab* getWorkTab(int index)
+        {
+            if(index == 0 && hometab)
+                return NULL;
+            else
+                return (WorkTab*)tabWidget->widget(index);
+        }
+
         void removeTab(quint16 index)
         {
             removeTab((WorkTab*)tabWidget->widget(index));
@@ -60,7 +68,11 @@ class WorkTabMgr : public Singleton<WorkTabMgr>
         void removeTab(WorkTab *tab);
 
         QTabWidget *getWi() { return tabWidget; }
-        void CreateWidget(QWidget *parent) { tabWidget = new QTabWidget(parent); }
+        QTabWidget *CreateWidget(QWidget *parent)
+        {
+            tabWidget = new QTabWidget(parent);
+            return tabWidget;
+        }
 
         void OpenHomeTab();
         void CloseHomeTab();

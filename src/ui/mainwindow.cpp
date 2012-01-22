@@ -61,14 +61,14 @@ MainWindow::MainWindow(QWidget *parent) :
     Config::GetSingleton();
 
     // menu bar
-    QMenuBar* menuBar = new QMenuBar(this);
-    QMenu* menuFile = new QMenu(tr("&File"), this);
-    QMenu* menuHelp = new QMenu(tr("&Help"), this);
+    menuBar = new QMenuBar(this);
+    menuFile = new QMenu(tr("&File"), this);
+    menuHelp = new QMenu(tr("&Help"), this);
 
     QAction* actionNewTab = new QAction(tr("&New tab.."), this);
     QAction* actionCloseTab = new QAction(tr("&Close tab"), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
-    QAction* actionAbout = new QAction(tr("About Lorris.."), this);
+    QAction* actionAbout = new QAction(tr("About Lorris..."), this);
 
     actionNewTab->setShortcut(QKeySequence("Ctrl+T"));
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
@@ -85,20 +85,23 @@ MainWindow::MainWindow(QWidget *parent) :
     menuHelp->addAction(actionAbout);
     menuBar->addMenu(menuFile);
     menuBar->addMenu(menuHelp);
+    menuBar->addSeparator();
 
     setMenuBar(menuBar);
 
     //Tabs
-    sWorkTabMgr.CreateWidget(this);
-    QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", sWorkTabMgr.getWi());
+    QTabWidget *tabWidget = sWorkTabMgr.CreateWidget(this);
+
+    QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", tabWidget);
     connect(newTabBtn, SIGNAL(clicked()), this, SLOT(NewTab()));
 
-    sWorkTabMgr.getWi()->setCornerWidget(newTabBtn);
-    sWorkTabMgr.getWi()->setMovable(true);
-    connect(sWorkTabMgr.getWi(), SIGNAL(tabCloseRequested(int)), this, SLOT(CloseTab(int)));
+    tabWidget->setCornerWidget(newTabBtn);
+    tabWidget->setMovable(true);
+    connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(CloseTab(int)));
+    connect(tabWidget, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
 
     sWorkTabMgr.OpenHomeTab();
-    setCentralWidget(sWorkTabMgr.getWi());
+    setCentralWidget(tabWidget);
 }
 
 MainWindow::~MainWindow()
@@ -166,4 +169,19 @@ void MainWindow::About()
     box->setIcon(QMessageBox::Information);
     box->exec();
     delete box;
+}
+
+void MainWindow::tabChanged(int index)
+{
+    WorkTab *tab = sWorkTabMgr.getWorkTab(index);
+    if(!tab)
+        return;
+
+    menuBar->clear();
+    menuBar->addMenu(menuFile);
+    menuBar->addMenu(menuHelp);
+
+    m_tab_menu = tab->getMenu();
+    for(quint8 i = 0; i < m_tab_menu.size(); ++i)
+        menuBar->addMenu(m_tab_menu[i]);
 }
