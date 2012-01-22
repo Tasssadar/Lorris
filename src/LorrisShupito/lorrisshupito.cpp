@@ -37,6 +37,7 @@
 #include "ui_lorrisshupito.h"
 #include "shupitomode.h"
 #include "chipdefs.h"
+#include "fusewidget.h"
 
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
@@ -45,6 +46,9 @@ static const QString colorSavedToFile= "#FFE0E0";
 LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 {
     ui->setupUi(this);
+
+    m_fuse_widget = new FuseWidget(this);
+    ui->mainLayout->addWidget(m_fuse_widget);
 
     m_cur_mode = sConfig.get(CFG_QUINT32_SHUPITO_MODE);
     if(m_cur_mode >= MODE_COUNT)
@@ -58,8 +62,14 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
     if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_LOG))
     {
-        ui->logText->setVisible(false);
+        ui->logText->hide();
         ui->hideLogBtn->setText("^");
+    }
+
+    if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_FUSES))
+    {
+        m_fuse_widget->hide();
+        ui->hideFusesBtn->setText("<");
     }
 
     ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
@@ -72,6 +82,9 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(ui->readEEPROM,     SIGNAL(clicked()),                SLOT(readEEPROMBtn()));
     connect(ui->hideLogBtn,     SIGNAL(clicked()),                SLOT(hideLogBtn()));
     connect(ui->eraseBtn,       SIGNAL(clicked()),                SLOT(eraseDevice()));
+    connect(ui->hideFusesBtn,   SIGNAL(clicked()),                SLOT(hideFusesBtn()));
+    connect(m_fuse_widget,      SIGNAL(readFuses()),              SLOT(readFuses()));
+    connect(m_fuse_widget,      SIGNAL(status(QString)),          SLOT(status(QString)));
 
     initMenuBar();
 
@@ -476,6 +489,11 @@ void LorrisShupito::log(const QString &text)
     ui->logText->appendPlainText(text);
 }
 
+void LorrisShupito::status(const QString &text)
+{
+    ui->statusLabel->setText(text);
+}
+
 bool LorrisShupito::checkVoltage(bool active)
 {
     bool error = false;
@@ -581,6 +599,17 @@ void LorrisShupito::hideLogBtn()
        ui->hideLogBtn->setText("^");
 }
 
+void LorrisShupito::hideFusesBtn()
+{
+    m_fuse_widget->setVisible(!m_fuse_widget->isVisible());
+    sConfig.set(CFG_BOOL_SHUPITO_SHOW_FUSES, m_fuse_widget->isVisible());
+
+    if(m_fuse_widget->isVisible())
+        ui->hideFusesBtn->setText(">");
+    else
+        ui->hideFusesBtn->setText("<");
+}
+
 chip_definition LorrisShupito::switchToFlashAndGetId()
 {
     log("Swithing to flash mode");
@@ -666,10 +695,13 @@ void LorrisShupito::startChip()
     if(!checkVoltage(true))
         return;
 
+    status("");
     try
     {
         log("Switching to run mode");
         m_modes[m_cur_mode]->switchToRunMode();
+
+        status(tr("Chip has been started"));
     }
     catch(QString ex)
     {
@@ -684,10 +716,14 @@ void LorrisShupito::stopChip()
     if(!checkVoltage(true))
         return;
 
+    status("");
+
     try
     {
         log("Swithing to flash mode");
         switchToFlashAndGetId();
+
+        status(tr("Chip has been stopped"));
     }
     catch(QString ex)
     {
@@ -702,6 +738,42 @@ void LorrisShupito::restartChip()
     if(!checkVoltage(true))
         return;
 
+    status("");
+
     stopChip();
     startChip();
+
+    status(tr("Chip has been restarted"));
+}
+
+void LorrisShupito::readFuses()
+{
+    if(!checkVoltage(true))
+        return;
+
+    status("");
+
+    try
+    {
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
+        chip_definition chip = switchToFlashAndGetId();
+
+        log("Reading fuses");
+        std::vector<quint8>& data = m_fuse_widget->getFuseData();
+        data.clear();
+
+        m_modes[m_cur_mode]->readFuses(data, chip);
+        m_fuse_widget->setFuses(chip.getFuses());
+
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
+        status(tr("Fuses had been succesfully read"));
+    }
+    catch(QString ex)
+    {
+        showErrorBox(ex);
+    }
 }

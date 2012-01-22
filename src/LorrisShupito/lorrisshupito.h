@@ -51,6 +51,7 @@ class QHexEdit;
 class ShupitoMode;
 class chip_definition;
 class QProgressDialog;
+class FuseWidget;
 
 class LorrisShupito : public WorkTab
 {
@@ -83,11 +84,13 @@ private slots:
     void tunnelStateChanged(bool opened);
 
     void hideLogBtn();
+    void hideFusesBtn();
 
     void readMemButton();
     void readEEPROMBtn();
     void progSpeedChanged(int idx);
     void eraseDevice();
+    void readFuses();
 
     void updateProgressDialog(int value);
 
@@ -96,6 +99,7 @@ private slots:
     void restartChip();
 
     void modeSelected(int idx);
+    void status(const QString& text);
 
 private:
     void sendAndWait(const QByteArray &data);
@@ -133,6 +137,8 @@ private:
     ShupitoDesc::config *m_tunnel_config;
 
     QProgressDialog *m_progress_dialog;
+
+    FuseWidget *m_fuse_widget;
 };
 
 #endif // LORRISSHUPITO_H

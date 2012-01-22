@@ -26,6 +26,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
 {
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
     "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
+    "shupito/show_fuses",         // CFG_BOOL_SHUPITO_SHOW_FUSES
 };
 
 Config::Config()
@@ -47,6 +48,7 @@ Config::Config()
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = true;
+    m_def_bool[CFG_BOOL_SHUPITO_SHOW_FUSES]        = true;
 }
 
 Config::~Config()

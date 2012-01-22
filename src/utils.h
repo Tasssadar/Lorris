@@ -35,6 +35,7 @@ public:
     template <typename T> static inline void swapEndian(char *val);
 
     static QString toBase16(quint8 const * first, quint8 const * last);
+    static QString toBinary(std::size_t width, int value);
 
     static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
     static void sleep (unsigned long secs)  { QThread::sleep(secs); }

@@ -55,3 +55,15 @@ QString Utils::toBase16(quint8 const * first, quint8 const * last)
     }
     return res;
 }
+
+QString Utils::toBinary(std::size_t width, int value)
+{
+    QString res("0b");
+
+    for(; width != 0; --width)
+    {
+        res[(int)(width+1)] = (QChar)((value % 2) ? '1' : '0');
+        value >>= 1;
+    }
+    return res;
+}

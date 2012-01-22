@@ -211,3 +211,21 @@ void ShupitoMode::erase_device()
     // This should really be on the device side...
     Utils::msleep(100);
 }
+
+// void read_fuses(std::vector<boost::uint8_t> & data, avrflash::chip_definition const & chip)
+// device_shupito.hpp
+void ShupitoMode::readFuses(std::vector<quint8> &data, chip_definition &chip)
+{
+    chip_definition::memorydef *memdef = chip.getMemDef("fuses");
+    if(!memdef)
+        throw QString(QObject::tr("Can't read fuses"));
+
+    data.resize(memdef->size);
+    QByteArray memory;
+
+    if(memdef->size != 0)
+        readMemRange(memdef->memid, memory, 0, memdef->size);
+
+    for(quint16 i = 0; i < memory.size(); ++i)
+        data[i] = (quint8)memory[i];
+}

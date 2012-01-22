@@ -70,7 +70,7 @@ void chip_definition::update_chipdef(std::vector<chip_definition> & templates, c
         }
     }
 
-    if(cd.getMems().find("fuses") != cd.getMems().end() && cd.getSign().left(4) == "avr:")
+    if(cd.getMems().find("fuses") == cd.getMems().end() && cd.getSign().left(4) == "avr:")
     {
         chip_definition::memorydef mem;
         mem.memid = 3;
