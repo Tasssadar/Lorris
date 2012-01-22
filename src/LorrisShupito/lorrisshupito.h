@@ -27,6 +27,7 @@
 #include "WorkTab/WorkTab.h"
 #include "shupito.h"
 #include "shupitodesc.h"
+#include "shared/hexfile.h"
 
 enum state
 {
@@ -91,8 +92,12 @@ private slots:
     void progSpeedChanged(int idx);
     void eraseDevice();
     void readFuses();
+    void writeFuses();
+    void writeFlashBtn();
+    void writeEEPROMBtn();
 
     void updateProgressDialog(int value);
+    void updateProgressLabel(const QString& text);
 
     void startChip();
     void stopChip();
@@ -109,8 +114,10 @@ private:
     void log(const QString& text);
     bool checkVoltage(bool active);
     void readMem(quint8 memId);
+    void writeMem(quint8 memId);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     void showErrorBox(const QString& text);
+    bool showContinueBox(const QString& title, const QString& text);
     chip_definition switchToFlashAndGetId();
     chip_definition update_chip_description(const QString& chip_id);
     void initMenuBar();
@@ -119,6 +126,7 @@ private:
     QAction *m_stop_act;
     QAction *m_restart_act;
     QAction *m_mode_act[MODE_COUNT];
+    QAction *m_auto_verify;
     QAction *m_load_flash;
     QAction *m_load_eeprom;
     QAction *m_save_flash;

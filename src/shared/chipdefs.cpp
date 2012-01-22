@@ -178,3 +178,9 @@ void chip_definition::parse_default_chipsets(std::vector<chip_definition> & res)
 chip_definition::chip_definition()
 {
 }
+
+chip_definition::memorydef *chip_definition::getMemDef(quint8 memId)
+{
+    static const QString memNames[] = { "", "flash", "eeprom", "fuses" };
+    return getMemDef(memNames[memId]);
+}

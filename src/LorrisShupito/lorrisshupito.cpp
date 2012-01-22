@@ -36,9 +36,9 @@
 #include "lorrisshupito.h"
 #include "ui_lorrisshupito.h"
 #include "shupitomode.h"
-#include "chipdefs.h"
 #include "fusewidget.h"
 #include "shared/hexfile.h"
+#include "shared/chipdefs.h"
 
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
@@ -87,8 +87,10 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(ui->hideLogBtn,     SIGNAL(clicked()),                SLOT(hideLogBtn()));
     connect(ui->eraseBtn,       SIGNAL(clicked()),                SLOT(eraseDevice()));
     connect(ui->hideFusesBtn,   SIGNAL(clicked()),                SLOT(hideFusesBtn()));
+    connect(ui->writeFlashBtn,  SIGNAL(clicked()),                SLOT(writeFlashBtn()));
     connect(m_fuse_widget,      SIGNAL(readFuses()),              SLOT(readFuses()));
     connect(m_fuse_widget,      SIGNAL(status(QString)),          SLOT(status(QString)));
+    connect(m_fuse_widget,      SIGNAL(writeFuses()),             SLOT(writeFuses()));
 
     initMenuBar();
 
@@ -131,6 +133,8 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
 LorrisShupito::~LorrisShupito()
 {
+    sConfig.set(CFG_BOOL_SHUPITO_VERIFY, m_auto_verify->isChecked());
+
     stopAll();
     delete m_shupito;
     delete m_desc;
@@ -173,6 +177,11 @@ void LorrisShupito::initMenuBar()
     }
     m_mode_act[m_cur_mode]->setChecked(true);
     connect(signalMap, SIGNAL(mapped(int)), SLOT(modeSelected(int)));
+
+    modeBar->addSeparator();
+    m_auto_verify = modeBar->addAction(tr("Verify write"));
+    m_auto_verify->setCheckable(true);
+    m_auto_verify->setChecked(sConfig.get(CFG_BOOL_SHUPITO_VERIFY));
 
     QMenu *dataBar = new QMenu(tr("Data"), this);
     m_menus.push_back(dataBar);
@@ -492,10 +501,6 @@ void LorrisShupito::readMem(quint8 memId)
         m_hexAreas[memId]->setData(mem);
         m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
 
-        HexFile f;
-        f.setData(mem);
-        f.SaveToFile("./neco.hex");
-
         if(restart)
         {
             log("Switching to run mode");
@@ -591,7 +596,8 @@ void LorrisShupito::showProgressDialog(const QString& text, QObject *sender)
 
     if(sender)
     {
-        connect(sender, SIGNAL(updateProgressDialog(int)), this, SLOT(updateProgressDialog(int)));
+        connect(sender, SIGNAL(updateProgressDialog(int)),    this, SLOT(updateProgressDialog(int)));
+        connect(sender, SIGNAL(updateProgressLabel(QString)), this, SLOT(updateProgressLabel(QString)));
         connect(m_progress_dialog, SIGNAL(canceled()), sender, SLOT(cancelRequested()));
     }
 }
@@ -607,9 +613,17 @@ void LorrisShupito::updateProgressDialog(int value)
         delete m_progress_dialog;
         m_progress_dialog = NULL;
         disconnect(this, SLOT(updateProgressDialog(int)));
+        disconnect(this, SLOT(updateProgressLabel(QString)));
         return;
     }
     m_progress_dialog->setValue(value);
+}
+
+void LorrisShupito::updateProgressLabel(const QString &text)
+{
+    if(!m_progress_dialog)
+        return;
+    m_progress_dialog->setLabelText(text);
 }
 
 void LorrisShupito::readMemButton()
@@ -678,18 +692,23 @@ void LorrisShupito::showErrorBox(const QString &text)
     box.exec();
 }
 
+bool LorrisShupito::showContinueBox(const QString &title, const QString &text)
+{
+    QMessageBox box(this);
+    box.setWindowTitle(title);
+    box.setText(text);
+    box.addButton(tr("Yes"), QMessageBox::YesRole);
+    box.addButton(tr("No"), QMessageBox::NoRole);
+    box.setIcon(QMessageBox::Question);
+    return !((bool)box.exec());
+}
+
 void LorrisShupito::eraseDevice()
 {
     if(!checkVoltage(true))
         return;
 
-    QMessageBox box(this);
-    box.setWindowTitle(tr("Erase chip?"));
-    box.setText(tr("Do you really wanna to erase WHOLE chip?"));
-    box.addButton(tr("Yes"), QMessageBox::YesRole);
-    box.addButton(tr("No"), QMessageBox::NoRole);
-    box.setIcon(QMessageBox::Question);
-    if(box.exec())
+    if(!showContinueBox(tr("Erase chip?"), tr("Do you really wanna to erase WHOLE chip?")))
         return;
 
     try
@@ -814,17 +833,21 @@ void LorrisShupito::readFuses()
 
 void LorrisShupito::loadFromFile(int memId)
 {
-    QString filename = QFileDialog::getOpenFileName(this, QObject::tr("Import data"),
-                                                    sConfig.get(CFG_SHUPITO_HEX_FOLDER),
-                                                    filters);
-    if(filename.isEmpty())
-        return;
-
-    sConfig.set(CFG_SHUPITO_HEX_FOLDER, filename);
-
-    status("");
     try
     {
+        if(m_cur_def.getName().isEmpty())
+            restartChip();
+
+        QString filename = QFileDialog::getOpenFileName(this, QObject::tr("Import data"),
+                                                        sConfig.get(CFG_SHUPITO_HEX_FOLDER),
+                                                        filters);
+        if(filename.isEmpty())
+            return;
+
+        sConfig.set(CFG_SHUPITO_HEX_FOLDER, filename);
+
+        status("");
+
         HexFile file;
 
         file.LoadFromFile(filename);
@@ -832,7 +855,7 @@ void LorrisShupito::loadFromFile(int memId)
         quint32 len = 0;
         if(!m_cur_def.getName().isEmpty())
         {
-            chip_definition::memorydef *memdef = m_cur_def.getMemDef(memNames[memId]);
+            chip_definition::memorydef *memdef = m_cur_def.getMemDef(memId);
             if(memdef)
                 len = memdef->size;
         }
@@ -849,18 +872,21 @@ void LorrisShupito::loadFromFile(int memId)
 
 void LorrisShupito::saveToFile(int memId)
 {
-    QString filename = QFileDialog::getSaveFileName(this, QObject::tr("Export data"),
-                                                    sConfig.get(CFG_SHUPITO_HEX_FOLDER),
-                                                    filters);
-    if(filename.isEmpty())
-        return;
-
-    sConfig.set(CFG_SHUPITO_HEX_FOLDER, filename);
-
-    status("");
-
     try
     {
+        if(m_cur_def.getName().isEmpty())
+            restartChip();
+
+        QString filename = QFileDialog::getSaveFileName(this, QObject::tr("Export data"),
+                                                        sConfig.get(CFG_SHUPITO_HEX_FOLDER),
+                                                        filters);
+        if(filename.isEmpty())
+            return;
+
+        sConfig.set(CFG_SHUPITO_HEX_FOLDER, filename);
+
+        status("");
+
         HexFile file;
         file.setData(m_hexAreas[memId]->data());
         file.SaveToFile(filename);
@@ -874,4 +900,103 @@ void LorrisShupito::saveToFile(int memId)
     {
         showErrorBox(ex);
     }
+}
+
+void LorrisShupito::writeFuses()
+{
+    if(!checkVoltage(true))
+        return;
+
+    status("");
+
+    if(!m_fuse_widget->isLoaded())
+    {
+        showErrorBox(tr("Fuses had not been read yet"));
+        return;
+    }
+
+    if(m_fuse_widget->isChanged())
+    {
+        showErrorBox(tr("You have to \"Remember\" fuses prior to writing"));
+        return;
+    }
+
+    if(!showContinueBox(tr("Write fuses?"), tr("Do you really wanna to write fuses to the chip?")))
+        return;
+
+    try
+    {
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
+        chip_definition chip = switchToFlashAndGetId();
+
+        log("Writing fuses");
+        std::vector<quint8>& data = m_fuse_widget->getFuseData();
+        m_modes[m_cur_mode]->writeFuses(data, chip, m_auto_verify->isChecked());
+
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
+        status(tr("Fuses had been succesfully written"));
+    }
+    catch(QString ex)
+    {
+        showErrorBox(ex);
+    }
+}
+
+void LorrisShupito::writeMem(quint8 memId)
+{
+    if(!checkVoltage(true))
+        return;
+
+    status("");
+
+    try
+    {
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
+        chip_definition chip = switchToFlashAndGetId();
+        chip_definition::memorydef *memdef = chip.getMemDef(memId);
+
+        if(!memdef)
+            throw QString(tr("Unknown memory id"));
+
+        QByteArray data = m_hexAreas[memId]->data();
+        if((quint32)data.size() != memdef->size)
+            throw QString(tr("Somethings wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
+
+        log("Writing memory");
+        showProgressDialog(tr("Writing memory"), m_modes[m_cur_mode]);
+
+        HexFile file;
+        file.setData(data);
+
+        m_modes[m_cur_mode]->flashRaw(file, memId, chip, m_auto_verify->isChecked());
+        m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
+
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
+        updateProgressDialog(-1);
+
+        status(tr("Data has been successfuly written"));
+    }
+    catch(QString ex)
+    {
+        updateProgressDialog(-1);
+        showErrorBox(ex);
+    }
+}
+
+void LorrisShupito::writeFlashBtn()
+{
+    writeMem(MEM_FLASH);
+}
+
+void LorrisShupito::writeEEPROMBtn()
+{
+    writeMem(MEM_EEPROM);
 }

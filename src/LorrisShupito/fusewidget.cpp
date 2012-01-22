@@ -49,6 +49,7 @@ FuseWidget::FuseWidget(QWidget *parent) :
     writeAct->setEnabled(false);
 
     connect(read,         SIGNAL(triggered()), this, SIGNAL(readFuses()));
+    connect(writeAct,     SIGNAL(triggered()), this, SIGNAL(writeFuses()));
     connect(rememberAct,  SIGNAL(triggered()), this, SLOT(rememberFuses()));
     connect(readFusesBtn, SIGNAL(clicked()),   this, SIGNAL(readFuses()));
 
@@ -127,7 +128,6 @@ void FuseWidget::setFuses(std::vector<chip_definition::fuse>& fuses)
         }
         line->box->setCurrentIndex(fuse_value_index);
         connect(line->box, SIGNAL(currentIndexChanged(int)), this, SLOT(changed(int)));
-
         m_fuse_layout->addRow(line->label, line->box);
         m_fuses.push_back(line);
     }

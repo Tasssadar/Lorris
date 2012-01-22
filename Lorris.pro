@@ -69,10 +69,10 @@ SOURCES += src/ui/mainwindow.cpp \
     dep/qhexedit2/src/commands.cpp \
     src/LorrisShupito/shupitomode.cpp \
     src/LorrisShupito/shupitospi.cpp \
-    src/LorrisShupito/chipdefs.cpp \
     src/LorrisShupito/fusewidget.cpp \
     src/shared/hexfile.cpp \
-    src/LorrisTerminal/hexfileterminal.cpp
+    src/LorrisTerminal/hexfileterminal.cpp \
+    src/shared/chipdefs.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -137,10 +137,10 @@ HEADERS += src/ui/mainwindow.h \
     dep/qhexedit2/src/commands.h \
     src/LorrisShupito/shupitomode.h \
     src/LorrisShupito/shupitospi.h \
-    src/LorrisShupito/chipdefs.h \
     src/LorrisShupito/fusewidget.h \
     src/shared/hexfile.h \
-    src/LorrisTerminal/hexfileterminal.h
+    src/LorrisTerminal/hexfileterminal.h \
+    src/shared/chipdefs.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

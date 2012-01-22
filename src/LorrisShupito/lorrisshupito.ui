@@ -180,6 +180,13 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="writeFlashBtn">
+         <property name="text">
+          <string>Write flash</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="eraseBtn">
          <property name="text">
           <string>Erase chip</string>
@@ -189,7 +196,7 @@
        <item>
         <widget class="QPushButton" name="readButton">
          <property name="text">
-          <string>Read memory</string>
+          <string>Read flash</string>
          </property>
         </widget>
        </item>

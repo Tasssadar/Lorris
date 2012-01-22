@@ -6,11 +6,45 @@
 #include <vector>
 
 class QFile;
+class chip_definition;
+
+enum MemoryTypes
+{
+    MEM_FLASH   = 1,
+    MEM_EEPROM  = 2,
+    MEM_FUSES   = 3,
+    MEM_COUNT   = 4
+};
+
+
+struct page
+{
+    quint32 address;
+    std::vector<quint8> data;
+};
 
 class HexFile
 {
 public:
     typedef std::map<quint32, std::vector<quint8> > regionMap;
+
+    class Patcher
+    {
+    public:
+        Patcher(quint32 patch_pos, quint32 boot_reset)
+        {
+            m_patch_pos = patch_pos;
+            m_boot_reset = boot_reset;
+            m_entrypt_jmp = 0;
+        }
+
+        void patchPage(page& p);
+
+    private:
+        quint16 m_entrypt_jmp;
+        quint32 m_patch_pos;
+        quint32 m_boot_reset;
+    };
 
     HexFile();
 
@@ -28,10 +62,23 @@ public:
     void setData(const QByteArray& data);
     QByteArray getDataArray(quint32 len);
 
+    quint32 getTopAddress()
+    {
+        if(m_data.empty())
+            return 0;
+        regionMap::iterator last = m_data.end();
+        --last;
+        return last->first + last->second.size();
+    }
+
     std::vector<quint8>& operator[](quint32 i)
     {
         return m_data[i];
     }
+
+    void makePages(std::vector<page>& pages, quint8 memId, chip_definition& chip);
+    bool intersects(quint32 address, quint32 length);
+    void getRange(quint32 address, quint32 length, std::vector<quint8> & out);
 
 private:
     void writeExtAddrLine(QFile *file, quint32 addr);

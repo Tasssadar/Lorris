@@ -30,21 +30,13 @@
 #include <QTimer>
 
 #include "shupitodesc.h"
-#include "chipdefs.h"
+#include "shared/chipdefs.h"
 
 enum Opcodes
 {
     MSG_INFO       = 0x00,
     MSG_VCC        = 0x0A,
     MSG_TUNNEL     = 0x09
-};
-
-enum MemoryTypes
-{
-    MEM_FLASH   = 1,
-    MEM_EEPROM  = 2,
-    MEM_FUSES   = 3,
-    MEM_COUNT   = 4
 };
 
 enum Modes
@@ -138,6 +130,7 @@ public:
 
     void readData(const QByteArray& data);
     void sendPacket(ShupitoPacket packet);
+    void sendPacket(const QByteArray& packet);
     ShupitoPacket waitForPacket(QByteArray data, quint8 cmd);
     QByteArray waitForStream(QByteArray packet, quint8 cmd, quint16 max_packets = 32);
 

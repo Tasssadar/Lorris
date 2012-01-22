@@ -52,6 +52,17 @@ public:
         return NULL;
     }
 
+    memorydef *getMemDef(quint8 memId);
+
+    QString getOption(const QString& name)
+    {
+        QString res;
+        std::map<QString, QString>::iterator itr = m_options.find(name);
+        if(itr != m_options.end())
+            res = itr->second;
+        return res;
+    }
+
 private:
     QString m_name;
     QString m_signature;

@@ -6,9 +6,10 @@
 #include <QObject>
 
 #include "shupitodesc.h"
+#include "shared/chipdefs.h"
 
 class Shupito;
-class chip_definition;
+class HexFile;
 
 class ShupitoMode : public QObject
 {
@@ -16,6 +17,7 @@ class ShupitoMode : public QObject
 
 Q_SIGNALS:
     void updateProgressDialog(int val);
+    void updateProgressLabel(const QString& text);
 
 public:
     ShupitoMode(Shupito *shupito);
@@ -31,6 +33,8 @@ public:
     virtual QByteArray readMemory(const QString& mem, chip_definition &chip);
     virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size);
     virtual void readFuses(std::vector<quint8>& data, chip_definition &chip);
+    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, bool verify);
+    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, bool verify);
 
     virtual void erase_device();
 
@@ -41,6 +45,14 @@ protected:
     virtual void prepare();
     virtual ShupitoDesc::config *getModeCfg();
     virtual void editIdArgs(QString& id, quint8& id_lenght);
+    virtual bool is_read_memory_supported(chip_definition::memorydef */*memdef*/)
+    {
+        return true;
+    }
+    virtual void prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& chip);
+    virtual void flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address);
+    virtual bool skipPage(quint8 memId, std::vector<quint8>& pageData);
+
 
     bool m_prepared;
     bool m_flash_mode;

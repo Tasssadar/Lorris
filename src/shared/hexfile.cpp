@@ -3,8 +3,40 @@
 
 #include "hexfile.h"
 #include "common.h"
+#include "chipdefs.h"
 
 // Most of this file is ported from avr232client, file program.hpp
+
+void HexFile::Patcher::patchPage(page &p)
+{
+    Q_ASSERT(!p.data.empty());
+
+    if(m_patch_pos == 0)
+        return;
+
+    if(p.address == 0)
+    {
+        m_entrypt_jmp = (m_boot_reset /2 - 1) | 0xC000;
+        if((m_entrypt_jmp & 0xF000) != 0xC000)
+            throw QString(QObject::tr("Cannot patch the program, it does not begin with rjmp instruction."));
+        p.data[0] = (quint8)m_entrypt_jmp;
+        p.data[1] = (quint8)(m_entrypt_jmp >> 8);
+        return;
+    }
+
+    if(p.address > m_patch_pos || p.address + p.data.size() <= m_patch_pos)
+        return;
+
+    quint32 new_patch_pos = m_patch_pos - p.address;
+
+    if(p.data[new_patch_pos] != 0xFF || p.data[new_patch_pos + 1] != 0xFF)
+        throw QString(QObject::tr("The program is incompatible with this patching algorithm."));
+
+    quint16 entry_addr = (m_entrypt_jmp & 0x0FFF) + 1;
+    quint16 patched_instr = ((entry_addr - m_patch_pos / 2 - 1) & 0xFFF) | 0xC000;
+    p.data[new_patch_pos] = (quint8)patched_instr;
+    p.data[new_patch_pos + 1] = (quint8)(patched_instr >> 8);
+}
 
 HexFile::HexFile()
 {
@@ -186,6 +218,7 @@ void HexFile::setData(const QByteArray &data)
     quint32 base = 0;
     quint32 size = data.size();
     quint32 itr = 0;
+    quint32 maxPerBase = 0xFFFF;
 
     std::vector<quint8> bytes;
 
@@ -193,11 +226,12 @@ void HexFile::setData(const QByteArray &data)
     {
         bytes.clear();
 
-        for(;itr < size && itr < 0xFFFF; ++itr)
+        for(;itr < size && itr < maxPerBase; ++itr)
             bytes.push_back(data[itr]);
 
         m_data[base] = bytes;
         base = itr;
+        maxPerBase += 0xFFFF;
     }while((base & 0xFFFF0000) != (size & 0xFFFF0000));
 }
 
@@ -211,11 +245,108 @@ QByteArray HexFile::getDataArray(quint32 len)
 
         for(quint32 i = 0; i < data.size(); ++i)
         {
-            //FIXME: is it right?
-            //if(offset + i > res.size())
-            //    return res;
+            if(offset + i > (quint32)res.size())
+                return res;
             res[offset+i] = data[i];
         }
     }
     return res;
+}
+
+//template <typename OutputIterator>
+//void make_pages(memory const & memory, std::string const & memid, chip_definition const & chip, OutputIterator out)
+//program.hpp
+void HexFile::makePages(std::vector<page> &pages, quint8 memId, chip_definition &chip)
+{
+    chip_definition::memorydef const * memdef = chip.getMemDef(memId);
+    if(!memdef)
+        throw QString(QObject::tr("This chip does not have memory type %1")).arg(memId);
+
+    if(getTopAddress() > memdef->size)
+        throw QString(QObject::tr("Program is too large."));
+
+    if(memdef->pagesize == 0)
+    {
+        // The memory is unpaged.
+        for(regionMap::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+        {
+            page cur_page;
+            cur_page.address = itr->first;
+            cur_page.data = itr->second;
+            pages.push_back(cur_page);
+        }
+    }
+    else
+    {
+        page cur_page;
+        cur_page.data.resize(memdef->pagesize);
+
+        QString patch_pos_str = (memId == MEM_FLASH) ? chip.getOption("avr232boot_patch") : "";
+        quint32 patch_pos = patch_pos_str.isEmpty() ? 0 : patch_pos_str.toInt();
+
+        quint32 alt_entry_page = patch_pos / memdef->pagesize;
+        bool add_alt_page = patch_pos != 0;
+
+        Patcher patcher(patch_pos, memdef->size);
+
+        for(quint32 i = 0; i < memdef->size / memdef->pagesize; ++i)
+        {
+            cur_page.address = i * memdef->pagesize;
+            if(!intersects(cur_page.address, memdef->pagesize))
+                continue;
+
+            std::fill(cur_page.data.begin(), cur_page.data.end(), 0xFF);
+            getRange(cur_page.address, memdef->pagesize, cur_page.data);
+
+            patcher.patchPage(cur_page);
+            pages.push_back(cur_page);
+
+            if(i == alt_entry_page)
+                add_alt_page = false;
+        }
+
+        if(add_alt_page)
+        {
+            cur_page.address = alt_entry_page * memdef->pagesize;
+            std::fill(cur_page.data.begin(), cur_page.data.end(), 0xFF);
+            patcher.patchPage(cur_page);
+            pages.push_back(cur_page);
+        }
+    }
+}
+
+bool HexFile::intersects(quint32 address, quint32 length)
+{
+    regionMap::iterator itr,prior;
+    itr = prior = m_data.upper_bound(address);
+    --prior;
+
+    bool res = false;
+
+    if(itr != m_data.begin() && prior->first + prior->second.size() > address)
+        res = true;
+    else if(itr != m_data.end() && itr->first < address + length)
+        res = true;
+
+    return res;
+}
+
+void HexFile::getRange(quint32 address, quint32 length, std::vector<quint8> & out)
+{
+    regionMap::iterator itr = m_data.upper_bound(address);
+    if(itr != m_data.begin())
+        --itr;
+
+    for(; itr != m_data.end() && itr->first < address + length; ++itr)
+    {
+        quint32 start = std::max(address, itr->first);
+        quint32 stop = std::min(address + length, (quint32)(itr->first + itr->second.size()));
+
+        if(start >= stop)
+            continue;
+
+        std::copy(itr->second.data() + (start - itr->first),
+                  itr->second.data() + (stop - itr->first),
+                  out.data() + (start - address));
+    }
 }

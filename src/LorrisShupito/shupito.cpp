@@ -231,6 +231,11 @@ void Shupito::sendPacket(ShupitoPacket packet)
     m_con->SendData(packet.getData(false));
 }
 
+void Shupito::sendPacket(const QByteArray& packet)
+{
+    m_con->SendData(packet);
+}
+
 void Shupito::handlePacket(ShupitoPacket& p)
 {
     switch(m_wait_type)

@@ -1,10 +1,12 @@
 #include <QObject>
+#include <set>
 
 #include "common.h"
 #include "shupito.h"
 #include "shupitomode.h"
 #include "shupitospi.h"
-#include "chipdefs.h"
+#include "shared/chipdefs.h"
+#include "shared/hexfile.h"
 
 ShupitoMode::ShupitoMode(Shupito *shupito) : QObject()
 {
@@ -144,6 +146,8 @@ void ShupitoMode::editIdArgs(QString &id, quint8 &/*id_lenght*/)
 // device.hpp
 QByteArray ShupitoMode::readMemory(const QString &mem, chip_definition &chip)
 {
+    m_cancel_requested = false;
+
     chip_definition::memorydef const *memdef = chip.getMemDef(mem);
 
     if(!memdef)
@@ -228,4 +232,175 @@ void ShupitoMode::readFuses(std::vector<quint8> &data, chip_definition &chip)
 
     for(quint16 i = 0; i < memory.size(); ++i)
         data[i] = (quint8)memory[i];
+}
+
+//void write_fuses(std::vector<boost::uint8_t> const & data, avrflash::chip_definition const & chip, bool verify)
+//device.hpp
+void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, bool verify)
+{
+    HexFile file;
+    file.addRegion(0, &data[0], &data[0] + data.size(), 0);
+    flashRaw(file, MEM_FUSES, chip, verify);
+}
+
+//void flash_raw(avrflash::memory const & mem, std::string const & memid, avrflash::chip_definition const & chip, bool verify)
+//device.hpp
+void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, bool verify)
+{
+    m_cancel_requested = false;
+
+    chip_definition::memorydef *memdef = chip.getMemDef(memId);
+    if(!memdef)
+        throw QString(QObject::tr("Chip does not have mem id %1")).arg(memId);
+
+    std::vector<page> pages;
+    file.makePages(pages, memId, chip);
+
+    quint32 countNoSkipped = 0;
+    quint32 flashedCount = 0;
+    std::set<quint32> skipped;
+    for(quint32 i = 0; !m_cancel_requested && i < pages.size(); ++i)
+    {
+        if(!skipPage(memId, pages[i].data))
+            ++countNoSkipped;
+        else
+            skipped.insert(i);
+    }
+
+    prepareMemForWriting(memdef, chip);
+
+    for(quint32 i = 0; !m_cancel_requested && i < pages.size(); ++i)
+    {
+        if(skipped.find(i) != skipped.end())
+            continue;
+
+        flashPage(memdef, pages[i].data, pages[i].address);
+
+        int pct = (++flashedCount)*100/countNoSkipped;
+        if(pct == 100)
+            --pct;
+        emit updateProgressDialog(pct);
+    }
+
+    if(m_cancel_requested)
+    {
+        m_cancel_requested = false;
+        throw QString(QObject::tr("Flashing interruped!"));
+    }
+
+    if(verify && is_read_memory_supported(memdef))
+    {
+        emit updateProgressLabel(QObject::tr("Verifying data"));
+        QByteArray buff;
+        for(quint32 i = 0; !m_cancel_requested && i < pages.size(); ++i)
+        {
+            buff.clear();
+            readMemRange(memId, buff, pages[i].address, pages[i].data.size());
+
+            bool wrong = false;
+            if((uint)buff.size() != pages[i].data.size())
+                wrong = true;
+            else
+            {
+                for(quint32 x = 0; !wrong && x < pages[i].data.size(); ++x)
+                    if(pages[i].data[x] != (quint8)buff[x])
+                        wrong = true;
+            }
+            if(wrong)
+                throw QString(QObject::tr("Verification failed!"));
+
+            emit updateProgressDialog((i*100)/pages.size());
+        }
+
+        if(m_cancel_requested)
+        {
+            m_cancel_requested = false;
+            throw QString(QObject::tr("Flashing interruped!"));
+        }
+    }
+}
+
+//void prepare_memory_for_writing(chip_definition::memorydef const * memdef, avrflash::chip_definition const & chip)
+//device_shupito.hpp
+void ShupitoMode::prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& /*chip*/)
+{
+    m_prepared = false;
+    m_flash_mode = false;
+
+    ShupitoPacket pkt(m_prog_cmd_base + 4, 0x01, memdef->memid);
+    pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 4);
+
+    if(pkt.getLen() != 1 || pkt[0] != 0)
+        throw QString(QObject::tr("Failed to prepare chip's memory for writing"));
+
+    m_flash_mode = true;
+    m_prepared = true;
+}
+
+//void flash_page(chip_definition::memorydef const * memdef, const unsigned char * memory, size_t address, size_t size)
+//device_shupito.hpp
+void ShupitoMode::flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address)
+{
+    m_prepared = false;
+    m_flash_mode = false;
+
+    quint32 size = memory.size();
+    // Prepare
+    {
+        ShupitoPacket pkt(m_prog_cmd_base + 5, 0x05, memdef->memid,
+                          (quint8)address, (quint8)(address >> 8),
+                          (quint8)(address >> 16), (quint8)(address >> 24));
+        pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 5);
+        if(pkt.getLen() != 1 || pkt[0] != 0)
+            throw QString(QObject::tr("Failed to flash a page"));
+    }
+
+    //send data
+    {
+        ShupitoPacket res;
+        QByteArray pkt;
+        pkt[0] = 0x80;
+        pkt[2] = memdef->memid;
+
+        quint32 itr = 0;
+
+        while(size > 0)
+        {
+            quint32 chunk = size > 14 ? 14 : size;
+            pkt[1] = ((m_prog_cmd_base + 6) << 4) | (chunk + 1);
+            pkt.resize(3 + chunk);
+            for(quint8 i = 0; i < chunk; ++i)
+                pkt[i+3] = memory[itr++];
+            size -= chunk;
+
+            res = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 6);
+            if(res.getLen() != 1 || res[0] != 0)
+                throw QString(QObject::tr("Failed to flash a page"));
+        }
+    }
+
+    // "seal"
+    {
+        ShupitoPacket pkt(m_prog_cmd_base + 7, 0x05, memdef->memid,
+                          (quint8)address, (quint8)(address >> 8),
+                          (quint8)(address >> 16), (quint8)(address >> 24));
+        pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 7);
+        if(pkt.getLen() != 1 || pkt[0] != 0)
+            throw QString(QObject::tr("Failed to flash a page"));
+    }
+
+    m_flash_mode = true;
+    m_prepared = true;
+}
+
+bool ShupitoMode::skipPage(quint8 memId, std::vector<quint8> &pageData)
+{
+    if(memId != MEM_FLASH)
+        return false;
+
+    bool skip = true;
+    for(quint32 x = 0; skip && x < pageData.size(); ++x)
+        if(pageData[x] != 0xFF)
+            skip = false;
+    return skip;
 }
