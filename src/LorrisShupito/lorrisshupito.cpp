@@ -71,6 +71,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(ui->progSpeedBox,   SIGNAL(currentIndexChanged(int)), SLOT(progSpeedChanged(int)));
     connect(ui->readEEPROM,     SIGNAL(clicked()),                SLOT(readEEPROMBtn()));
     connect(ui->hideLogBtn,     SIGNAL(clicked()),                SLOT(hideLogBtn()));
+    connect(ui->eraseBtn,       SIGNAL(clicked()),                SLOT(eraseDevice()));
 
     ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
 
@@ -152,13 +153,7 @@ void LorrisShupito::connectionResult(Connection */*con*/,bool result)
     if(!result)
     {
         ui->connectButton->setText(tr("Connect"));
-
-        QMessageBox *box = new QMessageBox(this);
-        box->setIcon(QMessageBox::Critical);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Can't open connection!"));
-        box->exec();
-        delete box;
+        showErrorBox(tr("Can't open connection!"));
     }
 }
 
@@ -318,7 +313,6 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
         return;
     }
 
-
     for(quint8 i = 0; i < vs[0].drives.size(); ++i)
         vddBox->addItem(vs[0].drives[i]);
     lastVccIndex = vs[0].current_drive;
@@ -336,13 +330,7 @@ void LorrisShupito::vddIndexChanged(int index)
     if(lastVccIndex == 0 && index > 0 && m_vcc != 0)
     {
         vddBox->setCurrentIndex(0);
-
-        QMessageBox *box = new QMessageBox(this);
-        box->setIcon(QMessageBox::Critical);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Can't set output VCC, voltage detected!"));
-        box->exec();
-        delete box;
+        showErrorBox(tr("Can't set output VCC, voltage detected!"));
         return;
     }
 
@@ -374,13 +362,7 @@ void LorrisShupito::tunnelToggled(bool enable)
     if(!m_tunnel_config)
     {
         if(enable)
-        {
-            QMessageBox box(this);
-            box.setIcon(QMessageBox::Information);
-            box.setWindowTitle(tr("Unsupported"));
-            box.setText(tr("It looks like your Shupito does not support RS232 tunnel!"));
-            box.exec();
-        }
+            showErrorBox(tr("It looks like your Shupito does not support RS232 tunnel!"));
         return;
     }
 
@@ -408,12 +390,7 @@ void LorrisShupito::flashModeChanged(int idx)
 {
     if(!m_modes[idx])
     {
-        QMessageBox box(this);
-        box.setIcon(QMessageBox::Critical);
-        box.setWindowTitle(tr("Error!"));
-        box.setText(tr("This mode is unsupported by Lorris, for now."));
-        box.exec();
-
+        showErrorBox(tr("This mode is unsupported by Lorris, for now."));
         ui->methodBox->setCurrentIndex(0);
         return;
     }
@@ -428,22 +405,9 @@ void LorrisShupito::readMem(quint8 memId)
 
     try
     {
-        log("Swithing to flash mode");
-
-        int speed_hz = ui->progSpeedBox->currentText().toInt();
-        m_modes[m_cur_mode]->switchToFlashMode(speed_hz);
-
-        log("Reading device id");
-        QString id = m_modes[m_cur_mode]->readDeviceId();
-        m_shupito->setChipId(id);
-        ui->chipIdLabel->setText(id);
-        log("Got device id: " % id);
-
-        //TODO:
-        //void post_flash_switch_check(), avrclient232.cpp
+        chip_definition chip = switchToFlashAndGetId();
 
         log("Reading memory");
-        chip_definition chip = update_chip_description(id);
 
         static const QString memNames[] = { "", "flash", "eeprom" };
         showProgressDialog(tr("Reading memory"), m_modes[m_cur_mode]);
@@ -461,11 +425,7 @@ void LorrisShupito::readMem(quint8 memId)
     {
         updateProgressDialog(-1);
 
-        QMessageBox box(this);
-        box.setIcon(QMessageBox::Critical);
-        box.setWindowTitle(tr("Error!"));
-        box.setText(ex);
-        box.exec();
+        showErrorBox(ex);
     }
 }
 
@@ -489,14 +449,10 @@ bool LorrisShupito::checkVoltage(bool active)
 
     if(error)
     {
-        QMessageBox box(this);
-        box.setIcon(QMessageBox::Critical);
-        box.setWindowTitle(tr("Error!"));
         if(active)
-            box.setText(tr("No voltage present"));
+            showErrorBox(tr("No voltage present"));
         else
-            box.setText("Output voltage detected!");
-        box.exec();
+            showErrorBox(tr("Output voltage detected!"));
     }
     return !error;
 }
@@ -586,4 +542,79 @@ void LorrisShupito::hideLogBtn()
        ui->hideLogBtn->setText("v");
    else
        ui->hideLogBtn->setText("^");
+}
+
+chip_definition LorrisShupito::switchToFlashAndGetId()
+{
+    log("Swithing to flash mode");
+
+    int speed_hz = ui->progSpeedBox->currentText().toInt();
+    m_modes[m_cur_mode]->switchToFlashMode(speed_hz);
+
+    log("Reading device id");
+
+    QString id = m_modes[m_cur_mode]->readDeviceId();
+    m_shupito->setChipId(id);
+
+    log("Got device id: " % id);
+
+    chip_definition chip = update_chip_description(id);
+
+    if(ui->chipIdLabel->text().contains("<"))
+        throw QString(tr("Unsupported chip: %1")).arg(id);
+
+    //TODO:
+    //void post_flash_switch_check(), avrclient232.cpp
+
+    return chip;
+}
+
+void LorrisShupito::showErrorBox(const QString &text)
+{
+    QMessageBox box(this);
+    box.setIcon(QMessageBox::Critical);
+    box.setWindowTitle(tr("Error!"));
+    box.setText(text);
+    box.exec();
+}
+
+void LorrisShupito::eraseDevice()
+{
+    if(!checkVoltage(true))
+        return;
+
+    QMessageBox box(this);
+    box.setWindowTitle(tr("Erase chip?"));
+    box.setText(tr("Do you really wanna to erase WHOLE chip?"));
+    box.addButton(tr("Yes"), QMessageBox::YesRole);
+    box.addButton(tr("No"), QMessageBox::NoRole);
+    box.setIcon(QMessageBox::Question);
+    if(box.exec())
+        return;
+
+    try
+    {
+        chip_definition chip = switchToFlashAndGetId();
+
+        log("Erasing device");
+        showProgressDialog(tr("Erasing chip..."));
+        m_modes[m_cur_mode]->erase_device();
+
+        log("Switching to run mode");
+        m_modes[m_cur_mode]->switchToRunMode();
+
+        updateProgressDialog(-1);
+    }
+    catch(QString ex)
+    {
+        updateProgressDialog(-1);
+        showErrorBox(ex);
+        return;
+    }
+
+    QMessageBox succesBox(this);
+    succesBox.setIcon(QMessageBox::Information);
+    succesBox.setWindowTitle(tr("Succes!"));
+    succesBox.setText(tr("Chip was succesfuly erased!"));
+    succesBox.exec();
 }

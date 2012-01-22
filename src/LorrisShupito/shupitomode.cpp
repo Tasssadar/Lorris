@@ -192,3 +192,22 @@ void ShupitoMode::cancelRequested()
 {
     m_cancel_requested = true;
 }
+
+//void erase_device(avrflash::chip_definition const & chip), device_shupito.hpp
+void ShupitoMode::erase_device()
+{
+    m_prepared = false;
+    m_flash_mode = false;
+
+    ShupitoPacket pkt(m_prog_cmd_base + 4, 0);
+    pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 4);
+
+    if(pkt.getLen() != 1 || pkt[0] != 0)
+        throw QString(QObject::tr("Failed to erase chip's memory"));
+
+    m_flash_mode = true;
+    m_prepared = true;
+
+    // This should really be on the device side...
+    Utils::msleep(100);
+}

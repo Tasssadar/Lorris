@@ -25,8 +25,9 @@
 #define NUM_FUNC_H
 
 #include <QString>
+#include <QThread>
 
-class Utils
+class Utils : public QThread
 {
 public:
     static QString hexToString(quint8 data, bool withZeroEx = false);
@@ -34,6 +35,10 @@ public:
     template <typename T> static inline void swapEndian(char *val);
 
     static QString toBase16(quint8 const * first, quint8 const * last);
+
+    static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
+    static void sleep (unsigned long secs)  { QThread::sleep(secs); }
+    static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
 };
 
 template <typename T>

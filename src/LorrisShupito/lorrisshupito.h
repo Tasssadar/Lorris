@@ -88,6 +88,7 @@ private slots:
     void readMemButton();
     void readEEPROMBtn();
     void progSpeedChanged(int idx);
+    void eraseDevice();
 
     void updateProgressDialog(int value);
 
@@ -97,6 +98,9 @@ private:
     bool checkVoltage(bool active);
     void readMem(quint8 memId);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
+    void showErrorBox(const QString& text);
+
+    chip_definition switchToFlashAndGetId();
 
     chip_definition update_chip_description(const QString& chip_id);
 

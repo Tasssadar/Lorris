@@ -192,6 +192,13 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="eraseBtn">
+         <property name="text">
+          <string>Erase chip</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="readButton">
          <property name="text">
           <string>Read memory</string>

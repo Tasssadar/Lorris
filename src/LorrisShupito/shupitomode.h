@@ -31,6 +31,8 @@ public:
     virtual QByteArray readMemory(const QString& mem, chip_definition &chip);
     virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size);
 
+    virtual void erase_device();
+
 public slots:
     void cancelRequested();
 
