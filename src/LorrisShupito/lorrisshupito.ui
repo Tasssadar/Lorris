@@ -6,16 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>746</width>
-    <height>361</height>
+    <width>798</width>
+    <height>372</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_3">
+  <layout class="QHBoxLayout" name="horizontalLayout_4">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,4,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -26,22 +26,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="methodBox">
-         <item>
-          <property name="text">
-           <string>SPI</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PDI</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>JTAG</string>
-          </property>
-         </item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Tunnel speed:</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -134,9 +122,35 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Mode:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="methodBox">
+         <item>
+          <property name="text">
+           <string>SPI</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PDI</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>JTAG</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Programming speed</string>
+          <string>Programming speed:</string>
          </property>
         </widget>
        </item>
@@ -165,20 +179,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Chip ID:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="chipIdLabel">
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -204,6 +204,37 @@
           <string>Read EEPROM</string>
          </property>
         </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Chip ID:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="chipIdLabel">
+         <property name="text">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>

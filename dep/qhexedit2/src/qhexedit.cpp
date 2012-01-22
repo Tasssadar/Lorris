@@ -150,3 +150,8 @@ const QFont & QHexEdit::font() const
 {
     return qHexEdit_p->font();
 }
+
+void QHexEdit::setBackgroundColor(const QString& htmlColor)
+{
+    qHexEdit_p->setStyleSheet("background-color: " + htmlColor);
+}

@@ -37,6 +37,10 @@
 #include "shupitomode.h"
 #include "chipdefs.h"
 
+static const QString colorFromDevice = "#C0FFFF";
+static const QString colorFromFile   = "#C0FFC0";
+static const QString colorSavedToFile= "#FFE0E0";
+
 LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 {
     ui->setupUi(this);
@@ -77,7 +81,6 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     {
         QHexEdit *h = new QHexEdit(this);
         h->setData(data);
-        h->setReadOnly(true);
         m_hexAreas[i+1] = h;
         ui->memTabs->addTab(h, memNames[i]);
     }
@@ -180,7 +183,6 @@ void LorrisShupito::connectedStatus(bool connected)
 
 void LorrisShupito::readData(const QByteArray &data)
 {
-    QByteArray dta = data;
     m_shupito->readData(data);
 }
 
@@ -404,6 +406,17 @@ void LorrisShupito::tunnelStateChanged(bool opened)
 
 void LorrisShupito::flashModeChanged(int idx)
 {
+    if(!m_modes[idx])
+    {
+        QMessageBox box(this);
+        box.setIcon(QMessageBox::Critical);
+        box.setWindowTitle(tr("Error!"));
+        box.setText(tr("This mode is unsupported by Lorris, for now."));
+        box.exec();
+
+        ui->methodBox->setCurrentIndex(0);
+        return;
+    }
     m_cur_mode = idx;
     sConfig.set(CFG_QUINT32_SHUPITO_MODE, idx);
 }
@@ -437,6 +450,7 @@ void LorrisShupito::readMem(quint8 memId)
         QByteArray mem = m_modes[m_cur_mode]->readMemory(memNames[memId], chip);
 
         m_hexAreas[memId]->setData(mem);
+        m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
 
         log("Switching to run mode");
         m_modes[m_cur_mode]->switchToRunMode();

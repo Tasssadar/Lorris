@@ -380,28 +380,28 @@
         <translation>Nemůžu se připojit!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="214"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="332"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="217"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="335"/>
         <source> of </source>
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="419"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="422"/>
         <source>Clear data?</source>
         <translation>Vyčistit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="420"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="423"/>
         <source>Do you really clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete smazat všechny widgety, data a strukturu packetu?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="421"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="424"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="422"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="425"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -414,103 +414,193 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="22"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="120"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="24"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="170"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="39"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="31"/>
+        <source>Tunnel speed:</source>
+        <translation>Rychlost tunelu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="48"/>
         <source>38400</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="44"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="53"/>
         <source>57600</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="49"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="58"/>
         <source>115200</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="54"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="63"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="166"/>
         <source>500000</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="59"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="68"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="171"/>
         <source>1000000</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="64"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="73"/>
         <source>1500000</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="69"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="78"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="176"/>
         <source>2000000</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="77"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="86"/>
         <source>Enable RS232 tunnel</source>
         <translation>Povolit RS232 tunel</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="82"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="127"/>
+        <source>Mode:</source>
+        <translation>Mód:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="135"/>
+        <source>SPI</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="140"/>
+        <source>PDI</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="145"/>
+        <source>JTAG</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="153"/>
+        <source>Programming speed:</source>
+        <translation>Rychlost programování:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="161"/>
+        <source>250000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="197"/>
+        <source>Read memory</source>
+        <translation>Přečíst paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="204"/>
+        <source>Read EEPROM</source>
+        <translation>Přečíst EEPROM</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="215"/>
+        <source>Chip ID:</source>
+        <translation>ID čipu:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="301"/>
+        <source>Fuses</source>
+        <translation>Pojistky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="78"/>
+        <source>Program memory</source>
+        <translation>Paměť programu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="78"/>
+        <source>EEPROM</source>
+        <translation>EEPROM</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="132"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="93"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="104"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="127"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="143"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="154"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="177"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="108"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="293"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="158"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="342"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="455"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="483"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="109"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="159"/>
         <source>Can&apos;t open connection!</source>
         <translation>Nemůžu se připojit!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="294"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="343"/>
         <source>Can&apos;t set output VCC, voltage detected!</source>
         <translation>Nemůžu nastavit výstupní napětí, na pinech už nějáké bylo detekováno!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="331"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="380"/>
         <source>Unsupported</source>
         <translation>Nepodoporováno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="332"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="381"/>
         <source>It looks like your Shupito does not support RS232 tunnel!</source>
         <translation>Vypadá to že vaše Shupito nepodporuje RS232 tunel!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="349"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="396"/>
         <source>RS232 tunnel </source>
         <translation>RS232 tunel </translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="351"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="398"/>
         <source>enabled</source>
         <translation>zapnut</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="353"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="400"/>
         <source>disabled</source>
         <translation>vypnut</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="438"/>
+        <source>Reading memory</source>
+        <translation>Čtu paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="485"/>
+        <source>No voltage present</source>
+        <translation>Nebylo detekováno žádné napětí</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="503"/>
+        <source>&lt;unknown&gt;</source>
+        <translation>&lt;neznámý&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="530"/>
+        <source>Progress</source>
+        <translation>Průběh</translation>
     </message>
 </context>
 <context>
@@ -1494,6 +1584,36 @@
         <location filename="../src/LorrisShupito/lorrisshupitoinfo.cpp" line="49"/>
         <source>Control program for shupito programmer.</source>
         <translation>Program pro obsluhu programátoru Shupito.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="56"/>
+        <source>Failed to switch to the flash mode (error %1)</source>
+        <translation>Nemůžu přepnout čip do flash módu (chyba %1)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="72"/>
+        <source>Failed to switch to the run mode</source>
+        <translation>Nemůžu čip přepnout zpět do normálního módu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="87"/>
+        <source>The device can&apos;t program these types of chips.</source>
+        <translation>Vaše Shupito nemůže programovat tento typ čipů.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="120"/>
+        <source>Failed to read the chip&apos;s signature (error %1).</source>
+        <translation>Chyba při čtení identifikace čipu (chyba %1).</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="150"/>
+        <source>Unknown memory id</source>
+        <translation>Neznámá paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="186"/>
+        <source>The read returned wrong-sized stream.</source>
+        <translation>Čtení paměti vrátilo data o špatné velikosti.</translation>
     </message>
 </context>
 <context>

@@ -13,6 +13,7 @@ QHexEditPrivate::QHexEditPrivate(QScrollArea *parent) : QWidget(parent)
     _undoStack = new QUndoStack(this);
 
     _scrollArea = parent;
+    setAutoFillBackground(true);
     setAddressWidth(4);
     setAddressOffset(0);
     setAddressArea(true);
@@ -645,11 +646,26 @@ void QHexEditPrivate::paintEvent(QPaintEvent *event)
                 painter.drawText(xPos, yPos, hex.toUpper());
                 xPos += 2 * _charWidth;
             } else {
-                hex = hexBa.mid((lineIdx + colIdx - firstLineIdx) * 2, 2).prepend(" ");
                 // Lorris change
-                //painter.drawText(xPos, yPos, hex);
-                painter.drawText(xPos, yPos, hex.toUpper());
+                /*
+                hex = hexBa.mid((lineIdx + colIdx - firstLineIdx) * 2, 2).prepend(" ");
+                painter.drawText(xPos, yPos, hex);
                 xPos += 3 * _charWidth;
+                */
+
+                hex = hexBa.mid((lineIdx + colIdx - firstLineIdx) * 2, 2);
+
+                if(painter.backgroundMode() == Qt::OpaqueMode)
+                {
+                    painter.setBackgroundMode(Qt::TransparentMode);
+                    painter.drawText(xPos, yPos, " ");
+                    painter.setBackgroundMode(Qt::OpaqueMode);
+                    xPos += _charWidth;
+                }else
+                    hex.prepend(" ");
+
+                painter.drawText(xPos, yPos, hex.toUpper());
+                xPos += hex.length() * _charWidth;
             }
 
         }
@@ -669,6 +685,16 @@ void QHexEditPrivate::paintEvent(QPaintEvent *event)
                 xPosAscii += _charWidth;
             }
         }
+    }
+
+    // paint separators - Lorris Change
+    painter.setPen(QPen(QBrush(Qt::black), 2));
+    int width_add = ((_xPosAscii - _xPosHex - (GAP_HEX_ASCII / 2))/4) + 2;
+    int cur_w = _xPosHex + width_add - 7;
+    for(quint8 i = 0; i < 4; ++i)
+    {
+        painter.drawLine(cur_w, event->rect().top(), cur_w, height());
+        cur_w += width_add;
     }
 
     // paint cursor

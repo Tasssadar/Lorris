@@ -140,6 +140,7 @@ public:
     QColor highlightingColor();
     void setSelectionColor(QColor const &color);
     QColor selectionColor();
+    void setBackgroundColor(const QString& htmlColor);
     void setOverwriteMode(bool);
     bool overwriteMode();
     void setReadOnly(bool);
