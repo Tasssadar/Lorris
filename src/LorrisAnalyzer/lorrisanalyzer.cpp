@@ -70,6 +70,14 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
     connect(ui->updateTimeBox,   SIGNAL(valueChanged(int)), SLOT(updateTimeChanged(int)));
 
+
+    QMenu* menuData = new QMenu(tr("&Data"), this);
+
+    QAction* clearAct = menuData->addAction(tr("Clear data"));
+    connect(clearAct, SIGNAL(triggered()), SLOT(clearButton()));
+
+    m_menus.push_back(menuData);
+
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better
 #if defined(Q_WS_X11)

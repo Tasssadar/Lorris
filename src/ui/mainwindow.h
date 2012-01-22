@@ -26,6 +26,7 @@
 
 #include <QMainWindow>
 #include <map>
+#include <vector>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -39,10 +40,16 @@ private slots:
     void QuitButton();
     void About();
     void closeEvent(QCloseEvent *event);
+    void tabChanged(int index);
 
 private:
     bool Quit();
     QString getVersionString();
+
+    std::vector<QMenu*> m_tab_menu;
+    QMenuBar* menuBar;
+    QMenu* menuFile;
+    QMenu* menuHelp;
 };
 
 #endif // MAINWINDOW_H

@@ -25,6 +25,8 @@
 #define WORKTAB_H
 
 #include <QtGui/QWidget>
+#include <vector>
+#include <QMenu>
 
 #include "common.h"
 #include "connection/connection.h"
@@ -43,6 +45,7 @@ class WorkTab : public QWidget
         static void DeleteAllMembers(QLayout *layout);
 
         virtual void onTabShow();
+        virtual std::vector<QMenu*>& getMenu() { return m_menus; }
 
     protected slots:
         virtual void readData(const QByteArray &data);
@@ -53,6 +56,7 @@ class WorkTab : public QWidget
 
         Connection *m_con;
         quint16 m_id;
+        std::vector<QMenu*> m_menus;
 };
 
 #endif // WORKTAB_H
