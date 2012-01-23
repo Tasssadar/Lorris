@@ -27,13 +27,13 @@
 #include <QByteArray>
 #include <QWidget>
 
-#include "deviceinfo.h"
-#include "hexfileterminal.h"
+#include "shared/chipdefs.h"
+#include "shared/hexfile.h"
 
 class EEPROM
 {
 public:
-    EEPROM(QWidget *parent, DeviceInfo *info);
+    EEPROM(QWidget *parent, chip_definition& chip);
     ~EEPROM();
 
     void AddData(QByteArray newData)
@@ -43,24 +43,28 @@ public:
 
     quint16 GetEEPROMSize()
     {
-        return m_deviceInfo->eeprom_size;
+        chip_definition::memorydef *memdef = m_chip.getMemDef(MEM_EEPROM);
+        if(!memdef)
+            return 0;
+        return memdef->size;
     }
 
     void Export();
     bool Import();
-    Page *getNextPage()
+
+    page* getNextPage()
     {
-        if(pageItr >= pages.size() || pages[pageItr]->address >= m_deviceInfo->eeprom_size)
+        if(pageItr >= pages.size() || pages[pageItr].address >= GetEEPROMSize())
             return NULL;
-        return pages[pageItr++];
+        return &pages[pageItr++];
     }
 
 private:
     QByteArray data;
-    DeviceInfo *m_deviceInfo;
+    chip_definition m_chip;
     QWidget *m_parent;
     quint16 pageItr;
-    std::vector<Page*> pages;
+    std::vector<page> pages;
 };
 
 #endif // EEPROM_H

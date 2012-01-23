@@ -42,6 +42,14 @@ enum responses
     RESPONSE_BAD
 };
 
+enum VddColor
+{
+    VDD_BLACK = 0,
+    VDD_GREEN,
+    VDD_RED,
+    VDD_ORANGE
+};
+
 namespace Ui {
     class LorrisShupito;
 }
@@ -142,6 +150,8 @@ private:
     chip_definition update_chip_description(const QString& chip_id);
     void initMenuBar();
 
+    void changeVddColor(float val);
+
     QAction *m_start_act;
     QAction *m_stop_act;
     QAction *m_restart_act;
@@ -163,7 +173,6 @@ private:
     ShupitoMode *m_modes[MODE_COUNT];
     quint8 m_cur_mode;
 
-    QString vccText;
     vdd_setup m_vdd_setup;
     double m_vcc;
     int lastVccIndex;
@@ -175,6 +184,8 @@ private:
     FuseWidget *m_fuse_widget;
 
     chip_definition m_cur_def;
+
+    VddColor m_color;
 };
 
 #endif // LORRISSHUPITO_H

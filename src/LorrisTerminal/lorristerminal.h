@@ -34,9 +34,11 @@
 
 class QVBoxLayout;
 class QTextEdit;
-class HexFileTerminal;
+class HexFile;
 class Terminal;
 class EEPROM;
+class chip_definition;
+struct page;
 
 enum states_
 {
@@ -103,12 +105,16 @@ private:
     QTimer *stopTimer;
     QTimer *flashTimeoutTimer;
     QByteArray stopCmd;
-    HexFileTerminal *hex;
+    HexFile *hex;
     Terminal *terminal;
 
     quint16 m_state;
     quint16 m_eepromItr;
     EEPROM *m_eeprom;
+
+    std::vector<chip_definition> m_chip_defs;
+    std::vector<page> m_pages;
+    quint32 m_cur_page;
 };
 
 #endif // LORRISTERMINAL_H

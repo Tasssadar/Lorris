@@ -262,6 +262,7 @@ void HexFile::makePages(std::vector<page> &pages, quint8 memId, chip_definition 
     if(!memdef)
         throw QString(QObject::tr("This chip does not have memory type %1")).arg(memId);
 
+    int i = getTopAddress();
     if(getTopAddress() > memdef->size)
         throw QString(QObject::tr("Program is too large."));
 

@@ -128,6 +128,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
         m_modes[i] = ShupitoMode::getMode(i, m_shupito);
 
     m_progress_dialog = NULL;
+    m_color = VDD_BLACK;
 }
 
 LorrisShupito::~LorrisShupito()
@@ -398,15 +399,41 @@ void LorrisShupito::descRead()
 
 void LorrisShupito::vccValueChanged(quint8 id, double value)
 {
-    if(id == 0 && vccText.length() != 0)
+    if(id == 0 && !ui->engineLabel->text().isEmpty())
     {
         if((value < 0 ? -value : value) < 0.03)
             value = 0;
-        m_vcc = value;
+
         char buff[24];
-        sprintf(buff, " %4.2f", value);
-        ui->vccLabel->setText(vccText % QString(buff));
+        sprintf(buff, "%4.2fV", value);
+        ui->vccLabel->setText(QString(buff));
+
+        changeVddColor(value);
+        m_vcc = value;
     }
+}
+
+void LorrisShupito::changeVddColor(float val)
+{
+    VddColor newClr;
+    if     (val == 0)                newClr = VDD_BLACK;
+    else if(val > 0 && val <= 2.7)   newClr = VDD_ORANGE;
+    else if(val > 2.7 && val <= 5.5) newClr = VDD_GREEN;
+    else                             newClr = VDD_RED;
+
+    if(newClr == m_color)
+        return;
+
+    static const QString vddColorHTML[] =
+    {
+        "#000000", // VDD_BLACK
+        "#009900", // VDD_GREEN
+        "#FF0000", // VDD_RED
+        "#996600", // VDD_ORANGE
+    };
+
+    ui->vccLabel->setStyleSheet("color: " % vddColorHTML[newClr]);
+    m_color = newClr;
 }
 
 //void do_vdd_setup(avrflash::device<comm>::vdd_setup const & vs)
@@ -420,7 +447,7 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
 
     if(vs.empty())
     {
-        vccText = "";
+        ui->engineLabel->setText("");
         return;
     }
 
@@ -428,7 +455,7 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
         ui->vddBox->addItem(vs[0].drives[i]);
     lastVccIndex = vs[0].current_drive;
     ui->vddBox->setCurrentIndex(vs[0].current_drive);
-    vccText = vs[0].name;
+    ui->engineLabel->setText(vs[0].name);
 
     connect(ui->vddBox, SIGNAL(currentIndexChanged(int)), this, SLOT(vddIndexChanged(int)));
 }

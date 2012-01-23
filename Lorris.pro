@@ -71,7 +71,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/shupitospi.cpp \
     src/LorrisShupito/fusewidget.cpp \
     src/shared/hexfile.cpp \
-    src/LorrisTerminal/hexfileterminal.cpp \
     src/shared/chipdefs.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
@@ -99,7 +98,6 @@ HEADERS += src/ui/mainwindow.h \
     dep/qserialdevice/src/qserialdevice/abstractserial_p.h \
     dep/qserialdevice/src/qserialdevice/abstractserial.h \
     dep/qserialdevice/src/qserialdevice_global.h \
-    src/LorrisTerminal/deviceinfo.h \
     src/LorrisTerminal/terminal.h \
     src/connection/serialportthread.h \
     src/LorrisTerminal/eeprom.h \
@@ -139,7 +137,6 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/shupitospi.h \
     src/LorrisShupito/fusewidget.h \
     src/shared/hexfile.h \
-    src/LorrisTerminal/hexfileterminal.h \
     src/shared/chipdefs.h
 
 win32 {

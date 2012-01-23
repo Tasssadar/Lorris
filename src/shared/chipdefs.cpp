@@ -43,6 +43,17 @@ static const QString embedded_chipdefs =
         " bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63\n"
     "atxmega16a avr:1e9441 flash=20480:256,eeprom=1024:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1"
         " bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63\n"
+
+    "atmega48 avr232boot:m48 flash=3840:64,eeprom=256:2 !avr232boot_patch=3838\n"
+    "atmega88 avr232boot:m88 flash=7936:64,eeprom=512:2\n"
+    "atmega168 avr232boot:m168 flash=16128:128,eeprom=512:2\n"
+    "atmega16 avr232boot:m16 flash=16128:128,eeprom=512:2\n"
+    "atmega32 avr232boot:m32 flash=32256:128,eeprom=1024:2\n"
+    "atmega128 avr232boot:m128 flash=65536:256,eeprom=4096:2\n" /* FIXME: only 16-bit addresses are available */
+    "atmega162 avr232boot:m162 flash=16128:128,eeprom=512:2\n"
+    "atmega328p avr232boot:m328 flash=32256:128,eeprom=1024:2\n"
+    "atmega8u2 avr232boot:m8u2 flash=7680:128,eeprom=512:2\n"
+    "atmega1284p avr232boot:p128 flash=65536:256,eeprom=4096:2\n" /* FIXME: only 16-bit addresses are available */
     ;
 
 void chip_definition::update_chipdef(std::vector<chip_definition> & templates, chip_definition & cd)

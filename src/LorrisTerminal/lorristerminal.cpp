@@ -34,10 +34,10 @@
 #include <QProgressDialog>
 
 #include "lorristerminal.h"
-#include "hexfileterminal.h"
-#include "deviceinfo.h"
 #include "terminal.h"
 #include "eeprom.h"
+#include "shared/hexfile.h"
+#include "shared/chipdefs.h"
 
 LorrisTerminal::LorrisTerminal() : WorkTab()
 {
@@ -53,6 +53,9 @@ LorrisTerminal::LorrisTerminal() : WorkTab()
     terminal = NULL;
     hexLine = NULL;
     m_eeprom = NULL;
+
+    chip_definition::parse_default_chipsets(m_chip_defs);
+
     initUI();
 }
 
@@ -186,22 +189,25 @@ void LorrisTerminal::eeprom_write(QString id)
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    DeviceInfo *info = new DeviceInfo(id);
-    if(!info->isSet())
+    chip_definition cd;
+    cd.setSign("avr232boot:" + id);
+    chip_definition::update_chipdef(m_chip_defs, cd);
+
+    if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
-        QMessageBox *box = new QMessageBox(this);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Unsupported chip: ") + id);
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
-        delete info;
+        m_state &= ~(STATE_EEPROM_WRITE);
+
+        QMessageBox box(this);
+        box.setWindowTitle(tr("Error!"));
+        box.setText(tr("Unsupported chip: ") + id);
+        box.setIcon(QMessageBox::Critical);
+        box.exec();
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
     }
 
-    m_eeprom = new EEPROM(this, info);
+    m_eeprom = new EEPROM(this, cd);
     if(!m_eeprom->Import())
     {
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
@@ -209,7 +215,7 @@ void LorrisTerminal::eeprom_write(QString id)
     }
 
     QProgressBar *bar = new QProgressBar(this);
-    bar->setMaximum(info->eeprom_size);
+    bar->setMaximum(m_eeprom->GetEEPROMSize());
     bar->setObjectName("FlashProgress");
     layout->insertWidget(1, bar);
 
@@ -222,9 +228,9 @@ void LorrisTerminal::eeprom_write(QString id)
 
 bool LorrisTerminal::eeprom_send_page()
 {
-    Page *page = m_eeprom->getNextPage();
+    page *p = m_eeprom->getNextPage();
     QProgressBar *bar = findChild<QProgressBar *>("FlashProgress");
-    if(!page)
+    if(!p)
     {
         delete flashTimeoutTimer;
         flashTimeoutTimer = NULL;
@@ -238,19 +244,20 @@ bool LorrisTerminal::eeprom_send_page()
     }
 
     flashTimeoutTimer->start(1500);
-    bar->setValue(page->address);
+    bar->setValue(p->address);
 
     QByteArray data;
     data[0] = 0x14;
     m_con->SendData(data);
 
-    data[0] = (page->address >> 8);
-    data[1] = quint8(page->address);
+    data[0] = (p->address >> 8);
+    data[1] = quint8(p->address);
     data[2] = 2;
     m_con->SendData(data);
+
     data.clear();
-    for(quint8 i = 0; i < page->data.size(); ++i)
-        data[i] = page->data[i];
+    for(quint8 i = 0; i < p->data.size(); ++i)
+        data[i] = p->data[i];
     m_con->SendData(data);
     return true;
 }
@@ -260,16 +267,19 @@ void LorrisTerminal::eeprom_read(QString id)
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    DeviceInfo *info = new DeviceInfo(id);
-    if(!info->isSet())
+    chip_definition cd;
+    cd.setSign("avr232boot:" + id);
+    chip_definition::update_chipdef(m_chip_defs, cd);
+
+    if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
-        QMessageBox *box = new QMessageBox(this);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Unsupported chip: ") + id);
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
-        delete info;
+        m_state &= ~(STATE_EEPROM_READ);
+
+        QMessageBox box(this);
+        box.setWindowTitle(tr("Error!"));
+        box.setText(tr("Unsupported chip: ") + id);
+        box.setIcon(QMessageBox::Critical);
+        box.exec();
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
@@ -285,10 +295,10 @@ void LorrisTerminal::eeprom_read(QString id)
     data[2] = 128;
     m_con->SendData(data);
 
-    m_eeprom = new EEPROM(this, info);
+    m_eeprom = new EEPROM(this, cd);
 
     QProgressBar *bar = new QProgressBar(this);
-    bar->setMaximum(info->eeprom_size);
+    bar->setMaximum(m_eeprom->GetEEPROMSize());
     bar->setObjectName("FlashProgress");
     layout->insertWidget(1, bar);
 
@@ -523,21 +533,23 @@ void LorrisTerminal::stopTimerSig()
 void LorrisTerminal::flashButton()
 {
     if(hex) delete hex;
-    hex = new HexFileTerminal();
-
-    QString load = hex->load(hexLine->text());
-    if(load != "")
+    hex = new HexFile();
+    try
     {
-        QMessageBox *box = new QMessageBox(this);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Error loading hex file: ") + load);
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
+        hex->LoadFromFile(hexLine->text());
+    }
+    catch(QString ex)
+    {
+        QMessageBox box(this);
+        box.setWindowTitle(tr("Error!"));
+        box.setText(tr("Error loading hex file: ") + ex);
+        box.setIcon(QMessageBox::Critical);
+        box.exec();
         delete hex;
         hex = NULL;
         return;
     }
+
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
     flashTimeoutTimer = new QTimer();
@@ -555,8 +567,11 @@ void LorrisTerminal::flash_prepare(QString deviceId)
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    DeviceInfo *info = new DeviceInfo(deviceId);
-    if(!info->isSet())
+    chip_definition cd;
+    cd.setSign("avr232boot:" + deviceId);
+    chip_definition::update_chipdef(m_chip_defs, cd);
+
+    if(cd.getName().isEmpty())
     {
         QMessageBox *box = new QMessageBox(this);
         box->setWindowTitle(tr("Error!"));
@@ -565,42 +580,43 @@ void LorrisTerminal::flash_prepare(QString deviceId)
         box->exec();
         delete box;
         delete hex;
-        delete info;
         hex = NULL;
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
     }
 
-    QString make = hex->makePages(info);
-    if(make != "")
+    try
     {
-        QMessageBox *box = new QMessageBox(this);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Error making pages: ") + make);
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
+        m_cur_page = 0;
+        m_pages.clear();
+        hex->makePages(m_pages, MEM_FLASH, cd, NULL);
+    }
+    catch(QString ex)
+    {
+        QMessageBox box(this);
+        box.setWindowTitle(tr("Error!"));
+        box.setText(tr("Error making pages: ") + ex);
+        box.setIcon(QMessageBox::Critical);
+        box.exec();
         delete hex;
-        delete info;
         hex = NULL;
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
     }
+
     QProgressBar *bar = new QProgressBar(this);
-    bar->setMaximum(hex->getPagesCount());
+    bar->setMaximum(m_pages.size());
     bar->setObjectName("FlashProgress");
     layout->insertWidget(1, bar);
 
     QLabel *label = findChild<QLabel *>("FlashLabel");
-    label->setText(tr("Flashing into ") + info->name + "...");
+    label->setText(tr("Flashing into ") + cd.getName() + "...");
 
     flashTimeoutTimer = new QTimer();
     connect(flashTimeoutTimer, SIGNAL(timeout()), this, SLOT(flashTimeout()));
     flashTimeoutTimer->start(1500);
-
-    delete info;
 
     m_state |= STATE_FLASHING;
     SendNextPage();
@@ -610,8 +626,8 @@ bool LorrisTerminal::SendNextPage()
 {
     flashTimeoutTimer->start(1500);
     QProgressBar *bar = findChild<QProgressBar *>("FlashProgress");
-    Page *page = hex->getNextPage();
-    if(!page)
+
+    if(m_cur_page >= m_pages.size())
     {
         layout->removeWidget(bar);
         delete bar;
@@ -625,18 +641,21 @@ bool LorrisTerminal::SendNextPage()
         delete flashTimeoutTimer;
         hex = NULL;
         flashTimeoutTimer = NULL;
+        m_pages.clear();
         return false;
     }
+
+    page& p = m_pages[m_cur_page++];
     QByteArray data;
     data[0] = 0x10;
     m_con->SendData(data);
 
-    data[0] = quint8(page->address >> 8);
-    data[1] = quint8(page->address);
+    data[0] = quint8(p.address >> 8);
+    data[1] = quint8(p.address);
     m_con->SendData(data);
 
-    for(quint16 i = 0; i < page->data.size(); ++i)
-        data[i] = page->data[i];
+    for(quint16 i = 0; i < p.data.size(); ++i)
+        data[i] = p.data[i];
     m_con->SendData(data);
     bar->setValue(bar->value()+1);
     return true;
