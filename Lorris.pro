@@ -199,4 +199,5 @@ FORMS += \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui
 
 RESOURCES += \
-    src/LorrisAnalyzer/DataWidgetIcons.qrc
+    src/LorrisAnalyzer/DataWidgetIcons.qrc \
+    src/LorrisShupito/shupitoicons.qrc

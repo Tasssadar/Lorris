@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="erase_chip.png">icons/erase_chip.png</file>
+        <file alias="read_chip.png">icons/read_chip.png</file>
+        <file alias="write_chip.png">icons/write_chip.png</file>
+    </qresource>
+</RCC>

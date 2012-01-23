@@ -87,14 +87,29 @@ private slots:
     void hideLogBtn();
     void hideFusesBtn();
 
-    void readMemButton();
-    void readEEPROMBtn();
+    void readMemButton()
+    {
+        readMemInFlash(MEM_FLASH);
+    }
+    void readEEPROMBtn()
+    {
+        readMemInFlash(MEM_EEPROM);
+    }
+
+    void readAll();
+    void writeAll();
     void progSpeedChanged(int idx);
     void eraseDevice();
-    void readFuses();
-    void writeFuses();
-    void writeFlashBtn();
-    void writeEEPROMBtn();
+    void readFusesInFlash();
+    void writeFusesInFlash();
+    void writeFlashBtn()
+    {
+        writeMemInFlash(MEM_FLASH);
+    }
+    void writeEEPROMBtn()
+    {
+        writeMemInFlash(MEM_EEPROM);
+    }
 
     void updateProgressDialog(int value);
     void updateProgressLabel(const QString& text);
@@ -113,8 +128,13 @@ private:
     void sendAndWait(const QByteArray &data);
     void log(const QString& text);
     bool checkVoltage(bool active);
-    void readMem(quint8 memId);
-    void writeMem(quint8 memId);
+    void readMemInFlash(quint8 memId);
+    void writeMemInFlash(quint8 memId);
+    void readMem(quint8 memId, chip_definition& chip);
+    void writeMem(quint8 memId, chip_definition& chip);
+    void readFuses(chip_definition& chip);
+    void writeFuses(chip_definition& chip);
+    void hideFuses(bool hide);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     void showErrorBox(const QString& text);
     bool showContinueBox(const QString& title, const QString& text);

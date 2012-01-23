@@ -83,14 +83,13 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(ui->tunnelCheck,    SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
     connect(ui->readButton,     SIGNAL(clicked()),                SLOT(readMemButton()));
     connect(ui->progSpeedBox,   SIGNAL(currentIndexChanged(int)), SLOT(progSpeedChanged(int)));
-    connect(ui->readEEPROM,     SIGNAL(clicked()),                SLOT(readEEPROMBtn()));
     connect(ui->hideLogBtn,     SIGNAL(clicked()),                SLOT(hideLogBtn()));
-    connect(ui->eraseBtn,       SIGNAL(clicked()),                SLOT(eraseDevice()));
+    connect(ui->eraseButton,    SIGNAL(clicked()),                SLOT(eraseDevice()));
     connect(ui->hideFusesBtn,   SIGNAL(clicked()),                SLOT(hideFusesBtn()));
-    connect(ui->writeFlashBtn,  SIGNAL(clicked()),                SLOT(writeFlashBtn()));
-    connect(m_fuse_widget,      SIGNAL(readFuses()),              SLOT(readFuses()));
+    connect(ui->writeButton,    SIGNAL(clicked()),                SLOT(writeFlashBtn()));
+    connect(m_fuse_widget,      SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
     connect(m_fuse_widget,      SIGNAL(status(QString)),          SLOT(status(QString)));
-    connect(m_fuse_widget,      SIGNAL(writeFuses()),             SLOT(writeFuses()));
+    connect(m_fuse_widget,      SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
 
     initMenuBar();
 
@@ -208,6 +207,34 @@ void LorrisShupito::initMenuBar()
     connect(signalMapSave, SIGNAL(mapped(int)), this,          SLOT(saveToFile(int)));
     connect(m_save_flash,  SIGNAL(triggered()), signalMapSave, SLOT(map()));
     connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
+
+    QMenu *readBtnMenu = new QMenu(this);
+    QAction *readFlash = readBtnMenu->addAction(tr("Read flash"));
+    readBtnMenu->addSeparator();
+    QAction *readAll = readBtnMenu->addAction(tr("Read all"));
+    QAction *readEEPROM = readBtnMenu->addAction(tr("Read EEPROM"));
+    QAction *readFuses = readBtnMenu->addAction(tr("Read fuses"));
+
+    connect(readAll,    SIGNAL(triggered()), SLOT(readAll()));
+    connect(readFlash,  SIGNAL(triggered()), SLOT(readMemButton()));
+    connect(readEEPROM, SIGNAL(triggered()), SLOT(readEEPROMBtn()));
+    connect(readFuses,  SIGNAL(triggered()), SLOT(readFusesInFlash()));
+
+    ui->readButton->setMenu(readBtnMenu);
+
+    QMenu *writeBtnMenu = new QMenu(this);
+    QAction *writeFlash = writeBtnMenu->addAction(tr("Write flash"));
+    writeBtnMenu->addSeparator();
+    QAction *writeAll = writeBtnMenu->addAction(tr("Write all"));
+    QAction *writeEEPROM = writeBtnMenu->addAction(tr("Write EEPROM"));
+    QAction *writeFuses = writeBtnMenu->addAction(tr("Write fuses"));
+
+    connect(writeAll,    SIGNAL(triggered()), SLOT(writeAll()));
+    connect(writeFlash,  SIGNAL(triggered()), SLOT(writeFlashBtn()));
+    connect(writeEEPROM, SIGNAL(triggered()), SLOT(writeEEPROMBtn()));
+    connect(writeFuses,  SIGNAL(triggered()), SLOT(writeFusesInFlash()));
+
+    ui->writeButton->setMenu(writeBtnMenu);
 }
 
 void LorrisShupito::connectButton()
@@ -483,40 +510,6 @@ void LorrisShupito::modeSelected(int idx)
         m_mode_act[i]->setChecked(i == m_cur_mode);
 }
 
-void LorrisShupito::readMem(quint8 memId)
-{
-    if(!checkVoltage(true))
-        return;
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-        chip_definition chip = switchToFlashAndGetId();
-
-        log("Reading memory");
-
-        showProgressDialog(tr("Reading memory"), m_modes[m_cur_mode]);
-        QByteArray mem = m_modes[m_cur_mode]->readMemory(memNames[memId], chip);
-
-        m_hexAreas[memId]->setData(mem);
-        m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-
-        ui->memTabs->setCurrentIndex(memId - 1);
-    }
-    catch(QString ex)
-    {
-        updateProgressDialog(-1);
-
-        showErrorBox(ex);
-    }
-}
-
 void LorrisShupito::progSpeedChanged(int idx)
 {
     sConfig.set(CFG_QUINT32_SHUPITO_PRG_SPEED, idx);
@@ -626,16 +619,6 @@ void LorrisShupito::updateProgressLabel(const QString &text)
     m_progress_dialog->setLabelText(text);
 }
 
-void LorrisShupito::readMemButton()
-{
-    readMem(MEM_FLASH);
-}
-
-void LorrisShupito::readEEPROMBtn()
-{
-    readMem(MEM_EEPROM);
-}
-
 void LorrisShupito::hideLogBtn()
 {
    ui->logText->setVisible(!ui->logText->isVisible());
@@ -649,8 +632,13 @@ void LorrisShupito::hideLogBtn()
 
 void LorrisShupito::hideFusesBtn()
 {
-    m_fuse_widget->setVisible(!m_fuse_widget->isVisible());
-    sConfig.set(CFG_BOOL_SHUPITO_SHOW_FUSES, m_fuse_widget->isVisible());
+    hideFuses(m_fuse_widget->isVisible());
+}
+
+void LorrisShupito::hideFuses(bool hide)
+{
+    m_fuse_widget->setVisible(!hide);
+    sConfig.set(CFG_BOOL_SHUPITO_SHOW_FUSES, !hide);
 
     if(m_fuse_widget->isVisible())
         ui->hideFusesBtn->setText(">");
@@ -701,46 +689,6 @@ bool LorrisShupito::showContinueBox(const QString &title, const QString &text)
     box.addButton(tr("No"), QMessageBox::NoRole);
     box.setIcon(QMessageBox::Question);
     return !((bool)box.exec());
-}
-
-void LorrisShupito::eraseDevice()
-{
-    if(!checkVoltage(true))
-        return;
-
-    if(!showContinueBox(tr("Erase chip?"), tr("Do you really wanna to erase WHOLE chip?")))
-        return;
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-
-        switchToFlashAndGetId();
-
-        log("Erasing device");
-        showProgressDialog(tr("Erasing chip..."));
-        m_modes[m_cur_mode]->erase_device();
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-
-        updateProgressDialog(-1);
-    }
-    catch(QString ex)
-    {
-        updateProgressDialog(-1);
-        showErrorBox(ex);
-        return;
-    }
-
-    QMessageBox succesBox(this);
-    succesBox.setIcon(QMessageBox::Information);
-    succesBox.setWindowTitle(tr("Succes!"));
-    succesBox.setText(tr("Chip was succesfuly erased!"));
-    succesBox.exec();
 }
 
 void LorrisShupito::startChip()
@@ -797,38 +745,6 @@ void LorrisShupito::restartChip()
     startChip();
 
     status(tr("Chip has been restarted"));
-}
-
-void LorrisShupito::readFuses()
-{
-    if(!checkVoltage(true))
-        return;
-
-    status("");
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-        chip_definition chip = switchToFlashAndGetId();
-
-        log("Reading fuses");
-        std::vector<quint8>& data = m_fuse_widget->getFuseData();
-        data.clear();
-
-        m_modes[m_cur_mode]->readFuses(data, chip);
-        m_fuse_widget->setFuses(chip.getFuses());
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-        status(tr("Fuses had been succesfully read"));
-    }
-    catch(QString ex)
-    {
-        showErrorBox(ex);
-    }
 }
 
 void LorrisShupito::loadFromFile(int memId)
@@ -902,7 +818,178 @@ void LorrisShupito::saveToFile(int memId)
     }
 }
 
-void LorrisShupito::writeFuses()
+void LorrisShupito::readAll()
+{
+    if(!checkVoltage(true))
+        return;
+
+    status("");
+
+    try
+    {
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
+        chip_definition chip = switchToFlashAndGetId();
+
+        readMem(MEM_FLASH, chip);
+        readMem(MEM_EEPROM, chip);
+        readFuses(chip);
+
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
+
+        status(tr("Data has been successfuly written"));
+    }
+    catch(QString ex)
+    {
+        updateProgressDialog(-1);
+        showErrorBox(ex);
+    }
+}
+
+void LorrisShupito::readMemInFlash(quint8 memId)
+{
+    if(!checkVoltage(true))
+        return;
+
+    try
+    {
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
+        chip_definition chip = switchToFlashAndGetId();
+
+        readMem(memId, chip);
+
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
+
+        ui->memTabs->setCurrentIndex(memId - 1);
+    }
+    catch(QString ex)
+    {
+        updateProgressDialog(-1);
+
+        showErrorBox(ex);
+    }
+}
+
+void LorrisShupito::readFusesInFlash()
+{
+    if(!checkVoltage(true))
+        return;
+
+    status("");
+
+    try
+    {
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
+        chip_definition chip = switchToFlashAndGetId();
+
+        readFuses(chip);
+
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
+        status(tr("Fuses had been succesfully read"));
+    }
+    catch(QString ex)
+    {
+        showErrorBox(ex);
+    }
+}
+
+void LorrisShupito::readMem(quint8 memId, chip_definition &chip)
+{
+    log("Reading memory");
+
+    showProgressDialog(tr("Reading memory"), m_modes[m_cur_mode]);
+    QByteArray mem = m_modes[m_cur_mode]->readMemory(memNames[memId], chip);
+
+    m_hexAreas[memId]->setData(mem);
+    m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
+
+    updateProgressDialog(-1);
+}
+
+void LorrisShupito::readFuses(chip_definition& chip)
+{
+    log("Reading fuses");
+    std::vector<quint8>& data = m_fuse_widget->getFuseData();
+    data.clear();
+
+    m_modes[m_cur_mode]->readFuses(data, chip);
+    m_fuse_widget->setFuses(chip.getFuses());
+
+    hideFuses(false);
+}
+
+void LorrisShupito::writeAll()
+{
+    if(!checkVoltage(true))
+        return;
+
+    status("");
+
+    try
+    {
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
+        chip_definition chip = switchToFlashAndGetId();
+
+        writeMem(MEM_FLASH, chip);
+        writeMem(MEM_EEPROM, chip);
+        writeFuses(chip);
+
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
+
+        status(tr("Data has been successfuly written"));
+    }
+    catch(QString ex)
+    {
+        updateProgressDialog(-1);
+        showErrorBox(ex);
+    }
+}
+
+void LorrisShupito::writeMemInFlash(quint8 memId)
+{
+    if(!checkVoltage(true))
+        return;
+
+    status("");
+
+    try
+    {
+        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
+        chip_definition chip = switchToFlashAndGetId();
+
+        writeMem(memId, chip);
+
+        if(restart)
+        {
+            log("Switching to run mode");
+            m_modes[m_cur_mode]->switchToRunMode();
+        }
+
+        status(tr("Data has been successfuly written"));
+    }
+    catch(QString ex)
+    {
+        updateProgressDialog(-1);
+        showErrorBox(ex);
+    }
+}
+
+void LorrisShupito::writeFusesInFlash()
 {
     if(!checkVoltage(true))
         return;
@@ -929,9 +1016,7 @@ void LorrisShupito::writeFuses()
         bool restart = !m_modes[m_cur_mode]->isInFlashMode();
         chip_definition chip = switchToFlashAndGetId();
 
-        log("Writing fuses");
-        std::vector<quint8>& data = m_fuse_widget->getFuseData();
-        m_modes[m_cur_mode]->writeFuses(data, chip, m_auto_verify->isChecked());
+        writeFuses(chip);
 
         if(restart)
         {
@@ -946,57 +1031,75 @@ void LorrisShupito::writeFuses()
     }
 }
 
-void LorrisShupito::writeMem(quint8 memId)
+void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
+{
+    chip_definition::memorydef *memdef = chip.getMemDef(memId);
+
+    if(!memdef)
+        throw QString(tr("Unknown memory id"));
+
+    QByteArray data = m_hexAreas[memId]->data();
+    if((quint32)data.size() != memdef->size)
+        throw QString(tr("Somethings wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
+
+    log("Writing memory");
+    showProgressDialog(tr("Writing memory"), m_modes[m_cur_mode]);
+
+    HexFile file;
+    file.setData(data);
+
+    m_modes[m_cur_mode]->flashRaw(file, memId, chip, m_auto_verify->isChecked());
+    m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
+
+    updateProgressDialog(-1);
+}
+
+void LorrisShupito::writeFuses(chip_definition &chip)
+{
+    if(!m_fuse_widget->isLoaded())
+        throw QString(tr("Fuses had not been read yet"));
+
+    log("Writing fuses");
+    std::vector<quint8>& data = m_fuse_widget->getFuseData();
+    m_modes[m_cur_mode]->writeFuses(data, chip, m_auto_verify->isChecked());
+}
+
+void LorrisShupito::eraseDevice()
 {
     if(!checkVoltage(true))
         return;
 
-    status("");
+    if(!showContinueBox(tr("Erase chip?"), tr("Do you really wanna to erase WHOLE chip?")))
+        return;
 
     try
     {
         bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-        chip_definition chip = switchToFlashAndGetId();
-        chip_definition::memorydef *memdef = chip.getMemDef(memId);
 
-        if(!memdef)
-            throw QString(tr("Unknown memory id"));
+        switchToFlashAndGetId();
 
-        QByteArray data = m_hexAreas[memId]->data();
-        if((quint32)data.size() != memdef->size)
-            throw QString(tr("Somethings wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
-
-        log("Writing memory");
-        showProgressDialog(tr("Writing memory"), m_modes[m_cur_mode]);
-
-        HexFile file;
-        file.setData(data);
-
-        m_modes[m_cur_mode]->flashRaw(file, memId, chip, m_auto_verify->isChecked());
-        m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
+        log("Erasing device");
+        showProgressDialog(tr("Erasing chip..."));
+        m_modes[m_cur_mode]->erase_device();
 
         if(restart)
         {
             log("Switching to run mode");
             m_modes[m_cur_mode]->switchToRunMode();
         }
-        updateProgressDialog(-1);
 
-        status(tr("Data has been successfuly written"));
+        updateProgressDialog(-1);
     }
     catch(QString ex)
     {
         updateProgressDialog(-1);
         showErrorBox(ex);
+        return;
     }
-}
 
-void LorrisShupito::writeFlashBtn()
-{
-    writeMem(MEM_FLASH);
-}
-
-void LorrisShupito::writeEEPROMBtn()
-{
-    writeMem(MEM_EEPROM);
+    QMessageBox succesBox(this);
+    succesBox.setIcon(QMessageBox::Information);
+    succesBox.setWindowTitle(tr("Succes!"));
+    succesBox.setText(tr("Chip was succesfuly erased!"));
+    succesBox.exec();
 }
