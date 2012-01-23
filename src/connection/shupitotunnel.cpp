@@ -41,6 +41,10 @@ bool ShupitoTunnel::Open()
 {
     if(!tunnelActive || !m_shupito)
         return false;
+
+    if(opened)
+        return true;
+
     opened = true;
     emit connected(true);
     connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
@@ -109,9 +113,9 @@ void ShupitoTunnel::SendData(const QByteArray &data)
 
 void ShupitoTunnel::tunnelStatus(bool opened)
 {
-    if(opened)
+    if(opened && !this->opened)
         connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
-    else
+    else if(!opened && this->opened)
         disconnect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, NULL);
     this->opened = opened;
     tunnelActive = opened;
