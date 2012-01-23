@@ -106,7 +106,7 @@ private slots:
 
     void readAll();
     void writeAll();
-    void progSpeedChanged(int idx);
+    void progSpeedChanged(QString text);
     void eraseDevice();
     void readFusesInFlash();
     void writeFusesInFlash();
@@ -168,6 +168,7 @@ private:
     ShupitoDesc *m_desc;
     QTimer *responseTimer;
     volatile quint8 m_response;
+    quint32 m_prog_speed_hz;
 
     QHexEdit *m_hexAreas[MEM_FUSES];
     ShupitoMode *m_modes[MODE_COUNT];

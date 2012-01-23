@@ -151,20 +151,18 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Programming speed:</string>
+             <string>Programming speed (Hz):</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
            <widget class="QComboBox" name="progSpeedBox">
+            <property name="editable">
+             <bool>true</bool>
+            </property>
             <item>
              <property name="text">
               <string>250000</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>5500000</string>
              </property>
             </item>
             <item>

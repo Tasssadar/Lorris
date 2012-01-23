@@ -58,11 +58,11 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     if(m_cur_mode >= MODE_COUNT)
         m_cur_mode = MODE_SPI;
 
-    int progIdx = sConfig.get(CFG_QUINT32_SHUPITO_PRG_SPEED);
-    if(progIdx < 0 || progIdx >= ui->progSpeedBox->count())
-        progIdx = 0;
+    m_prog_speed_hz = sConfig.get(CFG_QUINT32_SHUPITO_PRG_SPEED);
+    if(m_prog_speed_hz < 1 || m_prog_speed_hz >= 6000000)
+        m_prog_speed_hz = 250000;
 
-    ui->progSpeedBox->setCurrentIndex(progIdx);
+    ui->progSpeedBox->setEditText(QString::number(m_prog_speed_hz));
 
     if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_LOG))
     {
@@ -82,7 +82,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(ui->tunnelSpeedBox, SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
     connect(ui->tunnelCheck,    SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
     connect(ui->readButton,     SIGNAL(clicked()),                SLOT(readMemButton()));
-    connect(ui->progSpeedBox,   SIGNAL(currentIndexChanged(int)), SLOT(progSpeedChanged(int)));
+    connect(ui->progSpeedBox,   SIGNAL(editTextChanged(QString)), SLOT(progSpeedChanged(QString)));
     connect(ui->hideLogBtn,     SIGNAL(clicked()),                SLOT(hideLogBtn()));
     connect(ui->eraseButton,    SIGNAL(clicked()),                SLOT(eraseDevice()));
     connect(ui->hideFusesBtn,   SIGNAL(clicked()),                SLOT(hideFusesBtn()));
@@ -537,9 +537,20 @@ void LorrisShupito::modeSelected(int idx)
         m_mode_act[i]->setChecked(i == m_cur_mode);
 }
 
-void LorrisShupito::progSpeedChanged(int idx)
+void LorrisShupito::progSpeedChanged(QString text)
 {
-    sConfig.set(CFG_QUINT32_SHUPITO_PRG_SPEED, idx);
+    bool ok;
+    quint32 speed = text.toInt(&ok);
+    if(!ok)
+    {
+        ui->progSpeedBox->setStyleSheet("background-color: red");
+        return;
+    }
+    else
+        ui->progSpeedBox->setStyleSheet("");
+
+    m_prog_speed_hz = speed;
+    sConfig.set(CFG_QUINT32_SHUPITO_PRG_SPEED, m_prog_speed_hz);
 }
 
 void LorrisShupito::log(const QString &text)
@@ -677,8 +688,7 @@ chip_definition LorrisShupito::switchToFlashAndGetId()
 {
     log("Swithing to flash mode");
 
-    int speed_hz = ui->progSpeedBox->currentText().toInt();
-    m_modes[m_cur_mode]->switchToFlashMode(speed_hz);
+    m_modes[m_cur_mode]->switchToFlashMode(m_prog_speed_hz);
 
     log("Reading device id");
 
@@ -867,7 +877,7 @@ void LorrisShupito::readAll()
             m_modes[m_cur_mode]->switchToRunMode();
         }
 
-        status(tr("Data has been successfuly written"));
+        status(tr("Data has been successfuly read"));
     }
     catch(QString ex)
     {
