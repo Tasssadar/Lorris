@@ -254,18 +254,11 @@ void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, b
         throw QString(QObject::tr("Chip does not have mem id %1")).arg(memId);
 
     std::vector<page> pages;
-    file.makePages(pages, memId, chip);
-
-    quint32 countNoSkipped = 0;
-    quint32 flashedCount = 0;
     std::set<quint32> skipped;
-    for(quint32 i = 0; !m_cancel_requested && i < pages.size(); ++i)
-    {
-        if(!skipPage(memId, pages[i].data))
-            ++countNoSkipped;
-        else
-            skipped.insert(i);
-    }
+    file.makePages(pages, memId, chip, canSkipPages(memId) ? &skipped : NULL);
+
+    quint32 cntNoSkipped = pages.size() - skipped.size();
+    quint32 flashedCount = 0;
 
     prepareMemForWriting(memdef, chip);
 
@@ -276,7 +269,7 @@ void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, b
 
         flashPage(memdef, pages[i].data, pages[i].address);
 
-        int pct = (++flashedCount)*100/countNoSkipped;
+        int pct = (++flashedCount)*100/cntNoSkipped;
         if(pct == 100)
             --pct;
         emit updateProgressDialog(pct);
@@ -393,14 +386,7 @@ void ShupitoMode::flashPage(chip_definition::memorydef *memdef, std::vector<quin
     m_prepared = true;
 }
 
-bool ShupitoMode::skipPage(quint8 memId, std::vector<quint8> &pageData)
+bool ShupitoMode::canSkipPages(quint8 memId)
 {
-    if(memId != MEM_FLASH)
-        return false;
-
-    bool skip = true;
-    for(quint32 x = 0; skip && x < pageData.size(); ++x)
-        if(pageData[x] != 0xFF)
-            skip = false;
-    return skip;
+    return (memId == MEM_FLASH);
 }

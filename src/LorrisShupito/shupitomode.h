@@ -51,7 +51,7 @@ protected:
     }
     virtual void prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& chip);
     virtual void flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address);
-    virtual bool skipPage(quint8 memId, std::vector<quint8>& pageData);
+    virtual bool canSkipPages(quint8 memId);
 
 
     bool m_prepared;

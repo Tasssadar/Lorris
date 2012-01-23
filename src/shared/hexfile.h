@@ -4,6 +4,7 @@
 #include <QTypeInfo>
 #include <map>
 #include <vector>
+#include <set>
 
 class QFile;
 class chip_definition;
@@ -76,7 +77,7 @@ public:
         return m_data[i];
     }
 
-    void makePages(std::vector<page>& pages, quint8 memId, chip_definition& chip);
+    void makePages(std::vector<page>& pages, quint8 memId, chip_definition& chip, std::set<quint32> *skipPages);
     bool intersects(quint32 address, quint32 length);
     void getRange(quint32 address, quint32 length, std::vector<quint8> & out);
 

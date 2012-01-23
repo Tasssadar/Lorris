@@ -256,7 +256,7 @@ QByteArray HexFile::getDataArray(quint32 len)
 //template <typename OutputIterator>
 //void make_pages(memory const & memory, std::string const & memid, chip_definition const & chip, OutputIterator out)
 //program.hpp
-void HexFile::makePages(std::vector<page> &pages, quint8 memId, chip_definition &chip)
+void HexFile::makePages(std::vector<page> &pages, quint8 memId, chip_definition &chip, std::set<quint32> *skipPages)
 {
     chip_definition::memorydef const * memdef = chip.getMemDef(memId);
     if(!memdef)
@@ -311,6 +311,20 @@ void HexFile::makePages(std::vector<page> &pages, quint8 memId, chip_definition 
             std::fill(cur_page.data.begin(), cur_page.data.end(), 0xFF);
             patcher.patchPage(cur_page);
             pages.push_back(cur_page);
+        }
+    }
+
+    if(skipPages)
+    {
+        for(quint32 i = 0; i < pages.size(); ++i)
+        {
+            bool skip = true;
+            for(quint32 x = 0; skip && x < pages[i].data.size(); ++x)
+                if(pages[i].data[x] != 0xFF)
+                    skip = false;
+
+            if(skip)
+                skipPages->insert(i);
         }
     }
 }
