@@ -105,6 +105,7 @@ private:
 
     int _charWidth, _charHeight;            // char dimensions (dpendend on font)
     int _cursorX, _cursorY;                 // graphics position of the cursor
+    int _curAsciiX, _curAsciiY;             // cursor in ascii area  - Lorris change
     int _cursorPosition;                    // charakter positioin in stream (on byte ends in to steps)
     int _xPosAdr, _xPosHex, _xPosAscii;     // graphics x-position of the areas
 

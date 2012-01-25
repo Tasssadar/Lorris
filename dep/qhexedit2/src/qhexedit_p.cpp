@@ -535,12 +535,13 @@ if (!_readOnly)
     }
 
     // Switch between insert/overwrite mode
-    if ((event->key() == Qt::Key_Insert) && (event->modifiers() == Qt::NoModifier))
+    // Lorris change
+    /*if ((event->key() == Qt::Key_Insert) && (event->modifiers() == Qt::NoModifier))
     {
         _overwriteMode = !_overwriteMode;
         setCursorPos(_cursorPosition);
         overwriteModeChanged(_overwriteMode);
-    }
+    }*/
 
     _scrollArea->ensureVisible(_cursorX, _cursorY + _charHeight/2, 3, _charHeight/2 + 2);
     update();
@@ -713,6 +714,9 @@ void QHexEditPrivate::paintEvent(QPaintEvent *event)
             painter.fillRect(_cursorX, _cursorY + _charHeight - 2, _charWidth, 2, this->palette().color(QPalette::WindowText));
         else
             painter.fillRect(_cursorX, _cursorY, 2, _charHeight, this->palette().color(QPalette::WindowText));
+
+        // Lorris change
+        painter.fillRect(_curAsciiX, _curAsciiY, _charWidth, 2, this->palette().color(QPalette::WindowText));
     }
 
     if (_size != _xData.size())
@@ -746,6 +750,11 @@ void QHexEditPrivate::setCursorPos(int position)
     _cursorY = (position / (2 * BYTES_PER_LINE)) * _charHeight + 4;
     int x = (position % (2 * BYTES_PER_LINE));
     _cursorX = (((x / 2) * 3) + (x % 2)) * _charWidth + _xPosHex;
+
+
+    // Lorris change
+    _curAsciiX = ((position/2) % BYTES_PER_LINE) * _charWidth + _xPosAscii;
+    _curAsciiY = ((position/2) / BYTES_PER_LINE + 1) * _charHeight + 2;
 
     // immiadately draw cursor
     _blink = true;
@@ -815,11 +824,14 @@ int QHexEditPrivate::getSelectionEnd()
 
 void QHexEditPrivate::updateCursor()
 {
+    //Lorris change
+    /*
     if (_blink)
         _blink = false;
     else
         _blink = true;
     update(_cursorX, _cursorY, _charWidth, _charHeight);
+    */
 }
 
 void QHexEditPrivate::adjust()
