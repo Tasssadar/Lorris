@@ -31,6 +31,7 @@
 #include <QByteArray>
 #include <QProgressDialog>
 #include <QSignalMapper>
+#include <QRadioButton>
 
 #include "shupito.h"
 #include "lorrisshupito.h"
@@ -129,6 +130,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
     m_progress_dialog = NULL;
     m_color = VDD_BLACK;
+    m_vdd_signals = NULL;
 }
 
 LorrisShupito::~LorrisShupito()
@@ -142,6 +144,8 @@ LorrisShupito::~LorrisShupito()
 
     for(quint8 i = 0; i < MODE_COUNT; ++i)
         delete m_modes[i];
+
+    delete m_vdd_signals;
 }
 
 void LorrisShupito::initMenuBar()
@@ -285,7 +289,9 @@ void LorrisShupito::connectedStatus(bool connected)
     }
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
-    ui->vddBox->setEnabled(connected);
+
+    for(quint8 i = 0; i < m_vdd_radios.size(); ++i)
+        m_vdd_radios[i]->setEnabled(connected);
 }
 
 void LorrisShupito::readData(const QByteArray &data)
@@ -441,9 +447,9 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
 {
     m_vdd_setup = vs;
 
-    disconnect(ui->vddBox, SIGNAL(currentIndexChanged(int)), 0, 0);
-
-    ui->vddBox->clear();
+    for(quint8 i = 0; i < m_vdd_radios.size(); ++i)
+        delete m_vdd_radios[i];
+    m_vdd_radios.clear();
 
     if(vs.empty())
     {
@@ -451,13 +457,30 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
         return;
     }
 
-    for(quint8 i = 0; i < vs[0].drives.size(); ++i)
-        ui->vddBox->addItem(vs[0].drives[i]);
+    if(m_vdd_signals)
+    {
+        disconnect(this, SLOT(vddIndexChanged(int)));
+        delete m_vdd_signals;
+    }
+    m_vdd_signals = new QSignalMapper(this);
+
+    for(quint8 i = 0; i < vs[0].drives.size() && i < 5; ++i)
+    {
+        QRadioButton *rad = new QRadioButton(vs[0].drives[i], this);
+        m_vdd_radios.push_back(rad);
+        ui->vddLayout->addWidget(rad);
+
+        m_vdd_signals->setMapping(rad, i);
+        connect(rad, SIGNAL(clicked()), m_vdd_signals, SLOT(map()));
+    }
     lastVccIndex = vs[0].current_drive;
-    ui->vddBox->setCurrentIndex(vs[0].current_drive);
+
+    if(m_vdd_radios.size() > (uint)lastVccIndex)
+        m_vdd_radios[lastVccIndex]->setChecked(true);
+
     ui->engineLabel->setText(vs[0].name);
 
-    connect(ui->vddBox, SIGNAL(currentIndexChanged(int)), this, SLOT(vddIndexChanged(int)));
+    connect(m_vdd_signals, SIGNAL(mapped(int)), this, SLOT(vddIndexChanged(int)));
 }
 
 void LorrisShupito::vddIndexChanged(int index)
@@ -467,7 +490,7 @@ void LorrisShupito::vddIndexChanged(int index)
 
     if(lastVccIndex == 0 && index > 0 && m_vcc != 0)
     {
-        ui->vddBox->setCurrentIndex(0);
+        m_vdd_radios[0]->setChecked(true);
         showErrorBox(tr("Can't set output VCC, voltage detected!"));
         return;
     }

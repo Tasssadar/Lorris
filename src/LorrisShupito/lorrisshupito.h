@@ -57,9 +57,11 @@ namespace Ui {
 class QLabel;
 class QComboBox;
 class QHexEdit;
+class QRadioButton;
+class QProgressDialog;
+class QSignalMapper;
 class ShupitoMode;
 class chip_definition;
-class QProgressDialog;
 class FuseWidget;
 
 class LorrisShupito : public WorkTab
@@ -177,6 +179,10 @@ private:
     vdd_setup m_vdd_setup;
     double m_vcc;
     int lastVccIndex;
+    VddColor m_color;
+
+    std::vector<QRadioButton*> m_vdd_radios;
+    QSignalMapper *m_vdd_signals;
 
     ShupitoDesc::config *m_vdd_config;
     ShupitoDesc::config *m_tunnel_config;
@@ -185,8 +191,6 @@ private:
     FuseWidget *m_fuse_widget;
 
     chip_definition m_cur_def;
-
-    VddColor m_color;
 };
 
 #endif // LORRISSHUPITO_H
