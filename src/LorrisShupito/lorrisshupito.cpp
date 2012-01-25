@@ -289,6 +289,10 @@ void LorrisShupito::connectedStatus(bool connected)
     }
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
+    ui->progSpeedBox->setEnabled(connected);
+    ui->readButton->setEnabled(connected);
+    ui->writeButton->setEnabled(connected);
+    ui->eraseButton->setEnabled(connected);
 
     for(quint8 i = 0; i < m_vdd_radios.size(); ++i)
         m_vdd_radios[i]->setEnabled(connected);
@@ -803,8 +807,6 @@ void LorrisShupito::restartChip()
 
     stopChip();
     startChip();
-
-    status(tr("Chip has been restarted"));
 }
 
 void LorrisShupito::loadFromFile(int memId)

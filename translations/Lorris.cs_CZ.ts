@@ -219,6 +219,30 @@
     </message>
 </context>
 <context>
+    <name>FuseWidget</name>
+    <message>
+        <location filename="../src/LorrisShupito/fusewidget.cpp" line="44"/>
+        <source>Fuses</source>
+        <translation>Pojistky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/fusewidget.cpp" line="50"/>
+        <location filename="../src/LorrisShupito/fusewidget.cpp" line="64"/>
+        <source>Read fuses</source>
+        <translation>Přečíst pojistky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/fusewidget.cpp" line="68"/>
+        <source>Remember fuses</source>
+        <translation>Zapamatovat pojistky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/fusewidget.cpp" line="178"/>
+        <source>Fuses had been remembered</source>
+        <translation>Pojistky byly zapamatovány</translation>
+    </message>
+</context>
+<context>
     <name>GraphCurveAddDialog</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui" line="14"/>
@@ -323,7 +347,7 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="28"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="166"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="174"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
@@ -358,50 +382,60 @@
         <translation> z 0</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="130"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="74"/>
+        <source>&amp;Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="76"/>
+        <source>Clear data</source>
+        <translation>Vyčistit</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="138"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="140"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="150"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="171"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="148"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="158"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="179"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="154"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="162"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="155"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="163"/>
         <source>Can&apos;t open connection!</source>
         <translation>Nemůžu se připojit!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="217"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="335"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="225"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="343"/>
         <source> of </source>
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="422"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="430"/>
         <source>Clear data?</source>
         <translation>Vyčistit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="423"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="431"/>
         <source>Do you really clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete smazat všechny widgety, data a strukturu packetu?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="424"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="432"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="425"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="433"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -415,190 +449,394 @@
     </message>
     <message>
         <location filename="../src/LorrisShupito/lorrisshupito.ui" line="24"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="170"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="281"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="31"/>
-        <source>Tunnel speed:</source>
-        <translation>Rychlost tunelu</translation>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="80"/>
+        <source>RS232 Tunnel speed:</source>
+        <translation>Rychlost RS232 tunelu:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="48"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="97"/>
         <source>38400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="53"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="102"/>
         <source>57600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="58"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="107"/>
         <source>115200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="63"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="166"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="112"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="170"/>
         <source>500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="68"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="171"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="117"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="175"/>
         <source>1000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="73"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="122"/>
         <source>1500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="78"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="176"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="127"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="180"/>
         <source>2000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="86"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="135"/>
         <source>Enable RS232 tunnel</source>
         <translation>Povolit RS232 tunel</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="127"/>
-        <source>Mode:</source>
-        <translation>Mód:</translation>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="154"/>
+        <source>Programming speed (Hz):</source>
+        <translation>Rychlost programování (Hz):</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="135"/>
-        <source>SPI</source>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="216"/>
+        <source>Read</source>
+        <translation>Číst</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="254"/>
+        <source>Write</source>
+        <translation>Programovat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="286"/>
+        <source>Erase</source>
+        <translation>Vymazat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="362"/>
+        <source>N/A</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="140"/>
-        <source>PDI</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="145"/>
-        <source>JTAG</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="153"/>
-        <source>Programming speed:</source>
-        <translation>Rychlost programování:</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="161"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="165"/>
         <source>250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="197"/>
-        <source>Read memory</source>
-        <translation>Přečíst paměť</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="204"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="220"/>
         <source>Read EEPROM</source>
         <translation>Přečíst EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="215"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="31"/>
         <source>Chip ID:</source>
         <translation>ID čipu:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="301"/>
-        <source>Fuses</source>
-        <translation>Pojistky</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="78"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="98"/>
         <source>Program memory</source>
         <translation>Paměť programu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="78"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="98"/>
         <source>EEPROM</source>
         <translation>EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="132"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="153"/>
+        <source>Chip</source>
+        <translation>Součástka</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="156"/>
+        <source>Start chip</source>
+        <translation>Start</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="157"/>
+        <source>Stop chip</source>
+        <translation>Stop</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="158"/>
+        <source>Restart chip</source>
+        <translation>Restart</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="167"/>
+        <source>Mode</source>
+        <translation>Rozhraní</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="186"/>
+        <source>Verify write</source>
+        <translation>Ověření naprogramovaných dat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="190"/>
+        <source>Data</source>
+        <translation>Data</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="193"/>
+        <source>Load data into flash</source>
+        <translation>Importovat data pro flash paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="195"/>
+        <source>Load data into EEPROM</source>
+        <translation>Importovat data pro EEPROM</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="198"/>
+        <source>Save flash memory</source>
+        <translation>Exportovat flash paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="200"/>
+        <source>Save EERPOM</source>
+        <translation>Exportovat EEPROM</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="217"/>
+        <source>Read flash</source>
+        <translation>Přečíst flash paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="219"/>
+        <source>Read all</source>
+        <translation>Přečíst vše</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="221"/>
+        <source>Read fuses</source>
+        <translation>Přečíst pojistky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="231"/>
+        <source>Write flash</source>
+        <translation>Programovat flash paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="233"/>
+        <source>Write all</source>
+        <translation>Programovat vše</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="234"/>
+        <source>Write EEPROM</source>
+        <translation>Programovat EEPROM</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="235"/>
+        <source>Write fuses</source>
+        <translation>Zapsat pojistky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="249"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="143"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="154"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="177"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="260"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="271"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="288"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="158"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="342"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="455"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="483"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="553"/>
+        <source>This mode is unsupported by Lorris, for now.</source>
+        <translation>Toto rozhraní zatím není podporováno.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="602"/>
+        <source>Output voltage detected!</source>
+        <translation>Detekováno napětí na výstupu!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="726"/>
+        <source>Unsupported chip: %1</source>
+        <translation>Nepodporovaný čip: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="738"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="159"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1014"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1043"/>
+        <source>Data has been successfuly written</source>
+        <translation>Data byla naprogramována</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1061"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1120"/>
+        <source>Fuses had not been read yet</source>
+        <translation>Pojistky ještě nebyly přečteny ze součástky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1067"/>
+        <source>You have to &quot;Remember&quot; fuses prior to writing</source>
+        <translation>Před zapsáním pojistek je musíte &quot;zapamatovat&quot;</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1071"/>
+        <source>Write fuses?</source>
+        <translation>Zapsat pojistky?</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1071"/>
+        <source>Do you really wanna to write fuses to the chip?</source>
+        <translation>Opravdu chcete zapsat pojistky?</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1086"/>
+        <source>Fuses had been succesfully written</source>
+        <translation>Pojistky byly úspěšně zapsány</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1099"/>
+        <source>Unknown memory id</source>
+        <translation>Neznámá paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1103"/>
+        <source>Somethings wrong, data in tab: %1, chip size: %2</source>
+        <translation>Něco je špatně, data v záložce: %1, velikost čipu: %2. Moc velký program?</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1106"/>
+        <source>Writing memory</source>
+        <translation>Programuji paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1132"/>
+        <source>Erase chip?</source>
+        <translation>Vymazat čip?</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1132"/>
+        <source>Do you really wanna to erase WHOLE chip?</source>
+        <translation>Opravdu chcete vymazat celý čip?</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1142"/>
+        <source>Erasing chip...</source>
+        <translation>Mažu čip...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1162"/>
+        <source>Succes!</source>
+        <translation>Hotovo!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1163"/>
+        <source>Chip was succesfuly erased!</source>
+        <translation>Čip byl úspěšně vymazán!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="272"/>
         <source>Can&apos;t open connection!</source>
         <translation>Nemůžu se připojit!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="343"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="494"/>
         <source>Can&apos;t set output VCC, voltage detected!</source>
         <translation>Nemůžu nastavit výstupní napětí, na pinech už nějáké bylo detekováno!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="380"/>
-        <source>Unsupported</source>
-        <translation>Nepodoporováno</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="381"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="526"/>
         <source>It looks like your Shupito does not support RS232 tunnel!</source>
         <translation>Vypadá to že vaše Shupito nepodporuje RS232 tunel!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="396"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="539"/>
         <source>RS232 tunnel </source>
         <translation>RS232 tunel </translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="398"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="541"/>
         <source>enabled</source>
         <translation>zapnut</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="400"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="543"/>
         <source>disabled</source>
         <translation>vypnut</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="438"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="748"/>
+        <source>Yes</source>
+        <translation>Ano</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="749"/>
+        <source>No</source>
+        <translation>Ne</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="765"/>
+        <source>Chip has been started</source>
+        <translation>Součástka byla spuštěna</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="787"/>
+        <source>Chip has been stopped</source>
+        <translation>Součástka byla zastavena</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="807"/>
+        <source>Chip has been restarted</source>
+        <translation>Součástka byla restartována</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="841"/>
+        <source>File loaded</source>
+        <translation>Soubor byl načten</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="873"/>
+        <source>File saved</source>
+        <translation>Data byla uložena</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="903"/>
+        <source>Data has been successfuly read</source>
+        <translation>Data byla úspěšně přečtena</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="959"/>
+        <source>Fuses had been succesfully read</source>
+        <translation>Pojistky byly úspěšně přečteny</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="971"/>
         <source>Reading memory</source>
         <translation>Čtu paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="485"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="600"/>
         <source>No voltage present</source>
         <translation>Nebylo detekováno žádné napětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="503"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="617"/>
         <source>&lt;unknown&gt;</source>
         <translation>&lt;neznámý&gt;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="530"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="645"/>
         <source>Progress</source>
         <translation>Průběh</translation>
     </message>
@@ -606,148 +844,148 @@
 <context>
     <name>LorrisTerminal</name>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="67"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="70"/>
         <source>Browse...</source>
         <translation>Procházet...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="70"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="360"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="73"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="370"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="74"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="472"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="77"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="482"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="78"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="81"/>
         <source>Flash</source>
         <translation>Flash</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="83"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="151"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="86"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="154"/>
         <source>Pause</source>
         <translation>Zmrazit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="87"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="90"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="90"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="93"/>
         <source>Export EEPROM</source>
         <translation>Exportovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="95"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="98"/>
         <source>Import EEPROM</source>
         <translation>Importovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="126"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="129"/>
         <source>Open File</source>
         <translation>Otevřít soubor</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="128"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="131"/>
         <source>Intel hex file (*.hex)</source>
         <translation>Intel hex (*.hex)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="145"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="148"/>
         <source>Unpause</source>
         <translation>Odmrazit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="194"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="268"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="563"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="202"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="280"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="578"/>
         <source>Unsupported chip: </source>
         <translation>Nepodporovaný čip: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="346"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="356"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="371"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="384"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="381"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="394"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="193"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="267"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="388"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="516"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="532"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="562"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="579"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="663"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="677"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="694"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="709"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="201"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="279"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="398"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="526"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="544"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="577"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="598"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="682"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="696"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="713"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="728"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="389"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="399"/>
         <source>Can&apos;t open serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="424"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="434"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="482"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="492"/>
         <source>Stopping..</source>
         <translation>Zastavuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="517"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="527"/>
         <source>Timeout on stopping chip!</source>
         <translation>Timeout při zastavování čipu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="533"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="545"/>
         <source>Error loading hex file: </source>
         <translation>Chyba při načítání hex souboru: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="580"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="599"/>
         <source>Error making pages: </source>
         <translation>Chyba při vytváření stránek: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="597"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="615"/>
         <source>Flashing into </source>
         <translation>Čip: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="664"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="683"/>
         <source>Timeout during reading EEPROM!</source>
         <translation>Timeout při čtení EEPROM!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="678"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="697"/>
         <source>Timeout during writing EEPROM!</source>
         <translation>Timeout při zapisování EEPROM!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="695"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="714"/>
         <source>Timeout during flashing!</source>
         <translation>Timeout při nahrávání programu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="710"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="729"/>
         <source>Can&apos;t get device id!</source>
         <translation>Nemůžu identifikovat čip!</translation>
     </message>
@@ -781,36 +1019,36 @@
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="71"/>
-        <source>About Lorris..</source>
-        <translation>O Lorris..</translation>
+        <source>About Lorris...</source>
+        <translation>O Lorris...</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="141"/>
+        <location filename="../src/ui/mainwindow.cpp" line="144"/>
         <source>Exit Lorris?</source>
         <translation>Ukončit Lorris?</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="142"/>
+        <location filename="../src/ui/mainwindow.cpp" line="145"/>
         <source>Do you really want to leave Lorris?</source>
         <translation>Opravdu chcete ukončit Lorris?</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="143"/>
+        <location filename="../src/ui/mainwindow.cpp" line="146"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="144"/>
+        <location filename="../src/ui/mainwindow.cpp" line="147"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="164"/>
+        <location filename="../src/ui/mainwindow.cpp" line="167"/>
         <source>About Lorris</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="165"/>
+        <location filename="../src/ui/mainwindow.cpp" line="168"/>
         <source>Lorris revision </source>
         <translation>Lorris v revizi </translation>
     </message>
@@ -1439,13 +1677,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="44"/>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="98"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="43"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="84"/>
         <source>Intel hex file (*.hex);;Data file (*.dta)</source>
         <translation>Intel hex (*.hex);;Datový soubor (*.dta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="45"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="44"/>
         <source>Export EEPROM</source>
         <translation>Exportovat EEPROM</translation>
     </message>
@@ -1466,14 +1704,14 @@
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="166"/>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="194"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="63"/>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="53"/>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="105"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="75"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="125"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="81"/>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="54"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="64"/>
         <source>Can&apos;t create/open file!</source>
         <translation>Nemůžu vytvořit/otevřít soubor!</translation>
     </message>
@@ -1499,51 +1737,15 @@
         <translation>Data mají špatné magic číslo!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="99"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="85"/>
         <source>Import EEPROM</source>
         <translation>Importovat EEPROM</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="167"/>
-        <location filename="../src/LorrisTerminal/eeprom.cpp" line="106"/>
-        <location filename="../src/LorrisTerminal/hexfile.cpp" line="45"/>
+        <location filename="../src/LorrisTerminal/eeprom.cpp" line="105"/>
         <source>Can&apos;t open file!</source>
         <translation>Nemůžu otevřít soubor!</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisTerminal/hexfile.cpp" line="77"/>
-        <source>Wrong line format.</source>
-        <translation>Špatný formát řádků.</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisTerminal/hexfile.cpp" line="97"/>
-        <source>Invalid record lenght.</source>
-        <translation>Špatná délka záznamu.</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisTerminal/hexfile.cpp" line="107"/>
-        <source>Invalid type 2 record.</source>
-        <translation>Chybný záznam typu 2.</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisTerminal/hexfile.cpp" line="121"/>
-        <source>Invalid record type.</source>
-        <translation>Chybný typ záznamu.</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisTerminal/hexfile.cpp" line="134"/>
-        <source>Memory location was defined twice!</source>
-        <translation>Místo v paměti bylo definováno dvakrát!</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisTerminal/hexfile.cpp" line="154"/>
-        <source>Program is too big!</source>
-        <translation>Program je příliš velký!</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisTerminal/hexfile.cpp" line="193"/>
-        <source>Failed patching page</source>
-        <translation>Chyba při patchování stránky</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminalinfo.cpp" line="44"/>
@@ -1586,34 +1788,159 @@
         <translation>Program pro obsluhu programátoru Shupito.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/shupitomode.cpp" line="56"/>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="82"/>
         <source>Failed to switch to the flash mode (error %1)</source>
         <translation>Nemůžu přepnout čip do flash módu (chyba %1)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/shupitomode.cpp" line="72"/>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="98"/>
         <source>Failed to switch to the run mode</source>
         <translation>Nemůžu čip přepnout zpět do normálního módu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/shupitomode.cpp" line="87"/>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="113"/>
         <source>The device can&apos;t program these types of chips.</source>
         <translation>Vaše Shupito nemůže programovat tento typ čipů.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/shupitomode.cpp" line="120"/>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="146"/>
         <source>Failed to read the chip&apos;s signature (error %1).</source>
         <translation>Chyba při čtení identifikace čipu (chyba %1).</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/shupitomode.cpp" line="150"/>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="178"/>
         <source>Unknown memory id</source>
         <translation>Neznámá paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/shupitomode.cpp" line="186"/>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="214"/>
         <source>The read returned wrong-sized stream.</source>
         <translation>Čtení paměti vrátilo data o špatné velikosti.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="234"/>
+        <source>Failed to erase chip&apos;s memory</source>
+        <translation>Chyba při mazání čipu!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="249"/>
+        <source>Can&apos;t read fuses</source>
+        <translation>Nemůžu přečíst pojistky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="278"/>
+        <source>Chip does not have mem id %1</source>
+        <translation>Čip nemá paměť %1</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="305"/>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="335"/>
+        <source>Flashing interruped!</source>
+        <translation>Programování přerušeno!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="310"/>
+        <source>Verifying data</source>
+        <translation>Kontroluji data</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="327"/>
+        <source>Verification failed!</source>
+        <translation>Chyba při kontrole - data nesedí!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="351"/>
+        <source>Failed to prepare chip&apos;s memory for writing</source>
+        <translation>Nemůžu připravit paměť čipu pro programování</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="372"/>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="395"/>
+        <location filename="../src/LorrisShupito/shupitomode.cpp" line="406"/>
+        <source>Failed to flash a page</source>
+        <translation>Nemůžu naprogramovat stránku</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="49"/>
+        <source>Intel HEX file (*.hex)</source>
+        <translation>Intel HEX soubor (*.hex)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="817"/>
+        <source>Import data</source>
+        <translation>Importovat data</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="856"/>
+        <source>Export data</source>
+        <translation>Exportovat data</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="44"/>
+        <source>Cannot patch the program, it does not begin with rjmp instruction.</source>
+        <translation>Nemůžu opatchovat program, nezačíná rjmp instrukcí.</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="56"/>
+        <source>The program is incompatible with this patching algorithm.</source>
+        <translation>Program není kompatibilní s tímto typem patchování.</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="72"/>
+        <location filename="../src/shared/hexfile.cpp" line="178"/>
+        <source>Can&apos;t open file &quot;%1&quot;!</source>
+        <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="88"/>
+        <source>Invalid line format (line %1)</source>
+        <translation>Špatný formát řádku (č. %1)</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="96"/>
+        <source>Failed to parse hex num (line %1)</source>
+        <translation>Chyba při parsování hex čísla (lajna %1)</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="110"/>
+        <source>Checksums does not match (line %1)</source>
+        <translation>Kontrolní součet nesedí (lajna %1)</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="117"/>
+        <source>Invalid record lenght specified (line %1)</source>
+        <translation>Chybná délka záznamu (lajna %1)</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="122"/>
+        <source>Invalid type 4 record (line %1)</source>
+        <translation>Chybný záznam typu 4 (lajna %1)</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="133"/>
+        <source>Invalid type 2 record (line %1)</source>
+        <translation>Chybný záznam typu 2 (lajna %1)</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="142"/>
+        <source>Invalid record type (line %1)</source>
+        <translation>Chybný typ záznamu (lajna %1)</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="165"/>
+        <location filename="../src/shared/hexfile.cpp" line="169"/>
+        <source>Memory location was defined twice (line %1)</source>
+        <translation>Oblast paměti byla definována dvakrát (lajna %1)</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="286"/>
+        <source>This chip does not have memory type %1</source>
+        <translation>Tento čip nemá paměť %1</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/hexfile.cpp" line="289"/>
+        <source>Program is too large.</source>
+        <translation>Program je příliš velký.</translation>
     </message>
 </context>
 <context>
