@@ -71,7 +71,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/shupitospi.cpp \
     src/LorrisShupito/fusewidget.cpp \
     src/shared/hexfile.cpp \
-    src/shared/chipdefs.cpp
+    src/shared/chipdefs.cpp \
+    src/LorrisShupito/shupitopdi.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -137,7 +138,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/shupitospi.h \
     src/LorrisShupito/fusewidget.h \
     src/shared/hexfile.h \
-    src/shared/chipdefs.h
+    src/shared/chipdefs.h \
+    src/LorrisShupito/shupitopdi.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

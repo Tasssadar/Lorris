@@ -28,6 +28,7 @@
 #include "shupito.h"
 #include "shupitomode.h"
 #include "shupitospi.h"
+#include "shupitopdi.h"
 #include "shared/chipdefs.h"
 #include "shared/hexfile.h"
 
@@ -52,8 +53,8 @@ ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito)
     switch(mode)
     {
         case MODE_SPI: return new ShupitoSPI(shupito);
+        case MODE_PDI: return new ShupitoPDI(shupito);
         // TODO
-        case MODE_PDI:
         case MODE_JTAG:
             return NULL;
     }
