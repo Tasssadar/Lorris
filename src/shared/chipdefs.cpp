@@ -32,9 +32,12 @@
 #include "chipdefs.h"
 
 // const std::string embedded_chipdefs, chipdefs.cpp
+// fuse registers:
+// 0 1 2 3 4 5 6 7 | 8 9 10 11 12 13 14 15 | 16 17 18 19 20 21 22 23 | 24 25 26 27 28 29 30 31
+//   Lock bits     |     fuse low byte     |     fuse high byte      |    extended fuse byte
 static const QString embedded_chipdefs =
     // lock bits, low fuses, high fuses, extended fuses
-    "atmega48 avr:1e9205 flash=4096:64,eeprom=256:4 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19"
+    "atmega48 avr:1e9205 flash=4096:64,eeprom=256:4 lb:0,1 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19"
         " wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 selfprgen:24\n"
     "atmega88 avr:1e930a flash=8192:64,eeprom=512:4"
         " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19"
@@ -43,6 +46,15 @@ static const QString embedded_chipdefs =
         " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19"
         " wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bootrst:24 bootsz:25,26\n"
 
+    "atmega328 avr:1e9514 flash=32768:128,eeprom=1024:4"
+        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15"
+        " bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1"
+        " bodlevel:24,25,26\n"
+    "atmega328p avr:1e950f flash=32768:128,eeprom=1024:4"
+        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15"
+        " bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1"
+        " bodlevel:24,25,26\n"
+
     "atmega16 avr:1e9403 flash=16384:128,eeprom=512:4"
         " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 boden:14 bodlevel:15"
         " bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23\n"
@@ -50,6 +62,11 @@ static const QString embedded_chipdefs =
     "atmega128 avr:1e9702 flash=131072:256,eeprom=4096"
         " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 boden:14 bodlevel:15"
         " bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23 wdton:24 m103c:25\n"
+
+    "atmega1284p avr:1e9705 flash=131072:256,eeprom=4096:8"
+        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15"
+        " bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 jtagen:22 ocden:23"
+        " bodlevel:24,25,26\n"
 
     // the datasheet rev D is wrong, the page size is 64w/128b
     "atmega8u2 avr:1e9389 flash=8192:128,eeprom=256:4"

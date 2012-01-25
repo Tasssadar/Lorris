@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>946</width>
+    <width>1205</width>
     <height>372</height>
    </rect>
   </property>
@@ -348,6 +348,9 @@
             <widget class="QComboBox" name="vddBox">
              <property name="sizeAdjustPolicy">
               <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <property name="modelColumn">
+              <number>0</number>
              </property>
             </widget>
            </item>
