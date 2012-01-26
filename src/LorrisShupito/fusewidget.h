@@ -48,13 +48,15 @@ public:
     explicit FuseWidget(QWidget *parent = 0);
     ~FuseWidget();
 
-    void setFuses(std::vector<chip_definition::fuse>& fuses);
-    void clear();
+    void setFuses(chip_definition& chip);
+    void clear(bool addButton = false);
 
     std::vector<quint8>& getFuseData() { return m_fuse_data; }
 
     bool isChanged() { return m_changed; }
     bool isLoaded() { return !m_fuses.empty(); }
+
+    chip_definition& getChipDef() { return m_chip; }
 
 protected:
     void contextMenuEvent( QContextMenuEvent * event );
@@ -74,6 +76,8 @@ private:
     QVBoxLayout *m_layout;
     QFormLayout *m_fuse_layout;
     QPushButton *readFusesBtn;
+
+    chip_definition m_chip;
 
     std::vector<fuse_line*> m_fuses;
     std::vector<quint8> m_fuse_data;

@@ -148,6 +148,7 @@ private:
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     void showErrorBox(const QString& text);
     bool showContinueBox(const QString& title, const QString& text);
+    void postFlashSwitchCheck(chip_definition &chip);
     chip_definition switchToFlashAndGetId();
     chip_definition update_chip_description(const QString& chip_id);
     void initMenuBar();

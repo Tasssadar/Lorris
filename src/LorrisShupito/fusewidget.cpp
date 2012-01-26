@@ -84,7 +84,7 @@ FuseWidget::~FuseWidget()
     clear();
 }
 
-void FuseWidget::clear()
+void FuseWidget::clear(bool addButton)
 {
     for(quint16 i = 0; i < m_fuses.size(); ++i)
     {
@@ -93,6 +93,13 @@ void FuseWidget::clear()
         delete m_fuses[i];
     }
     m_fuses.clear();
+
+    if(addButton && !readFusesBtn)
+    {
+        readFusesBtn = new QPushButton(tr("Read fuses"), this);
+        m_layout->insertWidget(2, readFusesBtn);
+        connect(readFusesBtn, SIGNAL(clicked()), this, SIGNAL(readFuses()));
+    }
 }
 
 void FuseWidget::contextMenuEvent( QContextMenuEvent * event )
@@ -101,10 +108,14 @@ void FuseWidget::contextMenuEvent( QContextMenuEvent * event )
 }
 
 // void update_fuse_window(), avr232client.cpp
-void FuseWidget::setFuses(std::vector<chip_definition::fuse>& fuses)
+void FuseWidget::setFuses(chip_definition &chip)
 {
-    if(fuses.size() == 0)
+    m_chip = chip;
+
+    if(chip.getFuses().size() == 0)
         return;
+
+    std::vector<chip_definition::fuse>& fuses = chip.getFuses();
 
     if(readFusesBtn)
     {

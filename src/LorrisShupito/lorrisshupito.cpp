@@ -729,10 +729,16 @@ chip_definition LorrisShupito::switchToFlashAndGetId()
     if(ui->chipIdLabel->text().contains("<"))
         throw QString(tr("Unsupported chip: %1")).arg(id);
 
-    //TODO:
-    //void post_flash_switch_check(), avrclient232.cpp
+    postFlashSwitchCheck(chip);
 
     return chip;
+}
+
+//void post_flash_switch_check(), avrclient232.cpp
+void LorrisShupito::postFlashSwitchCheck(chip_definition& chip)
+{
+    if(m_fuse_widget->getChipDef().getSign() != chip.getSign())
+        m_fuse_widget->clear(true);
 }
 
 void LorrisShupito::showErrorBox(const QString &text)
@@ -986,7 +992,7 @@ void LorrisShupito::readFuses(chip_definition& chip)
     data.clear();
 
     m_modes[m_cur_mode]->readFuses(data, chip);
-    m_fuse_widget->setFuses(chip.getFuses());
+    m_fuse_widget->setFuses(chip);
 
     hideFuses(false);
 }
