@@ -57,7 +57,7 @@ FuseWidget::FuseWidget(QWidget *parent) :
     m_layout->addLayout(m_fuse_layout);
     m_layout->addItem(spacer);
 
-    setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
+    setFrameStyle(QFrame::Panel | QFrame::Plain);
     setContextMenuPolicy(Qt::DefaultContextMenu);
 
     contextMenu = new QMenu(this);

@@ -26,6 +26,7 @@
 #include <QLocale>
 
 #include "ui/mainwindow.h"
+#include "config.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,10 +36,15 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("github.com/Tasssadar");
     QCoreApplication::setApplicationName("Lorris");
 
+    QLocale newLang = QLocale(langs[sConfig.get(CFG_QUINT32_LANGUAGE)]);
+
     QTranslator translator;
-    if(!translator.load("Lorris." + QLocale::system().name(), "translations"))
-        translator.load("Lorris." + QLocale::system().name(), "/usr/share/lorris");
-    a.installTranslator(&translator);
+    bool loaded = translator.load("Lorris." + newLang.name(), "translations");
+    if(!loaded)
+        loaded = translator.load("Lorris." + newLang.name(), "/usr/share/lorris");
+
+    if(loaded)
+        a.installTranslator(&translator);
 
     MainWindow w;
     w.show();

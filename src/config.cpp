@@ -35,6 +35,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "analyzer/update_time",      // CFG_QUINT32_ANALYZER_UPDATE_TIME
     "shupito/flash_mode",        // CFG_QUINT32_SHUPITO_MODE
     "shupito/prog_speed",        // CFG_QUINT32_SHUPITO_PRG_SPEED
+    "general/language",          // CFG_QUINT32_LANGUAGE
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -65,6 +66,7 @@ Config::Config()
     m_def_quint32[CFG_QUINT32_ANALYZER_UPDATE_TIME]= 100;
     m_def_quint32[CFG_QUINT32_SHUPITO_MODE]        = 0;
     m_def_quint32[CFG_QUINT32_SHUPITO_PRG_SPEED]   = 0;
+    m_def_quint32[CFG_QUINT32_LANGUAGE]            = 0;
 
     m_def_string[CFG_STRING_SERIAL_PORT]           = "";
     m_def_string[CFG_STRING_SHUPITO_PORT]          = "";

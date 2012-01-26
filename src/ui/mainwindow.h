@@ -27,6 +27,9 @@
 #include <QMainWindow>
 #include <map>
 #include <vector>
+#include <QLocale>
+
+extern QLocale::Language langs[];
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -42,6 +45,8 @@ private slots:
     void closeEvent(QCloseEvent *event);
     void tabChanged(int index);
 
+    void langChanged(int idx);
+
 private:
     bool Quit();
     QString getVersionString();
@@ -50,6 +55,8 @@ private:
     QMenuBar* menuBar;
     QMenu* menuFile;
     QMenu* menuHelp;
+
+    std::vector<QAction*> m_lang_menu;
 };
 
 #endif // MAINWINDOW_H
