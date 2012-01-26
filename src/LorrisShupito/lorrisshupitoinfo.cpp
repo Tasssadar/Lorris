@@ -24,6 +24,8 @@
 #include "lorrisshupito.h"
 #include "lorrisshupitoinfo.h"
 
+static LorrisShupitoInfo info;
+
 LorrisShupitoInfo::LorrisShupitoInfo()
 {
 

@@ -22,11 +22,11 @@
 ****************************************************************************/
 
 #include "WorkTabInfo.h"
-
+#include "WorkTabMgr.h"
 
 WorkTabInfo::WorkTabInfo()
 {
-
+    sWorkTabMgr.RegisterTabInfo(this);
 }
 
 WorkTabInfo::~WorkTabInfo()

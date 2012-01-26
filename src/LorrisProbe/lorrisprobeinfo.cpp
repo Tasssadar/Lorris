@@ -24,6 +24,8 @@
 #include "lorrisprobe.h"
 #include "lorrisprobeinfo.h"
 
+//static LorrisProbeInfo info;
+
 LorrisProbeInfo::LorrisProbeInfo()
 {
 

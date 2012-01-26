@@ -36,13 +36,17 @@ class HomeTab;
 
 class WorkTabMgr : public Singleton<WorkTabMgr>
 {
-    typedef std::map<quint16, WorkTab*> WorkTabMap;
-
     public:
+        typedef std::map<quint16, WorkTab*> WorkTabMap;
+        typedef QList<WorkTabInfo*> InfoList;
+
         WorkTabMgr();
         ~WorkTabMgr();
 
-        std::vector<WorkTabInfo*> *GetWorkTabInfos();
+        void RegisterTabInfo(WorkTabInfo *info);
+
+        InfoList *GetWorkTabInfos();
+        void SortTabInfos();
         quint16 AddWorkTab(WorkTab *tab, QString label);
 
         WorkTab* getWorkTab(int index)
@@ -79,7 +83,7 @@ class WorkTabMgr : public Singleton<WorkTabMgr>
         void NewTabDialog();
 
     private:
-        std::vector<WorkTabInfo*> m_workTabInfos;
+        InfoList m_workTabInfos;
         WorkTabMap m_workTabs;
 
         quint16 tabIdCounter;

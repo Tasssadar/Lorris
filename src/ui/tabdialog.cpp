@@ -50,11 +50,12 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
     pluginsBox = new QListWidget(this);
     pluginsBox->setFixedWidth(150);
     pluginsBox->setSelectionMode(QAbstractItemView::SingleSelection);
-    std::vector<WorkTabInfo*> *tabs = sWorkTabMgr.GetWorkTabInfos();
-    for(std::vector<WorkTabInfo*>::iterator i = tabs->begin(); i != tabs->end(); ++i)
-        pluginsBox->addItem((*i)->GetName());
-    connect(pluginsBox, SIGNAL(currentRowChanged(int)), this, SLOT(PluginSelected(int)));
 
+    WorkTabMgr::InfoList *tabs = sWorkTabMgr.GetWorkTabInfos();
+    for(WorkTabMgr::InfoList::iterator i = tabs->begin(); i != tabs->end(); ++i)
+        pluginsBox->addItem((*i)->GetName());
+
+    connect(pluginsBox, SIGNAL(currentRowChanged(int)), this, SLOT(PluginSelected(int)));
 
     QLabel *desc = new QLabel(this);
     desc->setObjectName("pluginDesc");
@@ -87,7 +88,7 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
     setLayout(layout);
 
     quint32 lastSelected = sConfig.get(CFG_QUINT32_TAB_TYPE);
-    if(lastSelected >= sWorkTabMgr.GetWorkTabInfos()->size())
+    if(lastSelected >= (quint32)sWorkTabMgr.GetWorkTabInfos()->size())
         lastSelected = 0;
     pluginsBox->setCurrentRow(lastSelected);
 }
@@ -100,7 +101,7 @@ TabDialog::~TabDialog()
 
 void TabDialog::PluginSelected(int index)
 {
-    std::vector<WorkTabInfo*> *tabs = sWorkTabMgr.GetWorkTabInfos();
+    WorkTabMgr::InfoList *tabs = sWorkTabMgr.GetWorkTabInfos();
     quint8 conn = tabs->at(index)->GetConType();
 
     QLabel *desc = findChild<QLabel *>("pluginDesc");

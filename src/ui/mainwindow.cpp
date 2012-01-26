@@ -131,6 +131,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(CloseTab(int)));
     connect(tabWidget, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
 
+    // Sort tab infos after they were added by static variables
+    sWorkTabMgr.SortTabInfos();
+
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);
 }

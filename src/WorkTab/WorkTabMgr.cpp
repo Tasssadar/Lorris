@@ -27,19 +27,8 @@
 #include "ui/HomeTab.h"
 #include "ui/tabdialog.h"
 
-#include "LorrisProbe/lorrisprobeinfo.h"
-#include "LorrisTerminal/lorristerminalinfo.h"
-#include "LorrisAnalyzer/lorrisanalyzerinfo.h"
-#include "LorrisShupito/lorrisshupitoinfo.h"
-
 WorkTabMgr::WorkTabMgr()
 {
-    //put ALL plugins into this vector
-    m_workTabInfos.push_back(new LorrisAnalyzerInfo);
-    //m_workTabInfos.push_back(new LorrisProbeInfo);
-    m_workTabInfos.push_back(new LorrisShupitoInfo);
-    m_workTabInfos.push_back(new LorrisTerminalInfo);
-
     tabIdCounter = 0;
     tabWidget = NULL;
     hometab = NULL;
@@ -47,9 +36,6 @@ WorkTabMgr::WorkTabMgr()
 
 WorkTabMgr::~WorkTabMgr()
 {
-    for(quint8 itr = 0; itr < m_workTabInfos.size(); ++itr)
-        delete m_workTabInfos[itr];
-
     for(qint16 i = tabWidget->count(); tabWidget->count() && hometab == NULL;)
         removeTab(--i);
 
@@ -57,7 +43,22 @@ WorkTabMgr::~WorkTabMgr()
     delete tabWidget;
 }
 
-std::vector<WorkTabInfo*> *WorkTabMgr::GetWorkTabInfos()
+void WorkTabMgr::RegisterTabInfo(WorkTabInfo *info)
+{
+    m_workTabInfos.push_back(info);
+}
+
+void WorkTabMgr::SortTabInfos()
+{
+    QMap<QString, WorkTabInfo*> map;
+
+    for(InfoList::iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
+        map.insert((*itr)->GetName(), *itr);
+
+    m_workTabInfos = map.values();
+}
+
+WorkTabMgr::InfoList *WorkTabMgr::GetWorkTabInfos()
 {
     return &m_workTabInfos;
 }
