@@ -93,6 +93,7 @@ void FuseWidget::clear(bool addButton)
         delete m_fuses[i];
     }
     m_fuses.clear();
+    m_fuse_data.clear();
 
     if(addButton && !readFusesBtn)
     {
