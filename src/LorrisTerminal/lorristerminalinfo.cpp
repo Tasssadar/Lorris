@@ -24,7 +24,7 @@
 #include "lorristerminal.h"
 #include "lorristerminalinfo.h"
 
-static LorrisTerminalInfo info;
+static const LorrisTerminalInfo info;
 
 LorrisTerminalInfo::LorrisTerminalInfo()
 {

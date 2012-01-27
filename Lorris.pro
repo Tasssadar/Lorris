@@ -19,10 +19,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
     src/ui/HomeTab.cpp \
     src/WorkTab/WorkTab.cpp \
-    src/LorrisProbe/lorrisprobe.cpp \
     src/WorkTab/WorkTabMgr.cpp \
     src/WorkTab/WorkTabInfo.cpp \
-    src/LorrisProbe/lorrisprobeinfo.cpp \
     src/connection/connectionmgr.cpp \
     src/ui/tabdialog.cpp \
     src/LorrisTerminal/lorristerminal.cpp \
@@ -77,10 +75,8 @@ HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
     src/WorkTab/WorkTab.h \
-    src/LorrisProbe/lorrisprobe.h \
     src/WorkTab/WorkTabMgr.h \
     src/WorkTab/WorkTabInfo.h \
-    src/LorrisProbe/lorrisprobeinfo.h \
     src/connection/connectionmgr.h \
     src/ui/tabdialog.h \
     src/singleton.h \

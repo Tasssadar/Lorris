@@ -24,7 +24,7 @@
 #include "lorrisanalyzerinfo.h"
 #include "lorrisanalyzer.h"
 
-static LorrisAnalyzerInfo info;
+static const LorrisAnalyzerInfo info;
 
 LorrisAnalyzerInfo::LorrisAnalyzerInfo()
 {
