@@ -41,8 +41,8 @@ Terminal::Terminal(QWidget *parent) : QPlainTextEdit(parent)
     palette.setColor(QPalette::Text, color_white);
     setPalette(palette);
 
-    QFont font("Monospace");
-    font.setStyleHint(QFont::Monospace);
+    QFont font;
+    font.setStyleHint(QFont::TypeWriter);
     setFont(font);
 }
 

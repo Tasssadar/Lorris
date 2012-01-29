@@ -44,8 +44,8 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
     // FIXME
     //num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
-    QFont font("Monospace");
-    font.setStyleHint(QFont::Monospace);
+    QFont font;
+    font.setStyleHint(QFont::TypeWriter);
     font.setPixelSize(20);
     num->setFont(font);
     layout->addWidget(num);

@@ -158,7 +158,7 @@ win32 {
     HEADERS += dep/qserialdevice/src/qwineventnotifier_p.h
 }
 unix:!macx:!symbian {
-    LIBS += -ludev
+    LIBS += -lqwt -ludev
     SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_unix.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
         dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp \
