@@ -57,9 +57,9 @@ ColorWidget::~ColorWidget()
     delete m_widget;
 }
 
-void ColorWidget::setUp()
+void ColorWidget::setUp(AnalyzerDataStorage *storage)
 {
-    DataWidget::setUp();
+    DataWidget::setUp(storage);
 
     brightAct = new QAction(tr("Brightness correction"), this);
     brightAct->setCheckable(true);

@@ -58,9 +58,9 @@ NumberWidget::~NumberWidget()
 
 }
 
-void NumberWidget::setUp()
+void NumberWidget::setUp(AnalyzerDataStorage *storage)
 {
-    DataWidget::setUp();
+    DataWidget::setUp(storage);
 
     numberType = NUM_UINT8;
     format = FMT_DECIMAL;

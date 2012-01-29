@@ -26,7 +26,22 @@
 
 #include "../datawidget.h"
 
+class QSignalMapper;
 class Graph;
+class GraphCurveAddDialog;
+class GraphCurve;
+
+struct GraphCurveInfo
+{
+    GraphCurveInfo(GraphCurve* curve, data_widget_info& info)
+    {
+        this->curve = curve;
+        this->info = info;
+    }
+
+    GraphCurve* curve;
+    data_widget_info info;
+};
 
 class GraphWidget : public DataWidget
 {
@@ -35,7 +50,7 @@ public:
     GraphWidget(QWidget *parent = 0);
     ~GraphWidget();
 
-    void setUp();
+    void setUp(AnalyzerDataStorage *storage);
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);
 
@@ -43,8 +58,34 @@ protected:
      void processData(analyzer_data *data);
      void dropEvent(QDropEvent *event);
 
+private slots:
+     void addCurve();
+     void newData(analyzer_data *data, quint32 index);
+     void sampleSizeChanged(int val);
+     void editCurve();
+     void removeCurve(QString name);
+     void showLegend(bool show);
+
 private:
+     void updateVisibleArea();
+     void updateRemoveMapping();
+
      Graph *m_graph;
+     GraphCurveAddDialog *m_add_dialog;
+     QString m_drop_data;
+     AnalyzerDataStorage *m_storage;
+
+     QAction *m_sample_act[8];
+     QAction *m_editCurve;
+     QAction *m_showLegend;
+     QMenu *m_deleteCurve;
+     std::map<QString, QAction*> m_deleteAct;
+     QSignalMapper *m_deleteMap;
+
+     int m_sample_size_idx;
+     qint32 m_sample_size;
+
+     std::vector<GraphCurveInfo*> m_curves;
 };
 
 class GraphWidgetAddBtn : public DataWidgetAddBtn
@@ -53,7 +94,5 @@ class GraphWidgetAddBtn : public DataWidgetAddBtn
 public:
     GraphWidgetAddBtn(QWidget *parent = 0);
 };
-
-
 
 #endif // GRAPHWIDGET_H

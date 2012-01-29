@@ -89,7 +89,7 @@ void DataWidget::setId(quint32 id)
     m_closeLabel->setId(id);
 }
 
-void DataWidget::setUp()
+void DataWidget::setUp(AnalyzerDataStorage */*storage*/)
 {
     setAcceptDrops(true);
     m_assigned = false;
@@ -262,7 +262,7 @@ void DataWidget::dragMove(QMouseEvent *e)
     mOrigin = e->globalPos();
 }
 
-void DataWidget::newData(analyzer_data *data)
+void DataWidget::newData(analyzer_data *data, quint32 /*index*/)
 {
     if(!m_assigned || m_info.pos >= (quint32)data->getData().length())
         return;
@@ -421,4 +421,31 @@ void CloseLabel::setLocked(bool locked)
 {
     m_locked = locked;
     setText(locked ? tr(" [L] ") : " X ");
+}
+
+QVariant DataWidget::getNumFromPacket(analyzer_data *data, quint32 pos, quint8 type)
+{
+    QVariant res;
+
+    try
+    {
+        switch(type)
+        {
+            case NUM_INT8:  res.setValue((int)data->getInt8(pos));  break;
+            case NUM_INT16: res.setValue((int)data->getInt16(pos)); break;
+            case NUM_INT32: res.setValue(data->getInt32(pos)); break;
+            case NUM_INT64: res.setValue(data->getInt64(pos)); break;
+
+            case NUM_UINT8:  res.setValue(data->getUInt8(pos)); break;
+            case NUM_UINT16: res.setValue(data->getUInt16(pos)); break;
+            case NUM_UINT32: res.setValue(data->getUInt32(pos)); break;
+            case NUM_UINT64: res.setValue(data->getUInt64(pos)); break;
+
+            case NUM_FLOAT:  res.setValue(data->getFloat(pos));  break;
+            case NUM_DOUBLE: res.setValue(data->getDouble(pos)); break;
+        }
+    }
+    catch(const char*) { }
+
+    return res;
 }

@@ -34,13 +34,18 @@
 #include <qwt_text.h>
 #include <qwt_math.h>
 #include <qwt_plot_grid.h>
+#include <qwt_legend_item.h>
+#include <qwt_plot_layout.h>
 
 #include "graph.h"
 
 Graph::Graph(QWidget *parent) : QwtPlot(parent)
 {
     // zoom in/out with the wheel
-    (void) new QwtPlotMagnifier( canvas() );
+    //(void) new QwtPlotMagnifier( canvas() );
+
+    // panning with the left mouse button
+    //(void) new QwtPlotPanner( canvas() );
 
     QwtPlotGrid *grid = new QwtPlotGrid();
     grid->setPen(QPen(Qt::gray, 0.0, Qt::DotLine));
@@ -50,6 +55,29 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
     grid->enableYMin(false);
     grid->attach(this);
 
+    QwtLegend *legend = new QwtLegend;
+    legend->setItemMode(QwtLegend::CheckableItem);
+    insertLegend(legend, QwtPlot::BottomLegend);
+
+    connect(this, SIGNAL(legendChecked(QwtPlotItem*,bool)), SLOT(showCurve(QwtPlotItem*, bool)));
+
     // to show graph appearance while dragging from add button to widget area
+    replot();
+}
+
+void Graph::showCurve(QwtPlotItem *item, bool on)
+{
+    item->setVisible(on);
+    QWidget *w = legend()->find(item);
+    if ( w && w->inherits("QwtLegendItem") )
+        ((QwtLegendItem *)w)->setChecked(on);
+
+    replot();
+}
+
+void Graph::showLegend(bool show)
+{
+    plotLayout()->setLegendPosition(show ? QwtPlot::BottomLegend : QwtPlot::ExternalLegend);
+    legend()->setVisible(show);
     replot();
 }

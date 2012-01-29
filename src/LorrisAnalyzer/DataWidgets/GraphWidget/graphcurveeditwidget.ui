@@ -7,31 +7,31 @@
     <x>0</x>
     <y>0</y>
     <width>297</width>
-    <height>90</height>
+    <height>119</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Name</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="1" column="1">
     <widget class="QLineEdit" name="nameEdit"/>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Color</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="2" column="1">
     <widget class="QComboBox" name="colorBox">
      <property name="currentIndex">
       <number>1</number>
@@ -43,51 +43,61 @@
      </item>
      <item>
       <property name="text">
-       <string>Red</string>
+       <string notr="true">Red</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Blue</string>
+       <string notr="true">Blue</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Yellow</string>
+       <string notr="true">Yellow</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Green</string>
+       <string notr="true">Green</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Black</string>
+       <string notr="true">Black</string>
       </property>
      </item>
     </widget>
    </item>
-   <item row="1" column="2">
+   <item row="2" column="2">
     <widget class="QLineEdit" name="ColorEdit">
      <property name="enabled">
       <bool>false</bool>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="3" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
       <string>Data type</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="3" column="1">
     <widget class="QComboBox" name="dataTypeBox">
      <property name="enabled">
       <bool>true</bool>
      </property>
     </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="curveLabel">
+     <property name="text">
+      <string>Curve</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="curveBox"/>
    </item>
   </layout>
  </widget>

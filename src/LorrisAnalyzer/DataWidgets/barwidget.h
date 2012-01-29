@@ -37,7 +37,7 @@ class BarWidget : public DataWidget
 public:
     BarWidget(QWidget *parent);
 
-    void setUp();
+    void setUp(AnalyzerDataStorage *);
     void processData(analyzer_data *data);
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);

@@ -119,11 +119,11 @@ CmdTabWidget *DeviceTabWidget::addDevice(bool all_devices, quint8 id)
     return cmd_tab;
 }
 
-void DeviceTabWidget::handleData(analyzer_data *data)
+void DeviceTabWidget::handleData(analyzer_data *data, quint32 /*index*/)
 {
     quint8 id = 0;
     if( m_all_devices)
-        m_all_devices->handleData(data);
+        m_all_devices->handleData(data, 0);
 
     if(!m_id_enabled || (m_id_enabled && !data->getDeviceId(id)))
         return;
@@ -131,7 +131,7 @@ void DeviceTabWidget::handleData(analyzer_data *data)
     dev_map::iterator itr = m_devices.find(id);
     if(itr == m_devices.end())
         return;
-    itr->second->handleData(data);
+    itr->second->handleData(data, 0);
 }
 
 void DeviceTabWidget::newDevice()

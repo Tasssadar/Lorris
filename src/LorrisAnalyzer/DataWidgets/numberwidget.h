@@ -43,7 +43,7 @@ public:
     NumberWidget(QWidget *parent = 0);
     ~NumberWidget();
 
-    void setUp();
+    void setUp(AnalyzerDataStorage *storage);
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);
 

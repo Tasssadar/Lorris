@@ -91,10 +91,10 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     m_dev_tabs->addDevice();
     ui->leftVLayout->insertWidget(1, m_dev_tabs);
 
-    connect(this, SIGNAL(newData(analyzer_data*)), m_dev_tabs, SLOT(handleData(analyzer_data*)));
+    connect(this, SIGNAL(newData(analyzer_data*,quint32)), m_dev_tabs, SLOT(handleData(analyzer_data*, quint32)));
     connect(m_dev_tabs, SIGNAL(updateData()), this, SLOT(updateData()));
 
-    m_data_area = new AnalyzerDataArea(this);
+    m_data_area = new AnalyzerDataArea(this, m_storage);
     ui->bottomHLayout->insertWidget(0, m_data_area, 4);
     ui->bottomHLayout->setStretch(1, 1);
     connect(m_data_area, SIGNAL(updateData()), this, SLOT(updateData()));
@@ -315,7 +315,7 @@ void LorrisAnalyzer::updateData(bool ignoreTime)
     int val = ui->timeSlider->value();
 
     if(val != 0 && (quint32)val <= m_storage->getSize())
-        emit newData(m_storage->get(val-1));
+        emit newData(m_storage->get(val-1), val-1);
 
     this->setUpdatesEnabled(true);
 }

@@ -121,7 +121,7 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
     setCurrentIndex(index);
 }
 
-void CmdTabWidget::handleData(analyzer_data *data)
+void CmdTabWidget::handleData(analyzer_data *data, quint32 /*index*/)
 {
     if(m_all_cmds)
         m_all_cmds->l->SetData(data->getData());

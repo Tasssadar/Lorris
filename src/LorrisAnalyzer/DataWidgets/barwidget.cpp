@@ -52,9 +52,9 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     setMinimumSize(size());
 }
 
-void BarWidget::setUp()
+void BarWidget::setUp(AnalyzerDataStorage *storage)
 {
-    DataWidget::setUp();
+    DataWidget::setUp(storage);
 
     m_min = 0;
     m_max = 1000;

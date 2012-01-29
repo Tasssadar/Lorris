@@ -31,6 +31,11 @@ class Graph : public QwtPlot
     Q_OBJECT
 public:
     Graph(QWidget *parent = 0);
+
+    void showLegend(bool show);
+
+public slots:
+    void showCurve(QwtPlotItem *item, bool on);
 };
 
 #endif // GRAPH_H

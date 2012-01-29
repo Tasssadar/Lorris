@@ -30,6 +30,7 @@ ShupitoTunnel::ShupitoTunnel()
     m_type = CONNECTION_SHUPITO;
     m_shupito = NULL;
     tunnelActive = true;
+    dataSigConnected = false;
 }
 
 ShupitoTunnel::~ShupitoTunnel()
@@ -47,7 +48,11 @@ bool ShupitoTunnel::Open()
 
     opened = true;
     emit connected(true);
-    connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
+    if(!dataSigConnected)
+    {
+        connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
+        dataSigConnected = true;
+    }
     return true;
 }
 
@@ -55,6 +60,7 @@ void ShupitoTunnel::Close()
 {
     emit connected(false);
     disconnect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, NULL);
+    dataSigConnected = false;
     opened = false;
 }
 
@@ -75,6 +81,7 @@ void ShupitoTunnel::setShupito(Shupito* s, QString id)
     {
         connect(s, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
         connect(s, SIGNAL(tunnelStatus(bool)), this, SLOT(tunnelStatus(bool)));
+        dataSigConnected = true;
     }
     else if(opened)
         Close();
@@ -113,10 +120,16 @@ void ShupitoTunnel::SendData(const QByteArray &data)
 
 void ShupitoTunnel::tunnelStatus(bool opened)
 {
-    if(opened && !this->opened)
+    if(opened && !this->opened && !dataSigConnected)
+    {
         connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
+        dataSigConnected = true;
+    }
     else if(!opened && this->opened)
+    {
+        dataSigConnected = false;
         disconnect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, NULL);
+    }
     this->opened = opened;
     tunnelActive = opened;
     emit connected(opened);

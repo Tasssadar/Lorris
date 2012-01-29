@@ -29,6 +29,7 @@
 #include "DataWidgets/datawidget.h"
 
 class AnalyzerDataFile;
+class AnalyzerDataStorage;
 
 class AnalyzerDataArea : public QFrame
 {
@@ -41,7 +42,7 @@ Q_SIGNALS:
 public:
     typedef std::map<quint32, DataWidget*> w_map;
 
-    explicit AnalyzerDataArea(QWidget *parent = 0);
+    explicit AnalyzerDataArea(QWidget *parent, AnalyzerDataStorage* storage);
     ~AnalyzerDataArea();
 
     void clear();
@@ -66,6 +67,7 @@ private:
 
     w_map m_widgets;
     quint32 m_widgetIdCounter;
+    AnalyzerDataStorage *m_storage;
 };
 
 #endif // ANALYZERDATAAREA_H

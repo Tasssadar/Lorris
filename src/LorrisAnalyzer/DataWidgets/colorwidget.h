@@ -35,7 +35,7 @@ public:
     ColorWidget(QWidget *parent = 0);
     ~ColorWidget();
 
-    void setUp();
+    void setUp(AnalyzerDataStorage *);
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);
 

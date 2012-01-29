@@ -70,7 +70,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/fusewidget.cpp \
     src/shared/hexfile.cpp \
     src/shared/chipdefs.cpp \
-    src/LorrisShupito/shupitopdi.cpp
+    src/LorrisShupito/shupitopdi.cpp \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -135,7 +137,9 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/fusewidget.h \
     src/shared/hexfile.h \
     src/shared/chipdefs.h \
-    src/LorrisShupito/shupitopdi.h
+    src/LorrisShupito/shupitopdi.h \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

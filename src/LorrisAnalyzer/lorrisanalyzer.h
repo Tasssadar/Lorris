@@ -63,7 +63,7 @@ class LorrisAnalyzer : public WorkTab
     Q_OBJECT
 
     Q_SIGNALS:
-        void newData(analyzer_data *data);
+        void newData(analyzer_data *data, quint32 index);
 
     public:
         explicit LorrisAnalyzer();

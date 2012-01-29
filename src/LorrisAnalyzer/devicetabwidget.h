@@ -60,7 +60,7 @@ public:
     bool setHighlightPos(const data_widget_info& info, bool highlight);
 
 public slots:
-    void handleData(analyzer_data *data);
+    void handleData(analyzer_data *data,quint32 index);
 
 private slots:
     void newDevice();

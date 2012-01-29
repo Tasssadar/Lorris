@@ -66,7 +66,7 @@ public:
 
     void removeAll();
     void addCommand(bool add_all_cmds = true, quint8 id = 0);
-    void handleData(analyzer_data *data);
+    void handleData(analyzer_data *data, quint32 index);
     void setEnablePackets(bool enable)
     {
         m_enableCmds = enable;

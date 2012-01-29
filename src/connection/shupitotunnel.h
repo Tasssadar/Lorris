@@ -29,6 +29,7 @@ public slots:
 private:
     Shupito *m_shupito;
     bool tunnelActive;
+    bool dataSigConnected;
 };
 
 

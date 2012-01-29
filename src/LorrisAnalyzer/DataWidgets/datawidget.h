@@ -90,6 +90,7 @@ struct data_widget_info
 
 class CloseLabel;
 class AnalyzerDataFile;
+class AnalyzerDataStorage;
 
 class DataWidget : public QFrame
 {
@@ -104,7 +105,7 @@ public:
     explicit DataWidget(QWidget *parent = 0);
     ~DataWidget();
 
-    virtual void setUp();
+    virtual void setUp(AnalyzerDataStorage *);
 
     void setId(quint32 id);
     quint32 getId() { return m_id; }
@@ -122,8 +123,10 @@ public:
     virtual void saveWidgetInfo(AnalyzerDataFile *file);
     virtual void loadWidgetInfo(AnalyzerDataFile *file);
 
+    static QVariant getNumFromPacket(analyzer_data *data, quint32 pos, quint8 type);
+
 public slots:
-    void newData(analyzer_data *data);
+    virtual void newData(analyzer_data *data, quint32);
 
 protected:
     void mousePressEvent(QMouseEvent * event);

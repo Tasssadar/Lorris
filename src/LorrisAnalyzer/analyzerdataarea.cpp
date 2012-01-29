@@ -30,13 +30,15 @@
 #include "DataWidgets/GraphWidget/graphwidget.h"
 #include "lorrisanalyzer.h"
 #include "analyzerdatafile.h"
+#include "analyzerdatastorage.h"
 
-AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
+AnalyzerDataArea::AnalyzerDataArea(QWidget *parent, AnalyzerDataStorage *storage) :
     QFrame(parent)
 {
     setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
     setAcceptDrops(true);
     m_widgetIdCounter = 0;
+    m_storage = storage;
 }
 
 AnalyzerDataArea::~AnalyzerDataArea()
@@ -66,7 +68,7 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
     DataWidget *w = newWidget(type, this);
     if(!w)
         return NULL;
-    w->setUp();
+    w->setUp(m_storage);
 
 
     fixWidgetPos(pos, w);
@@ -78,7 +80,7 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
     w->setId(id);
     m_widgets.insert(std::make_pair<quint32,DataWidget*>(id, w));
 
-    connect(((LorrisAnalyzer*)parent()), SIGNAL(newData(analyzer_data*)), w, SLOT(newData(analyzer_data*)));
+    connect(((LorrisAnalyzer*)parent()), SIGNAL(newData(analyzer_data*,quint32)), w, SLOT(newData(analyzer_data*,quint32)));
     connect(w, SIGNAL(updateData()), this, SIGNAL(updateData()));
     connect(w, SIGNAL(mouseStatus(bool,data_widget_info)), this, SIGNAL(mouseStatus(bool,data_widget_info)));
     connect(w, SIGNAL(removeWidget(quint32)), this, SLOT(removeWidget(quint32)));
