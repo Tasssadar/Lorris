@@ -198,9 +198,9 @@ void GraphWidget::loadWidgetInfo(AnalyzerDataFile *file)
 
     if(file->seekToNextBlock("graphWLegend", BLOCK_WIDGET))
     {
-        bool showLegend;
-        file->read((char*)&showLegend, 1);
-        howLegend(showLegend);
+        bool show;
+        file->read((char*)&show, 1);
+        showLegend(show);
     }
 
     if(!file->seekToNextBlock("graphWCurveCount", BLOCK_WIDGET))

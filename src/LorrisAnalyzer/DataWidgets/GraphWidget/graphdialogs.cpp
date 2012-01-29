@@ -180,7 +180,7 @@ bool GraphCurveAddDialog::edit()
 
 void GraphCurveAddDialog::curveChanged(int idx)
 {
-    if(idx >= m_curves->size())
+    if((quint32)idx >= m_curves->size())
         return;
 
     GraphCurve* curve = m_curves->at(idx)->curve;
