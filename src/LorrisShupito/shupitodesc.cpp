@@ -21,10 +21,9 @@
 **
 ****************************************************************************/
 
+#include "common.h"
 #include "shupito.h"
 #include "shupitodesc.h"
-#include <exception>
-#include <stdexcept>
 
 ShupitoDesc::ShupitoDesc()
 {
@@ -47,7 +46,7 @@ void ShupitoDesc::AddData(const QByteArray& data, bool finish)
         quint8 *last = (quint8*)(m_data.data() + m_data.size());
 
         if((last - first) < 17 || *first++ != 1)
-            throw std::runtime_error("Invalid descriptor.");
+            return Utils::ThrowException("Invalid descriptor.");
 
         m_guid = makeGuid(first);
         first += 16;
@@ -78,7 +77,7 @@ QString ShupitoDesc::makeGuid(quint8 *data)
 void ShupitoDesc::parseGroupConfig(quint8 *& first, quint8 *& last, quint8& base_cmd, std::vector<quint8>& actseq)
 {
     if(first == last)
-        throw std::runtime_error("Invalid descriptor.");
+        return Utils::ThrowException("Invalid descriptor.");
 
     if(*first == 0)
     {
@@ -119,7 +118,7 @@ void ShupitoDesc::parseGroupConfig(quint8 *& first, quint8 *& last, quint8& base
 void ShupitoDesc::parseConfig(quint8 *& first, quint8 *& last, quint8& base_cmd, std::vector<quint8>& actseq)
 {
     if ((last - first) < 19)
-        throw std::runtime_error("Invalid descriptor.");
+        return Utils::ThrowException("Invalid descriptor.");
 
     config cfg;
     cfg.flags = *first++;
@@ -134,7 +133,7 @@ void ShupitoDesc::parseConfig(quint8 *& first, quint8 *& last, quint8& base_cmd,
 
     quint8 data_len = *first++;
     if (last - first < data_len)
-        throw std::runtime_error("Invalid descriptor.");
+        return Utils::ThrowException("Invalid descriptor.");
 
     cfg.data.assign(first, first + data_len);
     first += data_len;

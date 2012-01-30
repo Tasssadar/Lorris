@@ -187,6 +187,9 @@ void LorrisShupito::initMenuBar()
     m_auto_verify->setCheckable(true);
     m_auto_verify->setChecked(sConfig.get(CFG_BOOL_SHUPITO_VERIFY));
 
+    QAction *setTunnelName = modeBar->addAction(tr("Set RS232 tunnel name..."));
+    connect(setTunnelName, SIGNAL(triggered()), SLOT(setTunnelName()));
+
     QMenu *dataBar = new QMenu(tr("Data"), this);
     m_menus.push_back(dataBar);
 
@@ -562,6 +565,19 @@ void LorrisShupito::tunnelStateChanged(bool opened)
     ui->tunnelCheck->setChecked(opened);
 }
 
+void LorrisShupito::setTunnelName()
+{
+    QString name = QInputDialog::getText(this, tr("Set tunnel name"), tr("Tunnel name:"),
+                              QLineEdit::Normal, sConfig.get(CFG_STRING_SHUPITO_TUNNEL));
+
+    if(name.isEmpty())
+        return;
+
+    sConfig.set(CFG_STRING_SHUPITO_TUNNEL, name);
+    m_shupito->setTunnelState(false);
+    m_shupito->setTunnelState(true);
+}
+
 void LorrisShupito::modeSelected(int idx)
 {
     if(!m_modes[idx])
@@ -834,12 +850,12 @@ void LorrisShupito::loadFromFile(int memId)
             restartChip();
 
         QString filename = QFileDialog::getOpenFileName(this, QObject::tr("Import data"),
-                                                        sConfig.get(CFG_SHUPITO_HEX_FOLDER),
+                                                        sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
                                                         filters);
         if(filename.isEmpty())
             return;
 
-        sConfig.set(CFG_SHUPITO_HEX_FOLDER, filename);
+        sConfig.set(CFG_STRING_SHUPITO_HEX_FOLDER, filename);
 
         status("");
 
@@ -873,12 +889,12 @@ void LorrisShupito::saveToFile(int memId)
             restartChip();
 
         QString filename = QFileDialog::getSaveFileName(this, QObject::tr("Export data"),
-                                                        sConfig.get(CFG_SHUPITO_HEX_FOLDER),
+                                                        sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
                                                         filters);
         if(filename.isEmpty())
             return;
 
-        sConfig.set(CFG_SHUPITO_HEX_FOLDER, filename);
+        sConfig.set(CFG_STRING_SHUPITO_HEX_FOLDER, filename);
 
         status("");
 

@@ -44,7 +44,8 @@ static const QString keys_string[CFG_STRING_NUM] =
     "shupito/port",               // CFG_STRING_SHUPITO_PORT
     "terminal/hex_folder",        // CFG_STRING_HEX_FOLDER
     "analyzer/data_folder",       // CFG_STRING_ANALYZER_FOLDER
-    "shupito/hex_folder",         // CFG_SHUPITO_HEX_FOLDER
+    "shupito/hex_folder",         // CFG_STRING_SHUPITO_HEX_FOLDER
+    "shupito/tunnel_name",        // CFG_STRING_SHUPITO_TUNNEL
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -72,7 +73,8 @@ Config::Config()
     m_def_string[CFG_STRING_SHUPITO_PORT]          = "";
     m_def_string[CFG_STRING_HEX_FOLDER]            = "";
     m_def_string[CFG_STRING_ANALYZER_FOLDER]       = "";
-    m_def_string[CFG_SHUPITO_HEX_FOLDER]           = "";
+    m_def_string[CFG_STRING_SHUPITO_HEX_FOLDER]    = "";
+    m_def_string[CFG_STRING_SHUPITO_TUNNEL]        = "app";
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = true;

@@ -72,15 +72,11 @@ void ShupitoTunnel::OpenConcurrent()
 void ShupitoTunnel::setShupito(Shupito* s)
 {
     if(m_shupito)
-    {
         disconnect(m_shupito, SIGNAL(tunnelData(QByteArray)),     this, NULL);
-        disconnect(m_shupito, SIGNAL(tunnelStatus(bool)),         this, NULL);
-    }
 
     if(s)
     {
         connect(s, SIGNAL(tunnelData(QByteArray)),     SIGNAL(dataRead(QByteArray)));
-        connect(s, SIGNAL(tunnelStatus(bool)),         SLOT(tunnelStatus(bool)));
         dataSigConnected = true;
     }
     else if(opened)

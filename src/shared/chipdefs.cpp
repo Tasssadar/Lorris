@@ -24,11 +24,10 @@
 #include <QString>
 #include <QTextStream>
 #include <QStringList>
-#include <exception>
-#include <stdexcept>
 #include <QFile>
 #include <vector>
 
+#include "common.h"
 #include "chipdefs.h"
 
 // const std::string embedded_chipdefs, chipdefs.cpp
@@ -174,7 +173,7 @@ void chip_definition::parse_chipdefs(const QString &strdefs, std::vector<chip_de
             {
                 int sep_pos = tokens[i].indexOf('=');
                 if(sep_pos == -1)
-                    throw std::runtime_error("Invalid syntax in the chip definition file.");
+                    return Utils::ThrowException("Invalid syntax in the chip definition file.");
                 def.getOptions()[tokens[i].mid(1, sep_pos - 1)] = tokens[i].mid(sep_pos + 1);
             }
             else

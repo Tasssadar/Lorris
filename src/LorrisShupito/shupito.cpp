@@ -23,8 +23,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <exception>
-#include <stdexcept>
 #include <QEventLoop>
 
 #include "shupito.h"
@@ -397,33 +395,14 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
             // Tunnel list
             case 0:
             {
-                std::vector<QString> pipe_names;
                 for(quint8 i = 2; i < p.getLen(); ++i)
                 {
                     if (i + 1 + p[i] > p.getLen())
-                        throw std::runtime_error("Invalid response while enumerating pipes.");
-
-                    QString pipe_name;
-                    for(quint8 j = 0; j < p[i]; ++j)
-                        pipe_name.append(p[i+j+1]);
-                    pipe_names.push_back(pipe_name);
-
+                        return Utils::ThrowException("Invalid response while enumerating pipes.");
                     i += 1 + p[i];
                 }
 
-                if(!pipe_names.empty())
-                {
-                    QString const & name = pipe_names[0];
-
-                    QByteArray pkt_data;
-                    pkt_data[0] = 0x80;
-                    pkt_data[1] = (m_tunnel_config->cmd << 4) | (0x02 + name.length());
-                    pkt_data[2] = 0x00;
-                    pkt_data[3] = 0x01;
-                    pkt_data.append(name);
-
-                    m_con->SendData(pkt_data);
-                }
+                setTunnelState(true);
                 break;
             }
             // App tunnel activated
@@ -432,6 +411,9 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
                 if(p.getLen() == 3)
                 {
                     m_tunnel_pipe = p[2];
+                    if(!m_tunnel_pipe)
+                        return Utils::ThrowException("Invalid tunnel specified");
+
                     SendSetComSpeed();
 
                     sConMgr.AddShupito(m_con->GetIDString(), this);
@@ -528,13 +510,21 @@ void Shupito::setTunnelState(bool enable)
 
     if(enable && m_tunnel_pipe == 0)
     {
-        ShupitoPacket packet(m_tunnel_config->cmd, 2, 0, 0);
-        m_con->SendData(packet.getData(false));
+        QString name = sConfig.get(CFG_STRING_SHUPITO_TUNNEL);
+
+        QByteArray pkt_data;
+        pkt_data[0] = 0x80;
+        pkt_data[1] = (m_tunnel_config->cmd << 4) | (0x02 + name.length());
+        pkt_data[2] = 0x00;
+        pkt_data[3] = 0x01;
+        pkt_data.append(name);
+
+        waitForPacket(pkt_data, m_tunnel_config->cmd);
     }
     else if(!enable && m_tunnel_pipe != 0)
     {
         ShupitoPacket packet(m_tunnel_config->cmd, 3, 0, 2, m_tunnel_pipe);
-        m_con->SendData(packet.getData(false));
+        waitForPacket(packet.getData(false), m_tunnel_config->cmd);
     }
 }
 

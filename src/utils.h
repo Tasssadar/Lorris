@@ -43,6 +43,8 @@ public:
     static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
 
     static QFont getMonospaceFont(quint8 size = 9);
+
+    static void ThrowException(const QString& text, QWidget* parent = 0);
 };
 
 template <typename T>

@@ -93,6 +93,7 @@ private slots:
     void tunnelSpeedChanged ( const QString & text );
     void tunnelToggled(bool enable);
     void tunnelStateChanged(bool opened);
+    void setTunnelName();
 
     void hideLogBtn();
     void hideFusesBtn();

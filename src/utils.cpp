@@ -21,6 +21,8 @@
 **
 ****************************************************************************/
 
+#include <QMessageBox>
+
 #include "utils.h"
 
 QString Utils::hexToString(quint8 data, bool withZeroEx)
@@ -71,4 +73,13 @@ QString Utils::toBinary(std::size_t width, int value)
 QFont Utils::getMonospaceFont(quint8 size)
 {
     return QFont("Courier New", size);
+}
+
+void Utils::ThrowException(const QString& text, QWidget* parent)
+{
+    QMessageBox box(parent);
+    box.setIcon(QMessageBox::Critical);
+    box.setWindowTitle(tr("Error!"));
+    box.setText(text);
+    box.exec();
 }
