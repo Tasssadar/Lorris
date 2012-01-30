@@ -343,6 +343,8 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage->getSize()));
     ui->timeBox->setValue(m_storage->getSize());
     m_state &= ~(STATE_DIALOG);
+
+    updateData(true);
 }
 
 void LorrisAnalyzer::saveDataButton()
