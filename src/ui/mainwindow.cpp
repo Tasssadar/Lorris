@@ -164,32 +164,6 @@ void MainWindow::CloseTab(int index)
     sWorkTabMgr.removeTab(index);
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    if(Quit())
-        event->accept();
-    else
-        event->ignore();
-}
-
-bool MainWindow::Quit()
-{
-    QMessageBox *box = new QMessageBox(this);
-    box->setWindowTitle(tr("Exit Lorris?"));
-    box->setText(tr("Do you really want to leave Lorris?"));
-    box->addButton(tr("Yes"), QMessageBox::YesRole);
-    box->addButton(tr("No"), QMessageBox::NoRole);
-    box->setIcon(QMessageBox::Question);
-    int ret = box->exec();
-    delete box;
-    switch(ret)
-    {
-        case 0: return true;
-        case 1:
-        default: return false;
-    }
-}
-
 void MainWindow::QuitButton()
 {
     this->close();

@@ -42,13 +42,11 @@ private slots:
     void CloseTab(int index = -1);
     void QuitButton();
     void About();
-    void closeEvent(QCloseEvent *event);
     void tabChanged(int index);
 
     void langChanged(int idx);
 
 private:
-    bool Quit();
     QString getVersionString();
 
     std::vector<QMenu*> m_tab_menu;
