@@ -415,14 +415,12 @@ void LorrisShupito::descRead()
 
 void LorrisShupito::vccValueChanged(quint8 id, double value)
 {
-    if(id == 0 && !ui->engineLabel->text().isEmpty())
+    if(id == 0 && !ui->engineLabel->text().isEmpty() && m_vcc != value)
     {
         if((value < 0 ? -value : value) < 0.03)
             value = 0;
 
-        char buff[24];
-        sprintf(buff, "%4.2fV", value);
-        ui->vccLabel->setText(QString(buff));
+        ui->vccLabel->setText(QString("%1").arg(value, 3, 'f', 2, '0'));
 
         changeVddColor(value);
         m_vcc = value;

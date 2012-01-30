@@ -358,6 +358,9 @@
            <bold>true</bold>
           </font>
          </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>N/A</string>
          </property>
