@@ -307,6 +307,9 @@ void LorrisShupito::stopAll()
 {
     if(m_tunnel_config)
     {
+        ui->tunnelCheck->setEnabled(false);
+        ui->tunnelCheck->setChecked(false);
+
         m_shupito->setTunnelState(false);
 
         if(!m_tunnel_config->always_active())
@@ -390,7 +393,7 @@ void LorrisShupito::descRead()
 
     m_tunnel_config = m_desc->getConfig("356e9bf7-8718-4965-94a4-0be370c8797c");
     m_shupito->setTunnelConfig(m_tunnel_config);
-    if(m_tunnel_config && ui->tunnelCheck->isChecked())
+    if(m_tunnel_config && sConfig.get(CFG_BOOL_SHUPITO_TUNNEL))
     {
         if(!m_tunnel_config->always_active())
         {
@@ -541,14 +544,22 @@ void LorrisShupito::tunnelStateChanged(bool opened)
         return;
 
     QString text = tr("RS232 tunnel ");
+
     if(opened)
+    {
+        if(!ui->tunnelCheck->isEnabled())
+            ui->tunnelCheck->setEnabled(true);
         text += tr("enabled");
+    }
     else
+    {
+        if(ui->tunnelCheck->isChecked())
+            ui->tunnelCheck->setEnabled(false);
         text += tr("disabled");
+    }
 
     log(text);
-    if(ui->tunnelCheck->isChecked())
-        ui->tunnelCheck->setEnabled(opened);
+    ui->tunnelCheck->setChecked(opened);
 }
 
 void LorrisShupito::modeSelected(int idx)

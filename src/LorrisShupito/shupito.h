@@ -121,6 +121,7 @@ Q_SIGNALS:
     void vddDesc(const vdd_setup& vs);
     void tunnelData(const QByteArray& data);
     void packetReveived();
+    void tunnelStatus(bool);
 
 public:
     explicit Shupito(QObject *parent);

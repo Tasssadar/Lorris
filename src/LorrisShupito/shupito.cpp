@@ -435,6 +435,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
                     SendSetComSpeed();
 
                     sConMgr.AddShupito(m_con->GetIDString(), this);
+                    emit tunnelStatus(true);
 
                     m_tunnel_data.clear();
                     connect(&m_tunnel_timer, SIGNAL(timeout()), SLOT(tunnelDataSend()));
@@ -451,6 +452,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
                     m_tunnel_pipe = 0;
 
                     sConMgr.RemoveShupito(this);
+                    emit tunnelStatus(false);
 
                     disconnect(&m_tunnel_timer, SIGNAL(timeout()), this, SLOT(tunnelDataSend()));
                     m_tunnel_timer.stop();

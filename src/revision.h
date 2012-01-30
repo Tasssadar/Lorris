@@ -23,5 +23,5 @@
 
 #ifndef REVISION_H
 #define REVISION_H
- #define REVISION 105
+ #define REVISION 106
 #endif // REVISION_H
