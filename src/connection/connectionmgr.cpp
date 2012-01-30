@@ -26,6 +26,7 @@
 #include "connectionmgr.h"
 #include "connection.h"
 #include "../LorrisShupito/shupito.h"
+#include "shupitotunnel.h"
 
 ConnectionMgr::ConnectionMgr()
 {
@@ -52,11 +53,22 @@ Connection* ConnectionMgr::FindConnection(quint8 type, QString idString)
 void ConnectionMgr::AddShupito(QString id, Shupito *s)
 {
     shupitoMap[id] = s;
+
+    ShupitoTunnel *tunnel = (ShupitoTunnel*)sConMgr.FindConnection(CONNECTION_SHUPITO, id);
+    if(tunnel)
+    {
+        tunnel->setShupito(s);
+        tunnel->Open();
+    }
 }
 
 void ConnectionMgr::RemoveShupito(QString id)
 {
     shupitoMap.erase(id);
+
+    ShupitoTunnel *tunnel = (ShupitoTunnel*)sConMgr.FindConnection(CONNECTION_SHUPITO, id);
+    if(tunnel)
+        tunnel->setShupito(NULL);
 }
 
 void ConnectionMgr::RemoveShupito(Shupito *shupito)
@@ -65,7 +77,7 @@ void ConnectionMgr::RemoveShupito(Shupito *shupito)
     {
         if(itr->second == shupito)
         {
-            shupitoMap.erase(itr);
+            RemoveShupito(itr->first);
             return;
         }
     }

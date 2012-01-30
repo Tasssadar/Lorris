@@ -44,6 +44,7 @@ public:
 
     virtual quint8 getType() { return m_type; }
 
+    void setIDString(const QString& str) { m_idString = str; }
     QString GetIDString() { return m_idString; }
     virtual bool Open();
     virtual void OpenConcurrent();

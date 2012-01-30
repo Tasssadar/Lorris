@@ -357,7 +357,8 @@ WorkTab *TabDialog::ConnectShupito(WorkTabInfo *info)
     if(!tunnel)
     {
         tunnel = new ShupitoTunnel();
-        tunnel->setShupito(shupito, portName);
+        tunnel->setShupito(shupito);
+        tunnel->setIDString(portName);
         if(!tunnel->Open())
         {
             delete tunnel;
@@ -365,8 +366,12 @@ WorkTab *TabDialog::ConnectShupito(WorkTabInfo *info)
         }
         sConMgr.AddCon(CONNECTION_SHUPITO, tunnel);
     }
-    else if(!tunnel->isOpen() && !tunnel->Open())
-        return NULL;
+    else if(!tunnel->isOpen())
+    {
+        tunnel->setShupito(shupito);
+        if(!tunnel->Open())
+            return NULL;
+    }
 
     WorkTab *tab = info->GetNewTab();
     sWorkTabMgr.AddWorkTab(tab, info->GetName() + " - " + tunnel->GetIDString());

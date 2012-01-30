@@ -17,18 +17,13 @@ public:
     bool Open();
     void OpenConcurrent();
     void Close();
-
-    void setShupito(Shupito* s, QString id);
+    quint8 getType() { return CONNECTION_SERIAL_PORT; }
     void SendData(const QByteArray &data);
 
-    quint8 getType() { return CONNECTION_SERIAL_PORT; }
-
-public slots:
-    void tunnelStatus(bool opened);
+    void setShupito(Shupito* s);
 
 private:
     Shupito *m_shupito;
-    bool tunnelActive;
     bool dataSigConnected;
 };
 
