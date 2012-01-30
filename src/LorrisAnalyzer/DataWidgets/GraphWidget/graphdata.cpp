@@ -93,12 +93,24 @@ void GraphData::dataPosChanged(quint32 pos)
             double val = DataWidget::getNumFromPacket(cur, m_info.pos, m_data_type).toDouble();
             m_data.push_back(val);
 
-            if(m_max < val)
-                m_max = val;
-            if(m_min > val)
-                m_min = val;
+
         }
         catch(const char*) { }
+    }
+
+    if(m_data.empty())
+        return;
+
+
+    m_max = -999999999;
+    m_min = 99999999;
+
+    for(quint32 i = 0; i < m_data.size(); ++i)
+    {
+        if(m_max < m_data[i])
+            m_max = m_data[i];
+        if(m_min > m_data[i])
+            m_min = m_data[i];
     }
 }
 
