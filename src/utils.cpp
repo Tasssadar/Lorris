@@ -67,3 +67,8 @@ QString Utils::toBinary(std::size_t width, int value)
     }
     return res;
 }
+
+QFont Utils::getMonospaceFont(quint8 size)
+{
+    return QFont("Courier New", size);
+}

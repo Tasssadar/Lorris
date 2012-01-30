@@ -24,6 +24,7 @@
 #include <QScrollBar>
 #include <QKeyEvent>
 
+#include "common.h"
 #include "terminal.h"
 
 Terminal::Terminal(QWidget *parent) : QPlainTextEdit(parent)
@@ -41,9 +42,7 @@ Terminal::Terminal(QWidget *parent) : QPlainTextEdit(parent)
     palette.setColor(QPalette::Text, color_white);
     setPalette(palette);
 
-    QFont font;
-    font.setStyleHint(QFont::TypeWriter);
-    setFont(font);
+    setFont(Utils::getMonospaceFont());
 }
 
 Terminal::~Terminal()

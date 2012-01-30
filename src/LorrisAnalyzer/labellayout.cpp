@@ -307,9 +307,7 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
     valueLabel = new QLabel(text, this);
     valueLabel->setAlignment(Qt::AlignCenter);
 
-    QFont font;
-    font.setStyleHint(QFont::TypeWriter);
-    valueLabel->setFont(font);
+    setFont(Utils::getMonospaceFont());
     valueLabel->setAcceptDrops(true);
 
     layout->setSpacing(0);
@@ -320,7 +318,7 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
     {
         posLabel = new QLabel(QString::number(pos), this);
         posLabel->setAlignment(Qt::AlignCenter);
-        font = posLabel->font();
+        QFont font = posLabel->font();
         font.setPointSize(6);
         posLabel->setFont(font);
         layout->addWidget(posLabel);

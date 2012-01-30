@@ -44,9 +44,7 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
     // FIXME
     //num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
-    QFont font;
-    font.setStyleHint(QFont::TypeWriter);
-    font.setPixelSize(20);
+    QFont font = Utils::getMonospaceFont(20);
     num->setFont(font);
     layout->addWidget(num);
     adjustSize();
@@ -222,7 +220,7 @@ void NumberWidget::resizeEvent(QResizeEvent *event)
     if(event->oldSize().height() < minimumHeight())
         return;
     QFont f = num->font();
-    f.setPixelSize(f.pixelSize() + event->size().height() - event->oldSize().height());
+    f.setPointSize(f.pointSize() + event->size().height() - event->oldSize().height());
     num->setFont(f);
     DataWidget::resizeEvent(event);
 }
