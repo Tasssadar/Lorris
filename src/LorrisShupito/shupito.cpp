@@ -412,7 +412,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
                 {
                     m_tunnel_pipe = p[2];
                     if(!m_tunnel_pipe)
-                        return Utils::ThrowException("Invalid tunnel specified");
+                        return;
 
                     SendSetComSpeed();
 
@@ -503,7 +503,7 @@ void Shupito::tunnelDataSend()
     m_tunnel_timer.start();
 }
 
-void Shupito::setTunnelState(bool enable)
+void Shupito::setTunnelState(bool enable, bool wait)
 {
     if(!m_tunnel_config)
         return;
@@ -519,12 +519,18 @@ void Shupito::setTunnelState(bool enable)
         pkt_data[3] = 0x01;
         pkt_data.append(name);
 
-        waitForPacket(pkt_data, m_tunnel_config->cmd);
+        if(wait)
+            waitForPacket(pkt_data, m_tunnel_config->cmd);
+        else
+            m_con->SendData(pkt_data);
     }
     else if(!enable && m_tunnel_pipe != 0)
     {
         ShupitoPacket packet(m_tunnel_config->cmd, 3, 0, 2, m_tunnel_pipe);
-        waitForPacket(packet.getData(false), m_tunnel_config->cmd);
+        if(wait)
+            waitForPacket(packet.getData(false), m_tunnel_config->cmd);
+        else
+            sendPacket(packet);
     }
 }
 

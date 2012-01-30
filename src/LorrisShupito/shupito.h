@@ -140,7 +140,7 @@ public:
     void setTunnelSpeed(quint32 speed, bool send = true);
     qint16 getTunnelCmd();
     quint8 getTunnelId() { return m_tunnel_pipe; }
-    void setTunnelState(bool enable);
+    void setTunnelState(bool enable, bool wait = false);
 
     ShupitoDesc *getDesc() { return m_desc; }
     void setChipId(QString id) { m_chip_id = id; }

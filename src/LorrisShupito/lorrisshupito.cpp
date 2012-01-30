@@ -574,7 +574,7 @@ void LorrisShupito::setTunnelName()
         return;
 
     sConfig.set(CFG_STRING_SHUPITO_TUNNEL, name);
-    m_shupito->setTunnelState(false);
+    m_shupito->setTunnelState(false, true);
     m_shupito->setTunnelState(true);
 }
 
