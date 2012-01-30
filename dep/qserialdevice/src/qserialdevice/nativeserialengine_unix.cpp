@@ -51,8 +51,16 @@ bool NativeSerialEnginePrivate::nativeOpen(QIODevice::OpenMode mode)
 {
     //here chek locked device or not
     this->locker.setDeviceName(this->deviceName);
+
     bool byCurrPid = false;
-    if (this->locker.locked(&byCurrPid)) {
+    bool locked = this->locker.locked(&byCurrPid);
+    if(locked && byCurrPid)
+    {
+        locker.unlock();
+        locked = this->locker.locked(&byCurrPid);
+    }
+
+    if (locked) {
 #if defined (NATIVESERIALENGINE_UNIX_DEBUG)
         qDebug() << "Linux: NativeSerialEnginePrivate::nativeOpen(AbstractSerial::OpenMode mode) \n"
                 " -> can not open the device:" << this->deviceName <<
