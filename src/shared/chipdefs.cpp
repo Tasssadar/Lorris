@@ -25,10 +25,12 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QFile>
+#include <QDesktopServices>
 #include <vector>
 
 #include "common.h"
 #include "chipdefs.h"
+
 
 // const std::string embedded_chipdefs, chipdefs.cpp
 // fuse registers:
@@ -207,11 +209,24 @@ void chip_definition::parse_default_chipsets(std::vector<chip_definition> & res)
 {
     chip_definition::parse_chipdefs(embedded_chipdefs, res);
 
-    QFile *file = new QFile("./shupito_chipdefs.txt");
-    if(!file->open(QIODevice::ReadOnly))
+    static const QString defFileLocations[] =
+    {
+        "./shupito_chipdefs.txt",
+        QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/shupito_chipdefs.txt",
+    };
+
+    QFile file;
+    for(quint8 i = 0; i < sizeof(defFileLocations)/sizeof(QString); ++i)
+    {
+        file.setFileName(defFileLocations[i]);
+        if(file.open(QIODevice::ReadOnly))
+            break;
+    }
+
+    if(!file.isOpen())
         return;
 
-    QTextStream stream(file);
+    QTextStream stream(&file);
     QString defs("");
     QString line("");
 
@@ -219,8 +234,7 @@ void chip_definition::parse_default_chipsets(std::vector<chip_definition> & res)
         if(line.length() != 0)
             defs += line + "\n";
 
-    file->close();
-    delete file;
+    file.close();
 
     chip_definition::parse_chipdefs(defs, res);
 }

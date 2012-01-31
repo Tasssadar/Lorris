@@ -22,6 +22,8 @@
 ****************************************************************************/
 
 #include <QSettings>
+#include <QFile>
+#include <QDesktopServices>
 
 #include "config.h"
 #include "connection/connectionmgr.h"
@@ -58,7 +60,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
 
 Config::Config()
 {
-    m_settings = new QSettings("config.ini", QSettings::IniFormat);
+    openSettings();
 
     // Fill default values
     m_def_quint32[CFG_QUINT32_CONNECTION_TYPE]     = MAX_CON_TYPE;
@@ -85,6 +87,33 @@ Config::Config()
 Config::~Config()
 {
     delete m_settings;
+}
+
+void Config::openSettings()
+{
+    static const QString cfgFileLocations[] =
+    {
+        "./config.ini",
+        QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/config.ini"
+    };
+
+    QFile file;
+    for(quint8 i = 0; i < sizeof(cfgFileLocations)/sizeof(QString); ++i)
+    {
+        file.setFileName(cfgFileLocations[i]);
+        if(file.open(QIODevice::ReadOnly))
+            break;
+    }
+
+    QString filename = cfgFileLocations[1];
+
+    if(file.isOpen())
+    {
+        filename = file.fileName();
+        file.close();
+    }
+
+    m_settings = new QSettings(filename, QSettings::IniFormat);
 }
 
 quint32 Config::get(cfg_quint32 item)

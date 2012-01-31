@@ -83,6 +83,8 @@ public:
     void set(cfg_bool    item, bool           val);
 
 private:
+    void openSettings();
+
     QSettings *m_settings;
     def_map_quint32 m_def_quint32;
     def_map_string m_def_string;

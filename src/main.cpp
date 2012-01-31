@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QCoreApplication::setOrganizationName("-");
+    //TODO: found an organization
+    //QCoreApplication::setOrganizationName("-");
     QCoreApplication::setOrganizationDomain("github.com/Tasssadar");
     QCoreApplication::setApplicationName("Lorris");
 
