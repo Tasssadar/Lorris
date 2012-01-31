@@ -27,6 +27,8 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QMessageBox>
+#include <qextserialenumerator.h>
+#include <qextserialport.h>
 
 #include "common.h"
 #include "WorkTab/WorkTabMgr.h"
@@ -149,15 +151,9 @@ void TabDialog::FillConOptions(int index)
             portBox->setEditable(true);
             portBox->setObjectName("PortBox");
 
-            m_sde = SerialDeviceEnumerator::instance();
-            foreach (QString s, m_sde->devicesAvailable())
-            {
-                m_sde->setDeviceName(s);
-                portBox->addItem(m_sde->name(), m_sde->name());
-            }
-            m_sde->setEnabled(false);
-            SerialDeviceEnumerator::destroyInstance();
-            m_sde = NULL;
+            QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
+            for (int i = 0; i < ports.size(); i++)
+                portBox->addItem(ports.at(i).physName);
 
             conOptions->addWidget(portLabel);
             conOptions->addWidget(portBox);
@@ -165,15 +161,12 @@ void TabDialog::FillConOptions(int index)
             QLabel *rateLabel = new QLabel(tr("Baud Rate: "), NULL, Qt::WindowFlags(0));
             QComboBox *rateBox = new QComboBox(this);
 
-            rateBox->addItem("38400",   AbstractSerial::BaudRate38400);
-            rateBox->addItem("9600",    AbstractSerial::BaudRate9600);
-            rateBox->addItem("19200",   AbstractSerial::BaudRate19200);
-            rateBox->addItem("57600",   AbstractSerial::BaudRate57600);
-            rateBox->addItem("115200",  AbstractSerial::BaudRate115200);
-            rateBox->addItem("500000",  AbstractSerial::BaudRate500000);
-            rateBox->addItem("1000000", AbstractSerial::BaudRate1000000);
-            rateBox->addItem("1500000", AbstractSerial::BaudRate1500000);
-            rateBox->addItem("2000000", AbstractSerial::BaudRate2000000);
+            rateBox->addItem("38400",   BAUD38400);
+            rateBox->addItem("2400",    BAUD2400);
+            rateBox->addItem("4800",    BAUD4800);
+            rateBox->addItem("19200",   BAUD19200);
+            rateBox->addItem("57600",   BAUD57600);
+            rateBox->addItem("115200",  BAUD115200);
 
             rateBox->setObjectName("RateBox");
             conOptions->addWidget(rateLabel);
@@ -273,12 +266,12 @@ void TabDialog::CreateTab()
 WorkTab *TabDialog::ConnectSP(WorkTabInfo *info)
 {
     QString portName("");
-    AbstractSerial::BaudRate rate;
+    BaudRateType rate;
 
     QComboBox *combo = findChild<QComboBox *>("PortBox");
     portName = combo->currentText();
     combo = findChild<QComboBox *>("RateBox");
-    rate =  AbstractSerial::BaudRate(combo->itemData(combo->currentIndex()).toInt());
+    rate =  BaudRateType(combo->itemData(combo->currentIndex()).toInt());
 
     sConfig.set(CFG_STRING_SERIAL_PORT, portName);
     sConfig.set(CFG_QUINT32_SERIAL_BAUD, (quint32)rate);

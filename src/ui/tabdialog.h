@@ -31,7 +31,6 @@
 #include <QLineEdit>
 #include <QListWidget>
 
-class SerialDeviceEnumerator;
 class WorkTab;
 class Connection;
 class WorkTabInfo;
@@ -59,7 +58,6 @@ private:
     QHBoxLayout *conOptions;
     QListWidget *pluginsBox;
     QComboBox *conBox;
-    SerialDeviceEnumerator *m_sde;
     WorkTabInfo *tmpTabInfo;
 };
 

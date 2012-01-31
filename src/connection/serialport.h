@@ -24,9 +24,11 @@
 #ifndef SERIALPORT_H
 #define SERIALPORT_H
 
+#include <QFuture>
+#include <QFutureWatcher>
+#include <qextserialport.h>
+
 #include "connection.h"
-#include "qserialdevice/abstractserial.h"
-#include "qserialdeviceenumerator/serialdeviceenumerator.h"
 
 class SerialPortThread;
 
@@ -44,7 +46,7 @@ public:
     bool Open();
     void Close();
     void SendData(const QByteArray &data);
-    void SetNameAndRate(QString name, AbstractSerial::BaudRate rate)
+    void SetNameAndRate(QString name, BaudRateType rate)
     {
         m_idString = name;
         m_rate = rate;
@@ -52,12 +54,18 @@ public:
     void OpenConcurrent();
 
 private slots:
-    void dataReadSer(const QByteArray& data);
     void connectResultSer(bool opened);
+    void openResult();
 
 private:
-    AbstractSerial::BaudRate m_rate;
-    SerialPortThread *thread;
+    bool openPort();
+
+    QextSerialPort *m_port;
+    SerialPortThread *m_thread;
+    BaudRateType m_rate;
+
+    QFuture<bool> m_future;
+    QFutureWatcher<bool> m_watcher;
 };
 
 

@@ -25,9 +25,9 @@
         Qwt(http://qwt.sourceforge.net/), Qt Widgets for Technical Applications,
             which is distributed under the Qwt license - see dep/qwt/COPYING
 
-        Modified version of QSerialDevice(http://gitorious.org/qserialdevice),
-            a cross-platform library for serial devices (ports) based on Qt4,
-            which is distributed under the GNU GPLv2 - see dep/qserialdevice/copying
+        QExtSerialPort(http://code.google.com/p/qextserialport/),
+            Qt interface class for old fashioned serial ports,
+            which is distributed under the New BSD License - see http://www.opensource.org/licenses/bsd-license.php
 
         Modified version of QHexEdit2(http://code.google.com/p/qhexedit2/),
             "QHexEdit is a Binary Edior for Qt",

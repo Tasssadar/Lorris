@@ -15,6 +15,7 @@ INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += dep/qhexedit2/src
 INCLUDEPATH += src
+INCLUDEPATH += dep/qextserialport/src
 SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
     src/ui/HomeTab.cpp \
@@ -27,13 +28,7 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisTerminal/lorristerminalinfo.cpp \
     src/connection/connection.cpp \
     src/connection/serialport.cpp \
-    dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator.cpp \
-    dep/qserialdevice/src/qserialdevice/nativeserialengine.cpp \
-    dep/qserialdevice/src/qserialdevice/abstractserialnotifier.cpp \
-    dep/qserialdevice/src/qserialdevice/abstractserialengine.cpp \
-    dep/qserialdevice/src/qserialdevice/abstractserial.cpp \
     src/LorrisTerminal/terminal.cpp \
-    src/connection/serialportthread.cpp \
     src/LorrisTerminal/eeprom.cpp \
     src/LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     src/LorrisAnalyzer/lorrisanalyzer.cpp \
@@ -72,7 +67,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/shared/chipdefs.cpp \
     src/LorrisShupito/shupitopdi.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
-    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp \
+    dep/qextserialport/src/qextserialport.cpp \
+    src/connection/serialportthread.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -86,19 +83,7 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisTerminal/lorristerminalinfo.h \
     src/connection/connection.h \
     src/connection/serialport.h \
-    dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p.h \
-    dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator.h \
-    dep/qserialdevice/src/qserialdevice/nativeserialnotifier.h \
-    dep/qserialdevice/src/qserialdevice/nativeserialengine_p.h \
-    dep/qserialdevice/src/qserialdevice/nativeserialengine.h \
-    dep/qserialdevice/src/qserialdevice/abstractserialnotifier.h \
-    dep/qserialdevice/src/qserialdevice/abstractserialengine_p.h \
-    dep/qserialdevice/src/qserialdevice/abstractserialengine.h \
-    dep/qserialdevice/src/qserialdevice/abstractserial_p.h \
-    dep/qserialdevice/src/qserialdevice/abstractserial.h \
-    dep/qserialdevice/src/qserialdevice_global.h \
     src/LorrisTerminal/terminal.h \
-    src/connection/serialportthread.h \
     src/LorrisTerminal/eeprom.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
     src/LorrisAnalyzer/lorrisanalyzerinfo.h \
@@ -139,7 +124,11 @@ HEADERS += src/ui/mainwindow.h \
     src/shared/chipdefs.h \
     src/LorrisShupito/shupitopdi.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
-    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h \
+    dep/qextserialport/src/qextserialport_global.h \
+    dep/qextserialport/src/qextserialport.h \
+    dep/qextserialport/src/qextserialenumerator.h \
+    src/connection/serialportthread.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL
@@ -152,19 +141,13 @@ win32 {
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 
-    SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_win.cpp \
-        dep/qserialdevice/src/qserialdevice/nativeserialnotifier_win.cpp \
-        dep/qserialdevice/src/qserialdevice/nativeserialengine_win.cpp
-    HEADERS += dep/qserialdevice/src/qwineventnotifier_p.h
+    SOURCES += dep/qextserialport/src/win_qextserialport.cpp \
+               dep/qextserialport/src/qextserialenumerator_win.cpp
 }
 unix:!macx:!symbian {
     LIBS += -lqwt -ludev
-    SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_unix.cpp \
-        dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
-        dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp \
-        dep/qserialdevice/src/unix/ttylocker.cpp
-    HEADERS += dep/qserialdevice/src/unix/ttylocker.h \
-        dep/qserialdevice/src/unix/qcore_unix_p.h
+    SOURCES += dep/qextserialport/src/qextserialenumerator_unix.cpp \
+               dep/qextserialport/src/posix_qextserialport.cpp
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -177,9 +160,8 @@ macx {
         IOKit \
         -framework \
         CoreFoundation
-    SOURCES += dep/qserialdevice/src/qserialdeviceenumerator/serialdeviceenumerator_p_mac.cpp \
-        dep/qserialdevice/src/qserialdevice/nativeserialnotifier_unix.cpp \
-        dep/qserialdevice/src/qserialdevice/nativeserialengine_unix.cpp
+    SOURCES += dep/qextserialport/src/qextserialenumerator_osx.cpp \
+               dep/qextserialport/src/posix_qextserialport.cpp
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \

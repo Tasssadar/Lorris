@@ -21,23 +21,27 @@
 **
 ****************************************************************************/
 
+#include <QtCore/QtConcurrentRun>
+#include <QtCore/QThreadPool>
+#include <qextserialport.h>
+
 #include "serialport.h"
-#include "connectionmgr.h"
 #include "serialportthread.h"
+#include "connectionmgr.h"
 
 SerialPort::SerialPort() : Connection()
 {
     m_type = CONNECTION_SERIAL_PORT;
-    thread = NULL;
+    m_port = NULL;
+
+    m_thread = NULL;
+
+    connect(&m_watcher, SIGNAL(finished()), SLOT(openResult()));
 }
 
 SerialPort::~SerialPort()
 {
-    if(thread)
-    {
-        emit stopThread();
-        thread = NULL;
-    }
+    Close();
 }
 
 bool SerialPort::Open()
@@ -45,31 +49,27 @@ bool SerialPort::Open()
     return false;
 }
 
-void SerialPort::dataReadSer(const QByteArray& data)
-{
-    emit dataRead(data);
-}
-
 void SerialPort::connectResultSer(bool opened)
 {
     this->opened = opened;
     emit connectResult(this, opened);
 
-    if(!opened)
-        thread = NULL;
-    else
+    if(opened)
         emit connected(true);
 }
 
 void SerialPort::Close()
 {
-    if(thread)
+    if(m_port)
     {
-        emit stopThread();
-        thread->wait();
-        delete thread;
-        thread = NULL;
-        emit connected(false);
+        m_thread->stop();
+        m_thread->wait();
+        delete m_thread;
+        m_thread = NULL;
+
+        m_port->close();
+        delete m_port;
+        m_port = NULL;
     }
     opened = false;
 }
@@ -77,19 +77,42 @@ void SerialPort::Close()
 void SerialPort::SendData(const QByteArray& data)
 {
     if(opened)
-        thread->Send(data);
+        m_port->write(data);
 }
 
 void SerialPort::OpenConcurrent()
 {
-    if(thread)
+    m_future = QtConcurrent::run(this, &SerialPort::openPort);
+    m_watcher.setFuture(m_future);
+}
+
+bool SerialPort::openPort()
+{
+    m_port = new QextSerialPort(m_idString, QextSerialPort::EventDriven);
+    m_port->setBaudRate(m_rate);
+    m_port->setParity(PAR_NONE);
+    m_port->setDataBits(DATA_8);
+    m_port->setStopBits(STOP_1);
+    m_port->setFlowControl(FLOW_OFF);
+    m_port->setTimeout(-1);
+
+    bool res = m_port->open(QIODevice::ReadWrite | QIODevice::Unbuffered);
+    if(!res)
     {
-        emit stopThread();
-        thread->wait();
-        delete thread;
+        delete m_port;
+        m_port = NULL;
     }
-    thread = new SerialPortThread(m_idString, m_rate, this);
-    connect(thread, SIGNAL(dataRead(QByteArray)), this, SLOT(dataReadSer(QByteArray)));
-    connect(thread, SIGNAL(connectResult(bool)), this, SLOT(connectResultSer(bool)));
-    thread->start();
+    else
+    {
+        m_thread = new SerialPortThread(m_port);
+        connect(m_thread, SIGNAL(dataRead(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
+        m_thread->start();
+    }
+
+    return res;
+}
+
+void SerialPort::openResult()
+{
+    connectResultSer(m_future.result());
 }
