@@ -5,7 +5,7 @@ DESTDIR                 = build
 CONFIG                 += qt warn_on debug_and_release
 CONFIG                  += dll
 DEFINES                 += QEXTSERIALPORT_LIB
-#CONFIG                 += staticlib
+CONFIG                  += staticlib
 
 # event driven device enumeration on windows requires the gui module
 !win32:QT               -= gui

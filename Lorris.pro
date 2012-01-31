@@ -9,6 +9,7 @@ OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc
 CONFIG += qwt
 LIBS += -L"$$PWD/dep/qwt/lib"
+LIBS += -L"$$PWD/dep/qextserialport/lib"
 TRANSLATIONS = translations/Lorris.cs_CZ.ts
 TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
@@ -68,7 +69,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/shupitopdi.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp \
-    dep/qextserialport/src/qextserialport.cpp \
     src/connection/serialportthread.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
@@ -128,26 +128,18 @@ HEADERS += src/ui/mainwindow.h \
     dep/qextserialport/src/qextserialport_global.h \
     dep/qextserialport/src/qextserialport.h \
     dep/qextserialport/src/qextserialenumerator.h \
-    src/connection/serialportthread.h
+    src/connection/serialportthread.h \
 
 win32 {
     DEFINES += QT_DLL QWT_DLL
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
-    LIBS += -lsetupapi \
-        -luuid \
-        -ladvapi32
-
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
-
-    SOURCES += dep/qextserialport/src/win_qextserialport.cpp \
-               dep/qextserialport/src/qextserialenumerator_win.cpp
+    LIBS += -lqextserialport1
 }
 unix:!macx:!symbian {
-    LIBS += -lqwt -ludev
-    SOURCES += dep/qextserialport/src/qextserialenumerator_unix.cpp \
-               dep/qextserialport/src/posix_qextserialport.cpp
+    LIBS += -lqwt -ludev -lqextserialport
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -156,12 +148,7 @@ unix:!macx:!symbian {
         "$$DESTDIR/translations/"
 }
 macx {
-    LIBS += -framework \
-        IOKit \
-        -framework \
-        CoreFoundation
-    SOURCES += dep/qextserialport/src/qextserialenumerator_osx.cpp \
-               dep/qextserialport/src/posix_qextserialport.cpp
+    LIBS += -lqwt -lqextserialport1
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \

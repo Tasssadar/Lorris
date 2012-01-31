@@ -153,7 +153,13 @@ void TabDialog::FillConOptions(int index)
 
             QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
             for (int i = 0; i < ports.size(); i++)
+            {
+#ifdef Q_OS_WIN
+                portBox->addItem(ports.at(i).portName);
+#else
                 portBox->addItem(ports.at(i).physName);
+#endif
+            }
 
             conOptions->addWidget(portLabel);
             conOptions->addWidget(portBox);
