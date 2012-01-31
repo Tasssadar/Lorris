@@ -60,7 +60,7 @@ static const QString embedded_chipdefs =
         " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 boden:14 bodlevel:15"
         " bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23\n"
 
-    "atmega128 avr:1e9702 flash=131072:256,eeprom=4096"
+    "atmega128 avr:1e9702 flash=131072:256,eeprom=4096:8"
         " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 boden:14 bodlevel:15"
         " bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23 wdton:24 m103c:25\n"
 
