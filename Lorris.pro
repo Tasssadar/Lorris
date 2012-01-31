@@ -125,18 +125,14 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/shupitopdi.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h \
-    dep/qextserialport/src/qextserialport_global.h \
-    dep/qextserialport/src/qextserialport.h \
-    dep/qextserialport/src/qextserialenumerator.h \
     src/connection/serialportthread.h \
 
 win32 {
     DEFINES += QT_DLL QWT_DLL
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
-    CONFIG(debug, debug|release):LIBS += -lqwtd
-    else:LIBS += -lqwt
-    LIBS += -lqextserialport1
+    CONFIG(debug, debug|release):LIBS += -lqwtd -lqextserialportd1
+    else:LIBS += -lqwt -lqextserialport1
 }
 unix:!macx:!symbian {
     LIBS += -lqwt -ludev -lqextserialport
