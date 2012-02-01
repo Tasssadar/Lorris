@@ -36,16 +36,23 @@
 #include <qwt_plot_grid.h>
 #include <qwt_legend_item.h>
 #include <qwt_plot_layout.h>
+#include <qwt_scale_widget.h>
 
+#include <QMouseEvent>
+#include <QWheelEvent>
+
+#include "../datawidget.h"
 #include "graph.h"
 
 Graph::Graph(QWidget *parent) : QwtPlot(parent)
 {
     // zoom in/out with the wheel
-    //(void) new QwtPlotMagnifier( canvas() );
+    QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( canvas() );
+    magnifier->setMouseButton(Qt::LeftButton);
 
     // panning with the left mouse button
-    //(void) new QwtPlotPanner( canvas() );
+    QwtPlotPanner *panner =  new QwtPlotPanner( canvas() );
+    panner->setMouseButton(Qt::MiddleButton);
 
     QwtPlotGrid *grid = new QwtPlotGrid();
     grid->setPen(QPen(Qt::gray, 0.0, Qt::DotLine));
@@ -79,5 +86,71 @@ void Graph::showLegend(bool show)
 {
     plotLayout()->setLegendPosition(show ? QwtPlot::BottomLegend : QwtPlot::ExternalLegend);
     legend()->setVisible(show);
+    replot();
+}
+
+void Graph::mousePressEvent(QMouseEvent *event)
+{
+    int x = event->pos().x();
+    int y = event->pos().y();
+
+    if((x < RESIZE_BORDER) ||
+       (x > width() - RESIZE_BORDER) ||
+       (y > height() - RESIZE_BORDER))
+    {
+        return QWidget::mousePressEvent(event);
+    }
+
+    QwtPlot::mousePressEvent(event);
+    event->accept();
+}
+
+void Graph::mouseMoveEvent(QMouseEvent *event)
+{
+    int x = event->pos().x();
+    int y = event->pos().y();
+
+    if((x < RESIZE_BORDER) ||
+       (x > width() - RESIZE_BORDER) ||
+       (y > height() - RESIZE_BORDER))
+    {
+        return QWidget::mouseMoveEvent(event);
+    }
+
+    QwtPlot::mouseMoveEvent(event);
+    event->accept();
+}
+
+void Graph::wheelEvent(QWheelEvent *event)
+{
+    const QPoint& pos = event->pos();
+    int yPos = axisWidget(QwtPlot::yLeft)->pos().x() + axisWidget(QwtPlot::yLeft)->width();
+    int xPos = axisWidget(QwtPlot::xBottom)->pos().y();
+
+    int axis = -1;
+    if(pos.x() < yPos)
+        axis = QwtPlot::yLeft;
+    else if(pos.y() > xPos)
+        axis = QwtPlot::xBottom;
+
+    if(axis == -1)
+        return QwtPlot::wheelEvent(event);
+
+    double max = axisScaleDiv(axis)->upperBound();
+    double min = axisScaleDiv(axis)->lowerBound();
+
+    double diff = fabs(max - min);
+
+    float exp = (event->modifiers() & Qt::ShiftModifier) ? 0.01 : 0.001;
+    double newDiff = fabs(diff + (diff*(exp *event->delta())))/2;
+
+    diff /= 2;
+    double newMax = (max - diff) + newDiff;
+    double newMin = (min + diff) - newDiff;
+
+    if(newMin > newMax)
+        return;
+
+    setAxisScale(axis, newMin, newMax);
     replot();
 }

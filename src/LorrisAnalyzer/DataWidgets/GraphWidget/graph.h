@@ -34,6 +34,11 @@ public:
 
     void showLegend(bool show);
 
+protected:
+    void mousePressEvent(QMouseEvent * event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
+
 public slots:
     void showCurve(QwtPlotItem *item, bool on);
 };
