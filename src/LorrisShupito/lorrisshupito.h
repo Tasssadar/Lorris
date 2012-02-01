@@ -152,7 +152,7 @@ private:
     void postFlashSwitchCheck(chip_definition &chip);
     chip_definition switchToFlashAndGetId();
     chip_definition update_chip_description(const QString& chip_id);
-    void initMenuBar();
+    void initMenus();
 
     void changeVddColor(float val);
 

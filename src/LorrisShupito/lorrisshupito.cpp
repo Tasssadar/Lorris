@@ -40,6 +40,7 @@
 #include "fusewidget.h"
 #include "shared/hexfile.h"
 #include "shared/chipdefs.h"
+#include "flashbuttonmenu.h"
 
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
@@ -82,17 +83,15 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(ui->connectButton,  SIGNAL(clicked()),                SLOT(connectButton()));
     connect(ui->tunnelSpeedBox, SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
     connect(ui->tunnelCheck,    SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
-    connect(ui->readButton,     SIGNAL(clicked()),                SLOT(readMemButton()));
     connect(ui->progSpeedBox,   SIGNAL(editTextChanged(QString)), SLOT(progSpeedChanged(QString)));
     connect(ui->hideLogBtn,     SIGNAL(clicked()),                SLOT(hideLogBtn()));
     connect(ui->eraseButton,    SIGNAL(clicked()),                SLOT(eraseDevice()));
     connect(ui->hideFusesBtn,   SIGNAL(clicked()),                SLOT(hideFusesBtn()));
-    connect(ui->writeButton,    SIGNAL(clicked()),                SLOT(writeFlashBtn()));
     connect(m_fuse_widget,      SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
     connect(m_fuse_widget,      SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,      SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
 
-    initMenuBar();
+    initMenus();
 
     QByteArray data = QByteArray(1024, (char)0xFF);
     static const QString memNames[] = { tr("Program memory"), tr("EEPROM") };
@@ -148,8 +147,16 @@ LorrisShupito::~LorrisShupito()
     delete m_vdd_signals;
 }
 
-void LorrisShupito::initMenuBar()
+void LorrisShupito::initMenus()
 {
+    // Flash/Read buttons
+    FlashButtonMenu *readBtnMenu = new FlashButtonMenu(true, ui->readButton, this);
+    FlashButtonMenu *writeBtnMenu = new FlashButtonMenu(false, ui->writeButton, this);
+
+    connect(ui->memTabs, SIGNAL(currentChanged(int)), readBtnMenu,  SLOT(setActiveAction(int)));
+    connect(ui->memTabs, SIGNAL(currentChanged(int)), writeBtnMenu, SLOT(setActiveAction(int)));
+
+    // top menu bar
     QMenu *chipBar = new QMenu(tr("Chip"), this);
     m_menus.push_back(chipBar);
 
@@ -215,34 +222,6 @@ void LorrisShupito::initMenuBar()
     connect(signalMapSave, SIGNAL(mapped(int)), this,          SLOT(saveToFile(int)));
     connect(m_save_flash,  SIGNAL(triggered()), signalMapSave, SLOT(map()));
     connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
-
-    QMenu *readBtnMenu = new QMenu(this);
-    QAction *readFlash = readBtnMenu->addAction(tr("Read flash"));
-    readBtnMenu->addSeparator();
-    QAction *readAll = readBtnMenu->addAction(tr("Read all"));
-    QAction *readEEPROM = readBtnMenu->addAction(tr("Read EEPROM"));
-    QAction *readFuses = readBtnMenu->addAction(tr("Read fuses"));
-
-    connect(readAll,    SIGNAL(triggered()), SLOT(readAll()));
-    connect(readFlash,  SIGNAL(triggered()), SLOT(readMemButton()));
-    connect(readEEPROM, SIGNAL(triggered()), SLOT(readEEPROMBtn()));
-    connect(readFuses,  SIGNAL(triggered()), SLOT(readFusesInFlash()));
-
-    ui->readButton->setMenu(readBtnMenu);
-
-    QMenu *writeBtnMenu = new QMenu(this);
-    QAction *writeFlash = writeBtnMenu->addAction(tr("Write flash"));
-    writeBtnMenu->addSeparator();
-    QAction *writeAll = writeBtnMenu->addAction(tr("Write all"));
-    QAction *writeEEPROM = writeBtnMenu->addAction(tr("Write EEPROM"));
-    QAction *writeFuses = writeBtnMenu->addAction(tr("Write fuses"));
-
-    connect(writeAll,    SIGNAL(triggered()), SLOT(writeAll()));
-    connect(writeFlash,  SIGNAL(triggered()), SLOT(writeFlashBtn()));
-    connect(writeEEPROM, SIGNAL(triggered()), SLOT(writeEEPROMBtn()));
-    connect(writeFuses,  SIGNAL(triggered()), SLOT(writeFusesInFlash()));
-
-    ui->writeButton->setMenu(writeBtnMenu);
 }
 
 void LorrisShupito::connectButton()

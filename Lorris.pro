@@ -69,7 +69,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/shupitopdi.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp \
-    src/connection/serialportthread.cpp
+    src/connection/serialportthread.cpp \
+    src/LorrisShupito/flashbuttonmenu.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -126,6 +127,7 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h \
     src/connection/serialportthread.h \
+    src/LorrisShupito/flashbuttonmenu.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL
