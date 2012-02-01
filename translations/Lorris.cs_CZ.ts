@@ -2,14 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="cs_CZ" sourcelanguage="en_US">
 <context>
-    <name>AbstractSerial</name>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="943"/>
-        <source>%1 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>BarWidget</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="64"/>
@@ -219,6 +211,49 @@
     </message>
 </context>
 <context>
+    <name>FlashButtonMenu</name>
+    <message>
+        <location filename="../src/LorrisShupito/flashbuttonmenu.cpp" line="24"/>
+        <source>Read flash</source>
+        <translation>Přečíst flash paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/flashbuttonmenu.cpp" line="25"/>
+        <source>Read all</source>
+        <translation>Přečíst vše</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/flashbuttonmenu.cpp" line="26"/>
+        <source>Read EEPROM</source>
+        <translation>Přečíst EEPROM</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/flashbuttonmenu.cpp" line="27"/>
+        <source>Read fuses</source>
+        <translation>Přečíst pojistky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/flashbuttonmenu.cpp" line="36"/>
+        <source>Write flash</source>
+        <translation>Programovat flash paměť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/flashbuttonmenu.cpp" line="37"/>
+        <source>Write all</source>
+        <translation>Programovat vše</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/flashbuttonmenu.cpp" line="38"/>
+        <source>Write EEPROM</source>
+        <translation>Programovat EEPROM</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/flashbuttonmenu.cpp" line="39"/>
+        <source>Write fuses</source>
+        <translation>Zapsat pojistky</translation>
+    </message>
+</context>
+<context>
     <name>FuseWidget</name>
     <message>
         <location filename="../src/LorrisShupito/fusewidget.cpp" line="44"/>
@@ -228,6 +263,7 @@
     <message>
         <location filename="../src/LorrisShupito/fusewidget.cpp" line="50"/>
         <location filename="../src/LorrisShupito/fusewidget.cpp" line="64"/>
+        <location filename="../src/LorrisShupito/fusewidget.cpp" line="100"/>
         <source>Read fuses</source>
         <translation>Přečíst pojistky</translation>
     </message>
@@ -237,7 +273,7 @@
         <translation>Zapamatovat pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/fusewidget.cpp" line="178"/>
+        <location filename="../src/LorrisShupito/fusewidget.cpp" line="190"/>
         <source>Fuses had been remembered</source>
         <translation>Pojistky byly zapamatovány</translation>
     </message>
@@ -246,8 +282,8 @@
     <name>GraphCurveAddDialog</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui" line="14"/>
-        <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <source>Curve add/edit</source>
+        <translation>Přidání/editace hrany</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui" line="35"/>
@@ -259,6 +295,76 @@
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui" line="45"/>
         <source>Set for existing curve</source>
         <translation>Nastavit pro existující hranu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="52"/>
+        <source>unsigned 8bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="53"/>
+        <source>unsigned 16bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="54"/>
+        <source>unsigned 32bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="55"/>
+        <source>unsigned 64bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="57"/>
+        <source>signed 8bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="58"/>
+        <source>signed 16bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="59"/>
+        <source>signed 32bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="60"/>
+        <source>signed 64bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="62"/>
+        <source>float (4 bytes)</source>
+        <translation>float (4 byty)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="63"/>
+        <source>double (8 bytes)</source>
+        <translation>double (8 bytů)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="135"/>
+        <source>Error!</source>
+        <translation>Chyba!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="144"/>
+        <source>You have to set name!</source>
+        <translation>Musíte nastavit jméno hrany!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="151"/>
+        <source>You have to set color!</source>
+        <translation>Musíte nastavit barvu hrany!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="163"/>
+        <source>This name is already taken</source>
+        <translation>Tohle jméno je už zabrané</translation>
     </message>
 </context>
 <context>
@@ -284,29 +390,9 @@
         <translation>Typ:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="46"/>
-        <source>Red</source>
-        <translation>Červená</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="51"/>
-        <source>Blue</source>
-        <translation>Modrá</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="56"/>
-        <source>Yellow</source>
-        <translation>Žlutá</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="61"/>
-        <source>Green</source>
-        <translation>Zelená</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="66"/>
-        <source>Black</source>
-        <translation>Černá</translation>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="95"/>
+        <source>Curve</source>
+        <translation>Hrana</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="81"/>
@@ -317,15 +403,55 @@
 <context>
     <name>GraphWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="34"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="43"/>
         <source>Graph</source>
         <translation>Graf</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="69"/>
+        <source>Edit curve properties</source>
+        <translation>Upravit vlastnosti hrany</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="73"/>
+        <source>Remove Curve</source>
+        <translation>Odebrat hranu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="77"/>
+        <source>Sample size</source>
+        <translation>Velikost vzorku</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="82"/>
+        <source>Show all data</source>
+        <translation>Zobrazit všechna data</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="82"/>
+        <source>Set custom...</source>
+        <translation>Zadat...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="101"/>
+        <source>Show legend</source>
+        <translation>Zobrazit legendu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="384"/>
+        <source>Set sample size</source>
+        <translation>Nastavení velikosti vzorku</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="384"/>
+        <source>Sample size:</source>
+        <translation>Velikost vzorku</translation>
     </message>
 </context>
 <context>
     <name>GraphWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="80"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="453"/>
         <source>Graph</source>
         <translation>Graf</translation>
     </message>
@@ -384,7 +510,7 @@
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="74"/>
         <source>&amp;Data</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="76"/>
@@ -420,22 +546,22 @@
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="430"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="432"/>
         <source>Clear data?</source>
         <translation>Vyčistit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="431"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="433"/>
         <source>Do you really clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete smazat všechny widgety, data a strukturu packetu?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="432"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="434"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="433"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="435"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -449,7 +575,7 @@
     </message>
     <message>
         <location filename="../src/LorrisShupito/lorrisshupito.ui" line="24"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="281"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="263"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
@@ -522,7 +648,7 @@
         <translation>Vymazat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="362"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="365"/>
         <source>N/A</source>
         <translation></translation>
     </message>
@@ -532,310 +658,281 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="220"/>
-        <source>Read EEPROM</source>
-        <translation>Přečíst EEPROM</translation>
-    </message>
-    <message>
         <location filename="../src/LorrisShupito/lorrisshupito.ui" line="31"/>
         <source>Chip ID:</source>
         <translation>ID čipu:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="98"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="97"/>
         <source>Program memory</source>
         <translation>Paměť programu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="98"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="97"/>
         <source>EEPROM</source>
         <translation>EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="153"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="160"/>
         <source>Chip</source>
         <translation>Součástka</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="156"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="163"/>
         <source>Start chip</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="157"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="164"/>
         <source>Stop chip</source>
         <translation>Stop</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="158"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="165"/>
         <source>Restart chip</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="167"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="174"/>
         <source>Mode</source>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="186"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="193"/>
         <source>Verify write</source>
         <translation>Ověření naprogramovaných dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="190"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="197"/>
+        <source>Set RS232 tunnel name...</source>
+        <translation>Nastavit jméno RS232 tunelu...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="200"/>
         <source>Data</source>
         <translation>Data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="193"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="203"/>
         <source>Load data into flash</source>
         <translation>Importovat data pro flash paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="195"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="205"/>
         <source>Load data into EEPROM</source>
         <translation>Importovat data pro EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="198"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="208"/>
         <source>Save flash memory</source>
         <translation>Exportovat flash paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="200"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="210"/>
         <source>Save EERPOM</source>
         <translation>Exportovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="217"/>
-        <source>Read flash</source>
-        <translation>Přečíst flash paměť</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="219"/>
-        <source>Read all</source>
-        <translation>Přečíst vše</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="221"/>
-        <source>Read fuses</source>
-        <translation>Přečíst pojistky</translation>
-    </message>
-    <message>
         <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="231"/>
-        <source>Write flash</source>
-        <translation>Programovat flash paměť</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="233"/>
-        <source>Write all</source>
-        <translation>Programovat vše</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="234"/>
-        <source>Write EEPROM</source>
-        <translation>Programovat EEPROM</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="235"/>
-        <source>Write fuses</source>
-        <translation>Zapsat pojistky</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="249"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="260"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="271"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="288"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="242"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="253"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="270"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="557"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="548"/>
+        <source>Set tunnel name</source>
+        <translation>Nastavit jméno RS232 tunelu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="548"/>
+        <source>Tunnel name:</source>
+        <translation>Jméno tunelu:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="562"/>
         <source>This mode is unsupported by Lorris, for now.</source>
         <translation>Toto rozhraní zatím není podporováno.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="606"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="611"/>
         <source>Output voltage detected!</source>
         <translation>Detekováno napětí na výstupu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="730"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="735"/>
         <source>Unsupported chip: %1</source>
         <translation>Nepodporovaný čip: %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="742"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="753"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1016"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1045"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1027"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1056"/>
         <source>Data has been successfuly written</source>
         <translation>Data byla naprogramována</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1063"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1122"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1074"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1133"/>
         <source>Fuses had not been read yet</source>
         <translation>Pojistky ještě nebyly přečteny ze součástky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1069"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1080"/>
         <source>You have to &quot;Remember&quot; fuses prior to writing</source>
         <translation>Před zapsáním pojistek je musíte &quot;zapamatovat&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1073"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1084"/>
         <source>Write fuses?</source>
         <translation>Zapsat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1073"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1084"/>
         <source>Do you really wanna to write fuses to the chip?</source>
         <translation>Opravdu chcete zapsat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1088"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1099"/>
         <source>Fuses had been succesfully written</source>
         <translation>Pojistky byly úspěšně zapsány</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1101"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1112"/>
         <source>Unknown memory id</source>
         <translation>Neznámá paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1105"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1116"/>
         <source>Somethings wrong, data in tab: %1, chip size: %2</source>
         <translation>Něco je špatně, data v záložce: %1, velikost čipu: %2. Moc velký program?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1108"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1119"/>
         <source>Writing memory</source>
         <translation>Programuji paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1134"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1145"/>
         <source>Erase chip?</source>
         <translation>Vymazat čip?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1134"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1145"/>
         <source>Do you really wanna to erase WHOLE chip?</source>
         <translation>Opravdu chcete vymazat celý čip?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1144"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1155"/>
         <source>Erasing chip...</source>
         <translation>Mažu čip...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1164"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1175"/>
         <source>Succes!</source>
         <translation>Hotovo!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1165"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1176"/>
         <source>Chip was succesfuly erased!</source>
         <translation>Čip byl úspěšně vymazán!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="272"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="254"/>
         <source>Can&apos;t open connection!</source>
         <translation>Nemůžu se připojit!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="498"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="482"/>
         <source>Can&apos;t set output VCC, voltage detected!</source>
         <translation>Nemůžu nastavit výstupní napětí, na pinech už nějáké bylo detekováno!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="530"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="514"/>
         <source>It looks like your Shupito does not support RS232 tunnel!</source>
         <translation>Vypadá to že vaše Shupito nepodporuje RS232 tunel!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="543"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="527"/>
         <source>RS232 tunnel </source>
         <translation>RS232 tunel </translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="545"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="533"/>
         <source>enabled</source>
         <translation>zapnut</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="547"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="539"/>
         <source>disabled</source>
         <translation>vypnut</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="752"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="763"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="753"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="764"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="769"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="780"/>
         <source>Chip has been started</source>
         <translation>Součástka byla spuštěna</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="791"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="802"/>
         <source>Chip has been stopped</source>
         <translation>Součástka byla zastavena</translation>
     </message>
     <message>
-        <source>Chip has been restarted</source>
-        <translation type="obsolete">Součástka byla restartována</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="843"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="854"/>
         <source>File loaded</source>
         <translation>Soubor byl načten</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="875"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="886"/>
         <source>File saved</source>
         <translation>Data byla uložena</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="905"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="916"/>
         <source>Data has been successfuly read</source>
         <translation>Data byla úspěšně přečtena</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="961"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="972"/>
         <source>Fuses had been succesfully read</source>
         <translation>Pojistky byly úspěšně přečteny</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="973"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="984"/>
         <source>Reading memory</source>
         <translation>Čtu paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="604"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="609"/>
         <source>No voltage present</source>
         <translation>Nebylo detekováno žádné napětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="621"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="626"/>
         <source>&lt;unknown&gt;</source>
         <translation>&lt;neznámý&gt;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="649"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="654"/>
         <source>Progress</source>
         <translation>Průběh</translation>
     </message>
@@ -1033,41 +1130,21 @@
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="175"/>
-        <source>Exit Lorris?</source>
-        <translation>Ukončit Lorris?</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.cpp" line="176"/>
-        <source>Do you really want to leave Lorris?</source>
-        <translation>Opravdu chcete ukončit Lorris?</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.cpp" line="177"/>
-        <source>Yes</source>
-        <translation>Ano</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.cpp" line="178"/>
-        <source>No</source>
-        <translation>Ne</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.cpp" line="198"/>
         <source>About Lorris</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="199"/>
+        <location filename="../src/ui/mainwindow.cpp" line="176"/>
         <source>Lorris revision </source>
         <translation>Lorris v revizi </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="227"/>
+        <location filename="../src/ui/mainwindow.cpp" line="204"/>
         <source>Restart</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="228"/>
+        <location filename="../src/ui/mainwindow.cpp" line="205"/>
         <source>You need to restart Lorris for this change to take effect</source>
         <translation>Musíte restartovat Lorris aby se tato změna projevila</translation>
     </message>
@@ -1075,82 +1152,82 @@
 <context>
     <name>NumberWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="70"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="68"/>
         <source>Format</source>
         <translation>Formát</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="69"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="67"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="72"/>
         <source>unsigned 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="75"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="73"/>
         <source>unsigned 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="76"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="74"/>
         <source>unsigned 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="77"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="75"/>
         <source>unsigned 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="79"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="77"/>
         <source>signed 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="80"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="78"/>
         <source>signed 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="81"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="79"/>
         <source>signed 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="82"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="80"/>
         <source>signed 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="84"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="82"/>
         <source>float (4 bytes)</source>
         <translation>float (4 byty)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="85"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="83"/>
         <source>double (8 bytes)</source>
         <translation>double (8 bytů)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="106"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="104"/>
         <source>Decimal</source>
         <translation>Desítkový</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="107"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="105"/>
         <source>Decimal (w/ exponent)</source>
         <translation>Desítkový (s exponentem)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="108"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="106"/>
         <source>Hex</source>
         <translation>Hexadecimální</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="124"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="122"/>
         <source>Level off</source>
         <translation>Zarovnat</translation>
     </message>
@@ -1158,543 +1235,13 @@
 <context>
     <name>NumberWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="275"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="273"/>
         <source>Number</source>
         <translation>Číslo</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="460"/>
-        <source>Undefined baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="462"/>
-        <source>50 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="463"/>
-        <source>75 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="465"/>
-        <source>110 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="467"/>
-        <source>134 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="468"/>
-        <source>150 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="469"/>
-        <source>200 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="471"/>
-        <source>300 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="472"/>
-        <source>600 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="473"/>
-        <source>1200 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="475"/>
-        <source>1800 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="477"/>
-        <source>2400 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="478"/>
-        <source>4800 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="479"/>
-        <source>9600 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="481"/>
-        <source>14400 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="483"/>
-        <source>19200 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="484"/>
-        <source>38400 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="486"/>
-        <source>56000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="488"/>
-        <source>57600 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="490"/>
-        <source>76800 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="492"/>
-        <source>115200 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="494"/>
-        <source>128000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="495"/>
-        <source>256000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="499"/>
-        <source>230400 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="500"/>
-        <source>460800 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="501"/>
-        <source>500000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="502"/>
-        <source>576000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="503"/>
-        <source>921600 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="504"/>
-        <source>1000000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="505"/>
-        <source>1152000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="506"/>
-        <source>1500000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="507"/>
-        <source>2000000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="508"/>
-        <source>2500000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="509"/>
-        <source>3000000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="510"/>
-        <source>3500000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="511"/>
-        <source>4000000 baud</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="514"/>
-        <source>Undefined data bits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="515"/>
-        <source>5 bit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="516"/>
-        <source>6 bit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="517"/>
-        <source>7 bit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="518"/>
-        <source>8 bit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="521"/>
-        <source>Undefined parity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="522"/>
-        <source>None</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="523"/>
-        <source>Odd</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="524"/>
-        <source>Even</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="525"/>
-        <source>Mark</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="526"/>
-        <source>Space</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="529"/>
-        <source>Undefined stop bits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="530"/>
-        <source>1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="531"/>
-        <source>1.5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="532"/>
-        <source>2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="535"/>
-        <source>Undefined flow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="536"/>
-        <source>Disable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="537"/>
-        <source>Hardware</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="538"/>
-        <source>Xon/Xoff</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="549"/>
-        <source>No errors.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="550"/>
-        <source>Opened::Device is successfully opened. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="551"/>
-        <source>Closed::Device is successfully closed. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="552"/>
-        <source>Controls::Baud rate is successfully set. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="553"/>
-        <source>Controls::Parity is successfully set. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="554"/>
-        <source>Controls::Data bits is successfully set. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="555"/>
-        <source>Controls::Stop bits is successfully set. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="556"/>
-        <source>Controls::Flow is successfully set. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="557"/>
-        <source>Controls::Char timeout is successfully set. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="558"/>
-        <source>Controls::DTR is successfully changed. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="559"/>
-        <source>Controls::RTS is successfully changed. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="560"/>
-        <source>Controls::Status lines successfully get. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="561"/>
-        <source>Controls::Send break successfully. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="562"/>
-        <source>Controls::Set break successfully. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="563"/>
-        <source>Controls::Flush successfully. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="564"/>
-        <source>Controls::Reset successfully. OK!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="569"/>
-        <source>Error opening. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="570"/>
-        <source>Device is not open. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="571"/>
-        <source>Opened::Opened mode unsupported. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="572"/>
-        <source>Opened::Opened mode undefined. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="573"/>
-        <source>Opened::Invalid device descriptor. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="574"/>
-        <source>Opened::Fail saved old settings. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="575"/>
-        <source>Opened::Fail get current settings. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="576"/>
-        <source>Opened::Fail set default settings. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="577"/>
-        <source>Device is already open. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="580"/>
-        <source>Closed::Fail set old settings. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="581"/>
-        <source>Closed::Fail close device descriptor. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="582"/>
-        <source>Closed::Fail close device. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="585"/>
-        <source>Parameters::Set baud rate fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="586"/>
-        <source>Parameters::Set data bits fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="587"/>
-        <source>Parameters::Set parity fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="588"/>
-        <source>Parameters::Set stop bits fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="589"/>
-        <source>Parameters::Set flow control fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="590"/>
-        <source>Parameters::Set char interval timeout. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="591"/>
-        <source>Parameters::Set total read interval timeout. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="594"/>
-        <source>Controls::Get bytes available fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="595"/>
-        <source>Controls::Set DTR fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="596"/>
-        <source>Controls::Set RTS fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="597"/>
-        <source>Controls::Get lines status fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="598"/>
-        <source>Controls::Wait for ready read from device - i/o problem. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="599"/>
-        <source>Controls::Wait for ready read timeout. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="600"/>
-        <source>Controls::Wait for bytes writtten to device - i/o problem. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="601"/>
-        <source>Controls::Wait for bytes writtten timeout. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="602"/>
-        <source>Controls::Read data from device - i/o problem. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="603"/>
-        <source>Controls::Write data to device - i/o problem. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="604"/>
-        <source>Controls::Flush fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="605"/>
-        <source>Controls::Send break fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="606"/>
-        <source>Controls::Set break fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="607"/>
-        <source>Controls::Reset fail. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dep/qserialdevice/src/qserialdevice/abstractserial.cpp" line="609"/>
-        <source>AbstractSerial::statusToString(Status val) -&gt; Status mode: %1 undefined. Error!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisProbe/lorrisprobeinfo.cpp" line="44"/>
-        <source>Lorris probe</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="43"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="84"/>
@@ -1711,7 +1258,7 @@
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="156"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="104"/>
         <source>Lorris data file (*.ldta)</source>
-        <translation type="unfinished"></translation>
+        <translation>Datový soubor Lorris (*.ldta)</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="70"/>
@@ -1767,27 +1314,27 @@
         <translation>Nemůžu otevřít soubor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminalinfo.cpp" line="44"/>
+        <location filename="../src/LorrisTerminal/lorristerminalinfo.cpp" line="46"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminalinfo.cpp" line="49"/>
+        <location filename="../src/LorrisTerminal/lorristerminalinfo.cpp" line="51"/>
         <source>Terminal can show input data from serial port, send key strokes to serial port and flash new programs to devices with bootloader.</source>
         <translation>Terminál umí zobrazit data ze sériového port, poslat do portu stisky kláves a nahrát nový program do čipu s bootloaderem.</translation>
     </message>
     <message>
-        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="98"/>
+        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="99"/>
         <source>Home</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="44"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="46"/>
         <source>Analyzer</source>
         <translation>Analyzér</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="49"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="51"/>
         <source>Analyzer can parse any data you give it and show them as anything you like.You can mark packet in data source, mark its header or bottom, mark individual data blocks, select their data type and the way they will be showed to you.</source>
         <translation>Analyzér může překousat jakákoliv data které mu dáte a zobrazit je jak chcete. Můžete označit packet který se má v proudu dat vyhledávat, označit jeho hlavičku a konec, určit bloky data, jejich typ a způsob jakým budou zobrazeny.</translation>
     </message>
@@ -1797,12 +1344,12 @@
         <translation>Musíte vybrat alespoň jednu věc k načtení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupitoinfo.cpp" line="44"/>
+        <location filename="../src/LorrisShupito/lorrisshupitoinfo.cpp" line="46"/>
         <source>Shupito</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupitoinfo.cpp" line="49"/>
+        <location filename="../src/LorrisShupito/lorrisshupitoinfo.cpp" line="51"/>
         <source>Control program for shupito programmer.</source>
         <translation>Program pro obsluhu programátoru Shupito.</translation>
     </message>
@@ -1880,17 +1427,17 @@
         <translation>Nemůžu naprogramovat stránku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="49"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="50"/>
         <source>Intel HEX file (*.hex)</source>
         <translation>Intel HEX soubor (*.hex)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="819"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="830"/>
         <source>Import data</source>
         <translation>Importovat data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="858"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="869"/>
         <source>Export data</source>
         <translation>Exportovat data</translation>
     </message>
@@ -2164,61 +1711,69 @@ ke změně uspořádání</translation>
 <context>
     <name>TabDialog</name>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="67"/>
+        <location filename="../src/ui/tabdialog.cpp" line="70"/>
         <source>Connection: </source>
         <translation>Připojení: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="75"/>
-        <location filename="../src/ui/tabdialog.cpp" line="333"/>
+        <location filename="../src/ui/tabdialog.cpp" line="78"/>
+        <location filename="../src/ui/tabdialog.cpp" line="338"/>
         <source>Create tab</source>
         <translation>Vytvořit panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="118"/>
+        <location filename="../src/ui/tabdialog.cpp" line="121"/>
         <source>Socket</source>
         <translation>Socket</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="113"/>
+        <location filename="../src/ui/tabdialog.cpp" line="116"/>
         <source>Serial port</source>
         <translation>Sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="117"/>
+        <location filename="../src/ui/tabdialog.cpp" line="120"/>
         <source>None (Load data from File)</source>
         <translation>Žádné (Načíst data ze souboru)</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="115"/>
+        <location filename="../src/ui/tabdialog.cpp" line="118"/>
         <source>Shupito tunnel</source>
         <translation>Shupito tunel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="146"/>
-        <location filename="../src/ui/tabdialog.cpp" line="207"/>
+        <location filename="../src/ui/tabdialog.cpp" line="149"/>
+        <location filename="../src/ui/tabdialog.cpp" line="212"/>
         <source>Port: </source>
         <translation>Port: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="164"/>
+        <location filename="../src/ui/tabdialog.cpp" line="172"/>
         <source>Baud Rate: </source>
         <translation>Rychlost: </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="296"/>
+        <location filename="../src/ui/tabdialog.cpp" line="301"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="337"/>
+        <location filename="../src/ui/tabdialog.cpp" line="342"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabdialog.cpp" line="338"/>
+        <location filename="../src/ui/tabdialog.cpp" line="343"/>
         <source>Error opening serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
+    </message>
+</context>
+<context>
+    <name>Utils</name>
+    <message>
+        <location filename="../src/utils.cpp" line="82"/>
+        <source>Error!</source>
+        <translation>Chyba!</translation>
     </message>
 </context>
 </TS>

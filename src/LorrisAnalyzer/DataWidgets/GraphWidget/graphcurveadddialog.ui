@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Curve add/edit</string>
   </property>
   <layout class="QVBoxLayout" name="mainLayout">
    <item>
