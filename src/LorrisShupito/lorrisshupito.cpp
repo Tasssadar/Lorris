@@ -314,6 +314,7 @@ void LorrisShupito::stopAll()
         ui->tunnelCheck->setChecked(false);
 
         m_shupito->setTunnelState(false);
+        m_shupito->setTunnelPipe(0);
 
         if(!m_tunnel_config->always_active())
         {

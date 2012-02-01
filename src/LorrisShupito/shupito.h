@@ -141,6 +141,7 @@ public:
     qint16 getTunnelCmd();
     quint8 getTunnelId() { return m_tunnel_pipe; }
     void setTunnelState(bool enable, bool wait = false);
+    void setTunnelPipe(quint8 pipe) { m_tunnel_pipe = pipe; }
 
     ShupitoDesc *getDesc() { return m_desc; }
     void setChipId(QString id) { m_chip_id = id; }

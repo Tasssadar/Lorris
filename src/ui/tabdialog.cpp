@@ -152,14 +152,19 @@ void TabDialog::FillConOptions(int index)
             portBox->setObjectName("PortBox");
 
             QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
+            QStringList portNames;
             for (int i = 0; i < ports.size(); i++)
             {
 #ifdef Q_OS_WIN
-                portBox->addItem(ports.at(i).portName);
+                QString name = ports.at(i).portName;
+                name.replace(QRegExp("[^\\w]"), "");
+                portNames.push_back(name);
 #else
-                portBox->addItem(ports.at(i).physName);
+                portNames.push_back(ports.at(i).physName);
 #endif
             }
+            portNames.sort();
+            portBox->addItems(portNames);
 
             conOptions->addWidget(portLabel);
             conOptions->addWidget(portBox);
