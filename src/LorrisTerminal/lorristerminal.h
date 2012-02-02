@@ -110,6 +110,9 @@ private:
     HexFile *hex;
     Terminal *terminal;
 
+    QAction *m_export_eeprom;
+    QAction *m_import_eeprom;
+
     quint16 m_state;
     quint16 m_eepromItr;
     EEPROM *m_eeprom;

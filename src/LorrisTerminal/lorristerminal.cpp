@@ -66,6 +66,12 @@ void LorrisTerminal::initUI()
     terminal = new Terminal(this);
     ui->mainLayout->addWidget(terminal, 4);
 
+    QMenu *eepromBar = new QMenu(tr("EEPROM"), this);
+    m_menus.push_back(eepromBar);
+
+    m_export_eeprom = eepromBar->addAction(tr("Export EEPROM"));
+    m_import_eeprom = eepromBar->addAction(tr("Import EEPROM"));
+
     connect(terminal,          SIGNAL(keyPressedASCII(QByteArray)), SLOT(sendKeyEvent(QByteArray)));
     connect(ui->browseBtn,     SIGNAL(clicked()),                   SLOT(browseForHex()));
     connect(ui->connectButton, SIGNAL(clicked()),                   SLOT(connectButton()));
@@ -73,8 +79,8 @@ void LorrisTerminal::initUI()
     connect(ui->flashButton,   SIGNAL(clicked()),                   SLOT(flashButton()));
     connect(ui->pauseButton,   SIGNAL(clicked()),                   SLOT(pauseButton()));
     connect(ui->clearButton,   SIGNAL(clicked()),                   SLOT(clearButton()));
-    connect(ui->exportButton,  SIGNAL(clicked()),                   SLOT(eepromButton()));
-    connect(ui->importButton,  SIGNAL(clicked()),                   SLOT(eepromImportButton()));
+    connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromButton()));
+    connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
 }
 
 LorrisTerminal::~LorrisTerminal()
@@ -716,8 +722,8 @@ void LorrisTerminal::EnableButtons(quint16 buttons, bool enable)
         ui->flashButton->setEnabled(enable);
 
     if(buttons & BUTTON_EEPROM_READ)
-        ui->exportButton->setEnabled(enable);
+        m_export_eeprom->setEnabled(enable);
 
     if(buttons & BUTTON_EEPROM_WRITE)
-        ui->importButton->setEnabled(enable);
+        m_import_eeprom->setEnabled(enable);
 }

@@ -64,26 +64,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="importButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Import EEPROM</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="exportButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Export EEPROM</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="pauseButton">
        <property name="text">
         <string>Pause</string>
