@@ -62,6 +62,10 @@ enum buttons_
     BUTTON_EEPROM_WRITE= 0x10,
 };
 
+namespace Ui {
+    class LorrisTerminal;
+}
+
 class LorrisTerminal : public WorkTab
 {
     Q_OBJECT
@@ -100,8 +104,6 @@ private:
     void EnableButtons(quint16 buttons, bool enable);
     void initUI();
 
-    QVBoxLayout *layout;
-    QLineEdit *hexLine;
     QTimer *stopTimer;
     QTimer *flashTimeoutTimer;
     QByteArray stopCmd;
@@ -115,6 +117,8 @@ private:
     std::vector<chip_definition> m_chip_defs;
     std::vector<page> m_pages;
     quint32 m_cur_page;
+
+    Ui::LorrisTerminal *ui;
 };
 
 #endif // LORRISTERMINAL_H

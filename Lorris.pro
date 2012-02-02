@@ -162,7 +162,8 @@ FORMS += \
     src/LorrisAnalyzer/sourceselectdialog.ui \
     src/LorrisShupito/lorrisshupito.ui \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui \
-    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui
+    src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui \
+    src/LorrisTerminal/lorristerminal.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \
