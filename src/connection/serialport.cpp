@@ -70,6 +70,8 @@ void SerialPort::Close()
         m_port->close();
         delete m_port;
         m_port = NULL;
+
+        emit connected(false);
     }
     opened = false;
 }
