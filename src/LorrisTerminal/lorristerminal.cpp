@@ -32,6 +32,7 @@
 #include <QLabel>
 #include <QKeyEvent>
 #include <QProgressDialog>
+#include <QSignalMapper>
 
 #include "lorristerminal.h"
 #include "terminal.h"
@@ -71,7 +72,25 @@ void LorrisTerminal::initUI()
 
     m_export_eeprom = eepromBar->addAction(tr("Export EEPROM"));
     m_import_eeprom = eepromBar->addAction(tr("Import EEPROM"));
+    EnableButtons((BUTTON_EEPROM_READ |  BUTTON_EEPROM_WRITE), false);
 
+    QMenu *fmtBar = new QMenu(tr("Format"), this);
+    m_menus.push_back(fmtBar);
+
+    QSignalMapper *fmtMap = new QSignalMapper(this);
+    for(quint8 i = 0; i < FMT_MAX; ++i)
+    {
+        static const QString fmtText[] = { tr("Text"), tr("Hex dump") };
+
+        m_fmt_act[i] = fmtBar->addAction(fmtText[i]);
+        m_fmt_act[i]->setCheckable(true);
+        fmtMap->setMapping(m_fmt_act[i], i);
+        connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
+    }
+
+    fmtAction(sConfig.get(CFG_QUINT32_TERMINAL_FMT));
+
+    connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
     connect(terminal,          SIGNAL(keyPressedASCII(QByteArray)), SLOT(sendKeyEvent(QByteArray)));
     connect(ui->browseBtn,     SIGNAL(clicked()),                   SLOT(browseForHex()));
     connect(ui->connectButton, SIGNAL(clicked()),                   SLOT(connectButton()));
@@ -100,7 +119,7 @@ void LorrisTerminal::browseForHex()
 
 void LorrisTerminal::clearButton()
 {
-    terminal->setTextTerm("");
+    terminal->clear();
 }
 
 void LorrisTerminal::pauseButton()
@@ -112,10 +131,11 @@ void LorrisTerminal::pauseButton()
     }
     else
     {
-        terminal->updateEditText();
         m_state &= ~(STATE_PAUSED);
         ui->pauseButton->setText(tr("Pause"));
     }
+
+    terminal->pause(m_state & STATE_PAUSED);
 }
 
 void LorrisTerminal::eepromButton()
@@ -425,8 +445,7 @@ void LorrisTerminal::readData(const QByteArray& data)
     if(!terminal)
         return;
 
-    terminal->appendText(QString(data), !(m_state & STATE_PAUSED));
-
+    terminal->appendText(data);
 }
 
 void LorrisTerminal::stopButton()
@@ -726,4 +745,13 @@ void LorrisTerminal::EnableButtons(quint16 buttons, bool enable)
 
     if(buttons & BUTTON_EEPROM_WRITE)
         m_import_eeprom->setEnabled(enable);
+}
+
+void LorrisTerminal::fmtAction(int act)
+{
+    for(quint8 i = 0; i < FMT_MAX; ++i)
+        m_fmt_act[i]->setChecked(i == act);
+
+    sConfig.set(CFG_QUINT32_TERMINAL_FMT, act);
+    terminal->setFmt(act);
 }

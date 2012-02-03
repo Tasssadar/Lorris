@@ -30,12 +30,12 @@
 #include <QByteArray>
 
 #include "WorkTab/WorkTab.h"
+#include "terminal.h"
 
 
 class QVBoxLayout;
 class QTextEdit;
 class HexFile;
-class Terminal;
 class EEPROM;
 class chip_definition;
 struct page;
@@ -83,6 +83,7 @@ private slots:
     void connectButton();
     void eepromButton();
     void eepromImportButton();
+    void fmtAction(int act);
 
     void readData(const QByteArray& data);
     void sendKeyEvent(QByteArray key);
@@ -112,6 +113,7 @@ private:
 
     QAction *m_export_eeprom;
     QAction *m_import_eeprom;
+    QAction *m_fmt_act[FMT_MAX];
 
     quint16 m_state;
     quint16 m_eepromItr;

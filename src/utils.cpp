@@ -83,3 +83,12 @@ void Utils::ThrowException(const QString& text, QWidget* parent)
     box.setText(text);
     box.exec();
 }
+
+void Utils::parseForHexEditor(QByteArray& data)
+{
+    for(int i = 0; i < data.size(); ++i)
+    {
+        if((char)data[i] < 32 || (char)data[i] > 126)
+            data[i] = '.';
+    }
+}

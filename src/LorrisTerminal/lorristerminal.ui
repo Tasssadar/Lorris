@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="mainLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,3,0,0,0,0">
      <item>
       <widget class="QPushButton" name="connectButton">
        <property name="text">
@@ -41,7 +41,20 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="hexFile"/>
+      <widget class="QLineEdit" name="hexFile">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="browseBtn">

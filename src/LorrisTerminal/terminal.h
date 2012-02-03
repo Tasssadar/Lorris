@@ -25,11 +25,20 @@
 #define TERMINAL_H
 
 #include <QString>
-#include <QPlainTextEdit>
+#include <QAbstractScrollArea>
+#include <vector>
+#include <QPoint>
 
 class QByteArray;
 
-class Terminal : public QPlainTextEdit
+enum term_fmt
+{
+    FMT_TEXT,
+    FMT_HEX,
+    FMT_MAX
+};
+
+class Terminal : public QAbstractScrollArea
 {
     Q_OBJECT
 
@@ -40,17 +49,50 @@ public:
     Terminal(QWidget *parent);
     ~Terminal();
 
-    void appendText(QString text, bool toEdit = true);
-    void setTextTerm(QString text, bool toEdit = true);
-    QString getText() { return content; }
-    void updateEditText();
+    void appendText(QByteArray text);
+    void pause(bool pause);
+    void clear();
+
+    void setFmt(quint8 fmt);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
+    void paintEvent(QPaintEvent *e);
+    void resizeEvent(QResizeEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void focusInEvent(QFocusEvent *);
+    void focusOutEvent(QFocusEvent *);
 
 private:
-    QString content;
-    QScrollBar *sb;
+    void updateScrollBars();
+    void addLine(quint32 pos, char * &line, char * &itr);
+    void addLines(QByteArray text);
+    void addHex();
+    QPoint mouseToTextPos(const QPoint& pos);
+    void copyToClipboard();
+    void selectAll();
+
+    inline std::vector<QString>& lines()
+    {
+        return m_paused ? m_pause_lines : m_lines;
+    }
+
+    std::vector<QString> m_lines;
+    std::vector<QString> m_pause_lines;
+    QByteArray m_data;
+
+    bool m_paused;
+    quint8 m_fmt;
+    int m_hex_pos;
+
+    QPoint m_cursor_pos;
+    QPoint m_cursor_pause_pos;
+    QRect m_cursor;
+
+    QPoint m_sel_start;
+    QPoint m_sel_begin;
+    QPoint m_sel_stop;
 };
 
 #endif // TERMINAL_H
