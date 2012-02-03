@@ -51,7 +51,7 @@ void ShupitoDesc::AddData(const QByteArray& data, bool finish)
         m_guid = makeGuid(first);
         first += 16;
 
-        quint8 base_cmd;
+        quint8 base_cmd = 1;
         std::vector<quint8> act_seq;
         parseGroupConfig(first, last, base_cmd, act_seq);
     }

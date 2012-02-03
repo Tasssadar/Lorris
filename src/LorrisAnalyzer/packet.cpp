@@ -45,7 +45,7 @@ quint32 analyzer_data::addData(QByteArray data)
         m_data[itr++] = data[read++];
     }
 
-    bool readFromHeader;
+    bool readFromHeader = false;
     quint32 len = getLenght(&readFromHeader);
     quint32 var_len = 0;
 

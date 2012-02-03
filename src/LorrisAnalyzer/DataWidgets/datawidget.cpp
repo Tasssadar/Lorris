@@ -71,6 +71,7 @@ DataWidget::DataWidget(QWidget *parent) :
     setAutoFillBackground(true);
 
     contextMenu = NULL;
+    m_mouseIn = false;
 }
 
 DataWidget::~DataWidget()

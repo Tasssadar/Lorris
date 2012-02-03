@@ -130,6 +130,8 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     m_progress_dialog = NULL;
     m_color = VDD_BLACK;
     m_vdd_signals = NULL;
+
+    m_state = 0;
 }
 
 LorrisShupito::~LorrisShupito()
