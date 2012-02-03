@@ -7,6 +7,7 @@ CONFIG(debug, debug|release):DESTDIR = $$PWD/bin/debug
 else:DESTDIR = $$PWD/bin/release
 OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc
+UI_DIR = $$PWD/ui
 CONFIG += qwt
 LIBS += -L"$$PWD/dep/qwt/lib"
 LIBS += -L"$$PWD/dep/qextserialport/lib"
@@ -15,7 +16,7 @@ TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += dep/qhexedit2/src
-INCLUDEPATH += src
+INCLUDEPATH += src ui
 INCLUDEPATH += dep/qextserialport/src
 SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
