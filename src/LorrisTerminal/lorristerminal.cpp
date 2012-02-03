@@ -90,6 +90,12 @@ void LorrisTerminal::initUI()
 
     fmtAction(sConfig.get(CFG_QUINT32_TERMINAL_FMT));
 
+    QMenu *dataMenu = new QMenu(tr("Terminal"), this);
+    m_menus.push_back(dataMenu);
+    QAction *termLoad = dataMenu->addAction(tr("Load text file into terminal"));
+    QAction *termSave = dataMenu->addAction(tr("Save terminal content to text file"));
+    termSave->setShortcut(QKeySequence("Ctrl+S"));
+
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
     connect(terminal,          SIGNAL(keyPressedASCII(QByteArray)), SLOT(sendKeyEvent(QByteArray)));
     connect(ui->browseBtn,     SIGNAL(clicked()),                   SLOT(browseForHex()));
@@ -100,6 +106,8 @@ void LorrisTerminal::initUI()
     connect(ui->clearButton,   SIGNAL(clicked()),                   SLOT(clearButton()));
     connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromButton()));
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
+    connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
+    connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
 }
 
 LorrisTerminal::~LorrisTerminal()
@@ -754,4 +762,47 @@ void LorrisTerminal::fmtAction(int act)
 
     sConfig.set(CFG_QUINT32_TERMINAL_FMT, act);
     terminal->setFmt(act);
+}
+
+void LorrisTerminal::loadText()
+{
+    static const QString filters = tr("Text file (*.txt);;Any file (*.*)");
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                    sConfig.get(CFG_STRING_HEX_FOLDER),
+                                                    filters);
+    if(filename.isEmpty())
+        return;
+
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        Utils::ThrowException(tr("Can't open file \"%1\"!").arg(filename), this);
+        return;
+    }
+
+    terminal->appendText(file.readAll());
+    file.close();
+
+    sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
+}
+
+void LorrisTerminal::saveText()
+{
+    static const QString filters = tr("Text file (*.txt);;Any file (*.*)");
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save data"), sConfig.get(CFG_STRING_HEX_FOLDER), filters);
+
+    if(filename.isEmpty())
+        return;
+
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        Utils::ThrowException(tr("Can't open/create file \"%1\"!").arg(filename), this);
+        return;
+    }
+
+    terminal->writeToFile(&file);
+    file.close();
+
+    sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
 }

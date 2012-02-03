@@ -84,6 +84,8 @@ private slots:
     void eepromButton();
     void eepromImportButton();
     void fmtAction(int act);
+    void loadText();
+    void saveText();
 
     void readData(const QByteArray& data);
     void sendKeyEvent(QByteArray key);

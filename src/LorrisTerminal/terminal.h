@@ -30,6 +30,7 @@
 #include <QPoint>
 
 class QByteArray;
+class QFile;
 
 enum term_fmt
 {
@@ -54,6 +55,8 @@ public:
     void clear();
 
     void setFmt(quint8 fmt);
+
+    void writeToFile(QFile *file);
 
 protected:
     void keyPressEvent(QKeyEvent *event);

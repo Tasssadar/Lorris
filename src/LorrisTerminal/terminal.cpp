@@ -486,5 +486,15 @@ void Terminal::setFmt(quint8 fmt)
         case FMT_HEX:  addHex();         break;
     }
 
+    updateScrollBars();
     pause(paused);
+}
+
+void Terminal::writeToFile(QFile *file)
+{
+    for(quint32 i = 0; i < lines().size(); ++i)
+    {
+        file->write(lines()[i].toAscii());
+        file->write("\n");
+    }
 }

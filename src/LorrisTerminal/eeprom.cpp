@@ -40,7 +40,7 @@ EEPROM::~EEPROM()
 
 void EEPROM::Export()
 {
-    QString filters = QObject::tr("Intel hex file (*.hex);;Data file (*.dta)");
+    static const QString filters = QObject::tr("Intel hex file (*.hex);;Data file (*.dta)");
     QString filename = QFileDialog::getSaveFileName(m_parent, QObject::tr("Export EEPROM"), "", filters);
 
     QString error;
