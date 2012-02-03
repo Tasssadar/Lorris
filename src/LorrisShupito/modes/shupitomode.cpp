@@ -25,10 +25,11 @@
 #include <set>
 
 #include "common.h"
-#include "shupito.h"
+#include "../shupito.h"
 #include "shupitomode.h"
 #include "shupitospi.h"
 #include "shupitopdi.h"
+#include "shupitocc25xx.h"
 #include "shared/chipdefs.h"
 #include "shared/hexfile.h"
 
@@ -52,8 +53,9 @@ ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito)
 {
     switch(mode)
     {
-        case MODE_SPI: return new ShupitoSPI(shupito);
-        case MODE_PDI: return new ShupitoPDI(shupito);
+        case MODE_SPI:    return new ShupitoSPI(shupito);
+        case MODE_PDI:    return new ShupitoPDI(shupito);
+        case MODE_CC25XX: return new ShupitoCC25XX(shupito);
         // TODO
         case MODE_JTAG:
             return NULL;
@@ -77,7 +79,7 @@ void ShupitoMode::switchToFlashMode(quint32 speed_hz)
 
     ShupitoPacket pkt(m_prog_cmd_base, 2, (quint8)bsel, (quint8)(bsel >> 8));
 
-    pkt = m_shupito->waitForPacket(pkt.getData(false), 1);
+    pkt = m_shupito->waitForPacket(pkt, 1);
     if(pkt.getLen() != 1 || pkt[0] != 0)
         throw QString(QObject::tr("Failed to switch to the flash mode (error %1)")).arg((int)pkt[0]);
 
@@ -92,7 +94,7 @@ void ShupitoMode::switchToRunMode()
     m_prepared = false;
 
     ShupitoPacket pkt(m_prog_cmd_base + 1, 0);
-    pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 1);
+    pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 1);
 
     if(pkt.getLen() < 1 || pkt[0] != 0)
         throw QString(QObject::tr("Failed to switch to the run mode"));
@@ -135,12 +137,12 @@ ShupitoDesc::config *ShupitoMode::getModeCfg()
 }
 
 // std::string read_device_id(), device_shupito.hpp
-QString ShupitoMode::readDeviceId()
+chip_definition ShupitoMode::readDeviceId()
 {
     m_prepared = false;
 
     ShupitoPacket pkt(m_prog_cmd_base + 2, 0x00);
-    pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 2);
+    pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 2);
 
     if(pkt.getLen() == 0 || pkt[pkt.getLen()-1] != 0)
         throw QString(QObject::tr("Failed to read the chip's signature (error %1).")).arg((int)pkt[pkt.getLen()-1]);
@@ -158,7 +160,12 @@ QString ShupitoMode::readDeviceId()
     delete[] p_data;
 
     m_prepared = true;
-    return id;
+
+    chip_definition cd;
+    cd.setSign(id);
+    chip_definition::update_chipdef(m_shupito->getDefs(), cd);
+
+    return cd;
 }
 
 void ShupitoMode::editIdArgs(QString &id, quint8 &/*id_lenght*/)
@@ -209,7 +216,7 @@ void ShupitoMode::readMemRange(quint8 memid, QByteArray& memory, quint32 address
                      (quint8)address, (quint8)(address >> 8), (quint8)(address >> 16), (quint8)(address >> 24),
                      (quint8)size, (quint8)(size >> 8));
 
-    QByteArray p = m_shupito->waitForStream(pkt.getData(false), 4);
+    QByteArray p = m_shupito->waitForStream(pkt, 4);
     if((quint32)p.size() != size)
         throw QString(QObject::tr("The read returned wrong-sized stream."));
 
@@ -222,13 +229,13 @@ void ShupitoMode::cancelRequested()
 }
 
 //void erase_device(avrflash::chip_definition const & chip), device_shupito.hpp
-void ShupitoMode::erase_device()
+void ShupitoMode::erase_device(chip_definition& /*chip*/)
 {
     m_prepared = false;
     m_flash_mode = false;
 
     ShupitoPacket pkt(m_prog_cmd_base + 4, 0);
-    pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 4);
+    pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 4);
 
     if(pkt.getLen() != 1 || pkt[0] != 0)
         throw QString(QObject::tr("Failed to erase chip's memory"));
@@ -345,7 +352,7 @@ void ShupitoMode::prepareMemForWriting(chip_definition::memorydef *memdef, chip_
     m_flash_mode = false;
 
     ShupitoPacket pkt(m_prog_cmd_base + 4, 0x01, memdef->memid);
-    pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 4);
+    pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 4);
 
     if(pkt.getLen() != 1 || pkt[0] != 0)
         throw QString(QObject::tr("Failed to prepare chip's memory for writing"));
@@ -367,7 +374,7 @@ void ShupitoMode::flashPage(chip_definition::memorydef *memdef, std::vector<quin
         ShupitoPacket pkt(m_prog_cmd_base + 5, 0x05, memdef->memid,
                           (quint8)address, (quint8)(address >> 8),
                           (quint8)(address >> 16), (quint8)(address >> 24));
-        pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 5);
+        pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 5);
         if(pkt.getLen() != 1 || pkt[0] != 0)
             throw QString(QObject::tr("Failed to flash a page"));
     }
@@ -379,15 +386,13 @@ void ShupitoMode::flashPage(chip_definition::memorydef *memdef, std::vector<quin
         pkt[0] = 0x80;
         pkt[2] = memdef->memid;
 
-        quint32 itr = 0;
-
+        char *mem_itr = (char*)memory.data();
         while(size > 0)
         {
             quint32 chunk = size > 14 ? 14 : size;
             pkt[1] = ((m_prog_cmd_base + 6) << 4) | (chunk + 1);
-            pkt.resize(3 + chunk);
-            for(quint8 i = 0; i < chunk; ++i)
-                pkt[i+3] = memory[itr++];
+            pkt.replace(3, 100, mem_itr, chunk);
+            mem_itr += chunk;
             size -= chunk;
 
             res = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 6);
@@ -401,7 +406,7 @@ void ShupitoMode::flashPage(chip_definition::memorydef *memdef, std::vector<quin
         ShupitoPacket pkt(m_prog_cmd_base + 7, 0x05, memdef->memid,
                           (quint8)address, (quint8)(address >> 8),
                           (quint8)(address >> 16), (quint8)(address >> 24));
-        pkt = m_shupito->waitForPacket(pkt.getData(false), m_prog_cmd_base + 7);
+        pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 7);
         if(pkt.getLen() != 1 || pkt[0] != 0)
             throw QString(QObject::tr("Failed to flash a page"));
     }

@@ -243,8 +243,13 @@ chip_definition::chip_definition()
 {
 }
 
+chip_definition::chip_definition(const QString &sign)
+{
+    m_signature = sign;
+}
+
 chip_definition::memorydef *chip_definition::getMemDef(quint8 memId)
 {
-    static const QString memNames[] = { "", "flash", "eeprom", "fuses" };
+    static const QString memNames[] = { "", "flash", "eeprom", "fuses", "sdram" };
     return getMemDef(memNames[memId]);
 }

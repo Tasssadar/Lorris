@@ -57,6 +57,7 @@ public:
     static void set_fuse_value(Iter first, Iter last, fuse const & f, int value);
 
     chip_definition();
+    chip_definition(const QString& sign);
 
     const QString& getName() { return m_name; }
     const QString& getSign() { return m_signature; }

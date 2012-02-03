@@ -28,7 +28,7 @@
 #include <QByteArray>
 #include <QObject>
 
-#include "shupitodesc.h"
+#include "../shupitodesc.h"
 #include "shared/chipdefs.h"
 
 class Shupito;
@@ -51,7 +51,7 @@ public:
 
     virtual void switchToFlashMode(quint32 speed_hz);
     virtual void switchToRunMode();
-    virtual QString readDeviceId();
+    virtual chip_definition readDeviceId();
 
     virtual QByteArray readMemory(const QString& mem, chip_definition &chip);
     virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size);
@@ -59,7 +59,7 @@ public:
     virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, bool verify);
     virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, bool verify);
 
-    virtual void erase_device();
+    virtual void erase_device(chip_definition& chip);
 
 public slots:
     void cancelRequested();

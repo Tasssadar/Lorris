@@ -151,7 +151,7 @@ private:
     bool showContinueBox(const QString& title, const QString& text);
     void postFlashSwitchCheck(chip_definition &chip);
     chip_definition switchToFlashAndGetId();
-    chip_definition update_chip_description(const QString& chip_id);
+    void update_chip_description(chip_definition &cd);
     void initMenus();
 
     void changeVddColor(float val);

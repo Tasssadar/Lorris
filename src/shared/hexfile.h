@@ -37,9 +37,9 @@ enum MemoryTypes
     MEM_FLASH   = 1,
     MEM_EEPROM  = 2,
     MEM_FUSES   = 3,
-    MEM_COUNT   = 4
+    MEM_SDRAM   = 4,
+    MEM_COUNT   = 5
 };
-
 
 struct page
 {

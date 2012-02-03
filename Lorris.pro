@@ -62,16 +62,18 @@ SOURCES += src/ui/mainwindow.cpp \
     dep/qhexedit2/src/qhexedit_p.cpp \
     dep/qhexedit2/src/qhexedit.cpp \
     dep/qhexedit2/src/commands.cpp \
-    src/LorrisShupito/shupitomode.cpp \
-    src/LorrisShupito/shupitospi.cpp \
     src/LorrisShupito/fusewidget.cpp \
     src/shared/hexfile.cpp \
     src/shared/chipdefs.cpp \
-    src/LorrisShupito/shupitopdi.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp \
     src/connection/serialportthread.cpp \
-    src/LorrisShupito/flashbuttonmenu.cpp
+    src/LorrisShupito/flashbuttonmenu.cpp \
+    src/LorrisShupito/modes/shupitospi.cpp \
+    src/LorrisShupito/modes/shupitopdi.cpp \
+    src/LorrisShupito/modes/shupitomode.cpp \
+    src/LorrisShupito/modes/shupitocc25xx.cpp \
+    src/LorrisShupito/shupitopacket.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -119,16 +121,18 @@ HEADERS += src/ui/mainwindow.h \
     dep/qhexedit2/src/qhexedit_p.h \
     dep/qhexedit2/src/qhexedit.h \
     dep/qhexedit2/src/commands.h \
-    src/LorrisShupito/shupitomode.h \
-    src/LorrisShupito/shupitospi.h \
     src/LorrisShupito/fusewidget.h \
     src/shared/hexfile.h \
     src/shared/chipdefs.h \
-    src/LorrisShupito/shupitopdi.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h \
     src/connection/serialportthread.h \
-    src/LorrisShupito/flashbuttonmenu.h
+    src/LorrisShupito/flashbuttonmenu.h \
+    src/LorrisShupito/modes/shupitospi.h \
+    src/LorrisShupito/modes/shupitopdi.h \
+    src/LorrisShupito/modes/shupitomode.h \
+    src/LorrisShupito/modes/shupitocc25xx.h \
+    src/LorrisShupito/shupitopacket.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

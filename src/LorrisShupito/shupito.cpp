@@ -30,74 +30,6 @@
 #include "shupitodesc.h"
 #include "connection/connectionmgr.h"
 
-ShupitoPacket::ShupitoPacket(quint8 cmd, quint8 size, ...)
-{
-    itr = 0;
-
-    m_data = QByteArray(size + 2, 0);
-    m_data[itr++] = 0x80;
-    m_data[itr++] = size | (cmd << 4);
-
-    va_list args;
-    va_start(args, size);
-    for (quint8 i = 0; i < size; ++i)
-        m_data[itr++] = (quint8)va_arg(args, int);
-    va_end(args);
-}
-
-ShupitoPacket::ShupitoPacket()
-{
-    Clear();
-}
-
-void ShupitoPacket::set(bool resize, quint8 cmd, quint8 size)
-{
-    itr = 0;
-
-    int target_size = resize ? size + 2 : 2;
-    m_data = QByteArray(target_size, 0);
-
-    m_data[itr++] = 0x80;
-    m_data[itr++] = size | (cmd << 4);
-}
-
-void ShupitoPacket::Clear()
-{
-    m_data = QByteArray(2, 0);
-    itr = 0;
-}
-
-bool ShupitoPacket::isValid()
-{
-    if((quint8)m_data.at(0) != 0x80 || itr < 2)
-        return false;
-
-    quint8 size = getLen();
-    if((itr - 2) != size)
-        return false;
-    return true;
-}
-
-quint8 ShupitoPacket::addData(const QByteArray& data)
-{
-    quint8 read = 0;
-
-    if(itr == 0)
-    {
-        if(quint8(data[read++]) == 0x80)
-            m_data[itr++] = 0x80;
-        else
-            return 0;
-    }
-    if(itr == 1 && data.length() > 1)
-        m_data[itr++] = data[read++];
-
-    quint8 size = getLen();
-    for(quint8 i = itr - 2; i < size && read < data.length(); ++i)
-        m_data[itr++] = (char)data[read++];
-    return read;
-}
-
 Shupito::Shupito(QObject *parent) :
     QObject(parent)
 {
@@ -168,7 +100,7 @@ void Shupito::readData(const QByteArray &data)
         handlePacket(packets[i]);
 }
 
-ShupitoPacket Shupito::waitForPacket(QByteArray data, quint8 cmd)
+ShupitoPacket Shupito::waitForPacket(const QByteArray& data, quint8 cmd)
 {
     Q_ASSERT(responseTimer == NULL);
 
@@ -195,7 +127,7 @@ ShupitoPacket Shupito::waitForPacket(QByteArray data, quint8 cmd)
     return m_wait_packet;
 }
 
-QByteArray Shupito::waitForStream(QByteArray packet, quint8 cmd, quint16 max_packets)
+QByteArray Shupito::waitForStream(const QByteArray& data, quint8 cmd, quint16 max_packets)
 {
     Q_ASSERT(responseTimer == NULL);
 
@@ -211,7 +143,7 @@ QByteArray Shupito::waitForStream(QByteArray packet, quint8 cmd, quint16 max_pac
     QEventLoop loop;
     loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
 
-    m_con->SendData(packet);
+    m_con->SendData(data);
 
     loop.exec();
 

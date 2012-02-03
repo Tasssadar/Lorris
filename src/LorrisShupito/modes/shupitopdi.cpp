@@ -21,20 +21,23 @@
 **
 ****************************************************************************/
 
-#include "shupito.h"
-#include "shupitospi.h"
+#include <algorithm>
 
-ShupitoSPI::ShupitoSPI(Shupito *shupito) : ShupitoMode(shupito)
+#include "../shupito.h"
+#include "shupitopdi.h"
+
+ShupitoPDI::ShupitoPDI(Shupito *shupito) : ShupitoMode(shupito)
 {
 }
 
-ShupitoDesc::config *ShupitoSPI::getModeCfg()
+ShupitoDesc::config *ShupitoPDI::getModeCfg()
 {
-    return m_shupito->getDesc()->getConfig("46dbc865-b4d0-466b-9b70-2f3f5b264e65");
+    return m_shupito->getDesc()->getConfig("71efb903-3030-4fd3-8896-1946aba37efc");
 }
 
-
-void ShupitoSPI::editIdArgs(QString &id, quint8 &/*id_lenght*/)
+void ShupitoPDI::editIdArgs(QString &id, quint8 &id_lenght)
 {
     id = "avr:";
+    id_lenght = std::min(id_lenght, (quint8)3);
 }
+

@@ -29,6 +29,7 @@
 #include <QMutex>
 #include <QTimer>
 
+#include "shupitopacket.h"
 #include "shupitodesc.h"
 #include "shared/chipdefs.h"
 
@@ -44,6 +45,7 @@ enum Modes
     MODE_SPI = 0,
     MODE_PDI,
     MODE_JTAG,
+    MODE_CC25XX,
     MODE_COUNT
 };
 
@@ -66,50 +68,6 @@ struct vdd_point
 
 typedef std::vector<vdd_point> vdd_setup;
 
-class ShupitoPacket
-{
-public:
-    ShupitoPacket(quint8 cmd, quint8 size, ...);
-    ShupitoPacket();
-
-    void set(bool resize, quint8 cmd, quint8 size);
-
-    QByteArray getData(bool onlyPacketData = true)
-    {
-        if(onlyPacketData)
-            return m_data.right(m_data.length() - 2);
-        else
-            return m_data;
-    }
-
-    quint8 a(quint32 pos, bool onlyPacketData = true)
-    {
-        return (quint8)m_data[pos + (onlyPacketData ? 2 : 0)];
-    }
-
-    quint8 getOpcode() { return (quint8(m_data[1]) >> 4); }
-    quint8 getLen() { return (quint8(m_data[1]) & 0x0F); }
-
-    void Clear();
-    bool isValid();
-
-    quint8 addData(const QByteArray& data);
-
-    // Returns only data part!
-    quint8 operator[](int i) const
-    {
-        if(i+2 >= m_data.size())
-            return 0;
-        return (quint8)m_data[i+2];
-    }
-
-    QByteArray &getDataRef() { return m_data; }
-
-private:
-    QByteArray m_data;
-    quint8 itr;
-};
-
 class Shupito : public QObject
 {
     Q_OBJECT
@@ -131,8 +89,17 @@ public:
     void readData(const QByteArray& data);
     void sendPacket(ShupitoPacket packet);
     void sendPacket(const QByteArray& packet);
-    ShupitoPacket waitForPacket(QByteArray data, quint8 cmd);
-    QByteArray waitForStream(QByteArray packet, quint8 cmd, quint16 max_packets = 32);
+    ShupitoPacket waitForPacket(const QByteArray &data, quint8 cmd);
+    ShupitoPacket waitForPacket(ShupitoPacket& pkt, quint8 cmd)
+    {
+        return waitForPacket(pkt.getData(false), cmd);
+    }
+
+    QByteArray waitForStream(const QByteArray& data, quint8 cmd, quint16 max_packets = 32);
+    QByteArray waitForStream(ShupitoPacket& pkt, quint8 cmd, quint16 max_packets = 32)
+    {
+        return waitForStream(pkt.getData(false), cmd, max_packets);
+    }
 
     void setVddConfig(ShupitoDesc::config *cfg) { m_vdd_config = cfg; }
     void setTunnelConfig(ShupitoDesc::config *cfg) { m_tunnel_config = cfg; }
@@ -144,8 +111,8 @@ public:
     void setTunnelPipe(quint8 pipe) { m_tunnel_pipe = pipe; }
 
     ShupitoDesc *getDesc() { return m_desc; }
-    void setChipId(QString id) { m_chip_id = id; }
-    const QString& getChipId() { return m_chip_id; }
+    void setChipId(chip_definition cd) { m_chip_def = cd; }
+    const chip_definition& getChipId() { return m_chip_def; }
     std::vector<chip_definition> &getDefs() { return m_chip_defs; }
 
 private slots:
@@ -179,7 +146,7 @@ private:
     quint8 m_wait_type;
     quint16 m_wait_max_packets;
 
-    QString m_chip_id;
+    chip_definition m_chip_def;
 
     std::vector<chip_definition> m_chip_defs;
 };

@@ -35,12 +35,13 @@
 
 #include "shupito.h"
 #include "lorrisshupito.h"
-#include "ui_lorrisshupito.h"
-#include "shupitomode.h"
+#include "modes/shupitomode.h"
 #include "fusewidget.h"
 #include "shared/hexfile.h"
 #include "shared/chipdefs.h"
 #include "flashbuttonmenu.h"
+
+#include "ui_lorrisshupito.h"
 
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
@@ -176,7 +177,7 @@ void LorrisShupito::initMenus()
     QMenu *modeBar = new QMenu(tr("Mode"), this);
     m_menus.push_back(modeBar);
 
-    static const QString modeNames[] = { "SPI", "PDI", "JTAG" };
+    static const QString modeNames[] = { "SPI", "PDI", "JTAG", "cc25xx" };
 
     QSignalMapper *signalMap = new QSignalMapper(this);
 
@@ -616,12 +617,8 @@ bool LorrisShupito::checkVoltage(bool active)
 }
 
 // avrflash::chip_definition update_chip_description(std::string const & chip_id), avr232client.cpp
-chip_definition LorrisShupito::update_chip_description(const QString& chip_id)
+void LorrisShupito::update_chip_description(chip_definition& cd)
 {
-    chip_definition cd;
-    cd.setSign(chip_id);
-    chip_definition::update_chipdef(m_shupito->getDefs(), cd);
-
     if(cd.getName().isEmpty())
     {
         if(cd.getSign().isEmpty())
@@ -645,7 +642,6 @@ chip_definition LorrisShupito::update_chip_description(const QString& chip_id)
         ui->chipIdLabel->setText(name);
         m_cur_def = cd;
     }
-    return cd;
 }
 
 void LorrisShupito::showProgressDialog(const QString& text, QObject *sender)
@@ -726,15 +722,15 @@ chip_definition LorrisShupito::switchToFlashAndGetId()
 
     log("Reading device id");
 
-    QString id = m_modes[m_cur_mode]->readDeviceId();
-    m_shupito->setChipId(id);
+    chip_definition chip = m_modes[m_cur_mode]->readDeviceId();
+    m_shupito->setChipId(chip);
 
-    log("Got device id: " % id);
+    log("Got device id: " % chip.getSign());
 
-    chip_definition chip = update_chip_description(id);
+    update_chip_description(chip);
 
     if(ui->chipIdLabel->text().contains("<"))
-        throw QString(tr("Unsupported chip: %1")).arg(id);
+        throw QString(tr("Unsupported chip: %1")).arg(chip.getSign());
 
     postFlashSwitchCheck(chip);
 
@@ -1151,11 +1147,11 @@ void LorrisShupito::eraseDevice()
     {
         bool restart = !m_modes[m_cur_mode]->isInFlashMode();
 
-        switchToFlashAndGetId();
+        chip_definition cd = switchToFlashAndGetId();
 
         log("Erasing device");
         showProgressDialog(tr("Erasing chip..."));
-        m_modes[m_cur_mode]->erase_device();
+        m_modes[m_cur_mode]->erase_device(cd);
 
         if(restart)
         {
