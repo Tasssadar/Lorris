@@ -28,15 +28,24 @@
 
 class MainWindow;
 
+namespace Ui {
+    class HomeTab;
+}
+
 class HomeTab : public QWidget {
     Q_OBJECT
 public:
     HomeTab(QWidget *parent);
     ~HomeTab();
 
+protected:
+    void showEvent(QShowEvent *);
+
 private slots:
     void NewTab();
 
+private:
+    Ui::HomeTab *ui;
 };
 
 #endif // HOMETAB_H

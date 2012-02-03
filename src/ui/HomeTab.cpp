@@ -29,25 +29,25 @@
 #include "mainwindow.h"
 #include "WorkTab/WorkTabMgr.h"
 
-HomeTab::HomeTab(QWidget *parent) : QWidget(parent)
+#include "ui_hometab.h"
+
+HomeTab::HomeTab(QWidget *parent) : QWidget(parent), ui(new Ui::HomeTab)
 {
-    QPushButton *button = new QPushButton(tr("New tab"), this);
-    button->setFixedSize(200, 50);
-
-    connect(button, SIGNAL(clicked()), this, SLOT(NewTab()));
-
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(button);
-    this->setLayout(layout);
-
+    ui->setupUi(this);
+    connect(ui->newTabBtn, SIGNAL(clicked()), this, SLOT(NewTab()));
 }
 
 HomeTab::~HomeTab()
 {
-
+    delete ui;
 }
 
 void HomeTab::NewTab()
 {
    sWorkTabMgr.NewTabDialog();
+}
+
+void HomeTab::showEvent(QShowEvent *)
+{
+    ui->newTabBtn->setFocus();
 }
