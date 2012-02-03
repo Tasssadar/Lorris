@@ -24,12 +24,35 @@
 #include <QtGui/QApplication>
 #include <QTranslator>
 #include <QLocale>
+#include <stdio.h>
 
+#include "revision.h"
 #include "ui/mainwindow.h"
 #include "config.h"
 
 int main(int argc, char *argv[])
 {
+    if(argc == 2)
+    {
+        if(strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0)
+        {
+            printf("Lorris release %s, git revision %u\n", VERSION, REVISION);
+            return 0;
+        }
+        else if(strcmp(argv[1], "--help") == 0)
+        {
+
+            printf("Usage: %s [ARGUMENTS...]  Run Lorris\n\n"
+                   "Lorris, GUI tool for robotics - https://github.com/Tasssadar/Lorris\n\n"
+                   "Command line argumens:\n"
+                   "       %s --help          Display this help and exit\n"
+                   "       %s --version       Display version info and exit\n"
+                   "       %s -v\n",
+                   argv[0], argv[0], argv[0], argv[0]);
+            return 0;
+        }
+    }
+
     QApplication a(argc, argv);
 
     //TODO: found an organization
