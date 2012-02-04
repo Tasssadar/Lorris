@@ -76,6 +76,8 @@ private:
     void copyToClipboard();
     void selectAll();
 
+    inline void adjustSelectionWidth(int &w, quint32 i, quint32 max, int len);
+
     inline std::vector<QString>& lines()
     {
         return m_paused ? m_pause_lines : m_lines;

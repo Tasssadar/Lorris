@@ -49,6 +49,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     setPalette(palette);
 
     setFont(Utils::getMonospaceFont());
+    setCursor(Qt::IBeamCursor);
 
     m_char_width = fontMetrics().width(QLatin1Char('9'));
     m_char_height = fontMetrics().height();
@@ -238,7 +239,6 @@ void Terminal::copyToClipboard()
 
         start = 0;
     }
-    QString test = text.mid(text.lastIndexOf("\n"));
 
     QApplication::clipboard()->setText(text);
 }
@@ -320,12 +320,14 @@ void Terminal::paintEvent(QPaintEvent *)
         x = (m_sel_start.x() - startX)*m_char_width;
         y = (m_sel_start.y() - startY)*m_char_height;
 
-        int w = width - m_sel_start.x();
-        if(m_sel_stop.y() == m_sel_start.y())
-          w = m_sel_stop.x() - m_sel_start.x();
-        w *= m_char_width;
+        int w = m_char_width;
 
-        painter.setPen(QPen(this->palette().color(QPalette::Highlight)));
+        if(m_sel_stop.y() == m_sel_start.y())
+            w *= m_sel_stop.x() - m_sel_start.x();
+        else
+            w *= width - m_sel_start.x();
+
+        painter.setPen(Qt::NoPen);
         painter.setBrush(this->palette().color(QPalette::Highlight));
 
         for(quint32 i = 0; i <= max; ++i,++textLine)
@@ -334,15 +336,7 @@ void Terminal::paintEvent(QPaintEvent *)
                 continue;
 
             int len = (lines()[textLine].length() - startX)*m_char_width;
-            if(i == 0)
-            {
-                if(w > len)
-                    w = (len - m_sel_start.x()*m_char_width);
-            }
-            else if(i == max && m_sel_stop.x()*m_char_width < len)
-                w = m_sel_stop.x()*m_char_width;
-            else
-                w = len;
+            adjustSelectionWidth(w, i, max, len);
 
             QRect rec(x, y, w, m_char_height);
             painter.drawRect(rec);
@@ -365,6 +359,15 @@ void Terminal::paintEvent(QPaintEvent *)
 
         painter.drawText(0, y, viewport()->width(), m_char_height, Qt::AlignLeft, l);
     }
+}
+
+void Terminal::adjustSelectionWidth(int &w, quint32 i, quint32 max, int len)
+{
+    if(i == 0 && m_sel_start.x()*m_char_width > len)
+        w = 0;
+    else if(i == 0)   w = std::min(w, (len - m_sel_start.x()*m_char_width));
+    else if(i == max) w = std::min(len, m_sel_stop.x()*m_char_width);
+    else              w = len;
 }
 
 void Terminal::pause(bool pause)
