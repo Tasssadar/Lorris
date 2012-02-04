@@ -47,7 +47,7 @@ chip_definition ShupitoCC25XX::readDeviceId()
 
     m_prepared = true;
 
-    chip_definition cd;
+    chip_definition cd(id);
     chip_definition::memorydef flash_memdef;
     flash_memdef.memid = MEM_FLASH;
     flash_memdef.pagesize = 128;

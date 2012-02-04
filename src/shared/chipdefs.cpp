@@ -95,6 +95,11 @@ static const QString embedded_chipdefs =
     "atmega328p avr232boot:m328 flash=32256:128,eeprom=1024:2\n"
     "atmega8u2 avr232boot:m8u2 flash=7680:128,eeprom=512:2\n"
     "atmega1284p avr232boot:p128 flash=65536:256,eeprom=4096:2\n" /* FIXME: only 16-bit addresses are available */
+
+    "cc2530 cc25xx:a5\n"
+    "cc2531 cc25xx:b5\n"
+    "cc2533 cc25xx:99\n"
+    "cc2540 cc25xx:8d\n"
     ;
 
 void chip_definition::update_chipdef(std::vector<chip_definition> & templates, chip_definition & cd)
@@ -141,7 +146,7 @@ void chip_definition::parse_chipdefs(const QString &strdefs, std::vector<chip_de
     {
         QStringList tokens = line.split(' ', QString::SkipEmptyParts);
 
-        if(tokens.size() < 3)
+        if(tokens.size() < 2)
             continue;
 
         chip_definition def;
@@ -149,23 +154,26 @@ void chip_definition::parse_chipdefs(const QString &strdefs, std::vector<chip_de
         def.setSign(tokens[1]);
 
         // parse memories
-        QStringList memories = tokens[2].split(',', QString::SkipEmptyParts);
-        for(quint8 i = 0; i < memories.size(); ++i)
+        if(tokens.size() > 2)
         {
-            QStringList memory_tokens = memories[i].split('=', QString::SkipEmptyParts);
-            if(memory_tokens.size() != 2)
-                continue;
+            QStringList memories = tokens[2].split(',', QString::SkipEmptyParts);
+            for(quint8 i = 0; i < memories.size(); ++i)
+            {
+                QStringList memory_tokens = memories[i].split('=', QString::SkipEmptyParts);
+                if(memory_tokens.size() != 2)
+                    continue;
 
-            QStringList mem_size_tokens = memory_tokens[1].split(':', QString::SkipEmptyParts);
+                QStringList mem_size_tokens = memory_tokens[1].split(':', QString::SkipEmptyParts);
 
-            chip_definition::memorydef memdef;
-            memdef.memid = i + 1;
-            memdef.size = mem_size_tokens[0].toInt();
-            if(mem_size_tokens.size() > 1)
-                memdef.pagesize = mem_size_tokens[1].toInt();
-            else
-                memdef.pagesize = 0;
-            def.getMems()[memory_tokens[0]] = memdef;
+                chip_definition::memorydef memdef;
+                memdef.memid = i + 1;
+                memdef.size = mem_size_tokens[0].toInt();
+                if(mem_size_tokens.size() > 1)
+                    memdef.pagesize = mem_size_tokens[1].toInt();
+                else
+                    memdef.pagesize = 0;
+                def.getMems()[memory_tokens[0]] = memdef;
+            }
         }
 
         // parse fuses
