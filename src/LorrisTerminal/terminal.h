@@ -89,6 +89,9 @@ private:
     quint8 m_fmt;
     int m_hex_pos;
 
+    int m_char_height;
+    int m_char_width;
+
     QPoint m_cursor_pos;
     QPoint m_cursor_pause_pos;
     QRect m_cursor;

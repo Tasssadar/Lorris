@@ -36,9 +36,6 @@
 #include "common.h"
 #include "terminal.h"
 
-#define CHAR_HEIGHT 15
-#define CHAR_WIDTH  8
-
 Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -53,13 +50,15 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
     setFont(Utils::getMonospaceFont());
 
+    m_char_width = fontMetrics().width(QLatin1Char('9'));
+    m_char_height = fontMetrics().height();
+
     m_paused = false;
     m_fmt = FMT_TEXT;
     m_hex_pos = 0;
 
-    m_cursor.setSize(QSize(CHAR_WIDTH, CHAR_HEIGHT));
+    m_cursor.setSize(QSize(m_char_width, m_char_height));
     updateScrollBars();
-
 }
 
 Terminal::~Terminal()
@@ -270,8 +269,8 @@ void Terminal::updateScrollBars()
             width = lines()[i].length();
     }
 
-    verticalScrollBar()->setRange(0, height - areaSize.height()/CHAR_HEIGHT + 1);
-    horizontalScrollBar()->setRange(0, width - areaSize.width()/CHAR_WIDTH + 1);
+    verticalScrollBar()->setRange(0, height - areaSize.height()/m_char_height + 1);
+    horizontalScrollBar()->setRange(0, width - areaSize.width()/m_char_width + 1);
 
     if(scroll)
         verticalScrollBar()->setValue(verticalScrollBar()->maximum());
@@ -283,8 +282,8 @@ void Terminal::paintEvent(QPaintEvent *)
 {
     QPainter painter(viewport());
 
-    int width = viewport()->width()/CHAR_WIDTH;
-    int height = viewport()->height()/CHAR_HEIGHT;
+    int width = viewport()->width()/m_char_width;
+    int height = viewport()->height()/m_char_height;
 
     int startX = horizontalScrollBar()->value();
     int startY = verticalScrollBar()->value();
@@ -298,8 +297,8 @@ void Terminal::paintEvent(QPaintEvent *)
     if(cursor.x() >= startX && (cursor.x() - startX) < width &&
        cursor.y() >= startY && (cursor.y() - startY) < height)
     {
-        x = (cursor.x() - startX)*CHAR_WIDTH;
-        y = (cursor.y() - startY)*CHAR_HEIGHT;
+        x = (cursor.x() - startX)*m_char_width;
+        y = (cursor.y() - startY)*m_char_height;
         m_cursor.moveTo(x, y);
 
         painter.setPen(QPen(Qt::green));
@@ -318,13 +317,13 @@ void Terminal::paintEvent(QPaintEvent *)
         quint32 textLine = m_sel_start.y();
         quint32 max = m_sel_stop.y() - m_sel_start.y();
 
-        x = (m_sel_start.x() - startX)*CHAR_WIDTH;
-        y = (m_sel_start.y() - startY)*CHAR_HEIGHT;
+        x = (m_sel_start.x() - startX)*m_char_width;
+        y = (m_sel_start.y() - startY)*m_char_height;
 
         int w = width - m_sel_start.x();
         if(m_sel_stop.y() == m_sel_start.y())
           w = m_sel_stop.x() - m_sel_start.x();
-        w *= CHAR_WIDTH;
+        w *= m_char_width;
 
         painter.setPen(QPen(this->palette().color(QPalette::Highlight)));
         painter.setBrush(this->palette().color(QPalette::Highlight));
@@ -334,22 +333,22 @@ void Terminal::paintEvent(QPaintEvent *)
             if(textLine >= lines().size())
                 continue;
 
-            int len = (lines()[textLine].length() - startX)*CHAR_WIDTH;
+            int len = (lines()[textLine].length() - startX)*m_char_width;
             if(i == 0)
             {
                 if(w > len)
-                    w = (len - m_sel_start.x()*CHAR_WIDTH);
+                    w = (len - m_sel_start.x()*m_char_width);
             }
-            else if(i == max && m_sel_stop.x()*CHAR_WIDTH < len)
-                w = m_sel_stop.x()*CHAR_WIDTH;
+            else if(i == max && m_sel_stop.x()*m_char_width < len)
+                w = m_sel_stop.x()*m_char_width;
             else
                 w = len;
 
-            QRect rec(x, y, w, CHAR_HEIGHT);
+            QRect rec(x, y, w, m_char_height);
             painter.drawRect(rec);
 
             x = 0;
-            y += CHAR_HEIGHT;
+            y += m_char_height;
         }
 
         painter.setPen(QPen(Qt::white));
@@ -359,12 +358,12 @@ void Terminal::paintEvent(QPaintEvent *)
     // draw text
     std::size_t i = startY;
     int maxLines = i + height + 1;
-    for(y = 0; (int)i < maxLines && i < lines().size(); ++i, y += CHAR_HEIGHT)
+    for(y = 0; (int)i < maxLines && i < lines().size(); ++i, y += m_char_height)
     {
         QString l = lines()[i];
         l.remove(0, startX);
 
-        painter.drawText(0, y, viewport()->width(), CHAR_HEIGHT, Qt::AlignLeft, l);
+        painter.drawText(0, y, viewport()->width(), m_char_height, Qt::AlignLeft, l);
     }
 }
 
@@ -414,20 +413,20 @@ QPoint Terminal::mouseToTextPos(const QPoint& pos)
     int& x = res.rx();
     int& y = res.ry();
 
-    int width = viewport()->width()/CHAR_WIDTH;
-    int height = viewport()->height()/CHAR_HEIGHT;
+    int width = viewport()->width()/m_char_width;
+    int height = viewport()->height()/m_char_height;
 
     int startX = horizontalScrollBar()->value();
     int startY = verticalScrollBar()->value();
 
-    y = startY + pos.y()/CHAR_HEIGHT;
+    y = startY + pos.y()/m_char_height;
     if(y > startY + height)
     {
         y = 0;
         return res;
     }
 
-    x = startX + pos.x()/CHAR_WIDTH;
+    x = startX + pos.x()/m_char_width;
     if(x > startX + width)
     {
         x = 0;
