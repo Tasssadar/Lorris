@@ -62,7 +62,7 @@ void ShupitoPacket::Clear()
 
 bool ShupitoPacket::isValid()
 {
-    if((quint8)m_data.at(0) != 0x80 || itr < 2)
+    if(itr < 2 || (quint8)m_data.at(0) != 0x80)
         return false;
 
     quint8 size = getLen();

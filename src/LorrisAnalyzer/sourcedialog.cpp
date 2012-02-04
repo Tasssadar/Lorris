@@ -53,16 +53,16 @@ SourceDialog::SourceDialog(QWidget *parent) :
 
     ui->header_scroll->setWidget(w);
 
-    connect(ui->len_static, SIGNAL(valueChanged(int)), scroll_layout, SLOT(lenChanged(int)));
-    connect(ui->fmt_combo, SIGNAL(currentIndexChanged(int)), scroll_layout, SLOT(fmtChanged(int)));
-    connect(ui->len_check, SIGNAL(toggled(bool)), this, SLOT(headerLenToggled(bool)));
-    connect(ui->header_len_box, SIGNAL(valueChanged(int)), this, SLOT(headerLenChanged(int)));
-    connect(ui->static_check, SIGNAL(toggled(bool)), this, SLOT(staticCheckToggled(bool)));
-    connect(ui->cmd_check, SIGNAL(toggled(bool)), this, SLOT(cmdCheckToggled(bool)));
-    connect(ui->id_check, SIGNAL(toggled(bool)), this, SLOT(idCheckToggled(bool)));
-    connect(ui->static_len_box, SIGNAL(valueChanged(int)), this, SLOT(staticLenChanged(int)));
-    connect(ui->len_fmt_box, SIGNAL(currentIndexChanged(int)), this, SLOT(lenFmtChanged(int)));
-    connect(ui->ok_close_bBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(butonnBoxClicked(QAbstractButton*)));
+    connect(ui->len_box,        SIGNAL(valueChanged(int)),         scroll_layout, SLOT(lenChanged(int)));
+    connect(ui->fmt_combo,      SIGNAL(currentIndexChanged(int)),  scroll_layout, SLOT(fmtChanged(int)));
+    connect(ui->len_check,      SIGNAL(toggled(bool)),             this,          SLOT(headerLenToggled(bool)));
+    connect(ui->header_len_box, SIGNAL(valueChanged(int)),         this,          SLOT(headerLenChanged(int)));
+    connect(ui->static_check,   SIGNAL(toggled(bool)),             this,          SLOT(staticCheckToggled(bool)));
+    connect(ui->cmd_check,      SIGNAL(toggled(bool)),             this,          SLOT(cmdCheckToggled(bool)));
+    connect(ui->id_check,       SIGNAL(toggled(bool)),             this,          SLOT(idCheckToggled(bool)));
+    connect(ui->static_len_box, SIGNAL(valueChanged(int)),         this,          SLOT(staticLenChanged(int)));
+    connect(ui->len_fmt_box,    SIGNAL(currentIndexChanged(int)),  this,          SLOT(lenFmtChanged(int)));
+    connect(ui->ok_close_bBox,  SIGNAL(clicked(QAbstractButton*)), this,          SLOT(butonnBoxClicked(QAbstractButton*)));
 
     setted = false;
     setFirst = false;

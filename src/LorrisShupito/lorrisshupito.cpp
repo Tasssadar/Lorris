@@ -1045,6 +1045,8 @@ void LorrisShupito::writeMemInFlash(quint8 memId)
 
         writeMem(memId, chip);
 
+        m_hexAreas[memId]->clearDataChanged();
+
         if(restart)
         {
             log("Switching to run mode");
