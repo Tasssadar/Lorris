@@ -49,7 +49,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     setPalette(palette);
 
     setFont(Utils::getMonospaceFont());
-    setCursor(Qt::IBeamCursor);
+    viewport()->setCursor(Qt::IBeamCursor);
 
     m_char_width = fontMetrics().width(QLatin1Char('9'));
     m_char_height = fontMetrics().height();
