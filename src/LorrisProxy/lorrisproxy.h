@@ -21,26 +21,37 @@
 **
 ****************************************************************************/
 
-#include "serialportthread.h"
+#ifndef LORRISPROXY_H
+#define LORRISPROXY_H
 
-SerialPortThread::SerialPortThread(QextSerialPort *port, QObject *parent) :
-    QThread(parent)
-{
-    m_port = port;
-    m_run = true;
+#include "WorkTab/WorkTab.h"
+
+namespace Ui {
+    class LorrisProxy;
 }
 
-void SerialPortThread::run()
-{
-    while(m_run)
-    {
-        if(m_port->bytesAvailable())
-            emit dataRead(m_port->readAll());
-        msleep(50);
-    }
-}
+class TcpServer;
+class QTcpSocket;
 
-void SerialPortThread::stop()
+class LorrisProxy : public WorkTab
 {
-    m_run = false;
-}
+    Q_OBJECT
+    
+public:
+    explicit LorrisProxy();
+    ~LorrisProxy();
+
+    void setConnection(Connection *con);
+
+private slots:
+    void updateAddressText();
+    void listenChanged();
+    void addConnection(QTcpSocket *connection, quint32 id);
+    void removeConnection(quint32 id);
+
+private:
+    Ui::LorrisProxy *ui;
+    TcpServer *m_server;
+};
+
+#endif // LORRISPROXY_H

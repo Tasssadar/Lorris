@@ -21,26 +21,21 @@
 **
 ****************************************************************************/
 
-#include "serialportthread.h"
+#ifndef LORRISPROXYINFO_H
+#define LORRISPROXYINFO_H
 
-SerialPortThread::SerialPortThread(QextSerialPort *port, QObject *parent) :
-    QThread(parent)
-{
-    m_port = port;
-    m_run = true;
-}
+#include "WorkTab/WorkTabInfo.h"
 
-void SerialPortThread::run()
+class LorrisProxyInfo : public WorkTabInfo
 {
-    while(m_run)
-    {
-        if(m_port->bytesAvailable())
-            emit dataRead(m_port->readAll());
-        msleep(50);
-    }
-}
+public:
+    explicit LorrisProxyInfo();
+    virtual ~LorrisProxyInfo();
 
-void SerialPortThread::stop()
-{
-    m_run = false;
-}
+    WorkTab *GetNewTab();
+    QString GetName();
+    QString GetDescription();
+    quint8 GetConType() { return CON_MSK(CONNECTION_SERIAL_PORT); }
+};
+
+#endif // LORRISPROXYINFO_H

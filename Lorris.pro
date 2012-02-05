@@ -74,7 +74,10 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/modes/shupitomode.cpp \
     src/LorrisShupito/modes/shupitocc25xx.cpp \
     src/LorrisShupito/shupitopacket.cpp \
-    src/connection/tcpsocket.cpp
+    src/connection/tcpsocket.cpp \
+    src/LorrisProxy/lorrisproxyinfo.cpp \
+    src/LorrisProxy/lorrisproxy.cpp \
+    src/LorrisProxy/tcpserver.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -134,7 +137,10 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/modes/shupitomode.h \
     src/LorrisShupito/modes/shupitocc25xx.h \
     src/LorrisShupito/shupitopacket.h \
-    src/connection/tcpsocket.h
+    src/connection/tcpsocket.h \
+    src/LorrisProxy/lorrisproxyinfo.h \
+    src/LorrisProxy/lorrisproxy.h \
+    src/LorrisProxy/tcpserver.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL
@@ -171,7 +177,8 @@ FORMS += \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui \
     src/LorrisTerminal/lorristerminal.ui \
-    src/ui/hometab.ui
+    src/ui/hometab.ui \
+    src/LorrisProxy/lorrisproxy.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \

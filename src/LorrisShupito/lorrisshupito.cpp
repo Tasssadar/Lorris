@@ -40,6 +40,7 @@
 #include "shared/hexfile.h"
 #include "shared/chipdefs.h"
 #include "flashbuttonmenu.h"
+#include "connection/connectionmgr.h"
 
 #include "ui_lorrisshupito.h"
 
@@ -349,7 +350,8 @@ void LorrisShupito::responseReceived(char error_code)
 
 void LorrisShupito::onTabShow()
 {
-    sConfig.set(CFG_STRING_SHUPITO_PORT, m_con->GetIDString());
+    if(m_con->getType() == CONNECTION_SERIAL_PORT)
+        sConfig.set(CFG_STRING_SHUPITO_PORT, m_con->GetIDString());
 }
 
 void LorrisShupito::descRead()

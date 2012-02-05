@@ -21,26 +21,33 @@
 **
 ****************************************************************************/
 
-#include "serialportthread.h"
+#include "lorrisproxy.h"
+#include "lorrisproxyinfo.h"
 
-SerialPortThread::SerialPortThread(QextSerialPort *port, QObject *parent) :
-    QThread(parent)
+static const LorrisProxyInfo info;
+
+LorrisProxyInfo::LorrisProxyInfo()
 {
-    m_port = port;
-    m_run = true;
+
 }
 
-void SerialPortThread::run()
+LorrisProxyInfo::~LorrisProxyInfo()
 {
-    while(m_run)
-    {
-        if(m_port->bytesAvailable())
-            emit dataRead(m_port->readAll());
-        msleep(50);
-    }
+
 }
 
-void SerialPortThread::stop()
+WorkTab *LorrisProxyInfo::GetNewTab()
 {
-    m_run = false;
+    return new LorrisProxy();
 }
+
+QString LorrisProxyInfo::GetName()
+{
+    return QObject::tr("Serial port proxy");
+}
+
+QString LorrisProxyInfo::GetDescription()
+{
+    return QObject::tr("This module acts as proxy between serial port and TCP socket");
+}
+

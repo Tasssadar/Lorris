@@ -40,7 +40,7 @@ class WorkTab : public QWidget
         void setId(quint16 id) { m_id = id; }
         quint16 getId() { return m_id; }
 
-        void setConnection(Connection *con);
+        virtual void setConnection(Connection *con);
 
         static void DeleteAllMembers(QLayout *layout);
 

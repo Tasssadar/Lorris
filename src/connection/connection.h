@@ -49,7 +49,6 @@ public:
     virtual bool Open();
     virtual void OpenConcurrent();
     virtual void Close() { }
-    virtual void SendData(const QByteArray &data);
 
     bool isOpen() { return opened; }
 
@@ -67,6 +66,9 @@ public:
     {
         return !(m_usingTabsIDs.empty());
     }
+
+public slots:
+    virtual void SendData(const QByteArray &data);
 
 protected:
     bool opened;
