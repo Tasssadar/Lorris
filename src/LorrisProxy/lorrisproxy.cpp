@@ -119,7 +119,7 @@ void LorrisProxy::addConnection(QTcpSocket *connection, quint32 id)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem(ui->connections);
     item->setText(0, QString::number(id));
-    item->setText(1, connection->localAddress().toString());
+    item->setText(1, connection->peerAddress().toString());
 }
 
 void LorrisProxy::removeConnection(quint32 id)
