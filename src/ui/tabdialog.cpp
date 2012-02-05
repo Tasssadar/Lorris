@@ -126,9 +126,6 @@ void TabDialog::PluginSelected(int index)
     if(conn & CON_MSK(CONNECTION_FILE))
         conBox->addItem(tr("None (Load data from File)"), CONNECTION_FILE);
 
-    if(conn & CON_MSK(CONNECTION_SOCKET))
-        conBox->addItem(tr("Socket"), CONNECTION_SOCKET);
-
     quint32 lastConn = sConfig.get(CFG_QUINT32_CONNECTION_TYPE);
     if(lastConn != MAX_CON_TYPE)
     {
@@ -149,7 +146,6 @@ void TabDialog::FillConOptions(int index)
 
     switch(conBox->itemData(index).toInt())
     {
-        case CONNECTION_SOCKET:
         case CONNECTION_FILE: // Nothing to do
         default:   // TODO
             return;
