@@ -32,7 +32,6 @@
 #include "WorkTab/WorkTab.h"
 #include "terminal.h"
 
-
 class QVBoxLayout;
 class QTextEdit;
 class HexFile;
@@ -50,7 +49,7 @@ enum states_
     STATE_PAUSED       = 0x20,
     STATE_DISCONNECTED = 0x40,
     STATE_EEPROM_READ  = 0x80,
-    STATE_EEPROM_WRITE = 0x100,
+    STATE_EEPROM_WRITE = 0x100
 };
 
 enum buttons_
@@ -59,7 +58,7 @@ enum buttons_
     BUTTON_STOP        = 0x02,
     BUTTON_FLASH       = 0x04,
     BUTTON_EEPROM_READ = 0x08,
-    BUTTON_EEPROM_WRITE= 0x10,
+    BUTTON_EEPROM_WRITE= 0x10
 };
 
 namespace Ui {
@@ -86,6 +85,7 @@ private slots:
     void fmtAction(int act);
     void loadText();
     void saveText();
+    void inputAct(int act);
 
     void readData(const QByteArray& data);
     void sendKeyEvent(QByteArray key);
@@ -116,6 +116,7 @@ private:
     QAction *m_export_eeprom;
     QAction *m_import_eeprom;
     QAction *m_fmt_act[FMT_MAX];
+    QAction *m_input[INPUT_MAX];
 
     quint16 m_state;
     quint16 m_eepromItr;

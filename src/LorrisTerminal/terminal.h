@@ -39,6 +39,13 @@ enum term_fmt
     FMT_MAX
 };
 
+enum term_input
+{
+    INPUT_SEND_KEYPRESS,
+    INPUT_SEND_COMMAND,
+    INPUT_MAX
+};
+
 class Terminal : public QAbstractScrollArea
 {
     Q_OBJECT
@@ -55,6 +62,7 @@ public:
     void clear();
 
     void setFmt(quint8 fmt);
+    void setInput(quint8 input);
 
     void writeToFile(QFile *file);
 
@@ -89,6 +97,7 @@ private:
 
     bool m_paused;
     quint8 m_fmt;
+    quint8 m_input;
     int m_hex_pos;
 
     int m_char_height;
@@ -101,6 +110,8 @@ private:
     QPoint m_sel_start;
     QPoint m_sel_begin;
     QPoint m_sel_stop;
+
+    QByteArray m_command;
 };
 
 #endif // TERMINAL_H

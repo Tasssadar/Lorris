@@ -47,10 +47,12 @@ private slots:
     void CreateTab();
     void FillConOptions(int index);
     void serialConResult(Connection *con, bool result);
+    void tcpConResult(Connection *con, bool result);
 
 private:
     WorkTab *ConnectSP(WorkTabInfo *info);
     WorkTab *ConnectShupito(WorkTabInfo *info);
+    WorkTab *ConnectTcp(WorkTabInfo *info);
 
     QVBoxLayout *layout;
     QHBoxLayout *columns;

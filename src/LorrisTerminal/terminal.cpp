@@ -56,6 +56,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
     m_paused = false;
     m_fmt = FMT_TEXT;
+    m_input = INPUT_SEND_KEYPRESS;
     m_hex_pos = 0;
 
     m_cursor.setSize(QSize(m_char_width, m_char_height));
@@ -89,6 +90,8 @@ void Terminal::addLines(QByteArray text)
     quint32 size = 100;
     char *line = new char[size];
     char *itr = line;
+    *itr = 0;
+
     quint32 pos = m_cursor_pos.y();
     if(pos < m_lines.size())
     {
@@ -103,6 +106,7 @@ void Terminal::addLines(QByteArray text)
 
         std::copy(s.c_str(), s.c_str()+s.length(), line);
         itr = line + m_cursor_pos.x();
+        *itr = 0;
     }
 
     for(quint32 i = 0; i < (quint32)text.size(); ++i)
@@ -127,6 +131,17 @@ void Terminal::addLines(QByteArray text)
                 ++pos;
                 m_cursor_pos.setX(0);
                 m_cursor_pos.setY(pos);
+                break;
+            }
+            case '\b':
+            {
+                if(itr != line)
+                    --itr;
+
+                *itr = 0;
+
+                if(m_cursor_pos.x() != 0)
+                    --m_cursor_pos.rx();
                 break;
             }
             default:
@@ -211,8 +226,49 @@ void Terminal::keyPressEvent(QKeyEvent *event)
                 return;
         }
     }
+
     QByteArray key = event->text().toAscii();
-    emit keyPressedASCII(key);
+    switch(event->key())
+    {
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+        {
+            key = "\r\n";
+            break;
+        }
+        case Qt::Key_Backspace:
+        {
+            if(m_input != INPUT_SEND_COMMAND)
+                break;
+            appendText(key);
+            m_command.chop(1);
+            return;
+        }
+    }
+
+    if(key.isEmpty())
+        return;
+
+
+    switch(m_input)
+    {
+        case INPUT_SEND_KEYPRESS:
+        {
+            emit keyPressedASCII(key);
+            break;
+        }
+        case INPUT_SEND_COMMAND:
+        {
+            m_command.append(key);
+            appendText(key);
+
+            if(event->key() != Qt::Key_Return && event->key() != Qt::Key_Enter)
+                break;
+
+            emit keyPressedASCII(m_command);
+            m_command.clear();
+        }
+    }
 }
 
 void Terminal::copyToClipboard()
@@ -499,4 +555,13 @@ void Terminal::writeToFile(QFile *file)
         file->write(lines()[i].toAscii());
         file->write("\n");
     }
+}
+
+void Terminal::setInput(quint8 input)
+{
+    if(input == m_input)
+        return;
+
+    m_input = input;
+    m_command.clear();
 }

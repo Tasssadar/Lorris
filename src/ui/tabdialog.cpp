@@ -29,6 +29,7 @@
 #include <QMessageBox>
 #include <qextserialenumerator.h>
 #include <qextserialport.h>
+#include <QSpinBox>
 
 #include "common.h"
 #include "WorkTab/WorkTabMgr.h"
@@ -39,6 +40,7 @@
 #include "connection/serialport.h"
 #include "connection/fileconnection.h"
 #include "connection/shupitotunnel.h"
+#include "connection/tcpsocket.h"
 #include "LorrisShupito/shupito.h"
 
 TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0))
@@ -117,8 +119,15 @@ void TabDialog::PluginSelected(int index)
         if(sConMgr.isAnyShupito())
             conBox->addItem(tr("Shupito tunnel"), CONNECTION_SHUPITO);
     }
-    if(conn & CON_MSK(CONNECTION_FILE))        conBox->addItem(tr("None (Load data from File)"), CONNECTION_FILE);
-    if(conn & CON_MSK(CONNECTION_SOCKET))      conBox->addItem(tr("Socket"), CONNECTION_SOCKET);
+
+    if(conn & CON_MSK(CONNECTION_TCP_SOCKET))
+        conBox->addItem(tr("TCP socket"), CONNECTION_TCP_SOCKET);
+
+    if(conn & CON_MSK(CONNECTION_FILE))
+        conBox->addItem(tr("None (Load data from File)"), CONNECTION_FILE);
+
+    if(conn & CON_MSK(CONNECTION_SOCKET))
+        conBox->addItem(tr("Socket"), CONNECTION_SOCKET);
 
     quint32 lastConn = sConfig.get(CFG_QUINT32_CONNECTION_TYPE);
     if(lastConn != MAX_CON_TYPE)
@@ -221,6 +230,27 @@ void TabDialog::FillConOptions(int index)
             conOptions->addWidget(portBox);
             break;
         }
+        case CONNECTION_TCP_SOCKET:
+        {
+            QLabel    *addressLabel = new QLabel(tr("Address:"), this);
+            QLineEdit *address      = new QLineEdit(this);
+            QLabel    *portLabel    = new QLabel(tr("Port:"), this);
+            QSpinBox  *port         = new QSpinBox(this);
+            address->setObjectName("tcpAddress");
+            port->setObjectName("tcpPort");
+
+            port->setMinimum(0);
+            port->setMaximum(65536);
+            port->setValue(sConfig.get(CFG_QUINT32_TCP_PORT));
+
+            address->setText(sConfig.get(CFG_STRING_TCP_ADDR));
+
+            conOptions->addWidget(addressLabel);
+            conOptions->addWidget(address);
+            conOptions->addWidget(portLabel);
+            conOptions->addWidget(port);
+            break;
+        }
     }
 }
 
@@ -255,6 +285,13 @@ void TabDialog::CreateTab()
         case CONNECTION_SHUPITO:
         {
             tab = ConnectShupito(info);
+            if(!tab)
+                return;
+            break;
+        }
+        case CONNECTION_TCP_SOCKET:
+        {
+            tab = ConnectTcp(info);
             if(!tab)
                 return;
             break;
@@ -381,4 +418,75 @@ WorkTab *TabDialog::ConnectShupito(WorkTabInfo *info)
     sWorkTabMgr.AddWorkTab(tab, info->GetName() + " - " + tunnel->GetIDString());
     tab->setConnection(tunnel);
     return tab;
+}
+
+WorkTab *TabDialog::ConnectTcp(WorkTabInfo *info)
+{
+    QString address = findChild<QLineEdit*>("tcpAddress")->text();
+    quint16 port = findChild<QSpinBox*>("tcpPort")->value();
+
+    sConfig.set(CFG_QUINT32_TCP_PORT, port);
+    sConfig.set(CFG_STRING_TCP_ADDR, address);
+
+    TcpSocket *socket =
+            (TcpSocket*)sConMgr.FindConnection(CONNECTION_TCP_SOCKET, address + ":" + QString::number(port));
+    if(!socket || !socket->isOpen())
+    {
+        QPushButton *create = findChild<QPushButton *>("CreateButton");
+        create->setText(tr("Connecting..."));
+        create->setEnabled(false);
+
+        tmpTabInfo = info;
+
+        if(!socket)
+        {
+            socket = new TcpSocket();
+            socket->setAddress(address, port);
+        }
+
+        connect(socket, SIGNAL(connectResult(Connection*,bool)),  SLOT(tcpConResult(Connection*,bool)));
+        socket->OpenConcurrent();
+        return NULL;
+    }
+    else
+    {
+        WorkTab *tab = info->GetNewTab();
+        sWorkTabMgr.AddWorkTab(tab, info->GetName() + " - " + socket->GetIDString());
+        tab->setConnection(socket);
+        return tab;
+    }
+}
+
+void TabDialog::tcpConResult(Connection *con, bool result)
+{
+    QPushButton *create = findChild<QPushButton *>("CreateButton");
+    disconnect(con, SIGNAL(connectResult(Connection*,bool)), this, 0);
+
+    if(result)
+    {
+        WorkTab *tab = tmpTabInfo->GetNewTab();
+        sWorkTabMgr.AddWorkTab(tab, tmpTabInfo->GetName() + " - " + con->GetIDString());
+        tab->setConnection(con);
+        sConMgr.AddCon(CONNECTION_TCP_SOCKET, con);
+
+        sConfig.set(CFG_QUINT32_TAB_TYPE, pluginsBox->currentIndex().row());
+        sConfig.set(CFG_QUINT32_CONNECTION_TYPE, CONNECTION_TCP_SOCKET);
+
+        close();
+        tab->onTabShow();
+    }
+    else
+    {
+        create->setText(tr("Create tab"));
+        create->setEnabled(true);
+
+        QMessageBox *box = new QMessageBox(this);
+        box->setWindowTitle(tr("Error!"));
+        box->setText(tr("Error tcp socket!"));
+        box->setIcon(QMessageBox::Critical);
+        box->exec();
+        delete box;
+        delete con;
+    }
+    tmpTabInfo = NULL;
 }

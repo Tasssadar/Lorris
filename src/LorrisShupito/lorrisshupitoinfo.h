@@ -35,7 +35,7 @@ public:
     WorkTab *GetNewTab();
     QString GetName();
     QString GetDescription();
-    quint8 GetConType() { return CON_MSK(CONNECTION_SERIAL_PORT); }
+    quint8 GetConType() { return CON_MSK(CONNECTION_SERIAL_PORT) | CON_MSK(CONNECTION_TCP_SOCKET); }
 };
 
 #endif // LORRISSHUPITOINFO_H

@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2011-05-30T19:16:22
 # -------------------------------------------------
-QT += gui core
+QT += gui core network
 TARGET = Lorris
 CONFIG(debug, debug|release):DESTDIR = $$PWD/bin/debug
 else:DESTDIR = $$PWD/bin/release
@@ -73,7 +73,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/modes/shupitopdi.cpp \
     src/LorrisShupito/modes/shupitomode.cpp \
     src/LorrisShupito/modes/shupitocc25xx.cpp \
-    src/LorrisShupito/shupitopacket.cpp
+    src/LorrisShupito/shupitopacket.cpp \
+    src/connection/tcpsocket.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -132,7 +133,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/modes/shupitopdi.h \
     src/LorrisShupito/modes/shupitomode.h \
     src/LorrisShupito/modes/shupitocc25xx.h \
-    src/LorrisShupito/shupitopacket.h
+    src/LorrisShupito/shupitopacket.h \
+    src/connection/tcpsocket.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

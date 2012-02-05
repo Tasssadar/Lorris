@@ -38,7 +38,8 @@ enum ConnectionType
     CONNECTION_FILE        = 2,
     CONNECTION_SHUPITO     = 3, // Do not use in WorkTabs, when connected to shupito, it identifies
                                 // as serial port from WorkTab's point of view
-    MAX_CON_TYPE           = 4
+    CONNECTION_TCP_SOCKET  = 4,
+    MAX_CON_TYPE           = 5
 };
 
 #define CON_MSK(con) (1 << con)

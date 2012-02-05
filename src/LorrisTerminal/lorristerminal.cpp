@@ -96,6 +96,23 @@ void LorrisTerminal::initUI()
     QAction *termSave = dataMenu->addAction(tr("Save terminal content to text file"));
     termSave->setShortcut(QKeySequence("Ctrl+S"));
 
+    dataMenu->addSeparator();
+
+    QMenu *inputMenu = dataMenu->addMenu(tr("Input handling"));
+    QSignalMapper *inputMap = new QSignalMapper(this);
+    for(quint8 i = 0; i < INPUT_MAX; ++i)
+    {
+        static const QString inputText[] = { tr("Just send key presses"), tr("TCP-terminal-like") };
+
+        m_input[i] = inputMenu->addAction(inputText[i]);
+        m_input[i]->setCheckable(true);
+        inputMap->setMapping(m_input[i], i);
+        connect(m_input[i], SIGNAL(triggered()), inputMap, SLOT(map()));
+    }
+
+    inputAct(sConfig.get(CFG_QUINT32_TERMINAL_INPUT));
+
+    connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
     connect(terminal,          SIGNAL(keyPressedASCII(QByteArray)), SLOT(sendKeyEvent(QByteArray)));
     connect(ui->browseBtn,     SIGNAL(clicked()),                   SLOT(browseForHex()));
@@ -359,6 +376,8 @@ void LorrisTerminal::connectedStatus(bool connected)
 
         ui->stopButton->setEnabled(true);
         ui->stopButton->setText(tr("Stop"));
+
+        terminal->setFocus();
     }
     else
     {
@@ -805,4 +824,13 @@ void LorrisTerminal::saveText()
     file.close();
 
     sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
+}
+
+void LorrisTerminal::inputAct(int act)
+{
+    for(quint8 i = 0; i < INPUT_MAX; ++i)
+        m_input[i]->setChecked(i == act);
+
+    sConfig.set(CFG_QUINT32_TERMINAL_INPUT, act);
+    terminal->setInput(act);
 }
