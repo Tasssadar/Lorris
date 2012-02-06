@@ -84,7 +84,7 @@ Available connection types:
     <br>
     Once you have packet structure set-up, you can drag widgets from right bar to main "workspace".
     To assign data to widget, just drag desired byte (or first byte from left side, in case you want to display for example uint32, which is 4 bytes long)
-    to widget. Each widget has it's individual settings, accesible by right-click.
+    from top data view to widget. Each widget has it's individual settings, accesible by right-click.
 </p>
 
 <div style="margin-left: 30px">
@@ -104,7 +104,8 @@ Available widgets:
 <h4>Module: Serial port <-> TCP socket proxy</h4>
 <i style="margin-left: 30px">Supported connection types: Serial Port</i>
 <p style="margin-left: 30px">
-    This module acts as simple proxy between serial port and TCP socket. You can connect from Lorris (or another program) to this proxy via internet network.
+    This module acts as simple proxy between serial port and TCP socket. You can connect from Lorris (or another program) to this proxy via internet network.<br>
+    It is kinda awsome, we tested it a while ago so that my friend from across the country programmed a chip laying on my table via this proxy :)
 </p>
 
 <h4>Module: Shupito</h4>
@@ -114,6 +115,14 @@ Available widgets:
     This is controling interface for <a href="http://technika.junior.cz/trac/wiki/shupito">Shupito programmer</a>.
     It is programmer of microcontrollers or anything compatible with it. Lorris supports memory read, write and erasing and fuse read and write.
 </p>
+<div style="margin-left: 30px">
+Supported programming interfaces
+<ul>
+    <li>SPI</li>
+    <li>PDI</li>
+    <li>Texas Instrument's CC25xx RF-enabled processors</li>
+</ul>
+</div>
 
 <p id="shupito_tunnel" style="margin-left: 30px">
     It also can utilize Shupito's <b>RSR232 tunnel ability</b>. When you set-up tunnel (see <a href="screenshots/shupito.png">this screenshot</a>, left-top),
