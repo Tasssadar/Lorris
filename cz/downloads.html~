@@ -1,0 +1,25 @@
+<h3 id="downloads">Ke stažení</h3>
+<p>
+    Předkompilované binárky jsou dostupné zatím jen pro windows, pokud používáte jiný OS, musíte si Lorris <a href="#build">zkompilovat sami</a>.
+</p>
+
+<h4>Windows</h4>
+<p style="margin-left: 30px">
+    <b>Stabilní vydání</b> - žádná stabilní verze ještě není k dispozici</br>
+    <b>Testovací verze</b> - testovací verze jsou ke stažení na <a href="https://github.com/Tasssadar/Lorris/downloads">GitHubu</a>
+</p>
+
+<h4>Zrojový kód</h4>
+<p style="margin-left: 30px">
+    Github repozitář je na <a href="https://github.com/Tasssadar/Lorris">https://github.com/Tasssadar/Lorris</a>, k naklonování můžete použít následující příkaz:
+</p>
+<pre style="margin-left: 30px">
+    git clone git://github.com/Tasssadar/Lorris.git
+</pre>
+<p style="margin-left: 30px">
+    Nejnovější změny jsou ve větvi "master", jakmile bude vydaná první stabilní verze, bude ve větvi "stable".
+</p>
+
+<p style="margin-left: 30px">
+    Thanks to github, you can also download source code in .zip or .tar.gz archive on <a href="https://github.com/Tasssadar/Lorris/downloads">downloads page</a>.
+</p>

@@ -1,0 +1,264 @@
+<!-- head.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Lorris - Grafické rozhraní pro práci s embedded zařízeními</title>
+</head>
+
+<body>
+    <a href="../index.html" style="position: absolute; top: 0; right: 10px; border: 0;">EN</a>
+    <a href="https://github.com/Tasssadar/Lorris">
+        <img style="position: absolute; top: 0; left: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png" alt="Fork me on GitHub" />
+    </a>
+    <div align="center">
+        <h1>Lorris</h1>
+        Grafické rozhraní napsané v Qt určené pro práci s embedded zařízeními, roboty a podobnými aplikacemi.
+    </div>
+<!-- menu.html -->
+<div align="center">
+    | <a href="#downloads">Ke stažení</a> |
+      <a href="#desc">Popis</a> |
+      <a href="#build">Jak kompilovat</a> |
+      <a href="#license">Licence &amp; a knihovny</a> |
+      <a href="#screenshots">Screenshoty</a> |
+</div>
+<!-- downloads.html -->
+<h3 id="downloads">Ke stažení</h3>
+<p>
+    Předkompilované binárky jsou dostupné zatím jen pro windows, pokud používáte jiný OS, musíte si Lorris <a href="#build">zkompilovat sami</a>.
+</p>
+
+<h4>Windows</h4>
+<p style="margin-left: 30px">
+    <b>Stabilní vydání</b> - žádná stabilní verze ještě není k dispozici</br>
+    <b>Testovací verze</b> - testovací verze jsou ke stažení na <a href="https://github.com/Tasssadar/Lorris/downloads">GitHubu</a>
+</p>
+
+<h4>Zrojový kód</h4>
+<p style="margin-left: 30px">
+    Github repozitář je na <a href="https://github.com/Tasssadar/Lorris">https://github.com/Tasssadar/Lorris</a>, k naklonování můžete použít následující příkaz:
+</p>
+<pre style="margin-left: 30px">
+    git clone git://github.com/Tasssadar/Lorris.git
+</pre>
+<p style="margin-left: 30px">
+    Nejnovější změny jsou ve větvi "master", jakmile bude vydaná první stabilní verze, bude ve větvi "stable".
+</p>
+
+<p style="margin-left: 30px">
+    Github umožňuje stažení celého stromu jako .zip nebo .tar.gz archiv
+    na adrese <a href="https://github.com/Tasssadar/Lorris/downloads">https://github.com/Tasssadar/Lorris/downloads</a>.
+</p>
+
+<!-- desc.html -->
+<hr>
+<h3 id="desc">Popis</h3>
+<p>
+    Lorris je navrhnuta jako modulární aplikace - poskytuje pouze připojení k danému zařízení, moduly se starají o vše ostatní.
+    Můžete pracovat s více moduly zaráz (dokonce i se stejným portem/adresou/...) jako se záložkami ve webovém prohlížeči.
+</p>
+<p>
+    Lorris je napsaný v C++ a využívá <a href="http://qt.nokia.com/">Qt Framework (4.7)</a>, což (mimo jiné) znamen že dokáže běžet na více platformách - 
+    je otestovaný na Debian Linux(Wheezy, 64bit) a MS Windows (Xp, 7).<br>
+    Předkompilované binárky si můžete stáhnou v sekci <a href="#downloads">ke stažení</a>.
+</p>
+Možnosti připojení k zařízení:
+<ul>
+    <li>Sériový port</li>
+    <li>TCP Socket</li>
+    <li>Shupito Tunel - vysvětleno <a href="#shupito_tunnel">zde</a></li>
+    <li>Bez připojení (načíst data ze souboru)</li>
+</ul>
+
+<h4>Modul: Analyzér</h4>
+<i style="margin-left: 30px">Podporovaná připojení: Sériový Port, TCP socket, Bez připojení (načíst data ze souboru)</i>
+<p style="margin-left: 30px">
+    Tento modul je grafický parser příchozích dat. Parsovaná data zobrazuje ve widgetech, které si zvolí uživatel. 
+    Očekává se, že příchozí data budou mít formát packetů, nejlépe s nějákou hlavičkou.
+    Přesná struktura packetu se nastavuje v <a href="../screenshots/analyzer_struct.png">tomto okně</a>.
+</p>
+<p style="margin-left: 30px">
+    <small><i>
+        (Obrázek řekne víc než tisíc slov, podívejte se na <a href="../screenshots/analyzer_all.png">tento screenshot</a>
+        abyste věděli o čem mluvím)
+    </i></small>
+    <br>
+    Jakmile nastavíte strukturu packetu, můžete natahat na hlavni pracovní plochu widgety z pravého sloupce.
+    Data k widgetu přiřadíte přetažením (prvního) bytu dat z horního seznamu dat na widget.
+    Každý widget má individuální nastavení přistupná po pravém kliknutí.
+</p>
+
+<div style="margin-left: 30px">
+Dostupné widgety:
+<ul>
+    <li>Číslo</li>
+    <li>Sloupec</li>
+    <li>Barva - očekává tří uint8 jako RGB</li>
+    <li>Graf</li>
+</ul>
+</div>
+
+<p style="margin-left: 30px">
+    Widgety, strukturu a data lze také uložit do souboru, abyste pokaždé nemuseli nastavovat vše od začátku.
+</p>
+
+<h4>Modul: Proxy mezi Sériovým portem a TCP Socketem</h4>
+<i style="margin-left: 30px">Podporovaná připojení: Sériový Port</i>
+<p style="margin-left: 30px">
+    Tohle je jednoduchá proxy mezi sériovým portem a TCP socketem. K této proxy se můžete přes internet připojit pomocí Lorris nebo jiného programu.
+</p>
+
+<h4>Modul: Shupito</h4>
+<i style="margin-left: 30px">Podporovaná připojení: Sériový Port, TCP socket</i>
+
+<p style="margin-left: 30px">
+    Rozhraní pro obsluhu programátoru (hlavně) mikročipů <a href="http://technika.junior.cz/trac/wiki/shupito">Shupito</a>.
+    Lorris umí číst pamět čipu, programovat ho a programovat a číst pojistky.
+</p>
+
+<div style="margin-left: 30px">
+Podporovaná programovací rozhraní:
+<ul>
+    <li>SPI</li>
+    <li>PDI</li>
+    <li>Texas Instrument's CC25xx RF-enabled processors</li>
+</ul>
+</div>
+
+<p id="shupito_tunnel" style="margin-left: 30px">
+    Lorris umí také využít <b>RS232 tunel</b>, který umí Shupito poskytnout. Když tento tunel zapnete
+    (<a href="../screenshots/shupito.png">screenshot</a>, vlevo nahoře), vytvoří se nový typ připojení - "Shupito tunel".
+    Je to v podstatě sériový port, a chová se tak, takže ho mohou využít všechny moduly které podporují připojení přes sériový port.
+</p>
+
+<h4>Modul: Terminál</h4>
+<i style="margin-left: 30px">Podporovaná připojení: Sériový Port, TCP socket</i>
+
+<p style="margin-left: 30px">
+    Prostě terminál. Zobrazuje příchozí data buďto jako normální test (a podporuje \f, \r, \n a \b znaky)
+    nebo jako hex dump (přepínání je v horním menu pod položkou "Formát").
+</p>
+
+<div style="margin-left: 30px">
+    Terminál také posílá stisky kláves do zařízení, a má dva způsoby jak to může dělat:
+    <ol>
+        <li><b>Poslat každé stisknutí</b> - hned po stisknutí klávesy pošle znak do zařízení</li>
+        <li><b>Jako TCP terminál</b> - ukazuje co píšete v terminálu a pošlě to až po stisknutí enteru</li>
+    </ol>
+    Mezi těmito módy můžete přepnout v horním menu "Terminál -> Vstup".
+</div>
+
+
+
+
+
+<!-- build.html -->
+<hr>
+<h3 id="build">Jak kompilovat</h3>
+Budete potřebovat QtFramework 4.7 (4.6 by taky mohl fungovat, ale není to vyzkoušené).<br>
+Zkompilované binárky by měly být ve složce bin/debug nebo bin/release.
+<h4>Windows</h4>
+<p style="margin-left: 30px">
+    Stáhněte Lorris, otevřete Lorris.pro v QtCreatoru a stiskněte "Sestavit".
+</p>
+<h4>Linux</h4>
+<p style="margin-left: 30px">
+    Lorris vyžaduje libqwt-dev alespoň ve verzi 6. Pokud ve vaší distribuci je, prostě ho nainstalujte.
+    Pokud není, ve složce dep/qwt/lib jsou předkompilované libqwt.so* a libqwtmathml.so* pro 64bit, můžete je zkusit
+    dát do lib složky vaší distribuce, eg. /usr/lib.
+</p>
+<p style="margin-left: 60px">
+    <b>Pokud máte 32bit</b> jděte do složky dep/qextserialport a zkompiluje QExtSerialPort knihovnu:
+</p>
+<pre style="margin-left: 60px">
+    qmake qextserialport.pro
+    make clean
+    make
+</pre>
+<p style="margin-left: 30px">
+    Teď můžete zkompilovat Lorris v QtCreatoru nebo následujícími příkazy:
+</p>
+<pre style="margin-left: 30px">
+    qmake Lorris.pro
+    make
+</pre>
+<!-- license.html -->
+<hr>
+<h3 id="license">Licence &amp; knihovny</h3>
+<p>
+    Lorris je vydaný pod <a href="https://github.com/Tasssadar/Lorris/blob/master/COPYING">GNU GPLv3</a> licencí
+    a používá tyto knihovny:
+    <ul>
+        <li style="padding: 5px"><b>Qt Framework</b> (<a href="http://qt.nokia.com/">http://qt.nokia.com/</a>), the cross-platform application and UI framework,<br>
+            který je vydaný pod GNU LGPL v2.1</li>
+        <li style="padding: 5px"><b>Qwt</b> (<a href="http://qwt.sourceforge.net/">http://qwt.sourceforge.net/</a>), Qt Widgets for Technical Applications,<br>
+            která je vydaná pod Qwt licencí - <a href="https://github.com/Tasssadar/Lorris/blob/master/dep/qwt/COPYING">dep/qwt/COPYING</a></li>
+        <li style="padding: 5px"><b>QExtSerialPort</b> (<a href="http://code.google.com/p/qextserialport/">http://code.google.com/p/qextserialport/</a>),
+            Qt interface class for old fashioned serial ports,<br>
+            která je vydaná pod New BSD Licencí -
+            <a href="http://www.opensource.org/licenses/bsd-license.php">http://www.opensource.org/licenses/bsd-license.php</a></li>
+        <li style="padding: 5px">Upravenou verzi <b>QHexEdit2</b> (<a href="http://code.google.com/p/qhexedit2/">http://code.google.com/p/qhexedit2/</a>),
+            "QHexEdit is a Binary Edior for Qt",<br>
+            který je vydaný pod LGPL v2.1 -
+            <a href="https://github.com/Tasssadar/Lorris/blob/master/dep/qhexedit2/src/license.txt">dep/qhexedit2/src/license.txt</a></li>
+    </ul>
+</p>
+
+<!-- screenshots.html -->
+<hr>
+<h3 id="screenshots">Screenshoty</h3>
+<table width="100%" style="margin-bottom: 30px">
+    <tr>
+        <td align="center" width="33%" id="main">
+            <a href="../screenshots/main.png">
+                <img src="../screenshots/main.png" width="266px" height="150px"><br>
+                Hlavní okno
+            </a>
+        </td>
+        <td align="center" width="33%" id="analyzer_all">
+            <a href="../screenshots/analyzer_all.png">
+                <img src="../screenshots/analyzer_all.png" width="266px" height="150px"><br>
+                Analyzér
+            </a>
+        </td>
+        <td align="center" width="33%" id="analyzer_struct">
+            <a href="../screenshots/analyzer_struct.png">
+                <img src="../screenshots/analyzer_struct.png" width="266px" height="150px"><br>
+                Analyzér - nastavení struktury packetu
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" width="33%" id="shupito">
+            <a href="../screenshots/shupito.png">
+                <img src="../screenshots/shupito.png" width="266px" height="150px"><br>
+                Shupito
+            </a>
+        </td>
+        <td align="center" width="33%" id="terminal">
+            <a href="../screenshots/terminal.png">
+                <img src="../screenshots/terminal.png" width="266px" height="150px"><br>
+                Terminál
+            </a>
+        </td>
+        <td align="center" width="33%" id="proxy">
+            <a href="../screenshots/proxy.png">
+                <img src="../screenshots/proxy.png" width="266px" height="150px"><br>
+                Sériový port <-> TCP socket proxy
+            </a>
+        </td>
+    </tr>
+</table>
+
+<!-- menu.html -->
+<div align="center">
+    | <a href="#downloads">Ke stažení</a> |
+      <a href="#desc">Popis</a> |
+      <a href="#build">Jak kompilovat</a> |
+      <a href="#license">Licence &amp; a knihovny</a> |
+      <a href="#screenshots">Screenshoty</a> |
+</div>
+<!-- bottom.html -->
+</body>
+</html>
