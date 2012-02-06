@@ -2,7 +2,7 @@
 
 rm index.html
 
-files=( head.html menu.html downloads.html desc.html build.html screenshots.html menu.html bottom.html )
+files=( head.html menu.html downloads.html desc.html build.html license.html screenshots.html menu.html bottom.html )
 for file in ${files[@]}
 do
     echo "<!-- $file -->" >> index.html
