@@ -178,7 +178,8 @@ FORMS += \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui \
     src/LorrisTerminal/lorristerminal.ui \
     src/ui/hometab.ui \
-    src/LorrisProxy/lorrisproxy.ui
+    src/LorrisProxy/lorrisproxy.ui \
+    src/ui/tabdialog.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \

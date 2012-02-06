@@ -64,6 +64,8 @@ public:
     void GetShupitoIds(QStringList& list);
     bool isAnyShupito();
 
+    ConnectionBuilder *getConBuilder(quint8 conType, int moduleIdx, QWidget *parent);
+
 private:
     con_map conMap[MAX_CON_TYPE];
     shupito_map shupitoMap;

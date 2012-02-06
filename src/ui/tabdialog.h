@@ -34,6 +34,11 @@
 class WorkTab;
 class Connection;
 class WorkTabInfo;
+class ConnectionBuilder;
+
+namespace Ui {
+    class TabDialog;
+}
 
 class TabDialog : public QDialog
 {
@@ -46,21 +51,14 @@ private slots:
     void PluginSelected(int index);
     void CreateTab();
     void FillConOptions(int index);
-    void serialConResult(Connection *con, bool result);
-    void tcpConResult(Connection *con, bool result);
+    void setCreateButtonState(bool connecting);
+    void connectFailed(const QString& text);
+    void connectionSucces(Connection *con, const QString &tabName, WorkTabInfo *info);
 
 private:
-    WorkTab *ConnectSP(WorkTabInfo *info);
-    WorkTab *ConnectShupito(WorkTabInfo *info);
-    WorkTab *ConnectTcp(WorkTabInfo *info);
-
-    QVBoxLayout *layout;
-    QHBoxLayout *columns;
-    QVBoxLayout *secondCol;
-    QHBoxLayout *conOptions;
-    QListWidget *pluginsBox;
-    QComboBox *conBox;
-    WorkTabInfo *tmpTabInfo;
+    ConnectionBuilder *m_con_builder;
+    Ui::TabDialog *ui;
+    int m_cur_con;
 };
 
 #endif // TABDIALOG_H

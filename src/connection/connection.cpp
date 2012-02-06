@@ -47,3 +47,19 @@ void Connection::SendData(const QByteArray& /*data*/)
 void Connection::OpenConcurrent()
 {
 }
+
+
+ConnectionBuilder::ConnectionBuilder(QWidget *parent, int moduleIdx) : QObject((QObject*)parent)
+{
+    m_parent = parent;
+    m_module_idx = moduleIdx;
+}
+
+void ConnectionBuilder::addOptToTabDialog(QGridLayout */*layout*/)
+{
+
+}
+
+void ConnectionBuilder::CreateConnection(WorkTabInfo */*info*/)
+{
+}

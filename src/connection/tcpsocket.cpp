@@ -24,10 +24,14 @@
 #include <QtNetwork/QTcpSocket>
 #include <QtCore/QtConcurrentRun>
 #include <QtCore/QThreadPool>
+#include <QLabel>
+#include <QLineEdit>
+#include <QSpinBox>
 
 #include "common.h"
 #include "connectionmgr.h"
 #include "tcpsocket.h"
+#include "WorkTab/WorkTabInfo.h"
 
 TcpSocket::TcpSocket() : Connection()
 {
@@ -111,4 +115,67 @@ void TcpSocket::stateChanged()
 {
     if(opened && m_socket->state() != QAbstractSocket::ConnectedState)
         Close();
+}
+
+void TcpSocketBuilder::addOptToTabDialog(QGridLayout *layout)
+{
+    QLabel    *addressLabel = new QLabel(tr("Address:"), m_parent);
+    m_address               = new QLineEdit(m_parent);
+    QLabel    *portLabel    = new QLabel(tr("Port:"), m_parent);
+    m_port                  = new QSpinBox(m_parent);
+
+    m_port->setMaximum(65536);
+    m_port->setValue(sConfig.get(CFG_QUINT32_TCP_PORT));
+
+    m_address->setText(sConfig.get(CFG_STRING_TCP_ADDR));
+
+    layout->addWidget(addressLabel, 1, 0);
+    layout->addWidget(m_address, 1, 1);
+    layout->addWidget(portLabel, 1, 2);
+    layout->addWidget(m_port, 1, 3);
+}
+
+void TcpSocketBuilder::CreateConnection(WorkTabInfo *info)
+{
+    QString address = m_address->text();
+    quint16 port = m_port->value();
+
+    sConfig.set(CFG_QUINT32_TCP_PORT, port);
+    sConfig.set(CFG_STRING_TCP_ADDR, address);
+
+    TcpSocket *socket =
+            (TcpSocket*)sConMgr.FindConnection(CONNECTION_TCP_SOCKET, address + ":" + QString::number(port));
+    if(!socket || !socket->isOpen())
+    {
+        emit setCreateBtnStatus(true);
+
+        m_tab_info = info;
+
+        if(!socket)
+        {
+            socket = new TcpSocket();
+            socket->setAddress(address, port);
+        }
+
+        connect(socket, SIGNAL(connectResult(Connection*,bool)), SLOT(conResult(Connection*,bool)));
+        socket->OpenConcurrent();
+    }
+    else
+    {
+        emit connectionSucces(socket, info->GetName() + " - " + socket->GetIDString(), info);
+    }
+}
+
+void TcpSocketBuilder::conResult(Connection *con, bool open)
+{
+    if(open)
+    {
+        emit connectionSucces(con, m_tab_info->GetName() + " - " + con->GetIDString(), m_tab_info);
+    }
+    else
+    {
+        emit setCreateBtnStatus(false);
+        emit connectionFailed(tr("Error opening TCP socket!"));
+        delete con;
+    }
 }

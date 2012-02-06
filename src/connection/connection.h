@@ -28,6 +28,10 @@
 #include <QObject>
 #include <QDataStream>
 #include <set>
+#include <QGridLayout>
+
+class WorkTab;
+class WorkTabInfo;
 
 class Connection : public QObject
 {
@@ -77,6 +81,28 @@ protected:
     std::set<quint16> m_usingTabsIDs;
 
     QString m_idString;
+};
+
+class ConnectionBuilder : public QObject
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void setCreateBtnStatus(bool connecting);
+    void connectionFailed(const QString& msg);
+    void connectionSucces(Connection *con, const QString& tabName, WorkTabInfo *info);
+
+public:
+    ConnectionBuilder(QWidget *parent,  int moduleIdx);
+
+    virtual void addOptToTabDialog(QGridLayout *layout);
+    virtual void CreateConnection(WorkTabInfo *info);
+
+protected:
+    QWidget *m_parent;
+    int m_module_idx;
+
+    WorkTabInfo *m_tab_info;
 };
 
 #endif // CONNECTION_H

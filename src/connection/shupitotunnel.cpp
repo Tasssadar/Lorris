@@ -21,9 +21,14 @@
 **
 ****************************************************************************/
 
+#include <QLabel>
+#include <QComboBox>
+
 #include "shupitotunnel.h"
 #include "connectionmgr.h"
 #include "../LorrisShupito/shupito.h"
+
+#include "WorkTab/WorkTabInfo.h"
 
 ShupitoTunnel::ShupitoTunnel()
 {
@@ -111,4 +116,48 @@ void ShupitoTunnel::SendData(const QByteArray &data)
 
         sent += chunk;
     }
+}
+
+void ShupitoTunnelBuilder::addOptToTabDialog(QGridLayout *layout)
+{
+     QLabel *portLabel = new QLabel(tr("Port: "), m_parent);
+     m_portBox = new QComboBox(m_parent);
+
+     QStringList shupitoList;
+     sConMgr.GetShupitoIds(shupitoList);
+     m_portBox->addItems(shupitoList);
+
+     layout->addWidget(portLabel, 1, 0);
+     layout->addWidget(m_portBox, 1, 1);
+}
+
+void ShupitoTunnelBuilder::CreateConnection(WorkTabInfo *info)
+{
+    QString portName = m_portBox->currentText();
+
+    Shupito *shupito = sConMgr.GetShupito(portName);
+    if(!shupito)
+        return emit connectionFailed(tr("That Shupito does not exist anymore"));
+
+    ShupitoTunnel *tunnel = (ShupitoTunnel*)sConMgr.FindConnection(CONNECTION_SHUPITO, portName);
+    if(!tunnel)
+    {
+        tunnel = new ShupitoTunnel();
+        tunnel->setShupito(shupito);
+        tunnel->setIDString(portName);
+        if(!tunnel->Open())
+        {
+            delete tunnel;
+            return emit connectionFailed(tr("Failed to open tunnel!"));
+        }
+        sConMgr.AddCon(CONNECTION_SHUPITO, tunnel);
+    }
+    else if(!tunnel->isOpen())
+    {
+        tunnel->setShupito(shupito);
+        if(!tunnel->Open())
+            return emit connectionFailed(tr("Failed to open tunnel!"));
+    }
+
+    emit connectionSucces(tunnel, info->GetName() + " - " + tunnel->GetIDString(), info);
 }

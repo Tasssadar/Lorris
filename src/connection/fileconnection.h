@@ -38,4 +38,15 @@ public:
     void OpenConcurrent();
 };
 
+class FileConnectionBuilder : public ConnectionBuilder
+{
+    Q_OBJECT
+public:
+    FileConnectionBuilder(QWidget *parent, int moduleIdx) : ConnectionBuilder(parent, moduleIdx)
+    {
+    }
+
+    void CreateConnection(WorkTabInfo *info);
+};
+
 #endif // FILECONNECTION_H

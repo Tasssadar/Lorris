@@ -30,6 +30,7 @@
 
 #include "connection.h"
 
+class QComboBox;
 class SerialPortThread;
 
 class SerialPort : public Connection
@@ -68,6 +69,24 @@ private:
     QFutureWatcher<bool> m_watcher;
 };
 
+class SerialPortBuilder : public ConnectionBuilder
+{
+    Q_OBJECT
+public:
+    SerialPortBuilder(QWidget *parent,  int moduleIdx) : ConnectionBuilder(parent, moduleIdx)
+    {
+    }
+
+    void addOptToTabDialog(QGridLayout *layout);
+    void CreateConnection(WorkTabInfo *info);
+
+private slots:
+    void conResult(Connection *con, bool open);
+
+private:
+    QComboBox *m_rateBox;
+    QComboBox *m_portBox;
+};
 
 
 #endif // SERIALPORT_H

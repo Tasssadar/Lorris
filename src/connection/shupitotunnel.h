@@ -27,6 +27,7 @@
 #include "connection.h"
 #include "connectionmgr.h"
 
+class QComboBox;
 class Shupito;
 
 class ShupitoTunnel : public Connection
@@ -48,6 +49,21 @@ public:
 private:
     Shupito *m_shupito;
     bool dataSigConnected;
+};
+
+class ShupitoTunnelBuilder : public ConnectionBuilder
+{
+    Q_OBJECT
+public:
+    ShupitoTunnelBuilder(QWidget *parent, int moduleIdx) : ConnectionBuilder(parent, moduleIdx)
+    {
+    }
+
+    void addOptToTabDialog(QGridLayout *layout);
+    void CreateConnection(WorkTabInfo *info);
+
+private:
+    QComboBox *m_portBox;
 };
 
 
