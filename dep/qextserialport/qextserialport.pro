@@ -1,4 +1,5 @@
 #
+DESTDIR = $$PWD/lib
 TEMPLATE = subdirs
 CONFIG   += ordered
 SUBDIRS  = src \
