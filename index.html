@@ -1,87 +1,227 @@
+<!-- head.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset='utf-8'>
-
-  <title>Tasssadar/Lorris @ GitHub</title>
-
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #9a4c27;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #65b3d8; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #65b3d8; }
-    h3 { text-align: center; color: #65b3d8; }
-    a { color: #65b3d8; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
+  <title>Lorris - GUI tool which aims to be used when dealing with embedded devices</title>
 </head>
 
 <body>
-  <a href="https://github.com/Tasssadar/Lorris"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-  <div id="container">
-
-    <div class="download">
-      <a href="https://github.com/Tasssadar/Lorris/zipball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
-      <a href="https://github.com/Tasssadar/Lorris/tarball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
+    <a href="https://github.com/Tasssadar/Lorris">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+    </a>
+    <div align="center">
+        <h1>Lorris</h1>
+        GUI tool written in Qt which aims to be used when dealing with embedded devices, robots<br> and similar applications where you need to do something with data.
     </div>
+<!-- menu.html -->
+<div align="center">
+    | <a href="#downloads">Downloads</a> |
+      <a href="#desc">Detailed description</a> |
+      <a href="#build">Build instructions</a> |
+      <a href="#screenshots">Screenshots</a> |
+</div>
+<!-- downloads.html -->
+<h3 id="downloads">Downloads</h3>
+<p>
+    There are binaries available for MS Windows. If you're using other operating system, you have to <a href="#build">build Lorris yourself</a>.
+</p>
 
-    <h1><a href="https://github.com/Tasssadar/Lorris">Lorris</a>
-      <span class="small">by <a href="https://github.com/Tasssadar">Tasssadar</a></span></h1>
+<h4>Windows binaries</h4>
+<p style="margin-left: 30px">
+    <b>Stable release</b> - There is no stable release available at this time<br>
+    <b>Testing release</b> - Testing releases are available at <a href="https://github.com/Tasssadar/Lorris/downloads">GitHub downloads page</a>
+</p>
 
-    <div class="description">
-      Lorris is GUI tool which aims to be used when dealing with embedded devices, robots and similar applications where you need to do something with data.
-    </div>
+<h4>Source code</h4>
+<p style="margin-left: 30px">
+    GitHub repository is at <a href="https://github.com/Tasssadar/Lorris">https://github.com/Tasssadar/Lorris</a>, you can clone it with:
+</p>
+<pre style="margin-left: 30px">
+    git clone git://github.com/Tasssadar/Lorris.git
+</pre>
+<p style="margin-left: 30px">
+    Testing and newest changes are in "master" branch, once there is a stable release, "stable" branch will be created.
+</p>
 
-    
-      <p>Lorris itself provides only connection and tab-like ui - its modules do all the work. blahblah, todo.</p>
-    
+<p style="margin-left: 30px">
+    Thanks to github, you can also download source code in .zip or .tar.gz archive on <a href="https://github.com/Tasssadar/Lorris/downloads">downloads page</a>.
+</p>
 
-    
+<!-- desc.html -->
+<hr>
+<h3 id="desc">Description</h3>
+<p>
+    Main thing about Lorris is that it's modular - program iself provides only connection to target device, modules do all the work.
+    You can run multiple modules at the same time (even connect them to the same port/address/whatever) as tabs, like in web browser.
+</p>
+<p>
+    Lorris is using <a href="http://qt.nokia.com/">Qt Framework (4.7)</a>, which (also) means it is multiplatform - it is tested on 
+    Debian Linux(Wheezy, 64bit) and MS Windows(Xp, 7).<br>You can find Windows binaries in <a href="#downloads">downloads section</a>.
+</p>
+Available connection types:
+<ul>
+    <li>Serial Port</li>
+    <li>TCP Socket</li>
+    <li>Shupito Tunnel - explained <a href="#shupito_tunnel">here</a></li>
+    <li>None(load from file)</li>
+</ul>
 
-    
+<h4>Module: Analyzer</h4>
+<i style="margin-left: 30px">Supported connection types: Serial Port, TCP socket, None(load from file)</i>
+<p style="margin-left: 30px">
+    This module is graphical parser of incomming data, and displays them in user-selected widgets. Incomming data are expected to be in packet format, 
+    preferably with some kind of header. Exact packet format is set in <a href="screenshots/analyzer_struct.png">this window</a>,
+    it should be pretty self-explanatory.
+</p>
+<p style="margin-left: 30px">
+    <small><i>
+        (Image is worth a thousand words, so take a look at <a href="screenshots/analyzer_all.png">this screenshot</a>
+        so you can understand what am I talking about)
+    </i></small>
+    <br>
+    Once you have packet structure set-up, you can drag widgets from right bar to main "workspace".
+    To assign data to widget, just drag desired byte (or first byte from left side, in case you want to display for example uint32, which is 4 bytes long)
+    to widget. Each widget has it's individual settings, accesible by right-click.
+</p>
 
-    
+<div style="margin-left: 30px">
+Available widgets:
+<ul>
+    <li>Number</li>
+    <li>Bar</li>
+    <li>Color - expects three uint8s as RGB</li>
+    <li>Graph</li>
+</ul>
+</div>
 
-    
-      <h2>Authors</h2>
-      <p>Tassadar (vbocek@gmail.com)<br/>      </p>
-    
+<p style="margin-left: 30px">
+    You can also save currect Analyzer configuration and received data to file, so that you do not have set up everything every time you use it.
+</p>
 
-    
+<h4>Module: Serial port <-> TCP socket proxy</h4>
+<i style="margin-left: 30px">Supported connection types: Serial Port</i>
+<p style="margin-left: 30px">
+    This module acts as simple proxy between serial port and TCP socket. You can connect from Lorris (or another program) to this proxy via internet network.
+</p>
 
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="https://github.com/Tasssadar/Lorris/zipball/master">zip</a> or
-      <a href="https://github.com/Tasssadar/Lorris/tarball/master">tar formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/Tasssadar/Lorris</pre>
-    </p>
+<h4>Module: Shupito</h4>
+<i style="margin-left: 30px">Supported connection types: Serial Port, TCP Socket</i>
 
-    <div class="footer">
-      get the source code on GitHub : <a href="https://github.com/Tasssadar/Lorris">Tasssadar/Lorris</a>
-    </div>
+<p style="margin-left: 30px">
+    This is controling interface for <a href="http://technika.junior.cz/trac/wiki/shupito">Shupito programmer</a>.
+    It is programmer of microcontrollers or anything compatible with it. Lorris supports memory read, write and erasing and fuse read and write.
+</p>
 
-  </div>
+<p id="shupito_tunnel" style="margin-left: 30px">
+    It also can utilize Shupito's <b>RSR232 tunnel ability</b>. When you set-up tunnel (see <a href="screenshots/shupito.png">this screenshot</a>, left-top),
+    new connection type will appear - "Shupito tunnel". It is basically forwarded serial port, and it acts like one, so every module which use
+    serial port connection can also use Shupito tunnel.
+</p>
 
+<h4>Module: Terminal</h4>
+<i style="margin-left: 30px">Supported connection types: Serial Port, TCP Socket</i>
+
+<p style="margin-left: 30px">
+    Standart terminal. It shows incomming data as normal text (and can handle \f, \r, \n and \b control characters)
+    or as hex dump (you can chose mode in  top "format" menu).
+</p>
+
+<div style="margin-left: 30px">
+    Terminal also sends key presses to device, and it can do it in two modes:
+    <ol>
+        <li><b>Send each key press</b> - sends each character immediately after key press</li>
+        <li><b>TCP-terminal-like mode</b> - shows what you type in terminal and sends it only when you press return/enter key</li>
+    </ol>
+    You can switch between these modes in "Terminal -> Input handling" top menu.
+</div>
+
+
+
+
+
+<!-- build.html -->
+<hr>
+<h3 id="build">Build instructions</h3>
+You will need QtFramework 4.7 to build Lorris (4.6 _should_ be also ok, but it is not tested).<br>
+Built binaries should be in bin/debug or bin/release.
+<h4>Building on Windows</h4>
+<p style="margin-left: 30px">
+    Download Lorris, open Lorris.pro in QtCreator and hit "Build" button. 
+</p>
+<h4>Building on Linux</h4>
+<p style="margin-left: 30px">
+    You need libqwt-dev to build Lorris on Linux, at least version 6.0.0. If it is in your distribution's repository, just install it.
+    If it is not, there are libqwt.so* and libqwtmathml.so* in dep/qwt/lib. Copy these files to your distro's lib directory, eg. /usr/lib.
+    These are for 64bit only however.
+</p>
+<p style="margin-left: 60px">
+    <b>For 32bit users:</b> go to dep/qextserialport folder and execute these commands to rebuild QExtSerialPort for 32bit:
+</p>
+<pre style="margin-left: 60px">
+    qmake qextserialport.pro
+    make clean
+    make
+</pre>
+<p style="margin-left: 30px">
+    Now you can build Lorris with QtCreator or go to Lorris folder and execute these commands:
+</p>
+<pre style="margin-left: 30px">
+    qmake Lorris.pro
+    make
+</pre>
+<!-- screenshots.html -->
+<hr>
+<h3 id="screenshots">Screenshots</h3>
+<table width="100%">
+    <tr>
+        <td align="center" width="33%" id="main">
+            <a href="screenshots/main.png">
+                <img src="screenshots/main.png" width="266px" height="150px"><br>
+                Main window
+            </a>
+        </td>
+        <td align="center" width="33%" id="analyzer_all">
+            <a href="screenshots/analyzer_all.png">
+                <img src="screenshots/analyzer_all.png" width="266px" height="150px"><br>
+                Analyzer module
+            </a>
+        </td>
+        <td align="center" width="33%" id="analyzer_struct">
+            <a href="screenshots/analyzer_struct.png">
+                <img src="screenshots/analyzer_struct.png" width="266px" height="150px"><br>
+                Analyzer module - packet structure settings
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" width="33%" id="shupito">
+            <a href="screenshots/shupito.png">
+                <img src="screenshots/shupito.png" width="266px" height="150px"><br>
+                Shupito module
+            </a>
+        </td>
+        <td align="center" width="33%" id="terminal">
+            <a href="screenshots/terminal.png">
+                <img src="screenshots/terminal.png" width="266px" height="150px"><br>
+                Terminal module
+            </a>
+        </td>
+        <td align="center" width="33%" id="proxy">
+            <a href="screenshots/proxy.png">
+                <img src="screenshots/proxy.png" width="266px" height="150px"><br>
+                Serial port <-> TCP proxy module
+            </a>
+        </td>
+    </tr>
+</table
+<!-- menu.html -->
+<div align="center">
+    | <a href="#downloads">Downloads</a> |
+      <a href="#desc">Detailed description</a> |
+      <a href="#build">Build instructions</a> |
+      <a href="#screenshots">Screenshots</a> |
+</div>
+<!-- bottom.html -->
 </body>
 </html>

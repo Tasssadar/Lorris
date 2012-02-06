@@ -1,0 +1,29 @@
+<hr>
+<h3 id="build">Build instructions</h3>
+You will need QtFramework 4.7 to build Lorris (4.6 _should_ be also ok, but it is not tested).<br>
+Built binaries should be in bin/debug or bin/release.
+<h4>Building on Windows</h4>
+<p style="margin-left: 30px">
+    Download Lorris, open Lorris.pro in QtCreator and hit "Build" button. 
+</p>
+<h4>Building on Linux</h4>
+<p style="margin-left: 30px">
+    You need libqwt-dev to build Lorris on Linux, at least version 6.0.0. If it is in your distribution's repository, just install it.
+    If it is not, there are libqwt.so* and libqwtmathml.so* in dep/qwt/lib. Copy these files to your distro's lib directory, eg. /usr/lib.
+    These are for 64bit only however.
+</p>
+<p style="margin-left: 60px">
+    <b>For 32bit users:</b> go to dep/qextserialport folder and execute these commands to rebuild QExtSerialPort for 32bit:
+</p>
+<pre style="margin-left: 60px">
+    qmake qextserialport.pro
+    make clean
+    make
+</pre>
+<p style="margin-left: 30px">
+    Now you can build Lorris with QtCreator or go to Lorris folder and execute these commands:
+</p>
+<pre style="margin-left: 30px">
+    qmake Lorris.pro
+    make
+</pre>
