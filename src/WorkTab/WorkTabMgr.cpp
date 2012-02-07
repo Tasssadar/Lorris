@@ -90,7 +90,7 @@ void WorkTabMgr::removeTab(WorkTab *tab)
         OpenHomeTab();
         tabWidget->setTabsClosable(false);
     }
-    delete tab;
+    tab->deleteLater();
 }
 
 void WorkTabMgr::OpenHomeTab()
