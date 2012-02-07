@@ -41,10 +41,13 @@ public:
     bool Open();
     void OpenConcurrent();
     void Close();
-    quint8 getType() { return CONNECTION_SERIAL_PORT; }
     void SendData(const QByteArray &data);
 
     void setShupito(Shupito* s);
+    void setType(quint8 type)
+    {
+        m_type = type;
+    }
 
 private:
     Shupito *m_shupito;

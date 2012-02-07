@@ -90,7 +90,7 @@ class ConnectionBuilder : public QObject
 Q_SIGNALS:
     void setCreateBtnStatus(bool connecting);
     void connectionFailed(const QString& msg);
-    void connectionSucces(Connection *con, const QString& tabName, WorkTabInfo *info);
+    void connectionSucces(Connection *con, const QString& tabName, WorkTabInfo *info, qint16 conType = -1);
 
 public:
     ConnectionBuilder(QWidget *parent,  int moduleIdx);

@@ -32,9 +32,10 @@
 
 ShupitoTunnel::ShupitoTunnel()
 {
-    m_type = CONNECTION_SHUPITO;
     m_shupito = NULL;
     dataSigConnected = false;
+
+    m_type = CONNECTION_SERIAL_PORT;
 }
 
 ShupitoTunnel::~ShupitoTunnel()
@@ -63,8 +64,13 @@ bool ShupitoTunnel::Open()
 
 void ShupitoTunnel::Close()
 {
+    if(opened)
+        return;
+
     emit connected(false);
+
     disconnect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, NULL);
+
     dataSigConnected = false;
     opened = false;
 }
@@ -159,5 +165,5 @@ void ShupitoTunnelBuilder::CreateConnection(WorkTabInfo *info)
             return emit connectionFailed(tr("Failed to open tunnel!"));
     }
 
-    emit connectionSucces(tunnel, info->GetName() + " - " + tunnel->GetIDString(), info);
+    emit connectionSucces(tunnel, info->GetName() + " - " + tunnel->GetIDString(), info, CONNECTION_SHUPITO);
 }
