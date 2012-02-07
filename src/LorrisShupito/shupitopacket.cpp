@@ -56,7 +56,7 @@ void ShupitoPacket::set(bool resize, quint8 cmd, quint8 size)
 
 void ShupitoPacket::Clear()
 {
-    m_data = QByteArray(2, 0);
+    m_data.clear();
     itr = 0;
 }
 

@@ -74,7 +74,7 @@ public:
     LorrisShupito();
     ~LorrisShupito();
 
-    void stopAll();
+    void stopAll(bool wait);
 
 private slots:
     void connectButton();

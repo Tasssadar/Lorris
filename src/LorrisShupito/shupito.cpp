@@ -60,8 +60,9 @@ void Shupito::init(Connection *con, ShupitoDesc *desc)
 
     chip_definition::parse_default_chipsets(m_chip_defs);
 
-    ShupitoPacket getInfo(MSG_INFO, 1, 0x00);
+    m_packet.Clear();
 
+    ShupitoPacket getInfo(MSG_INFO, 1, 0x00);
     QByteArray data = waitForStream(getInfo, MSG_INFO);
     if(!data.isEmpty())
         m_desc->AddData(data);

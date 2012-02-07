@@ -136,7 +136,7 @@ LorrisShupito::~LorrisShupito()
 {
     sConfig.set(CFG_BOOL_SHUPITO_VERIFY, m_auto_verify->isChecked());
 
-    stopAll();
+    stopAll(false);
     delete m_shupito;
     delete m_desc;
     delete ui;
@@ -235,7 +235,7 @@ void LorrisShupito::connectButton()
     }
     else
     {
-        stopAll();
+        stopAll(false);
         m_con->Close();
         m_state |= STATE_DISCONNECTED;
 
@@ -261,7 +261,7 @@ void LorrisShupito::connectedStatus(bool connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
         ui->connectButton->setText(tr("Disconnect"));
-        stopAll();
+        stopAll(true);
 
         delete m_desc;
         m_desc = new ShupitoDesc();
@@ -289,7 +289,7 @@ void LorrisShupito::readData(const QByteArray &data)
     m_shupito->readData(data);
 }
 
-void LorrisShupito::stopAll()
+void LorrisShupito::stopAll(bool wait)
 {
     if(m_tunnel_config)
     {
@@ -302,14 +302,20 @@ void LorrisShupito::stopAll()
         if(!m_tunnel_config->always_active())
         {
             ShupitoPacket pkt = m_tunnel_config->getStateChangeCmd(false);
-            m_shupito->waitForPacket(pkt, MSG_INFO);
+            if(wait)
+                m_shupito->waitForPacket(pkt, MSG_INFO);
+            else
+                m_shupito->sendPacket(pkt);
         }
     }
 
     if(m_vdd_config && !m_vdd_config->always_active())
     {
         ShupitoPacket pkt = m_vdd_config->getStateChangeCmd(false);
-        m_shupito->waitForPacket(pkt, MSG_INFO);
+        if(wait)
+            m_shupito->waitForPacket(pkt, MSG_INFO);
+        else
+            m_shupito->sendPacket(pkt);
     }
 }
 
