@@ -156,13 +156,7 @@ void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
     if(!result)
     {
         ui->connectButton->setText(tr("Connect"));
-
-        QMessageBox *box = new QMessageBox(this);
-        box->setIcon(QMessageBox::Critical);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Can't open connection!"));
-        box->exec();
-        delete box;
+        showErrorBox(tr("Can't open connection!"));
     }
 }
 

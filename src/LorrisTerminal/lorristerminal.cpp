@@ -27,7 +27,6 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QScrollBar>
-#include <QMessageBox>
 #include <QProgressBar>
 #include <QLabel>
 #include <QKeyEvent>
@@ -205,11 +204,7 @@ void LorrisTerminal::eeprom_write(QString id)
     {
         m_state &= ~(STATE_EEPROM_WRITE);
 
-        QMessageBox box(this);
-        box.setWindowTitle(tr("Error!"));
-        box.setText(tr("Unsupported chip: ") + id);
-        box.setIcon(QMessageBox::Critical);
-        box.exec();
+        showErrorBox(tr("Unsupported chip: ") + id);
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
@@ -283,11 +278,7 @@ void LorrisTerminal::eeprom_read(QString id)
     {
         m_state &= ~(STATE_EEPROM_READ);
 
-        QMessageBox box(this);
-        box.setWindowTitle(tr("Error!"));
-        box.setText(tr("Unsupported chip: ") + id);
-        box.setIcon(QMessageBox::Critical);
-        box.exec();
+        showErrorBox(tr("Unsupported chip: ") + id);
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
@@ -400,12 +391,7 @@ void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
     {
         ui->connectButton->setText(tr("Connect"));
 
-        QMessageBox *box = new QMessageBox(this);
-        box->setIcon(QMessageBox::Critical);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Can't open serial port!"));
-        box->exec();
-        delete box;
+        showErrorBox(tr("Can't open serial port!"));
     }
 }
 
@@ -524,12 +510,7 @@ void LorrisTerminal::stopTimerSig()
         ui->stopButton->setText(tr("Stop"));
         ui->stopButton->setEnabled(true);
 
-        QMessageBox *box = new QMessageBox(this);
-        box->setIcon(QMessageBox::Critical);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Timeout on stopping chip!"));
-        box->exec();
-        delete box;
+        showErrorBox(tr("Timeout on stopping chip!"));
     }
 }
 
@@ -543,11 +524,8 @@ void LorrisTerminal::flashButton()
     }
     catch(QString ex)
     {
-        QMessageBox box(this);
-        box.setWindowTitle(tr("Error!"));
-        box.setText(tr("Error loading hex file: ") + ex);
-        box.setIcon(QMessageBox::Critical);
-        box.exec();
+        showErrorBox(tr("Error loading hex file: ") + ex);
+
         delete hex;
         hex = NULL;
         return;
@@ -576,12 +554,7 @@ void LorrisTerminal::flash_prepare(QString deviceId)
 
     if(cd.getName().isEmpty())
     {
-        QMessageBox *box = new QMessageBox(this);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Unsupported chip: ") + deviceId);
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
+        showErrorBox(tr("Unsupported chip: ") + deviceId);
         delete hex;
         hex = NULL;
 
@@ -597,11 +570,8 @@ void LorrisTerminal::flash_prepare(QString deviceId)
     }
     catch(QString ex)
     {
-        QMessageBox box(this);
-        box.setWindowTitle(tr("Error!"));
-        box.setText(tr("Error making pages: ") + ex);
-        box.setIcon(QMessageBox::Critical);
-        box.exec();
+        showErrorBox(tr("Error making pages: ") + ex);
+
         delete hex;
         hex = NULL;
 
@@ -679,12 +649,7 @@ void LorrisTerminal::flashTimeout()
         m_state &= ~(STATE_EEPROM_READ);
         delete m_eeprom;
 
-        QMessageBox *box = new QMessageBox(this);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Timeout during reading EEPROM!"));
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
+        showErrorBox(tr("Timeout during reading EEPROM!"));
         return;
     }
 
@@ -693,12 +658,7 @@ void LorrisTerminal::flashTimeout()
         m_state &= ~(STATE_EEPROM_WRITE);
         delete m_eeprom;
 
-        QMessageBox *box = new QMessageBox(this);
-        box->setWindowTitle(tr("Error!"));
-        box->setText(tr("Timeout during writing EEPROM!"));
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
+        showErrorBox(tr("Timeout during writing EEPROM!"));
         return;
     }
 
@@ -709,12 +669,7 @@ void LorrisTerminal::flashTimeout()
 
     ui->flashText->setText("");
 
-    QMessageBox *box = new QMessageBox(this);
-    box->setWindowTitle(tr("Error!"));
-    box->setText(tr("Timeout during flashing!"));
-    box->setIcon(QMessageBox::Critical);
-    box->exec();
-    delete box;
+    showErrorBox(tr("Timeout during flashing!"));
 }
 
 void LorrisTerminal::deviceIdTimeout()
@@ -724,13 +679,7 @@ void LorrisTerminal::deviceIdTimeout()
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    QMessageBox *box = new QMessageBox(this);
-    box->setWindowTitle(tr("Error!"));
-    box->setText(tr("Can't get device id!"));
-    box->setIcon(QMessageBox::Critical);
-    box->exec();
-    delete box;
-
+    showErrorBox(tr("Can't get device id!"));
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
 

@@ -50,6 +50,7 @@ class WorkTab : public QWidget
     protected slots:
         virtual void readData(const QByteArray &data);
         virtual void connectedStatus(bool connected);
+        virtual void showErrorBox(const QString& text);
 
     protected:
         explicit WorkTab();

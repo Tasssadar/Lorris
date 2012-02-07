@@ -52,6 +52,42 @@ LorrisProxy::~LorrisProxy()
     delete ui;
 }
 
+void LorrisProxy::connectButton()
+{
+    if(m_con->isOpen())
+    {
+        ui->connectButton->setText(tr("Connecting..."));
+        ui->connectButton->setEnabled(false);
+        connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
+        m_con->OpenConcurrent();
+    }
+    else
+    {
+        m_con->Close();
+        ui->connectButton->setText(tr("Connect to serial port"));
+    }
+}
+
+void LorrisProxy::connectionResult(Connection */*con*/,bool result)
+{
+    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
+
+    ui->connectButton->setEnabled(true);
+    if(!result)
+    {
+        ui->connectButton->setText(tr("Connect to serial port"));
+        showErrorBox(tr("Can't open connection!"));
+    }
+}
+
+void LorrisProxy::connectedStatus(bool connected)
+{
+    if(connected)
+        ui->connectButton->setText(tr("Disconnect from serial port"));
+    else
+        ui->connectButton->setText(tr("Connect to serial port"));
+}
+
 void LorrisProxy::setConnection(Connection *con)
 {
     m_con = con;

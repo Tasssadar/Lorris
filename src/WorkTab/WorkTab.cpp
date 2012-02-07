@@ -21,8 +21,10 @@
 **
 ****************************************************************************/
 
-#include "WorkTab.h"
 #include <QLayout>
+#include <QMessageBox>
+
+#include "WorkTab.h"
 
 WorkTab::WorkTab() : QWidget(NULL)
 {
@@ -82,4 +84,13 @@ void WorkTab::DeleteAllMembers(QLayout *layout)
 void WorkTab::onTabShow()
 {
 
+}
+
+void WorkTab::showErrorBox(const QString &text)
+{
+    QMessageBox box(this);
+    box.setIcon(QMessageBox::Critical);
+    box.setWindowTitle(tr("Error!"));
+    box.setText(text);
+    box.exec();
 }

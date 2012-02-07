@@ -147,7 +147,6 @@ private:
     void writeFuses(chip_definition& chip);
     void hideFuses(bool hide);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
-    void showErrorBox(const QString& text);
     bool showContinueBox(const QString& title, const QString& text);
     void postFlashSwitchCheck(chip_definition &chip);
     chip_definition switchToFlashAndGetId();

@@ -746,15 +746,6 @@ void LorrisShupito::postFlashSwitchCheck(chip_definition& chip)
         m_fuse_widget->clear(true);
 }
 
-void LorrisShupito::showErrorBox(const QString &text)
-{
-    QMessageBox box(this);
-    box.setIcon(QMessageBox::Critical);
-    box.setWindowTitle(tr("Error!"));
-    box.setText(text);
-    box.exec();
-}
-
 bool LorrisShupito::showContinueBox(const QString &title, const QString &text)
 {
     QMessageBox box(this);
