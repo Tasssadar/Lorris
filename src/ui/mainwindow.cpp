@@ -61,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle(getVersionString());
     setMinimumSize(600, 500);
     setWindowState(Qt::WindowMaximized);
+    setWindowIcon(QIcon(":/icons/icon.png"));
 
     // menu bar
     menuBar = new QMenuBar(this);
