@@ -19,7 +19,7 @@
      <item>
       <widget class="QPushButton" name="connectButton">
        <property name="text">
-        <string>Odpojit</string>
+        <string>Disconnect</string>
        </property>
       </widget>
      </item>
