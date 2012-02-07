@@ -174,8 +174,10 @@ void TcpSocketBuilder::conResult(Connection *con, bool open)
     }
     else
     {
+        if(!con->IsUsedByTab())
+            delete con;
+
         emit setCreateBtnStatus(false);
         emit connectionFailed(tr("Error opening TCP socket!"));
-        delete con;
     }
 }
