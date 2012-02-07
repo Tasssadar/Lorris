@@ -29,6 +29,7 @@
 #include <vector>
 #include <QPoint>
 
+class QMenu;
 class QByteArray;
 class QFile;
 
@@ -75,13 +76,18 @@ protected:
     void focusInEvent(QFocusEvent *);
     void focusOutEvent(QFocusEvent *);
 
+private slots:
+    void copyToClipboard();
+    void pasteFromClipboard();
+
 private:
+    void handleInput(const QByteArray& data, int key = 0);
     void updateScrollBars();
     void addLine(quint32 pos, char * &line, char * &itr);
     void addLines(QByteArray text);
     void addHex();
     QPoint mouseToTextPos(const QPoint& pos);
-    void copyToClipboard();
+
     void selectAll();
 
     inline void adjustSelectionWidth(int &w, quint32 i, quint32 max, int len);
@@ -112,6 +118,8 @@ private:
     QPoint m_sel_stop;
 
     QByteArray m_command;
+
+    QMenu *m_context_menu;
 };
 
 #endif // TERMINAL_H

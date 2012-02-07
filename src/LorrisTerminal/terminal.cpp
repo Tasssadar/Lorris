@@ -32,6 +32,7 @@
 #include <QTextStream>
 #include <QResizeEvent>
 #include <QClipboard>
+#include <QMenu>
 
 #include "common.h"
 #include "terminal.h"
@@ -61,6 +62,16 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
     m_cursor.setSize(QSize(m_char_width, m_char_height));
     updateScrollBars();
+
+    m_context_menu = new QMenu(this);
+    QAction *copy = m_context_menu->addAction(tr("Copy"));
+    copy->setShortcut(QKeySequence("Ctrl+C"));
+
+    QAction *paste = m_context_menu->addAction(tr("Paste"));
+    paste->setShortcut(QKeySequence("Ctrl+V"));
+
+    connect(copy,  SIGNAL(triggered()), SLOT(copyToClipboard()));
+    connect(paste, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
 }
 
 Terminal::~Terminal()
@@ -212,22 +223,27 @@ void Terminal::addLine(quint32 pos, char *&line, char *&itr)
 
 void Terminal::keyPressEvent(QKeyEvent *event)
 {
+    QByteArray key = event->text().toAscii();
+
     if((event->modifiers() & Qt::ControlModifier))
     {
-
         switch(event->key())
         {
             case Qt::Key_C:
             case Qt::Key_X:
                 copyToClipboard();
                 return;
+            case Qt::Key_V:
+            {
+               key = QApplication::clipboard()->text().toAscii();
+               break;
+            }
             case Qt::Key_A:
                 selectAll();
                 return;
         }
     }
 
-    QByteArray key = event->text().toAscii();
     switch(event->key())
     {
         case Qt::Key_Return:
@@ -249,20 +265,24 @@ void Terminal::keyPressEvent(QKeyEvent *event)
     if(key.isEmpty())
         return;
 
+    handleInput(key, event->key());
+}
 
+void Terminal::handleInput(const QByteArray &data, int key)
+{
     switch(m_input)
     {
         case INPUT_SEND_KEYPRESS:
         {
-            emit keyPressedASCII(key);
+            emit keyPressedASCII(data);
             break;
         }
         case INPUT_SEND_COMMAND:
         {
-            m_command.append(key);
-            appendText(key);
+            m_command.append(data);
+            appendText(data);
 
-            if(event->key() != Qt::Key_Return && event->key() != Qt::Key_Enter)
+            if(key != Qt::Key_Return && key != Qt::Key_Enter)
                 break;
 
             emit keyPressedASCII(m_command);
@@ -296,7 +316,8 @@ void Terminal::copyToClipboard()
         start = 0;
     }
 
-    QApplication::clipboard()->setText(text);
+    if(!text.isEmpty())
+        QApplication::clipboard()->setText(text);
 }
 
 void Terminal::selectAll()
@@ -306,6 +327,11 @@ void Terminal::selectAll()
     m_sel_stop.setX(lines()[m_sel_stop.y()].length());
 
     viewport()->update();
+}
+
+void Terminal::pasteFromClipboard()
+{
+    handleInput(QApplication::clipboard()->text().toAscii());
 }
 
 void Terminal::updateScrollBars()
@@ -462,8 +488,18 @@ void Terminal::resizeEvent(QResizeEvent *)
 
 void Terminal::mousePressEvent(QMouseEvent *event)
 {
-    m_sel_stop = m_sel_start = m_sel_begin = mouseToTextPos(event->pos());
-    viewport()->update();
+    switch(event->button())
+    {
+        case Qt::LeftButton:
+            m_sel_stop = m_sel_start = m_sel_begin = mouseToTextPos(event->pos());
+            viewport()->update();
+            break;
+        case Qt::RightButton:
+            m_context_menu->exec(event->globalPos());
+            break;
+        default:
+            break;
+    }
 }
 
 QPoint Terminal::mouseToTextPos(const QPoint& pos)
