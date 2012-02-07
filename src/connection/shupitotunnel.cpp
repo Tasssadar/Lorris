@@ -156,7 +156,6 @@ void ShupitoTunnelBuilder::CreateConnection(WorkTabInfo *info)
             delete tunnel;
             return emit connectionFailed(tr("Failed to open tunnel!"));
         }
-        sConMgr.AddCon(CONNECTION_SHUPITO, tunnel);
     }
     else if(!tunnel->isOpen())
     {
