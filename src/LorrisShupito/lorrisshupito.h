@@ -83,9 +83,8 @@ private slots:
     void connectionResult(Connection*,bool);
     void connectedStatus(bool connected);
     void readData(const QByteArray& data);
-    void descRead();
+    void descRead(bool correct);
 
-    void responseReceived(char error_code);
     void vccValueChanged(quint8 id, double value);
     void vddSetup(const vdd_setup& vs);
     void vddIndexChanged(int index);
@@ -136,7 +135,6 @@ private slots:
     void saveToFile(int memId);
 
 private:
-    void sendAndWait(const QByteArray &data);
     void log(const QString& text);
     bool checkVoltage(bool active);
     void readMemInFlash(quint8 memId);
@@ -169,8 +167,6 @@ private:
     quint8 m_state;
     Shupito *m_shupito;
     ShupitoDesc *m_desc;
-    QTimer *responseTimer;
-    volatile quint8 m_response;
     quint32 m_prog_speed_hz;
 
     QHexEdit *m_hexAreas[MEM_FUSES];

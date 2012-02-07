@@ -54,7 +54,7 @@ public:
 
     void Clear();
 
-    void AddData(const QByteArray &data, bool finish);
+    void AddData(const QByteArray &data);
     QString makeGuid(quint8 *data);
     void parseGroupConfig(quint8 *& first, quint8 *& last, quint8& base_cmd, std::vector<quint8>& actseq);
     void parseConfig(quint8 *& first, quint8 *& last, quint8& base_cmd, std::vector<quint8>& actseq);

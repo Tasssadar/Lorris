@@ -37,24 +37,22 @@ void ShupitoDesc::Clear()
     m_interface_map.clear();
 }
 
-void ShupitoDesc::AddData(const QByteArray& data, bool finish)
+void ShupitoDesc::AddData(const QByteArray& data)
 {
     m_data.append(data);
-    if(finish)
-    {
-        quint8 *first = (quint8*)m_data.data();
-        quint8 *last = (quint8*)(m_data.data() + m_data.size());
 
-        if((last - first) < 17 || *first++ != 1)
-            return Utils::ThrowException("Invalid descriptor.");
+    quint8 *first = (quint8*)m_data.data();
+    quint8 *last = (quint8*)(first + m_data.size());
 
-        m_guid = makeGuid(first);
-        first += 16;
+    if((last - first) < 17 || *first++ != 1)
+        return Utils::ThrowException("Invalid descriptor.");
 
-        quint8 base_cmd = 1;
-        std::vector<quint8> act_seq;
-        parseGroupConfig(first, last, base_cmd, act_seq);
-    }
+    m_guid = makeGuid(first);
+    first += 16;
+
+    quint8 base_cmd = 1;
+    std::vector<quint8> act_seq;
+    parseGroupConfig(first, last, base_cmd, act_seq);
 }
 
 // Device guid: 093d7f32-cdc6-4928-955d-513d17a85358 for Shupito 2.0

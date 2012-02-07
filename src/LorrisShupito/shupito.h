@@ -73,7 +73,7 @@ class Shupito : public QObject
     Q_OBJECT
 
 Q_SIGNALS:
-    void descRead();
+    void descRead(bool correct);
     void responseReceived(char error_code);
     void vccValueChanged(quint8 id, double value);
     void vddDesc(const vdd_setup& vs);

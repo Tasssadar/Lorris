@@ -107,19 +107,15 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     }
 
     m_shupito = new Shupito(this);
-    m_desc = new ShupitoDesc();
+    m_desc = NULL;
 
-    connect(m_shupito, SIGNAL(descRead()), this, SLOT(descRead()));
-    connect(m_shupito, SIGNAL(responseReceived(char)), this, SLOT(responseReceived(char)));
+    connect(m_shupito, SIGNAL(descRead(bool)), this, SLOT(descRead(bool)));
     connect(m_shupito, SIGNAL(vccValueChanged(quint8,double)), this, SLOT(vccValueChanged(quint8,double)));
     connect(m_shupito, SIGNAL(vddDesc(vdd_setup)), this, SLOT(vddSetup(vdd_setup)));
     connect(m_shupito, SIGNAL(tunnelStatus(bool)), this, SLOT(tunnelStateChanged(bool)));
 
     m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
 
-    m_response = RESPONSE_NONE;
-
-    responseTimer = NULL;
     m_vcc = 0;
     lastVccIndex = 0;
 
@@ -266,6 +262,10 @@ void LorrisShupito::connectedStatus(bool connected)
         m_state &= ~(STATE_DISCONNECTED);
         ui->connectButton->setText(tr("Disconnect"));
         stopAll();
+
+        delete m_desc;
+        m_desc = new ShupitoDesc();
+
         m_shupito->init(m_con, m_desc);
     }
     else
@@ -301,51 +301,16 @@ void LorrisShupito::stopAll()
 
         if(!m_tunnel_config->always_active())
         {
-            sendAndWait(m_tunnel_config->getStateChangeCmd(false).getData(false));
-            m_response = RESPONSE_NONE;
+            ShupitoPacket pkt = m_tunnel_config->getStateChangeCmd(false);
+            m_shupito->waitForPacket(pkt, MSG_INFO);
         }
     }
 
     if(m_vdd_config && !m_vdd_config->always_active())
     {
-        sendAndWait(m_vdd_config->getStateChangeCmd(false).getData(false));
-        m_response = RESPONSE_NONE;
+        ShupitoPacket pkt = m_vdd_config->getStateChangeCmd(false);
+        m_shupito->waitForPacket(pkt, MSG_INFO);
     }
-}
-
-void LorrisShupito::sendAndWait(const QByteArray &data)
-{
-    Q_ASSERT(responseTimer == NULL);
-
-    responseTimer = new QTimer;
-    responseTimer->start(1000);
-    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(responseChanged()));
-
-    m_response = RESPONSE_WAITING;
-
-    QEventLoop loop;
-    loop.connect(this, SIGNAL(responseChanged()), SLOT(quit()));
-
-    m_con->SendData(data);
-
-    loop.exec();
-
-    delete responseTimer;
-    responseTimer = NULL;
-
-    if(m_response == RESPONSE_WAITING)
-        m_response = RESPONSE_BAD;
-}
-
-void LorrisShupito::responseReceived(char error_code)
-{
-    if(responseTimer)
-        responseTimer->stop();
-    if(error_code == 0)
-        m_response = RESPONSE_GOOD;
-    else
-        m_response = RESPONSE_BAD;
-    emit responseChanged();
 }
 
 void LorrisShupito::onTabShow()
@@ -354,8 +319,16 @@ void LorrisShupito::onTabShow()
         sConfig.set(CFG_STRING_SHUPITO_PORT, m_con->GetIDString());
 }
 
-void LorrisShupito::descRead()
+void LorrisShupito::descRead(bool correct)
 {
+    if(!correct)
+    {
+        log("Failed to read info from shupito!");
+        return showErrorBox(tr("Failed to read info from Shupito. If you're sure "
+                        "you're connected to shupito, try to disconnect and "
+                        "connect again"));
+    }
+
     log("Device GUID: " % m_desc->getGuid());
 
     ShupitoDesc::intf_map map = m_desc->getInterfaceMap();
@@ -368,12 +341,13 @@ void LorrisShupito::descRead()
     {
         if(!m_vdd_config->always_active())
         {
-            sendAndWait(m_vdd_config->getStateChangeCmd(true).getData(false));
-            if(m_response == RESPONSE_GOOD)
+            ShupitoPacket pkt = m_vdd_config->getStateChangeCmd(true);
+            pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
+
+            if(pkt.getLen() == 1 && pkt[0] == 0)
                 log("VDD started!");
             else
                 log("Could not start VDD!");
-            m_response = RESPONSE_NONE;
         }
         ShupitoPacket packet(m_vdd_config->cmd, 2, 0, 0);
         m_con->SendData(packet.getData(false));
@@ -385,12 +359,13 @@ void LorrisShupito::descRead()
     {
         if(!m_tunnel_config->always_active())
         {
-            sendAndWait(m_tunnel_config->getStateChangeCmd(true).getData(false));
-            if(m_response == RESPONSE_GOOD)
+            ShupitoPacket pkt = m_tunnel_config->getStateChangeCmd(true);
+            pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
+
+            if(pkt.getLen() == 1 && pkt[0] == 0)
                 log("Tunnel started!");
             else
                 log("Could not start tunnel!");
-            m_response = RESPONSE_NONE;
         }
 
         m_shupito->setTunnelState(true);

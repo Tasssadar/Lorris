@@ -61,7 +61,12 @@ void Shupito::init(Connection *con, ShupitoDesc *desc)
     chip_definition::parse_default_chipsets(m_chip_defs);
 
     ShupitoPacket getInfo(MSG_INFO, 1, 0x00);
-    sendPacket(getInfo);
+
+    QByteArray data = waitForStream(getInfo, MSG_INFO);
+    if(!data.isEmpty())
+        m_desc->AddData(data);
+
+    emit descRead(!data.isEmpty());
 }
 
 void Shupito::readData(const QByteArray &data)
@@ -204,18 +209,6 @@ void Shupito::handlePacket(ShupitoPacket& p)
 
     switch(p.getOpcode())
     {
-        case MSG_INFO:
-        {
-            if(p.getLen() == 1)
-                emit responseReceived(p[0]);
-            else
-            {
-                m_desc->AddData(p.getData(), p.getLen() < 15);
-                if(p.getLen() < 15)
-                    emit descRead();
-            }
-            break;
-        }
         case MSG_VCC:
         {
             handleVccPacket(p);
