@@ -36,11 +36,6 @@ WorkTabMgr::WorkTabMgr()
 
 WorkTabMgr::~WorkTabMgr()
 {
-    for(qint16 i = tabWidget->count(); tabWidget->count() && hometab == NULL;)
-        removeTab(--i);
-
-    CloseHomeTab();
-    delete tabWidget;
 }
 
 void WorkTabMgr::RegisterTabInfo(WorkTabInfo *info)
