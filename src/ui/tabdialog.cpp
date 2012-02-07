@@ -160,7 +160,7 @@ void TabDialog::connectionSucces(Connection* con, const QString& tabName, WorkTa
     WorkTab *tab = info->GetNewTab();
     sWorkTabMgr.AddWorkTab(tab, tabName);
     tab->setConnection(con);
-    sConMgr.AddCon(CONNECTION_TCP_SOCKET, con);
+    sConMgr.AddCon(con->getType(), con);
 
     sConfig.set(CFG_QUINT32_TAB_TYPE, ui->modulesList->currentIndex().row());
     sConfig.set(CFG_QUINT32_CONNECTION_TYPE, con->getType());
