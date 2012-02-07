@@ -36,11 +36,12 @@ LorrisProxy::LorrisProxy() : WorkTab(), ui(new Ui::LorrisProxy)
 
     ui->setupUi(this);
 
-    connect(ui->addressEdit, SIGNAL(textChanged(QString)), SLOT(updateAddressText()));
-    connect(ui->portBox,     SIGNAL(valueChanged(int)),    SLOT(updateAddressText()));
-    connect(ui->listenButon, SIGNAL(clicked()),            SLOT(listenChanged()));
-    connect(m_server,        SIGNAL(newConnection(QTcpSocket*,quint32)), SLOT(addConnection(QTcpSocket*,quint32)));
-    connect(m_server,        SIGNAL(removeConnection(quint32)), SLOT(removeConnection(quint32)));
+    connect(ui->connectButton, SIGNAL(clicked()),            SLOT(connectButton()));
+    connect(ui->addressEdit,   SIGNAL(textChanged(QString)), SLOT(updateAddressText()));
+    connect(ui->portBox,       SIGNAL(valueChanged(int)),    SLOT(updateAddressText()));
+    connect(ui->listenButon,   SIGNAL(clicked()),            SLOT(listenChanged()));
+    connect(m_server,          SIGNAL(newConnection(QTcpSocket*,quint32)), SLOT(addConnection(QTcpSocket*,quint32)));
+    connect(m_server,          SIGNAL(removeConnection(quint32)), SLOT(removeConnection(quint32)));
 
     ui->addressEdit->setText(sConfig.get(CFG_STRING_PROXY_ADDR));
     ui->portBox->setValue(sConfig.get(CFG_QUINT32_PROXY_PORT));
@@ -54,7 +55,7 @@ LorrisProxy::~LorrisProxy()
 
 void LorrisProxy::connectButton()
 {
-    if(m_con->isOpen())
+    if(!m_con->isOpen())
     {
         ui->connectButton->setText(tr("Connecting..."));
         ui->connectButton->setEnabled(false);

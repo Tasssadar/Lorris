@@ -90,6 +90,9 @@ void SerialPort::SendData(const QByteArray& data)
 
 void SerialPort::OpenConcurrent()
 {
+    if(opened)
+        return;
+
     m_future = QtConcurrent::run(this, &SerialPort::openPort);
     m_watcher.setFuture(m_future);
 }

@@ -74,6 +74,9 @@ void TcpSocket::connectResultSer(bool opened)
 
 void TcpSocket::OpenConcurrent()
 {
+    if(opened)
+        return;
+
     m_socket->connectToHost(m_address, m_port);
 
     m_future = QtConcurrent::run(this, &TcpSocket::connectToHost);
