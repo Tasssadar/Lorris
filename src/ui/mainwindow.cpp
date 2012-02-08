@@ -141,6 +141,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete sWorkTabMgr.getWi();
+
     //delete singletons
     WorkTabMgr::Destroy();
     ConnectionMgr::Destroy();

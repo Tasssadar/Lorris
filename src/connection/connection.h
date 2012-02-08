@@ -54,6 +54,8 @@ public:
     virtual void OpenConcurrent();
     virtual void Close() { }
 
+    virtual void removeFromMgr();
+
     bool isOpen() { return opened; }
 
     void AddUsingTab(quint16 id)

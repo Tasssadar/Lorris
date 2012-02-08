@@ -40,6 +40,7 @@ WorkTab::~WorkTab()
         if(!m_con->IsUsedByTab())
         {
             m_con->Close();
+            m_con->removeFromMgr();
             delete m_con;
         }
     }

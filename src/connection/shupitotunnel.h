@@ -44,10 +44,7 @@ public:
     void SendData(const QByteArray &data);
 
     void setShupito(Shupito* s);
-    void setType(quint8 type)
-    {
-        m_type = type;
-    }
+    void removeFromMgr();
 
 private:
     Shupito *m_shupito;

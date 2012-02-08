@@ -31,7 +31,7 @@ Connection::Connection()
 
 Connection::~Connection()
 {
-    sConMgr.RemoveCon(m_type, this);
+
 }
 
 bool Connection::Open()
@@ -48,6 +48,10 @@ void Connection::OpenConcurrent()
 {
 }
 
+void Connection::removeFromMgr()
+{
+     sConMgr.RemoveCon(m_type, this);
+}
 
 ConnectionBuilder::ConnectionBuilder(QWidget *parent, int moduleIdx) : QObject((QObject*)parent)
 {
@@ -63,3 +67,4 @@ void ConnectionBuilder::addOptToTabDialog(QGridLayout */*layout*/)
 void ConnectionBuilder::CreateConnection(WorkTabInfo */*info*/)
 {
 }
+

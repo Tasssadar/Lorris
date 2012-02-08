@@ -40,6 +40,10 @@ ShupitoTunnel::ShupitoTunnel()
 
 ShupitoTunnel::~ShupitoTunnel()
 {
+}
+
+void ShupitoTunnel::removeFromMgr()
+{
     sConMgr.RemoveCon(CONNECTION_SHUPITO, this);
 }
 
@@ -64,7 +68,7 @@ bool ShupitoTunnel::Open()
 
 void ShupitoTunnel::Close()
 {
-    if(opened)
+    if(!opened)
         return;
 
     emit connected(false);
