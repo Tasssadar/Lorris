@@ -83,7 +83,7 @@ private slots:
 private:
     void handleInput(const QByteArray& data, int key = 0);
     void updateScrollBars();
-    void addLine(quint32 pos, char * &line, char * &itr);
+    void addLine(quint32 pos, char *&line_start, char *&line_end);
     void addLines(QByteArray text);
     void addHex();
     QPoint mouseToTextPos(const QPoint& pos);

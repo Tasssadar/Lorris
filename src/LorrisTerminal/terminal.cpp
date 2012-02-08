@@ -98,47 +98,32 @@ void Terminal::appendText(QByteArray text)
 
 void Terminal::addLines(QByteArray text)
 {
-    quint32 size = 100;
-    char *line = new char[size];
-    char *itr = line;
-    *itr = 0;
-
     quint32 pos = m_cursor_pos.y();
-    if(pos < m_lines.size())
-    {
-        std::string s = m_lines[pos].toStdString();
-        if(s.length() >= size)
-        {
-            while(s.length() >= size)
-                size *= 2;
-            delete[] line;
-            line = new char[size];
-        }
 
-        std::copy(s.c_str(), s.c_str()+s.length(), line);
-        itr = line + m_cursor_pos.x();
-        *itr = 0;
-    }
+    char *in_data = text.data();
 
-    for(quint32 i = 0; i < (quint32)text.size(); ++i)
+    char *line_start = in_data;
+    char *line_end = in_data;
+
+    for(quint32 i = 0; *line_end && i < (quint32)text.size(); ++i)
     {
-        switch(text[i])
+        switch(*line_end)
         {
             case '\f':
             {
-                addLine(pos, line, itr);
+                addLine(pos, line_start, line_end);
                 m_cursor_pos.setX(0);
                 m_cursor_pos.setY(0);
                 pos = 0;
                 break;
             }
             case '\r':
-                itr = line;
+                addLine(pos, line_start, line_end);
                 m_cursor_pos.setX(0);
                 break;
             case '\n':
             {
-                addLine(pos, line, itr);
+                addLine(pos, line_start, line_end);
                 ++pos;
                 m_cursor_pos.setX(0);
                 m_cursor_pos.setY(pos);
@@ -146,10 +131,14 @@ void Terminal::addLines(QByteArray text)
             }
             case '\b':
             {
-                if(itr != line)
-                    --itr;
+                if(line_end != line_start)
+                    --line_end;
 
-                *itr = 0;
+                addLine(pos, line_start, line_end);
+
+                if(*line_start == '\b')
+                    ++line_end;
+                line_start = line_end;
 
                 if(m_cursor_pos.x() != 0)
                     --m_cursor_pos.rx();
@@ -157,29 +146,48 @@ void Terminal::addLines(QByteArray text)
             }
             default:
             {
-                *itr = text[i];
-                ++itr;
-                if(itr - line >= size)
-                {
-                    quint32 diff = itr - line;
-                    size *= 2;
-                    char *tmp = new char[size];
-                    std::copy(line, line+size, tmp);
-
-                    delete[] line;
-                    line = tmp;
-                    itr = line + diff;
-                }
-                *itr = 0;
+                ++line_end;
                 break;
             }
         }
     }
 
-    if(itr != line)
-        addLine(pos, line, itr);
+    if(line_start != line_end)
+        addLine(pos, line_start, line_end);
+}
 
-    delete[] line;
+void Terminal::addLine(quint32 pos, char *&line_start, char *&line_end)
+{
+    std::vector<QString>::iterator linePos = m_lines.begin() + pos;
+    if(linePos != m_lines.end())
+    {
+        if((line_end - line_start + m_cursor_pos.x()) > (*linePos).length())
+            (*linePos).resize(line_end - line_start + m_cursor_pos.x());
+
+        QChar *lineData = (*linePos).data();
+
+        QChar *line = new QChar[line_end - line_start];
+        QChar *line_itr = line;
+        for(char *itr = line_start; itr != line_end; ++itr,++line_itr)
+            *line_itr = *itr;
+        std::copy(line, line_itr, lineData+m_cursor_pos.x());
+
+        m_cursor_pos.rx() += (line_end - line_start);
+    }
+    else
+    {
+        char tmp = *line_end;
+        *line_end = 0;
+        m_lines.insert(linePos, QString(line_start));
+        *line_end = tmp;
+
+        m_cursor_pos.setX(m_lines[pos].length());
+    }
+
+    m_cursor_pos.setY(pos);
+
+    ++line_end;
+    line_start = line_end;
 }
 
 void Terminal::addHex()
@@ -208,17 +216,6 @@ void Terminal::addHex()
     }
     m_cursor_pos.setY(m_lines.size());
     m_cursor_pos.setX(0);
-}
-
-void Terminal::addLine(quint32 pos, char *&line, char *&itr)
-{
-    std::vector<QString>::iterator linePos = m_lines.begin() + pos;
-    if(linePos != m_lines.end())
-        linePos = m_lines.erase(linePos);
-    m_lines.insert(linePos, QString(line));
-    m_cursor_pos.setY(pos);
-    m_cursor_pos.setX(m_lines[pos].length());
-    itr = line;
 }
 
 void Terminal::keyPressEvent(QKeyEvent *event)

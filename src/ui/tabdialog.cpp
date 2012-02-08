@@ -167,7 +167,7 @@ void TabDialog::connectionSucces(Connection* con, const QString& tabName, WorkTa
     sConMgr.AddCon(conType, con);
 
     sConfig.set(CFG_QUINT32_TAB_TYPE, ui->modulesList->currentIndex().row());
-    sConfig.set(CFG_QUINT32_CONNECTION_TYPE, con->getType());
+    sConfig.set(CFG_QUINT32_CONNECTION_TYPE, conType);
 
     close();
     tab->onTabShow();
