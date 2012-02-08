@@ -94,3 +94,8 @@ void WorkTab::showErrorBox(const QString &text)
     box.setText(text);
     box.exec();
 }
+
+void WorkTab::addTopMenu(QMenu *menu)
+{
+    m_menus.push_back(menu);
+}

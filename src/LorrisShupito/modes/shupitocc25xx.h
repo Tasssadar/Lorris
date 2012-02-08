@@ -38,7 +38,7 @@ public:
     void erase_device(chip_definition& chip);
     void readMemRange(quint8, QByteArray& memory, quint32 address, quint32 size);
     void readFuses(std::vector<quint8> &data, chip_definition &chip);
-    void writeFuses(std::vector<quint8> &data, chip_definition &chip, bool verify);
+    void writeFuses(std::vector<quint8> &data, chip_definition &chip, quint8 verifyMode);
     void flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address);
 
 

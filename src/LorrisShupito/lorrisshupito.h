@@ -93,6 +93,7 @@ private slots:
     void tunnelToggled(bool enable);
     void tunnelStateChanged(bool opened);
     void setTunnelName();
+    void verifyChanged(int mode);
 
     void hideLogBtn();
     void hideFusesBtn();
@@ -157,7 +158,7 @@ private:
     QAction *m_stop_act;
     QAction *m_restart_act;
     QAction *m_mode_act[MODE_COUNT];
-    QAction *m_auto_verify;
+    QAction *m_verify[VERIFY_MAX];
     QAction *m_load_flash;
     QAction *m_load_eeprom;
     QAction *m_save_flash;
@@ -168,6 +169,7 @@ private:
     Shupito *m_shupito;
     ShupitoDesc *m_desc;
     quint32 m_prog_speed_hz;
+    quint8 m_verify_mode;
 
     QHexEdit *m_hexAreas[MEM_FUSES];
     ShupitoMode *m_modes[MODE_COUNT];

@@ -203,7 +203,7 @@ void chip_definition::parse_chipdefs(const QString &strdefs, std::vector<chip_de
                 {
                     bit_numbers = token_parts[2].split(',', QString::SkipEmptyParts);
                     for(quint32 j = 0; j < (quint32)bit_numbers.size(); ++j)
-                        f.bits.push_back(bit_numbers[j].toInt());
+                        f.values.push_back(bit_numbers[j].toInt());
                 }
                 def.getFuses().push_back(f);
             }

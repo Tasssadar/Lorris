@@ -134,8 +134,6 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
 LorrisShupito::~LorrisShupito()
 {
-    sConfig.set(CFG_BOOL_SHUPITO_VERIFY, m_auto_verify->isChecked());
-
     stopAll(false);
     delete m_shupito;
     delete m_desc;
@@ -158,7 +156,7 @@ void LorrisShupito::initMenus()
 
     // top menu bar
     QMenu *chipBar = new QMenu(tr("Chip"), this);
-    m_menus.push_back(chipBar);
+    addTopMenu(chipBar);
 
     m_start_act = chipBar->addAction(tr("Start chip"));
     m_stop_act = chipBar->addAction(tr("Stop chip"));
@@ -172,7 +170,7 @@ void LorrisShupito::initMenus()
     connect(m_restart_act, SIGNAL(triggered()), SLOT(restartChip()));
 
     QMenu *modeBar = new QMenu(tr("Mode"), this);
-    m_menus.push_back(modeBar);
+    addTopMenu(modeBar);
 
     static const QString modeNames[] = { "SPI", "PDI", "JTAG", "cc25xx" };
 
@@ -190,15 +188,34 @@ void LorrisShupito::initMenus()
     connect(signalMap, SIGNAL(mapped(int)), SLOT(modeSelected(int)));
 
     modeBar->addSeparator();
-    m_auto_verify = modeBar->addAction(tr("Verify write"));
-    m_auto_verify->setCheckable(true);
-    m_auto_verify->setChecked(sConfig.get(CFG_BOOL_SHUPITO_VERIFY));
+
+    QMenu *verifyMenu = modeBar->addMenu(tr("Verify write"));
+    QSignalMapper *verifyMap = new QSignalMapper(this);
+
+    for(quint8 i = 0; i < VERIFY_MAX; ++i)
+    {
+        static const QString verifyText[] =
+        {
+            tr("None"),
+            tr("Verify only non-empty pages"),
+            tr("Verify all")
+        };
+
+        m_verify[i] = verifyMenu->addAction(verifyText[i]);
+        m_verify[i]->setCheckable(true);
+        verifyMap->setMapping(m_verify[i], i);
+
+        connect(m_verify[i], SIGNAL(triggered()), verifyMap, SLOT(map()));
+    }
+
+    connect(verifyMap, SIGNAL(mapped(int)), SLOT(verifyChanged(int)));
+    verifyChanged(sConfig.get(CFG_QUINT32_SHUPITO_VERIFY));
 
     QAction *setTunnelName = modeBar->addAction(tr("Set RS232 tunnel name..."));
     connect(setTunnelName, SIGNAL(triggered()), SLOT(setTunnelName()));
 
     QMenu *dataBar = new QMenu(tr("Data"), this);
-    m_menus.push_back(dataBar);
+    addTopMenu(dataBar);
 
     m_load_flash = dataBar->addAction(tr("Load data into flash"));
     m_load_flash->setShortcut(QKeySequence("Ctrl+O"));
@@ -965,11 +982,17 @@ void LorrisShupito::readMem(quint8 memId, chip_definition &chip)
 void LorrisShupito::readFuses(chip_definition& chip)
 {
     log("Reading fuses");
+
+    m_fuse_widget->setUpdatesEnabled(false);
+    m_fuse_widget->clear(false);
+
     std::vector<quint8>& data = m_fuse_widget->getFuseData();
     data.clear();
 
     m_modes[m_cur_mode]->readFuses(data, chip);
     m_fuse_widget->setFuses(chip);
+
+    m_fuse_widget->setUpdatesEnabled(true);
 
     hideFuses(false);
 }
@@ -1095,7 +1118,7 @@ void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
     HexFile file;
     file.setData(data);
 
-    m_modes[m_cur_mode]->flashRaw(file, memId, chip, m_auto_verify->isChecked());
+    m_modes[m_cur_mode]->flashRaw(file, memId, chip, m_verify_mode);
     m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
 
     updateProgressDialog(-1);
@@ -1108,7 +1131,7 @@ void LorrisShupito::writeFuses(chip_definition &chip)
 
     log("Writing fuses");
     std::vector<quint8>& data = m_fuse_widget->getFuseData();
-    m_modes[m_cur_mode]->writeFuses(data, chip, m_auto_verify->isChecked());
+    m_modes[m_cur_mode]->writeFuses(data, chip, m_verify_mode);
 }
 
 void LorrisShupito::eraseDevice()
@@ -1149,4 +1172,14 @@ void LorrisShupito::eraseDevice()
     succesBox.setWindowTitle(tr("Succes!"));
     succesBox.setText(tr("Chip was succesfuly erased!"));
     succesBox.exec();
+}
+
+void LorrisShupito::verifyChanged(int mode)
+{
+    for(quint8 i = 0; i < VERIFY_MAX; ++i)
+        m_verify[i]->setChecked(i == mode);
+
+    sConfig.set(CFG_QUINT32_SHUPITO_VERIFY, mode);
+
+    m_verify_mode = mode;
 }

@@ -76,7 +76,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     QAction* clearAct = menuData->addAction(tr("Clear data"));
     connect(clearAct, SIGNAL(triggered()), SLOT(clearButton()));
 
-    m_menus.push_back(menuData);
+    addTopMenu(menuData);
 
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better

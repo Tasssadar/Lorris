@@ -40,7 +40,7 @@ ShupitoTunnel::ShupitoTunnel()
 
 ShupitoTunnel::~ShupitoTunnel()
 {
-
+    sConMgr.RemoveCon(CONNECTION_SHUPITO, this);
 }
 
 bool ShupitoTunnel::Open()

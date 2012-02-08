@@ -267,16 +267,16 @@ void ShupitoMode::readFuses(std::vector<quint8> &data, chip_definition &chip)
 
 //void write_fuses(std::vector<boost::uint8_t> const & data, avrflash::chip_definition const & chip, bool verify)
 //device.hpp
-void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, bool verify)
+void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, quint8 verifyMode)
 {
     HexFile file;
     file.addRegion(0, &data[0], &data[0] + data.size(), 0);
-    flashRaw(file, MEM_FUSES, chip, verify);
+    flashRaw(file, MEM_FUSES, chip, verifyMode);
 }
 
 //void flash_raw(avrflash::memory const & mem, std::string const & memid, avrflash::chip_definition const & chip, bool verify)
 //device.hpp
-void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, bool verify)
+void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
 {
     m_cancel_requested = false;
 
@@ -301,9 +301,7 @@ void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, b
         flashPage(memdef, pages[i].data, pages[i].address);
 
         int pct = (++flashedCount)*100/cntNoSkipped;
-        if(pct == 100)
-            --pct;
-        emit updateProgressDialog(pct);
+        emit updateProgressDialog(std::min(99, pct));
     }
 
     if(m_cancel_requested)
@@ -312,12 +310,18 @@ void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, b
         throw QString(QObject::tr("Flashing interruped!"));
     }
 
-    if(verify && is_read_memory_supported(memdef))
+    if(verifyMode != VERIFY_NONE && is_read_memory_supported(memdef))
     {
         emit updateProgressLabel(QObject::tr("Verifying data"));
+
         QByteArray buff;
+        flashedCount = 0;
+
         for(quint32 i = 0; !m_cancel_requested && i < pages.size(); ++i)
         {
+            if(verifyMode == VERIFY_ONLY_NON_EMPTY && skipped.find(i) != skipped.end())
+                continue;
+
             buff.clear();
             readMemRange(memId, buff, pages[i].address, pages[i].data.size());
 
@@ -333,7 +337,14 @@ void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, b
             if(wrong)
                 throw QString(QObject::tr("Verification failed!"));
 
-            emit updateProgressDialog((i*100)/pages.size());
+            int pct = (++flashedCount)*100;
+
+            if(verifyMode == VERIFY_ONLY_NON_EMPTY)
+                pct /= cntNoSkipped;
+            else
+                pct /= pages.size();
+
+            emit updateProgressDialog(std::min(99, pct));
         }
 
         if(m_cancel_requested)

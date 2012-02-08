@@ -67,14 +67,14 @@ void LorrisTerminal::initUI()
     ui->mainLayout->addWidget(terminal, 4);
 
     QMenu *eepromBar = new QMenu(tr("EEPROM"), this);
-    m_menus.push_back(eepromBar);
+    addTopMenu(eepromBar);
 
     m_export_eeprom = eepromBar->addAction(tr("Export EEPROM"));
     m_import_eeprom = eepromBar->addAction(tr("Import EEPROM"));
     EnableButtons((BUTTON_EEPROM_READ |  BUTTON_EEPROM_WRITE), false);
 
     QMenu *fmtBar = new QMenu(tr("Format"), this);
-    m_menus.push_back(fmtBar);
+    addTopMenu(fmtBar);
 
     QSignalMapper *fmtMap = new QSignalMapper(this);
     for(quint8 i = 0; i < FMT_MAX; ++i)
@@ -90,7 +90,7 @@ void LorrisTerminal::initUI()
     fmtAction(sConfig.get(CFG_QUINT32_TERMINAL_FMT));
 
     QMenu *dataMenu = new QMenu(tr("Terminal"), this);
-    m_menus.push_back(dataMenu);
+    addTopMenu(dataMenu);
     QAction *termLoad = dataMenu->addAction(tr("Load text file into terminal"));
     QAction *termSave = dataMenu->addAction(tr("Save terminal content to text file"));
     termSave->setShortcut(QKeySequence("Ctrl+S"));

@@ -35,6 +35,7 @@ class WorkTab : public QWidget
 {
     Q_OBJECT
     public:
+
         virtual ~WorkTab();
 
         void setId(quint16 id) { m_id = id; }
@@ -53,10 +54,14 @@ class WorkTab : public QWidget
         virtual void showErrorBox(const QString& text);
 
     protected:
-        explicit WorkTab();
+        WorkTab();
+
+        void addTopMenu(QMenu *menu);
 
         Connection *m_con;
         quint16 m_id;
+
+    private:
         std::vector<QMenu*> m_menus;
 };
 

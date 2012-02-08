@@ -42,6 +42,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "tcpsocket/port",            // CFG_QUINT32_TCP_PORT
     "terminal/input_handling",   // CFG_QUINT32_TERMINAL_INPUT
     "proxy/port",                // CFG_QUINT32_PROXY_PORT
+    "shupito/verify_mode",       // CFG_QUINT32_SHUPITO_VERIFY
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -61,7 +62,6 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
     "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
     "shupito/show_fuses",         // CFG_BOOL_SHUPITO_SHOW_FUSES
-    "shupito/verify",             // CFG_BOOL_SHUPITO_VERIFY
 };
 
 Config::Config()
@@ -80,6 +80,7 @@ Config::Config()
     m_def_quint32[CFG_QUINT32_TCP_PORT]            = 0;
     m_def_quint32[CFG_QUINT32_TERMINAL_INPUT]      = 0;
     m_def_quint32[CFG_QUINT32_PROXY_PORT]          = 0;
+    m_def_quint32[CFG_QUINT32_SHUPITO_VERIFY]      = 1;
 
     m_def_string[CFG_STRING_SERIAL_PORT]           = "";
     m_def_string[CFG_STRING_SHUPITO_PORT]          = "";
@@ -88,12 +89,11 @@ Config::Config()
     m_def_string[CFG_STRING_SHUPITO_HEX_FOLDER]    = "";
     m_def_string[CFG_STRING_SHUPITO_TUNNEL]        = "app";
     m_def_string[CFG_STRING_TCP_ADDR]              = "127.0.0.1";
-    m_def_string[CFG_STRING_PROXY_ADDR]           = "0";
+    m_def_string[CFG_STRING_PROXY_ADDR]            = "0";
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = false;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_FUSES]        = true;
-    m_def_bool[CFG_BOOL_SHUPITO_VERIFY]            = true;
 }
 
 Config::~Config()

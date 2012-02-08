@@ -113,7 +113,8 @@ void FuseWidget::setFuses(chip_definition &chip)
 {
     m_chip = chip;
 
-    if(chip.getFuses().size() == 0)
+    chip_definition::memorydef *memdef = chip.getMemDef("fuses");
+    if(!memdef || chip.getFuses().size() == 0)
         return;
 
     std::vector<chip_definition::fuse>& fuses = chip.getFuses();
@@ -125,7 +126,6 @@ void FuseWidget::setFuses(chip_definition &chip)
     }
 
     disconnect(this, SLOT(changed(int)));
-    clear();
 
     for(quint16 i = 0; i < fuses.size(); ++i)
     {
