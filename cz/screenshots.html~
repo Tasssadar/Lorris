@@ -1,23 +1,23 @@
 <hr>
-<h3 id="screenshots">Screenshoty</h3>
-<table width="100%" style="margin-bottom: 30px">
+<h3 id="screenshots">Screenshots</h3>
+<table id="screenshot_big" width="100%" style="margin-bottom: 30px">
     <tr>
         <td align="center" width="33%" id="main">
             <a href="../screenshots/main.png">
                 <img src="../screenshots/main.png" width="266px" height="150px"><br>
-                Main window
+                Hlavní okno
             </a>
         </td>
         <td align="center" width="33%" id="analyzer_all">
             <a href="../screenshots/analyzer_all.png">
                 <img src="../screenshots/analyzer_all.png" width="266px" height="150px"><br>
-                Analyzer module
+                Analyzér
             </a>
         </td>
         <td align="center" width="33%" id="analyzer_struct">
             <a href="../screenshots/analyzer_struct.png">
                 <img src="../screenshots/analyzer_struct.png" width="266px" height="150px"><br>
-                Analyzer module - packet structure settings
+                Analyzér - nastavení struktury packetu
             </a>
         </td>
     </tr>
@@ -25,20 +25,58 @@
         <td align="center" width="33%" id="shupito">
             <a href="../screenshots/shupito.png">
                 <img src="../screenshots/shupito.png" width="266px" height="150px"><br>
-                Shupito module
+                Shupito
             </a>
         </td>
         <td align="center" width="33%" id="terminal">
             <a href="../screenshots/terminal.png">
                 <img src="../screenshots/terminal.png" width="266px" height="150px"><br>
-                Terminal module
+                Terminál
             </a>
         </td>
         <td align="center" width="33%" id="proxy">
             <a href="../screenshots/proxy.png">
                 <img src="../screenshots/proxy.png" width="266px" height="150px"><br>
-                Serial port <-> TCP proxy module
+                Sériový port <-> TCP socket proxy
             </a>
         </td>
     </tr>
 </table>
+<div id="screenshot_small" align="center">
+    <div align="center">
+        <a href="../creenshots/main.png">
+                <img src="../screenshots/main.png" width="266px" height="150px"><br>
+                Main window
+        </a>
+    </div>
+    <div align="center">
+        <a href="../screenshots/analyzer_all.png">
+                <img src="../screenshots/analyzer_all.png" width="266px" height="150px"><br>
+                Analyzer module
+            </a>
+    </div>
+    <div align="center">
+        <a href="../screenshots/analyzer_struct.png">
+                <img src="../screenshots/analyzer_struct.png" width="266px" height="150px"><br>
+                Analyzer module - packet structure settings
+            </a>
+    </div>
+    <div align="center">
+        <a href="../screenshots/shupito.png">
+                <img src="../screenshots/shupito.png" width="266px" height="150px"><br>
+                Shupito module
+            </a>
+    </div>
+    <div align="center">
+        <a href="../screenshots/terminal.png">
+                <img src="../screenshots/terminal.png" width="266px" height="150px"><br>
+                Terminal module
+            </a>
+    </div>
+    <div align="center">
+        <a href="../screenshots/proxy.png">
+                <img src="../screenshots/proxy.png" width="266px" height="150px"><br>
+                Serial port <-> TCP proxy module
+            </a>
+    </div>
+</div>

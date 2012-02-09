@@ -1,7 +1,30 @@
-<div align="center">
-    | <a href="#downloads">Ke stažení</a> |
-      <a href="#desc">Popis</a> |
-      <a href="#build">Jak kompilovat</a> |
-      <a href="#license">Licence &amp; a knihovny</a> |
-      <a href="#screenshots">Screenshots</a> |
-</div>
+    <a id="fork_me" href="https://github.com/Tasssadar/Lorris">
+        <img style="position: absolute; top: 30; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+    </a>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" style="cursor: pointer;" onclick="do_scroll('#top');">Lorris</a>
+          <div class="nav-collapse" id="menu_neco">
+            <ul class="nav">
+              <li><a style="cursor: pointer;" onclick="do_scroll('#downloads');">Ke stažení</a></li>
+              <li><a style="cursor: pointer;" onclick="do_scroll('#desc');">Popis</a></li>
+              <li><a style="cursor: pointer;" onclick="do_scroll('#build');">Jak zkompilovat</a></li>
+              <li><a style="cursor: pointer;" onclick="do_scroll('#license');">Licence &amp; a knihovny</a></li>
+              <li><a style="cursor: pointer;" onclick="do_scroll('#screenshots');">Screenshoty</a></li>
+              <li style="margin-left: 150px"><a href="cz/index.html">EN</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>    
+    <div style="margin-top: 30px" class="container" id="content">
+        <h1>Lorris</h1>
+        <p>
+            Grafické rozhraní napsané v Qt určené pro práci s embedded zařízeními, roboty a podobnými aplikacemi.
+        </p>
