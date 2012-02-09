@@ -3363,3 +3363,9 @@ a.thumbnail:hover {
 .invisible {
   visibility: hidden;
 }
+#screenshot_small {
+  display: none;
+}
+#screenshot_big {
+  display: block;
+}
