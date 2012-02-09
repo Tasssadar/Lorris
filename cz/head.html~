@@ -10,9 +10,7 @@
     <a href="https://github.com/Tasssadar/Lorris">
         <img style="position: absolute; top: 0; left: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png" alt="Fork me on GitHub" />
     </a>
-    <div align="center">
+    <div style="margin-top:60;" align="center">
         <h1>Lorris</h1>
-        
-        GUI tool written in Qt which aims to be used when dealing with embedded devices, robots<br>
-        and similar applications where you need to do something with data.
+        Grafické rozhraní napsané v Qt určené pro práci s embedded zařízeními, roboty a podobnými aplikacemi.
     </div>
