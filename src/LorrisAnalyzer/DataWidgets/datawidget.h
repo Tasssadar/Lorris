@@ -100,6 +100,7 @@ Q_SIGNALS:
     void updateData();
     void mouseStatus(bool in, const data_widget_info& info);
     void removeWidget(quint32 id);
+    void updateMarker(DataWidget *w);
 
 public:
     explicit DataWidget(QWidget *parent = 0);

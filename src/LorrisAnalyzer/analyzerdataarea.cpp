@@ -34,13 +34,14 @@
 #include "analyzerdatafile.h"
 #include "analyzerdatastorage.h"
 
-AnalyzerDataArea::AnalyzerDataArea(QWidget *parent, AnalyzerDataStorage *storage) :
-    QFrame(parent)
+AnalyzerDataArea::AnalyzerDataArea(LorrisAnalyzer *analyzer, AnalyzerDataStorage *storage) :
+    QFrame(analyzer)
 {
     setFrameStyle(QFrame::Panel | QFrame::Plain);
     setAcceptDrops(true);
     m_widgetIdCounter = 0;
     m_storage = storage;
+    m_analyzer = analyzer;
 }
 
 AnalyzerDataArea::~AnalyzerDataArea()
@@ -80,10 +81,12 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
     w->setId(id);
     m_widgets.insert(std::make_pair<quint32,DataWidget*>(id, w));
 
-    connect(((LorrisAnalyzer*)parent()), SIGNAL(newData(analyzer_data*,quint32)), w, SLOT(newData(analyzer_data*,quint32)));
-    connect(w, SIGNAL(updateData()), this, SIGNAL(updateData()));
-    connect(w, SIGNAL(mouseStatus(bool,data_widget_info)), this, SIGNAL(mouseStatus(bool,data_widget_info)));
-    connect(w, SIGNAL(removeWidget(quint32)), this, SLOT(removeWidget(quint32)));
+    connect(m_analyzer, SIGNAL(newData(analyzer_data*,quint32)), w, SLOT(newData(analyzer_data*,quint32)));
+    connect(w,          SIGNAL(removeWidget(quint32)),              SLOT(removeWidget(quint32)));
+    connect(w,          SIGNAL(updateMarker(DataWidget*)),          SLOT(updateMarker(DataWidget*)));
+    connect(w,          SIGNAL(updateData()),                       SIGNAL(updateData()));
+    connect(w,          SIGNAL(mouseStatus(bool,data_widget_info)), SIGNAL(mouseStatus(bool,data_widget_info)));
+
     return w;
 }
 
@@ -114,7 +117,9 @@ void AnalyzerDataArea::removeWidget(quint32 id)
         return;
     delete itr->second;
     m_widgets.erase(itr);
+
     m_marks.erase(id);
+    update();
 }
 
 void AnalyzerDataArea::SaveWidgets(AnalyzerDataFile *file)
@@ -165,17 +170,8 @@ void AnalyzerDataArea::LoadWidgets(AnalyzerDataFile *file, bool skip)
 
         if(skip)
             removeWidget(w->getId());
-        // create markers
-        else if(w->pos().x() < 0       || w->pos().y() < 0 ||
-                w->pos().x() > width() || w->pos().y() > height())
-        {
-            QPoint markPos(w->pos().x(), w->pos().y());
-            QSize size;
-
-            getMarkPos(markPos.rx(), markPos.ry(), size);
-
-            m_marks[w->getId()] = QRect(markPos, size);
-        }
+        else
+            updateMarker(w);
     }
     update();
 }
@@ -201,7 +197,6 @@ void AnalyzerDataArea::paintEvent(QPaintEvent *event)
 
     event->accept();
 
-
     if(m_marks.empty())
         return;
 
@@ -221,26 +216,20 @@ void AnalyzerDataArea::mouseMoveEvent(QMouseEvent *event)
 
     QPoint n = event->globalPos() - m_mouse_orig;
 
-    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
-    {
-        QPoint pos = itr->second->pos() + n;
-        itr->second->move(pos);
-
-        if(pos.x() < 0       || pos.y() < 0 ||
-           pos.x() > width() || pos.y() > height())
-        {
-            QPoint markPos(pos.x(), pos.y());
-            QSize size;
-
-            getMarkPos(markPos.rx(), markPos.ry(), size);
-
-            m_marks[itr->first] = QRect(markPos, size);
-        }
-        else
-            m_marks.erase(itr->first);
-    }
+    moveWidgets(n);
 
     m_mouse_orig = event->globalPos();
+}
+
+void AnalyzerDataArea::moveWidgets(QPoint diff)
+{
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+    {
+        QPoint pos = itr->second->pos() + diff;
+        itr->second->move(pos);
+
+        updateMarker(itr->second);
+    }
     update();
 }
 
@@ -255,3 +244,37 @@ void AnalyzerDataArea::getMarkPos(int &x, int &y, QSize &size)
     else if(y > height()) y = height() - 5;
 }
 
+void AnalyzerDataArea::updateMarker(DataWidget *w)
+{
+    bool do_update = false;
+
+    if(!rect().intersects(w->geometry()))
+    {
+        QPoint markPos(w->pos().x(), w->pos().y());
+        markPos.rx() += w->width()/2;
+        markPos.ry() += w->height()/2;
+
+        QSize size;
+        getMarkPos(markPos.rx(), markPos.ry(), size);
+
+        m_marks[w->getId()] = QRect(markPos, size);
+
+        do_update = true;
+    }
+    else
+        do_update = m_marks.erase(w->getId());
+
+    if(do_update)
+        update();
+}
+
+void AnalyzerDataArea::moveEvent(QMoveEvent *event)
+{
+    moveWidgets(event->oldPos() - pos());
+}
+
+void AnalyzerDataArea::resizeEvent(QResizeEvent *)
+{
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+        updateMarker(itr->second);
+}

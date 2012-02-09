@@ -254,6 +254,8 @@ void DataWidget::dragMove(QMouseEvent *e)
 {
     move(pos() + ( e->globalPos() - mOrigin ));
     mOrigin = e->globalPos();
+
+    emit updateMarker(this);
 }
 
 void DataWidget::newData(analyzer_data *data, quint32 /*index*/)

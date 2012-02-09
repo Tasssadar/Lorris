@@ -30,6 +30,7 @@
 
 class AnalyzerDataFile;
 class AnalyzerDataStorage;
+class LorrisAnalyzer;
 
 class AnalyzerDataArea : public QFrame
 {
@@ -43,7 +44,7 @@ public:
     typedef std::map<quint32, DataWidget*> w_map;
     typedef std::map<quint32, QRect> mark_map;
 
-    explicit AnalyzerDataArea(QWidget *parent, AnalyzerDataStorage* storage);
+    explicit AnalyzerDataArea(LorrisAnalyzer* analyzer, AnalyzerDataStorage* storage);
     ~AnalyzerDataArea();
 
     void clear();
@@ -51,9 +52,11 @@ public:
     void SaveWidgets(AnalyzerDataFile *file);
     void LoadWidgets(AnalyzerDataFile *file, bool skip);
     static DataWidget *newWidget(quint8 type, QWidget *parent);
+    void moveWidgets(QPoint diff);
 
 public slots:
     void removeWidget(quint32 id);
+    void updateMarker(DataWidget *w);
     
 protected:
     void mousePressEvent(QMouseEvent * event);
@@ -62,6 +65,8 @@ protected:
     void dropEvent ( QDropEvent * event );
     void dragEnterEvent( QDragEnterEvent *event );
     void paintEvent(QPaintEvent *event);
+    void moveEvent(QMoveEvent *event);
+    void resizeEvent(QResizeEvent *);
 
 private:
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
@@ -72,6 +77,7 @@ private:
     mark_map m_marks;
     quint32 m_widgetIdCounter;
     AnalyzerDataStorage *m_storage;
+    LorrisAnalyzer* m_analyzer;
 
     QPoint m_mouse_orig;
 };
