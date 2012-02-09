@@ -151,7 +151,8 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
         else
             dragResize(e);
     }
-    QWidget::mouseMoveEvent(e);
+    else
+        QWidget::mouseMoveEvent(e);
 }
 
 void DataWidget::enterEvent(QEvent *)

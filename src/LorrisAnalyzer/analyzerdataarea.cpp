@@ -22,6 +22,8 @@
 ****************************************************************************/
 
 #include <QDropEvent>
+#include <QMouseEvent>
+#include <QPainter>
 
 #include "analyzerdataarea.h"
 #include "DataWidgets/numberwidget.h"
@@ -35,7 +37,7 @@
 AnalyzerDataArea::AnalyzerDataArea(QWidget *parent, AnalyzerDataStorage *storage) :
     QFrame(parent)
 {
-    setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+    setFrameStyle(QFrame::Panel | QFrame::Plain);
     setAcceptDrops(true);
     m_widgetIdCounter = 0;
     m_storage = storage;
@@ -114,6 +116,7 @@ void AnalyzerDataArea::removeWidget(quint32 id)
         return;
     delete itr->second;
     m_widgets.erase(itr);
+    m_marks.erase(id);
 }
 
 void AnalyzerDataArea::fixWidgetPos(QPoint &pos, QWidget *w)
@@ -172,4 +175,75 @@ void AnalyzerDataArea::LoadWidgets(AnalyzerDataFile *file, bool skip)
         if(skip)
             removeWidget(w->getId());
     }
+}
+
+void AnalyzerDataArea::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton)
+    {
+        m_mouse_orig = event->globalPos();
+        setCursor(Qt::SizeAllCursor);
+    }
+}
+
+void AnalyzerDataArea::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton)
+        setCursor(Qt::ArrowCursor);
+}
+
+void AnalyzerDataArea::paintEvent(QPaintEvent *event)
+{
+    QFrame::paintEvent(event);
+
+    QPainter painter(this);
+
+    painter.setPen(Qt::red);
+    painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+
+    for(mark_map::iterator itr = m_marks.begin(); itr != m_marks.end(); ++itr)
+        painter.drawRect(itr->second);
+
+    event->accept();
+}
+
+void AnalyzerDataArea::mouseMoveEvent(QMouseEvent *event)
+{
+    if(event->buttons() != Qt::LeftButton)
+        return;
+
+    QPoint n = event->globalPos() - m_mouse_orig;
+
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+    {
+        QPoint pos = itr->second->pos() + n;
+        itr->second->move(pos);
+
+        if(pos.x() < 0       || pos.y() < 0 ||
+           pos.x() > width() || pos.y() > height())
+        {
+            QPoint markPos(pos.x(), pos.y());
+            QSize size;
+
+            getMarkPos(markPos.rx(), markPos.ry(), size);
+
+            m_marks[itr->first] = QRect(markPos, size);
+        }
+        else
+            m_marks.erase(itr->first);
+    }
+
+    m_mouse_orig = event->globalPos();
+    update();
+}
+
+void AnalyzerDataArea::getMarkPos(int &x, int &y, QSize &size)
+{
+    size = (y < 0 || y > height()) ? QSize(20, 5) : QSize(5, 20);
+
+    if     (x < 0)       x = 0;
+    else if(x > width()) x = width() - 5;
+
+    if     (y < 0)        y = 0;
+    else if(y > height()) y = height() - 5;
 }

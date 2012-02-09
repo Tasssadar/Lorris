@@ -41,6 +41,7 @@ Q_SIGNALS:
 
 public:
     typedef std::map<quint32, DataWidget*> w_map;
+    typedef std::map<quint32, QRect> mark_map;
 
     explicit AnalyzerDataArea(QWidget *parent, AnalyzerDataStorage* storage);
     ~AnalyzerDataArea();
@@ -55,19 +56,27 @@ public slots:
     void removeWidget(quint32 id);
     
 protected:
+    void mousePressEvent(QMouseEvent * event);
+    void mouseMoveEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent *event);
     void dropEvent ( QDropEvent * event );
     void dragEnterEvent( QDragEnterEvent *event );
+    void paintEvent(QPaintEvent *event);
 
 private:
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
+    void getMarkPos(int &x, int &y, QSize &size);
 
     quint32 getNewId() { return m_widgetIdCounter++; }
 
     void fixWidgetPos(QPoint& pos, QWidget *w);
 
     w_map m_widgets;
+    mark_map m_marks;
     quint32 m_widgetIdCounter;
     AnalyzerDataStorage *m_storage;
+
+    QPoint m_mouse_orig;
 };
 
 #endif // ANALYZERDATAAREA_H
