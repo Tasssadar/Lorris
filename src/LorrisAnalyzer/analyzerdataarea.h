@@ -66,10 +66,7 @@ protected:
 private:
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void getMarkPos(int &x, int &y, QSize &size);
-
     quint32 getNewId() { return m_widgetIdCounter++; }
-
-    void fixWidgetPos(QPoint& pos, QWidget *w);
 
     w_map m_widgets;
     mark_map m_marks;

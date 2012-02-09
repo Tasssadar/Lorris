@@ -72,8 +72,6 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
         return NULL;
     w->setUp(m_storage);
 
-
-    fixWidgetPos(pos, w);
     w->move(pos);
     if(show)
         w->show();
@@ -119,18 +117,6 @@ void AnalyzerDataArea::removeWidget(quint32 id)
     m_marks.erase(id);
 }
 
-void AnalyzerDataArea::fixWidgetPos(QPoint &pos, QWidget *w)
-{
-    int x = pos.x() + w->width();
-    int y = pos.y() + w->height();
-
-    if(x > width())
-        pos.setX(width() - w->width());
-
-    if(y > height())
-        pos.setY(height() - w->height());
-}
-
 void AnalyzerDataArea::SaveWidgets(AnalyzerDataFile *file)
 {
     // write widget count
@@ -155,23 +141,28 @@ void AnalyzerDataArea::LoadWidgets(AnalyzerDataFile *file, bool skip)
     {
         if(!file->seekToNextBlock(BLOCK_WIDGET, 0))
             break;
+
         // type
         if(!file->seekToNextBlock("widgetType", BLOCK_WIDGET))
             break;
+
         quint8 type = 0;
         file->read((char*)&type, sizeof(quint8));
 
         // pos and size
         if(!file->seekToNextBlock("widgetPosSize", BLOCK_WIDGET))
             break;
+
         int val[4];
         file->read((char*)&val, sizeof(val));
 
         DataWidget *w = addWidget(QPoint(val[0], val[1]), type, !skip);
         if(!w)
             continue;
+
         w->resize(val[2], val[3]);
         w->loadWidgetInfo(file);
+
         if(skip)
             removeWidget(w->getId());
         // create markers
@@ -208,6 +199,12 @@ void AnalyzerDataArea::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
 
+    event->accept();
+
+
+    if(m_marks.empty())
+        return;
+
     QPainter painter(this);
 
     painter.setPen(Qt::red);
@@ -215,8 +212,6 @@ void AnalyzerDataArea::paintEvent(QPaintEvent *event)
 
     for(mark_map::iterator itr = m_marks.begin(); itr != m_marks.end(); ++itr)
         painter.drawRect(itr->second);
-
-    event->accept();
 }
 
 void AnalyzerDataArea::mouseMoveEvent(QMouseEvent *event)

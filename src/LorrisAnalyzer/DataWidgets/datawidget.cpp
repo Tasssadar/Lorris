@@ -252,15 +252,7 @@ void DataWidget::dragResize(QMouseEvent* e)
 
 void DataWidget::dragMove(QMouseEvent *e)
 {
-    QPoint n = pos() + ( e->globalPos() - mOrigin );
-
-    if(n.x() < 0 || iw(n.x()))
-        n.setX(getWPosInside(n.x()));
-
-    if(n.y() < 0 || ih(n.y()))
-        n.setY(getHPosInside(n.y()));
-
-    move(n);
+    move(pos() + ( e->globalPos() - mOrigin ));
     mOrigin = e->globalPos();
 }
 
