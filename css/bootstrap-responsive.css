@@ -377,6 +377,9 @@
     overflow: hidden;
     height: 0;
   }
+  #fork_me {
+      display: none;
+  }
 }
 @media (min-width: 980px) {
   .nav-collapse.collapse {
