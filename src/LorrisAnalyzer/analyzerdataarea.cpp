@@ -174,7 +174,19 @@ void AnalyzerDataArea::LoadWidgets(AnalyzerDataFile *file, bool skip)
         w->loadWidgetInfo(file);
         if(skip)
             removeWidget(w->getId());
+        // create markers
+        else if(w->pos().x() < 0       || w->pos().y() < 0 ||
+                w->pos().x() > width() || w->pos().y() > height())
+        {
+            QPoint markPos(w->pos().x(), w->pos().y());
+            QSize size;
+
+            getMarkPos(markPos.rx(), markPos.ry(), size);
+
+            m_marks[w->getId()] = QRect(markPos, size);
+        }
     }
+    update();
 }
 
 void AnalyzerDataArea::mousePressEvent(QMouseEvent *event)
@@ -247,3 +259,4 @@ void AnalyzerDataArea::getMarkPos(int &x, int &y, QSize &size)
     if     (y < 0)        y = 0;
     else if(y > height()) y = height() - 5;
 }
+
