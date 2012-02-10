@@ -116,7 +116,7 @@ bool SerialPort::openPort()
     else
     {
         m_thread = new SerialPortThread(m_port);
-        connect(m_thread, SIGNAL(dataRead(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
+        connect(m_thread, SIGNAL(dataRead(QByteArray)), this, SIGNAL(dataRead(QByteArray)), Qt::QueuedConnection);
         m_thread->start();
     }
 

@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <layout class="QVBoxLayout" name="leftVLayout" stretch="0,0,0,4">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

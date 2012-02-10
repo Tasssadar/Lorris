@@ -208,8 +208,6 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     if(!canUpdateUi())
         return;
 
-    this->setUpdatesEnabled(false);
-
     int size = m_storage->getSize();
     bool update = ui->timeSlider->value() == ui->timeSlider->maximum();
 
@@ -221,8 +219,6 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
     if(update)
         ui->timeBox->setValue(size);
-
-    this->setUpdatesEnabled(true);
 }
 
 void LorrisAnalyzer::onTabShow()
@@ -304,14 +300,10 @@ void LorrisAnalyzer::updateData(bool ignoreTime)
 
     updateTime.restart();
 
-    this->setUpdatesEnabled(false);
-
     int val = ui->timeSlider->value();
 
     if(val != 0 && (quint32)val <= m_storage->getSize())
         emit newData(m_storage->get(val-1), val-1);
-
-    this->setUpdatesEnabled(true);
 }
 
 void LorrisAnalyzer::load(QString *name, quint8 mask)
