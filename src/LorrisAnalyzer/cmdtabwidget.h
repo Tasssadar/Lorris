@@ -77,6 +77,8 @@ public:
 
     bool setHighlightPos(const data_widget_info& info, bool highlight);
 
+    void setHeader(analyzer_header *header);
+
 private slots:
     void newCommand();
     void addAllCmds();
@@ -87,6 +89,7 @@ private:
     bool m_enableCmds;
     analyzer_header *m_header;
     QAction *m_add_all_act;
+    QAction *new_cmd_act;
     CmdTabInfo *m_all_cmds;
     DeviceTabWidget *m_devTab;
 };

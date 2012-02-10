@@ -74,6 +74,12 @@ void DeviceTabWidget::setHeader(analyzer_header *h)
     m_header = h;
     bool enable = h ? m_header->data_mask & DATA_DEVICE_ID : false;
     (*actions().begin())->setEnabled(enable);
+
+    for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
+        itr->second->setHeader(h);
+
+    if(m_all_devices)
+        m_all_devices->setHeader(h);
 }
 
 void DeviceTabWidget::removeAll()

@@ -77,6 +77,10 @@ struct analyzer_header
 
     void AddOrder(quint8 mask)
     {
+        for(quint8 i = 0; i < 4; ++i)
+            if(order[i] == mask)
+                return;
+
         quint8 i = 0;
         while(order[i] != 0) { ++i; }
         order[i] = mask;

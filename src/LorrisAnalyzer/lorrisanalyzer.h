@@ -81,6 +81,8 @@ class LorrisAnalyzer : public WorkTab
         void connectButton();
         void saveDataButton();
         void clearButton();
+        void openFile();
+        void editStruture();
 
         void collapseTopButton();
         void collapseRightButton();

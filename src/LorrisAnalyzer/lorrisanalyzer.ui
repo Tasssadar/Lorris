@@ -49,16 +49,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="addSourceButton">
+      <widget class="QPushButton" name="structureBtn">
        <property name="text">
-        <string>New source</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="saveDataButton">
-       <property name="text">
-        <string>Save data</string>
+        <string>Change packet structure</string>
        </property>
       </widget>
      </item>

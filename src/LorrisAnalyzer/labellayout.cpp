@@ -193,6 +193,16 @@ bool LabelLayout::setHightlightLabel(quint32 pos, bool highlight)
     return true;
 }
 
+void LabelLayout::setHeader(analyzer_header *header)
+{
+    m_header = header;
+
+    quint16 len = (m_header->data_mask & DATA_LEN) ? m_header->length : m_header->packet_length;
+    lenChanged(len);
+
+    UpdateTypes();
+}
+
 ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
                                    CmdTabWidget *cmd, DeviceTabWidget *dev, QWidget *parent) :
                                    LabelLayout(header, enable_reorder, enable_drag, cmd, dev, parent)

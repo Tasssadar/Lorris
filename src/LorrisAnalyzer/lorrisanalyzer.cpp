@@ -37,6 +37,7 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QFileDialog>
 
 #include "lorrisanalyzer.h"
 #include "sourcedialog.h"
@@ -60,9 +61,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     minUpdateDelay = sConfig.get(CFG_QUINT32_ANALYZER_UPDATE_TIME);
     ui->updateTimeBox->setValue(minUpdateDelay);
 
+    connect(ui->structureBtn,    SIGNAL(clicked()),         SLOT(editStruture()));
     connect(ui->connectButton,   SIGNAL(clicked()),         SLOT(connectButton()));
-    connect(ui->addSourceButton, SIGNAL(clicked()),         SLOT(onTabShow()));
-    connect(ui->saveDataButton,  SIGNAL(clicked()),         SLOT(saveDataButton()));
     connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
     connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearButton()));
@@ -70,13 +70,25 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
     connect(ui->updateTimeBox,   SIGNAL(valueChanged(int)), SLOT(updateTimeChanged(int)));
 
-
     QMenu* menuData = new QMenu(tr("&Data"), this);
 
+    QAction* newSource = menuData->addAction(tr("New source..."));
+    menuData->addSeparator();
+    QAction* openAct = menuData->addAction(tr("Open data..."));
+    QAction* saveAct = menuData->addAction(tr("Save data..."));
+    menuData->addSeparator();
     QAction* clearAct = menuData->addAction(tr("Clear data"));
-    connect(clearAct, SIGNAL(triggered()), SLOT(clearButton()));
+
+    openAct->setShortcut(QKeySequence("Ctrl+O"));
+    saveAct->setShortcut(QKeySequence("Ctrl+S"));
+
+    connect(newSource, SIGNAL(triggered()), SLOT(onTabShow()));
+    connect(openAct,   SIGNAL(triggered()), SLOT(openFile()));
+    connect(saveAct,   SIGNAL(triggered()), SLOT(saveDataButton()));
+    connect(clearAct,  SIGNAL(triggered()), SLOT(clearButton()));
 
     addTopMenu(menuData);
+
 
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better
@@ -244,7 +256,7 @@ void LorrisAnalyzer::onTabShow()
         }
         case 1:
         {
-            SourceDialog *d = new SourceDialog(this);
+            SourceDialog *d = new SourceDialog(NULL, this);
             m_state |= STATE_DIALOG;
             connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
 
@@ -455,4 +467,48 @@ void LorrisAnalyzer::updateTimeChanged(int value)
 {
     minUpdateDelay = value;
     sConfig.set(CFG_QUINT32_ANALYZER_UPDATE_TIME, minUpdateDelay);
+}
+
+void LorrisAnalyzer::openFile()
+{
+    static const QString filters = QObject::tr("Lorris data file (*.ldta)");
+    QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Load data file"),
+                                                    sConfig.get(CFG_STRING_ANALYZER_FOLDER),
+                                                    filters);
+
+    if(filename.length() == 0)
+        return;
+
+    sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
+
+    load(&filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS));
+}
+
+void LorrisAnalyzer::editStruture()
+{
+    SourceDialog *d = new SourceDialog(m_packet, this);
+    m_state |= STATE_DIALOG;
+    connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
+
+    analyzer_packet *packet = d->getStructure();
+    delete d;
+
+    m_state &= ~(STATE_DIALOG);
+    if(packet)
+    {
+        delete m_curData;
+        m_curData = new analyzer_data(packet);
+
+        if(m_packet)
+        {
+            delete m_packet->header;
+            delete m_packet;
+        }
+        m_dev_tabs->setHeader(packet->header);
+
+        m_storage->setPacket(packet);
+        m_packet = packet;
+
+         updateData(true);
+    }
 }

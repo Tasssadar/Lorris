@@ -36,7 +36,7 @@ CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWi
 {
     setTabPosition(QTabWidget::South);
 
-    QAction *new_cmd_act = new QAction(tr("Add command"), this);
+    new_cmd_act = new QAction(tr("Add command"), this);
     if(!header || !(header->data_mask & DATA_OPCODE))
         new_cmd_act->setEnabled(false);
     connect(new_cmd_act, SIGNAL(triggered()), this, SLOT(newCommand()));
@@ -98,7 +98,6 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
     QWidget *w = new QWidget();
     if(m_header)
     {
-
         layout = new ScrollDataLayout(m_header, false, true, this, m_devTab, w);
         w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }
@@ -290,4 +289,16 @@ bool CmdTabWidget::setHighlightPos(const data_widget_info& info, bool highlight)
         }
     }
     return false;
+}
+
+void CmdTabWidget::setHeader(analyzer_header *header)
+{
+    m_header = header;
+    new_cmd_act->setEnabled(!(header->data_mask & DATA_OPCODE));
+
+    if(m_all_cmds && m_all_cmds->l)
+        m_all_cmds->l->setHeader(header);
+
+    for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
+        itr->second->l->setHeader(header);
 }

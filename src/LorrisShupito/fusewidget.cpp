@@ -68,7 +68,7 @@ FuseWidget::FuseWidget(QWidget *parent) :
     rememberAct = contextMenu->addAction(tr("Remember fuses"));
     rememberAct->setEnabled(false);
 
-    writeAct = contextMenu->addAction("Write fuses");
+    writeAct = contextMenu->addAction(tr("Write fuses"));
     writeAct->setEnabled(false);
 
     connect(read,         SIGNAL(triggered()), this, SIGNAL(readFuses()));

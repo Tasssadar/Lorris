@@ -43,7 +43,7 @@ class SourceDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit SourceDialog(QWidget *parent = 0);
+    explicit SourceDialog(analyzer_packet *pkt, QWidget *parent = 0);
     ~SourceDialog();
 
     analyzer_packet *getStructure();
@@ -61,7 +61,7 @@ public slots:
 
 private:
     void AddOrRmHeaderType(bool add, quint8 type);
-
+    void updateHeaderLabels();
 
     ScrollDataLayout *scroll_layout;
     LabelLayout *scroll_header;

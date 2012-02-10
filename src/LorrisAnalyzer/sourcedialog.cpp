@@ -36,11 +36,14 @@
 #include "labellayout.h"
 #include "packet.h"
 
-SourceDialog::SourceDialog(QWidget *parent) :
+SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
     QDialog(parent),ui(new Ui::SourceDialog)
 {
     ui->setupUi(this);
     setFixedSize(width(), height());
+
+    if(pkt)
+        m_header.Copy(pkt->header);
 
     QWidget *w = new QWidget();
     scroll_layout = new ScrollDataLayout(&m_header, false, false, NULL, NULL, w);
@@ -66,6 +69,27 @@ SourceDialog::SourceDialog(QWidget *parent) :
 
     setted = false;
     setFirst = false;
+
+    if(!pkt)
+        return;
+
+    scroll_layout->lenChanged(m_header.packet_length);
+    ui->len_box->setValue(m_header.packet_length);
+
+    for(quint8 i = 0; i < 4 && m_header.order[i] != 0; ++i)
+    {
+        switch(m_header.order[i])
+        {
+            case DATA_LEN:       headerLenToggled(true);   break;
+            case DATA_STATIC:    staticCheckToggled(true); break;
+            case DATA_DEVICE_ID: idCheckToggled(true);     break;
+            case DATA_OPCODE:    cmdCheckToggled(true);    break;
+        }
+    }
+
+    ui->endianBox->setCurrentIndex(!pkt->big_endian);
+    lenFmtChanged(m_header.len_fmt);
+    headerLenChanged(m_header.length);
 }
 
 SourceDialog::~SourceDialog()
@@ -112,6 +136,11 @@ void SourceDialog::AddOrRmHeaderType(bool add, quint8 type)
         m_header.RmOrder(type);
     }
 
+    updateHeaderLabels();
+}
+
+void SourceDialog::updateHeaderLabels()
+{
     scroll_header->parentWidget()->setUpdatesEnabled(false);
     scroll_header->ClearLabels();
 
@@ -135,6 +164,7 @@ void SourceDialog::headerLenToggled(bool checked)
 {
     if(!checked)
         ui->len_static->setChecked(true);
+    ui->len_check->setChecked(checked);
     AddOrRmHeaderType(checked, DATA_LEN);
 }
 
@@ -142,6 +172,8 @@ void SourceDialog::headerLenChanged(int value)
 {
     if(value > 0)
         ui->static_check->setChecked(true);
+
+    ui->header_len_box->setValue(value);
 
     m_header.length = value;
     if(scroll_layout->GetLabelCount() < (quint32)value)
@@ -152,6 +184,7 @@ void SourceDialog::headerLenChanged(int value)
 void SourceDialog::staticCheckToggled(bool checked)
 {
     AddOrRmHeaderType(checked, DATA_STATIC);
+    ui->static_check->setChecked(checked);
     if(checked)
     {
         if(ui->staticList->count() == 0)
@@ -162,11 +195,13 @@ void SourceDialog::staticCheckToggled(bool checked)
 void SourceDialog::cmdCheckToggled(bool checked)
 {
     AddOrRmHeaderType(checked, DATA_OPCODE);
+    ui->cmd_check->setChecked(true);
 }
 
 void SourceDialog::idCheckToggled(bool checked)
 {
     AddOrRmHeaderType(checked, DATA_DEVICE_ID);
+    ui->id_check->setChecked(true);
 }
 
 void SourceDialog::staticLenChanged(int value)

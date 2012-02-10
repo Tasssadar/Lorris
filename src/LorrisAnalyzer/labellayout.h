@@ -88,6 +88,8 @@ public:
     CmdTabWidget *getCmdTab() { return cmd_w; }
     DeviceTabWidget *getDeviceTab() { return dev_w; }
 
+    void setHeader(analyzer_header *header);
+
 public slots:
     void lenChanged(int len);
     void changePos(int this_label, int dragged_label);
