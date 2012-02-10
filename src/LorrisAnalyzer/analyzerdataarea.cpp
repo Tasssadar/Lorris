@@ -52,7 +52,7 @@ AnalyzerDataArea::~AnalyzerDataArea()
 void AnalyzerDataArea::clear()
 {
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
-        delete itr->second;
+        delete itr.value();
     m_widgets.clear();
 }
 
@@ -79,7 +79,7 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
 
     quint32 id = getNewId();
     w->setId(id);
-    m_widgets.insert(std::make_pair<quint32,DataWidget*>(id, w));
+    m_widgets.insert(id, w);
 
     connect(m_analyzer, SIGNAL(newData(analyzer_data*,quint32)), w, SLOT(newData(analyzer_data*,quint32)));
     connect(w,          SIGNAL(removeWidget(quint32)),              SLOT(removeWidget(quint32)));
@@ -115,10 +115,10 @@ void AnalyzerDataArea::removeWidget(quint32 id)
     w_map::iterator itr = m_widgets.find(id);
     if(itr == m_widgets.end())
         return;
-    delete itr->second;
+    delete itr.value();
     m_widgets.erase(itr);
 
-    m_marks.erase(id);
+    m_marks.remove(id);
     update();
 }
 
@@ -131,7 +131,7 @@ void AnalyzerDataArea::SaveWidgets(AnalyzerDataFile *file)
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
     {
         file->writeBlockIdentifier(BLOCK_WIDGET);
-        itr->second->saveWidgetInfo(file);
+        (*itr)->saveWidgetInfo(file);
     }
 }
 
@@ -206,7 +206,7 @@ void AnalyzerDataArea::paintEvent(QPaintEvent *event)
     painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
 
     for(mark_map::iterator itr = m_marks.begin(); itr != m_marks.end(); ++itr)
-        painter.drawRect(itr->second);
+        painter.drawRect(*itr);
 }
 
 void AnalyzerDataArea::mouseMoveEvent(QMouseEvent *event)
@@ -225,10 +225,10 @@ void AnalyzerDataArea::moveWidgets(QPoint diff)
 {
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
     {
-        QPoint pos = itr->second->pos() + diff;
-        itr->second->move(pos);
+        QPoint pos = (*itr)->pos() + diff;
+        (*itr)->move(pos);
 
-        updateMarker(itr->second);
+        updateMarker(*itr);
     }
     update();
 }
@@ -260,9 +260,22 @@ void AnalyzerDataArea::updateMarker(DataWidget *w)
         m_marks[w->getId()] = QRect(markPos, size);
 
         do_update = true;
+
+        w->setUpdating(false);
     }
     else
-        do_update = m_marks.erase(w->getId());
+    {
+        do_update = m_marks.remove(w->getId());
+        if(do_update)
+        {
+            w->setUpdating(true);
+
+            quint32 idx = 0;
+            analyzer_data *data = m_analyzer->getLastData(idx);
+            if(data)
+                w->newData(data, idx);
+        }
+    }
 
     if(do_update)
         update();
@@ -276,5 +289,5 @@ void AnalyzerDataArea::moveEvent(QMoveEvent *event)
 void AnalyzerDataArea::resizeEvent(QResizeEvent *)
 {
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
-        updateMarker(itr->second);
+        updateMarker(*itr);
 }

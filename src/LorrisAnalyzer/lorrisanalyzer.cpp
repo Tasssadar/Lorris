@@ -318,6 +318,16 @@ void LorrisAnalyzer::updateData(bool ignoreTime)
         emit newData(m_storage->get(val-1), val-1);
 }
 
+analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
+{
+    int val = ui->timeSlider->value();
+    if(!val)
+        return NULL;
+
+    idx = --val;
+    return m_storage->get(val);
+}
+
 void LorrisAnalyzer::load(QString *name, quint8 mask)
 {
     analyzer_packet *packet = m_storage->loadFromFile(name, mask, m_data_area, m_dev_tabs);

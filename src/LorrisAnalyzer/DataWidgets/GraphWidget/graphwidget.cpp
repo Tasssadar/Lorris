@@ -119,6 +119,9 @@ void GraphWidget::updateRemoveMapping()
 
 void GraphWidget::newData(analyzer_data */*data*/, quint32 index)
 {
+    if(!m_updating || m_curves.empty())
+        return;
+
     for(quint8 i = 0; i < m_curves.size(); ++i)
         m_curves[i]->curve->dataPosChanged(index);
     updateVisibleArea();

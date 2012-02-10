@@ -72,6 +72,7 @@ DataWidget::DataWidget(QWidget *parent) :
 
     contextMenu = NULL;
     m_mouseIn = false;
+    m_updating = true;
 }
 
 DataWidget::~DataWidget()
@@ -260,7 +261,7 @@ void DataWidget::dragMove(QMouseEvent *e)
 
 void DataWidget::newData(analyzer_data *data, quint32 /*index*/)
 {
-    if(!m_assigned || m_info.pos >= (quint32)data->getData().length())
+    if(!m_updating || !m_assigned || m_info.pos >= (quint32)data->getData().length())
         return;
 
     quint8 id;

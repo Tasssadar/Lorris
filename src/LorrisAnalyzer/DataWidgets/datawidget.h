@@ -126,6 +126,11 @@ public:
 
     static QVariant getNumFromPacket(analyzer_data *data, quint32 pos, quint8 type);
 
+    void setUpdating(bool update)
+    {
+        m_updating = update;
+    }
+
 public slots:
     virtual void newData(analyzer_data *data, quint32);
 
@@ -147,6 +152,7 @@ protected:
     quint8 m_widgetType;
     data_widget_info m_info;
     bool m_assigned;
+    bool m_updating;
 
     QVBoxLayout *layout;
     QMenu *contextMenu;

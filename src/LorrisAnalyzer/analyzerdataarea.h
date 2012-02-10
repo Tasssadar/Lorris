@@ -25,7 +25,8 @@
 #define ANALYZERDATAAREA_H
 
 #include <QFrame>
-#include <map>
+#include <QHash>
+
 #include "DataWidgets/datawidget.h"
 
 class AnalyzerDataFile;
@@ -41,8 +42,8 @@ Q_SIGNALS:
     void mouseStatus(bool in, const data_widget_info& info);
 
 public:
-    typedef std::map<quint32, DataWidget*> w_map;
-    typedef std::map<quint32, QRect> mark_map;
+    typedef QHash<quint32, DataWidget*> w_map;
+    typedef QHash<quint32, QRect> mark_map;
 
     explicit AnalyzerDataArea(LorrisAnalyzer* analyzer, AnalyzerDataStorage* storage);
     ~AnalyzerDataArea();
