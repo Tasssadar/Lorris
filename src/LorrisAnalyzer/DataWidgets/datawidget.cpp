@@ -145,15 +145,16 @@ void DataWidget::mousePressEvent( QMouseEvent* e )
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
 {
-    if(!m_locked && e->buttons() == Qt::LeftButton) //dragging
+    if(m_locked)
+        return;
+
+    if(e->buttons() == Qt::LeftButton) //dragging
     {
         if(m_dragAction == DRAG_MOVE)
             dragMove(e);
         else
             dragResize(e);
     }
-    else
-        QWidget::mouseMoveEvent(e);
 }
 
 void DataWidget::enterEvent(QEvent *)

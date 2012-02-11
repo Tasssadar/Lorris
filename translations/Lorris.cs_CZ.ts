@@ -149,7 +149,7 @@
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="102"/>
         <source>Lock</source>
-        <translation>Uzamčít</translation>
+        <translation>Uzamknout</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="107"/>
@@ -1828,7 +1828,7 @@
     <message>
         <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="81"/>
         <source>Static data (start bytes, etc)</source>
-        <translation>Statická data (start byty apod.)</translation>
+        <translation>Statická data (start byty)</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="91"/>
