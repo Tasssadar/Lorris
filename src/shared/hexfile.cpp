@@ -107,7 +107,7 @@ void HexFile::LoadFromFile(const QString &path)
         checksum = 256 - checksum;
 
         if(checksum != rec_nums[rec_nums.size()-1])
-            throw QString(QObject::tr("Checksums does not match (line %1)")).arg(lineno);
+            throw QString(QObject::tr("Checksums do not match (line %1)")).arg(lineno);
 
         int length = rec_nums[0];
         int address = rec_nums[1] * 0x100 + rec_nums[2];

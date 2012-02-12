@@ -77,7 +77,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/connection/tcpsocket.cpp \
     src/LorrisProxy/lorrisproxyinfo.cpp \
     src/LorrisProxy/lorrisproxy.cpp \
-    src/LorrisProxy/tcpserver.cpp
+    src/LorrisProxy/tcpserver.cpp \
+    src/LorrisShupito/progressdialog.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -140,7 +141,8 @@ HEADERS += src/ui/mainwindow.h \
     src/connection/tcpsocket.h \
     src/LorrisProxy/lorrisproxyinfo.h \
     src/LorrisProxy/lorrisproxy.h \
-    src/LorrisProxy/tcpserver.h
+    src/LorrisProxy/tcpserver.h \
+    src/LorrisShupito/progressdialog.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

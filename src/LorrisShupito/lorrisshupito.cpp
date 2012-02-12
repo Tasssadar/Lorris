@@ -33,6 +33,7 @@
 #include <QSignalMapper>
 #include <QRadioButton>
 
+#include "progressdialog.h"
 #include "shupito.h"
 #include "lorrisshupito.h"
 #include "modes/shupitomode.h"
@@ -648,12 +649,9 @@ void LorrisShupito::showProgressDialog(const QString& text, QObject *sender)
 {
     Q_ASSERT(!m_progress_dialog);
 
-    m_progress_dialog = new QProgressDialog(this, Qt::CustomizeWindowHint);
-    m_progress_dialog->setWindowTitle(tr("Progress"));
-    m_progress_dialog->setLabelText(text);
-    m_progress_dialog->setMaximum(100);
-    m_progress_dialog->setFixedSize(500, m_progress_dialog->height());
+    m_progress_dialog = new ProgressDialog(text, this);
     m_progress_dialog->open();
+
 
     if(sender)
     {

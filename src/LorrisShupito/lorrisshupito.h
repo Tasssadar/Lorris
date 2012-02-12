@@ -63,6 +63,7 @@ class QSignalMapper;
 class ShupitoMode;
 class chip_definition;
 class FuseWidget;
+class ProgressDialog;
 
 class LorrisShupito : public WorkTab
 {
@@ -186,7 +187,7 @@ private:
     ShupitoDesc::config *m_vdd_config;
     ShupitoDesc::config *m_tunnel_config;
 
-    QProgressDialog *m_progress_dialog;
+    ProgressDialog *m_progress_dialog;
     FuseWidget *m_fuse_widget;
 
     chip_definition m_cur_def;
