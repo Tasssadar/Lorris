@@ -169,9 +169,13 @@ void MainWindow::QuitButton()
 
 void MainWindow::About()
 {
+    QString text = tr("Lorris version " VERSION);
+    if(text.contains("-dev"))
+        text += ", git revision " + QString::number(REVISION);
+
     QMessageBox *box = new QMessageBox(this);
     box->setWindowTitle(tr("About Lorris"));
-    box->setText(tr("Lorris revision ") + QString::number(REVISION));
+    box->setText(text);
     box->setIcon(QMessageBox::Information);
     box->exec();
     delete box;
