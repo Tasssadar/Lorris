@@ -33,6 +33,7 @@ enum NumberFormats
     FMT_DECIMAL,
     FMT_EXPONENT,
     FMT_HEX,
+    FMT_BINARY,
     FMT_COUNT
 };
 
@@ -57,6 +58,8 @@ private slots:
      void levelSelected();
 
 private:
+     void prependZeros(QString& n, quint8 len);
+
      QLabel *num;
      quint8 numberType;
      quint8 format;

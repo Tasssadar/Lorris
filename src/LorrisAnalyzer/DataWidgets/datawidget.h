@@ -39,7 +39,8 @@ enum WidgetTypes
     WIDGET_BAR,
     WIDGET_COLOR,
     WIDGET_GRAPH
-    //TODO: X Y mapa, rafickovej ukazatel, timestamp
+    //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
+
 };
 
 enum NumberTypes
