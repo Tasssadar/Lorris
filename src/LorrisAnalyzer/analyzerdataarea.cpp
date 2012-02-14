@@ -30,6 +30,7 @@
 #include "DataWidgets/barwidget.h"
 #include "DataWidgets/colorwidget.h"
 #include "DataWidgets/GraphWidget/graphwidget.h"
+#include "DataWidgets/ScriptWidget/scriptwidget.h"
 #include "lorrisanalyzer.h"
 #include "analyzerdatafile.h"
 #include "analyzerdatastorage.h"
@@ -106,6 +107,7 @@ DataWidget *AnalyzerDataArea::newWidget(quint8 type, QWidget *parent)
         case WIDGET_BAR:     return new BarWidget(parent);
         case WIDGET_COLOR:   return new ColorWidget(parent);
         case WIDGET_GRAPH:   return new GraphWidget(parent);
+        case WIDGET_SCRIPT:  return new ScriptWidget(parent);
     }
     return NULL;
 }

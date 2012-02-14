@@ -68,7 +68,6 @@ DataWidget::DataWidget(QWidget *parent) :
     setFrameStyle(QFrame::Box | QFrame::Plain);
     setLineWidth(1);
     setMidLineWidth(2);
-    setAutoFillBackground(true);
 
     contextMenu = NULL;
     m_mouseIn = false;
@@ -116,7 +115,7 @@ void DataWidget::setUp(AnalyzerDataStorage */*storage*/)
     connect(m_closeLabel, SIGNAL(removeWidget(quint32)), this, SIGNAL(removeWidget(quint32)));
 }
 
-void DataWidget::setTitle(QString title)
+void DataWidget::setTitle(const QString &title)
 {
     m_title_label->setText(title);
 }

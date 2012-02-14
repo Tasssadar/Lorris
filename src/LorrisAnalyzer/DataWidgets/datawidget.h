@@ -29,6 +29,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QFile>
+#include <QMenu>
 
 #include "../packet.h"
 #include "../analyzerdatafile.h"
@@ -38,7 +39,8 @@ enum WidgetTypes
     WIDGET_NUMBERS,
     WIDGET_BAR,
     WIDGET_COLOR,
-    WIDGET_GRAPH
+    WIDGET_GRAPH,
+    WIDGET_SCRIPT
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
 
 };
@@ -146,9 +148,9 @@ protected:
 
     virtual void processData(analyzer_data *data);
 
-    void setTitle(QString title);
-    void setIcon(QString path);
+    void setTitle(const QString& title);
     QString getTitle();
+    void setIcon(QString path);
 
     quint8 m_widgetType;
     data_widget_info m_info;

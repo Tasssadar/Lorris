@@ -40,7 +40,6 @@
 Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setShown(true);
 
     QColor color_black(0, 0, 0);
     QColor color_white(255, 255, 255);

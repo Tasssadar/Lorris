@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2011-05-30T19:16:22
 # -------------------------------------------------
-QT += gui core network
+QT += gui core network script
 TARGET = Lorris
 CONFIG(debug, debug|release):DESTDIR = $$PWD/bin/debug
 else:DESTDIR = $$PWD/bin/release
@@ -16,7 +16,7 @@ TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += dep/qhexedit2/src
-INCLUDEPATH += src ui
+INCLUDEPATH += src ui src/shared
 INCLUDEPATH += dep/qextserialport/src
 SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
@@ -30,7 +30,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisTerminal/lorristerminalinfo.cpp \
     src/connection/connection.cpp \
     src/connection/serialport.cpp \
-    src/LorrisTerminal/terminal.cpp \
     src/LorrisTerminal/eeprom.cpp \
     src/LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     src/LorrisAnalyzer/lorrisanalyzer.cpp \
@@ -78,7 +77,11 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisProxy/lorrisproxyinfo.cpp \
     src/LorrisProxy/lorrisproxy.cpp \
     src/LorrisProxy/tcpserver.cpp \
-    src/LorrisShupito/progressdialog.cpp
+    src/LorrisShupito/progressdialog.cpp \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp \
+    src/shared/terminal.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -92,7 +95,6 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisTerminal/lorristerminalinfo.h \
     src/connection/connection.h \
     src/connection/serialport.h \
-    src/LorrisTerminal/terminal.h \
     src/LorrisTerminal/eeprom.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
     src/LorrisAnalyzer/lorrisanalyzerinfo.h \
@@ -142,7 +144,11 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisProxy/lorrisproxyinfo.h \
     src/LorrisProxy/lorrisproxy.h \
     src/LorrisProxy/tcpserver.h \
-    src/LorrisShupito/progressdialog.h
+    src/LorrisShupito/progressdialog.h \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.h \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.h \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.h \
+    src/shared/terminal.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL
@@ -181,7 +187,8 @@ FORMS += \
     src/LorrisTerminal/lorristerminal.ui \
     src/ui/hometab.ui \
     src/LorrisProxy/lorrisproxy.ui \
-    src/ui/tabdialog.ui
+    src/ui/tabdialog.ui \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \

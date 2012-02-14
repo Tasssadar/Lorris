@@ -58,14 +58,20 @@ public:
     Terminal(QWidget *parent);
     ~Terminal();
 
-    void appendText(QByteArray text);
-    void pause(bool pause);
-    void clear();
-
     void setFmt(quint8 fmt);
     void setInput(quint8 input);
 
     void writeToFile(QFile *file);
+
+    const QByteArray& getData()
+    {
+        return m_data;
+    }
+
+public slots:
+    void clear();
+    void pause(bool pause);
+    void appendText(QByteArray text);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
