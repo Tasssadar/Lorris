@@ -141,8 +141,8 @@ void NumberWidget::processData(analyzer_data *data)
     static const char fmt[] = { 'f', 'e' };
     static const quint8 base[] = { 10, 10, 16, 2 };
 
-    if(numberType < NUM_UINT8)       n = var.toString();
-    else if(numberType < NUM_FLOAT)  n.setNum(var.toULongLong(), base[format]);
+    if(numberType < NUM_INT8)        n.setNum(var.toULongLong(), base[format]);
+    else if(numberType < NUM_FLOAT)  n = var.toString();
     else                             n.setNum(var.toDouble(), fmt[format]);
 
     switch(format)
