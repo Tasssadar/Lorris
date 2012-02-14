@@ -233,15 +233,13 @@ void DataWidget::dragResize(QMouseEvent* e)
     if(m_dragAction & DRAG_RES_BOTTOM)
         h = e->pos().y();
 
-    int parW = ((QWidget*)parent())->width();
-    int parH = ((QWidget*)parent())->height();
-    if(w < minimumWidth() || x < 0 || x + w > parW)
+    if(w < minimumWidth())
     {
         w = width();
         x = pos().x();
     }
 
-    if(h < minimumHeight() || y < 0 || y + h > parH)
+    if(h < minimumHeight())
     {
         h = height();
         y = pos().y();
