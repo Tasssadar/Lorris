@@ -35,12 +35,13 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 
     m_widgetType = WIDGET_SCRIPT;
     m_editor = NULL;
-    m_terminal = new Terminal(this);
-    m_terminal->repaint();
 
-    layout->addWidget(m_terminal, 4);
+
     adjustSize();
     setMinimumSize(width(), width());
+
+    m_terminal = new Terminal(this);
+    layout->addWidget(m_terminal, 4);
 }
 
 ScriptWidget::~ScriptWidget()
@@ -131,19 +132,22 @@ void ScriptWidget::setSourceTriggered()
     delete m_editor;
     m_editor = new ScriptEditor(m_env->getSource(), getTitle());
 
-    connect(m_editor, SIGNAL(okPressed()), SLOT(sourceSet()));
+    connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
 
     m_editor->show();
 }
 
-void ScriptWidget::sourceSet()
+void ScriptWidget::sourceSet(bool close)
 {
     try
     {
         m_env->setSource(m_editor->getSource());
 
-        delete m_editor;
-        m_editor = NULL;
+        if(close)
+        {
+            m_editor->deleteLater();
+            m_editor = NULL;
+        }
     }
     catch(const QString& text)
     {

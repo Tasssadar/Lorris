@@ -47,7 +47,7 @@ protected:
 
 private slots:
      void setSourceTriggered();
-     void sourceSet();
+     void sourceSet(bool close);
 
 private:
      ScriptEditor *m_editor;

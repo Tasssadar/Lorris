@@ -30,12 +30,14 @@ namespace Ui {
 class ScriptEditor;
 }
 
+class QAbstractButton;
+
 class ScriptEditor : public QDialog
 {
     Q_OBJECT
 
 Q_SIGNALS:
-    void okPressed();
+    void applySource(bool close);
     
 public:
     explicit ScriptEditor(const QString& source, const QString &widgetName = 0);
@@ -43,6 +45,9 @@ public:
 
     QString getSource();
     
+private slots:
+    void buttonPressed(QAbstractButton *btn);
+
 private:
     Ui::ScriptEditor *ui;
 };

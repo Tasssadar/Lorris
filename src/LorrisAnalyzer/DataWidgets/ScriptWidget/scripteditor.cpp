@@ -33,7 +33,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& widgetName) :
     ui->sourceEdit->setPlainText(source);
     setWindowTitle(windowTitle() + widgetName);
 
-    connect(ui->buttonBox, SIGNAL(accepted()), SIGNAL(okPressed()));
+    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), SLOT(buttonPressed(QAbstractButton*)));
 }
 
 ScriptEditor::~ScriptEditor()
@@ -44,4 +44,14 @@ ScriptEditor::~ScriptEditor()
 QString ScriptEditor::getSource()
 {
     return ui->sourceEdit->toPlainText();
+}
+
+void ScriptEditor::buttonPressed(QAbstractButton *btn)
+{
+    switch(ui->buttonBox->buttonRole(btn))
+    {
+        case QDialogButtonBox::ApplyRole:  emit applySource(false); break;
+        case QDialogButtonBox::AcceptRole: emit applySource(true);  break;
+        default: break;
+    }
 }
