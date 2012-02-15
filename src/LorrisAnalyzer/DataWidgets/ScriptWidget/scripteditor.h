@@ -27,10 +27,11 @@
 #include <QDialog>
 
 namespace Ui {
-class ScriptEditor;
+    class ScriptEditor;
 }
 
 class QAbstractButton;
+class LineNumber;
 
 class ScriptEditor : public QDialog
 {
@@ -47,9 +48,31 @@ public:
     
 private slots:
     void buttonPressed(QAbstractButton *btn);
+    void textChanged();
+    void sliderMoved(int val = -1);
+    void rangeChanged(int, int);
 
 private:
     Ui::ScriptEditor *ui;
+    LineNumber *m_line_num;
+};
+
+class LineNumber : public QWidget
+{
+public:
+    LineNumber(QWidget *parent = 0);
+
+    void setLineNum(int lineNum);
+    void setScroll(int line);
+
+protected:
+    void paintEvent(QPaintEvent *event);
+
+private:
+    int m_char_h;
+    int m_line_num;
+    int m_scroll;
+    quint8 m_last_w;
 };
 
 #endif // SCRIPTEDITOR_H

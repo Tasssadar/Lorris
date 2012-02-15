@@ -19,17 +19,24 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QPlainTextEdit" name="sourceEdit">
-     <property name="lineWrapMode">
-      <enum>QPlainTextEdit::NoWrap</enum>
-     </property>
-     <property name="plainText">
-      <string/>
-     </property>
-     <property name="tabStopWidth">
-      <number>40</number>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="editLayout" stretch="0">
+     <item>
+      <widget class="QPlainTextEdit" name="sourceEdit">
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
+       <property name="lineWrapMode">
+        <enum>QPlainTextEdit::NoWrap</enum>
+       </property>
+       <property name="plainText">
+        <string/>
+       </property>
+       <property name="tabStopWidth">
+        <number>40</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

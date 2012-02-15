@@ -16,7 +16,7 @@ TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += dep/qhexedit2/src
-INCLUDEPATH += src ui src/shared
+INCLUDEPATH += src ui src/shared dep
 INCLUDEPATH += dep/qextserialport/src
 SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
@@ -81,7 +81,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp \
-    src/shared/terminal.cpp
+    src/shared/terminal.cpp \
+    dep/qscriptsyntaxhighlighter.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -148,7 +149,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.h \
-    src/shared/terminal.h
+    src/shared/terminal.h \
+    dep/qscriptsyntaxhighlighter_p.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL
