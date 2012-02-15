@@ -51,6 +51,7 @@ private slots:
     void textChanged();
     void sliderMoved(int val = -1);
     void rangeChanged(int, int);
+    void loadFile();
 
 private:
     Ui::ScriptEditor *ui;

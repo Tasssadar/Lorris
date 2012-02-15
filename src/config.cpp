@@ -55,6 +55,7 @@ static const QString keys_string[CFG_STRING_NUM] =
     "shupito/tunnel_name",        // CFG_STRING_SHUPITO_TUNNEL
     "tcpsocket/address",          // CFG_STRING_TCP_ADDR
     "proxy/address",              // CFG_STRING_PROXY_ADDR
+    "analyzer/js_source",         // CFG_STRING_ANALYZER_JS
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -90,6 +91,7 @@ Config::Config()
     m_def_string[CFG_STRING_SHUPITO_TUNNEL]        = "app";
     m_def_string[CFG_STRING_TCP_ADDR]              = "127.0.0.1";
     m_def_string[CFG_STRING_PROXY_ADDR]            = "0";
+    m_def_string[CFG_STRING_ANALYZER_JS]           = "";
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = false;
