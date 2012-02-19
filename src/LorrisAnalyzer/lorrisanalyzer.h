@@ -73,6 +73,8 @@ class LorrisAnalyzer : public WorkTab
         void setAreaVisibility(quint8 area, bool visible);
         analyzer_data *getLastData(quint32& idx);
 
+        Connection *getCon() { return m_con; }
+
     public slots:
         void onTabShow();
         void updateData(bool ignoreTime = false);

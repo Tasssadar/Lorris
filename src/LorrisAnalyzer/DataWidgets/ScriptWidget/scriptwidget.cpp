@@ -61,6 +61,7 @@ void ScriptWidget::setUp(AnalyzerDataStorage *storage)
     connect(m_terminal, SIGNAL(keyPressedASCII(QByteArray)), m_env,      SLOT(keyPressed(QByteArray)));
     connect(m_env,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
     connect(m_env,      SIGNAL(appendTerm(QByteArray)),      m_terminal, SLOT(appendText(QByteArray)));
+    connect(m_env,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
 }
 
 void ScriptWidget::newData(analyzer_data *data, quint32)

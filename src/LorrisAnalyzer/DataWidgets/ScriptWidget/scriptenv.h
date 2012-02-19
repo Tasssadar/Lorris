@@ -37,6 +37,7 @@ class ScriptEnv : public QScriptEngine
 Q_SIGNALS:
     void clearTerm();
     void appendTerm(const QByteArray& text);
+    void SendData(const QByteArray& data);
 
 public:
     explicit ScriptEnv(QObject *parent = 0);
@@ -52,6 +53,7 @@ public slots:
 private:
     static QScriptValue __clearTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __appendTerm(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __sendData(QScriptContext *context, QScriptEngine *engine);
 
     QString m_source;
     QScriptEngine m_engine;

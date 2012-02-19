@@ -47,8 +47,10 @@ ScriptEnv::ScriptEnv(QObject *parent) :
 
     QScriptValue clearTerm = newFunction(&__clearTerm);
     QScriptValue appendTerm = newFunction(&__appendTerm);
+    QScriptValue sendData = newFunction(&__sendData);
     m_global.setProperty("clearTerm", clearTerm);
     m_global.setProperty("appendTerm", appendTerm);
+    m_global.setProperty("sendData", sendData);
 }
 
 void ScriptEnv::setSource(const QString &source)
@@ -108,5 +110,28 @@ QScriptValue ScriptEnv::__clearTerm(QScriptContext *context, QScriptEngine *engi
 QScriptValue ScriptEnv::__appendTerm(QScriptContext *context, QScriptEngine *engine)
 {
     emit ((ScriptEnv*)engine)->appendTerm(context->argument(0).toString().toAscii());
+    return QScriptValue();
+}
+
+QScriptValue ScriptEnv::__sendData(QScriptContext *context, QScriptEngine *engine)
+{
+    if(context->argumentCount() == 0)
+        return QScriptValue();
+
+    QScriptValue data = context->argument(0);
+    if(!data.isArray())
+        return QScriptValue();
+
+    QByteArray sendData;
+
+    QScriptValueIterator itr(data);
+    while(itr.hasNext())
+    {
+        itr.next();
+        if(itr.value().isNumber())
+            sendData.push_back(itr.value().toUInt16());
+    }
+
+    emit ((ScriptEnv*)engine)->SendData(sendData);
     return QScriptValue();
 }
