@@ -11,14 +11,16 @@ Playback::Playback(QWidget *parent) :
     ui->setupUi(this);
 
     m_playing = false;
-    m_timer = NULL;
+    m_timer = new QTimer(this);
     m_index = 0;
     m_pause = false;
 
     ui->delayBox->setValue(sConfig.get(CFG_QUINT32_ANALYZER_PLAY_DEL));
 
-    connect(ui->startBtn,   SIGNAL(clicked()), SLOT(startBtn()));
-    connect(ui->stopButton, SIGNAL(clicked()), SLOT(stopPlayback()));
+    connect(ui->startBtn,   SIGNAL(clicked()),         SLOT(startBtn()));
+    connect(ui->stopButton, SIGNAL(clicked()),         SLOT(stopPlayback()));
+    connect(ui->delayBox,   SIGNAL(valueChanged(int)), SLOT(delayChanged(int)));
+    connect(m_timer,        SIGNAL(timeout()),         SLOT(timeout()));
 }
 
 Playback::~Playback()
@@ -54,9 +56,6 @@ void Playback::startBtn()
 
         emit enablePosSet(false);
 
-
-        m_timer = new QTimer(this);
-        connect(m_timer, SIGNAL(timeout()), SLOT(timeout()));
         m_timer->start(ui->delayBox->value());
 
         enableUi(false);
@@ -81,9 +80,7 @@ void Playback::startBtn()
 void Playback::stopPlayback()
 {
     m_playing = false;
-
-    delete m_timer;
-    m_timer = NULL;
+    m_timer->stop();
 
     emit enablePosSet(true);
     ui->startBtn->setText(tr("Start"));
@@ -94,7 +91,6 @@ void Playback::stopPlayback()
 void Playback::enableUi(bool enable)
 {
     ui->startBox->setEnabled(enable);
-    ui->delayBox->setEnabled(enable);
     ui->cntBox->setEnabled(enable);
     ui->repeatBox->setEnabled(enable);
     ui->reverseBox->setEnabled(enable);
@@ -142,4 +138,12 @@ bool Playback::updateIndex()
             return true;
     }
     return false;
+}
+
+void Playback::delayChanged(int val)
+{
+    if(m_playing && !m_pause)
+        m_timer->start(val);
+    else
+        m_timer->setInterval(val);
 }

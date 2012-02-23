@@ -29,6 +29,7 @@ public slots:
 private slots:
     void startBtn();
     void timeout();
+    void delayChanged(int val);
 
     void stopPlayback();
 
