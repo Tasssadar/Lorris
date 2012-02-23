@@ -42,6 +42,8 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 
     m_terminal = new Terminal(this);
     layout->addWidget(m_terminal, 4);
+
+    m_env = NULL;
 }
 
 ScriptWidget::~ScriptWidget()
@@ -53,24 +55,24 @@ void ScriptWidget::setUp(AnalyzerDataStorage *storage)
 {
     DataWidget::setUp(storage);
 
+    QAction *src_act = contextMenu->addAction(tr("Set source..."));
+    connect(src_act,    SIGNAL(triggered()),                 this,       SLOT(setSourceTriggered()));
+
     m_env = new ScriptEnv(this);
 
-    QAction *src_act = contextMenu->addAction(tr("Set source..."));
-
-    connect(src_act,    SIGNAL(triggered()),                 this,       SLOT(setSourceTriggered()));
     connect(m_terminal, SIGNAL(keyPressedASCII(QByteArray)), m_env,      SLOT(keyPressed(QByteArray)));
     connect(m_env,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
     connect(m_env,      SIGNAL(appendTerm(QByteArray)),      m_terminal, SLOT(appendText(QByteArray)));
     connect(m_env,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
 }
 
-void ScriptWidget::newData(analyzer_data *data, quint32)
+void ScriptWidget::newData(analyzer_data *data, quint32 index)
 {
     // FIXME: is it correct?
     //if(!m_updating)
     //    return;
 
-    QString res = m_env->dataChanged(data);
+    QString res = m_env->dataChanged(data, index);
     if(!res.isEmpty())
         m_terminal->appendText(res.toAscii());
 }
@@ -131,11 +133,11 @@ void ScriptWidget::loadWidgetInfo(AnalyzerDataFile *file)
 void ScriptWidget::setSourceTriggered()
 {
     delete m_editor;
+
     m_editor = new ScriptEditor(m_env->getSource(), getTitle());
+    m_editor->show();
 
     connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
-
-    m_editor->show();
 }
 
 void ScriptWidget::sourceSet(bool close)

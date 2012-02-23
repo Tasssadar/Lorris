@@ -43,7 +43,7 @@ public:
     void loadWidgetInfo(AnalyzerDataFile *file);
 
 protected:
-     void newData(analyzer_data *data, quint32);
+     void newData(analyzer_data *data, quint32 index);
 
 private slots:
      void setSourceTriggered();

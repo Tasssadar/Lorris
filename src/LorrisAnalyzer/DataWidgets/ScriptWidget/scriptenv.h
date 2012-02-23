@@ -45,12 +45,14 @@ public:
     void setSource(const QString& source);
     const QString& getSource() { return m_source; }
 
-    QString dataChanged(analyzer_data *data);
+    QString dataChanged(analyzer_data *data, quint32 index);
     
 public slots:
     void keyPressed(const QByteArray& key);
 
 private:
+    void prepareNewContext();
+
     static QScriptValue __clearTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __appendTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __sendData(QScriptContext *context, QScriptEngine *engine);

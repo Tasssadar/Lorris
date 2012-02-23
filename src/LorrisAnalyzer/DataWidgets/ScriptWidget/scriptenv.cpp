@@ -31,30 +31,40 @@
 ScriptEnv::ScriptEnv(QObject *parent) :
     QScriptEngine(parent)
 {
-    m_global = globalObject();
+    pushContext();
     m_source =
-            "// You can use clearTerm() and appendTerm(string) to set term content\n\n"
+            tr("// You can use clearTerm() and appendTerm(string) to set term content\n"
+            "// You can use sendData(Array of ints) to send data to device. It expects array of uint8s\n\n"
             "// This function gets called on data received\n"
             "// it should return string, which is automatically appended to terminal\n"
-            "function onDataChanged(data, dev, cmd) {\n"
+            "function onDataChanged(data, dev, cmd, index) {\n"
             "    return \"\";\n"
             "}\n\n"
             "// This function is called on key press in terminal.\n"
             "// Param is string\n"
             "function onKeyPress(key) {\n"
             "    \n"
-            "}\n";
+            "}\n");
+}
 
+void ScriptEnv::prepareNewContext()
+{
+    QScriptContext *context = pushContext();
+    // Functions
     QScriptValue clearTerm = newFunction(&__clearTerm);
     QScriptValue appendTerm = newFunction(&__appendTerm);
     QScriptValue sendData = newFunction(&__sendData);
-    m_global.setProperty("clearTerm", clearTerm);
-    m_global.setProperty("appendTerm", appendTerm);
-    m_global.setProperty("sendData", sendData);
+    context->activationObject().setProperty("clearTerm", clearTerm);
+    context->activationObject().setProperty("appendTerm", appendTerm);
+    context->activationObject().setProperty("sendData", sendData);
+
+    m_global = context->activationObject();
 }
 
 void ScriptEnv::setSource(const QString &source)
 {
+    popContext();
+    prepareNewContext();
     evaluate(source);
 
     if(hasUncaughtException())
@@ -65,7 +75,7 @@ void ScriptEnv::setSource(const QString &source)
     m_source = source;
 }
 
-QString ScriptEnv::dataChanged(analyzer_data *data)
+QString ScriptEnv::dataChanged(analyzer_data *data, quint32 index)
 {
     if(!m_on_data.isFunction())
         return "";
@@ -85,6 +95,8 @@ QString ScriptEnv::dataChanged(analyzer_data *data)
 
     if(data->getCmd(res))  args << res;
     else                   args << -1;
+
+    args << index;
 
     QScriptValue val = m_on_data.call(QScriptValue(), args);
     return val.isUndefined() ? "" : val.toString();
