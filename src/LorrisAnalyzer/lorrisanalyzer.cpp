@@ -66,10 +66,16 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->connectButton,   SIGNAL(clicked()),         SLOT(connectButton()));
     connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
+    connect(ui->collapseLeft,    SIGNAL(clicked()),         SLOT(collapseLeftButton()));
     connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearButton()));
     connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(timeSliderMoved(int)));
     connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
     connect(ui->updateTimeBox,   SIGNAL(valueChanged(int)), SLOT(updateTimeChanged(int)));
+    connect(ui->playFrame,       SIGNAL(setPos(int)),           ui->timeBox,    SLOT(setValue(int)));
+    connect(ui->timeSlider,      SIGNAL(valueChanged(int)),     ui->playFrame,  SLOT(valChanged(int)));
+    connect(ui->timeSlider,      SIGNAL(rangeChanged(int,int)), ui->playFrame,  SLOT(rangeChanged(int,int)));
+    connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
+    connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
 
     QMenu* menuData = new QMenu(tr("&Data"), this);
 
@@ -108,7 +114,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(m_dev_tabs, SIGNAL(updateData()), this, SLOT(updateData()));
 
     m_data_area = new AnalyzerDataArea(this, m_storage);
-    ui->bottomHLayout->insertWidget(0, m_data_area, 4);
+    ui->bottomHLayout->insertWidget(2, m_data_area, 4);
     ui->bottomHLayout->setStretch(1, 1);
     connect(m_data_area, SIGNAL(updateData()), this, SLOT(updateData()));
     connect(m_data_area, SIGNAL(mouseStatus(bool,data_widget_info)), this, SLOT(widgetMouseStatus(bool,data_widget_info)));
@@ -295,10 +301,11 @@ void LorrisAnalyzer::onTabShow()
 void LorrisAnalyzer::timeSliderMoved(int value)
 {
     bool down = ui->timeSlider->isSliderDown();
+    bool enabled = ui->timeSlider->isEnabled();
     if(value != 0)
-        updateData(down);
+        updateData(down || !enabled);
 
-    if(down)
+    if(down && enabled)
         ui->timeBox->setValue(value);
 }
 
@@ -396,12 +403,18 @@ void LorrisAnalyzer::collapseRightButton()
     setAreaVisibility(AREA_RIGHT, !isAreaVisible(AREA_RIGHT));
 }
 
+void LorrisAnalyzer::collapseLeftButton()
+{
+    setAreaVisibility(AREA_LEFT, !isAreaVisible(AREA_LEFT));
+}
+
 bool LorrisAnalyzer::isAreaVisible(quint8 area)
 {
     switch(area)
     {
         case AREA_TOP:   return m_dev_tabs->isVisible();
         case AREA_RIGHT: return ui->widgetsScrollArea->isVisible();
+        case AREA_LEFT:  return ui->playFrame->isVisible();
     }
     return false;
 }
@@ -410,29 +423,23 @@ void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
 {
     if(area & AREA_TOP)
     {
-        if(visible)
-        {
-            m_dev_tabs->show();
-            ui->collapseTop->setText("^");
-        }
-        else
-        {
-            m_dev_tabs->hide();
-            ui->collapseTop->setText("v");
-        }
+        if(visible) ui->collapseTop->setText("^");
+        else        ui->collapseTop->setText("v");
+        m_dev_tabs->setVisible(visible);
     }
+
     if(area & AREA_RIGHT)
     {
-        if(visible)
-        {
-            ui->widgetsScrollArea->show();
-            ui->collapseRight->setText(">");
-        }
-        else
-        {
-            ui->widgetsScrollArea->hide();
-            ui->collapseRight->setText("<");
-        }
+        if(visible) ui->collapseRight->setText(">");
+        else        ui->collapseRight->setText("<");
+        ui->widgetsScrollArea->setVisible(visible);
+    }
+
+    if(area & AREA_LEFT)
+    {
+        if(visible) ui->collapseLeft->setText("<");
+        else        ui->collapseLeft->setText(">");
+        ui->playFrame->setVisible(visible);
     }
 }
 

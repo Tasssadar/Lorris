@@ -51,7 +51,8 @@ enum states_
 enum hideable_areas
 {
     AREA_TOP    = 0x01,
-    AREA_RIGHT  = 0x02
+    AREA_RIGHT  = 0x02,
+    AREA_LEFT   = 0x04
 };
 
 namespace Ui {
@@ -89,6 +90,7 @@ class LorrisAnalyzer : public WorkTab
 
         void collapseTopButton();
         void collapseRightButton();
+        void collapseLeftButton();
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);

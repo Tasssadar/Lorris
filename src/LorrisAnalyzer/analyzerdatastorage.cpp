@@ -108,6 +108,10 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     dta = m_analyzer->isAreaVisible(AREA_RIGHT);
     file->write(&dta, 1);
 
+    file->writeBlockIdentifier(BLOCK_COLLAPSE_STATUS2);
+    dta = m_analyzer->isAreaVisible(AREA_LEFT);
+    file->write(&dta, 1);
+
     //header static data
     file->writeBlockIdentifier(BLOCK_STATIC_DATA);
     if(m_packet->static_data)
@@ -241,6 +245,19 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         file->read((char*)&status, 1);
         m_analyzer->setAreaVisibility(AREA_RIGHT, status);
     }
+    if(file->seekToNextBlock(BLOCK_COLLAPSE_STATUS2, BLOCK_STATIC_DATA))
+    {
+        bool status;
+
+        file->read((char*)&status, 1);
+
+        // FIXME: hack, dunno what else to do about this
+        if(m_analyzer->isAreaVisible(AREA_LEFT) != status)
+            area->skipNextMove();
+
+        m_analyzer->setAreaVisibility(AREA_LEFT, status);
+    }
+
 
     //header static data
     if(file->seekToNextBlock(BLOCK_STATIC_DATA, BLOCK_DEVICE_TABS))

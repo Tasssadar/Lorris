@@ -150,6 +150,7 @@ char* AnalyzerDataFile::getBlockName(DataBlocks block)
     {
         case BLOCK_STATIC_DATA: strcpy(res, "staticDataBlock"); break;
         case BLOCK_COLLAPSE_STATUS: strcpy(res, "collapseWStatus"); break;
+        case BLOCK_COLLAPSE_STATUS2: strcpy(res, "collapseWStatus2"); break;
         case BLOCK_DEVICE_TABS: strcpy(res, "deviceTabsBlock"); break;
         case BLOCK_DEVICE_TAB:  strcpy(res, "deviceTabBlock");  break;
         case BLOCK_CMD_TABS:    strcpy(res, "cmdTabsBlock");    break;
