@@ -140,7 +140,7 @@ void LineNumber::setScroll(int line)
     update();
 }
 
-void LineNumber::paintEvent(QPaintEvent *event)
+void LineNumber::paintEvent(QPaintEvent */*event*/)
 {
     QPainter painter(this);
 

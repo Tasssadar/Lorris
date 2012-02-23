@@ -1941,127 +1941,131 @@ function onKeyPress(key) {
 <context>
     <name>SourceDialog</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="20"/>
-        <source>Dialog</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="32"/>
         <source>Header</source>
         <translation>Hlavička</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="47"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="189"/>
         <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="152"/>
         <source>Length</source>
         <translation>Délka</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="69"/>
         <source>Content</source>
-        <translation>Obsah</translation>
+        <translation type="obsolete">Obsah</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="81"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="123"/>
         <source>Static data (start bytes, etc)</source>
         <translation>Statická data (start byty)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="91"/>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="335"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="146"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="320"/>
         <source>Packet length</source>
         <translation>Délka packetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="98"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="175"/>
         <source>Command (opcode)</source>
         <translation>Příkaz (opcode)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="105"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="182"/>
         <source>Device ID</source>
         <translation>ID zařízení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="143"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="157"/>
         <source>8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="148"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="162"/>
         <source>16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="153"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="167"/>
         <source>32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="173"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="216"/>
         <source>Block order:</source>
         <translation>Pořadí bloků:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="203"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="246"/>
         <source>Hint: Use drag &amp; drop
 to change order</source>
         <translation>Použijte drag &amp; drop
 ke změně uspořádání</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="242"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="63"/>
         <source>Static data:</source>
         <translation>Statická data:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="268"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="89"/>
         <source>Changeable by double-click</source>
         <translation>Hodnoty můžete změnit pomocí dvojkliku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="288"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="269"/>
         <source>Packet Data</source>
         <translation>Data packetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="347"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="330"/>
         <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="153"/>
         <source>Static</source>
         <translation>Static</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="357"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="367"/>
         <source>Dynamic</source>
         <translation>Dynamická</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="407"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="343"/>
         <source>Endianess</source>
         <translation>Endian</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="435"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="20"/>
+        <source>Source structure</source>
+        <translation>Struktura dat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="113"/>
+        <source>Content:</source>
+        <translation>Obsah:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="354"/>
         <source>Big-endian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="440"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="359"/>
         <source>Little endian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="473"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="391"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="478"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="396"/>
         <source>Byte</source>
         <translation>Číslo</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="483"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="401"/>
         <source>String</source>
         <translation>Text</translation>
     </message>

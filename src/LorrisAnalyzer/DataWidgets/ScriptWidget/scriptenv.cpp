@@ -113,7 +113,7 @@ void ScriptEnv::keyPressed(const QByteArray &key)
     m_on_key.call(QScriptValue(), args);
 }
 
-QScriptValue ScriptEnv::__clearTerm(QScriptContext *context, QScriptEngine *engine)
+QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
 {
     emit ((ScriptEnv*)engine)->clearTerm();
     return QScriptValue();
