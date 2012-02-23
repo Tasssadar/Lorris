@@ -230,7 +230,13 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         bool status;
 
         file->read((char*)&status, 1);
+
+        // FIXME: hack, dunno what else to do about this
+        if(m_analyzer->isAreaVisible(AREA_TOP) != status)
+            area->skipNextMove();
+
         m_analyzer->setAreaVisibility(AREA_TOP, status);
+
 
         file->read((char*)&status, 1);
         m_analyzer->setAreaVisibility(AREA_RIGHT, status);
@@ -247,7 +253,6 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
             file->read((char*)m_packet->static_data, static_len);
         }
     }
-
 
     //Devices and commands
     devices->setHeader(header);

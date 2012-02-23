@@ -55,6 +55,8 @@ public:
     static DataWidget *newWidget(quint8 type, QWidget *parent);
     void moveWidgets(QPoint diff);
 
+    void skipNextMove() { m_skipNextMove = true; }
+
 public slots:
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
@@ -81,6 +83,8 @@ private:
     LorrisAnalyzer* m_analyzer;
 
     QPoint m_mouse_orig;
+
+    bool m_skipNextMove;
 };
 
 #endif // ANALYZERDATAAREA_H

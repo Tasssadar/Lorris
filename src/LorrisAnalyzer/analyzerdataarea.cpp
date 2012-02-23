@@ -43,6 +43,8 @@ AnalyzerDataArea::AnalyzerDataArea(LorrisAnalyzer *analyzer, AnalyzerDataStorage
     m_widgetIdCounter = 0;
     m_storage = storage;
     m_analyzer = analyzer;
+
+    m_skipNextMove = false;
 }
 
 AnalyzerDataArea::~AnalyzerDataArea()
@@ -286,7 +288,10 @@ void AnalyzerDataArea::updateMarker(DataWidget *w)
 
 void AnalyzerDataArea::moveEvent(QMoveEvent *event)
 {
-    moveWidgets(event->oldPos() - pos());
+    if(m_skipNextMove)
+        m_skipNextMove = false;
+    else
+        moveWidgets(event->oldPos() - pos());
 }
 
 void AnalyzerDataArea::resizeEvent(QResizeEvent *)
