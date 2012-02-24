@@ -362,11 +362,12 @@ DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 {
     setFlat(true);
     setStyleSheet("text-align: left");
+    m_pixmap = NULL;
 }
 
 DataWidgetAddBtn::~DataWidgetAddBtn()
 {
-
+    delete m_pixmap;
 }
 
 void DataWidgetAddBtn::mousePressEvent(QMouseEvent *event)
@@ -384,16 +385,21 @@ void DataWidgetAddBtn::mousePressEvent(QMouseEvent *event)
     }
 }
 
-QPixmap DataWidgetAddBtn::getRender()
+const QPixmap& DataWidgetAddBtn::getRender()
 {
-    DataWidget *w = AnalyzerDataArea::newWidget(m_widgetType, this);
-    if(!w)
-        return QPixmap();
-
-    QPixmap map(w->size());
-    w->render(&map);
-    delete w;
-    return map;
+    if(!m_pixmap)
+    {
+        DataWidget *w = AnalyzerDataArea::newWidget(m_widgetType, this);
+        if(w)
+        {
+            m_pixmap = new QPixmap(w->size());
+            w->render(m_pixmap);
+            delete w;
+        }
+        else
+            m_pixmap = new QPixmap();
+    }
+    return *m_pixmap;
 }
 
 CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)

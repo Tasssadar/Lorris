@@ -213,9 +213,10 @@ public:
 protected:
     void mousePressEvent(QMouseEvent *event);
 
-    virtual QPixmap getRender();
+    virtual const QPixmap &getRender();
 
     quint8 m_widgetType;
+    QPixmap *m_pixmap;
 };
 
 class CloseLabel : public QLabel
