@@ -25,7 +25,7 @@
 #define CONFIG_H
 
 #include <QSettings>
-#include <map>
+#include <QHash>
 
 #include "singleton.h"
 
@@ -74,9 +74,9 @@ enum cfg_bool
 
 class Config : public Singleton<Config>
 {
-    typedef std::map<cfg_quint32, quint32> def_map_quint32;
-    typedef std::map<cfg_string, QString> def_map_string;
-    typedef std::map<cfg_bool, bool> def_map_bool;
+    typedef QHash<cfg_quint32, quint32> def_map_quint32;
+    typedef QHash<cfg_string, QString> def_map_string;
+    typedef QHash<cfg_bool, bool> def_map_bool;
 
 public:
     Config();
