@@ -27,6 +27,7 @@
 #include <QString>
 #include <vector>
 #include <map>
+#include <QHash>
 
 class ShupitoPacket;
 
@@ -48,7 +49,7 @@ public:
         ShupitoPacket getStateChangeCmd(bool activate);
     };
 
-    typedef std::map<QString, config> intf_map;
+    typedef QHash<QString, config> intf_map;
 
     ShupitoDesc();
 
@@ -65,7 +66,7 @@ public:
         intf_map::iterator itr = m_interface_map.find(guid);
         if(itr == m_interface_map.end())
             return NULL;
-        return &itr->second;
+        return &(*itr);
     }
     const intf_map& getInterfaceMap()
     {

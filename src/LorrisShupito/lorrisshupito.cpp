@@ -357,7 +357,7 @@ void LorrisShupito::descRead(bool correct)
 
     ShupitoDesc::intf_map map = m_desc->getInterfaceMap();
     for(ShupitoDesc::intf_map::iterator itr = map.begin(); itr != map.end(); ++itr)
-        log("Got interface GUID: " % itr->first);
+        log("Got interface GUID: " % itr.key());
 
     m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
     m_shupito->setVddConfig(m_vdd_config);
