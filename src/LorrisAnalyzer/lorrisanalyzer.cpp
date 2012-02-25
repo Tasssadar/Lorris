@@ -445,16 +445,14 @@ void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
 
 void LorrisAnalyzer::clearButton()
 {
-    QMessageBox *box = new QMessageBox(this);
-    box->setWindowTitle(tr("Clear data?"));
-    box->setText(tr("Do you really clear data, widgets and packet structure?"));
-    box->addButton(tr("Yes"), QMessageBox::YesRole);
-    box->addButton(tr("No"), QMessageBox::NoRole);
-    box->setIcon(QMessageBox::Question);
-    int ret = box->exec();
-    delete box;
+    QMessageBox box(this);
+    box.setWindowTitle(tr("Clear data?"));
+    box.setText(tr("Do you really clear data, widgets and packet structure?"));
+    box.addButton(tr("Yes"), QMessageBox::YesRole);
+    box.addButton(tr("No"), QMessageBox::NoRole);
+    box.setIcon(QMessageBox::Question);
 
-    if(ret)
+    if(box.exec())
         return;
 
     analyzer_packet *packet = m_packet;

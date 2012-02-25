@@ -57,6 +57,7 @@ void AnalyzerDataArea::clear()
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         delete itr.value();
     m_widgets.clear();
+    m_marks.clear();
 }
 
 void AnalyzerDataArea::dropEvent(QDropEvent *event)
@@ -133,10 +134,16 @@ void AnalyzerDataArea::SaveWidgets(AnalyzerDataFile *file)
     quint32 count = m_widgets.size();
     file->write((char*)&count, sizeof(quint32));
 
+    // We want widgets saved in same order as they were created. It does not have to be super-fast,
+    // so I am using std::map to sort them.
+    std::map<quint32, DataWidget*> widgets;
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+        widgets[itr.key()] = *itr;
+
+    for(std::map<quint32, DataWidget*>::iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
     {
         file->writeBlockIdentifier(BLOCK_WIDGET);
-        (*itr)->saveWidgetInfo(file);
+        itr->second->saveWidgetInfo(file);
     }
 }
 

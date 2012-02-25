@@ -451,9 +451,11 @@ void GraphWidget::editCurve()
 {
     if(m_add_dialog)
         delete m_add_dialog;
+
     m_add_dialog = new GraphCurveAddDialog(this, &m_curves, true);
-    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(addCurve()));
     m_add_dialog->open();
+
+    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(addCurve()));
 }
 
 void GraphWidget::removeCurve(QString name)
