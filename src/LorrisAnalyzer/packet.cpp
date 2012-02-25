@@ -35,14 +35,14 @@ analyzer_data::analyzer_data(analyzer_packet *packet)
     m_forceValid = false;
 }
 
-quint32 analyzer_data::addData(QByteArray data)
+quint32 analyzer_data::addData(char *d_itr, char *d_end)
 {
     quint32 read = 0;
-    for(; itr < (quint32)m_static_data.length() && read < (quint32)data.length();)
+    for(; itr < (quint32)m_static_data.length() && d_itr+read != d_end;)
     {
-        if(data[read] != m_static_data[itr])
+        if(*(d_itr+read) != m_static_data[itr])
             return 0;
-        m_data[itr++] = data[read++];
+        m_data[itr++] = *(d_itr+read++);
     }
 
     bool readFromHeader = false;
@@ -51,8 +51,7 @@ quint32 analyzer_data::addData(QByteArray data)
 
     quint8 lenRead = (m_packet->header->data_mask & DATA_LEN);
 
-
-    for(quint32 i = itr; i < len && read < (quint32)data.length(); ++i)
+    for(quint32 i = itr; i < len && d_itr+read != d_end; ++i)
     {
         if(!readFromHeader && lenRead == DATA_LEN && getLenFromHeader(var_len))
         {
@@ -60,7 +59,7 @@ quint32 analyzer_data::addData(QByteArray data)
             lenRead = 0;
         }
 
-        m_data[itr++] = data[read++];
+        m_data[itr++] = *(d_itr+read++);
     }
     return read;
 }

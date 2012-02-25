@@ -202,22 +202,26 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     if(!m_curData)
         m_curData = new analyzer_data(m_packet);
 
-    QByteArray dta = data;
+    char *d_start = (char*)data.data();
+    char *d_itr = d_start;
+    char *d_end = (char*)data.data() + data.size();
+
     static bool first = true;
     quint32 curRead = 1;
 
-    while(dta.length() != 0)
+    while(d_itr != d_end)
     {
         if(first || curRead == 0)
         {
-            int index = dta.indexOf(m_curData->getStaticData());
+            int index = data.indexOf(m_curData->getStaticData());
             if(index == -1)
                 break;
-            dta.remove(0, index);
+            d_itr = d_start + index;
             first = false;
         }
-        curRead = m_curData->addData(dta);
-        dta.remove(0, curRead);
+        curRead = m_curData->addData(d_itr, d_end);
+        d_itr += curRead;
+
         if(m_curData->isValid())
         {
             m_storage->addData(m_curData);
