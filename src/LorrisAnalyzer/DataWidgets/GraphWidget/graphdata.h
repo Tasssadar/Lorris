@@ -9,13 +9,13 @@ struct data_widget_info;
 
 struct graph_data_st
 {
-    graph_data_st(double v, int i)
+    graph_data_st(const qreal& v, const int& i)
     {
         val = v;
         itr = i;
     }
 
-    double val;
+    qreal val;
     quint32 itr;
 };
 

@@ -54,6 +54,13 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
     QwtPlotPanner *panner =  new QwtPlotPanner( canvas() );
     panner->setMouseButton(Qt::MiddleButton);
 
+#if defined(Q_WS_X11)
+    // Even if not recommended by TrollTech, Qt::WA_PaintOutsidePaintEvent
+    // works on X11. This has a nice effect on the performance.
+
+    canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+#endif
+
     QwtPlotGrid *grid = new QwtPlotGrid();
     grid->setPen(QPen(Qt::gray, 0.0, Qt::DotLine));
     grid->enableX(true);

@@ -6,8 +6,9 @@ GraphCurve::GraphCurve(const QString &name, AnalyzerDataStorage *data, data_widg
     QwtPlotCurve(name)
 {
 
-    setRenderHint(QwtPlotItem::RenderAntialiased);
+    //setRenderHint(QwtPlotItem::RenderAntialiased);
     setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
+    setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
 
     m_data = new GraphData(data, info, sample_size, data_type);
     setData(m_data);

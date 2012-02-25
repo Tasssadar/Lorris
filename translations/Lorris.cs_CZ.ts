@@ -65,7 +65,7 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="424"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="425"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
@@ -147,22 +147,22 @@
 <context>
     <name>DataWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="101"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="102"/>
         <source>Lock</source>
         <translation>Uzamknout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="106"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="107"/>
         <source>Set title</source>
         <translation>Změnit jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="291"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="292"/>
         <source>Set widget title</source>
         <translation>Nastavení jména widgetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="291"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="292"/>
         <source>Enter title:</source>
         <translation>Zadejne nové jméno:</translation>
     </message>
@@ -2157,8 +2157,8 @@ ke změně uspořádání</translation>
     <name>TabDialog</name>
     <message>
         <location filename="../src/ui/tabdialog.ui" line="32"/>
-        <source>Dialog</source>
-        <translation></translation>
+        <source>New tab</source>
+        <translation>Nový panel</translation>
     </message>
     <message>
         <location filename="../src/ui/tabdialog.ui" line="97"/>

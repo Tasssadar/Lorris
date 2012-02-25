@@ -58,6 +58,8 @@ void GraphData::dataPosChanged(quint32 pos)
 
     resetMinMax();
 
+    QVariant v;
+
     for(quint32 i = getStorageBegin(absPos); i < m_data_pos && i < m_storage->getSize(); ++i)
     {
         cur = m_storage->get(i);
@@ -68,14 +70,14 @@ void GraphData::dataPosChanged(quint32 pos)
         if(m_info.device != -1 && (!cur->getDeviceId(dev) || dev != m_info.device))
             continue;
 
-        try
-        {
-            double val = DataWidget::getNumFromPacket(cur, m_info.pos, m_data_type).toDouble();
-            m_data.push_back(graph_data_st(val, i));
+        v = DataWidget::getNumFromPacket(cur, m_info.pos, m_data_type).toReal();
 
-            setMinMax(val);
-        }
-        catch(const char*) { }
+        if(!v.isValid())
+            continue;
+
+        qreal val = v.toReal();
+        m_data.push_back(graph_data_st(val, i));
+        setMinMax(val);
     }
 }
 
