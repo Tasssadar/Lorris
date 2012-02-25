@@ -65,6 +65,7 @@ private slots:
      void editCurve();
      void removeCurve(QString name);
      void showLegend(bool show);
+     void toggleAutoScroll(bool scroll);
 
 private:
      void updateVisibleArea();
@@ -78,12 +79,15 @@ private:
      QAction *m_sample_act[8];
      QAction *m_editCurve;
      QAction *m_showLegend;
+     QAction *m_autoScroll;
+
      QMenu *m_deleteCurve;
      std::map<QString, QAction*> m_deleteAct;
      QSignalMapper *m_deleteMap;
 
      int m_sample_size_idx;
      qint32 m_sample_size;
+     bool m_enableAutoScroll;
 
      std::vector<GraphCurveInfo*> m_curves;
 };

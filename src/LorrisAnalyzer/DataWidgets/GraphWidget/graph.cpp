@@ -154,3 +154,20 @@ void Graph::wheelEvent(QWheelEvent *event)
     setAxisScale(axis, newMin, newMax);
     replot();
 }
+
+double Graph::XupperBound()
+{
+    return axisScaleDiv(QwtPlot::xBottom)->upperBound();
+}
+double Graph::XlowerBound()
+{
+    return axisScaleDiv(QwtPlot::xBottom)->lowerBound();
+}
+double Graph::YupperBound()
+{
+    return axisScaleDiv(QwtPlot::yLeft)->upperBound();
+}
+double Graph::YlowerBound()
+{
+    return axisScaleDiv(QwtPlot::yLeft)->lowerBound();
+}

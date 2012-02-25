@@ -34,6 +34,11 @@ public:
 
     void showLegend(bool show);
 
+    double XupperBound();
+    double XlowerBound();
+    double YupperBound();
+    double YlowerBound();
+
 protected:
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent *event);
