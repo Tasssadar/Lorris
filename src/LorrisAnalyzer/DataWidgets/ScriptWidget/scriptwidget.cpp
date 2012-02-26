@@ -41,6 +41,7 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
     setMinimumSize(width(), width());
 
     m_terminal = new Terminal(this);
+    layout->setContentsMargins(5, 0, 5, 5);
     layout->addWidget(m_terminal, 4);
 
     m_env = NULL;
