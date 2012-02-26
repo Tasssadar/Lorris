@@ -122,9 +122,9 @@ void ColorWidget::setValue(int r, int g, int b)
 void ColorWidget::setValue(QString hex)
 {
     hex.remove("#");
-    m_color[0] = hex.mid(0, 2).toInt();
-    m_color[1] = hex.mid(2, 2).toInt();
-    m_color[2] = hex.mid(4, 2).toInt();
+    m_color[0] = hex.mid(0, 2).toInt(NULL, 16);
+    m_color[1] = hex.mid(2, 2).toInt(NULL, 16);
+    m_color[2] = hex.mid(4, 2).toInt(NULL, 16);
 
     updateColor();
 }
