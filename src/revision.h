@@ -24,5 +24,5 @@
 #ifndef REVISION_H
 #define REVISION_H
  #define VERSION "0.2.0-dev"
- #define REVISION 181
+ #define REVISION 182
 #endif // REVISION_H

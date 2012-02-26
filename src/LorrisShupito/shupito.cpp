@@ -50,6 +50,7 @@ Shupito::Shupito(QObject *parent) :
 
 Shupito::~Shupito()
 {
+    delete m_packet;
     sConMgr.RemoveShupito(this);
 }
 
