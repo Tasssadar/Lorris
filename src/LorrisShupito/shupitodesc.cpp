@@ -148,6 +148,6 @@ ShupitoPacket ShupitoDesc::config::getStateChangeCmd(bool activate)
     data[2] = activate ? 0x01 : 0x02;
     for(quint8 i = 0; i < actseq.size(); ++i)
         data[i+3] = actseq[i];
-    packet.addData(data);
+    packet.addData(data.data(), data.data()+data.size());
     return packet;
 }

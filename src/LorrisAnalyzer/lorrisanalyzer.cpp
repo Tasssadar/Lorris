@@ -213,7 +213,7 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     {
         if(first || curRead == 0)
         {
-            int index = data.indexOf(m_curData->getStaticData());
+            int index = data.indexOf(m_curData->getStaticData(), d_itr - d_start);
             if(index == -1)
                 break;
             d_itr = d_start + index;

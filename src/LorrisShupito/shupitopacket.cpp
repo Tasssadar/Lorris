@@ -71,22 +71,22 @@ bool ShupitoPacket::isValid()
     return true;
 }
 
-quint8 ShupitoPacket::addData(const QByteArray& data)
+quint8 ShupitoPacket::addData(char *d_itr, char *d_end)
 {
     quint8 read = 0;
 
     if(itr == 0)
     {
-        if(quint8(data[read++]) == 0x80)
+        if(quint8(*(d_itr+read++)) == 0x80)
             m_data[itr++] = 0x80;
         else
             return 0;
     }
-    if(itr == 1 && data.length() > 1)
-        m_data[itr++] = data[read++];
+    if(itr == 1 && d_end - d_itr > 1)
+        m_data[itr++] = *(d_itr+read++);
 
     quint8 size = getLen();
-    for(quint8 i = itr - 2; i < size && read < data.length(); ++i)
-        m_data[itr++] = (char)data[read++];
+    for(quint8 i = itr - 2; i < size && d_itr+read != d_end; ++i)
+        m_data[itr++] = *(d_itr+read++);
     return read;
 }

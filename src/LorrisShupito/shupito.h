@@ -134,7 +134,7 @@ private:
     void SendSetComSpeed();
 
     Connection *m_con;
-    ShupitoPacket m_packet;
+    ShupitoPacket *m_packet;
     ShupitoDesc *m_desc;
     QMutex mutex;
     vdd_setup m_vdd_setup;
