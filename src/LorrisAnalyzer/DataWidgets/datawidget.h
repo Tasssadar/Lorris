@@ -101,7 +101,7 @@ class DataWidget : public QFrame
 
 Q_SIGNALS:
     void updateData();
-    void mouseStatus(bool in, const data_widget_info& info);
+    void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
     void SendData(const QByteArray& data);
@@ -135,8 +135,18 @@ public:
         m_updating = update;
     }
 
+    void setWidgetControlled(qint32 widget)
+    {
+        m_widgetControlled = widget;
+    }
+
+    qint32 getWidgetControlled() { return m_widgetControlled; }
+
 public slots:
     virtual void newData(analyzer_data *data, quint32);
+    void setTitle(const QString& title);
+    virtual void setValue(const QVariant &var);
+    void lockTriggered();
 
 protected:
     void mousePressEvent(QMouseEvent * event);
@@ -149,7 +159,6 @@ protected:
 
     virtual void processData(analyzer_data *data);
 
-    void setTitle(const QString& title);
     QString getTitle();
     void setIcon(QString path);
 
@@ -157,12 +166,12 @@ protected:
     data_widget_info m_info;
     bool m_assigned;
     bool m_updating;
+    qint32 m_widgetControlled;
 
     QVBoxLayout *layout;
     QMenu *contextMenu;
 
 private slots:
-    void lockTriggered();
     void setTitleTriggered();
 
 private:

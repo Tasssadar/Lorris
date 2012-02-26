@@ -39,7 +39,7 @@ class AnalyzerDataArea : public QFrame
 
 Q_SIGNALS:
     void updateData();
-    void mouseStatus(bool in, const data_widget_info& info);
+    void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
 
 public:
     typedef QHash<quint32, DataWidget*> w_map;
@@ -53,9 +53,12 @@ public:
     void SaveWidgets(AnalyzerDataFile *file);
     void LoadWidgets(AnalyzerDataFile *file, bool skip);
     static DataWidget *newWidget(quint8 type, QWidget *parent);
+    DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void moveWidgets(QPoint diff);
 
     void skipNextMove() { m_skipNextMove = true; }
+
+    DataWidget *getWidget(quint32 id);
 
 public slots:
     void removeWidget(quint32 id);
@@ -72,7 +75,6 @@ protected:
     void resizeEvent(QResizeEvent *);
 
 private:
-    DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void getMarkPos(int &x, int &y, QSize &size);
     quint32 getNewId() { return m_widgetIdCounter++; }
 

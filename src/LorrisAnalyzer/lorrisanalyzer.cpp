@@ -117,7 +117,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     ui->bottomHLayout->insertWidget(2, m_data_area, 4);
     ui->bottomHLayout->setStretch(1, 1);
     connect(m_data_area, SIGNAL(updateData()), this, SLOT(updateData()));
-    connect(m_data_area, SIGNAL(mouseStatus(bool,data_widget_info)), this, SLOT(widgetMouseStatus(bool,data_widget_info)));
+    connect(m_data_area, SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
+                         SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
@@ -373,27 +374,47 @@ void LorrisAnalyzer::saveDataButton()
     m_storage->SaveToFile(m_data_area, m_dev_tabs);
 }
 
-void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info)
+void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
 {
-    if(in)
+    if(parent != -1)
     {
-        if(highlightInfoNotNull && highlightInfo != info)
-            m_dev_tabs->setHighlightPos(highlightInfo, false);
-
-        bool found = m_dev_tabs->setHighlightPos(info, true);
-
-        if(found)
-        {
-            highlightInfo = info;
-            highlightInfoNotNull = true;
+        DataWidget *w = m_data_area->getWidget(parent);
+        if(!w)
             return;
+
+        if(in)
+        {
+            w->setStyleSheet("color: red");
+            w->setLineWidth(2);
+        }
+        else
+        {
+            w->setLineWidth(1);
+            w->setStyleSheet("");
         }
     }
-
-    if(highlightInfoNotNull)
+    else
     {
-        m_dev_tabs->setHighlightPos(highlightInfo, false);
-        highlightInfoNotNull = false;
+        if(in)
+        {
+            if(highlightInfoNotNull && highlightInfo != info)
+                m_dev_tabs->setHighlightPos(highlightInfo, false);
+
+            bool found = m_dev_tabs->setHighlightPos(info, true);
+
+            if(found)
+            {
+                highlightInfo = info;
+                highlightInfoNotNull = true;
+                return;
+            }
+        }
+
+        if(highlightInfoNotNull)
+        {
+            m_dev_tabs->setHighlightPos(highlightInfo, false);
+            highlightInfoNotNull = false;
+        }
     }
 }
 

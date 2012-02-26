@@ -42,10 +42,14 @@ public:
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);
 
+public slots:
+    void setValue(const QVariant &var);
+    void setRange(int min, int max);
+    void rotationSelected(int i);
+
 private slots:
     void bitsSelected(int i);
     void rangeSelected();
-    void rotationSelected(int i);
 
 private:
     void rotate(int i);

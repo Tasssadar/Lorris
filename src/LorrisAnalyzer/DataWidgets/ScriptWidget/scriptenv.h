@@ -30,6 +30,9 @@
 
 #include "../../packet.h"
 
+class AnalyzerDataArea;
+class DataWidget;
+
 class ScriptEnv : public QScriptEngine
 {
     Q_OBJECT
@@ -40,13 +43,20 @@ Q_SIGNALS:
     void SendData(const QByteArray& data);
 
 public:
-    explicit ScriptEnv(QObject *parent = 0);
+    explicit ScriptEnv(AnalyzerDataArea *area , quint32 w_id, QObject *parent = 0);
 
     void setSource(const QString& source);
     const QString& getSource() { return m_source; }
 
     QString dataChanged(analyzer_data *data, quint32 index);
-    
+    DataWidget *addWidget(quint8 type, QScriptContext *context);
+
+    void setPos(int x, int y)
+    {
+        m_x = x;
+        m_y = y;
+    }
+
 public slots:
     void keyPressed(const QByteArray& key);
 
@@ -57,11 +67,22 @@ private:
     static QScriptValue __appendTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __sendData(QScriptContext *context, QScriptEngine *engine);
 
+    static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __newColorWidget(QScriptContext *context, QScriptEngine *engine);
+
     QString m_source;
+    AnalyzerDataArea *m_area;
     QScriptEngine m_engine;
     QScriptValue  m_global;
     QScriptValue  m_on_data;
     QScriptValue  m_on_key;
+
+    qint32 m_widget_id;
+    int m_x;
+    int m_y;
+
+    std::list<DataWidget*> m_widgets;
 };
 
 #endif // SCRIPTENV_H

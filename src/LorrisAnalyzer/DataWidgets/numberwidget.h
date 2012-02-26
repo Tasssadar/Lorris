@@ -48,6 +48,9 @@ public:
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);
 
+public slots:
+    void setValue(const QVariant &var);
+
 protected:
      void processData(analyzer_data *data);
      void resizeEvent ( QResizeEvent * event );

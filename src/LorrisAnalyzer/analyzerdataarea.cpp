@@ -75,21 +75,23 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
     DataWidget *w = newWidget(type, this);
     if(!w)
         return NULL;
+
+    quint32 id = getNewId();
+    w->setId(id);
+
     w->setUp(m_storage);
 
     w->move(pos);
     if(show)
         w->show();
 
-    quint32 id = getNewId();
-    w->setId(id);
     m_widgets.insert(id, w);
 
     connect(m_analyzer, SIGNAL(newData(analyzer_data*,quint32)), w, SLOT(newData(analyzer_data*,quint32)));
     connect(w,          SIGNAL(removeWidget(quint32)),              SLOT(removeWidget(quint32)));
     connect(w,          SIGNAL(updateMarker(DataWidget*)),          SLOT(updateMarker(DataWidget*)));
     connect(w,          SIGNAL(updateData()),                       SIGNAL(updateData()));
-    connect(w,          SIGNAL(mouseStatus(bool,data_widget_info)), SIGNAL(mouseStatus(bool,data_widget_info)));
+    connect(w,  SIGNAL(mouseStatus(bool,data_widget_info,qint32)),  SIGNAL(mouseStatus(bool,data_widget_info,qint32)));
     connect(w,  SIGNAL(SendData(QByteArray)), m_analyzer->getCon(), SLOT(SendData(QByteArray)));
 
     return w;
@@ -128,17 +130,26 @@ void AnalyzerDataArea::removeWidget(quint32 id)
     update();
 }
 
+DataWidget *AnalyzerDataArea::getWidget(quint32 id)
+{
+    w_map::iterator itr = m_widgets.find(id);
+    if(itr == m_widgets.end())
+        return NULL;
+    return *itr;
+}
+
 void AnalyzerDataArea::SaveWidgets(AnalyzerDataFile *file)
 {
-    // write widget count
-    quint32 count = m_widgets.size();
-    file->write((char*)&count, sizeof(quint32));
-
     // We want widgets saved in same order as they were created. It does not have to be super-fast,
     // so I am using std::map to sort them.
     std::map<quint32, DataWidget*> widgets;
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
-        widgets[itr.key()] = *itr;
+        if((*itr)->getWidgetControlled() == -1)
+            widgets[itr.key()] = *itr;
+
+    // write widget count
+    quint32 count = widgets.size();
+    file->write((char*)&count, sizeof(quint32));
 
     for(std::map<quint32, DataWidget*>::iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
     {

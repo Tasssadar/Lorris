@@ -79,7 +79,7 @@ class LorrisAnalyzer : public WorkTab
     public slots:
         void onTabShow();
         void updateData(bool ignoreTime = false);
-        void widgetMouseStatus(bool in, const data_widget_info& info);
+        void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);
 
     private slots:
         void connectButton();

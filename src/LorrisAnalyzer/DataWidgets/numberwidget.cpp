@@ -129,7 +129,11 @@ void NumberWidget::setUp(AnalyzerDataStorage *storage)
 void NumberWidget::processData(analyzer_data *data)
 {
     QVariant var = DataWidget::getNumFromPacket(data, m_info.pos, numberType);
+    setValue(var);
+}
 
+void NumberWidget::setValue(const QVariant& var)
+{
     if(var.isNull())
     {
         num->setText("N/A");

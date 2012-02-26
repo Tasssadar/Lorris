@@ -44,6 +44,7 @@ public:
 
 protected:
      void newData(analyzer_data *data, quint32 index);
+     void moveEvent(QMoveEvent *);
 
 private slots:
      void setSourceTriggered();

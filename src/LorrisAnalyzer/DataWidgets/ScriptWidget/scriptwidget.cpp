@@ -59,7 +59,7 @@ void ScriptWidget::setUp(AnalyzerDataStorage *storage)
     QAction *src_act = contextMenu->addAction(tr("Set source..."));
     connect(src_act,    SIGNAL(triggered()),                 this,       SLOT(setSourceTriggered()));
 
-    m_env = new ScriptEnv(this);
+    m_env = new ScriptEnv((AnalyzerDataArea*)parent(), getId(),  this);
 
     connect(m_terminal, SIGNAL(keyPressedASCII(QByteArray)), m_env,      SLOT(keyPressed(QByteArray)));
     connect(m_env,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
@@ -85,11 +85,11 @@ void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
     // source
     file->writeBlockIdentifier("scriptWSource");
     {
-        QByteArray source = m_env->getSource().toAscii();
+        QByteArray source = m_env->getSource().toUtf8();
         quint32 len = source.length();
 
         file->write((char*)&len, sizeof(quint32));
-        file->write(source.data());
+        file->write(source.data(), len);
     }
 
     // terminal data
@@ -113,7 +113,7 @@ void ScriptWidget::loadWidgetInfo(AnalyzerDataFile *file)
         quint32 size = 0;
         file->read((char*)&size, sizeof(quint32));
 
-        QString source(file->read(size));
+        QString source = QString::fromUtf8(file->read(size), size);
         try
         {
             m_env->setSource(source);
@@ -157,6 +157,12 @@ void ScriptWidget::sourceSet(bool close)
     {
         Utils::ThrowException(text, m_editor);
     }
+}
+
+void ScriptWidget::moveEvent(QMoveEvent *)
+{
+    if(m_env)
+        m_env->setPos(pos().x(), pos().y());
 }
 
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

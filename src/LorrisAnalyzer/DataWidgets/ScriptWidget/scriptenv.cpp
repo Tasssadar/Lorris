@@ -26,9 +26,12 @@
 #include <QScriptValueList>
 #include <QScriptEngineAgent>
 #include <QDebug>
+
+#include <analyzerdataarea.h>
+#include "DataWidgets/datawidget.h"
 #include "scriptenv.h"
 
-ScriptEnv::ScriptEnv(QObject *parent) :
+ScriptEnv::ScriptEnv(AnalyzerDataArea* area, quint32 w_id, QObject *parent) :
     QScriptEngine(parent)
 {
     pushContext();
@@ -45,20 +48,38 @@ ScriptEnv::ScriptEnv(QObject *parent) :
             "function onKeyPress(key) {\n"
             "    \n"
             "}\n");
+
+    m_area = area;
+    m_widget_id = w_id;
+    m_x = m_y = 0;
 }
 
 void ScriptEnv::prepareNewContext()
 {
     QScriptContext *context = pushContext();
+
+    m_global = context->activationObject();
+
     // Functions
     QScriptValue clearTerm = newFunction(&__clearTerm);
     QScriptValue appendTerm = newFunction(&__appendTerm);
     QScriptValue sendData = newFunction(&__sendData);
-    context->activationObject().setProperty("clearTerm", clearTerm);
-    context->activationObject().setProperty("appendTerm", appendTerm);
-    context->activationObject().setProperty("sendData", sendData);
 
-    m_global = context->activationObject();
+    QScriptValue numberW = newFunction(&__newNumberWidget);
+    QScriptValue barW = newFunction(&__newBarWidget);
+    QScriptValue colorW = newFunction(&__newColorWidget);
+
+    m_global.setProperty("clearTerm", clearTerm);
+    m_global.setProperty("appendTerm", appendTerm);
+    m_global.setProperty("sendData", sendData);
+
+    m_global.setProperty("newNumberWidget", numberW);
+    m_global.setProperty("newBarWidget", barW);
+    m_global.setProperty("newColorWidget", colorW);
+
+    for(std::list<DataWidget*>::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+        m_area->removeWidget((*itr)->getId());
+    m_widgets.clear();
 }
 
 void ScriptEnv::setSource(const QString &source)
@@ -113,6 +134,35 @@ void ScriptEnv::keyPressed(const QByteArray &key)
     m_on_key.call(QScriptValue(), args);
 }
 
+DataWidget *ScriptEnv::addWidget(quint8 type, QScriptContext *context)
+{
+    if(context->argumentCount() == 0)
+        return NULL;
+
+    DataWidget *w = m_area->addWidget(QPoint(0,0), type);
+    if(!w)
+        return NULL;
+
+    m_widgets.push_back(w);
+
+    w->setTitle(context->argument(0).toString());
+
+    if(context->argumentCount() >= 3)
+        w->resize(context->argument(1).toUInt32(), context->argument(2).toUInt32());
+
+    if(context->argumentCount() >= 5)
+    {
+        int x = m_x + context->argument(3).toInt32();
+        int y = m_y + context->argument(4).toInt32();
+        w->move(x, y);
+    }
+
+    w->setWidgetControlled(m_widget_id);
+    w->setAcceptDrops(false);
+
+    return w;
+}
+
 QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
 {
     emit ((ScriptEnv*)engine)->clearTerm();
@@ -146,4 +196,22 @@ QScriptValue ScriptEnv::__sendData(QScriptContext *context, QScriptEngine *engin
 
     emit ((ScriptEnv*)engine)->SendData(sendData);
     return QScriptValue();
+}
+
+QScriptValue ScriptEnv::__newNumberWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    DataWidget *w = ((ScriptEnv*)engine)->addWidget(WIDGET_NUMBERS, context);
+    return engine->newQObject(w);
+}
+
+QScriptValue ScriptEnv::__newBarWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    DataWidget *w = ((ScriptEnv*)engine)->addWidget(WIDGET_BAR, context);
+    return engine->newQObject(w);
+}
+
+QScriptValue ScriptEnv::__newColorWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    DataWidget *w = ((ScriptEnv*)engine)->addWidget(WIDGET_COLOR, context);
+    return engine->newQObject(w);
 }

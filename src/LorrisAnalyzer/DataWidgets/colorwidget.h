@@ -39,6 +39,10 @@ public:
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);
 
+public slots:
+    void setValue(int r, int g, int b);
+    void setValue(QString hex);
+
 protected:
      void processData(analyzer_data *data);
 

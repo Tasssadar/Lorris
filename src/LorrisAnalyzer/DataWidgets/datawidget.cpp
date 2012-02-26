@@ -73,13 +73,15 @@ DataWidget::DataWidget(QWidget *parent) :
     contextMenu = NULL;
     m_mouseIn = false;
     m_updating = true;
+
+    m_widgetControlled = -1;
 }
 
 DataWidget::~DataWidget()
 {
     // Remove highlight from top data widget
     if(m_mouseIn)
-        emit mouseStatus(false, m_info);
+        emit mouseStatus(false, m_info, m_widgetControlled);
 
     WorkTab::DeleteAllMembers(layout);
     delete layout;
@@ -159,15 +161,15 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
 
 void DataWidget::enterEvent(QEvent *)
 {
-    if(m_assigned)
-        emit mouseStatus(true, m_info);
+    if(m_assigned || m_widgetControlled != -1)
+        emit mouseStatus(true, m_info, m_widgetControlled);
     m_mouseIn = true;
 }
 
 void DataWidget::leaveEvent(QEvent *)
 {
-    if(m_assigned)
-        emit mouseStatus(false, m_info);
+    if(m_assigned || m_widgetControlled != -1)
+        emit mouseStatus(false, m_info, m_widgetControlled);
     m_mouseIn = false;
 }
 
@@ -357,6 +359,10 @@ void DataWidget::loadWidgetInfo(AnalyzerDataFile *file)
         QString title(file->read(size));
         setTitle(title);
     }
+}
+
+void DataWidget::setValue(const QVariant &/*var*/)
+{
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
