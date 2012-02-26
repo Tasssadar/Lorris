@@ -84,6 +84,8 @@ void ScriptEnv::prepareNewContext()
 
 void ScriptEnv::setSource(const QString &source)
 {
+    m_source = source;
+
     popContext();
     prepareNewContext();
     evaluate(source);
@@ -93,7 +95,6 @@ void ScriptEnv::setSource(const QString &source)
 
     m_on_data = m_global.property("onDataChanged");
     m_on_key = m_global.property("onKeyPress");
-    m_source = source;
 }
 
 QString ScriptEnv::dataChanged(analyzer_data *data, quint32 index)
