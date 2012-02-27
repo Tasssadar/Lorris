@@ -149,6 +149,8 @@ void Graph::wheelEvent(QWheelEvent *event)
     double min = axisScaleDiv(axis)->lowerBound();
 
     double diff = fabs(max - min);
+    if(diff == 0)
+        diff = 1;
 
     float exp = (event->modifiers() & Qt::ShiftModifier) ? 0.01 : 0.001;
     double newDiff = fabs(diff + (diff*(exp *event->delta())))/2;
