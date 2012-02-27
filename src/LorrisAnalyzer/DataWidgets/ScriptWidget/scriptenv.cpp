@@ -157,21 +157,26 @@ DataWidget *ScriptEnv::addWidget(quint8 type, QScriptContext *context)
 
     m_widgets.push_back(w);
 
-    w->setTitle(context->argument(0).toString());
-
-    if(context->argumentCount() >= 3)
+    switch(context->argumentCount())
     {
-        int wid = context->argument(1).toUInt32();
-        int h = context->argument(2).toUInt32();
-        if(wid && h)
-            w->resize(wid, h);
-    }
-
-    if(context->argumentCount() >= 5)
-    {
-        int x = m_x + context->argument(3).toInt32();
-        int y = m_y + context->argument(4).toInt32();
-        w->move(x, y);
+        case 5:
+        {
+            int x = m_x + context->argument(3).toInt32();
+            int y = m_y + context->argument(4).toInt32();
+            w->move(x, y);
+            // Fallthrough
+        }
+        case 3:
+        {
+            int wid = context->argument(1).toUInt32();
+            int h = context->argument(2).toUInt32();
+            if(wid || h)
+                w->resize(wid, h);
+            // Fallthrough
+        }
+        case 1:
+            w->setTitle(context->argument(0).toString());
+            break;
     }
 
     w->setWidgetControlled(m_widget_id);
