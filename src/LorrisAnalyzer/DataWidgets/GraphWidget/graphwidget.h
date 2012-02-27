@@ -57,6 +57,7 @@ public:
 public slots:
     GraphCurve *addCurve(QString name, QString color);
     void setAxisScale(bool x, double min, double max);
+    void updateVisibleArea();
 
 protected:
      void processData(analyzer_data *data);
@@ -72,7 +73,6 @@ private slots:
      void toggleAutoScroll(bool scroll);
 
 private:
-     void updateVisibleArea();
      void updateRemoveMapping();
 
      Graph *m_graph;
