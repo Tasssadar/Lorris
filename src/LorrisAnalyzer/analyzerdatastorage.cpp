@@ -66,7 +66,7 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     if(!m_packet)
         return;
 
-    QString filters = QObject::tr("Lorris data file (*.ldta)");
+    QString filters = QObject::tr("Compressed Lorris data file(*.cldta);;Lorris data file (*.ldta)");
     QString filename = QFileDialog::getSaveFileName(NULL, QObject::tr("Export Data"),
                                                     sConfig.get(CFG_STRING_ANALYZER_FOLDER),
                                                     filters);
@@ -157,7 +157,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         filename = *name;
     else
     {
-        QString filters = QObject::tr("Lorris data file (*.ldta)");
+        QString filters = QObject::tr("Compressed Lorris data file(*.cldta);;Lorris data file (*.ldta)");
         filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"), "", filters);
     }
 
@@ -314,7 +314,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     return m_packet;
 }
 
-bool AnalyzerDataStorage::checkMagic(QFile *file)
+bool AnalyzerDataStorage::checkMagic(AnalyzerDataFile *file)
 {
     char *itr = new char[3];
     file->read(itr, 3);

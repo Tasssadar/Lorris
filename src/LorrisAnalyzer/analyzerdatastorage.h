@@ -42,6 +42,7 @@ class AnalyzerDataArea;
 class DeviceTabWidget;
 class QFile;
 class LorrisAnalyzer;
+class AnalyzerDataFile;
 
 class AnalyzerDataStorage : public QObject
 {
@@ -67,7 +68,7 @@ public slots:
     void SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *devices);
 
 private:
-    bool checkMagic(QFile *file);
+    bool checkMagic(AnalyzerDataFile *file);
 
     std::vector<analyzer_data*> m_data;
     analyzer_packet *m_packet;

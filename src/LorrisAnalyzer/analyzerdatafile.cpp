@@ -24,21 +24,48 @@
 #include "analyzerdatafile.h"
 
 AnalyzerDataFile::AnalyzerDataFile(const QString &filename, QObject *parent) :
-    QFile(filename, parent)
+    QBuffer(parent)
 {
     m_last_block = 0;
+    m_file = NULL;
+    m_filename = filename;
+}
+
+AnalyzerDataFile::~AnalyzerDataFile()
+{
+    if(m_file)
+    {
+        if(m_file->openMode() & QIODevice::WriteOnly)
+        {
+            if(m_file->fileName().endsWith(".cldta"))
+                m_file->write(qCompress(data()));
+            else
+                m_file->write(data());
+        }
+        m_file->close();
+        delete m_file;
+    }
 }
 
 bool AnalyzerDataFile::open ( OpenMode mode )
 {
-    bool res = QFile::open(mode);
+    m_file = new QFile(m_filename);
+
+    bool res = m_file->open(mode);
     if(!res)
         return res;
+
     if(mode & QIODevice::ReadOnly)
     {
-        m_data = readAll();
-        seek(0);
+        QByteArray dta = m_file->readAll();
+        if(m_filename.endsWith(".cldta"))
+            setData(qUncompress(dta));
+        else
+            setData(dta);
     }
+
+    QBuffer::open(mode);
+
     return res;
 }
 
@@ -57,7 +84,7 @@ bool AnalyzerDataFile::seekToNextBlock(const char *block, qint32 maxDist)
     quint8 lenght = 0;
     char* name = getBlockWithFormat(block, lenght);
 
-    int index = m_data.indexOf(QByteArray(name, lenght), m_last_block);
+    int index = data().indexOf(QByteArray(name, lenght), m_last_block);
     delete[] name;
 
     if(index == -1 || (maxDist != 0 && (index - m_last_block) > maxDist))
@@ -72,7 +99,7 @@ bool AnalyzerDataFile::seekToNextBlock(const char *block, const char *toMax)
     quint8 lenght = 0;
     char* name = getBlockWithFormat(toMax, lenght);
 
-    int index = m_data.indexOf(QByteArray(name, lenght), m_last_block);
+    int index = data().indexOf(QByteArray(name, lenght), m_last_block);
 
     delete[] name;
 
@@ -92,7 +119,7 @@ bool AnalyzerDataFile::seekToNextBlock(const char *block, DataBlocks toMax)
     quint8 len;
     char *formatted = getBlockWithFormat(block_name, len);
 
-    int index = m_data.indexOf(QByteArray(formatted, len), m_last_block);
+    int index = data().indexOf(QByteArray(formatted, len), m_last_block);
 
     delete[] block_name;
     delete[] formatted;
@@ -109,7 +136,7 @@ bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, const char *toMax)
     quint8 lenght = 0;
     char* name = getBlockWithFormat(toMax, lenght);
 
-    int index = m_data.indexOf(QByteArray(name, lenght), m_last_block);
+    int index = data().indexOf(QByteArray(name, lenght), m_last_block);
 
     delete[] name;
 
@@ -120,7 +147,6 @@ bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, const char *toMax)
     return seekToNextBlock(block, dist);
 }
 
-
 bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, DataBlocks toMax)
 {
     char* block_name = getBlockName(toMax);
@@ -130,7 +156,7 @@ bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, DataBlocks toMax)
     quint8 len;
     char *formatted = getBlockWithFormat(block_name, len);
 
-    int index = m_data.indexOf(QByteArray(formatted, len), m_last_block);
+    int index = data().indexOf(QByteArray(formatted, len), m_last_block);
 
     delete[] block_name;
     delete[] formatted;
