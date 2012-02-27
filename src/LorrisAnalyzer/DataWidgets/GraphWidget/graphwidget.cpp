@@ -299,8 +299,9 @@ void GraphWidget::loadWidgetInfo(AnalyzerDataFile *file)
             color = file->read(size);
         }
 
-        GraphCurve *curve = new GraphCurve(name, m_storage, info,
-                                           m_sample_size, dataType);
+        GraphDataSimple *dta = new GraphData(m_storage, info, m_sample_size, dataType);
+        GraphCurve *curve = new GraphCurve(name, dta);
+
         curve->setPen(QPen(QColor(color)));
         curve->attach(m_graph);
         m_graph->showCurve(curve, true);
@@ -341,8 +342,8 @@ void GraphWidget::addCurve()
 
     if(!m_add_dialog->edit())
     {
-        GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), m_storage, m_info,
-                                           m_sample_size, m_add_dialog->getDataType());
+        GraphData *data = new GraphData(m_storage, m_info, m_sample_size, m_add_dialog->getDataType());
+        GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), data);
         curve->setPen(QPen(QColor(m_add_dialog->getColor())));
         curve->attach(m_graph);
         m_graph->showCurve(curve, true);
@@ -497,6 +498,26 @@ void GraphWidget::toggleAutoScroll(bool scroll)
 {
     m_autoScroll->setChecked(scroll);
     m_enableAutoScroll = scroll;
+}
+
+GraphCurve *GraphWidget::addCurve(QString name, QString color)
+{
+    GraphDataSimple *dta = new GraphDataSimple();
+    GraphCurve *curve = new GraphCurve(name, dta);
+
+    curve->setPen(QPen(QColor(color)));
+    curve->attach(m_graph);
+    m_graph->showCurve(curve, true);
+    m_curves.push_back(new GraphCurveInfo(curve, m_info));
+
+    return curve;
+}
+
+void GraphWidget::setAxisScale(bool x, double min, double max)
+{
+    int axis = x ? QwtPlot::xBottom : QwtPlot::yLeft;
+
+    m_graph->setAxisScale(axis, min, max);
 }
 
 GraphWidgetAddBtn::GraphWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

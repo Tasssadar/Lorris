@@ -21,19 +21,20 @@
 **
 ****************************************************************************/
 
+#include <qwt_plot.h>
+
 #include "graphcurve.h"
 #include "../../analyzerdatastorage.h"
 
-
-GraphCurve::GraphCurve(const QString &name, AnalyzerDataStorage *data, data_widget_info& info, qint32 sample_size, quint8 data_type) :
-    QwtPlotCurve(name)
+GraphCurve::GraphCurve(const QString &name, GraphDataSimple *data) :
+    QObject(NULL),QwtPlotCurve(name)
 {
 
     //setRenderHint(QwtPlotItem::RenderAntialiased);
     setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
     setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
 
-    m_data = new GraphData(data, info, sample_size, data_type);
+    m_data = data;
     setData(m_data);
 }
 
@@ -70,4 +71,16 @@ quint32 GraphCurve::getSize()
 void GraphCurve::setDataType(quint8 type)
 {
     m_data->setDataType(type);
+}
+
+void GraphCurve::addPoint(quint32 index, qreal val)
+{
+    m_data->addPoint(index, val);
+    plot()->replot();
+}
+
+void GraphCurve::clear()
+{
+    m_data->clear();
+    plot()->replot();
 }

@@ -54,6 +54,10 @@ public:
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);
 
+public slots:
+    GraphCurve *addCurve(QString name, QString color);
+    void setAxisScale(bool x, double min, double max);
+
 protected:
      void processData(analyzer_data *data);
      void dropEvent(QDropEvent *event);

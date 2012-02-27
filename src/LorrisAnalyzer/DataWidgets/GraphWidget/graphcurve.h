@@ -25,16 +25,17 @@
 #define GRAPHCURVE_H
 
 #include <qwt_plot_curve.h>
+
 #include "graphdata.h"
 #include "../datawidget.h"
 
 class AnalyzerDataStorage;
 
-class GraphCurve : public QwtPlotCurve
+class GraphCurve : public QObject, public QwtPlotCurve
 {
+    Q_OBJECT
 public:
-    GraphCurve(const QString& name, AnalyzerDataStorage *data, data_widget_info& info,
-               qint32 sample_size, quint8 data_type);
+    GraphCurve(const QString& name, GraphDataSimple *data);
     ~GraphCurve();
 
     void setSampleSize(qint32 size);
@@ -52,9 +53,15 @@ public:
 
     quint8 getDataType() { return m_data->getDataType(); }
 
+public slots:
+    void addPoint(quint32 index, qreal val);
+    void clear();
+
 private:
-    GraphData *m_data;
+    GraphDataSimple *m_data;
     qint32 m_sample_size;
 };
+
+Q_DECLARE_METATYPE(GraphCurve*)
 
 #endif // GRAPHCURVE_H

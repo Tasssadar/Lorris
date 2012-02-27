@@ -25,7 +25,64 @@
 #include "../datawidget.h"
 #include "../../analyzerdatastorage.h"
 
-GraphData::GraphData(AnalyzerDataStorage *storage, data_widget_info &info, qint32 sample_size, quint8 data_type) : QwtSeriesData<QPointF>()
+GraphDataSimple::GraphDataSimple() : QwtSeriesData<QPointF>()
+{
+    resetMinMax();
+}
+
+QPointF GraphDataSimple::sample(size_t i) const
+{
+    if(i < m_data.size())
+        return QPointF(i, m_data[i]->val);
+    else
+        return QPointF(0, 0);
+}
+
+size_t GraphDataSimple::size() const
+{
+    return m_data.size();
+}
+
+QRectF GraphDataSimple::boundingRect() const
+{
+    return QRect(0, m_max, m_data.size(), abs(m_max) + abs(m_min));
+}
+
+void GraphDataSimple::setMinMax(double val)
+{
+    if(val > m_max)      m_max = val;
+    else if(val < m_min) m_min = val;
+}
+
+void GraphDataSimple::resetMinMax()
+{
+    m_max = -999999999;
+    m_min = 99999999;
+}
+
+void GraphDataSimple::addPoint(quint32 index, qreal data)
+{
+    QHash<quint32, graph_data_st*>::iterator itr = m_indexes.find(index);
+    if(itr != m_indexes.end())
+        (*itr)->val = data;
+    else
+    {
+        graph_data_st *dta = new graph_data_st(data, index);
+        m_data.push_back(dta);
+        m_indexes.insert(index, dta);
+    }
+}
+
+void GraphDataSimple::clear()
+{
+    for(std::vector<graph_data_st*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+        delete *itr;
+    m_data.clear();
+    m_indexes.clear();
+}
+
+GraphData::GraphData(AnalyzerDataStorage *storage, data_widget_info &info, qint32 sample_size, quint8 data_type) :
+    GraphDataSimple()
 {
     m_storage = storage;
     m_info = info;
@@ -33,26 +90,6 @@ GraphData::GraphData(AnalyzerDataStorage *storage, data_widget_info &info, qint3
 
     m_data_pos = 0;
     m_data_type = data_type;
-
-    resetMinMax();
-}
-
-QPointF GraphData::sample(size_t i) const
-{
-    if(i < m_data.size())
-        return QPointF(i, m_data[i].val);
-    else
-        return QPointF(0, 0);
-}
-
-size_t GraphData::size() const
-{
-    return m_data.size();
-}
-
-QRectF GraphData::boundingRect() const
-{
-    return QRect(0, m_max, m_data.size(), abs(m_max) + abs(m_min));
 }
 
 void GraphData::setSampleSize(qint32 size)
@@ -61,7 +98,7 @@ void GraphData::setSampleSize(qint32 size)
 
     quint32 pos = m_data_pos;
     m_data_pos = 0;
-    m_data.clear();
+    clear();
     dataPosChanged(pos);
 }
 
@@ -99,7 +136,7 @@ void GraphData::dataPosChanged(quint32 pos)
             continue;
 
         qreal val = v.toReal();
-        m_data.push_back(graph_data_st(val, i));
+        m_data.push_back(new graph_data_st(val, i));
         setMinMax(val);
     }
 }
@@ -112,9 +149,11 @@ void GraphData::eraseSpareData(qint32 absPos, quint32 pos)
         {
             int i = m_data.size()-1;
             for(; i != -1; --i)
-                if(m_data[i].itr < pos)
+                if(m_data[i]->itr < pos)
                     break;
 
+            for(std::vector<graph_data_st*>::iterator itr = m_data.begin()+i; itr != m_data.end(); ++itr)
+                delete *itr;
             m_data.erase(m_data.begin()+i, m_data.end());
             m_data_pos = pos;
             return;
@@ -122,15 +161,17 @@ void GraphData::eraseSpareData(qint32 absPos, quint32 pos)
     }
     else if(absPos >= m_sample_size || pos < m_data_pos)
     {
-        m_data.clear();
+        clear();
     }
     else if(pos > m_data_pos && ((qint32)m_data.size() >= m_sample_size || (qint32)m_data.size() > absPos))
     {
         quint32 i = 0;
         for(; i < m_data.size(); ++i)
-            if(m_data[i].itr > pos)
+            if(m_data[i]->itr > pos)
                 break;
 
+        for(std::vector<graph_data_st*>::iterator itr = m_data.begin(); itr != m_data.begin()+i; ++itr)
+            delete *itr;
         m_data.erase(m_data.begin(), m_data.begin()+i);
     }
 }
@@ -139,7 +180,7 @@ quint32 GraphData::getStorageBegin(qint32 absPos)
 {
     if(m_sample_size == -1 && !m_data.empty())
     {
-        return m_data.back().itr+1;
+        return m_data.back()->itr+1;
     }
     else if(absPos < (qint32)m_data.size())
     {
@@ -155,25 +196,13 @@ quint32 GraphData::getStorageBegin(qint32 absPos)
     return 0;
 }
 
-void GraphData::setMinMax(double val)
-{
-    if(val > m_max)      m_max = val;
-    else if(val < m_min) m_min = val;
-}
-
-void GraphData::resetMinMax()
-{
-    m_max = -999999999;
-    m_min = 99999999;
-}
-
 void GraphData::setDataType(quint8 type)
 {
     m_data_type = type;
 
     quint32 pos = m_data_pos;
     m_data_pos = 0;
-    m_data.clear();
+    clear();
     dataPosChanged(pos);
 }
 
@@ -183,6 +212,6 @@ void GraphData::setInfo(data_widget_info &info)
 
     quint32 pos = m_data_pos;
     m_data_pos = 0;
-    m_data.clear();
+    clear();
     dataPosChanged(pos);
 }

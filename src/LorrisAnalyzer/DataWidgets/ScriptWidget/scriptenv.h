@@ -70,6 +70,7 @@ private:
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newColorWidget(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __newGraphWidget(QScriptContext *context, QScriptEngine *engine);
 
     QString m_source;
     AnalyzerDataArea *m_area;

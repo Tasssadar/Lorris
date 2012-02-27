@@ -28,8 +28,15 @@
 #include <QDebug>
 
 #include <analyzerdataarea.h>
+#include "DataWidgets/GraphWidget/graphcurve.h"
 #include "DataWidgets/datawidget.h"
 #include "scriptenv.h"
+
+QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &in)
+{ return engine->newQObject(in); }
+
+void GraphCurveFromScriptValue(const QScriptValue &object, GraphCurve* &out)
+{ out = qobject_cast<GraphCurve*>(object.toQObject()); }
 
 ScriptEnv::ScriptEnv(AnalyzerDataArea* area, quint32 w_id, QObject *parent) :
     QScriptEngine(parent)
@@ -68,6 +75,7 @@ void ScriptEnv::prepareNewContext()
     QScriptValue numberW = newFunction(&__newNumberWidget);
     QScriptValue barW = newFunction(&__newBarWidget);
     QScriptValue colorW = newFunction(&__newColorWidget);
+    QScriptValue graphW = newFunction(&__newGraphWidget);
 
     m_global.setProperty("clearTerm", clearTerm);
     m_global.setProperty("appendTerm", appendTerm);
@@ -76,10 +84,13 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
     m_global.setProperty("newColorWidget", colorW);
+    m_global.setProperty("newGraphWidget", graphW);
 
     for(std::list<DataWidget*>::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         m_area->removeWidget((*itr)->getId());
     m_widgets.clear();
+
+    qScriptRegisterMetaType(this, GraphCurveToScriptValue, GraphCurveFromScriptValue);
 }
 
 void ScriptEnv::setSource(const QString &source)
@@ -149,7 +160,12 @@ DataWidget *ScriptEnv::addWidget(quint8 type, QScriptContext *context)
     w->setTitle(context->argument(0).toString());
 
     if(context->argumentCount() >= 3)
-        w->resize(context->argument(1).toUInt32(), context->argument(2).toUInt32());
+    {
+        int wid = context->argument(1).toUInt32();
+        int h = context->argument(2).toUInt32();
+        if(wid && h)
+            w->resize(wid, h);
+    }
 
     if(context->argumentCount() >= 5)
     {
@@ -214,5 +230,11 @@ QScriptValue ScriptEnv::__newBarWidget(QScriptContext *context, QScriptEngine *e
 QScriptValue ScriptEnv::__newColorWidget(QScriptContext *context, QScriptEngine *engine)
 {
     DataWidget *w = ((ScriptEnv*)engine)->addWidget(WIDGET_COLOR, context);
+    return engine->newQObject(w);
+}
+
+QScriptValue ScriptEnv::__newGraphWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    DataWidget *w = ((ScriptEnv*)engine)->addWidget(WIDGET_GRAPH, context);
     return engine->newQObject(w);
 }

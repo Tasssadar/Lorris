@@ -75,6 +75,8 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
 
     connect(this, SIGNAL(legendChecked(QwtPlotItem*,bool)), SLOT(showCurve(QwtPlotItem*, bool)));
 
+    setAxisScale(QwtPlot::xBottom, -20, 20);
+    setAxisScale(QwtPlot::yLeft, -20, 20);
     // to show graph appearance while dragging from add button to widget area
     replot();
 }

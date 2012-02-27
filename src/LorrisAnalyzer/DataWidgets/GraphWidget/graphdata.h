@@ -42,38 +42,58 @@ struct graph_data_st
     quint32 itr;
 };
 
-class GraphData : public QwtSeriesData<QPointF>
+class GraphDataSimple : public QwtSeriesData<QPointF>
+{
+public:
+    GraphDataSimple();
+
+    QPointF sample(size_t i) const;
+    size_t  size() const;
+    QRectF boundingRect() const;
+
+    void addPoint(quint32 index, qreal data);
+    qint32 getMax() { return m_max; }
+    qint32 getMin() { return m_min; }
+    void clear();
+
+    virtual void setSampleSize(qint32) { }
+    virtual void dataPosChanged(quint32) { }
+
+    virtual void setDataType(quint8) { }
+    virtual quint8 getDataType() { return 0; }
+    virtual void setInfo(data_widget_info&) { }
+
+protected:
+    void setMinMax(double val);
+    void resetMinMax();
+
+    std::vector<graph_data_st*> m_data;
+    QHash<quint32, graph_data_st*> m_indexes;
+
+    qint32 m_min;
+    qint32 m_max;
+};
+
+class GraphData : public GraphDataSimple
 {
 public:
     GraphData(AnalyzerDataStorage *storage, data_widget_info& info, qint32 sample_size, quint8 data_type);
 
-    QPointF sample(size_t i) const;
-    size_t size() const;
-
-    QRectF boundingRect() const;
     void setSampleSize(qint32 size);
     void dataPosChanged(quint32 pos);
 
-    qint32 getMax() { return m_max; }
-    qint32 getMin() { return m_min; }
     void setDataType(quint8 type);
     quint8 getDataType() { return m_data_type; }
     void setInfo(data_widget_info& info);
-
 private:
     void eraseSpareData(qint32 absPos, quint32 pos);
     quint32 getStorageBegin(qint32 absPos);
-    void setMinMax(double val);
-    void resetMinMax();
 
     AnalyzerDataStorage *m_storage;
     data_widget_info m_info;
 
-    std::vector<graph_data_st> m_data;
     qint32 m_sample_size;
 
-    qint32 m_min;
-    qint32 m_max;
     quint32 m_data_pos;
     quint8 m_data_type;
 };
