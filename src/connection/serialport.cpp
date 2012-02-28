@@ -85,7 +85,15 @@ void SerialPort::Close()
 void SerialPort::SendData(const QByteArray& data)
 {
     if(opened)
-        m_port->write(data);
+    {
+        qint64 len = m_port->write(data);
+        // FIXME: Some serial ports needs this
+        if(len == -1)
+        {
+            Utils::msleep(1);
+            m_port->write(data);
+        }
+    }
 }
 
 void SerialPort::OpenConcurrent()
