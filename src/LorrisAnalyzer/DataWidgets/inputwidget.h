@@ -21,8 +21,26 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.2.0-dev"
- #define REVISION 193
-#endif // REVISION_H
+#ifndef INPUTWIDGET_H
+#define INPUTWIDGET_H
+
+#include "datawidget.h"
+
+class QUiLoader;
+
+class InputWidget : public DataWidget
+{
+    Q_OBJECT
+public:
+    InputWidget(QWidget *parent = 0);
+    ~InputWidget();
+
+public slots:
+    QWidget *newWidget(const QString& name, int stretch = 0);
+
+private:
+    QUiLoader *m_loader;
+};
+
+
+#endif // INPUTWIDGET_H

@@ -40,7 +40,8 @@ enum WidgetTypes
     WIDGET_BAR,
     WIDGET_COLOR,
     WIDGET_GRAPH,
-    WIDGET_SCRIPT
+    WIDGET_SCRIPT,
+    WIDGET_INPUT
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
 
 };

@@ -3,6 +3,7 @@
 # -------------------------------------------------
 QT += gui core network script
 TARGET = Lorris
+CONFIG += uitools
 CONFIG(debug, debug|release):DESTDIR = $$PWD/bin/debug
 else:DESTDIR = $$PWD/bin/release
 OBJECTS_DIR = $$PWD/obj
@@ -83,7 +84,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp \
     src/shared/terminal.cpp \
     dep/qscriptsyntaxhighlighter.cpp \
-    src/LorrisAnalyzer/playback.cpp
+    src/LorrisAnalyzer/playback.cpp \
+    src/LorrisAnalyzer/DataWidgets/inputwidget.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -152,7 +154,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.h \
     src/shared/terminal.h \
     dep/qscriptsyntaxhighlighter_p.h \
-    src/LorrisAnalyzer/playback.h
+    src/LorrisAnalyzer/playback.h \
+    src/LorrisAnalyzer/DataWidgets/inputwidget.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

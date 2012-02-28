@@ -21,8 +21,39 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.2.0-dev"
- #define REVISION 193
-#endif // REVISION_H
+#include <QSpacerItem>
+#include <QtUiTools/QUiLoader>
+
+#include "inputwidget.h"
+
+InputWidget::InputWidget(QWidget *parent) :
+    DataWidget(parent)
+{
+    m_widgetType = WIDGET_INPUT;
+
+    setTitle(tr("Color"));
+    //setIcon(":/dataWidgetIcons/color.png");
+
+    adjustSize();
+    setMinimumSize(width(), width());
+
+    layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+    m_loader = new QUiLoader(this);
+}
+
+InputWidget::~InputWidget()
+{
+
+}
+
+QWidget *InputWidget::newWidget(const QString &name, int stretch)
+{
+    QWidget *w = m_loader->createWidget(name, this);
+    if(!w)
+        return NULL;
+
+    layout->addWidget(w, stretch);
+
+    return w;
+}

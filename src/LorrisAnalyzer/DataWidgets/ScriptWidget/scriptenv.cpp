@@ -76,6 +76,7 @@ void ScriptEnv::prepareNewContext()
     QScriptValue barW = newFunction(&__newBarWidget);
     QScriptValue colorW = newFunction(&__newColorWidget);
     QScriptValue graphW = newFunction(&__newGraphWidget);
+    QScriptValue inputW = newFunction(&__newInputWidget);
 
     m_global.setProperty("clearTerm", clearTerm);
     m_global.setProperty("appendTerm", appendTerm);
@@ -85,6 +86,7 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("newBarWidget", barW);
     m_global.setProperty("newColorWidget", colorW);
     m_global.setProperty("newGraphWidget", graphW);
+    m_global.setProperty("newInputWidget", inputW);
 
     for(std::list<DataWidget*>::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         m_area->removeWidget((*itr)->getId());
@@ -216,6 +218,8 @@ QScriptValue ScriptEnv::__sendData(QScriptContext *context, QScriptEngine *engin
             sendData.push_back(itr.value().toUInt16());
     }
 
+    sendData.chop(1); // last num is array len, wtf
+
     emit ((ScriptEnv*)engine)->SendData(sendData);
     return QScriptValue();
 }
@@ -241,5 +245,12 @@ QScriptValue ScriptEnv::__newColorWidget(QScriptContext *context, QScriptEngine 
 QScriptValue ScriptEnv::__newGraphWidget(QScriptContext *context, QScriptEngine *engine)
 {
     DataWidget *w = ((ScriptEnv*)engine)->addWidget(WIDGET_GRAPH, context);
+    return engine->newQObject(w);
+}
+
+
+QScriptValue ScriptEnv::__newInputWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    DataWidget *w = ((ScriptEnv*)engine)->addWidget(WIDGET_INPUT, context);
     return engine->newQObject(w);
 }
