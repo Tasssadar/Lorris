@@ -25,6 +25,8 @@
 #define GRAPHDATA_H
 
 #include <qwt_series_data.h>
+#include <deque>
+
 #include "../datawidget.h"
 
 class AnalyzerDataStorage;
@@ -45,6 +47,7 @@ struct graph_data_st
 class GraphDataSimple : public QwtSeriesData<QPointF>
 {
 public:
+    typedef std::deque<graph_data_st*> storage;
     GraphDataSimple();
 
     QPointF sample(size_t i) const;
@@ -67,7 +70,7 @@ protected:
     void setMinMax(double val);
     void resetMinMax();
 
-    std::vector<graph_data_st*> m_data;
+    storage m_data;
     QHash<quint32, graph_data_st*> m_indexes;
 
     qint32 m_min;

@@ -68,14 +68,29 @@ void GraphDataSimple::addPoint(quint32 index, qreal data)
     else
     {
         graph_data_st *dta = new graph_data_st(data, index);
-        m_data.push_back(dta);
         m_indexes.insert(index, dta);
+
+        if(m_data.empty() || index > m_data.back()->itr)
+            m_data.push_back(dta);
+        else if(index < m_data.front()->itr)
+            m_data.push_front(dta);
+        else
+        {
+            for(storage::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+            {
+                if((*itr)->itr < index)
+                {
+                    m_data.insert(++itr, dta);
+                    break;
+                }
+            }
+        }
     }
 }
 
 void GraphDataSimple::clear()
 {
-    for(std::vector<graph_data_st*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+    for(storage::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
         delete *itr;
     m_data.clear();
     m_indexes.clear();
@@ -130,7 +145,7 @@ void GraphData::dataPosChanged(quint32 pos)
         if(m_info.device != -1 && (!cur->getDeviceId(dev) || dev != m_info.device))
             continue;
 
-        v = DataWidget::getNumFromPacket(cur, m_info.pos, m_data_type).toReal();
+        v = DataWidget::getNumFromPacket(cur, m_info.pos, m_data_type);
 
         if(!v.isValid())
             continue;
@@ -152,7 +167,7 @@ void GraphData::eraseSpareData(qint32 absPos, quint32 pos)
                 if(m_data[i]->itr < pos)
                     break;
 
-            for(std::vector<graph_data_st*>::iterator itr = m_data.begin()+i; itr != m_data.end(); ++itr)
+            for(storage::iterator itr = m_data.begin()+i; itr != m_data.end(); ++itr)
                 delete *itr;
             m_data.erase(m_data.begin()+i, m_data.end());
             m_data_pos = pos;
@@ -170,7 +185,7 @@ void GraphData::eraseSpareData(qint32 absPos, quint32 pos)
             if(m_data[i]->itr > pos)
                 break;
 
-        for(std::vector<graph_data_st*>::iterator itr = m_data.begin(); itr != m_data.begin()+i; ++itr)
+        for(storage::iterator itr = m_data.begin(); itr != m_data.begin()+i; ++itr)
             delete *itr;
         m_data.erase(m_data.begin(), m_data.begin()+i);
     }
