@@ -30,6 +30,7 @@
 #include <analyzerdataarea.h>
 #include "DataWidgets/GraphWidget/graphcurve.h"
 #include "DataWidgets/datawidget.h"
+#include "DataWidgets/inputwidget.h"
 #include "scriptenv.h"
 
 QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &in)

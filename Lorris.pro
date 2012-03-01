@@ -155,7 +155,8 @@ HEADERS += src/ui/mainwindow.h \
     src/shared/terminal.h \
     dep/qscriptsyntaxhighlighter_p.h \
     src/LorrisAnalyzer/playback.h \
-    src/LorrisAnalyzer/DataWidgets/inputwidget.h
+    src/LorrisAnalyzer/DataWidgets/inputwidget.h \
+    src/LorrisAnalyzer/DataWidgets/inputwidgetclasses.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

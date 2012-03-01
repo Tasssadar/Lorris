@@ -49,7 +49,7 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 
 ScriptWidget::~ScriptWidget()
 {
-
+    delete m_editor;
 }
 
 void ScriptWidget::setUp(AnalyzerDataStorage *storage)

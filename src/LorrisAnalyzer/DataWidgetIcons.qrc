@@ -5,5 +5,6 @@
         <file alias="color.png">icons/color.png</file>
         <file alias="graph.png">icons/graph.png</file>
         <file alias="script.png">icons/script.png</file>
+        <file alias="input.png">icons/input.png</file>
     </qresource>
 </RCC>
