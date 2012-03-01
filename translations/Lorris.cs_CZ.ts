@@ -288,18 +288,18 @@
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui" line="14"/>
         <source>Curve add/edit</source>
-        <translation>Přidání/editace hrany</translation>
+        <translation>Přidání/editace křivky</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui" line="35"/>
         <source>Add new curve</source>
-        <translatorcomment>Říká Audio!</translatorcomment>
-        <translation>Nová hrana</translation>
+        <translatorcomment>Říká Audio! PS: je to křivka! Audio spatne!</translatorcomment>
+        <translation>Nová křivka</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui" line="45"/>
         <source>Set for existing curve</source>
-        <translation>Nastavit pro existující hranu</translation>
+        <translation>Nastavit pro existující křivku</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="52"/>
@@ -359,12 +359,12 @@
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="144"/>
         <source>You have to set name!</source>
-        <translation>Musíte nastavit jméno hrany!</translation>
+        <translation>Musíte nastavit jméno křivky!</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="151"/>
         <source>You have to set color!</source>
-        <translation>Musíte nastavit barvu hrany!</translation>
+        <translation>Musíte nastavit barvu křivky!</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="163"/>
@@ -397,7 +397,7 @@
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="95"/>
         <source>Curve</source>
-        <translation>Hrana</translation>
+        <translation>Křivka</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="81"/>
@@ -415,12 +415,12 @@
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="69"/>
         <source>Edit curve properties</source>
-        <translation>Upravit vlastnosti hrany</translation>
+        <translation>Upravit vlastnosti křivky</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="72"/>
         <source>Remove Curve</source>
-        <translation>Odebrat hranu</translation>
+        <translation>Odebrat křivku</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="76"/>
@@ -477,6 +477,14 @@
         <location filename="../src/ui/hometab.ui" line="41"/>
         <source>New tab</source>
         <translation>Nový panel</translation>
+    </message>
+</context>
+<context>
+    <name>InputWidget</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/inputwidget.cpp" line="34"/>
+        <source>Color</source>
+        <translation>Barva</translation>
     </message>
 </context>
 <context>
@@ -1514,10 +1522,6 @@
         <translation>Exportovat EEPROM</translation>
     </message>
     <message>
-        <source>Lorris data file (*.ldta)</source>
-        <translation type="obsolete">Datový soubor Lorris (*.ldta)</translation>
-    </message>
-    <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="69"/>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="160"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="516"/>
@@ -1913,7 +1917,7 @@ function onKeyPress(key) {
 }</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="105"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="107"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
@@ -1942,17 +1946,17 @@ function onKeyPress(key) {
 <context>
     <name>SerialPortBuilder</name>
     <message>
-        <location filename="../src/connection/serialport.cpp" line="133"/>
+        <location filename="../src/connection/serialport.cpp" line="141"/>
         <source>Port: </source>
         <translation>Port: </translation>
     </message>
     <message>
-        <location filename="../src/connection/serialport.cpp" line="155"/>
+        <location filename="../src/connection/serialport.cpp" line="163"/>
         <source>Baud Rate: </source>
         <translation>Rychlost: </translation>
     </message>
     <message>
-        <location filename="../src/connection/serialport.cpp" line="233"/>
+        <location filename="../src/connection/serialport.cpp" line="241"/>
         <source>Failed to open serial port!</source>
         <translation>Nemůžu oteřít sériový port!</translation>
     </message>
