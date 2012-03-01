@@ -95,7 +95,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -262,7 +262,7 @@ to change order</string>
      <x>10</x>
      <y>0</y>
      <width>721</width>
-     <height>171</height>
+     <height>191</height>
     </rect>
    </property>
    <property name="title">
@@ -304,7 +304,7 @@ to change order</string>
     </widget>
    </widget>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>21</x>

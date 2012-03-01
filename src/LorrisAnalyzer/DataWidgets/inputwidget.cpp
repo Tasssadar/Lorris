@@ -38,13 +38,14 @@ InputWidget::InputWidget(QWidget *parent) :
     setMinimumSize(width(), width());
 
     layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    layout->setContentsMargins(5, 0, 5, 5);
 
     m_loader = new QUiLoader(this);
 }
 
 InputWidget::~InputWidget()
 {
-
+    delete m_loader;
 }
 
 QWidget *InputWidget::newWidget(const QString &name, int stretch)
