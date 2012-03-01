@@ -157,7 +157,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         filename = *name;
     else
     {
-        QString filters = QObject::tr("Compressed Lorris data file(*.cldta);;Lorris data file (*.ldta)");
+        QString filters = QObject::tr("Lorris data files (*.ldta *.cldta)");
         filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"), "", filters);
     }
 

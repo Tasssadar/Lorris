@@ -483,8 +483,8 @@
     <name>InputWidget</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/inputwidget.cpp" line="34"/>
-        <source>Color</source>
-        <translation>Barva</translation>
+        <source>Input</source>
+        <translation>Vstup</translation>
     </message>
 </context>
 <context>
@@ -1523,9 +1523,6 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="69"/>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="160"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="516"/>
-        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="104"/>
         <source>Compressed Lorris data file(*.cldta);;Lorris data file (*.ldta)</source>
         <translation>Komprimovaný datový soubor Lorris (*cldta);;Datový soubor Lorris (*.ldta)</translation>
     </message>
@@ -1549,6 +1546,13 @@
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="64"/>
         <source>Can&apos;t create/open file!</source>
         <translation>Nemůžu vytvořit/otevřít soubor!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="160"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="516"/>
+        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="104"/>
+        <source>Lorris data files (*.ldta *.cldta)</source>
+        <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="161"/>
@@ -1883,7 +1887,7 @@
 <context>
     <name>ScriptEnv</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="46"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="47"/>
         <source>// You can use clearTerm() and appendTerm(string) to set term content
 // You can use sendData(Array of ints) to send data to device. It expects array of uint8s
 
@@ -1917,7 +1921,7 @@ function onKeyPress(key) {
 }</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="107"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="108"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
