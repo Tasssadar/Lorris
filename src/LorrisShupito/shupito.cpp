@@ -237,14 +237,13 @@ void Shupito::handleVccPacket(ShupitoPacket &p)
     //vcc value
     if(p.getLen() == 4 && p[0] == 0x01 && p[1] == 0x03)
     {
-        ShupitoDesc::config *vddCfg = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
-        if(!vddCfg)
+        if(!m_vdd_config)
             return;
 
         double millivolts_per_unit = 1.0;
-        if (vddCfg->data.size() == 5 && vddCfg->data[0] == 1)
+        if (m_vdd_config->data.size() == 5 && m_vdd_config->data[0] == 1)
         {
-            qint32 mpu_16_16 = vddCfg->data[1] | (vddCfg->data[2] << 8) | (vddCfg->data[3] << 16) | (vddCfg->data[4] << 24);
+            qint32 mpu_16_16 = m_vdd_config->data[1] | (m_vdd_config->data[2] << 8) | (m_vdd_config->data[3] << 16) | (m_vdd_config->data[4] << 24);
             millivolts_per_unit = mpu_16_16 / 65536.0;
         }
 
