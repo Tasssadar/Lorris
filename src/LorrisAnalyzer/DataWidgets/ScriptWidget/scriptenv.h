@@ -44,6 +44,7 @@ Q_SIGNALS:
 
 public:
     explicit ScriptEnv(AnalyzerDataArea *area , quint32 w_id, QObject *parent = 0);
+    ~ScriptEnv();
 
     void setSource(const QString& source);
     const QString& getSource() { return m_source; }

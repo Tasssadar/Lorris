@@ -136,11 +136,7 @@ public:
         m_updating = update;
     }
 
-    void setWidgetControlled(qint32 widget)
-    {
-        m_widgetControlled = widget;
-    }
-
+    void setWidgetControlled(qint32 widget);
     qint32 getWidgetControlled() { return m_widgetControlled; }
 
 public slots:
@@ -229,6 +225,13 @@ protected:
     QPixmap *m_pixmap;
 };
 
+enum CloseLabelState
+{
+    CLOSE_NONE   = 0x00,
+    CLOSE_LOCKED = 0x01,
+    CLOSE_SCRIPT = 0x02
+};
+
 class CloseLabel : public QLabel
 {
     Q_OBJECT
@@ -240,13 +243,16 @@ public:
     explicit CloseLabel(QWidget *parent);
 
     void setLocked(bool locked);
+    void setScript(bool script);
     void setId(quint32 id) { m_id = id; }
 
 protected:
     void mousePressEvent(QMouseEvent *event);
 
 private:
-    bool m_locked;
+    QString getTextByState();
+
+    quint8 m_state;
     quint32 m_id;
 };
 

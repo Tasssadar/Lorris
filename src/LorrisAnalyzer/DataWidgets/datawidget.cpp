@@ -365,6 +365,13 @@ void DataWidget::setValue(const QVariant &/*var*/)
 {
 }
 
+void DataWidget::setWidgetControlled(qint32 widget)
+{
+    m_widgetControlled = widget;
+
+    m_closeLabel->setScript(widget != -1);
+}
+
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 {
     setFlat(true);
@@ -411,6 +418,8 @@ const QPixmap& DataWidgetAddBtn::getRender()
 
 CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
 {
+    m_state = CLOSE_NONE;
+
     setObjectName("closeLabel");
     setStyleSheet("border-bottom: 1px solid black");
     setAlignment(Qt::AlignVCenter);
@@ -419,7 +428,7 @@ CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
 
 void CloseLabel::mousePressEvent(QMouseEvent *event)
 {
-    if (!m_locked && event->button() == Qt::LeftButton)
+    if (m_state == CLOSE_NONE && event->button() == Qt::LeftButton)
         emit removeWidget(m_id);
     else
         QLabel::mousePressEvent(event);
@@ -427,8 +436,29 @@ void CloseLabel::mousePressEvent(QMouseEvent *event)
 
 void CloseLabel::setLocked(bool locked)
 {
-    m_locked = locked;
-    setText(locked ? tr(" [L] ") : " X ");
+    if(locked)
+        m_state |= CLOSE_LOCKED;
+    else
+        m_state &= ~(CLOSE_LOCKED);
+
+    setText(getTextByState());
+}
+
+void CloseLabel::setScript(bool script)
+{
+    if(script)
+        m_state |= CLOSE_SCRIPT;
+    else
+        m_state &= ~(CLOSE_SCRIPT);
+
+    setText(getTextByState());
+}
+
+QString CloseLabel::getTextByState()
+{
+    if     (m_state & CLOSE_LOCKED)  return tr(" [L] ");
+    else if(m_state & CLOSE_SCRIPT)  return tr(" [S] ");
+    else                             return " X ";
 }
 
 QVariant DataWidget::getNumFromPacket(analyzer_data *data, quint32 pos, quint8 type)

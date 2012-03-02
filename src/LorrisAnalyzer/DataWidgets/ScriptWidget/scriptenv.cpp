@@ -63,6 +63,13 @@ ScriptEnv::ScriptEnv(AnalyzerDataArea* area, quint32 w_id, QObject *parent) :
     m_x = m_y = 0;
 }
 
+ScriptEnv::~ScriptEnv()
+{
+    for(std::list<DataWidget*>::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+        m_area->removeWidget((*itr)->getId());
+    m_widgets.clear();
+}
+
 void ScriptEnv::prepareNewContext()
 {
     QScriptContext *context = pushContext();
