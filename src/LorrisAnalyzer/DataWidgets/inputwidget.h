@@ -44,10 +44,7 @@ public slots:
     QWidget *newWidget(const QString& name, int stretch = 0);
 
 private:
-    QHash<QString, QWidgetFc> m_w_pointers;
     QUiLoader *m_loader;
 };
-
-#include "inputwidgetclasses.h"
 
 #endif // INPUTWIDGET_H

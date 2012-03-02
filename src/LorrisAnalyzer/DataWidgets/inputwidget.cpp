@@ -41,9 +41,6 @@ InputWidget::InputWidget(QWidget *parent) :
     layout->setContentsMargins(5, 0, 5, 5);
 
     m_loader = new QUiLoader(this);
-
-    m_w_pointers["Button"] = &Button::newInstance;
-    m_w_pointers["LineEdit"] = &LineEdit::newInstance;
 }
 
 InputWidget::~InputWidget()
@@ -53,17 +50,7 @@ InputWidget::~InputWidget()
 
 QWidget *InputWidget::newWidget(const QString &name, int stretch)
 {
-    QWidget *w = NULL;
-
-    if(name.startsWith("Q"))
-        w = m_loader->createWidget(name, this);
-    else
-    {
-        QHash<QString, QWidgetFc>::iterator itr = m_w_pointers.find(name);
-        if(itr != m_w_pointers.end())
-            w = (*itr.value())(this);
-    }
-
+    QWidget *w = m_loader->createWidget(name, this);
     if(!w)
         return NULL;
 

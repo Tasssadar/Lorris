@@ -157,7 +157,6 @@ HEADERS += src/ui/mainwindow.h \
     dep/qscriptsyntaxhighlighter_p.h \
     src/LorrisAnalyzer/playback.h \
     src/LorrisAnalyzer/DataWidgets/inputwidget.h \
-    src/LorrisAnalyzer/DataWidgets/inputwidgetclasses.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.h
 
 win32 {
