@@ -85,7 +85,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/shared/terminal.cpp \
     dep/qscriptsyntaxhighlighter.cpp \
     src/LorrisAnalyzer/playback.cpp \
-    src/LorrisAnalyzer/DataWidgets/inputwidget.cpp
+    src/LorrisAnalyzer/DataWidgets/inputwidget.cpp \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -156,7 +157,8 @@ HEADERS += src/ui/mainwindow.h \
     dep/qscriptsyntaxhighlighter_p.h \
     src/LorrisAnalyzer/playback.h \
     src/LorrisAnalyzer/DataWidgets/inputwidget.h \
-    src/LorrisAnalyzer/DataWidgets/inputwidgetclasses.h
+    src/LorrisAnalyzer/DataWidgets/inputwidgetclasses.h \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

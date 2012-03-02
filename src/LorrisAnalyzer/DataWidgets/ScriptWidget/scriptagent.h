@@ -21,8 +21,23 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.2.0-dev"
- #define REVISION 199
-#endif // REVISION_H
+#ifndef SCRIPTAGENT_H
+#define SCRIPTAGENT_H
+
+#include <QScriptEngineAgent>
+#include <QElapsedTimer>
+
+class ScriptAgent : public QScriptEngineAgent
+{
+public:
+    explicit ScriptAgent(QScriptEngine * engine);
+    
+    void exceptionThrow (qint64 scriptId, const QScriptValue & exception, bool hasHandler);
+    void scriptLoad(qint64, const QString &, const QString &, int);
+
+private:
+    QElapsedTimer m_timer;
+    quint8 m_errors;
+};
+
+#endif // SCRIPTAGENT_H

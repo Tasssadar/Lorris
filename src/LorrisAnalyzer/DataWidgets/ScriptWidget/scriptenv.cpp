@@ -32,6 +32,7 @@
 #include "DataWidgets/datawidget.h"
 #include "DataWidgets/inputwidget.h"
 #include "scriptenv.h"
+#include "scriptagent.h"
 
 QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &in)
 { return engine->newQObject(in); }
@@ -102,10 +103,13 @@ void ScriptEnv::setSource(const QString &source)
 
     popContext();
     prepareNewContext();
+    setAgent(NULL);
     evaluate(source);
 
     if(hasUncaughtException())
         throw tr("%1 on line %2").arg(uncaughtException().toString()).arg(uncaughtExceptionLineNumber());
+
+    setAgent(new ScriptAgent(this));
 
     m_on_data = m_global.property("onDataChanged");
     m_on_key = m_global.property("onKeyPress");
