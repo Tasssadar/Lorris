@@ -165,6 +165,12 @@ void ScriptWidget::moveEvent(QMoveEvent *)
         m_env->setPos(pos().x(), pos().y());
 }
 
+void ScriptWidget::resizeEvent(QResizeEvent *)
+{
+    if(m_env)
+        m_env->setSize(size());
+}
+
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText(tr("Script"));

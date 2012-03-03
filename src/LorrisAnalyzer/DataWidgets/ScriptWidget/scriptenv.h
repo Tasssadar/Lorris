@@ -27,6 +27,7 @@
 #include <QObject>
 #include <QScriptEngine>
 #include <QScriptProgram>
+#include <QSize>
 
 #include "../../packet.h"
 
@@ -58,6 +59,15 @@ public:
         m_y = y;
     }
 
+    void setSize(const QSize& size)
+    {
+        m_width = size.width();
+        m_height = size.height();
+    }
+
+    int getWidth() { return m_width; }
+    int getHeight() { return m_height; }
+
 public slots:
     void keyPressed(const QByteArray& key);
 
@@ -67,6 +77,8 @@ private:
     static QScriptValue __clearTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __appendTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __sendData(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getWidth(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getHeight(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);
@@ -85,6 +97,8 @@ private:
     qint32 m_widget_id;
     int m_x;
     int m_y;
+    int m_width;
+    int m_height;
 
     std::list<DataWidget*> m_widgets;
 };

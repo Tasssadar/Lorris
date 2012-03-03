@@ -80,6 +80,8 @@ void ScriptEnv::prepareNewContext()
     QScriptValue clearTerm = newFunction(&__clearTerm);
     QScriptValue appendTerm = newFunction(&__appendTerm);
     QScriptValue sendData = newFunction(&__sendData);
+    QScriptValue getW = newFunction(&__getWidth);
+    QScriptValue getH = newFunction(&__getHeight);
 
     QScriptValue numberW = newFunction(&__newNumberWidget);
     QScriptValue barW = newFunction(&__newBarWidget);
@@ -91,6 +93,8 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("clearTerm", clearTerm);
     m_global.setProperty("appendTerm", appendTerm);
     m_global.setProperty("sendData", sendData);
+    m_global.setProperty("getWidth", getW);
+    m_global.setProperty("getHeight", getH);
 
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
@@ -289,4 +293,14 @@ QScriptValue ScriptEnv::__newWidget(QScriptContext *context, QScriptEngine *engi
 
     DataWidget *w = ((ScriptEnv*)engine)->addWidget(type, context, 1);
     return engine->newQObject(w);
+}
+
+QScriptValue ScriptEnv::__getWidth(QScriptContext */*context*/, QScriptEngine *engine)
+{
+    return ((ScriptEnv*)engine)->getWidth();
+}
+
+QScriptValue ScriptEnv::__getHeight(QScriptContext */*context*/, QScriptEngine *engine)
+{
+    return ((ScriptEnv*)engine)->getHeight();
 }
