@@ -45,6 +45,7 @@ public:
 protected:
      void newData(analyzer_data *data, quint32 index);
      void moveEvent(QMoveEvent *);
+     void resizeEvent(QResizeEvent *);
 
 private slots:
      void setSourceTriggered();

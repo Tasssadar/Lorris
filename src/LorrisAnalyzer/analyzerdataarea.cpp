@@ -55,9 +55,12 @@ AnalyzerDataArea::~AnalyzerDataArea()
 
 void AnalyzerDataArea::clear()
 {
-    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
-        delete itr.value();
-    m_widgets.clear();
+    w_map::iterator itr = m_widgets.begin();
+    while(itr != m_widgets.end())
+    {
+        delete *itr;
+        itr = m_widgets.erase(itr);
+    }
     m_marks.clear();
 }
 
