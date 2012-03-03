@@ -65,9 +65,14 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="431"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="459"/>
         <source> [L] </source>
         <translation> [Z] </translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="460"/>
+        <source> [S] </source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -1837,6 +1842,11 @@
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.cpp" line="46"/>
+        <source>Uncaught exception: </source>
+        <translation>Neošetřená výjimka: </translation>
+    </message>
 </context>
 <context>
     <name>RangeSelectDialog</name>
@@ -1887,7 +1897,7 @@
 <context>
     <name>ScriptEnv</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="47"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="48"/>
         <source>// You can use clearTerm() and appendTerm(string) to set term content
 // You can use sendData(Array of ints) to send data to device. It expects array of uint8s
 
@@ -1921,7 +1931,7 @@ function onKeyPress(key) {
 }</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="108"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="126"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
