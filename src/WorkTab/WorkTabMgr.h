@@ -26,16 +26,18 @@
 
 #include <vector>
 #include <map>
-#include <QTabWidget>
 
 #include "singleton.h"
 #include "WorkTab.h"
+#include "ui/maintabwidget.h"
 
 class WorkTabInfo;
 class HomeTab;
 
-class WorkTabMgr : public Singleton<WorkTabMgr>
+class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 {
+    Q_OBJECT
+
     public:
         typedef std::map<quint16, WorkTab*> WorkTabMap;
         typedef QList<WorkTabInfo*> InfoList;
@@ -72,14 +74,12 @@ class WorkTabMgr : public Singleton<WorkTabMgr>
         void removeTab(WorkTab *tab);
 
         QTabWidget *getWi() { return tabWidget; }
-        QTabWidget *CreateWidget(QWidget *parent)
-        {
-            tabWidget = new QTabWidget(parent);
-            return tabWidget;
-        }
+        QTabWidget *CreateWidget(QWidget *parent);
 
         void OpenHomeTab();
         void CloseHomeTab();
+
+    public slots:
         void NewTabDialog();
 
     private:
@@ -87,7 +87,7 @@ class WorkTabMgr : public Singleton<WorkTabMgr>
         WorkTabMap m_workTabs;
 
         quint16 tabIdCounter;
-        QTabWidget *tabWidget;
+        MainTabWidget *tabWidget;
         HomeTab *hometab;
 };
 

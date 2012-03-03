@@ -21,8 +21,39 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.3.0-dev"
- #define REVISION 209
-#endif // REVISION_H
+#ifndef MAINTABWIDGET_H
+#define MAINTABWIDGET_H
+
+#include <QTabWidget>
+#include <QTabBar>
+
+class MainTabWidget : public QTabWidget
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void newTab();
+
+public:
+    explicit MainTabWidget(QWidget *parent = 0);
+
+protected:
+    void mousePressEvent(QMouseEvent *ev);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+
+private:
+    bool checkEvent(QMouseEvent *event);
+};
+
+class MainTabBar : public QTabBar
+{
+    Q_OBJECT
+
+public:
+    explicit MainTabBar(QWidget * parent = 0);
+
+protected:
+    void mousePressEvent(QMouseEvent * event);
+};
+
+#endif // MAINTABWIDGET_H

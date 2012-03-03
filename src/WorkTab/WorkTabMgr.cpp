@@ -27,7 +27,7 @@
 #include "ui/HomeTab.h"
 #include "ui/tabdialog.h"
 
-WorkTabMgr::WorkTabMgr()
+WorkTabMgr::WorkTabMgr() : QObject()
 {
     tabIdCounter = 0;
     tabWidget = NULL;
@@ -108,4 +108,12 @@ void WorkTabMgr::NewTabDialog()
     TabDialog *dialog = new TabDialog((QWidget*)tabWidget->parent());
     dialog->exec();
     delete dialog;
+}
+
+QTabWidget *WorkTabMgr::CreateWidget(QWidget *parent)
+{
+    tabWidget = new MainTabWidget(parent);
+
+    connect(tabWidget, SIGNAL(newTab()), SLOT(NewTabDialog()));
+    return tabWidget;
 }
