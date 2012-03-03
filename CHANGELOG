@@ -5,6 +5,9 @@ Copyright (C) 2012 Vojtěch Boček
 Contact: <vbocek@gmail.com>
          https://github.com/Tasssadar
 
+Version 0.2.1 - git revision [207]
+ * Bugfix release - fix crash in LorrisAnalyzer when deleting widgets created by ScriptWidget
+ * Implement getWidth and getHeight to ScriptWidget
 
 Version 0.2.0 - git revision [204]
  * LorrisAnalyzer: Implement ScriptWidget, which allows to parse data with user-defined script
