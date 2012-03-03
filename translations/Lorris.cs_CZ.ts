@@ -1281,6 +1281,24 @@
     </message>
 </context>
 <context>
+    <name>MainTabBar</name>
+    <message>
+        <location filename="../src/ui/maintabwidget.cpp" line="82"/>
+        <source>Rename...</source>
+        <translation>Přejmenovat...</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/maintabwidget.cpp" line="86"/>
+        <source>Rename tab</source>
+        <translation>Přejmenovat panel</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/maintabwidget.cpp" line="86"/>
+        <source>New name:</source>
+        <translation>Nové jméno:</translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="68"/>
@@ -1931,7 +1949,7 @@ function onKeyPress(key) {
 }</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="126"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="134"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
@@ -1952,7 +1970,7 @@ function onKeyPress(key) {
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="170"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="176"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>

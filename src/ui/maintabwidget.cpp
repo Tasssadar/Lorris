@@ -22,6 +22,8 @@
 ****************************************************************************/
 
 #include <QMouseEvent>
+#include <QInputDialog>
+#include <QMenu>
 
 #include "maintabwidget.h"
 
@@ -29,6 +31,7 @@ MainTabWidget::MainTabWidget(QWidget *parent) :
     QTabWidget(parent)
 {
     setTabBar(new MainTabBar(this));
+    setMovable(true);
 }
 
 void MainTabWidget::mousePressEvent(QMouseEvent *event)
@@ -59,11 +62,36 @@ MainTabBar::MainTabBar(QWidget *parent) :
 
 void MainTabBar::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() != Qt::MidButton)
-        return QTabBar::mousePressEvent(event);
+    switch(event->button())
+    {
+        case Qt::MidButton:
+        {
+            int tab = tabAt(event->pos());
 
-    int tab = tabAt(event->pos());
+            if(tab != -1)
+                emit tabCloseRequested(tab);
+            break;
+        }
+        case Qt::RightButton:
+        {
+            int tab = tabAt(event->pos());
+            if(tab == -1 || tabText(tab) == "Home")
+                break;
 
-    if(tab != -1)
-        emit tabCloseRequested(tab);
+            QMenu menu(this);
+            menu.addAction(tr("Rename..."));
+            QAction *act = menu.exec(event->globalPos());
+            if(act)
+            {
+                QString name = QInputDialog::getText(this, tr("Rename tab"), tr("New name:"),
+                                                     QLineEdit::Normal, tabText(tab));
+                if(!name.isEmpty())
+                    setTabText(tab, name);
+            }
+            break;
+        }
+        default:
+            QTabBar::mousePressEvent(event);
+            break;
+    }
 }
