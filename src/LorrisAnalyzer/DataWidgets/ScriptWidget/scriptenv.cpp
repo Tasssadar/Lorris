@@ -65,9 +65,14 @@ ScriptEnv::ScriptEnv(AnalyzerDataArea* area, quint32 w_id, QObject *parent) :
 
 ScriptEnv::~ScriptEnv()
 {
-    for(std::list<DataWidget*>::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
-        m_area->removeWidget((*itr)->getId());
-    m_widgets.clear();
+    while(!m_widgets.empty())
+        m_area->removeWidget((*m_widgets.begin())->getId());
+}
+
+void ScriptEnv::widgetDestroyed(QObject *widget)
+{
+    DataWidget *w = (DataWidget*)widget;
+    m_widgets.remove(w->getId());
 }
 
 void ScriptEnv::prepareNewContext()
@@ -110,9 +115,8 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("WIDGET_GRAPH",  QScriptValue(this, WIDGET_GRAPH));
     m_global.setProperty("WIDGET_INPUT",  QScriptValue(this, WIDGET_INPUT));
 
-    for(std::list<DataWidget*>::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
-        m_area->removeWidget((*itr)->getId());
-    m_widgets.clear();
+    while(!m_widgets.empty())
+        m_area->removeWidget((*m_widgets.begin())->getId());
 
     qScriptRegisterMetaType(this, GraphCurveToScriptValue, GraphCurveFromScriptValue);
 }
@@ -182,7 +186,8 @@ DataWidget *ScriptEnv::addWidget(quint8 type, QScriptContext *context, quint8 re
     if(!w)
         return NULL;
 
-    m_widgets.push_back(w);
+    connect(w, SIGNAL(destroyed(QObject*)), SLOT(widgetDestroyed(QObject*)));
+    m_widgets.insert(w->getId(), w);
 
     switch(context->argumentCount()-removeArg)
     {

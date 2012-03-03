@@ -71,6 +71,9 @@ public:
 public slots:
     void keyPressed(const QByteArray& key);
 
+private slots:
+    void widgetDestroyed(QObject *widget);
+
 private:
     void prepareNewContext();
 
@@ -100,7 +103,7 @@ private:
     int m_width;
     int m_height;
 
-    std::list<DataWidget*> m_widgets;
+    QHash<quint32, DataWidget*> m_widgets;
 };
 
 #endif // SCRIPTENV_H
