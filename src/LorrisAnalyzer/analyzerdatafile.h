@@ -25,11 +25,13 @@
 #define ANALYZERDATAFILE_H
 
 #include <QFile>
+#include <QBuffer>
 
 enum DataBlocks
 {
     BLOCK_STATIC_DATA,
     BLOCK_COLLAPSE_STATUS,
+    BLOCK_COLLAPSE_STATUS2,
     BLOCK_DEVICE_TABS,
     BLOCK_DEVICE_TAB,
     BLOCK_CMD_TABS,
@@ -39,11 +41,12 @@ enum DataBlocks
     BLOCK_WIDGET
 };
 
-class AnalyzerDataFile : public QFile
+class AnalyzerDataFile : public QBuffer
 {
     Q_OBJECT
 public:
     explicit AnalyzerDataFile(const QString& filename, QObject *parent = 0);
+    ~AnalyzerDataFile();
 
     bool seekToNextBlock(DataBlocks block, qint32 maxDist);
     bool seekToNextBlock(const char *block, qint32 maxDist);
@@ -61,8 +64,9 @@ public:
     
 private:
     char *getBlockWithFormat(const char *block, quint8& lenght);
-    QByteArray m_data;
     int m_last_block;
+    QFile *m_file;
+    QString m_filename;
 };
 
 #endif // ANALYZERDATAFILE_H

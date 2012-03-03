@@ -103,7 +103,8 @@ void NumberWidget::setUp(AnalyzerDataStorage *storage)
     {
         tr("Decimal"),
         tr("Decimal (w/ exponent)"),
-        tr("Hex")
+        tr("Hex"),
+        tr("Binary")
     };
 
     QSignalMapper *signalMapFmt = new QSignalMapper(this);
@@ -127,62 +128,66 @@ void NumberWidget::setUp(AnalyzerDataStorage *storage)
 
 void NumberWidget::processData(analyzer_data *data)
 {
-    QString n;
-    try
-    {
-        static const char fmt[] = { 'f', 'e' };
-        static const quint8 base[] = { 10, 10, 16 };
+    QVariant var = DataWidget::getNumFromPacket(data, m_info.pos, numberType);
+    setValue(var);
+}
 
-        switch(numberType)
-        {
-            case NUM_INT8:  n = QString::number(data->getInt8(m_info.pos));  break;
-            case NUM_INT16: n = QString::number(data->getInt16(m_info.pos)); break;
-            case NUM_INT32: n = QString::number(data->getInt32(m_info.pos)); break;
-            case NUM_INT64: n = QString::number(data->getInt64(m_info.pos)); break;
-
-            case NUM_UINT8:  n = QString::number(data->getUInt8(m_info.pos),  base[format]); break;
-            case NUM_UINT16: n = QString::number(data->getUInt16(m_info.pos), base[format]); break;
-            case NUM_UINT32: n = QString::number(data->getUInt32(m_info.pos), base[format]); break;
-            case NUM_UINT64: n = QString::number(data->getUInt64(m_info.pos), base[format]); break;
-
-            case NUM_FLOAT:  n = QString::number(data->getFloat(m_info.pos), fmt[format]);  break;
-            case NUM_DOUBLE: n = QString::number(data->getDouble(m_info.pos), fmt[format]); break;
-        }
-    }
-    catch(char const* e)
+void NumberWidget::setValue(const QVariant& var)
+{
+    if(var.isNull())
     {
         num->setText("N/A");
         return;
     }
 
-    if(level)
+    QString n;
+
+    static const char fmt[] = { 'f', 'e' };
+    static const quint8 base[] = { 10, 10, 16, 2 };
+
+    if(numberType < NUM_INT8)        n.setNum(var.toULongLong(), base[format]);
+    else if(numberType < NUM_FLOAT)  n = var.toString();
+    else                             n.setNum(var.toDouble(), fmt[format]);
+
+    switch(format)
     {
-        static const quint8 levelPos[] =
+        case FMT_DECIMAL:
+        case FMT_EXPONENT:
         {
-            3,  //NUM_INT8,  NUM_UINT8,
-            5,  //NUM_INT16, NUM_UINT16,
-            10, //NUM_INT32, NUM_UINT32,
-            19, //NUM_INT64, NUM_UINT64,
-            0,  //NUM_FLOAT
-            0,  //NUM_DOUBLE
-        };
+            if(!level)
+                break;
 
-        quint8 pos = format == FMT_HEX ? (numberType%4+1)*2 : levelPos[numberType >= 4 ? numberType - 4 : numberType];
-        if(pos)
+            static const quint8 levelPos[] =
+            {
+                3,  //NUM_INT8,  NUM_UINT8,
+                5,  //NUM_INT16, NUM_UINT16,
+                10, //NUM_INT32, NUM_UINT32,
+                19, //NUM_INT64, NUM_UINT64,
+                0,  //NUM_FLOAT
+                0,  //NUM_DOUBLE
+            };
+
+            quint8 len = levelPos[numberType >= 4 ? numberType - 4 : numberType];
+            prependZeros(n, len);
+            break;
+        }
+        case FMT_HEX:
         {
-            bool negative = n.contains("-");
-            if(negative)
-                n.replace("-", "");
-
-            pos -= n.length();
-            for(quint8 y = 0; y < pos; ++y)
-                n = "0" % n;
-
-            if(negative)
-                n = "-" % n;
+            if(level)
+                prependZeros(n, (1 << (numberType%4))*2);
+            n = "0x" % n.toUpper();
+            break;
+        }
+        case FMT_BINARY:
+        {
+            if(level)
+                prependZeros(n, (1 << (numberType%4))*8);
+            n.prepend("0b");
+            break;
         }
     }
-    num->setText(format == FMT_HEX ? "0x" % n.toUpper() : n);
+
+    num->setText(n);
 }
 
 void NumberWidget::fmtSelected(int i)
@@ -204,6 +209,7 @@ void NumberWidget::bitsSelected(int i)
     numberType = i;
 
     fmtAction[FMT_HEX]->setEnabled(i < NUM_INT8);
+    fmtAction[FMT_BINARY]->setEnabled(i < NUM_INT8);
     fmtAction[FMT_EXPONENT]->setEnabled(i >= NUM_FLOAT);
     emit updateData();
 }
@@ -268,6 +274,20 @@ void NumberWidget::loadWidgetInfo(AnalyzerDataFile *file)
     }
 }
 
+void NumberWidget::prependZeros(QString &n, quint8 len)
+{
+    if(!len)
+        return;
+
+    bool negative = n.contains('-');
+    quint8 numLen = n.length() - quint8(negative);
+
+    if(numLen >= len)
+        return;
+
+    n.insert(int(negative), QString("%1").arg("", len - numLen, '0'));
+}
+
 NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText(tr("Number"));
@@ -276,3 +296,5 @@ NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(paren
 
     m_widgetType = WIDGET_NUMBERS;
 }
+
+

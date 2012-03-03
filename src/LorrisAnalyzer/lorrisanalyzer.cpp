@@ -52,6 +52,7 @@
 #include "DataWidgets/barwidget.h"
 #include "DataWidgets/colorwidget.h"
 #include "DataWidgets/GraphWidget/graphwidget.h"
+#include "DataWidgets/ScriptWidget/scriptwidget.h"
 #include "sourceselectdialog.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
@@ -65,10 +66,16 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->connectButton,   SIGNAL(clicked()),         SLOT(connectButton()));
     connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
+    connect(ui->collapseLeft,    SIGNAL(clicked()),         SLOT(collapseLeftButton()));
     connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearButton()));
     connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(timeSliderMoved(int)));
     connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
     connect(ui->updateTimeBox,   SIGNAL(valueChanged(int)), SLOT(updateTimeChanged(int)));
+    connect(ui->playFrame,       SIGNAL(setPos(int)),           ui->timeBox,    SLOT(setValue(int)));
+    connect(ui->timeSlider,      SIGNAL(valueChanged(int)),     ui->playFrame,  SLOT(valChanged(int)));
+    connect(ui->timeSlider,      SIGNAL(rangeChanged(int,int)), ui->playFrame,  SLOT(rangeChanged(int,int)));
+    connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
+    connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
 
     QMenu* menuData = new QMenu(tr("&Data"), this);
 
@@ -107,10 +114,11 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(m_dev_tabs, SIGNAL(updateData()), this, SLOT(updateData()));
 
     m_data_area = new AnalyzerDataArea(this, m_storage);
-    ui->bottomHLayout->insertWidget(0, m_data_area, 4);
+    ui->bottomHLayout->insertWidget(2, m_data_area, 4);
     ui->bottomHLayout->setStretch(1, 1);
     connect(m_data_area, SIGNAL(updateData()), this, SLOT(updateData()));
-    connect(m_data_area, SIGNAL(mouseStatus(bool,data_widget_info)), this, SLOT(widgetMouseStatus(bool,data_widget_info)));
+    connect(m_data_area, SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
+                         SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
@@ -118,6 +126,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     widgetBtnL->addWidget(new BarWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new ColorWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new GraphWidgetAddBtn(tmp));
+    widgetBtnL->addWidget(new ScriptWidgetAddBtn(tmp));
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);
@@ -194,22 +203,26 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     if(!m_curData)
         m_curData = new analyzer_data(m_packet);
 
-    QByteArray dta = data;
+    char *d_start = (char*)data.data();
+    char *d_itr = d_start;
+    char *d_end = (char*)data.data() + data.size();
+
     static bool first = true;
     quint32 curRead = 1;
 
-    while(dta.length() != 0)
+    while(d_itr != d_end)
     {
         if(first || curRead == 0)
         {
-            int index = dta.indexOf(m_curData->getStaticData());
+            int index = data.indexOf(m_curData->getStaticData(), d_itr - d_start);
             if(index == -1)
                 break;
-            dta.remove(0, index);
+            d_itr = d_start + index;
             first = false;
         }
-        curRead = m_curData->addData(dta);
-        dta.remove(0, curRead);
+        curRead = m_curData->addData(d_itr, d_end);
+        d_itr += curRead;
+
         if(m_curData->isValid())
         {
             m_storage->addData(m_curData);
@@ -293,10 +306,11 @@ void LorrisAnalyzer::onTabShow()
 void LorrisAnalyzer::timeSliderMoved(int value)
 {
     bool down = ui->timeSlider->isSliderDown();
+    bool enabled = ui->timeSlider->isEnabled();
     if(value != 0)
-        updateData(down);
+        updateData(down || !enabled);
 
-    if(down)
+    if(down && enabled)
         ui->timeBox->setValue(value);
 }
 
@@ -360,27 +374,47 @@ void LorrisAnalyzer::saveDataButton()
     m_storage->SaveToFile(m_data_area, m_dev_tabs);
 }
 
-void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info)
+void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
 {
-    if(in)
+    if(parent != -1)
     {
-        if(highlightInfoNotNull && highlightInfo != info)
-            m_dev_tabs->setHighlightPos(highlightInfo, false);
-
-        bool found = m_dev_tabs->setHighlightPos(info, true);
-
-        if(found)
-        {
-            highlightInfo = info;
-            highlightInfoNotNull = true;
+        DataWidget *w = m_data_area->getWidget(parent);
+        if(!w)
             return;
+
+        if(in)
+        {
+            w->setStyleSheet("color: red");
+            w->setLineWidth(2);
+        }
+        else
+        {
+            w->setLineWidth(1);
+            w->setStyleSheet("");
         }
     }
-
-    if(highlightInfoNotNull)
+    else
     {
-        m_dev_tabs->setHighlightPos(highlightInfo, false);
-        highlightInfoNotNull = false;
+        if(in)
+        {
+            if(highlightInfoNotNull && highlightInfo != info)
+                m_dev_tabs->setHighlightPos(highlightInfo, false);
+
+            bool found = m_dev_tabs->setHighlightPos(info, true);
+
+            if(found)
+            {
+                highlightInfo = info;
+                highlightInfoNotNull = true;
+                return;
+            }
+        }
+
+        if(highlightInfoNotNull)
+        {
+            m_dev_tabs->setHighlightPos(highlightInfo, false);
+            highlightInfoNotNull = false;
+        }
     }
 }
 
@@ -394,12 +428,18 @@ void LorrisAnalyzer::collapseRightButton()
     setAreaVisibility(AREA_RIGHT, !isAreaVisible(AREA_RIGHT));
 }
 
+void LorrisAnalyzer::collapseLeftButton()
+{
+    setAreaVisibility(AREA_LEFT, !isAreaVisible(AREA_LEFT));
+}
+
 bool LorrisAnalyzer::isAreaVisible(quint8 area)
 {
     switch(area)
     {
         case AREA_TOP:   return m_dev_tabs->isVisible();
         case AREA_RIGHT: return ui->widgetsScrollArea->isVisible();
+        case AREA_LEFT:  return ui->playFrame->isVisible();
     }
     return false;
 }
@@ -408,44 +448,36 @@ void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
 {
     if(area & AREA_TOP)
     {
-        if(visible)
-        {
-            m_dev_tabs->show();
-            ui->collapseTop->setText("^");
-        }
-        else
-        {
-            m_dev_tabs->hide();
-            ui->collapseTop->setText("v");
-        }
+        if(visible) ui->collapseTop->setText("^");
+        else        ui->collapseTop->setText("v");
+        m_dev_tabs->setVisible(visible);
     }
+
     if(area & AREA_RIGHT)
     {
-        if(visible)
-        {
-            ui->widgetsScrollArea->show();
-            ui->collapseRight->setText(">");
-        }
-        else
-        {
-            ui->widgetsScrollArea->hide();
-            ui->collapseRight->setText("<");
-        }
+        if(visible) ui->collapseRight->setText(">");
+        else        ui->collapseRight->setText("<");
+        ui->widgetsScrollArea->setVisible(visible);
+    }
+
+    if(area & AREA_LEFT)
+    {
+        if(visible) ui->collapseLeft->setText("<");
+        else        ui->collapseLeft->setText(">");
+        ui->playFrame->setVisible(visible);
     }
 }
 
 void LorrisAnalyzer::clearButton()
 {
-    QMessageBox *box = new QMessageBox(this);
-    box->setWindowTitle(tr("Clear data?"));
-    box->setText(tr("Do you really clear data, widgets and packet structure?"));
-    box->addButton(tr("Yes"), QMessageBox::YesRole);
-    box->addButton(tr("No"), QMessageBox::NoRole);
-    box->setIcon(QMessageBox::Question);
-    int ret = box->exec();
-    delete box;
+    QMessageBox box(this);
+    box.setWindowTitle(tr("Clear data?"));
+    box.setText(tr("Do you really clear data, widgets and packet structure?"));
+    box.addButton(tr("Yes"), QMessageBox::YesRole);
+    box.addButton(tr("No"), QMessageBox::NoRole);
+    box.setIcon(QMessageBox::Question);
 
-    if(ret)
+    if(box.exec())
         return;
 
     analyzer_packet *packet = m_packet;
@@ -481,7 +513,7 @@ void LorrisAnalyzer::updateTimeChanged(int value)
 
 void LorrisAnalyzer::openFile()
 {
-    static const QString filters = QObject::tr("Lorris data file (*.ldta)");
+    static const QString filters = QObject::tr("Lorris data files (*.ldta *.cldta)");
     QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Load data file"),
                                                     sConfig.get(CFG_STRING_ANALYZER_FOLDER),
                                                     filters);

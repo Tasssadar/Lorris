@@ -29,6 +29,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QFile>
+#include <QMenu>
 
 #include "../packet.h"
 #include "../analyzerdatafile.h"
@@ -38,8 +39,13 @@ enum WidgetTypes
     WIDGET_NUMBERS,
     WIDGET_BAR,
     WIDGET_COLOR,
-    WIDGET_GRAPH
-    //TODO: X Y mapa, rafickovej ukazatel, timestamp
+    WIDGET_GRAPH,
+    WIDGET_SCRIPT,
+    WIDGET_INPUT,
+
+    WIDGET_MAX
+    //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
+
 };
 
 enum NumberTypes
@@ -98,9 +104,10 @@ class DataWidget : public QFrame
 
 Q_SIGNALS:
     void updateData();
-    void mouseStatus(bool in, const data_widget_info& info);
+    void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
+    void SendData(const QByteArray& data);
 
 public:
     explicit DataWidget(QWidget *parent = 0);
@@ -131,8 +138,14 @@ public:
         m_updating = update;
     }
 
+    void setWidgetControlled(qint32 widget);
+    qint32 getWidgetControlled() { return m_widgetControlled; }
+
 public slots:
     virtual void newData(analyzer_data *data, quint32);
+    void setTitle(const QString& title);
+    virtual void setValue(const QVariant &var);
+    void lockTriggered();
 
 protected:
     void mousePressEvent(QMouseEvent * event);
@@ -145,20 +158,19 @@ protected:
 
     virtual void processData(analyzer_data *data);
 
-    void setTitle(QString title);
-    void setIcon(QString path);
     QString getTitle();
+    void setIcon(QString path);
 
     quint8 m_widgetType;
     data_widget_info m_info;
     bool m_assigned;
     bool m_updating;
+    qint32 m_widgetControlled;
 
     QVBoxLayout *layout;
     QMenu *contextMenu;
 
 private slots:
-    void lockTriggered();
     void setTitleTriggered();
 
 private:
@@ -209,9 +221,17 @@ public:
 protected:
     void mousePressEvent(QMouseEvent *event);
 
-    virtual QPixmap getRender();
+    virtual const QPixmap &getRender();
 
     quint8 m_widgetType;
+    QPixmap *m_pixmap;
+};
+
+enum CloseLabelState
+{
+    CLOSE_NONE   = 0x00,
+    CLOSE_LOCKED = 0x01,
+    CLOSE_SCRIPT = 0x02
 };
 
 class CloseLabel : public QLabel
@@ -225,13 +245,16 @@ public:
     explicit CloseLabel(QWidget *parent);
 
     void setLocked(bool locked);
+    void setScript(bool script);
     void setId(quint32 id) { m_id = id; }
 
 protected:
     void mousePressEvent(QMouseEvent *event);
 
 private:
-    bool m_locked;
+    QString getTextByState();
+
+    quint8 m_state;
     quint32 m_id;
 };
 

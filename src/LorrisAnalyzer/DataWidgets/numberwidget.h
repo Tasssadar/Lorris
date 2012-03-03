@@ -33,6 +33,7 @@ enum NumberFormats
     FMT_DECIMAL,
     FMT_EXPONENT,
     FMT_HEX,
+    FMT_BINARY,
     FMT_COUNT
 };
 
@@ -47,6 +48,9 @@ public:
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);
 
+public slots:
+    void setValue(const QVariant &var);
+
 protected:
      void processData(analyzer_data *data);
      void resizeEvent ( QResizeEvent * event );
@@ -57,6 +61,8 @@ private slots:
      void levelSelected();
 
 private:
+     void prependZeros(QString& n, quint8 len);
+
      QLabel *num;
      quint8 numberType;
      quint8 format;

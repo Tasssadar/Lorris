@@ -21,47 +21,59 @@
 **
 ****************************************************************************/
 
-#ifndef GRAPHCURVE_H
-#define GRAPHCURVE_H
+#ifndef SCRIPTEDITOR_H
+#define SCRIPTEDITOR_H
 
-#include <qwt_plot_curve.h>
+#include <QDialog>
 
-#include "graphdata.h"
-#include "../datawidget.h"
+namespace Ui {
+    class ScriptEditor;
+}
 
-class AnalyzerDataStorage;
+class QAbstractButton;
+class LineNumber;
 
-class GraphCurve : public QObject, public QwtPlotCurve
+class ScriptEditor : public QDialog
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void applySource(bool close);
+    
 public:
-    GraphCurve(const QString& name, GraphDataSimple *data);
-    ~GraphCurve();
+    explicit ScriptEditor(const QString& source, const QString &widgetName = 0);
+    ~ScriptEditor();
 
-    void setSampleSize(qint32 size);
-    void dataPosChanged(quint32 pos);
-
-    qint32 getMin();
-    qint32 getMax();
-    quint32 getSize();
-    void setDataType(quint8 type);
-
-    void setDataInfo(data_widget_info& info)
-    {
-        m_data->setInfo(info);
-    }
-
-    quint8 getDataType() { return m_data->getDataType(); }
-
-public slots:
-    void addPoint(quint32 index, qreal val);
-    void clear();
+    QString getSource();
+    
+private slots:
+    void buttonPressed(QAbstractButton *btn);
+    void textChanged();
+    void sliderMoved(int val = -1);
+    void rangeChanged(int, int);
+    void loadFile();
 
 private:
-    GraphDataSimple *m_data;
-    qint32 m_sample_size;
+    Ui::ScriptEditor *ui;
+    LineNumber *m_line_num;
 };
 
-Q_DECLARE_METATYPE(GraphCurve*)
+class LineNumber : public QWidget
+{
+public:
+    LineNumber(QWidget *parent = 0);
 
-#endif // GRAPHCURVE_H
+    void setLineNum(int lineNum);
+    void setScroll(int line);
+
+protected:
+    void paintEvent(QPaintEvent *event);
+
+private:
+    int m_char_h;
+    int m_line_num;
+    int m_scroll;
+    quint8 m_last_w;
+};
+
+#endif // SCRIPTEDITOR_H

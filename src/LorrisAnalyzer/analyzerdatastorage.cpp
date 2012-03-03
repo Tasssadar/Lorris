@@ -66,7 +66,7 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     if(!m_packet)
         return;
 
-    QString filters = QObject::tr("Lorris data file (*.ldta)");
+    QString filters = QObject::tr("Compressed Lorris data file(*.cldta);;Lorris data file (*.ldta)");
     QString filename = QFileDialog::getSaveFileName(NULL, QObject::tr("Export Data"),
                                                     sConfig.get(CFG_STRING_ANALYZER_FOLDER),
                                                     filters);
@@ -106,6 +106,10 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     char dta = m_analyzer->isAreaVisible(AREA_TOP);
     file->write(&dta, 1);
     dta = m_analyzer->isAreaVisible(AREA_RIGHT);
+    file->write(&dta, 1);
+
+    file->writeBlockIdentifier(BLOCK_COLLAPSE_STATUS2);
+    dta = m_analyzer->isAreaVisible(AREA_LEFT);
     file->write(&dta, 1);
 
     //header static data
@@ -153,7 +157,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         filename = *name;
     else
     {
-        QString filters = QObject::tr("Lorris data file (*.ldta)");
+        QString filters = QObject::tr("Lorris data files (*.ldta *.cldta)");
         filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"), "", filters);
     }
 
@@ -230,11 +234,30 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         bool status;
 
         file->read((char*)&status, 1);
+
+        // FIXME: hack, dunno what else to do about this
+        if(m_analyzer->isAreaVisible(AREA_TOP) != status)
+            area->skipNextMove();
+
         m_analyzer->setAreaVisibility(AREA_TOP, status);
+
 
         file->read((char*)&status, 1);
         m_analyzer->setAreaVisibility(AREA_RIGHT, status);
     }
+    if(file->seekToNextBlock(BLOCK_COLLAPSE_STATUS2, BLOCK_STATIC_DATA))
+    {
+        bool status;
+
+        file->read((char*)&status, 1);
+
+        // FIXME: hack, dunno what else to do about this
+        if(m_analyzer->isAreaVisible(AREA_LEFT) != status)
+            area->skipNextMove();
+
+        m_analyzer->setAreaVisibility(AREA_LEFT, status);
+    }
+
 
     //header static data
     if(file->seekToNextBlock(BLOCK_STATIC_DATA, BLOCK_DEVICE_TABS))
@@ -247,7 +270,6 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
             file->read((char*)m_packet->static_data, static_len);
         }
     }
-
 
     //Devices and commands
     devices->setHeader(header);
@@ -292,7 +314,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     return m_packet;
 }
 
-bool AnalyzerDataStorage::checkMagic(QFile *file)
+bool AnalyzerDataStorage::checkMagic(AnalyzerDataFile *file)
 {
     char *itr = new char[3];
     file->read(itr, 3);

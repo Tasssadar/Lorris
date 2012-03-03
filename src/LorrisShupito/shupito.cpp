@@ -35,7 +35,7 @@ Shupito::Shupito(QObject *parent) :
 {
     m_con = NULL;
     m_desc = NULL;
-    m_packet = ShupitoPacket();
+    m_packet = NULL;
 
     m_vdd_config = m_tunnel_config = NULL;
     m_tunnel_pipe = 0;
@@ -50,6 +50,7 @@ Shupito::Shupito(QObject *parent) :
 
 Shupito::~Shupito()
 {
+    delete m_packet;
     sConMgr.RemoveShupito(this);
 }
 
@@ -60,7 +61,8 @@ void Shupito::init(Connection *con, ShupitoDesc *desc)
 
     chip_definition::parse_default_chipsets(m_chip_defs);
 
-    m_packet.Clear();
+    delete m_packet;
+    m_packet = new ShupitoPacket();
 
     ShupitoPacket getInfo(MSG_INFO, 1, 0x00);
     QByteArray data = waitForStream(getInfo, MSG_INFO);
@@ -73,37 +75,43 @@ void Shupito::init(Connection *con, ShupitoDesc *desc)
 void Shupito::readData(const QByteArray &data)
 {
     mutex.lock();
-    QByteArray dta = data;
 
     static bool first = true;
 
-    std::vector<ShupitoPacket> packets;
-    ShupitoPacket packet = m_packet;
+    std::vector<ShupitoPacket*> packets;
+    ShupitoPacket *packet = m_packet;
+
+    char *d_start = (char*)data.data();
+    char *d_itr = d_start;
+    char *d_end = d_start + data.size();
 
     quint8 curRead = 1;
-    while(dta.length() > 0)
+    while(d_itr != d_end)
     {
         if(first || curRead == 0)
         {
-            int index = dta.indexOf(char(0x80));
+            int index = data.indexOf(char(0x80), d_itr - d_start);
             if(index == -1)
                 break;
-            dta.remove(0, index);
+            d_itr = d_start+index;
             first = false;
         }
-        curRead = packet.addData(dta);
-        dta.remove(0, curRead);
-        if(packet.isValid())
+        curRead = packet->addData(d_itr, d_end);
+        d_itr += curRead;
+        if(packet->isValid())
         {
             packets.push_back(packet);
-            packet = ShupitoPacket();
+            packet = new ShupitoPacket();
         }
     }
     m_packet = packet;
     mutex.unlock();
 
     for(quint32 i = 0; i < packets.size(); ++i)
-        handlePacket(packets[i]);
+    {
+        handlePacket(*packets[i]);
+        delete packets[i];
+    }
 }
 
 ShupitoPacket Shupito::waitForPacket(const QByteArray& data, quint8 cmd)
@@ -229,14 +237,13 @@ void Shupito::handleVccPacket(ShupitoPacket &p)
     //vcc value
     if(p.getLen() == 4 && p[0] == 0x01 && p[1] == 0x03)
     {
-        ShupitoDesc::config *vddCfg = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
-        if(!vddCfg)
+        if(!m_vdd_config)
             return;
 
         double millivolts_per_unit = 1.0;
-        if (vddCfg->data.size() == 5 && vddCfg->data[0] == 1)
+        if (m_vdd_config->data.size() == 5 && m_vdd_config->data[0] == 1)
         {
-            qint32 mpu_16_16 = vddCfg->data[1] | (vddCfg->data[2] << 8) | (vddCfg->data[3] << 16) | (vddCfg->data[4] << 24);
+            qint32 mpu_16_16 = m_vdd_config->data[1] | (m_vdd_config->data[2] << 8) | (m_vdd_config->data[3] << 16) | (m_vdd_config->data[4] << 24);
             millivolts_per_unit = mpu_16_16 / 65536.0;
         }
 

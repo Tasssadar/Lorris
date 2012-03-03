@@ -21,47 +21,51 @@
 **
 ****************************************************************************/
 
-#ifndef GRAPHCURVE_H
-#define GRAPHCURVE_H
+#ifndef PLAYBACK_H
+#define PLAYBACK_H
 
-#include <qwt_plot_curve.h>
+#include <QFrame>
 
-#include "graphdata.h"
-#include "../datawidget.h"
+class QTimer;
 
-class AnalyzerDataStorage;
+namespace Ui {
+    class Playback;
+}
 
-class GraphCurve : public QObject, public QwtPlotCurve
+class Playback : public QFrame
+
 {
     Q_OBJECT
+    
+Q_SIGNALS:
+    void enablePosSet(bool enable);
+    void setPos(int pos);
+
 public:
-    GraphCurve(const QString& name, GraphDataSimple *data);
-    ~GraphCurve();
-
-    void setSampleSize(qint32 size);
-    void dataPosChanged(quint32 pos);
-
-    qint32 getMin();
-    qint32 getMax();
-    quint32 getSize();
-    void setDataType(quint8 type);
-
-    void setDataInfo(data_widget_info& info)
-    {
-        m_data->setInfo(info);
-    }
-
-    quint8 getDataType() { return m_data->getDataType(); }
-
+    explicit Playback(QWidget *parent = 0);
+    ~Playback();
+    
 public slots:
-    void addPoint(quint32 index, qreal val);
-    void clear();
+    void rangeChanged(int min, int max);
+    void valChanged(int val);
+
+private slots:
+    void startBtn();
+    void timeout();
+    void delayChanged(int val);
+
+    void stopPlayback();
 
 private:
-    GraphDataSimple *m_data;
-    qint32 m_sample_size;
+    void enableUi(bool enable);
+    bool updateIndex();
+
+    bool m_playing;
+    bool m_pause;
+    int m_index;
+
+    QTimer *m_timer;
+    Ui::Playback *ui;
 };
 
-Q_DECLARE_METATYPE(GraphCurve*)
-
-#endif // GRAPHCURVE_H
+#endif // PLAYBACK_H

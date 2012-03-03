@@ -54,6 +54,13 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
     QwtPlotPanner *panner =  new QwtPlotPanner( canvas() );
     panner->setMouseButton(Qt::MiddleButton);
 
+#if defined(Q_WS_X11)
+    // Even if not recommended by TrollTech, Qt::WA_PaintOutsidePaintEvent
+    // works on X11. This has a nice effect on the performance.
+
+    canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+#endif
+
     QwtPlotGrid *grid = new QwtPlotGrid();
     grid->setPen(QPen(Qt::gray, 0.0, Qt::DotLine));
     grid->enableX(true);
@@ -68,6 +75,8 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
 
     connect(this, SIGNAL(legendChecked(QwtPlotItem*,bool)), SLOT(showCurve(QwtPlotItem*, bool)));
 
+    setAxisScale(QwtPlot::xBottom, -20, 20);
+    setAxisScale(QwtPlot::yLeft, -20, 20);
     // to show graph appearance while dragging from add button to widget area
     replot();
 }
@@ -140,6 +149,8 @@ void Graph::wheelEvent(QWheelEvent *event)
     double min = axisScaleDiv(axis)->lowerBound();
 
     double diff = fabs(max - min);
+    if(diff == 0)
+        diff = 1;
 
     float exp = (event->modifiers() & Qt::ShiftModifier) ? 0.01 : 0.001;
     double newDiff = fabs(diff + (diff*(exp *event->delta())))/2;
@@ -153,4 +164,21 @@ void Graph::wheelEvent(QWheelEvent *event)
 
     setAxisScale(axis, newMin, newMax);
     replot();
+}
+
+double Graph::XupperBound()
+{
+    return axisScaleDiv(QwtPlot::xBottom)->upperBound();
+}
+double Graph::XlowerBound()
+{
+    return axisScaleDiv(QwtPlot::xBottom)->lowerBound();
+}
+double Graph::YupperBound()
+{
+    return axisScaleDiv(QwtPlot::yLeft)->upperBound();
+}
+double Graph::YlowerBound()
+{
+    return axisScaleDiv(QwtPlot::yLeft)->lowerBound();
 }

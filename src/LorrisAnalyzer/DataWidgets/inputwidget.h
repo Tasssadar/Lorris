@@ -21,47 +21,30 @@
 **
 ****************************************************************************/
 
-#ifndef GRAPHCURVE_H
-#define GRAPHCURVE_H
+#ifndef INPUTWIDGET_H
+#define INPUTWIDGET_H
 
-#include <qwt_plot_curve.h>
+#include <QLineEdit>
+#include <QHash>
 
-#include "graphdata.h"
-#include "../datawidget.h"
+#include "datawidget.h"
 
-class AnalyzerDataStorage;
+class QUiLoader;
 
-class GraphCurve : public QObject, public QwtPlotCurve
+class InputWidget : public DataWidget
 {
     Q_OBJECT
 public:
-    GraphCurve(const QString& name, GraphDataSimple *data);
-    ~GraphCurve();
+    typedef QWidget *(*QWidgetFc)(QWidget*);
 
-    void setSampleSize(qint32 size);
-    void dataPosChanged(quint32 pos);
-
-    qint32 getMin();
-    qint32 getMax();
-    quint32 getSize();
-    void setDataType(quint8 type);
-
-    void setDataInfo(data_widget_info& info)
-    {
-        m_data->setInfo(info);
-    }
-
-    quint8 getDataType() { return m_data->getDataType(); }
+    InputWidget(QWidget *parent = 0);
+    ~InputWidget();
 
 public slots:
-    void addPoint(quint32 index, qreal val);
-    void clear();
+    QWidget *newWidget(const QString& name, int stretch = 0);
 
 private:
-    GraphDataSimple *m_data;
-    qint32 m_sample_size;
+    QUiLoader *m_loader;
 };
 
-Q_DECLARE_METATYPE(GraphCurve*)
-
-#endif // GRAPHCURVE_H
+#endif // INPUTWIDGET_H

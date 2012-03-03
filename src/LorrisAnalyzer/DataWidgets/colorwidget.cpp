@@ -110,6 +110,25 @@ void ColorWidget::updateColor()
     m_widget->setStyleSheet(css + color_str);
 }
 
+void ColorWidget::setValue(int r, int g, int b)
+{
+    m_color[0] = r;
+    m_color[1] = g;
+    m_color[2] = b;
+
+    updateColor();
+}
+
+void ColorWidget::setValue(QString hex)
+{
+    hex.remove("#");
+    m_color[0] = hex.mid(0, 2).toInt(NULL, 16);
+    m_color[1] = hex.mid(2, 2).toInt(NULL, 16);
+    m_color[2] = hex.mid(4, 2).toInt(NULL, 16);
+
+    updateColor();
+}
+
 void ColorWidget::saveWidgetInfo(AnalyzerDataFile *file)
 {
     DataWidget::saveWidgetInfo(file);

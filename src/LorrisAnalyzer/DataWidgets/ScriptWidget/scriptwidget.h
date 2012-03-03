@@ -21,47 +21,46 @@
 **
 ****************************************************************************/
 
-#ifndef GRAPHCURVE_H
-#define GRAPHCURVE_H
+#ifndef SCRIPTWIDGET_H
+#define SCRIPTWIDGET_H
 
-#include <qwt_plot_curve.h>
-
-#include "graphdata.h"
 #include "../datawidget.h"
 
-class AnalyzerDataStorage;
+class QLabel;
+class ScriptEditor;
+class ScriptEnv;
+class Terminal;
 
-class GraphCurve : public QObject, public QwtPlotCurve
+class ScriptWidget : public DataWidget
 {
     Q_OBJECT
 public:
-    GraphCurve(const QString& name, GraphDataSimple *data);
-    ~GraphCurve();
+    ScriptWidget(QWidget *parent = 0);
+    ~ScriptWidget();
 
-    void setSampleSize(qint32 size);
-    void dataPosChanged(quint32 pos);
+    void setUp(AnalyzerDataStorage *);
+    void saveWidgetInfo(AnalyzerDataFile *file);
+    void loadWidgetInfo(AnalyzerDataFile *file);
 
-    qint32 getMin();
-    qint32 getMax();
-    quint32 getSize();
-    void setDataType(quint8 type);
+protected:
+     void newData(analyzer_data *data, quint32 index);
+     void moveEvent(QMoveEvent *);
 
-    void setDataInfo(data_widget_info& info)
-    {
-        m_data->setInfo(info);
-    }
-
-    quint8 getDataType() { return m_data->getDataType(); }
-
-public slots:
-    void addPoint(quint32 index, qreal val);
-    void clear();
+private slots:
+     void setSourceTriggered();
+     void sourceSet(bool close);
 
 private:
-    GraphDataSimple *m_data;
-    qint32 m_sample_size;
+     ScriptEditor *m_editor;
+     ScriptEnv *m_env;
+     Terminal *m_terminal;
 };
 
-Q_DECLARE_METATYPE(GraphCurve*)
+class ScriptWidgetAddBtn : public DataWidgetAddBtn
+{
+    Q_OBJECT
+public:
+    ScriptWidgetAddBtn(QWidget *parent = 0);
 
-#endif // GRAPHCURVE_H
+};
+#endif // SCRIPTWIDGET_H

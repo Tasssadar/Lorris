@@ -142,6 +142,16 @@ void BarWidget::processData(analyzer_data *data)
     m_bar->setValue(value);
 }
 
+void BarWidget::setValue(const QVariant &var)
+{
+    m_bar->setValue(var.toInt());
+}
+
+void BarWidget::setRange(int min, int max)
+{
+    m_bar->setRange(min, max);
+}
+
 void BarWidget::bitsSelected(int i)
 {
     for(quint8 y = 0; y < NUM_COUNT; ++y)
@@ -177,10 +187,8 @@ void BarWidget::rangeSelected()
     RangeSelectDialog *dialog = new RangeSelectDialog(m_bar->minimum(), m_bar->maximum(), max, min, this);
     dialog->exec();
     if(dialog->getRes())
-    {
-        m_bar->setMaximum(dialog->getMax());
-        m_bar->setMinimum(dialog->getMin());
-    }
+        m_bar->setRange(dialog->getMax(), dialog->getMin());
+
     delete dialog;
     emit updateData();
 }

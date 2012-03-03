@@ -21,47 +21,40 @@
 **
 ****************************************************************************/
 
-#ifndef GRAPHCURVE_H
-#define GRAPHCURVE_H
+#include <QSpacerItem>
+#include <QtUiTools/QUiLoader>
 
-#include <qwt_plot_curve.h>
+#include "inputwidget.h"
 
-#include "graphdata.h"
-#include "../datawidget.h"
-
-class AnalyzerDataStorage;
-
-class GraphCurve : public QObject, public QwtPlotCurve
+InputWidget::InputWidget(QWidget *parent) :
+    DataWidget(parent)
 {
-    Q_OBJECT
-public:
-    GraphCurve(const QString& name, GraphDataSimple *data);
-    ~GraphCurve();
+    m_widgetType = WIDGET_INPUT;
 
-    void setSampleSize(qint32 size);
-    void dataPosChanged(quint32 pos);
+    setTitle(tr("Input"));
+    setIcon(":/dataWidgetIcons/input.png");
 
-    qint32 getMin();
-    qint32 getMax();
-    quint32 getSize();
-    void setDataType(quint8 type);
+    adjustSize();
+    setMinimumSize(width(), width());
 
-    void setDataInfo(data_widget_info& info)
-    {
-        m_data->setInfo(info);
-    }
+    layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    layout->setContentsMargins(5, 0, 5, 5);
 
-    quint8 getDataType() { return m_data->getDataType(); }
+    m_loader = new QUiLoader(this);
+}
 
-public slots:
-    void addPoint(quint32 index, qreal val);
-    void clear();
+InputWidget::~InputWidget()
+{
+    delete m_loader;
+}
 
-private:
-    GraphDataSimple *m_data;
-    qint32 m_sample_size;
-};
+QWidget *InputWidget::newWidget(const QString &name, int stretch)
+{
+    QWidget *w = m_loader->createWidget(name, this);
+    if(!w)
+        return NULL;
 
-Q_DECLARE_METATYPE(GraphCurve*)
+    layout->addWidget(w, stretch);
 
-#endif // GRAPHCURVE_H
+    return w;
+}

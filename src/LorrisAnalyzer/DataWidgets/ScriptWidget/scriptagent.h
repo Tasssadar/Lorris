@@ -21,47 +21,23 @@
 **
 ****************************************************************************/
 
-#ifndef GRAPHCURVE_H
-#define GRAPHCURVE_H
+#ifndef SCRIPTAGENT_H
+#define SCRIPTAGENT_H
 
-#include <qwt_plot_curve.h>
+#include <QScriptEngineAgent>
+#include <QElapsedTimer>
 
-#include "graphdata.h"
-#include "../datawidget.h"
-
-class AnalyzerDataStorage;
-
-class GraphCurve : public QObject, public QwtPlotCurve
+class ScriptAgent : public QScriptEngineAgent
 {
-    Q_OBJECT
 public:
-    GraphCurve(const QString& name, GraphDataSimple *data);
-    ~GraphCurve();
-
-    void setSampleSize(qint32 size);
-    void dataPosChanged(quint32 pos);
-
-    qint32 getMin();
-    qint32 getMax();
-    quint32 getSize();
-    void setDataType(quint8 type);
-
-    void setDataInfo(data_widget_info& info)
-    {
-        m_data->setInfo(info);
-    }
-
-    quint8 getDataType() { return m_data->getDataType(); }
-
-public slots:
-    void addPoint(quint32 index, qreal val);
-    void clear();
+    explicit ScriptAgent(QScriptEngine * engine);
+    
+    void exceptionThrow (qint64 scriptId, const QScriptValue & exception, bool hasHandler);
+    void scriptLoad(qint64, const QString &, const QString &, int);
 
 private:
-    GraphDataSimple *m_data;
-    qint32 m_sample_size;
+    QElapsedTimer m_timer;
+    quint8 m_errors;
 };
 
-Q_DECLARE_METATYPE(GraphCurve*)
-
-#endif // GRAPHCURVE_H
+#endif // SCRIPTAGENT_H

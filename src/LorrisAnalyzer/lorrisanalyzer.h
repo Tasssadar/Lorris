@@ -51,7 +51,8 @@ enum states_
 enum hideable_areas
 {
     AREA_TOP    = 0x01,
-    AREA_RIGHT  = 0x02
+    AREA_RIGHT  = 0x02,
+    AREA_LEFT   = 0x04
 };
 
 namespace Ui {
@@ -73,10 +74,12 @@ class LorrisAnalyzer : public WorkTab
         void setAreaVisibility(quint8 area, bool visible);
         analyzer_data *getLastData(quint32& idx);
 
+        Connection *getCon() { return m_con; }
+
     public slots:
         void onTabShow();
         void updateData(bool ignoreTime = false);
-        void widgetMouseStatus(bool in, const data_widget_info& info);
+        void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);
 
     private slots:
         void connectButton();
@@ -87,6 +90,7 @@ class LorrisAnalyzer : public WorkTab
 
         void collapseTopButton();
         void collapseRightButton();
+        void collapseLeftButton();
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);

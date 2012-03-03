@@ -1,0 +1,18 @@
+Lorris - GUI tool for robotics (at least until I think of something which suits more)
+             https://github.com/Tasssadar/Lorris
+
+Copyright (C) 2012 Vojtěch Boček
+Contact: <vbocek@gmail.com>
+         https://github.com/Tasssadar
+
+
+Version 0.2.0 - git revision [204]
+ * LorrisAnalyzer: Implement ScriptWidget, which allows to parse data with user-defined script
+ * LorrisAnalyzer: Implement playback function
+ * LorrisAnalyzer: Improvements to GraphWidget code
+ * LorrisAnalyzer: Add support for compressed data files
+ * LorrisAnalyzer: UI corrections
+ * Bug fixes, crash fixes and random fixes
+
+Version 0.1.0 - git revision [164]
+ * First release

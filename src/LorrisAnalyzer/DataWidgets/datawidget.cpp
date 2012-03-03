@@ -73,13 +73,15 @@ DataWidget::DataWidget(QWidget *parent) :
     contextMenu = NULL;
     m_mouseIn = false;
     m_updating = true;
+
+    m_widgetControlled = -1;
 }
 
 DataWidget::~DataWidget()
 {
     // Remove highlight from top data widget
     if(m_mouseIn)
-        emit mouseStatus(false, m_info);
+        emit mouseStatus(false, m_info, m_widgetControlled);
 
     WorkTab::DeleteAllMembers(layout);
     delete layout;
@@ -116,7 +118,7 @@ void DataWidget::setUp(AnalyzerDataStorage */*storage*/)
     connect(m_closeLabel, SIGNAL(removeWidget(quint32)), this, SIGNAL(removeWidget(quint32)));
 }
 
-void DataWidget::setTitle(QString title)
+void DataWidget::setTitle(const QString &title)
 {
     m_title_label->setText(title);
 }
@@ -159,15 +161,15 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
 
 void DataWidget::enterEvent(QEvent *)
 {
-    if(m_assigned)
-        emit mouseStatus(true, m_info);
+    if(m_assigned || m_widgetControlled != -1)
+        emit mouseStatus(true, m_info, m_widgetControlled);
     m_mouseIn = true;
 }
 
 void DataWidget::leaveEvent(QEvent *)
 {
-    if(m_assigned)
-        emit mouseStatus(false, m_info);
+    if(m_assigned || m_widgetControlled != -1)
+        emit mouseStatus(false, m_info, m_widgetControlled);
     m_mouseIn = false;
 }
 
@@ -234,15 +236,13 @@ void DataWidget::dragResize(QMouseEvent* e)
     if(m_dragAction & DRAG_RES_BOTTOM)
         h = e->pos().y();
 
-    int parW = ((QWidget*)parent())->width();
-    int parH = ((QWidget*)parent())->height();
-    if(w < minimumWidth() || x < 0 || x + w > parW)
+    if(w < minimumWidth())
     {
         w = width();
         x = pos().x();
     }
 
-    if(h < minimumHeight() || y < 0 || y + h > parH)
+    if(h < minimumHeight())
     {
         h = height();
         y = pos().y();
@@ -361,15 +361,27 @@ void DataWidget::loadWidgetInfo(AnalyzerDataFile *file)
     }
 }
 
+void DataWidget::setValue(const QVariant &/*var*/)
+{
+}
+
+void DataWidget::setWidgetControlled(qint32 widget)
+{
+    m_widgetControlled = widget;
+
+    m_closeLabel->setScript(widget != -1);
+}
+
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 {
     setFlat(true);
     setStyleSheet("text-align: left");
+    m_pixmap = NULL;
 }
 
 DataWidgetAddBtn::~DataWidgetAddBtn()
 {
-
+    delete m_pixmap;
 }
 
 void DataWidgetAddBtn::mousePressEvent(QMouseEvent *event)
@@ -387,20 +399,27 @@ void DataWidgetAddBtn::mousePressEvent(QMouseEvent *event)
     }
 }
 
-QPixmap DataWidgetAddBtn::getRender()
+const QPixmap& DataWidgetAddBtn::getRender()
 {
-    DataWidget *w = AnalyzerDataArea::newWidget(m_widgetType, this);
-    if(!w)
-        return QPixmap();
-
-    QPixmap map(w->size());
-    w->render(&map);
-    delete w;
-    return map;
+    if(!m_pixmap)
+    {
+        DataWidget *w = AnalyzerDataArea::newWidget(m_widgetType, this);
+        if(w)
+        {
+            m_pixmap = new QPixmap(w->size());
+            w->render(m_pixmap);
+            delete w;
+        }
+        else
+            m_pixmap = new QPixmap();
+    }
+    return *m_pixmap;
 }
 
 CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
 {
+    m_state = CLOSE_NONE;
+
     setObjectName("closeLabel");
     setStyleSheet("border-bottom: 1px solid black");
     setAlignment(Qt::AlignVCenter);
@@ -409,7 +428,7 @@ CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
 
 void CloseLabel::mousePressEvent(QMouseEvent *event)
 {
-    if (!m_locked && event->button() == Qt::LeftButton)
+    if (m_state == CLOSE_NONE && event->button() == Qt::LeftButton)
         emit removeWidget(m_id);
     else
         QLabel::mousePressEvent(event);
@@ -417,8 +436,29 @@ void CloseLabel::mousePressEvent(QMouseEvent *event)
 
 void CloseLabel::setLocked(bool locked)
 {
-    m_locked = locked;
-    setText(locked ? tr(" [L] ") : " X ");
+    if(locked)
+        m_state |= CLOSE_LOCKED;
+    else
+        m_state &= ~(CLOSE_LOCKED);
+
+    setText(getTextByState());
+}
+
+void CloseLabel::setScript(bool script)
+{
+    if(script)
+        m_state |= CLOSE_SCRIPT;
+    else
+        m_state &= ~(CLOSE_SCRIPT);
+
+    setText(getTextByState());
+}
+
+QString CloseLabel::getTextByState()
+{
+    if     (m_state & CLOSE_LOCKED)  return tr(" [L] ");
+    else if(m_state & CLOSE_SCRIPT)  return tr(" [S] ");
+    else                             return " X ";
 }
 
 QVariant DataWidget::getNumFromPacket(analyzer_data *data, quint32 pos, quint8 type)

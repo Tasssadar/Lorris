@@ -101,7 +101,7 @@ QString SourceSelectDialog::getFileName()
 
 void SourceSelectDialog::browse()
 {
-    QString filters = QObject::tr("Lorris data file (*.ldta)");
+    QString filters = QObject::tr("Lorris data files (*.ldta *.cldta)");
     QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"),
                                                     sConfig.get(CFG_STRING_ANALYZER_FOLDER),
                                                     filters);

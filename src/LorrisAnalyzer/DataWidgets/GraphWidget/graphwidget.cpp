@@ -68,7 +68,6 @@ void GraphWidget::setUp(AnalyzerDataStorage *storage)
 
     m_editCurve = contextMenu->addAction(tr("Edit curve properties"));
     m_editCurve->setEnabled(false);
-    connect(m_editCurve, SIGNAL(triggered()), SLOT(editCurve()));
 
     m_deleteCurve = contextMenu->addMenu(tr("Remove Curve"));
     m_deleteCurve->setEnabled(false);
@@ -92,16 +91,23 @@ void GraphWidget::setUp(AnalyzerDataStorage *storage)
         sampleMap->setMapping(m_sample_act[i], sampleValues[i]);
         connect(m_sample_act[i], SIGNAL(triggered()), sampleMap, SLOT(map()));
     }
-    connect(sampleMap, SIGNAL(mapped(int)), SLOT(sampleSizeChanged(int)));
 
-    m_sample_size_idx = 6;
-    m_sample_size = 500;
-    m_sample_act[6]->setChecked(true);
+    m_sample_size_idx = 0;
+    m_sample_size = -1;
+    m_sample_act[0]->setChecked(true);
 
     m_showLegend = contextMenu->addAction(tr("Show legend"));
     m_showLegend->setCheckable(true);
     m_showLegend->setChecked(true);
-    connect(m_showLegend, SIGNAL(triggered(bool)), this, SLOT(showLegend(bool)));
+
+    m_autoScroll = contextMenu->addAction(tr("Automaticaly scroll graph"));
+    m_autoScroll->setCheckable(true);
+    toggleAutoScroll(true);
+
+    connect(m_editCurve,  SIGNAL(triggered()),     SLOT(editCurve()));
+    connect(sampleMap,    SIGNAL(mapped(int)),     SLOT(sampleSizeChanged(int)));
+    connect(m_showLegend, SIGNAL(triggered(bool)), SLOT(showLegend(bool)));
+    connect(m_autoScroll, SIGNAL(triggered(bool)), SLOT(toggleAutoScroll(bool)));
 }
 
 void GraphWidget::updateRemoveMapping()
@@ -124,6 +130,7 @@ void GraphWidget::newData(analyzer_data */*data*/, quint32 index)
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
         m_curves[i]->curve->dataPosChanged(index);
+
     updateVisibleArea();
 }
 
@@ -137,15 +144,35 @@ void GraphWidget::saveWidgetInfo(AnalyzerDataFile *file)
     DataWidget::saveWidgetInfo(file);
 
     file->writeBlockIdentifier("graphWSample");
-    file->write((char*)&m_sample_size, sizeof(m_sample_size));
+    {
+        file->write((char*)&m_sample_size, sizeof(m_sample_size));
+    }
 
     file->writeBlockIdentifier("graphWLegend");
-    bool showLegend = m_showLegend->isChecked();
-    file->write((char*)&showLegend, 1);
+    {
+        bool showLegend = m_showLegend->isChecked();
+        file->write((char*)&showLegend, 1);
+    }
 
+    // axis range
+    file->writeBlockIdentifier("graphWAxisRange");
+    {
+        double vals[] = { m_graph->XlowerBound(), m_graph->XupperBound(), m_graph->YlowerBound(), m_graph->YupperBound() };
+        file->write((char*)&vals, sizeof(vals));
+    }
+
+    // autoscroll
+    file->writeBlockIdentifier("graphWAutoScroll");
+    {
+        file->write((char*)&m_enableAutoScroll, sizeof(bool));
+    }
+
+    // curves
     file->writeBlockIdentifier("graphWCurveCount");
-    quint32 size = m_curves.size();
-    file->write((char*)&size, sizeof(quint32));
+    {
+        quint32 size = m_curves.size();
+        file->write((char*)&size, sizeof(quint32));
+    }
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
     {
@@ -156,7 +183,7 @@ void GraphWidget::saveWidgetInfo(AnalyzerDataFile *file)
         // curve name
         file->writeBlockIdentifier("graphWCurveName");
         QByteArray title = info->curve->title().text().toAscii();
-        size = title.length();
+        quint32 size = title.length();
         file->write((char*)&size, sizeof(quint32));
         file->write(title.data());
 
@@ -204,6 +231,24 @@ void GraphWidget::loadWidgetInfo(AnalyzerDataFile *file)
         bool show;
         file->read((char*)&show, 1);
         showLegend(show);
+    }
+
+    // axis range
+    if(file->seekToNextBlock("graphWAxisRange", BLOCK_WIDGET))
+    {
+        double vals[4];
+        file->read((char*)&vals, sizeof(vals));
+
+        m_graph->setAxisScale(QwtPlot::xBottom, vals[0], vals[1]);
+        m_graph->setAxisScale(QwtPlot::yLeft, vals[2], vals[3]);
+    }
+
+    // autoscroll
+    if(file->seekToNextBlock("graphWAutoScroll", BLOCK_WIDGET))
+    {
+        bool enable;
+        file->read((char*)&enable, sizeof(enable));
+        toggleAutoScroll(enable);
     }
 
     if(!file->seekToNextBlock("graphWCurveCount", BLOCK_WIDGET))
@@ -254,8 +299,9 @@ void GraphWidget::loadWidgetInfo(AnalyzerDataFile *file)
             color = file->read(size);
         }
 
-        GraphCurve *curve = new GraphCurve(name, m_storage, info,
-                                           m_sample_size, dataType);
+        GraphDataSimple *dta = new GraphData(m_storage, info, m_sample_size, dataType);
+        GraphCurve *curve = new GraphCurve(name, dta);
+
         curve->setPen(QPen(QColor(color)));
         curve->attach(m_graph);
         m_graph->showCurve(curve, true);
@@ -296,8 +342,8 @@ void GraphWidget::addCurve()
 
     if(!m_add_dialog->edit())
     {
-        GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), m_storage, m_info,
-                                           m_sample_size, m_add_dialog->getDataType());
+        GraphData *data = new GraphData(m_storage, m_info, m_sample_size, m_add_dialog->getDataType());
+        GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), data);
         curve->setPen(QPen(QColor(m_add_dialog->getColor())));
         curve->attach(m_graph);
         m_graph->showCurve(curve, true);
@@ -351,26 +397,21 @@ void GraphWidget::updateVisibleArea()
     if(m_curves.empty())
         return;
 
-    qint32 max = 0;
-    qint32 min = 0;
-    quint32 size = 0;
-
-    for(quint8 i = 0; i < m_curves.size(); ++i)
+    if(m_enableAutoScroll)
     {
-        qint32 c_min = m_curves[i]->curve->getMin();
-        qint32 c_max = m_curves[i]->curve->getMax();
-        quint32 c_size = m_curves[i]->curve->getSize();
+        qint32 size = 0;
 
-        if(c_min < min)   min  = c_min;
-        if(c_max > max)   max  = c_max;
-        if(c_size > size) size = c_size;
+        for(quint8 i = 0; i < m_curves.size(); ++i)
+        {
+            qint32 c_size = m_curves[i]->curve->getSize();
+
+            if(c_size > size)
+                size = c_size;
+        }
+
+        qint32 x_max = m_graph->XupperBound() - m_graph->XlowerBound();
+        m_graph->setAxisScale(QwtPlot::xBottom, size - x_max, size);
     }
-
-    if(max == 0) max = 1;
-    if(min == 0) min = -1;
-
-    m_graph->setAxisScale(QwtPlot::xBottom, 0, size);
-    m_graph->setAxisScale(QwtPlot::yLeft, min, max);
 
     m_graph->replot();
 }
@@ -411,9 +452,11 @@ void GraphWidget::editCurve()
 {
     if(m_add_dialog)
         delete m_add_dialog;
+
     m_add_dialog = new GraphCurveAddDialog(this, &m_curves, true);
-    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(addCurve()));
     m_add_dialog->open();
+
+    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(addCurve()));
 }
 
 void GraphWidget::removeCurve(QString name)
@@ -449,6 +492,32 @@ void GraphWidget::showLegend(bool show)
 {
     m_showLegend->setChecked(show);
     m_graph->showLegend(show);
+}
+
+void GraphWidget::toggleAutoScroll(bool scroll)
+{
+    m_autoScroll->setChecked(scroll);
+    m_enableAutoScroll = scroll;
+}
+
+GraphCurve *GraphWidget::addCurve(QString name, QString color)
+{
+    GraphDataSimple *dta = new GraphDataSimple();
+    GraphCurve *curve = new GraphCurve(name, dta);
+
+    curve->setPen(QPen(QColor(color)));
+    curve->attach(m_graph);
+    m_graph->showCurve(curve, true);
+    m_curves.push_back(new GraphCurveInfo(curve, m_info));
+
+    return curve;
+}
+
+void GraphWidget::setAxisScale(bool x, double min, double max)
+{
+    int axis = x ? QwtPlot::xBottom : QwtPlot::yLeft;
+
+    m_graph->setAxisScale(axis, min, max);
 }
 
 GraphWidgetAddBtn::GraphWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

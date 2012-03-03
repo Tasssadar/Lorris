@@ -25,7 +25,7 @@
 #define CHIPDEFS_H
 
 #include <QString>
-#include <map>
+#include <QHash>
 #include <vector>
 
 class chip_definition
@@ -64,15 +64,15 @@ public:
     void setName(const QString& name) { m_name = name; }
     void setSign(const QString& sign) { m_signature = sign; }
 
-    std::map<QString, memorydef> &getMems() { return m_memories; }
+    QHash<QString, memorydef> &getMems() { return m_memories; }
     std::vector<fuse> &getFuses() { return m_fuses; }
-    std::map<QString, QString> &getOptions() { return m_options; }
+    QHash<QString, QString> &getOptions() { return m_options; }
 
     memorydef *getMemDef(const QString& name)
     {
-        std::map<QString, memorydef>::iterator itr = m_memories.find(name);
+        QHash<QString, memorydef>::iterator itr = m_memories.find(name);
         if(itr != m_memories.end())
-            return &itr->second;
+            return &itr.value();
         return NULL;
     }
 
@@ -81,9 +81,9 @@ public:
     QString getOption(const QString& name)
     {
         QString res;
-        std::map<QString, QString>::iterator itr = m_options.find(name);
+        QHash<QString, QString>::iterator itr = m_options.find(name);
         if(itr != m_options.end())
-            res = itr->second;
+            res = itr.value();
         return res;
     }
 
@@ -91,8 +91,8 @@ private:
     QString m_name;
     QString m_signature;
 
-    std::map<QString, memorydef> m_memories;
-    std::map<QString, QString> m_options;
+    QHash<QString, memorydef> m_memories;
+    QHash<QString, QString> m_options;
 
     std::vector<fuse> m_fuses;
 };

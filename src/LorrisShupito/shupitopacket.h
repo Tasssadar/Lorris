@@ -53,7 +53,7 @@ public:
     void Clear();
     bool isValid();
 
-    quint8 addData(const QByteArray& data);
+    quint8 addData(char *d_itr, char *d_end);
 
     // Returns only data part!
     quint8 operator[](int i) const

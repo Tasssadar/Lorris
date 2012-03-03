@@ -110,7 +110,7 @@ void chip_definition::update_chipdef(std::vector<chip_definition> & templates, c
         if(cd.getSign() == templ.getSign())
         {
             cd.setName(templ.getName());
-            cd.getMems().insert(templ.getMems().begin(), templ.getMems().end());
+            cd.getMems() = templ.getMems();
 
             for(quint32 x = 0; x < templ.getFuses().size(); ++x)
             {

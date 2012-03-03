@@ -21,47 +21,37 @@
 **
 ****************************************************************************/
 
-#ifndef GRAPHCURVE_H
-#define GRAPHCURVE_H
+#include <QScriptValue>
 
-#include <qwt_plot_curve.h>
+#include "scriptagent.h"
+#include "common.h"
 
-#include "graphdata.h"
-#include "../datawidget.h"
-
-class AnalyzerDataStorage;
-
-class GraphCurve : public QObject, public QwtPlotCurve
+ScriptAgent::ScriptAgent(QScriptEngine *engine) :
+    QScriptEngineAgent(engine)
 {
-    Q_OBJECT
-public:
-    GraphCurve(const QString& name, GraphDataSimple *data);
-    ~GraphCurve();
+    m_timer.invalidate();
+    m_errors = 0;
+}
 
-    void setSampleSize(qint32 size);
-    void dataPosChanged(quint32 pos);
+void ScriptAgent::exceptionThrow(qint64 /*scriptid*/, const QScriptValue &exception, bool hasHandler)
+{
+    if(hasHandler)
+        return;
 
-    qint32 getMin();
-    qint32 getMax();
-    quint32 getSize();
-    void setDataType(quint8 type);
-
-    void setDataInfo(data_widget_info& info)
+    if((!m_timer.isValid() || m_timer.elapsed() > 1000) && m_errors < 3)
     {
-        m_data->setInfo(info);
+        ++m_errors;
+        m_timer.invalidate();
+
+        Utils::ThrowException(QObject::tr("Uncaught exception: ") + exception.toString());
+
+        m_timer.restart();
     }
+}
 
-    quint8 getDataType() { return m_data->getDataType(); }
+void ScriptAgent::scriptLoad(qint64, const QString &, const QString &, int)
+{
+    m_timer.invalidate();
+    m_errors = 0;
+}
 
-public slots:
-    void addPoint(quint32 index, qreal val);
-    void clear();
-
-private:
-    GraphDataSimple *m_data;
-    qint32 m_sample_size;
-};
-
-Q_DECLARE_METATYPE(GraphCurve*)
-
-#endif // GRAPHCURVE_H

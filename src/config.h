@@ -25,7 +25,7 @@
 #define CONFIG_H
 
 #include <QSettings>
-#include <map>
+#include <QHash>
 
 #include "singleton.h"
 
@@ -43,6 +43,7 @@ enum cfg_quint32
     CFG_QUINT32_TERMINAL_INPUT,
     CFG_QUINT32_PROXY_PORT,
     CFG_QUINT32_SHUPITO_VERIFY,
+    CFG_QUINT32_ANALYZER_PLAY_DEL,
 
     CFG_QUINT32_NUM
 };
@@ -57,6 +58,7 @@ enum cfg_string
     CFG_STRING_SHUPITO_TUNNEL,
     CFG_STRING_TCP_ADDR,
     CFG_STRING_PROXY_ADDR,
+    CFG_STRING_ANALYZER_JS,
 
     CFG_STRING_NUM
 };
@@ -72,9 +74,9 @@ enum cfg_bool
 
 class Config : public Singleton<Config>
 {
-    typedef std::map<cfg_quint32, quint32> def_map_quint32;
-    typedef std::map<cfg_string, QString> def_map_string;
-    typedef std::map<cfg_bool, bool> def_map_bool;
+    typedef QHash<cfg_quint32, quint32> def_map_quint32;
+    typedef QHash<cfg_string, QString> def_map_string;
+    typedef QHash<cfg_bool, bool> def_map_bool;
 
 public:
     Config();

@@ -150,7 +150,7 @@ public:
         m_data = data;
         m_forceValid = true;
     }
-    quint32 addData(QByteArray data);
+    quint32 addData(char *d_itr, char *d_end);
 
     const QByteArray& getData() { return m_data; }
     const QByteArray& getStaticData() { return m_static_data; }
@@ -197,5 +197,7 @@ T analyzer_data::read(quint32 pos)
         Utils::swapEndian<T>((char*)&val);
     return val;
 }
+
+
 
 #endif // PACKET_H
