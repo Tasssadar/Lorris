@@ -47,7 +47,7 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QWidget" name="layoutWidget1">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -95,7 +95,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QWidget" name="layoutWidget2">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -304,7 +304,7 @@ to change order</string>
     </widget>
    </widget>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QWidget" name="layoutWidget3">
    <property name="geometry">
     <rect>
      <x>21</x>
