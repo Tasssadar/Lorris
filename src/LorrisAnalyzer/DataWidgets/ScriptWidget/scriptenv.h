@@ -50,7 +50,7 @@ public:
     const QString& getSource() { return m_source; }
 
     QString dataChanged(analyzer_data *data, quint32 index);
-    DataWidget *addWidget(quint8 type, QScriptContext *context);
+    DataWidget *addWidget(quint8 type, QScriptContext *context, quint8 removeArg = 0);
 
     void setPos(int x, int y)
     {
@@ -73,6 +73,7 @@ private:
     static QScriptValue __newColorWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newGraphWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newInputWidget(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __newWidget(QScriptContext *context, QScriptEngine *engine);
 
     QString m_source;
     AnalyzerDataArea *m_area;

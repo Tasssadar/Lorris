@@ -86,6 +86,7 @@ void ScriptEnv::prepareNewContext()
     QScriptValue colorW = newFunction(&__newColorWidget);
     QScriptValue graphW = newFunction(&__newGraphWidget);
     QScriptValue inputW = newFunction(&__newInputWidget);
+    QScriptValue newW = newFunction(&__newWidget);
 
     m_global.setProperty("clearTerm", clearTerm);
     m_global.setProperty("appendTerm", appendTerm);
@@ -96,6 +97,14 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("newColorWidget", colorW);
     m_global.setProperty("newGraphWidget", graphW);
     m_global.setProperty("newInputWidget", inputW);
+    m_global.setProperty("newWidget", newW);
+
+    // defines
+    m_global.setProperty("WIDGET_NUMBER", QScriptValue(this, WIDGET_NUMBERS));
+    m_global.setProperty("WIDGET_BAR",    QScriptValue(this, WIDGET_BAR));
+    m_global.setProperty("WIDGET_COLOR",  QScriptValue(this, WIDGET_COLOR));
+    m_global.setProperty("WIDGET_GRAPH",  QScriptValue(this, WIDGET_GRAPH));
+    m_global.setProperty("WIDGET_INPUT",  QScriptValue(this, WIDGET_INPUT));
 
     for(std::list<DataWidget*>::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         m_area->removeWidget((*itr)->getId());
@@ -160,9 +169,9 @@ void ScriptEnv::keyPressed(const QByteArray &key)
     m_on_key.call(QScriptValue(), args);
 }
 
-DataWidget *ScriptEnv::addWidget(quint8 type, QScriptContext *context)
+DataWidget *ScriptEnv::addWidget(quint8 type, QScriptContext *context, quint8 removeArg)
 {
-    if(context->argumentCount() == 0)
+    if(context->argumentCount()-removeArg == 0)
         return NULL;
 
     DataWidget *w = m_area->addWidget(QPoint(0,0), type);
@@ -171,25 +180,25 @@ DataWidget *ScriptEnv::addWidget(quint8 type, QScriptContext *context)
 
     m_widgets.push_back(w);
 
-    switch(context->argumentCount())
+    switch(context->argumentCount()-removeArg)
     {
         case 5:
         {
-            int x = m_x + context->argument(3).toInt32();
-            int y = m_y + context->argument(4).toInt32();
+            int x = m_x + context->argument(3+removeArg).toInt32();
+            int y = m_y + context->argument(4+removeArg).toInt32();
             w->move(x, y);
             // Fallthrough
         }
         case 3:
         {
-            int wid = context->argument(1).toUInt32();
-            int h = context->argument(2).toUInt32();
+            int wid = context->argument(1+removeArg).toUInt32();
+            int h = context->argument(2+removeArg).toUInt32();
             if(wid || h)
                 w->resize(wid, h);
             // Fallthrough
         }
         case 1:
-            w->setTitle(context->argument(0).toString());
+            w->setTitle(context->argument(0+removeArg).toString());
             break;
     }
 
@@ -264,5 +273,20 @@ QScriptValue ScriptEnv::__newGraphWidget(QScriptContext *context, QScriptEngine 
 QScriptValue ScriptEnv::__newInputWidget(QScriptContext *context, QScriptEngine *engine)
 {
     DataWidget *w = ((ScriptEnv*)engine)->addWidget(WIDGET_INPUT, context);
+    return engine->newQObject(w);
+}
+
+QScriptValue ScriptEnv::__newWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    if(context->argumentCount() < 2)
+        return QScriptValue();
+
+    quint16 type = context->argument(0).toUInt16();
+
+    if(type >= WIDGET_MAX || type == WIDGET_SCRIPT)
+        return QScriptValue();
+
+
+    DataWidget *w = ((ScriptEnv*)engine)->addWidget(type, context, 1);
     return engine->newQObject(w);
 }
