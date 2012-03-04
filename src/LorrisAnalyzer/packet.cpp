@@ -91,7 +91,7 @@ bool analyzer_data::isValid()
     if(m_forceValid)
         return true;
 
-    if(itr < (quint32)m_static_data.length())
+    if(m_data.isEmpty() || itr < (quint32)m_static_data.length())
         return false;
 
     for(quint8 i = 0; i < m_static_data.length(); ++i)
