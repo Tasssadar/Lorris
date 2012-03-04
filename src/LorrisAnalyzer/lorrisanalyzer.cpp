@@ -350,6 +350,8 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
 
     // old packet deleted in AnalyzerDataStorage::loadFromFile()
     m_packet = packet;
+
+    delete m_curData;
     m_curData = new analyzer_data(m_packet);
 
     if(!m_dev_tabs->count())
@@ -489,6 +491,7 @@ void LorrisAnalyzer::clearButton()
 
     m_data_area->clear();
 
+    delete m_curData;
     m_curData = NULL;
     m_storage->Clear();
     m_storage->setPacket(NULL);
