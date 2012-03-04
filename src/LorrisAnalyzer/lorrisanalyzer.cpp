@@ -84,9 +84,10 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
                                  SLOT(handleData(analyzer_data*, quint32)));
 
 
-    int h = ui->collapseLeft->fontMetrics().height();
+    int h = ui->collapseLeft->fontMetrics().height()+10;
     ui->collapseLeft->setFixedWidth(h);
     ui->collapseRight->setFixedWidth(h);
+    ui->collapseTop->setFixedHeight(h);
     ui->collapseLeft->setRotation(ROTATE_270);
     ui->collapseRight->setRotation(ROTATE_90);
 
@@ -454,25 +455,13 @@ bool LorrisAnalyzer::isAreaVisible(quint8 area)
 void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
 {
     if(area & AREA_TOP)
-    {
-        if(visible) ui->collapseTop->setText(tr("Data") % " ^");
-        else        ui->collapseTop->setText(tr("Data") % " v");
         ui->devTabs->setVisible(visible);
-    }
 
     if(area & AREA_RIGHT)
-    {
-        if(visible) ui->collapseRight->setText(tr("Widgets") % " ^");
-        else        ui->collapseRight->setText(tr("Widgets") % " v");
         ui->widgetsScrollArea->setVisible(visible);
-    }
 
     if(area & AREA_LEFT)
-    {
-        if(visible) ui->collapseLeft->setText(tr("Playback") % " v");
-        else        ui->collapseLeft->setText(tr("Playback") % " ^");
         ui->playFrame->setVisible(visible);
-    }
 }
 
 void LorrisAnalyzer::clearButton()

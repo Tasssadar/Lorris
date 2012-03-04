@@ -122,10 +122,10 @@
       <string notr="true">padding: 0px</string>
      </property>
      <property name="text">
-      <string notr="true">^</string>
+      <string>Data</string>
      </property>
      <property name="flat">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -198,10 +198,10 @@
         <string notr="true">padding: 0</string>
        </property>
        <property name="text">
-        <string>v</string>
+        <string>Playback</string>
        </property>
        <property name="flat">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="rotation" stdset="0">
         <UInt>1</UInt>
@@ -239,10 +239,10 @@
         <string notr="true">padding: 0px</string>
        </property>
        <property name="text">
-        <string notr="true">&gt;</string>
+        <string>Widgets</string>
        </property>
        <property name="flat">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
