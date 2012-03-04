@@ -76,6 +76,13 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->timeSlider,      SIGNAL(rangeChanged(int,int)), ui->playFrame,  SLOT(rangeChanged(int,int)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
+    connect(ui->dataArea,        SIGNAL(updateData()),      SLOT(updateData()));
+    connect(ui->devTabs,         SIGNAL(updateData()),      SLOT(updateData()));
+    connect(ui->dataArea,        SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
+                                 SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
+    connect(this,                SIGNAL(newData(analyzer_data*,quint32)), ui->devTabs,
+                                 SLOT(handleData(analyzer_data*, quint32)));
+
 
     int h = ui->collapseLeft->fontMetrics().height();
     ui->collapseLeft->setFixedWidth(h);
@@ -102,7 +109,6 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 
     addTopMenu(menuData);
 
-
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better
 #if defined(Q_WS_X11)
@@ -111,20 +117,9 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 #endif
 
     m_storage = new AnalyzerDataStorage(this);
+    ui->dataArea->setAnalyzerAndStorage(this, m_storage);
 
-    m_dev_tabs = new DeviceTabWidget(this);
-    m_dev_tabs->addDevice();
-    ui->leftVLayout->insertWidget(1, m_dev_tabs);
-
-    connect(this, SIGNAL(newData(analyzer_data*,quint32)), m_dev_tabs, SLOT(handleData(analyzer_data*, quint32)));
-    connect(m_dev_tabs, SIGNAL(updateData()), this, SLOT(updateData()));
-
-    m_data_area = new AnalyzerDataArea(this, m_storage);
-    ui->bottomHLayout->insertWidget(2, m_data_area, 4);
-    ui->bottomHLayout->setStretch(1, 1);
-    connect(m_data_area, SIGNAL(updateData()), this, SLOT(updateData()));
-    connect(m_data_area, SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
-                         SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
+    ui->devTabs->addDevice();
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
@@ -158,7 +153,7 @@ LorrisAnalyzer::~LorrisAnalyzer()
         delete m_packet->header;
         delete m_packet;
     }
-    delete m_dev_tabs;
+    delete ui->devTabs;
     delete m_curData;
 }
 
@@ -298,11 +293,11 @@ void LorrisAnalyzer::onTabShow()
                     delete m_packet->header;
                     delete m_packet;
                 }
-                m_data_area->clear();
+                ui->dataArea->clear();
                 m_storage->Clear();
-                m_dev_tabs->removeAll();
-                m_dev_tabs->setHeader(packet->header);
-                m_dev_tabs->addDevice();
+                ui->devTabs->removeAll();
+                ui->devTabs->setHeader(packet->header);
+                ui->devTabs->addDevice();
 
                 m_storage->setPacket(packet);
                 m_packet = packet;
@@ -354,7 +349,7 @@ analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
 
 void LorrisAnalyzer::load(QString *name, quint8 mask)
 {
-    analyzer_packet *packet = m_storage->loadFromFile(name, mask, m_data_area, m_dev_tabs);
+    analyzer_packet *packet = m_storage->loadFromFile(name, mask, ui->dataArea, ui->devTabs);
     if(!packet)
         return;
 
@@ -364,11 +359,11 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     delete m_curData;
     m_curData = new analyzer_data(m_packet);
 
-    if(!m_dev_tabs->count())
+    if(!ui->devTabs->count())
     {
-        m_dev_tabs->removeAll();
-        m_dev_tabs->setHeader(packet->header);
-        m_dev_tabs->addDevice();
+        ui->devTabs->removeAll();
+        ui->devTabs->setHeader(packet->header);
+        ui->devTabs->addDevice();
     }
 
     ui->timeSlider->setMaximum(m_storage->getSize());
@@ -383,14 +378,14 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
 
 void LorrisAnalyzer::saveDataButton()
 {
-    m_storage->SaveToFile(m_data_area, m_dev_tabs);
+    m_storage->SaveToFile(ui->dataArea, ui->devTabs);
 }
 
 void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
 {
     if(parent != -1)
     {
-        DataWidget *w = m_data_area->getWidget(parent);
+        DataWidget *w = ui->dataArea->getWidget(parent);
         if(!w)
             return;
 
@@ -410,9 +405,9 @@ void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qi
         if(in)
         {
             if(highlightInfoNotNull && highlightInfo != info)
-                m_dev_tabs->setHighlightPos(highlightInfo, false);
+                ui->devTabs->setHighlightPos(highlightInfo, false);
 
-            bool found = m_dev_tabs->setHighlightPos(info, true);
+            bool found = ui->devTabs->setHighlightPos(info, true);
 
             if(found)
             {
@@ -424,7 +419,7 @@ void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qi
 
         if(highlightInfoNotNull)
         {
-            m_dev_tabs->setHighlightPos(highlightInfo, false);
+            ui->devTabs->setHighlightPos(highlightInfo, false);
             highlightInfoNotNull = false;
         }
     }
@@ -449,7 +444,7 @@ bool LorrisAnalyzer::isAreaVisible(quint8 area)
 {
     switch(area)
     {
-        case AREA_TOP:   return m_dev_tabs->isVisible();
+        case AREA_TOP:   return ui->devTabs->isVisible();
         case AREA_RIGHT: return ui->widgetsScrollArea->isVisible();
         case AREA_LEFT:  return ui->playFrame->isVisible();
     }
@@ -462,7 +457,7 @@ void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
     {
         if(visible) ui->collapseTop->setText(tr("Data") % " ^");
         else        ui->collapseTop->setText(tr("Data") % " v");
-        m_dev_tabs->setVisible(visible);
+        ui->devTabs->setVisible(visible);
     }
 
     if(area & AREA_RIGHT)
@@ -495,11 +490,11 @@ void LorrisAnalyzer::clearButton()
     analyzer_packet *packet = m_packet;
     m_packet = NULL;
 
-    m_dev_tabs->removeAll();
-    m_dev_tabs->setHeader(NULL);
-    m_dev_tabs->addDevice();
+    ui->devTabs->removeAll();
+    ui->devTabs->setHeader(NULL);
+    ui->devTabs->addDevice();
 
-    m_data_area->clear();
+    ui->dataArea->clear();
 
     delete m_curData;
     m_curData = NULL;
@@ -560,11 +555,11 @@ void LorrisAnalyzer::editStruture()
             delete m_packet->header;
             delete m_packet;
         }
-        m_dev_tabs->setHeader(packet->header);
+        ui->devTabs->setHeader(packet->header);
 
         m_storage->setPacket(packet);
         m_packet = packet;
 
-         updateData(true);
+        updateData(true);
     }
 }

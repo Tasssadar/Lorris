@@ -45,8 +45,14 @@ public:
     typedef QHash<quint32, DataWidget*> w_map;
     typedef QHash<quint32, QRect> mark_map;
 
-    explicit AnalyzerDataArea(LorrisAnalyzer* analyzer, AnalyzerDataStorage* storage);
+    explicit AnalyzerDataArea(QWidget *parent = 0);
     ~AnalyzerDataArea();
+
+    void setAnalyzerAndStorage(LorrisAnalyzer* analyzer, AnalyzerDataStorage* storage)
+    {
+        m_analyzer = analyzer;
+        m_storage = storage;
+    }
 
     void clear();
 

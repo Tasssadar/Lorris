@@ -36,14 +36,10 @@
 #include "analyzerdatafile.h"
 #include "analyzerdatastorage.h"
 
-AnalyzerDataArea::AnalyzerDataArea(LorrisAnalyzer *analyzer, AnalyzerDataStorage *storage) :
-    QFrame(analyzer)
+AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
+    QFrame(parent)
 {
-    setFrameStyle(QFrame::Panel | QFrame::Plain);
-    setAcceptDrops(true);
     m_widgetIdCounter = 0;
-    m_storage = storage;
-    m_analyzer = analyzer;
 
     m_skipNextMove = false;
 }

@@ -115,8 +115,6 @@ class LorrisAnalyzer : public WorkTab
         AnalyzerDataStorage *m_storage;
         analyzer_packet *m_packet;
         analyzer_data *m_curData;
-        DeviceTabWidget *m_dev_tabs;
-        AnalyzerDataArea *m_data_area;
 
         QTime updateTime;
         int minUpdateDelay;
