@@ -42,6 +42,11 @@ void XByteArray::setData(QByteArray data)
     _changedData = QByteArray(data.length(), char(0));
 }
 
+bool XByteArray::dataChanged() const
+{
+    return _changedData.contains(1);
+}
+
 bool XByteArray::dataChanged(int i)
 {
     return bool(_changedData[i]);

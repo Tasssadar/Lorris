@@ -136,6 +136,7 @@ private slots:
     void status(const QString& text);
 
     void loadFromFile(int memId);
+    void loadFromFile(int memId, const QString& filename);
     void saveToFile(int memId);
 
 private:
@@ -177,6 +178,7 @@ private:
     quint8 m_verify_mode;
 
     QHexEdit *m_hexAreas[MEM_FUSES];
+    QString m_hexFilenames[MEM_FUSES];
     ShupitoMode *m_modes[MODE_COUNT];
     quint8 m_cur_mode;
 

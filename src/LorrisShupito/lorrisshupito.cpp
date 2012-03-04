@@ -856,28 +856,34 @@ void LorrisShupito::loadFromFile(int memId)
 
         sConfig.set(CFG_STRING_SHUPITO_HEX_FOLDER, filename);
 
-        status("");
-
-        HexFile file;
-
-        file.LoadFromFile(filename);
-
-        quint32 len = 0;
-        if(!m_cur_def.getName().isEmpty())
-        {
-            chip_definition::memorydef *memdef = m_cur_def.getMemDef(memId);
-            if(memdef)
-                len = memdef->size;
-        }
-        m_hexAreas[memId]->setData(file.getDataArray(len));
-        m_hexAreas[memId]->setBackgroundColor(colorFromFile);
-
-        status(tr("File loaded"));
+        loadFromFile(memId, filename);
     }
     catch(QString ex)
     {
         showErrorBox(ex);
     }
+}
+
+void LorrisShupito::loadFromFile(int memId, const QString& filename)
+{
+    status("");
+
+    HexFile file;
+
+    file.LoadFromFile(filename);
+
+    quint32 len = 0;
+    if(!m_cur_def.getName().isEmpty())
+    {
+        chip_definition::memorydef *memdef = m_cur_def.getMemDef(memId);
+        if(memdef)
+            len = memdef->size;
+    }
+    m_hexAreas[memId]->setData(file.getDataArray(len));
+    m_hexAreas[memId]->setBackgroundColor(colorFromFile);
+    m_hexFilenames[memId] = filename;
+
+    status(tr("File loaded"));
 }
 
 void LorrisShupito::saveToFile(int memId)
@@ -903,6 +909,7 @@ void LorrisShupito::saveToFile(int memId)
 
         m_hexAreas[memId]->setBackgroundColor(colorFromFile);
         m_hexAreas[memId]->clearDataChanged();
+        m_hexFilenames[memId] = filename;
 
         status(tr("File saved"));
     }
@@ -1007,6 +1014,7 @@ void LorrisShupito::readMem(quint8 memId, chip_definition &chip)
 
     m_hexAreas[memId]->setData(mem);
     m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
+    m_hexFilenames[memId].clear();
 
     updateProgressDialog(-1);
 }
@@ -1135,6 +1143,18 @@ void LorrisShupito::writeFusesInFlash()
 
 void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
 {
+    if (!m_hexFilenames[memId].isEmpty() && !m_hexAreas[memId]->hasDataChanged())
+    {
+        try
+        {
+            loadFromFile(memId, m_hexFilenames[memId]);
+        }
+        catch (QString const &)
+        {
+            // Ignore errors.
+        }
+    }
+
     chip_definition::memorydef *memdef = chip.getMemDef(memId);
 
     if(!memdef)
@@ -1152,6 +1172,7 @@ void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
 
     m_modes[m_cur_mode]->flashRaw(file, memId, chip, m_verify_mode);
     m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
+    m_hexFilenames[memId].clear();
 
     updateProgressDialog(-1);
 }

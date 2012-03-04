@@ -62,6 +62,11 @@ QByteArray QHexEditPrivate::data()
     return _xData.data();
 }
 
+bool QHexEditPrivate::hasDataChanged() const
+{
+    return _xData.dataChanged();
+}
+
 // Lorris change
 void QHexEditPrivate::clearDataChanged()
 {

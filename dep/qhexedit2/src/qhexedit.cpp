@@ -156,6 +156,11 @@ void QHexEdit::setBackgroundColor(const QString& htmlColor)
     qHexEdit_p->setStyleSheet("background-color: " + htmlColor);
 }
 
+bool QHexEdit::hasDataChanged() const
+{
+    return qHexEdit_p->hasDataChanged();
+}
+
 // Lorris change
 void QHexEdit::clearDataChanged()
 {
