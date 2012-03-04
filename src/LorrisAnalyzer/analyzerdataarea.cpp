@@ -65,9 +65,9 @@ void AnalyzerDataArea::dropEvent(QDropEvent *event)
     QString data = event->mimeData()->text().remove(0, 1);
     quint8 type = data.toInt();
 
-    addWidget(event->pos(), type);
-
     event->acceptProposedAction();
+
+    addWidget(event->pos(), type);
 }
 
 DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
