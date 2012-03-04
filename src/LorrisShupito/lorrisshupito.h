@@ -126,9 +126,11 @@ private slots:
     void updateProgressDialog(int value);
     void updateProgressLabel(const QString& text);
 
+    void startstopChip();
     void startChip();
     void stopChip();
     void restartChip();
+    void updateStartStopUi(bool stopped);
 
     void modeSelected(int idx);
     void status(const QString& text);
@@ -154,6 +156,8 @@ private:
     void initMenus();
 
     void changeVddColor(float val);
+
+    bool m_chipStopped;
 
     QAction *m_start_act;
     QAction *m_stop_act;

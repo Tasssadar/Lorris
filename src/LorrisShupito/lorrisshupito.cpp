@@ -56,6 +56,8 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 {
     ui->setupUi(this);
 
+    m_chipStopped = false;
+
     m_fuse_widget = new FuseWidget(this);
     ui->mainLayout->addWidget(m_fuse_widget);
 
@@ -83,16 +85,17 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
     ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
 
-    connect(ui->connectButton,  SIGNAL(clicked()),                SLOT(connectButton()));
-    connect(ui->tunnelSpeedBox, SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
-    connect(ui->tunnelCheck,    SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
-    connect(ui->progSpeedBox,   SIGNAL(editTextChanged(QString)), SLOT(progSpeedChanged(QString)));
-    connect(ui->hideLogBtn,     SIGNAL(clicked()),                SLOT(hideLogBtn()));
-    connect(ui->eraseButton,    SIGNAL(clicked()),                SLOT(eraseDevice()));
-    connect(ui->hideFusesBtn,   SIGNAL(clicked()),                SLOT(hideFusesBtn()));
-    connect(m_fuse_widget,      SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
-    connect(m_fuse_widget,      SIGNAL(status(QString)),          SLOT(status(QString)));
-    connect(m_fuse_widget,      SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
+    connect(ui->connectButton,   SIGNAL(clicked()),                SLOT(connectButton()));
+    connect(ui->tunnelSpeedBox,  SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
+    connect(ui->tunnelCheck,     SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
+    connect(ui->progSpeedBox,    SIGNAL(editTextChanged(QString)), SLOT(progSpeedChanged(QString)));
+    connect(ui->hideLogBtn,      SIGNAL(clicked()),                SLOT(hideLogBtn()));
+    connect(ui->eraseButton,     SIGNAL(clicked()),                SLOT(eraseDevice()));
+    connect(ui->hideFusesBtn,    SIGNAL(clicked()),                SLOT(hideFusesBtn()));
+    connect(m_fuse_widget,       SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
+    connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
+    connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
+    connect(ui->startstopButton, SIGNAL(clicked()),                SLOT(startstopChip()));
 
     initMenus();
 
@@ -290,7 +293,9 @@ void LorrisShupito::connectedStatus(bool connected)
     {
         m_state |= STATE_DISCONNECTED;
         ui->connectButton->setText(tr("Connect"));  
+        updateStartStopUi(false);
     }
+    ui->startstopButton->setEnabled(connected);
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
     ui->progSpeedBox->setEnabled(connected);
@@ -753,6 +758,14 @@ bool LorrisShupito::showContinueBox(const QString &title, const QString &text)
     return !((bool)box.exec());
 }
 
+void LorrisShupito::startstopChip()
+{
+    if (m_chipStopped)
+        startChip();
+    else
+        stopChip();
+}
+
 void LorrisShupito::startChip()
 {
     if(!checkVoltage(true))
@@ -770,8 +783,8 @@ void LorrisShupito::startChip()
     {
         showErrorBox(ex);
     }
-    m_start_act->setEnabled(false);
-    m_stop_act->setEnabled(true);
+
+    updateStartStopUi(false);
 }
 
 void LorrisShupito::stopChip()
@@ -791,9 +804,30 @@ void LorrisShupito::stopChip()
     catch(QString ex)
     {
         showErrorBox(ex);
+
+        // The chip has not been stopped.
+        return;
     }
-    m_start_act->setEnabled(true);
-    m_stop_act->setEnabled(false);
+
+    updateStartStopUi(true);
+}
+
+void LorrisShupito::updateStartStopUi(bool stopped)
+{
+    if (stopped)
+    {
+        m_start_act->setEnabled(true);
+        m_stop_act->setEnabled(false);
+        ui->startstopButton->setText(tr("Start"));
+    }
+    else
+    {
+        m_start_act->setEnabled(false);
+        m_stop_act->setEnabled(true);
+        ui->startstopButton->setText(tr("Stop"));
+    }
+
+    m_chipStopped = stopped;
 }
 
 void LorrisShupito::restartChip()
