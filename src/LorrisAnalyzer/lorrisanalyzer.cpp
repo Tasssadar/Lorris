@@ -137,6 +137,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     m_curData = NULL;
 
     updateTime.start();
+
+    setAreaVisibility(AREA_LEFT, false);
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -506,6 +508,7 @@ void LorrisAnalyzer::clearButton()
     }
 
     setAreaVisibility(AREA_TOP | AREA_RIGHT, true);
+    setAreaVisibility(AREA_LEFT, false);
 }
 
 void LorrisAnalyzer::updateTimeChanged(int value)
