@@ -77,6 +77,12 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
 
+    int h = ui->collapseLeft->fontMetrics().height();
+    ui->collapseLeft->setFixedWidth(h);
+    ui->collapseRight->setFixedWidth(h);
+    ui->collapseLeft->setRotation(ROTATE_270);
+    ui->collapseRight->setRotation(ROTATE_90);
+
     QMenu* menuData = new QMenu(tr("&Data"), this);
 
     QAction* newSource = menuData->addAction(tr("New source..."));
@@ -139,6 +145,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     updateTime.start();
 
     setAreaVisibility(AREA_LEFT, false);
+    setAreaVisibility(AREA_RIGHT, true);
+    setAreaVisibility(AREA_TOP, true);
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -452,22 +460,22 @@ void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
 {
     if(area & AREA_TOP)
     {
-        if(visible) ui->collapseTop->setText("^");
-        else        ui->collapseTop->setText("v");
+        if(visible) ui->collapseTop->setText(tr("Data") % " ^");
+        else        ui->collapseTop->setText(tr("Data") % " v");
         m_dev_tabs->setVisible(visible);
     }
 
     if(area & AREA_RIGHT)
     {
-        if(visible) ui->collapseRight->setText(">");
-        else        ui->collapseRight->setText("<");
+        if(visible) ui->collapseRight->setText(tr("Widgets") % " ^");
+        else        ui->collapseRight->setText(tr("Widgets") % " v");
         ui->widgetsScrollArea->setVisible(visible);
     }
 
     if(area & AREA_LEFT)
     {
-        if(visible) ui->collapseLeft->setText("<");
-        else        ui->collapseLeft->setText(">");
+        if(visible) ui->collapseLeft->setText(tr("Playback") % " v");
+        else        ui->collapseLeft->setText(tr("Playback") % " ^");
         ui->playFrame->setVisible(visible);
     }
 }

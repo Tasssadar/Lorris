@@ -87,7 +87,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/playback.cpp \
     src/LorrisAnalyzer/DataWidgets/inputwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.cpp \
-    src/ui/maintabwidget.cpp
+    src/ui/maintabwidget.cpp \
+    src/shared/rotatebutton.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -159,7 +160,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/playback.h \
     src/LorrisAnalyzer/DataWidgets/inputwidget.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.h \
-    src/ui/maintabwidget.h
+    src/ui/maintabwidget.h \
+    src/shared/rotatebutton.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL

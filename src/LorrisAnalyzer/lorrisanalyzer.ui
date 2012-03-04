@@ -180,7 +180,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="collapseLeft">
+      <widget class="RotateButton" name="collapseLeft">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -191,15 +191,18 @@
         <string notr="true">padding: 0</string>
        </property>
        <property name="text">
-        <string notr="true">&lt;</string>
+        <string>v</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
+       <property name="rotation" stdset="0">
+        <UInt>1</UInt>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="collapseRight">
+      <widget class="RotateButton" name="collapseRight">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -229,13 +232,10 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>689</width>
+            <width>691</width>
             <height>271</height>
            </rect>
           </property>
-          <zorder>playFrame</zorder>
-          <zorder>playFrame</zorder>
-          <zorder>playFrame</zorder>
          </widget>
         </widget>
        </item>
@@ -251,6 +251,11 @@
    <extends>QFrame</extends>
    <header location="global">playback.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RotateButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">rotatebutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
