@@ -261,6 +261,8 @@ void HexFile::setData(const QByteArray &data)
 QByteArray HexFile::getDataArray(quint32 len)
 {
     QByteArray res(len, 0xFF);
+    quint32 size = len;
+
     for(regionMap::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
     {
         quint32 offset = itr->first;
@@ -268,9 +270,20 @@ QByteArray HexFile::getDataArray(quint32 len)
 
         for(quint32 i = 0; i < data.size(); ++i)
         {
-            if(offset + i > (quint32)res.size())
+            if(len && offset + i > (quint32)res.size())
                 return res;
+
+
             res[offset+i] = data[i];
+
+            if(size < offset+i)
+            {
+                char *itr = res.data()+size;
+                char *end = res.data()+offset+i-1;
+                for(;itr < end; ++itr)
+                    *itr = 0xFF;
+            }
+            size = offset+i;
         }
     }
     return res;

@@ -846,9 +846,6 @@ void LorrisShupito::loadFromFile(int memId)
 {
     try
     {
-        if(m_cur_def.getName().isEmpty())
-            restartChip();
-
         QString filename = QFileDialog::getOpenFileName(this, QObject::tr("Import data"),
                                                         sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
                                                         filters);
@@ -880,6 +877,7 @@ void LorrisShupito::loadFromFile(int memId, const QString& filename)
         if(memdef)
             len = memdef->size;
     }
+
     m_hexAreas[memId]->setData(file.getDataArray(len));
     m_hexAreas[memId]->setBackgroundColor(colorFromFile);
     m_hexFilenames[memId] = filename;
@@ -1152,7 +1150,7 @@ void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
         throw QString(tr("Unknown memory id"));
 
     QByteArray data = m_hexAreas[memId]->data();
-    if((quint32)data.size() != memdef->size)
+    if((quint32)data.size() > memdef->size)
         throw QString(tr("Somethings wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
 
     log("Writing memory");
