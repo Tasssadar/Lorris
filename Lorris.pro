@@ -88,7 +88,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/inputwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.cpp \
     src/ui/maintabwidget.cpp \
-    src/shared/rotatebutton.cpp
+    src/shared/rotatebutton.cpp \
+    src/LorrisShupito/reloaddialog.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -161,7 +162,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/inputwidget.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.h \
     src/ui/maintabwidget.h \
-    src/shared/rotatebutton.h
+    src/shared/rotatebutton.h \
+    src/LorrisShupito/reloaddialog.h
 
 win32 {
     DEFINES += QT_DLL QWT_DLL
@@ -202,7 +204,8 @@ FORMS += \
     src/LorrisProxy/lorrisproxy.ui \
     src/ui/tabdialog.ui \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
-    src/LorrisAnalyzer/playback.ui
+    src/LorrisAnalyzer/playback.ui \
+    src/LorrisShupito/reloaddialog.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \

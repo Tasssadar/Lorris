@@ -44,6 +44,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "proxy/port",                // CFG_QUINT32_PROXY_PORT
     "shupito/verify_mode",       // CFG_QUINT32_SHUPITO_VERIFY
     "analyzer/play_delay",       // CFG_QUINT32_ANALYZER_PLAY_DEL
+    "shupito/reload_hex",        // CFG_QUINT32_SHUPITO_HEX_RELOAD
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -84,6 +85,7 @@ Config::Config()
     m_def_quint32[CFG_QUINT32_PROXY_PORT]          = 0;
     m_def_quint32[CFG_QUINT32_SHUPITO_VERIFY]      = 1;
     m_def_quint32[CFG_QUINT32_ANALYZER_PLAY_DEL]   = 1000;
+    m_def_quint32[CFG_QUINT32_SHUPITO_HEX_RELOAD]  = 0;
 
     m_def_string[CFG_STRING_SERIAL_PORT]           = "";
     m_def_string[CFG_STRING_SHUPITO_PORT]          = "";
