@@ -24,8 +24,6 @@
 #ifndef LORRISSHUPITO_H
 #define LORRISSHUPITO_H
 
-#include <QFileSystemWatcher>
-
 #include "WorkTab/WorkTab.h"
 #include "shupito.h"
 #include "shupitodesc.h"
@@ -140,7 +138,6 @@ private slots:
     void loadFromFile(int memId);
     void loadFromFile(int memId, const QString& filename);
     void saveToFile(int memId);
-    void fileChanged(const QString& path);
 
 private:
     void log(const QString& text);
@@ -179,8 +176,6 @@ private:
     ShupitoDesc *m_desc;
     quint32 m_prog_speed_hz;
     quint8 m_verify_mode;
-
-    QFileSystemWatcher *m_file_watcher;
 
     QHexEdit *m_hexAreas[MEM_FUSES];
     QString m_hexFilenames[MEM_FUSES];

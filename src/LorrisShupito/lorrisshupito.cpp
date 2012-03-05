@@ -42,7 +42,6 @@
 #include "shared/chipdefs.h"
 #include "flashbuttonmenu.h"
 #include "connection/connectionmgr.h"
-#include "reloaddialog.h"
 
 #include "ui_lorrisshupito.h"
 
@@ -86,8 +85,6 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
     ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
 
-    m_file_watcher = new QFileSystemWatcher(this);
-
     connect(ui->connectButton,   SIGNAL(clicked()),                SLOT(connectButton()));
     connect(ui->tunnelSpeedBox,  SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
     connect(ui->tunnelCheck,     SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
@@ -99,7 +96,6 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
     connect(ui->startstopButton, SIGNAL(clicked()),                SLOT(startstopChip()));
-    connect(m_file_watcher,     SIGNAL(fileChanged(QString)),     SLOT(fileChanged(QString)));
 
     initMenus();
 
@@ -861,10 +857,6 @@ void LorrisShupito::loadFromFile(int memId)
         sConfig.set(CFG_STRING_SHUPITO_HEX_FOLDER, filename);
 
         loadFromFile(memId, filename);
-
-        if(!m_hexFilenames[memId].isEmpty() && !m_file_watcher->files().contains(filename))
-            m_file_watcher->removePath(m_hexFilenames[memId]);
-        m_file_watcher->addPath(filename);
     }
     catch(QString ex)
     {
@@ -1151,6 +1143,18 @@ void LorrisShupito::writeFusesInFlash()
 
 void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
 {
+    if (!m_hexFilenames[memId].isEmpty() && !m_hexAreas[memId]->hasDataChanged())
+    {
+        try
+        {
+            loadFromFile(memId, m_hexFilenames[memId]);
+        }
+        catch (QString const &)
+        {
+            // Ignore errors.
+        }
+    }
+
     chip_definition::memorydef *memdef = chip.getMemDef(memId);
 
     if(!memdef)
@@ -1231,42 +1235,4 @@ void LorrisShupito::verifyChanged(int mode)
     sConfig.set(CFG_QUINT32_SHUPITO_VERIFY, mode);
 
     m_verify_mode = mode;
-}
-
-void LorrisShupito::fileChanged(const QString &path)
-{
-    quint8 mem = MEM_FLASH;
-    for(; mem < MEM_FUSES; ++mem)
-        if(!m_hexAreas[mem]->hasDataChanged() && m_hexFilenames[mem] == path)
-            break;
-
-    if(mem == MEM_FUSES)
-        return;
-
-    QStringList list = m_file_watcher->files();
-
-    switch(sConfig.get(CFG_QUINT32_SHUPITO_HEX_RELOAD))
-    {
-        case 0: // ask
-        {
-            ReloadDialog box(m_hexFilenames[mem], this);
-
-            if(box.exec() == QDialog::Rejected)
-                return;
-
-            sConfig.set(CFG_QUINT32_SHUPITO_HEX_RELOAD, box.getReloadState());
-            break;
-        }
-        case 1: break; // Auto reload
-        case 2: return; // Ignore reload
-    }
-
-    try
-    {
-        loadFromFile(mem, m_hexFilenames[mem]);
-    }
-    catch (QString const &)
-    {
-        // Ignore errors.
-    }
 }
