@@ -66,8 +66,8 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
         m_cur_mode = MODE_SPI;
 
     m_prog_speed_hz = sConfig.get(CFG_QUINT32_SHUPITO_PRG_SPEED);
-    if(m_prog_speed_hz < 1 || m_prog_speed_hz >= 6000000)
-        m_prog_speed_hz = 250000;
+    if(m_prog_speed_hz < 1)
+        m_prog_speed_hz = 2000000;
 
     ui->progSpeedBox->setEditText(QString::number(m_prog_speed_hz));
 
