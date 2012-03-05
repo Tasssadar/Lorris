@@ -96,6 +96,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
     connect(ui->startstopButton, SIGNAL(clicked()),                SLOT(startstopChip()));
+    connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 
     initMenus();
 
@@ -1143,17 +1144,7 @@ void LorrisShupito::writeFusesInFlash()
 
 void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
 {
-    if (!m_hexFilenames[memId].isEmpty() && !m_hexAreas[memId]->hasDataChanged())
-    {
-        try
-        {
-            loadFromFile(memId, m_hexFilenames[memId]);
-        }
-        catch (QString const &)
-        {
-            // Ignore errors.
-        }
-    }
+    tryFileReload(memId);
 
     chip_definition::memorydef *memdef = chip.getMemDef(memId);
 
@@ -1235,4 +1226,25 @@ void LorrisShupito::verifyChanged(int mode)
     sConfig.set(CFG_QUINT32_SHUPITO_VERIFY, mode);
 
     m_verify_mode = mode;
+}
+
+void LorrisShupito::tryFileReload(quint8 memId)
+{
+    if (!m_hexFilenames[memId].isEmpty() && !m_hexAreas[memId]->hasDataChanged())
+    {
+        try
+        {
+            loadFromFile(memId, m_hexFilenames[memId]);
+        }
+        catch (QString const &)
+        {
+            // Ignore errors.
+        }
+    }
+}
+
+void LorrisShupito::focusChanged(QWidget *prev, QWidget */*curr*/)
+{
+    if(prev == NULL)
+        tryFileReload(ui->memTabs->currentIndex()+1);
 }

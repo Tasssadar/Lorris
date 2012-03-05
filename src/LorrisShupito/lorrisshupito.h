@@ -138,6 +138,7 @@ private slots:
     void loadFromFile(int memId);
     void loadFromFile(int memId, const QString& filename);
     void saveToFile(int memId);
+    void focusChanged(QWidget *prev, QWidget *curr);
 
 private:
     void log(const QString& text);
@@ -157,6 +158,7 @@ private:
     void initMenus();
 
     void changeVddColor(float val);
+    void tryFileReload(quint8 memId);
 
     bool m_chipStopped;
 
