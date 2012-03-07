@@ -1576,9 +1576,8 @@
         <translation>Exportovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="69"/>
         <source>Compressed Lorris data file(*.cldta);;Lorris data file (*.ldta)</source>
-        <translation>Komprimovaný datový soubor Lorris (*cldta);;Datový soubor Lorris (*.ldta)</translation>
+        <translation type="obsolete">Komprimovaný datový soubor Lorris (*cldta);;Datový soubor Lorris (*.ldta)</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="70"/>
@@ -1586,9 +1585,8 @@
         <translation>Export dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="80"/>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="170"/>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="198"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="165"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="193"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="63"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="75"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="125"/>
@@ -1596,36 +1594,41 @@
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="81"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="80"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="64"/>
         <source>Can&apos;t create/open file!</source>
         <translation>Nemůžu vytvořit/otevřít soubor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="160"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="69"/>
+        <source>Compressed Lorris data file (*.cldta);;Lorris data file (*.ldta)</source>
+        <translation>Komprimovaný datový soubor Lorris (*.cldta);;Datový soubor Lorris (*.ldta)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="155"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="514"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="104"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="161"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="156"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="105"/>
         <source>Import Data</source>
         <translation>Import dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="187"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="182"/>
         <source>Warning!</source>
         <translation>Pozor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="188"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="183"/>
         <source>You are opening file with old structure format, some things may be messed up!</source>
         <translation>Otevíráte soubor staré verze, něco může být rozbité!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="199"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="194"/>
         <source>Data file has wrong magic!</source>
         <translation>Data mají špatné magic číslo!</translation>
     </message>
@@ -1635,7 +1638,7 @@
         <translation>Importovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="171"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="166"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="105"/>
         <source>Can&apos;t open file!</source>
         <translation>Nemůžu otevřít soubor!</translation>

@@ -66,23 +66,18 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     if(!m_packet)
         return;
 
-    QString filters = QObject::tr("Compressed Lorris data file(*.cldta);;Lorris data file (*.ldta)");
+    QString filters = QObject::tr("Compressed Lorris data file (*.cldta);;Lorris data file (*.ldta)");
     QString filename = QFileDialog::getSaveFileName(NULL, QObject::tr("Export Data"),
                                                     sConfig.get(CFG_STRING_ANALYZER_FOLDER),
                                                     filters);
 
+    if(filename.isEmpty())
+        return;
+
     AnalyzerDataFile *file = new AnalyzerDataFile(filename);
     if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        if(filename != "")
-        {
-            QMessageBox *box = new QMessageBox();
-            box->setWindowTitle(QObject::tr("Error!"));
-            box->setText(QObject::tr("Can't create/open file!"));
-            box->setIcon(QMessageBox::Critical);
-            box->exec();
-            delete box;
-        }
+        Utils::ThrowException(QObject::tr("Can't create/open file!"));
         delete file;
         return;
     }
