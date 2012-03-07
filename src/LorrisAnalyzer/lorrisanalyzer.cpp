@@ -147,7 +147,6 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 
 LorrisAnalyzer::~LorrisAnalyzer()
 {
-    delete ui;
     delete m_storage;
     if(m_packet)
     {
@@ -155,6 +154,7 @@ LorrisAnalyzer::~LorrisAnalyzer()
         delete m_packet;
     }
     delete ui->devTabs;
+    delete ui;
     delete m_curData;
 }
 
