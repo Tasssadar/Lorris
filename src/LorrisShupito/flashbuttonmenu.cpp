@@ -83,6 +83,9 @@ void FlashButtonMenu::setActiveAction(int actInt)
 {
     ActionSlots act = ActionSlots(actInt);
 
+    if(act == ACT_ALL) // set flash as active for terminal
+        act = ACT_FLASH;
+
     if((act == m_active) || (act != ACT_FLASH && act != ACT_EEPROM))
         return;
 

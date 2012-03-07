@@ -103,7 +103,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     QByteArray data = QByteArray(1024, (char)0xFF);
     static const QString memNames[] = { tr("Program memory"), tr("EEPROM") };
     m_hexAreas[0] = NULL;
-    for(quint8 i = 0; i < 2; ++i)
+    for(quint8 i = 0; i < TAB_TERMINAL; ++i)
     {
         QHexEdit *h = new QHexEdit(this);
         h->setData(data);
@@ -120,6 +120,13 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(m_shupito, SIGNAL(tunnelStatus(bool)), this, SLOT(tunnelStateChanged(bool)));
 
     m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
+
+    m_terminal = new Terminal(this);
+    m_terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
+    ui->memTabs->addTab(m_terminal, tr("Terminal"));
+
+    connect(m_terminal, SIGNAL(keyPressedASCII(QByteArray)), m_shupito,  SLOT(sendTunnelData(QByteArray)));
+    connect(m_shupito,  SIGNAL(tunnelData(QByteArray)),      m_terminal, SLOT(appendText(QByteArray)));
 
     m_vcc = 0;
     lastVccIndex = 0;
@@ -139,6 +146,8 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
 LorrisShupito::~LorrisShupito()
 {
+    sConfig.set(CFG_QUITN32_SHUPITO_TERM_FMT, m_terminal->getFmt());
+
     stopAll(false);
     delete m_shupito;
     delete m_desc;
@@ -1244,5 +1253,13 @@ void LorrisShupito::tryFileReload(quint8 memId)
 void LorrisShupito::focusChanged(QWidget *prev, QWidget */*curr*/)
 {
     if(prev == NULL)
-        tryFileReload(ui->memTabs->currentIndex()+1);
+        tryFileReload(getMemIndex()+1);
+}
+
+int LorrisShupito::getMemIndex()
+{
+    int res = ui->memTabs->currentIndex();
+    if(res == TAB_TERMINAL)
+        res = TAB_FLASH;
+    return res;
 }

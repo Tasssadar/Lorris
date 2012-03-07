@@ -123,6 +123,9 @@ public:
     const chip_definition& getChipId() { return m_chip_def; }
     std::vector<chip_definition> &getDefs() { return m_chip_defs; }
 
+public slots:
+    void sendTunnelData(const QByteArray& data);
+
 private slots:
     void tunnelDataSend();
 

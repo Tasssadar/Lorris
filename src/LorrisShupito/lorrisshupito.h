@@ -28,6 +28,7 @@
 #include "shupito.h"
 #include "shupitodesc.h"
 #include "shared/hexfile.h"
+#include "shared/terminal.h"
 
 enum state
 {
@@ -48,6 +49,14 @@ enum VddColor
     VDD_GREEN,
     VDD_RED,
     VDD_ORANGE
+};
+
+enum TabIndex
+{
+    TAB_FLASH = 0,
+    TAB_EEPROM,
+    TAB_TERMINAL,
+    TAB_MAX
 };
 
 namespace Ui {
@@ -159,6 +168,7 @@ private:
 
     void changeVddColor(float val);
     void tryFileReload(quint8 memId);
+    inline int getMemIndex();
 
     bool m_chipStopped;
 
@@ -180,6 +190,7 @@ private:
     quint8 m_verify_mode;
 
     QHexEdit *m_hexAreas[MEM_FUSES];
+    Terminal *m_terminal;
     QString m_hexFilenames[MEM_FUSES];
     ShupitoMode *m_modes[MODE_COUNT];
     quint8 m_cur_mode;
