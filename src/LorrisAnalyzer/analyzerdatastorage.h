@@ -52,10 +52,7 @@ public:
     explicit AnalyzerDataStorage(LorrisAnalyzer *analyzer);
     ~AnalyzerDataStorage();
 
-    void setPacket(analyzer_packet *packet)
-    {
-        m_packet = packet;
-    }
+    void setPacket(analyzer_packet *packet);
 
     void Clear();
 

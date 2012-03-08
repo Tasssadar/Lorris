@@ -30,7 +30,7 @@
 #include "analyzerdatafile.h"
 #include "lorrisanalyzer.h"
 
-static const char *ANALYZER_DATA_FORMAT = "v6";
+static const char *ANALYZER_DATA_FORMAT = "v7";
 static const char ANALYZER_DATA_MAGIC[] = { 0xFF, 0x80, 0x68 };
 
 AnalyzerDataStorage::AnalyzerDataStorage(LorrisAnalyzer *analyzer)
@@ -45,11 +45,22 @@ AnalyzerDataStorage::~AnalyzerDataStorage()
     Clear();
 }
 
+void AnalyzerDataStorage::setPacket(analyzer_packet *packet)
+{
+    m_packet = packet;
+
+    if(m_data.empty())
+        return;
+
+    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+        (*itr)->setPacket(packet);
+}
+
 void AnalyzerDataStorage::Clear()
 {
     m_size = 0;
-    for(quint32 i = 0; i < m_data.size(); ++i)
-        delete m_data[i];
+    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+        delete *itr;
     m_data.clear();
 }
 
@@ -160,43 +171,32 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     if(!file->open(QIODevice::ReadOnly))
     {
         if(filename != "")
-        {
-            QMessageBox *box = new QMessageBox();
-            box->setWindowTitle(QObject::tr("Error!"));
-            box->setText(QObject::tr("Can't open file!"));
-            box->setIcon(QMessageBox::Critical);
-            box->exec();
-            delete box;
-        }
+            Utils::ThrowException(QObject::tr("Can't open file!"));
         delete file;
         return NULL;
     }
 
     //Magic
-    char *itr = new char[3];
-    file->read(itr, 2);
+    char *version = new char[3];
+    file->read(version, 2);
+    version[2] = 0;
 
-    if(itr[0] != ANALYZER_DATA_FORMAT[0] || itr[1] != ANALYZER_DATA_FORMAT[1])
+    if(version[0] != ANALYZER_DATA_FORMAT[0] || version[1] != ANALYZER_DATA_FORMAT[1])
     {
-        QMessageBox *box = new QMessageBox();
-        box->setWindowTitle(QObject::tr("Warning!"));
-        box->setText(QObject::tr("You are opening file with old structure format, some things may be messed up!"));
-        box->setIcon(QMessageBox::Warning);
-        box->exec();
-        delete box;
+        QMessageBox box;
+        box.setWindowTitle(QObject::tr("Warning!"));
+        box.setText(QObject::tr("You are opening file with old structure format, some things may be messed up!"));
+        box.setIcon(QMessageBox::Warning);
+        box.exec();
     }
-    delete[] itr;
 
     if(!checkMagic(file))
     {
-        QMessageBox *box = new QMessageBox();
-        box->setWindowTitle(QObject::tr("Error!"));
-        box->setText(QObject::tr("Data file has wrong magic!"));
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
+        Utils::ThrowException(QObject::tr("Data file has wrong magic!"));
+
         file->close();
         delete file;
+        delete[] version;
         return NULL;
     }
 
@@ -206,8 +206,20 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     analyzer_packet *packet = new analyzer_packet(header, true, NULL);
 
     //Header
-    itr = (char*)&header->length;
-    file->read(itr, sizeof(analyzer_header));
+    char *itr = NULL;
+    if(strcmp(version, "v6") == 0)
+    {
+        analyzer_header_v1 old_header;
+        itr = (char*)&old_header.length;
+        file->read(itr, sizeof(analyzer_header_v1));
+
+        old_header.copyToNew(header);
+    }
+    else
+    {
+        itr = (char*)&header->length;
+        file->read(itr, sizeof(analyzer_header));
+    }
 
     //Packet
     itr = (char*)&packet->big_endian;
@@ -306,6 +318,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         delete header;
     }
 
+    delete[] version;
     return m_packet;
 }
 

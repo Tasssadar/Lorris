@@ -47,6 +47,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
 
     QWidget *w = new QWidget();
     scroll_layout = new ScrollDataLayout(&m_header, false, false, NULL, NULL, w);
+    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     ui->data_scroll->setWidget(w);
 
@@ -66,6 +67,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
     connect(ui->static_len_box, SIGNAL(valueChanged(int)),         this,          SLOT(staticLenChanged(int)));
     connect(ui->len_fmt_box,    SIGNAL(currentIndexChanged(int)),  this,          SLOT(lenFmtChanged(int)));
     connect(ui->ok_close_bBox,  SIGNAL(clicked(QAbstractButton*)), this,          SLOT(butonnBoxClicked(QAbstractButton*)));
+    connect(ui->offsetBox,      SIGNAL(valueChanged(int)),         this,          SLOT(offsetChanged(int)));
 
     setted = false;
     setFirst = false;
@@ -75,6 +77,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
 
     scroll_layout->lenChanged(m_header.packet_length);
     ui->len_box->setValue(m_header.packet_length);
+    ui->offsetBox->setValue(m_header.len_offset);
 
     for(quint8 i = 0; i < 4 && m_header.order[i] != 0; ++i)
     {
@@ -232,6 +235,11 @@ void SourceDialog::lenFmtChanged(int index)
 {
     m_header.len_fmt = index;
     scroll_layout->UpdateTypes();
+}
+
+void SourceDialog::offsetChanged(int val)
+{
+    m_header.len_offset = val;
 }
 
 analyzer_packet *SourceDialog::getStructure()

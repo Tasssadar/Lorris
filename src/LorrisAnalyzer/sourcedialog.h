@@ -58,6 +58,7 @@ public slots:
     void idCheckToggled(bool checked);
     void lenFmtChanged(int index);
     void butonnBoxClicked(QAbstractButton *b);
+    void offsetChanged(int val);
 
 private:
     void AddOrRmHeaderType(bool add, quint8 type);
