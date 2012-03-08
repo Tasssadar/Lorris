@@ -82,6 +82,7 @@ private:
     static QScriptValue __sendData(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getWidth(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getHeight(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __throwException(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);

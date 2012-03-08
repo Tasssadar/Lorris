@@ -87,6 +87,7 @@ void ScriptEnv::prepareNewContext()
     QScriptValue sendData = newFunction(&__sendData);
     QScriptValue getW = newFunction(&__getWidth);
     QScriptValue getH = newFunction(&__getHeight);
+    QScriptValue throwEx = newFunction(&__throwException);
 
     QScriptValue numberW = newFunction(&__newNumberWidget);
     QScriptValue barW = newFunction(&__newBarWidget);
@@ -100,6 +101,7 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("sendData", sendData);
     m_global.setProperty("getWidth", getW);
     m_global.setProperty("getHeight", getH);
+    m_global.setProperty("throwException", throwEx);
 
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
@@ -308,4 +310,15 @@ QScriptValue ScriptEnv::__getWidth(QScriptContext */*context*/, QScriptEngine *e
 QScriptValue ScriptEnv::__getHeight(QScriptContext */*context*/, QScriptEngine *engine)
 {
     return ((ScriptEnv*)engine)->getHeight();
+}
+
+
+QScriptValue ScriptEnv::__throwException(QScriptContext *context, QScriptEngine */*engine*/)
+{
+    if(context->argumentCount() != 1)
+        return QScriptValue();
+
+    Utils::ThrowException(context->argument(0).toString());
+
+    return QScriptValue();
 }
