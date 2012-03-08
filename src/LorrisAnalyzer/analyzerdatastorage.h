@@ -59,7 +59,7 @@ public:
     void addData(analyzer_data *data);
     quint32 getSize() { return m_size; }
     analyzer_data *get(quint32 index) { return m_data[index]; }
-    analyzer_packet *loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices);
+    analyzer_packet *loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices, quint32 &data_idx);
 
 public slots:
     void SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *devices);

@@ -184,6 +184,7 @@ char* AnalyzerDataFile::getBlockName(DataBlocks block)
         case BLOCK_DATA:        strcpy(res, "dataBlock");       break;
         case BLOCK_WIDGETS:     strcpy(res, "widgetsBlock");    break;
         case BLOCK_WIDGET:      strcpy(res, "widgetBlock");     break;
+        case BLOCK_DATA_INDEX:  strcpy(res, "dataIndexBlock");  break;
         default: return NULL;
     }
     return res;

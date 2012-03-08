@@ -152,11 +152,16 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     file->writeBlockIdentifier(BLOCK_WIDGETS);
     area->SaveWidgets(file);
 
+    // Data index
+    file->writeBlockIdentifier(BLOCK_DATA_INDEX);
+    quint32 idx = m_analyzer->getCurrentIndex();
+    file->write((char*)&idx, sizeof(idx));
+
     file->close();
     delete file;
 }
 
-analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices)
+analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices, quint32 &data_idx)
 {
     QString filename;
     if(name)
@@ -308,6 +313,10 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     //Widgets
     if(file->seekToNextBlock(BLOCK_WIDGETS, 0))
         area->LoadWidgets(file, !(load & STORAGE_WIDGETS));
+
+    // Data index
+    if((load & STORAGE_DATA) && file->seekToNextBlock(BLOCK_DATA_INDEX, 0))
+        file->read((char*)&data_idx, sizeof(data_idx));
 
     file->close();
     delete file;

@@ -350,7 +350,8 @@ analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
 
 void LorrisAnalyzer::load(QString *name, quint8 mask)
 {
-    analyzer_packet *packet = m_storage->loadFromFile(name, mask, ui->dataArea, ui->devTabs);
+    quint32 idx = 0;
+    analyzer_packet *packet = m_storage->loadFromFile(name, mask, ui->dataArea, ui->devTabs, idx);
     if(!packet)
         return;
 
@@ -367,11 +368,14 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
         ui->devTabs->addDevice();
     }
 
+    if(!idx)
+        idx = m_storage->getSize();
+
     ui->timeSlider->setMaximum(m_storage->getSize());
-    ui->timeSlider->setValue(m_storage->getSize());
+    ui->timeSlider->setValue(idx);
     ui->timeBox->setMaximum(m_storage->getSize());
     ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage->getSize()));
-    ui->timeBox->setValue(m_storage->getSize());
+    ui->timeBox->setValue(idx);
     m_state &= ~(STATE_DIALOG);
 
     updateData(true);
@@ -551,4 +555,9 @@ void LorrisAnalyzer::editStruture()
 
         updateData(true);
     }
+}
+
+quint32 LorrisAnalyzer::getCurrentIndex()
+{
+    return ui->timeBox->value();
 }

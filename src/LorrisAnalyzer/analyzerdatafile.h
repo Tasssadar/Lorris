@@ -38,7 +38,8 @@ enum DataBlocks
     BLOCK_CMD_TAB,
     BLOCK_DATA,
     BLOCK_WIDGETS,
-    BLOCK_WIDGET
+    BLOCK_WIDGET,
+    BLOCK_DATA_INDEX
 };
 
 class AnalyzerDataFile : public QBuffer

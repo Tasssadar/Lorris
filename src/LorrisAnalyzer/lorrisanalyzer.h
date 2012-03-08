@@ -76,6 +76,8 @@ class LorrisAnalyzer : public WorkTab
 
         Connection *getCon() { return m_con; }
 
+        quint32 getCurrentIndex();
+
     public slots:
         void onTabShow();
         void updateData(bool ignoreTime = false);
