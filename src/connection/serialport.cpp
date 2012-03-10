@@ -69,7 +69,7 @@ void SerialPort::Close()
     if(m_port)
     {
         m_thread->stop();
-        m_thread->wait();
+        Q_ASSERT(m_thread->wait(500));
         delete m_thread;
         m_thread = NULL;
 
