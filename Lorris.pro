@@ -88,7 +88,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/inputwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.cpp \
     src/ui/maintabwidget.cpp \
-    src/shared/rotatebutton.cpp
+    src/shared/rotatebutton.cpp \
+    src/joystick/joymgr.cpp \
+    src/joystick/joystick.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -161,17 +163,22 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/inputwidget.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.h \
     src/ui/maintabwidget.h \
-    src/shared/rotatebutton.h
+    src/shared/rotatebutton.h \
+    src/joystick/joymgr.h \
+    src/joystick/joystick.h
 
 win32 {
+    INCLUDEPATH += dep/SDL/include
+
     DEFINES += QT_DLL QWT_DLL
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
+    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl
     CONFIG(debug, debug|release):LIBS += -lqwtd -lqextserialportd1
     else:LIBS += -lqwt -lqextserialport1
 }
 unix:!macx:!symbian {
-    LIBS += -lqwt -ludev -lqextserialport
+    LIBS += -lqwt -ludev -lqextserialport -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -180,7 +187,7 @@ unix:!macx:!symbian {
         "$$DESTDIR/translations/"
 }
 macx {
-    LIBS += -lqwt -lqextserialport1
+    LIBS += -lqwt -lqextserialport1 -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
