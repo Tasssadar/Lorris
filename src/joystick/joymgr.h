@@ -17,6 +17,7 @@ class JoyMgr : public Singleton<JoyMgr>
 {
 public:
     JoyMgr();
+    ~JoyMgr();
 
     void updateJoystickNames();
 
