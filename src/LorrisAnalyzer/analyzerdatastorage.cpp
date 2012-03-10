@@ -324,7 +324,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     if(!(load & STORAGE_STRUCTURE))
     {
         delete packet->header;
-        delete header;
+        delete packet;
     }
 
     delete[] version;
