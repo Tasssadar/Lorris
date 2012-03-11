@@ -187,7 +187,7 @@ void BarWidget::rangeSelected()
     RangeSelectDialog *dialog = new RangeSelectDialog(m_bar->minimum(), m_bar->maximum(), max, min, this);
     dialog->exec();
     if(dialog->getRes())
-        m_bar->setRange(dialog->getMax(), dialog->getMin());
+        m_bar->setRange(dialog->getMin(), dialog->getMax());
 
     delete dialog;
     emit updateData();
@@ -302,10 +302,8 @@ RangeSelectDialog::RangeSelectDialog(int val_min, int val_max, int max, int min,
     connect(ui->maxBox, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
     connect(ui->minBox, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
 
-    ui->maxBox->setMaximum(max);
-    ui->maxBox->setMinimum(min);
-    ui->minBox->setMaximum(max);
-    ui->minBox->setMinimum(min);
+    ui->maxBox->setRange(min, max);
+    ui->minBox->setRange(min, max);
     ui->maxBox->setValue(val_max);
     ui->minBox->setValue(val_min);
 
