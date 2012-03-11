@@ -52,7 +52,6 @@
 #include "tabdialog.h"
 #include "revision.h"
 #include "config.h"
-#include "joystick/joymgr.h"
 
 QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
 
@@ -138,8 +137,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);
-
-    sJoyMgr.updateJoystickNames();
 }
 
 MainWindow::~MainWindow()

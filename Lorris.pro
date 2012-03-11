@@ -91,7 +91,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/shared/rotatebutton.cpp \
     src/joystick/joymgr.cpp \
     src/joystick/joystick.cpp \
-    src/LorrisAnalyzer/DataWidgets/terminalwidget.cpp
+    src/LorrisAnalyzer/DataWidgets/terminalwidget.cpp \
+    src/joystick/joythread.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -167,7 +168,8 @@ HEADERS += src/ui/mainwindow.h \
     src/shared/rotatebutton.h \
     src/joystick/joymgr.h \
     src/joystick/joystick.h \
-    src/LorrisAnalyzer/DataWidgets/terminalwidget.h
+    src/LorrisAnalyzer/DataWidgets/terminalwidget.h \
+    src/joystick/joythread.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include

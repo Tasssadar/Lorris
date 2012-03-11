@@ -21,10 +21,10 @@
 **
 ****************************************************************************/
 
-#ifndef JOYSTICK_H
-#define JOYSTICK_H
+#ifndef JOYTHREAD_H
+#define JOYTHREAD_H
 
-#include <QObject>
+#include <QThread>
 
 #ifdef Q_OS_WIN
     #include <SDL.h>
@@ -32,55 +32,19 @@
     #include <SDL/SDL.h>
 #endif
 
-class Joystick : public QObject
+class JoyThread : public QThread
 {
     Q_OBJECT
-
-Q_SIGNALS:
-    void __axisEvent(int id, qint16 val);
-    void __ballEvent(int id, qint16 x, qint16 y);
-    void __hatEvent(int id, quint8 val);
-    void __buttonEvent(int id, quint8 state);
-
 public:
-    Joystick(int id, QObject *parent = 0);
-    ~Joystick();
+    explicit JoyThread(QObject *parent = 0);
+    
+    void stop();
 
-    bool open();
-
-    int getNumAxes() const { return m_num_axes; }
-    int getNumBalls() const { return m_num_balls; }
-    int getNumHats() const { return m_num_hats; }
-    int getNumButtons() const { return m_num_buttons; }
-
-    void axisEvent(int id, qint16 val)
-    {
-        emit __axisEvent(id, val);
-    }
-
-    void ballEvent(int id, qint16 x, qint16 y)
-    {
-        emit __ballEvent(id, x, y);
-    }
-
-    void hatEvent(int id, quint8 val)
-    {
-        emit __hatEvent(id, val);
-    }
-
-    void buttonEvent(int id, quint8 state)
-    {
-        emit __buttonEvent(id, state);
-    }
+protected:
+    void run();
 
 private:
-    int m_id;
-    SDL_Joystick *m_joy;
-
-    int m_num_axes;
-    int m_num_balls;
-    int m_num_hats;
-    int m_num_buttons;
+    volatile bool m_run;
 };
 
-#endif // JOYSTICK_H
+#endif // JOYTHREAD_H
