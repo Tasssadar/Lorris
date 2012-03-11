@@ -250,7 +250,8 @@ QScriptValue ScriptEnv::__sendData(QScriptContext *context, QScriptEngine *engin
             sendData.push_back(itr.value().toUInt16());
     }
 
-    sendData.chop(1); // last num is array len, wtf
+    if(sendData.size() > 1)
+        sendData.chop(1); // last num is array len, wtf
 
     emit ((ScriptEnv*)engine)->SendData(sendData);
     return QScriptValue();

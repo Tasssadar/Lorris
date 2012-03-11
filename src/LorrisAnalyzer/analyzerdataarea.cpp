@@ -32,6 +32,7 @@
 #include "DataWidgets/GraphWidget/graphwidget.h"
 #include "DataWidgets/ScriptWidget/scriptwidget.h"
 #include "DataWidgets/inputwidget.h"
+#include "DataWidgets/terminalwidget.h"
 #include "lorrisanalyzer.h"
 #include "analyzerdatafile.h"
 #include "analyzerdatastorage.h"
@@ -115,6 +116,7 @@ DataWidget *AnalyzerDataArea::newWidget(quint8 type, QWidget *parent)
         case WIDGET_GRAPH:   return new GraphWidget(parent);
         case WIDGET_SCRIPT:  return new ScriptWidget(parent);
         case WIDGET_INPUT:   return new InputWidget(parent);
+        case WIDGET_TERMINAL:return new TerminalWidget(parent);
     }
     return NULL;
 }

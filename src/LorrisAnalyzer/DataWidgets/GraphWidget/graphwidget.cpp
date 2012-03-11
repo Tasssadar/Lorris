@@ -34,7 +34,7 @@
 #include "graphcurve.h"
 #include "../../analyzerdatastorage.h"
 
-static const int sampleValues[] = { -1, -2, 10, 50, 100, 200, 500, 1000 };
+static const int sampleValues[] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
 GraphWidget::GraphWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -78,12 +78,12 @@ void GraphWidget::setUp(AnalyzerDataStorage *storage)
     QSignalMapper *sampleMap = new QSignalMapper(this);
     static const QString sampleNames[] =
     {
-        tr("Show all data"), tr("Set custom..."), "10", "50", "100", "200", "500", "1000"
+        tr("Show all data"), tr("Set custom..."), tr("According to X axis"), "10", "50", "100", "200", "500", "1000"
     };
 
     for(quint8 i = 0; i < sizeof(sampleValues)/sizeof(int); ++i)
     {
-        if(i == 2)
+        if(i == 3)
             sampleSize->addSeparator();
 
         m_sample_act[i] = sampleSize->addAction(sampleNames[i]);
@@ -92,22 +92,26 @@ void GraphWidget::setUp(AnalyzerDataStorage *storage)
         connect(m_sample_act[i], SIGNAL(triggered()), sampleMap, SLOT(map()));
     }
 
-    m_sample_size_idx = 0;
-    m_sample_size = -1;
-    m_sample_act[0]->setChecked(true);
+    m_sample_size_idx = 2;
+    m_sample_size = -3;
+    m_sample_act[2]->setChecked(true);
+
+    updateSampleSize();
 
     m_showLegend = contextMenu->addAction(tr("Show legend"));
     m_showLegend->setCheckable(true);
     m_showLegend->setChecked(true);
+    m_showLegend->setEnabled(false);
 
     m_autoScroll = contextMenu->addAction(tr("Automaticaly scroll graph"));
     m_autoScroll->setCheckable(true);
     toggleAutoScroll(true);
 
-    connect(m_editCurve,  SIGNAL(triggered()),     SLOT(editCurve()));
-    connect(sampleMap,    SIGNAL(mapped(int)),     SLOT(sampleSizeChanged(int)));
-    connect(m_showLegend, SIGNAL(triggered(bool)), SLOT(showLegend(bool)));
-    connect(m_autoScroll, SIGNAL(triggered(bool)), SLOT(toggleAutoScroll(bool)));
+    connect(m_editCurve,  SIGNAL(triggered()),        SLOT(editCurve()));
+    connect(sampleMap,    SIGNAL(mapped(int)),        SLOT(sampleSizeChanged(int)));
+    connect(m_showLegend, SIGNAL(triggered(bool)),    SLOT(showLegend(bool)));
+    connect(m_autoScroll, SIGNAL(triggered(bool)),    SLOT(toggleAutoScroll(bool)));
+    connect(m_graph,      SIGNAL(updateSampleSize()), SLOT(updateSampleSize()));
 }
 
 void GraphWidget::updateRemoveMapping()
@@ -440,10 +444,17 @@ void GraphWidget::sampleSizeChanged(int val)
     if(!ok || m_sample_size == sample)
         return;
 
-    for(quint8 i = 0; i < m_curves.size(); ++i)
-        m_curves[i]->curve->setSampleSize(sample);
+    if(sample != -3)
+    {
+        for(quint8 i = 0; i < m_curves.size(); ++i)
+            m_curves[i]->curve->setSampleSize(sample);
+    }
+    else
+        updateSampleSize();
 
     m_sample_size = sample;
+
+    m_showLegend->setEnabled(sample == -1);
 
     updateVisibleArea();
 }
@@ -518,6 +529,17 @@ void GraphWidget::setAxisScale(bool x, double min, double max)
     int axis = x ? QwtPlot::xBottom : QwtPlot::yLeft;
 
     m_graph->setAxisScale(axis, min, max);
+}
+
+void GraphWidget::updateSampleSize()
+{
+    if(m_sample_size != -3)
+        return;
+
+    qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound());
+
+    for(quint8 i = 0; i < m_curves.size(); ++i)
+        m_curves[i]->curve->setSampleSize(size);
 }
 
 GraphWidgetAddBtn::GraphWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

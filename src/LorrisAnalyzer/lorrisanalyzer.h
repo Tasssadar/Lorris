@@ -86,7 +86,8 @@ class LorrisAnalyzer : public WorkTab
     private slots:
         void connectButton();
         void saveDataButton();
-        void clearButton();
+        void clearAllButton();
+        void clearDataButton();
         void openFile();
         void editStruture();
 

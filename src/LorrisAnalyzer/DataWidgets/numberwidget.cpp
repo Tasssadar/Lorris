@@ -28,6 +28,7 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QSignalMapper>
+#include <QStringBuilder>
 
 #include "numberwidget.h"
 

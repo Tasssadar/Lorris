@@ -875,6 +875,8 @@ void LorrisShupito::loadFromFile(int memId, const QString& filename)
 {
     status("");
 
+    QDateTime loadTimestamp = QDateTime::currentDateTime();
+
     HexFile file;
 
     file.LoadFromFile(filename);
@@ -890,6 +892,7 @@ void LorrisShupito::loadFromFile(int memId, const QString& filename)
     m_hexAreas[memId]->setData(file.getDataArray(len));
     m_hexAreas[memId]->setBackgroundColor(colorFromFile);
     m_hexFilenames[memId] = filename;
+    m_hexWriteTimes[memId] = loadTimestamp;
 
     status(tr("File loaded"));
 }
@@ -1170,7 +1173,6 @@ void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
 
     m_modes[m_cur_mode]->flashRaw(file, memId, chip, m_verify_mode);
     m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
-    m_hexFilenames[memId].clear();
 
     updateProgressDialog(-1);
 }
@@ -1237,16 +1239,20 @@ void LorrisShupito::verifyChanged(int mode)
 
 void LorrisShupito::tryFileReload(quint8 memId)
 {
-    if (!m_hexFilenames[memId].isEmpty() && !m_hexAreas[memId]->hasDataChanged())
+    if (m_hexFilenames[memId].isEmpty() || m_hexAreas[memId]->hasDataChanged())
+        return;
+
+    QDateTime writeTime = QFileInfo(m_hexFilenames[memId]).lastModified();
+    if (writeTime <= m_hexWriteTimes[memId])
+        return;
+
+    try
     {
-        try
-        {
-            loadFromFile(memId, m_hexFilenames[memId]);
-        }
-        catch (QString const &)
-        {
-            // Ignore errors.
-        }
+        loadFromFile(memId, m_hexFilenames[memId]);
+    }
+    catch (QString const &)
+    {
+        // Ignore errors.
     }
 }
 
