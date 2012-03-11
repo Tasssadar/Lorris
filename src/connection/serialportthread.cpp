@@ -36,7 +36,7 @@ void SerialPortThread::run()
     {
         if(m_port->isOpen() && m_port->bytesAvailable())
             emit dataRead(m_port->readAll());
-        msleep(50);
+        msleep(10);
     }
 }
 
