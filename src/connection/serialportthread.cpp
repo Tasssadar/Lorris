@@ -34,7 +34,7 @@ void SerialPortThread::run()
 {
     while(m_run)
     {
-        if(m_port->bytesAvailable())
+        if(m_port->bytesAvailable() > 0)
             emit dataRead(m_port->readAll());
         msleep(1);
     }
