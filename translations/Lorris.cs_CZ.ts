@@ -527,8 +527,12 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="100"/>
+        <source>Clear data</source>
+        <translation>Vymazat data</translation>
+    </message>
+    <message>
         <source>Clear</source>
-        <translation>Vyčistit</translation>
+        <translation type="obsolete">Vyčistit</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="125"/>
@@ -590,6 +594,8 @@
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="251"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="380"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="502"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="522"/>
         <source> of </source>
         <translation> z </translation>
     </message>
@@ -604,14 +610,12 @@
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="516"/>
         <source>Clear data?</source>
-        <translation>Vymazat data?</translation>
+        <translation type="obsolete">Vymazat data?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="517"/>
         <source>Do you really want to clear data?</source>
-        <translation>Opravdu chcete vymazata data?</translation>
+        <translation type="obsolete">Opravdu chcete vymazata data?</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="102"/>
@@ -625,13 +629,11 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="479"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="518"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="480"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="519"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -1622,7 +1624,7 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="171"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="539"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="535"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="104"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -1906,7 +1908,7 @@
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="540"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="536"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>

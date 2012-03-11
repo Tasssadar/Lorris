@@ -68,7 +68,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
     connect(ui->collapseLeft,    SIGNAL(clicked()),         SLOT(collapseLeftButton()));
-    connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearAllButton()));
+    connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearDataButton()));
     connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(timeSliderMoved(int)));
     connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
     connect(ui->updateTimeBox,   SIGNAL(valueChanged(int)), SLOT(updateTimeChanged(int)));
@@ -499,6 +499,7 @@ void LorrisAnalyzer::clearAllButton()
 
     ui->timeSlider->setMaximum(0);
     ui->timeBox->setMaximum(0);
+    ui->timeBox->setSuffix(tr(" of ") % "0");
 
     if(packet)
     {
@@ -508,24 +509,19 @@ void LorrisAnalyzer::clearAllButton()
 
     setAreaVisibility(AREA_TOP | AREA_RIGHT, true);
     setAreaVisibility(AREA_LEFT, false);
+
+    updateData(true);
 }
 
 void LorrisAnalyzer::clearDataButton()
 {
-    QMessageBox box(this);
-    box.setWindowTitle(tr("Clear data?"));
-    box.setText(tr("Do you really want to clear data?"));
-    box.addButton(tr("Yes"), QMessageBox::YesRole);
-    box.addButton(tr("No"), QMessageBox::NoRole);
-    box.setIcon(QMessageBox::Question);
-
-    if(box.exec())
-        return;
-
     m_storage->Clear();
 
     ui->timeSlider->setMaximum(0);
     ui->timeBox->setMaximum(0);
+    ui->timeBox->setSuffix(tr(" of ") % "0");
+
+    updateData(true);
 }
 
 void LorrisAnalyzer::updateTimeChanged(int value)
