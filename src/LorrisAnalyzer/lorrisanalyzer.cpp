@@ -548,9 +548,13 @@ void LorrisAnalyzer::editStruture()
             delete m_packet->header;
             delete m_packet;
         }
-        ui->devTabs->removeAll();
         ui->devTabs->setHeader(packet->header);
-        ui->devTabs->addDevice();
+
+        if(!m_packet)
+        {
+            ui->devTabs->removeAll();
+            ui->devTabs->addDevice();
+        }
 
         m_storage->setPacket(packet);
         m_packet = packet;
