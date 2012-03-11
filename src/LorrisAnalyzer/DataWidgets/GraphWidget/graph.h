@@ -29,6 +29,10 @@
 class Graph : public QwtPlot
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void updateSampleSize();
+
 public:
     Graph(QWidget *parent = 0);
 

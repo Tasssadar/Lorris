@@ -205,7 +205,9 @@ quint32 GraphData::getStorageBegin(qint32 absPos)
     }
     else if((qint32)m_data.size() < m_sample_size)
     {
-        return m_data_pos - m_sample_size + m_data.size();
+        if(m_data_pos > m_sample_size)
+            return m_data_pos - m_sample_size + m_data.size();
+
     }
 
     return 0;
