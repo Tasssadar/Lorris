@@ -68,7 +68,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
     connect(ui->collapseLeft,    SIGNAL(clicked()),         SLOT(collapseLeftButton()));
-    connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearButton()));
+    connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearAllButton()));
     connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(timeSliderMoved(int)));
     connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
     connect(ui->updateTimeBox,   SIGNAL(valueChanged(int)), SLOT(updateTimeChanged(int)));
@@ -99,7 +99,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     QAction* openAct = menuData->addAction(tr("Open data..."));
     QAction* saveAct = menuData->addAction(tr("Save data..."));
     menuData->addSeparator();
-    QAction* clearAct = menuData->addAction(tr("Clear data"));
+    QAction* clearAct = menuData->addAction(tr("Clear received data"));
+    QAction* clearAllAct = menuData->addAction(tr("Clear everything"));
 
     openAct->setShortcut(QKeySequence("Ctrl+O"));
     saveAct->setShortcut(QKeySequence("Ctrl+S"));
@@ -107,7 +108,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(newSource, SIGNAL(triggered()), SLOT(onTabShow()));
     connect(openAct,   SIGNAL(triggered()), SLOT(openFile()));
     connect(saveAct,   SIGNAL(triggered()), SLOT(saveDataButton()));
-    connect(clearAct,  SIGNAL(triggered()), SLOT(clearButton()));
+    connect(clearAct,  SIGNAL(triggered()), SLOT(clearDataButton()));
+    connect(clearAllAct,  SIGNAL(triggered()), SLOT(clearAllButton()));
 
     addTopMenu(menuData);
 
@@ -469,11 +471,11 @@ void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
         ui->playFrame->setVisible(visible);
 }
 
-void LorrisAnalyzer::clearButton()
+void LorrisAnalyzer::clearAllButton()
 {
     QMessageBox box(this);
-    box.setWindowTitle(tr("Clear data?"));
-    box.setText(tr("Do you really clear data, widgets and packet structure?"));
+    box.setWindowTitle(tr("Clear everything?"));
+    box.setText(tr("Do you really want to clear data, widgets and packet structure?"));
     box.addButton(tr("Yes"), QMessageBox::YesRole);
     box.addButton(tr("No"), QMessageBox::NoRole);
     box.setIcon(QMessageBox::Question);
@@ -506,6 +508,24 @@ void LorrisAnalyzer::clearButton()
 
     setAreaVisibility(AREA_TOP | AREA_RIGHT, true);
     setAreaVisibility(AREA_LEFT, false);
+}
+
+void LorrisAnalyzer::clearDataButton()
+{
+    QMessageBox box(this);
+    box.setWindowTitle(tr("Clear data?"));
+    box.setText(tr("Do you really want to clear data?"));
+    box.addButton(tr("Yes"), QMessageBox::YesRole);
+    box.addButton(tr("No"), QMessageBox::NoRole);
+    box.setIcon(QMessageBox::Question);
+
+    if(box.exec())
+        return;
+
+    m_storage->Clear();
+
+    ui->timeSlider->setMaximum(0);
+    ui->timeBox->setMaximum(0);
 }
 
 void LorrisAnalyzer::updateTimeChanged(int value)
