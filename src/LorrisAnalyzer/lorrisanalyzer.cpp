@@ -54,6 +54,7 @@
 #include "DataWidgets/colorwidget.h"
 #include "DataWidgets/GraphWidget/graphwidget.h"
 #include "DataWidgets/ScriptWidget/scriptwidget.h"
+#include "DataWidgets/terminalwidget.h"
 #include "sourceselectdialog.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
@@ -132,6 +133,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     widgetBtnL->addWidget(new ColorWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new GraphWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new ScriptWidgetAddBtn(tmp));
+    widgetBtnL->addWidget(new TerminalWidgetAddBtn(tmp));
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);

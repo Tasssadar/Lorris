@@ -47,11 +47,11 @@ protected:
      void moveEvent(QMoveEvent *);
      void resizeEvent(QResizeEvent *);
 
-private slots:
+protected slots:
      void setSourceTriggered();
      void sourceSet(bool close);
 
-private:
+protected:
      ScriptEditor *m_editor;
      ScriptEnv *m_env;
      Terminal *m_terminal;

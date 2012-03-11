@@ -21,8 +21,26 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.3.0-dev"
- #define REVISION 249
-#endif // REVISION_H
+#ifndef TERMINALWIDGET_H
+#define TERMINALWIDGET_H
+
+#include "ScriptWidget/scriptwidget.h"
+
+class TerminalWidget : public ScriptWidget
+{
+    Q_OBJECT
+public:
+    TerminalWidget(QWidget *parent = 0);
+    ~TerminalWidget();
+
+    void setUp(AnalyzerDataStorage *storage);
+};
+
+class TerminalWidgetAddBtn : public DataWidgetAddBtn
+{
+    Q_OBJECT
+public:
+    TerminalWidgetAddBtn(QWidget *parent = 0);
+
+};
+#endif // TERMINALWIDGET_H
