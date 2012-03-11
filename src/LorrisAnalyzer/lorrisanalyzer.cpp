@@ -538,7 +538,6 @@ void LorrisAnalyzer::editStruture()
     analyzer_packet *packet = d->getStructure();
     delete d;
 
-    m_state &= ~(STATE_DIALOG);
     if(packet)
     {
         delete m_curData;
@@ -549,13 +548,16 @@ void LorrisAnalyzer::editStruture()
             delete m_packet->header;
             delete m_packet;
         }
+        ui->devTabs->removeAll();
         ui->devTabs->setHeader(packet->header);
+        ui->devTabs->addDevice();
 
         m_storage->setPacket(packet);
         m_packet = packet;
 
         updateData(true);
     }
+    m_state &= ~(STATE_DIALOG);
 }
 
 quint32 LorrisAnalyzer::getCurrentIndex()
