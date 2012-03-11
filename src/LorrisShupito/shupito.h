@@ -103,8 +103,8 @@ public:
         return waitForPacket(pkt.getData(false), cmd);
     }
 
-    QByteArray waitForStream(const QByteArray& data, quint8 cmd, quint16 max_packets = 32);
-    QByteArray waitForStream(ShupitoPacket& pkt, quint8 cmd, quint16 max_packets = 32)
+    QByteArray waitForStream(const QByteArray& data, quint8 cmd, quint16 max_packets = 1024);
+    QByteArray waitForStream(ShupitoPacket& pkt, quint8 cmd, quint16 max_packets = 1024)
     {
         return waitForStream(pkt.getData(false), cmd, max_packets);
     }

@@ -34,6 +34,7 @@
 #include <QClipboard>
 #include <QMenu>
 #include <QSignalMapper>
+#include <QStringBuilder>
 
 #include "common.h"
 #include "terminal.h"
