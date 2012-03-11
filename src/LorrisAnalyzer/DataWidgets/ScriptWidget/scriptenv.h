@@ -86,7 +86,9 @@ private:
     static QScriptValue __getHeight(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __throwException(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getJoystick(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getJoystickNames(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newTimer(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __addComboBoxItems(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);

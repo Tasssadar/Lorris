@@ -60,8 +60,6 @@ void JoyMgr::updateJoystickNames()
     }
 }
 
-
-
 Joystick *JoyMgr::getJoystick(int id)
 {
     QMutexLocker locker(&m_joy_lock);
@@ -82,4 +80,12 @@ Joystick *JoyMgr::getJoystick(int id)
 
     m_joysticks[id] = joy;
     return joy;
+}
+
+QStringList JoyMgr::getNamesList()
+{
+    QStringList list;
+    for(QHash<int, QString>::iterator itr = m_names.begin(); itr != m_names.end(); ++itr)
+        list << *itr;
+    return list;
 }

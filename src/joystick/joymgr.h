@@ -26,6 +26,7 @@
 
 #include <QHash>
 #include <QMutex>
+#include <QStringList>
 
 #ifdef Q_OS_WIN
     #include <SDL.h>
@@ -47,6 +48,7 @@ public:
 
     bool isEmpty() { return m_names.isEmpty(); }
     const QHash<int, QString>& getNames() { return m_names; }
+    QStringList getNamesList();
 
     Joystick *getJoystick(int id);
 

@@ -27,6 +27,7 @@
 #include <QScriptEngineAgent>
 #include <QDebug>
 #include <QTimer>
+#include <QComboBox>
 
 #include <analyzerdataarea.h>
 #include "DataWidgets/GraphWidget/graphcurve.h"
@@ -94,7 +95,9 @@ void ScriptEnv::prepareNewContext()
     QScriptValue getH = newFunction(&__getHeight);
     QScriptValue throwEx = newFunction(&__throwException);
     QScriptValue getJoy = newFunction(&__getJoystick);
+    QScriptValue getJoyName = newFunction(&__getJoystickNames);
     QScriptValue newTimer = newFunction(&__newTimer);
+    QScriptValue addComboItems = newFunction(&__addComboBoxItems);
 
     QScriptValue numberW = newFunction(&__newNumberWidget);
     QScriptValue barW = newFunction(&__newBarWidget);
@@ -110,7 +113,9 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("getHeight", getH);
     m_global.setProperty("throwException", throwEx);
     m_global.setProperty("getJoystick", getJoy);
+    m_global.setProperty("getJoystickNames", getJoyName);
     m_global.setProperty("newTimer", newTimer);
+    m_global.setProperty("addComboBoxItems", addComboItems);
 
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
@@ -358,4 +363,40 @@ QScriptValue ScriptEnv::__getJoystick(QScriptContext *context, QScriptEngine *en
 QScriptValue ScriptEnv::__newTimer(QScriptContext */*context*/, QScriptEngine *engine)
 {
     return ((ScriptEnv*)engine)->newTimer();
+}
+
+QScriptValue ScriptEnv::__getJoystickNames(QScriptContext */*context*/, QScriptEngine *engine)
+{
+    sJoyMgr.updateJoystickNames();
+
+    const QHash<int, QString>& names = sJoyMgr.getNames();
+    QScriptValue val = engine->newArray(names.size());
+
+    for(int i = 0; i < names.size(); ++i)
+        val.setProperty(i, names[i]);
+
+    return val;
+}
+
+QScriptValue ScriptEnv::__addComboBoxItems(QScriptContext *context, QScriptEngine */*engine*/)
+{
+    if(context->argumentCount() != 2)
+        return QScriptValue();
+
+    if(!context->argument(0).isQObject() || !context->argument(1).isArray())
+        return QScriptValue();
+
+    if(!context->argument(0).toQObject()->inherits("QComboBox"))
+        return QScriptValue();
+
+    QComboBox *box = (QComboBox*)context->argument(0).toQObject();
+
+    QScriptValueIterator itr(context->argument(1));
+    while(itr.hasNext())
+    {
+        itr.next();
+        if(itr.value().isString())
+            box->addItem(itr.value().toString());
+    }
+    return QScriptValue();
 }
