@@ -93,6 +93,16 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
     ui->endianBox->setCurrentIndex(!pkt->big_endian);
     lenFmtChanged(m_header.len_fmt);
     headerLenChanged(m_header.length);
+
+    if(m_header.data_mask & DATA_STATIC)
+    {
+        setFirst = false;
+        ui->static_len_box->setValue(pkt->header->static_len);
+        staticLenChanged(pkt->header->static_len);
+
+        for(quint8 i = 0; i < pkt->header->static_len; ++i)
+            ui->staticList->item(i)->setText(Utils::hexToString(pkt->static_data[i], true));
+    }
 }
 
 SourceDialog::~SourceDialog()
