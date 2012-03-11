@@ -38,6 +38,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QFileDialog>
+#include <QStringBuilder>
 
 #include "lorrisanalyzer.h"
 #include "sourcedialog.h"
