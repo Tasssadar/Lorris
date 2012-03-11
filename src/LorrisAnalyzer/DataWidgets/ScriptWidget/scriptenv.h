@@ -68,6 +68,8 @@ public:
     int getWidth() { return m_width; }
     int getHeight() { return m_height; }
 
+    QScriptValue newTimer();
+
 public slots:
     void keyPressed(const QByteArray& key);
 
@@ -83,6 +85,8 @@ private:
     static QScriptValue __getWidth(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getHeight(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __throwException(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getJoystick(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __newTimer(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);
@@ -105,6 +109,7 @@ private:
     int m_height;
 
     QHash<quint32, DataWidget*> m_widgets;
+    std::list<QTimer*> m_timers;
 };
 
 #endif // SCRIPTENV_H

@@ -26,6 +26,7 @@
 #include <QScriptValueList>
 #include <QScriptEngineAgent>
 #include <QDebug>
+#include <QTimer>
 
 #include <analyzerdataarea.h>
 #include "DataWidgets/GraphWidget/graphcurve.h"
@@ -33,6 +34,7 @@
 #include "DataWidgets/inputwidget.h"
 #include "scriptenv.h"
 #include "scriptagent.h"
+#include "joystick/joymgr.h"
 
 QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &in)
 { return engine->newQObject(in); }
@@ -67,6 +69,9 @@ ScriptEnv::~ScriptEnv()
 {
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
+
+    for(std::list<QTimer*>::iterator itr = m_timers.begin(); itr != m_timers.end(); ++itr)
+        delete *itr;
 }
 
 void ScriptEnv::widgetDestroyed(QObject *widget)
@@ -88,6 +93,8 @@ void ScriptEnv::prepareNewContext()
     QScriptValue getW = newFunction(&__getWidth);
     QScriptValue getH = newFunction(&__getHeight);
     QScriptValue throwEx = newFunction(&__throwException);
+    QScriptValue getJoy = newFunction(&__getJoystick);
+    QScriptValue newTimer = newFunction(&__newTimer);
 
     QScriptValue numberW = newFunction(&__newNumberWidget);
     QScriptValue barW = newFunction(&__newBarWidget);
@@ -102,6 +109,8 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("getWidth", getW);
     m_global.setProperty("getHeight", getH);
     m_global.setProperty("throwException", throwEx);
+    m_global.setProperty("getJoystick", getJoy);
+    m_global.setProperty("newTimer", newTimer);
 
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
@@ -119,6 +128,10 @@ void ScriptEnv::prepareNewContext()
 
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
+
+    for(std::list<QTimer*>::iterator itr = m_timers.begin(); itr != m_timers.end(); ++itr)
+        delete *itr;
+    m_timers.clear();
 
     qScriptRegisterMetaType(this, GraphCurveToScriptValue, GraphCurveFromScriptValue);
 }
@@ -219,6 +232,13 @@ DataWidget *ScriptEnv::addWidget(quint8 type, QScriptContext *context, quint8 re
     return w;
 }
 
+QScriptValue ScriptEnv::newTimer()
+{
+    QTimer *t = new QTimer();
+    m_timers.push_back(t);
+    return newQObject(t);
+}
+
 QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
 {
     emit ((ScriptEnv*)engine)->clearTerm();
@@ -313,7 +333,6 @@ QScriptValue ScriptEnv::__getHeight(QScriptContext */*context*/, QScriptEngine *
     return ((ScriptEnv*)engine)->getHeight();
 }
 
-
 QScriptValue ScriptEnv::__throwException(QScriptContext *context, QScriptEngine */*engine*/)
 {
     if(context->argumentCount() != 1)
@@ -322,4 +341,21 @@ QScriptValue ScriptEnv::__throwException(QScriptContext *context, QScriptEngine 
     Utils::ThrowException(context->argument(0).toString());
 
     return QScriptValue();
+}
+
+QScriptValue ScriptEnv::__getJoystick(QScriptContext *context, QScriptEngine *engine)
+{
+    if(context->argumentCount() != 1)
+        return QScriptValue();
+
+    Joystick *joy = sJoyMgr.getJoystick(context->argument(0).toInt32());
+    if(!joy)
+        return QScriptValue();
+
+    return engine->newQObject(joy);;
+}
+
+QScriptValue ScriptEnv::__newTimer(QScriptContext */*context*/, QScriptEngine *engine)
+{
+    return ((ScriptEnv*)engine)->newTimer();
 }

@@ -25,6 +25,7 @@
 #define JOYSTICK_H
 
 #include <QObject>
+#include <QMutex>
 
 #ifdef Q_OS_WIN
     #include <SDL.h>
@@ -37,10 +38,10 @@ class Joystick : public QObject
     Q_OBJECT
 
 Q_SIGNALS:
-    void __axisEvent(int id, qint16 val);
-    void __ballEvent(int id, qint16 x, qint16 y);
-    void __hatEvent(int id, quint8 val);
-    void __buttonEvent(int id, quint8 state);
+    void axisEvent(int id, qint16 val);
+    void ballEvent(int id, qint16 x, qint16 y);
+    void hatEvent(int id, quint8 val);
+    void buttonEvent(int id, quint8 state);
 
 public:
     Joystick(int id, QObject *parent = 0);
@@ -48,29 +49,50 @@ public:
 
     bool open();
 
+    void __axisEvent(int id, qint16 val)
+    {
+        m_lock.lock();
+        m_axes[id] = val;
+        m_lock.unlock();
+
+        emit axisEvent(id, val);
+    }
+
+    void __ballEvent(int id, qint16 x, qint16 y)
+    {
+        emit ballEvent(id, x, y);
+    }
+
+    void __hatEvent(int id, quint8 val)
+    {
+        emit hatEvent(id, val);
+    }
+
+    void __buttonEvent(int id, quint8 state)
+    {
+        m_lock.lock();
+        m_buttons[id] = state;
+        m_lock.unlock();
+
+        emit buttonEvent(id, state);
+    }
+
+public slots:
     int getNumAxes() const { return m_num_axes; }
     int getNumBalls() const { return m_num_balls; }
     int getNumHats() const { return m_num_hats; }
     int getNumButtons() const { return m_num_buttons; }
 
-    void axisEvent(int id, qint16 val)
+    int getAxisVal(int id)
     {
-        emit __axisEvent(id, val);
+        QMutexLocker locker(&m_lock);
+        return m_axes[id];
     }
 
-    void ballEvent(int id, qint16 x, qint16 y)
+    quint8 getButtonVal(int id)
     {
-        emit __ballEvent(id, x, y);
-    }
-
-    void hatEvent(int id, quint8 val)
-    {
-        emit __hatEvent(id, val);
-    }
-
-    void buttonEvent(int id, quint8 state)
-    {
-        emit __buttonEvent(id, state);
+        QMutexLocker locker(&m_lock);
+        return m_buttons[id];
     }
 
 private:
@@ -81,6 +103,11 @@ private:
     int m_num_balls;
     int m_num_hats;
     int m_num_buttons;
+
+    int *m_axes;
+    quint8 *m_buttons;
+
+    QMutex m_lock;
 };
 
 #endif // JOYSTICK_H
