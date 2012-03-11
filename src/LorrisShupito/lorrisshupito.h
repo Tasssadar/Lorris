@@ -30,6 +30,8 @@
 #include "shared/hexfile.h"
 #include "shared/terminal.h"
 
+#include <QDateTime>
+
 enum state
 {
     STATE_DISCONNECTED = 0x01
@@ -192,6 +194,7 @@ private:
     QHexEdit *m_hexAreas[MEM_FUSES];
     Terminal *m_terminal;
     QString m_hexFilenames[MEM_FUSES];
+    QDateTime m_hexWriteTimes[MEM_FUSES];
     ShupitoMode *m_modes[MODE_COUNT];
     quint8 m_cur_mode;
 
