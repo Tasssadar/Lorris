@@ -454,10 +454,12 @@ void Terminal::paintEvent(QPaintEvent *)
     int maxLines = i + height + 1;
     for(y = 0; (int)i < maxLines && i < lines().size(); ++i, y += m_char_height)
     {
-        QString l = lines()[i];
-        l.remove(0, startX);
-
-        painter.drawText(0, y, viewport()->width(), m_char_height, Qt::AlignLeft, l);
+        QString& l = lines()[i];
+        int len = l.length() - startX;
+        if(len <= 0)
+            continue;
+        painter.drawText(0, y, viewport()->width(), m_char_height, Qt::AlignLeft,
+                         QString::fromRawData(l.data()+startX, len));
     }
 }
 
