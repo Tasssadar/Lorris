@@ -231,11 +231,11 @@ void Shupito::handlePacket(ShupitoPacket& p)
             }
             else
             {
-                m_wait_max_packets = 0;
                 responseTimer->start(1000);
                 m_wait_data.append(p.getData());
                 if(p.getLen() < 15)
                 {
+                    m_wait_max_packets = 0;
                     m_wait_type = WAIT_NONE;
                     emit packetReveived();
                 }
