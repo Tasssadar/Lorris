@@ -144,6 +144,8 @@ void TabDialog::setCreateButtonState(bool connecting)
 {
     ui->createButton->setText(connecting ? tr("Connecting...") : tr("Create tab"));
     ui->createButton->setEnabled(!connecting);
+    ui->modulesList->setEnabled(!connecting);
+    ui->conBox->setEnabled(!connecting);
 }
 
 void TabDialog::connectFailed(const QString &text)
