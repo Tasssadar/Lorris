@@ -96,7 +96,7 @@ void BarWidget::setUp(AnalyzerDataStorage *storage)
         ++y;
     }
     bitsAction[0]->setChecked(true);
-    connect(signalMapBits, SIGNAL(mapped(int)), SLOT(bitsSelected(int)));
+    connect(signalMapBits, SIGNAL(mapped(int)), SLOT(setDataType(int)));
 
     QSignalMapper *signalMapRot = new QSignalMapper(this);
 
@@ -152,7 +152,7 @@ void BarWidget::setRange(int min, int max)
     m_bar->setRange(min, max);
 }
 
-void BarWidget::bitsSelected(int i)
+void BarWidget::setDataType(int i)
 {
     for(quint8 y = 0; y < NUM_COUNT; ++y)
         if(bitsAction[y])
@@ -264,7 +264,7 @@ void BarWidget::loadWidgetInfo(AnalyzerDataFile *file)
     if(file->seekToNextBlock("barWType", BLOCK_WIDGET))
     {
         file->read((char*)&m_numberType, sizeof(m_numberType));
-        bitsSelected(m_numberType);
+        setDataType(m_numberType);
     }
 
     // range
@@ -274,8 +274,7 @@ void BarWidget::loadWidgetInfo(AnalyzerDataFile *file)
         qint32 max = 0;
         file->read((char*)&min, sizeof(qint32));
         file->read((char*)&max, sizeof(qint32));
-        m_bar->setMaximum(max);
-        m_bar->setMinimum(min);
+        m_bar->setRange(min, max);
     }
 
     //rotation

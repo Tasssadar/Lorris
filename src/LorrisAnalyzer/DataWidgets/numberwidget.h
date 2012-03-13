@@ -50,6 +50,7 @@ public:
 
 public slots:
     void setValue(const QVariant &var);
+    void setDataType(int i);
 
 protected:
      void processData(analyzer_data *data);
@@ -57,7 +58,6 @@ protected:
 
 private slots:
      void fmtSelected(int i);
-     void bitsSelected(int i);
      void levelSelected();
 
 private:

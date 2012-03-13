@@ -131,6 +131,17 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("WIDGET_GRAPH",  QScriptValue(this, WIDGET_GRAPH));
     m_global.setProperty("WIDGET_INPUT",  QScriptValue(this, WIDGET_INPUT));
 
+    m_global.setProperty("NUM_UINT8",  QScriptValue(this, NUM_UINT8));
+    m_global.setProperty("NUM_UINT16", QScriptValue(this, NUM_UINT16));
+    m_global.setProperty("NUM_UINT32", QScriptValue(this, NUM_UINT32));
+    m_global.setProperty("NUM_UINT64", QScriptValue(this, NUM_UINT64));
+    m_global.setProperty("NUM_INT8",   QScriptValue(this, NUM_INT8));
+    m_global.setProperty("NUM_INT16",  QScriptValue(this, NUM_INT16));
+    m_global.setProperty("NUM_INT32",  QScriptValue(this, NUM_INT32));
+    m_global.setProperty("NUM_INT64",  QScriptValue(this, NUM_INT64));
+    m_global.setProperty("NUM_FLOAT",  QScriptValue(this, NUM_FLOAT));
+    m_global.setProperty("NUM_DOUBLE", QScriptValue(this, NUM_DOUBLE));
+
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
 

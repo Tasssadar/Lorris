@@ -46,9 +46,9 @@ public slots:
     void setValue(const QVariant &var);
     void setRange(int min, int max);
     void rotationSelected(int i);
+    void setDataType(int i);
 
 private slots:
-    void bitsSelected(int i);
     void rangeSelected();
 
 private:
