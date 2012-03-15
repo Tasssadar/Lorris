@@ -89,6 +89,7 @@ private:
     static QScriptValue __getJoystickNames(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newTimer(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __addComboBoxItems(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __moveWidget(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);

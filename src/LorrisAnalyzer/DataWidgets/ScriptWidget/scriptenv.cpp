@@ -98,6 +98,7 @@ void ScriptEnv::prepareNewContext()
     QScriptValue getJoyName = newFunction(&__getJoystickNames);
     QScriptValue newTimer = newFunction(&__newTimer);
     QScriptValue addComboItems = newFunction(&__addComboBoxItems);
+    QScriptValue moveW = newFunction(&__moveWidget);
 
     QScriptValue numberW = newFunction(&__newNumberWidget);
     QScriptValue barW = newFunction(&__newBarWidget);
@@ -116,6 +117,7 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("getJoystickNames", getJoyName);
     m_global.setProperty("newTimer", newTimer);
     m_global.setProperty("addComboBoxItems", addComboItems);
+    m_global.setProperty("moveWidget", moveW);
 
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
@@ -141,6 +143,10 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("NUM_INT64",  QScriptValue(this, NUM_INT64));
     m_global.setProperty("NUM_FLOAT",  QScriptValue(this, NUM_FLOAT));
     m_global.setProperty("NUM_DOUBLE", QScriptValue(this, NUM_DOUBLE));
+
+    // objects
+    m_global.setProperty("script", newQObject(parent()));
+    m_global.setProperty("area", newQObject(m_area));
 
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
@@ -409,5 +415,19 @@ QScriptValue ScriptEnv::__addComboBoxItems(QScriptContext *context, QScriptEngin
         if(itr.value().isString())
             box->addItem(itr.value().toString());
     }
+    return QScriptValue();
+}
+
+QScriptValue ScriptEnv::__moveWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    if(context->argumentCount() != 3)
+        return QScriptValue();
+
+    if(!context->argument(0).isQObject() || !context->argument(0).toQObject()->inherits("QWidget"))
+        return QScriptValue();
+
+    QWidget *w = (QWidget*)context->argument(0).toQObject();
+    w->move(context->argument(1).toInt32(), context->argument(2).toInt32());
+
     return QScriptValue();
 }

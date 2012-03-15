@@ -147,6 +147,7 @@ public slots:
     void setTitle(const QString& title);
     virtual void setValue(const QVariant &var);
     void lockTriggered();
+    void remove();
 
 protected:
     void mousePressEvent(QMouseEvent * event);

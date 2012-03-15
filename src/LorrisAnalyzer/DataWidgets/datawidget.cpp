@@ -372,6 +372,11 @@ void DataWidget::setWidgetControlled(qint32 widget)
     m_closeLabel->setScript(widget != -1);
 }
 
+void DataWidget::remove()
+{
+    emit removeWidget(m_id);
+}
+
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 {
     setFlat(true);
