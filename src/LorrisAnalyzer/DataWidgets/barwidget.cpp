@@ -295,16 +295,17 @@ RangeSelectDialog::RangeSelectDialog(int val_min, int val_max, int max, int min,
 {
     ui->setupUi(this);
 
-    connect(ui->maxBox, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
-    connect(ui->minBox, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
-
-    ui->maxBox->setRange(min, max);
-    ui->minBox->setRange(min, max);
+    ui->maxBox->setRange(val_min, max);
+    ui->minBox->setRange(min, val_max);
     ui->maxBox->setValue(val_max);
     ui->minBox->setValue(val_min);
 
+    connect(ui->maxBox, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
+    connect(ui->minBox, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
     connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(boxClicked(QAbstractButton*)));
 
+    m_minRes = val_min;
+    m_maxRes = val_max;
     m_res = false;
 
     setFixedSize(size());
