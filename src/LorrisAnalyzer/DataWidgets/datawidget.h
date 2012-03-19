@@ -43,6 +43,7 @@ enum WidgetTypes
     WIDGET_SCRIPT,
     WIDGET_INPUT,
     WIDGET_TERMINAL,
+    WIDGET_BUTTON,
 
     WIDGET_MAX
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla

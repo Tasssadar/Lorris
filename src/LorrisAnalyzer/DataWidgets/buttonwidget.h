@@ -21,8 +21,36 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.3.0-dev"
- #define REVISION 256
-#endif // REVISION_H
+#ifndef BUTTONWIDGET_H
+#define BUTTONWIDGET_H
+
+#include "datawidget.h"
+
+class ButtonWidget : public DataWidget
+{
+    Q_OBJECT
+public:
+    ButtonWidget(QWidget *parent);
+    void setUp(AnalyzerDataStorage *storage);
+    void saveWidgetInfo(AnalyzerDataFile *file);
+    void loadWidgetInfo(AnalyzerDataFile *file);
+
+public slots:
+    void setButtonName(const QString& name);
+    void setButtonName();
+
+private slots:
+    void buttonClicked();
+
+private:
+    QPushButton *m_button;
+};
+
+class ButtonWidgetAddBtn : public DataWidgetAddBtn
+{
+    Q_OBJECT
+public:
+    ButtonWidgetAddBtn(QWidget *parent = 0);
+
+};
+#endif // TERMINALWIDGET_H
