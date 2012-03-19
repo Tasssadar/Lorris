@@ -158,6 +158,7 @@ public slots:
     virtual void setValue(const QVariant &var);
     void lockTriggered();
     void remove();
+    void setTitleVisibility(bool visible);
 
     //events
     virtual void onWidgetAdd(DataWidget *w);

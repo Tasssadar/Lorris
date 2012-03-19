@@ -118,6 +118,13 @@ void DataWidget::setUp(AnalyzerDataStorage */*storage*/)
     connect(m_closeLabel, SIGNAL(removeWidget(quint32)), this, SIGNAL(removeWidget(quint32)));
 }
 
+void DataWidget::setTitleVisibility(bool visible)
+{
+    m_closeLabel->setVisible(visible);
+    m_title_label->setVisible(visible);
+    m_icon_widget->setVisible(visible);
+}
+
 void DataWidget::setTitle(const QString &title)
 {
     emit titleChanged(title);

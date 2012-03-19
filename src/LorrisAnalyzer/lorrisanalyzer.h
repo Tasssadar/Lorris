@@ -65,6 +65,7 @@ class LorrisAnalyzer : public WorkTab
 
     Q_SIGNALS:
         void newData(analyzer_data *data, quint32 index);
+        void setTitleVisibility(bool visible);
 
     public:
         explicit LorrisAnalyzer();
@@ -77,6 +78,8 @@ class LorrisAnalyzer : public WorkTab
         Connection *getCon() { return m_con; }
 
         quint32 getCurrentIndex();
+
+        bool showTitleBars() const { return m_title_action->isChecked(); }
 
     public slots:
         void onTabShow();
@@ -99,6 +102,7 @@ class LorrisAnalyzer : public WorkTab
         void connectedStatus(bool connected);
         void timeSliderMoved(int value);
         void timeBoxChanged(int value);
+        void showTitleTriggered(bool checked);
 
         void updateTimeChanged(int value);
 
@@ -121,6 +125,8 @@ class LorrisAnalyzer : public WorkTab
 
         QTime updateTime;
         int minUpdateDelay;
+
+        QAction *m_title_action;
 };
 
 #endif // LORRISANALYZER_H

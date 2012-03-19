@@ -49,7 +49,6 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     bar_l->addWidget(m_bar);
     layout->addLayout(bar_l);
     adjustSize();
-    setMinimumSize(size());
 }
 
 void BarWidget::setUp(AnalyzerDataStorage *storage)
@@ -200,10 +199,8 @@ void BarWidget::rotationSelected(int i)
 
     rotate(i);
 
-    setMinimumSize(0, 0);
     resize(0, 0);
     adjustSize();
-    setMinimumSize(size());
 
     if(i == 0)
         setMaximumSize(width(), 16777215);

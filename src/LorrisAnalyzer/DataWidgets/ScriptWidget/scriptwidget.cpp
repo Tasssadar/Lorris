@@ -36,13 +36,11 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
     m_widgetType = WIDGET_SCRIPT;
     m_editor = NULL;
 
-
-    adjustSize();
-    setMinimumSize(width(), width());
-
     m_terminal = new Terminal(this);
     layout->setContentsMargins(5, 0, 5, 5);
     layout->addWidget(m_terminal, 4);
+
+    resize(120, 100);
 
     m_env = NULL;
 }

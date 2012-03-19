@@ -95,6 +95,7 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(w,          SIGNAL(updateData()),                       SIGNAL(updateData()));
     connect(w,  SIGNAL(mouseStatus(bool,data_widget_info,qint32)),  SIGNAL(mouseStatus(bool,data_widget_info,qint32)));
     connect(w,  SIGNAL(SendData(QByteArray)), m_analyzer->getCon(), SLOT(SendData(QByteArray)));
+    connect(m_analyzer, SIGNAL(setTitleVisibility(bool)),        w, SLOT(setTitleVisibility(bool)));
 
     //events
     connect(this,       SIGNAL(onWidgetAdd(DataWidget*)),        w, SLOT(onWidgetAdd(DataWidget*)));
@@ -104,6 +105,7 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
 
     emit onWidgetAdd(w);
 
+    w->setTitleVisibility(m_analyzer->showTitleBars());
     return w;
 }
 

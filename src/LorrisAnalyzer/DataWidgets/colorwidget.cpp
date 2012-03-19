@@ -43,9 +43,9 @@ ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
     layout->setContentsMargins(3, 0, 3, 3);
     layout->addWidget(m_widget, 1);
 
-    adjustSize();
+    resize(150, 100);
 
-    //setMinimumSize(width(), width());
+    setMinimumSize(50, 50);
 
     m_brightness = 0;
     m_color_layout[0] = m_color_layout[1] = m_color_layout[2] = NULL;

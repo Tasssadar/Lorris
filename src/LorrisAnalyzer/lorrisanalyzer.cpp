@@ -115,6 +115,15 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 
     addTopMenu(menuData);
 
+    QMenu *menuWidgets = new QMenu(tr("Widgets"), this);
+
+    m_title_action = menuWidgets->addAction(tr("Show widget's title bar"));
+    m_title_action->setCheckable(true);
+    m_title_action->setChecked(true);
+    connect(m_title_action, SIGNAL(triggered(bool)), SLOT(showTitleTriggered(bool)));
+
+    addTopMenu(menuWidgets);
+
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better
 #if defined(Q_WS_X11)
@@ -587,4 +596,11 @@ void LorrisAnalyzer::editStruture()
 quint32 LorrisAnalyzer::getCurrentIndex()
 {
     return ui->timeBox->value();
+}
+
+void LorrisAnalyzer::showTitleTriggered(bool checked)
+{
+    m_title_action->setChecked(checked);
+
+    emit setTitleVisibility(checked);
 }
