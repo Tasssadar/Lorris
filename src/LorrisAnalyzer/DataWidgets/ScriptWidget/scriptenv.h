@@ -70,14 +70,20 @@ public:
 
     QScriptValue newTimer();
 
+    void onWidgetAdd(DataWidget *w);
+    void onWidgetRemove(DataWidget *w);
+    void callEventHandler(const QString& eventId);
+
 public slots:
     void keyPressed(const QByteArray& key);
 
 private slots:
     void widgetDestroyed(QObject *widget);
+    void onTitleChange(const QString& newTitle);
 
 private:
     void prepareNewContext();
+    QString sanitizeWidgetName(QString const & name);
 
     static QScriptValue __clearTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __appendTerm(QScriptContext *context, QScriptEngine *engine);
@@ -104,6 +110,8 @@ private:
     QScriptValue  m_global;
     QScriptValue  m_on_data;
     QScriptValue  m_on_key;
+    QScriptValue  m_on_widget_add;
+    QScriptValue  m_on_widget_remove;
 
     qint32 m_widget_id;
     int m_x;

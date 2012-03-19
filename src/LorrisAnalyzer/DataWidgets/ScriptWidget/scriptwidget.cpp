@@ -171,6 +171,24 @@ void ScriptWidget::resizeEvent(QResizeEvent *)
         m_env->setSize(size());
 }
 
+void ScriptWidget::onWidgetAdd(DataWidget *w)
+{
+    if(m_env)
+        m_env->onWidgetAdd(w);
+}
+
+void ScriptWidget::onWidgetRemove(DataWidget *w)
+{
+    if(m_env)
+        m_env->onWidgetRemove(w);
+}
+
+void ScriptWidget::onScriptEvent(const QString& eventId)
+{
+    if(m_env)
+        m_env->callEventHandler(eventId);
+}
+
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText(tr("Script"));

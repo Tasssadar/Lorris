@@ -148,6 +148,15 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("script", newQObject(parent()));
     m_global.setProperty("area", newQObject(m_area));
 
+    const AnalyzerDataArea::w_map& widgets = m_area->getWidgets();
+    for(AnalyzerDataArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
+    {
+        QString name = sanitizeWidgetName((*itr)->getTitle());
+        if(!name.isEmpty())
+            m_global.setProperty(name, newQObject(*itr));
+    }
+
+    // remove script created widgets and timer from previous script
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
 
@@ -174,6 +183,8 @@ void ScriptEnv::setSource(const QString &source)
 
     m_on_data = m_global.property("onDataChanged");
     m_on_key = m_global.property("onKeyPress");
+    m_on_widget_add = m_global.property("onWidgetAdd");
+    m_on_widget_remove = m_global.property("onWidgetRemove");
 }
 
 QString ScriptEnv::dataChanged(analyzer_data *data, quint32 index)
@@ -259,6 +270,71 @@ QScriptValue ScriptEnv::newTimer()
     QTimer *t = new QTimer();
     m_timers.push_back(t);
     return newQObject(t);
+}
+
+QString ScriptEnv::sanitizeWidgetName(QString const & name)
+{
+    if (name.isEmpty())
+        return QString();
+
+    if (!name[0].isLetter() && name[0] != '_')
+       return QString();
+
+    for (int i = 1; i < name.size(); ++i)
+    {
+        if (!name[i].isLetterOrNumber() && name[i] != '_')
+            return QString();
+    }
+
+    return name;
+}
+
+void ScriptEnv::onWidgetAdd(DataWidget *w)
+{
+    QString name = sanitizeWidgetName(w->getTitle());
+    if(!name.isEmpty())
+        m_global.setProperty(name, newQObject(w));
+
+    connect(w, SIGNAL(titleChanged(QString)), SLOT(onTitleChange(QString)));
+
+    QScriptValueList args;
+    args << newQObject(w) << name;
+    m_on_widget_add.call(QScriptValue(), args);
+}
+
+void ScriptEnv::onWidgetRemove(DataWidget *w)
+{
+    QString name = sanitizeWidgetName(w->getTitle());
+    if(!name.isEmpty())
+        m_global.setProperty(name, undefinedValue());
+    disconnect(w, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChange(QString)));
+
+    QScriptValueList args;
+    args << newQObject(w) << name;
+    m_on_widget_remove.call(QScriptValue(), args);
+}
+
+void ScriptEnv::onTitleChange(const QString& newTitle)
+{
+    DataWidget *w = (DataWidget*)sender();
+    QString name = sanitizeWidgetName(w->getTitle());
+
+    if(!name.isEmpty())
+        m_global.setProperty(name, undefinedValue());
+
+    name = sanitizeWidgetName(newTitle);
+    if(!name.isEmpty())
+        m_global.setProperty(name, newQObject(w));
+}
+
+void ScriptEnv::callEventHandler(const QString& eventId)
+{
+    QScriptValue handler = m_global.property(eventId);
+
+    if(!handler.isFunction())
+        return;
+
+    handler.call();
 }
 
 QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
@@ -418,7 +494,7 @@ QScriptValue ScriptEnv::__addComboBoxItems(QScriptContext *context, QScriptEngin
     return QScriptValue();
 }
 
-QScriptValue ScriptEnv::__moveWidget(QScriptContext *context, QScriptEngine *engine)
+QScriptValue ScriptEnv::__moveWidget(QScriptContext *context, QScriptEngine */*engine*/)
 {
     if(context->argumentCount() != 3)
         return QScriptValue();

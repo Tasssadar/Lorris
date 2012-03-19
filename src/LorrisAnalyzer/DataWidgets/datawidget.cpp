@@ -120,6 +120,8 @@ void DataWidget::setUp(AnalyzerDataStorage */*storage*/)
 
 void DataWidget::setTitle(const QString &title)
 {
+    emit titleChanged(title);
+
     m_title_label->setText(title);
 }
 
@@ -375,6 +377,21 @@ void DataWidget::setWidgetControlled(qint32 widget)
 void DataWidget::remove()
 {
     emit removeWidget(m_id);
+}
+
+void DataWidget::onWidgetAdd(DataWidget */*w*/)
+{
+
+}
+
+void DataWidget::onWidgetRemove(DataWidget */*w*/)
+{
+
+}
+
+void DataWidget::onScriptEvent(const QString& /*eventId*/)
+{
+
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)

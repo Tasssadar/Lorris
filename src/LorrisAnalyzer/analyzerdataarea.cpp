@@ -95,6 +95,14 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(w,  SIGNAL(mouseStatus(bool,data_widget_info,qint32)),  SIGNAL(mouseStatus(bool,data_widget_info,qint32)));
     connect(w,  SIGNAL(SendData(QByteArray)), m_analyzer->getCon(), SLOT(SendData(QByteArray)));
 
+    //events
+    connect(this,       SIGNAL(onWidgetAdd(DataWidget*)),        w, SLOT(onWidgetAdd(DataWidget*)));
+    connect(this,       SIGNAL(onWidgetRemove(DataWidget*)),     w, SLOT(onWidgetRemove(DataWidget*)));
+    connect(this,       SIGNAL(onScriptEvent(QString)),          w, SLOT(onScriptEvent(QString)));
+    connect(w,          SIGNAL(scriptEvent(QString)),         this, SIGNAL(onScriptEvent(QString)));
+
+    emit onWidgetAdd(w);
+
     return w;
 }
 
@@ -126,7 +134,10 @@ void AnalyzerDataArea::removeWidget(quint32 id)
     w_map::iterator itr = m_widgets.find(id);
     if(itr == m_widgets.end())
         return;
-    delete itr.value();
+
+    emit onWidgetRemove(*itr);
+
+    delete *itr;
     m_widgets.erase(itr);
 
     m_marks.remove(id);
