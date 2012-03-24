@@ -29,7 +29,7 @@
 
 #include "singleton.h"
 #include "WorkTab.h"
-#include "ui/maintabwidget.h"
+#include "ui/tabview.h"
 
 class WorkTabInfo;
 class HomeTab;
@@ -73,8 +73,18 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 
         void removeTab(WorkTab *tab);
 
-        QTabWidget *getWi() { return tabWidget; }
-        QTabWidget *CreateWidget(QWidget *parent);
+        TabView *getWi() { return tabWidget; }
+        TabView *CreateWidget(QWidget *parent);
+
+        quint32 generateNewWidgetId()
+        {
+            return tabWidgetCounter++;
+        }
+
+        quint32 generateNewTabId()
+        {
+            return tabIdCounter++;
+        }
 
         void OpenHomeTab();
         void CloseHomeTab();
@@ -86,8 +96,9 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
         InfoList m_workTabInfos;
         WorkTabMap m_workTabs;
 
-        quint16 tabIdCounter;
-        MainTabWidget *tabWidget;
+        quint32 tabWidgetCounter;
+        quint32 tabIdCounter;
+        TabView *tabWidget;
         HomeTab *hometab;
 };
 

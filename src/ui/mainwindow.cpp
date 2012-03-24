@@ -122,15 +122,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setMenuBar(menuBar);
 
     //Tabs
-    QTabWidget *tabWidget = sWorkTabMgr.CreateWidget(this);
-
-    QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", tabWidget);
-    connect(newTabBtn, SIGNAL(clicked()), this, SLOT(NewTab()));
-
-    tabWidget->setCornerWidget(newTabBtn);
-    tabWidget->setMovable(true);
-    connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(CloseTab(int)));
-    connect(tabWidget, SIGNAL(currentChanged(int)),    this, SLOT(tabChanged(int)));
+    QWidget *tabWidget = sWorkTabMgr.CreateWidget(this);
 
     // Sort tab infos after they were added by static variables
     sWorkTabMgr.SortTabInfos();

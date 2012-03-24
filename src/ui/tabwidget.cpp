@@ -25,28 +25,35 @@
 #include <QInputDialog>
 #include <QMenu>
 
-#include "maintabwidget.h"
+#include "tabwidget.h"
 
-MainTabWidget::MainTabWidget(QWidget *parent) :
+TabWidget::TabWidget(quint32 id, QWidget *parent) :
     QTabWidget(parent)
 {
-    setTabBar(new MainTabBar(this));
+    m_id = id;
+
+    setTabBar(new TabBar(this));
     setMovable(true);
+
+    QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", this);
+    connect(newTabBtn, SIGNAL(clicked()), SIGNAL(newTab()));
+
+    setCornerWidget(newTabBtn);
 }
 
-void MainTabWidget::mousePressEvent(QMouseEvent *event)
+void TabWidget::mousePressEvent(QMouseEvent *event)
 {
     if(event->button() != Qt::MidButton || !checkEvent(event))
         return QTabWidget::mousePressEvent(event);
 }
 
-void MainTabWidget::mouseDoubleClickEvent(QMouseEvent *event)
+void TabWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if(event->button() != Qt::LeftButton || !checkEvent(event))
         return QTabWidget::mouseDoubleClickEvent(event);
 }
 
-bool MainTabWidget::checkEvent(QMouseEvent *event)
+bool TabWidget::checkEvent(QMouseEvent *event)
 {
     if(event->pos().y() > tabBar()->height())
         return false;
@@ -55,12 +62,12 @@ bool MainTabWidget::checkEvent(QMouseEvent *event)
     return true;
 }
 
-MainTabBar::MainTabBar(QWidget *parent) :
+TabBar::TabBar(QWidget *parent) :
     QTabBar(parent)
 {
 }
 
-void MainTabBar::mousePressEvent(QMouseEvent *event)
+void TabBar::mousePressEvent(QMouseEvent *event)
 {
     switch(event->button())
     {

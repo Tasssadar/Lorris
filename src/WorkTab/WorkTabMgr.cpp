@@ -60,7 +60,7 @@ WorkTabMgr::InfoList *WorkTabMgr::GetWorkTabInfos()
 
 quint16 WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
 {
-    quint16 id = tabIdCounter++;
+    quint16 id = generateNewTabId();
 
     m_workTabs.insert(std::make_pair<quint16, WorkTab*>(id, tab));
     tab->setId(id);
@@ -110,9 +110,9 @@ void WorkTabMgr::NewTabDialog()
     delete dialog;
 }
 
-QTabWidget *WorkTabMgr::CreateWidget(QWidget *parent)
+TabView *WorkTabMgr::CreateWidget(QWidget *parent)
 {
-    tabWidget = new MainTabWidget(parent);
+    tabWidget = new TabView(parent);
 
     connect(tabWidget, SIGNAL(newTab()), SLOT(NewTabDialog()));
     return tabWidget;

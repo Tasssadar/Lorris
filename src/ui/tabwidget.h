@@ -27,7 +27,7 @@
 #include <QTabWidget>
 #include <QTabBar>
 
-class MainTabWidget : public QTabWidget
+class TabWidget : public QTabWidget
 {
     Q_OBJECT
 
@@ -35,7 +35,9 @@ Q_SIGNALS:
     void newTab();
 
 public:
-    explicit MainTabWidget(QWidget *parent = 0);
+    explicit TabWidget(quint32 id, QWidget *parent = 0);
+
+    quint32 getId() const { return m_id; }
 
 protected:
     void mousePressEvent(QMouseEvent *ev);
@@ -43,14 +45,16 @@ protected:
 
 private:
     bool checkEvent(QMouseEvent *event);
+
+    quint32 m_id;
 };
 
-class MainTabBar : public QTabBar
+class TabBar : public QTabBar
 {
     Q_OBJECT
 
 public:
-    explicit MainTabBar(QWidget * parent = 0);
+    explicit TabBar(QWidget * parent = 0);
 
 protected:
     void mousePressEvent(QMouseEvent * event);
