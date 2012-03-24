@@ -43,6 +43,8 @@ Q_SIGNALS:
     void appendTerm(const QByteArray& text);
     void SendData(const QByteArray& data);
 
+    void stopUsingJoy(QObject *object);
+
 public:
     explicit ScriptEnv(AnalyzerDataArea *area , quint32 w_id, QObject *parent = 0);
     ~ScriptEnv();

@@ -24,7 +24,7 @@
 #include <QDebug>
 #include "joymgr.h"
 
-JoyMgr::JoyMgr()
+JoyMgr::JoyMgr() : QObject()
 {
     // SDL needs video to be enabled
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
@@ -78,6 +78,8 @@ Joystick *JoyMgr::getJoystick(int id)
         return NULL;
     }
 
+    connect(joy, SIGNAL(removeJoystick(Joystick*)), SLOT(removeJoystick(Joystick*)));
+
     m_joysticks[id] = joy;
     return joy;
 }
@@ -88,4 +90,13 @@ QStringList JoyMgr::getNamesList()
     for(QHash<int, QString>::iterator itr = m_names.begin(); itr != m_names.end(); ++itr)
         list << *itr;
     return list;
+}
+
+void JoyMgr::removeJoystick(Joystick *joy)
+{
+    if(joy->isUsed())
+        return;
+
+    m_joysticks.remove(joy->getId());
+    delete joy;
 }

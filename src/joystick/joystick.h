@@ -26,6 +26,7 @@
 
 #include <QObject>
 #include <QMutex>
+#include <set>
 
 #ifdef Q_OS_WIN
     #include <SDL.h>
@@ -43,11 +44,14 @@ Q_SIGNALS:
     void hatEvent(int id, quint8 val);
     void buttonEvent(int id, quint8 state);
 
+    void removeJoystick(Joystick *joy);
+
 public:
     Joystick(int id, QObject *parent = 0);
     ~Joystick();
 
     bool open();
+    int getId() const { return m_id; }
 
     void __axisEvent(int id, qint16 val)
     {
@@ -77,6 +81,8 @@ public:
         emit buttonEvent(id, state);
     }
 
+    bool isUsed() const { return !m_used.empty(); }
+
 public slots:
     int getNumAxes() const { return m_num_axes; }
     int getNumBalls() const { return m_num_balls; }
@@ -95,6 +101,19 @@ public slots:
         return m_buttons[id];
     }
 
+    void startUsing(QObject *object)
+    {
+        m_used.insert(object);
+    }
+
+    void stopUsing(QObject *object)
+    {
+        m_used.erase(object);
+
+        if(m_used.empty())
+            emit removeJoystick(this);
+    }
+
 private:
     int m_id;
     SDL_Joystick *m_joy;
@@ -106,6 +125,8 @@ private:
 
     int *m_axes;
     quint8 *m_buttons;
+
+    std::set<QObject*> m_used;
 
     QMutex m_lock;
 };
