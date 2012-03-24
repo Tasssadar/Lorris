@@ -106,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actionCloseTab->setShortcut(QKeySequence("Ctrl+W"));
 
     connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
-    connect(actionQuit,     SIGNAL(triggered()), this, SLOT(QuitButton()));
+    connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
     connect(actionCloseTab, SIGNAL(triggered()), this, SLOT(CloseTab()));
 
@@ -147,18 +147,6 @@ void MainWindow::NewTab()
     sWorkTabMgr.NewTabDialog();
 }
 
-void MainWindow::CloseTab(int index)
-{
-    if(index == -1)
-        index = sWorkTabMgr.getWi()->currentIndex();
-    sWorkTabMgr.removeTab(index);
-}
-
-void MainWindow::QuitButton()
-{
-    this->close();
-}
-
 void MainWindow::About()
 {
     QString text = tr("Lorris version " VERSION);
@@ -173,9 +161,9 @@ void MainWindow::About()
     delete box;
 }
 
-void MainWindow::tabChanged(int index)
+void MainWindow::tabChanged(int id)
 {
-    WorkTab *tab = sWorkTabMgr.getWorkTab(index);
+    WorkTab *tab = sWorkTabMgr.getWorkTab(id);
     if(!tab)
         return;
 

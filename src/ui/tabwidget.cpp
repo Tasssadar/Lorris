@@ -24,6 +24,8 @@
 #include <QMouseEvent>
 #include <QInputDialog>
 #include <QMenu>
+#include <QStyle>
+#include <QPushButton>
 
 #include "tabwidget.h"
 

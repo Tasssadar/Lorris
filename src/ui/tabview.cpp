@@ -23,6 +23,7 @@
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QApplication>
 
 #include "tabview.h"
 #include "WorkTab/WorkTabMgr.h"
@@ -45,6 +46,8 @@ TabWidget *TabView::newTabWidget(QLayout *l)
 
     l->addWidget(tabW);
 
+    connect(tabW, SIGNAL(newTab()), &sWorkTabMgr, SLOT(NewTabDialog()));
+
     return tabW;
 }
 
@@ -54,4 +57,9 @@ void TabView::focusChanged(QWidget */*prev*/, QWidget *now)
         return;
 
     m_active_widget = (TabWidget*)now;
+}
+
+void TabView::addTab(QWidget *widget, const QString &name)
+{
+    m_active_widget->addTab(widget, name);
 }

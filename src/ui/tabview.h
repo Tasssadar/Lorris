@@ -36,6 +36,8 @@ class TabView : public QWidget
 public:
     explicit TabView(QWidget *parent = 0);
 
+    void addTab(QWidget *widget, const QString& name);
+
 private slots:
     void focusChanged(QWidget *prev, QWidget *now);
 

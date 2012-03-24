@@ -51,20 +51,15 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
         void SortTabInfos();
         quint16 AddWorkTab(WorkTab *tab, QString label);
 
-        WorkTab* getWorkTab(int index)
+        WorkTab* getWorkTab(int id)
         {
-            if(index == 0 && hometab)
-                return NULL;
-            else
-                return (WorkTab*)tabWidget->widget(index);
+            WorkTabMap::iterator itr = m_workTabs.find(id);
+            if(itr != m_workTabs.end())
+                return itr->second;
+            return NULL;
         }
 
-        void removeTab(quint16 index)
-        {
-            removeTab((WorkTab*)tabWidget->widget(index));
-        }
-
-        void removeTabWithId(quint16 id)
+        void removeTab(quint16 id)
         {
             WorkTabMap::iterator itr = m_workTabs.find(id);
             if(itr != m_workTabs.end())

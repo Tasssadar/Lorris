@@ -66,12 +66,8 @@ quint16 WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
     tab->setId(id);
 
     tab->setParent(tabWidget);
-    quint16 index = tabWidget->addTab(tab, label);
-    if(tabWidget->count() > 1)
-    {
-        tabWidget->setTabsClosable(true);
-        tabWidget->setCurrentIndex(index);
-    }
+    tabWidget->addTab(tab, label);
+    tabWidget->setTabsClosable(true);
     CloseHomeTab();
     return id;
 }
