@@ -41,6 +41,7 @@ Q_SIGNALS:
     void removeWidget(quint32 id);
     void split(bool horizontal, int index);
     void changeActiveWidget(TabWidget *widget);
+    void changeMenu(quint32 id);
 
 public:
     explicit TabWidget(quint32 id, QWidget *parent = 0);
@@ -64,6 +65,7 @@ private slots:
     void closeTab(int index);
     void tabMoved(int from, int to);
     void newTabBtn();
+    void currentIndexChanged(int idx);
 
 private:
     bool checkEvent(QMouseEvent *event);

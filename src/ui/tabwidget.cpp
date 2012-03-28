@@ -46,6 +46,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     connect(m_tab_bar, SIGNAL(tabMoved(int,int)),      SLOT(tabMoved(int,int)));
     connect(newTabBtn, SIGNAL(clicked()),              SIGNAL(newTab()));
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
+    connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
 
     setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 }
@@ -56,6 +57,9 @@ int TabWidget::addTab(QWidget *widget, const QString &name, quint32 tabId)
 
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
     m_tab_ids.insert(itr, tabId);
+
+    if(idx == 0)
+        emit changeMenu(tabId);
 
     setCurrentIndex(idx);
 
@@ -137,6 +141,15 @@ QWidget *TabWidget::unregisterTab(int index)
     m_tab_ids.erase(itr);
 
     return tab;
+}
+
+void TabWidget::currentIndexChanged(int idx)
+{
+    if(idx == -1 || (uint)idx >= m_tab_ids.size())
+        return;
+
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
+    emit changeMenu(*itr);
 }
 
 void TabWidget::mousePressEvent(QMouseEvent *event)

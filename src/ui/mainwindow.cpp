@@ -122,7 +122,9 @@ MainWindow::MainWindow(QWidget *parent) :
     setMenuBar(menuBar);
 
     //Tabs
-    QWidget *tabWidget = sWorkTabMgr.CreateWidget(this);
+    TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
+
+    connect(tabWidget, SIGNAL(changeMenu(quint32)), SLOT(changeMenu(quint32)));
 
     // Sort tab infos after they were added by static variables
     sWorkTabMgr.SortTabInfos();
@@ -161,7 +163,7 @@ void MainWindow::About()
     delete box;
 }
 
-void MainWindow::tabChanged(int id)
+void MainWindow::changeMenu(quint32 id)
 {
     WorkTab *tab = sWorkTabMgr.getWorkTab(id);
     if(!tab)

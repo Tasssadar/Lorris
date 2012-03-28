@@ -40,7 +40,7 @@ public:
 private slots:
     void NewTab();
     void About();
-    void tabChanged(int id);
+    void changeMenu(quint32 id);
 
     void langChanged(int idx);
 
