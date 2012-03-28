@@ -61,6 +61,7 @@ private slots:
 
 private:
     TabWidget *newTabWidget(QLayout *l);
+    void updateSize(QLayout *l);
 
     QHash<quint32, TabWidget*> m_tab_widgets;
     std::set<QLayout*> m_layouts;

@@ -44,6 +44,8 @@ TabWidget *TabView::newTabWidget(QLayout *l)
 
     l->addWidget(tabW);
 
+    l->setSizeConstraint(QLayout::SetMaximumSize);
+
     connect(tabW, SIGNAL(newTab()),                       SIGNAL(newTab()));
     connect(tabW, SIGNAL(openHomeTab(quint32)),           SIGNAL(openHomeTab(quint32)));
     connect(tabW, SIGNAL(split(bool,int)),                SLOT(split(bool,int)));
