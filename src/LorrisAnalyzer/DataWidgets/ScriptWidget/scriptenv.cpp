@@ -73,6 +73,8 @@ ScriptEnv::~ScriptEnv()
 
     for(std::list<QTimer*>::iterator itr = m_timers.begin(); itr != m_timers.end(); ++itr)
         delete *itr;
+
+    emit stopUsingJoy(this);
 }
 
 void ScriptEnv::widgetDestroyed(QObject *widget)
@@ -163,6 +165,8 @@ void ScriptEnv::prepareNewContext()
     for(std::list<QTimer*>::iterator itr = m_timers.begin(); itr != m_timers.end(); ++itr)
         delete *itr;
     m_timers.clear();
+
+    emit stopUsingJoy(this);
 
     qScriptRegisterMetaType(this, GraphCurveToScriptValue, GraphCurveFromScriptValue);
 }
@@ -450,7 +454,10 @@ QScriptValue ScriptEnv::__getJoystick(QScriptContext *context, QScriptEngine *en
     if(!joy)
         return QScriptValue();
 
-    return engine->newQObject(joy);;
+    joy->startUsing(engine);
+
+    connect((ScriptEnv*)engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
+    return engine->newQObject(joy);
 }
 
 QScriptValue ScriptEnv::__newTimer(QScriptContext */*context*/, QScriptEngine *engine)

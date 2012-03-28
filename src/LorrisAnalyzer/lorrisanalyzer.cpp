@@ -98,18 +98,21 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 
     QAction* newSource = menuData->addAction(tr("New source..."));
     menuData->addSeparator();
-    QAction* openAct = menuData->addAction(tr("Open data..."));
-    QAction* saveAct = menuData->addAction(tr("Save data..."));
+    QAction* openAct = menuData->addAction(tr("Open..."));
+    QAction* saveAsAct = menuData->addAction(tr("Save as..."));
+    QAction* saveAct = menuData->addAction(tr("Save"));
     menuData->addSeparator();
     QAction* clearAct = menuData->addAction(tr("Clear received data"));
     QAction* clearAllAct = menuData->addAction(tr("Clear everything"));
 
     openAct->setShortcut(QKeySequence("Ctrl+O"));
+    saveAsAct->setShortcut(QKeySequence("Ctrl+Shift+S"));
     saveAct->setShortcut(QKeySequence("Ctrl+S"));
 
     connect(newSource, SIGNAL(triggered()), SLOT(onTabShow()));
     connect(openAct,   SIGNAL(triggered()), SLOT(openFile()));
-    connect(saveAct,   SIGNAL(triggered()), SLOT(saveDataButton()));
+    connect(saveAsAct, SIGNAL(triggered()), SLOT(saveAsButton()));
+    connect(saveAct,   SIGNAL(triggered()), SLOT(saveButton()));
     connect(clearAct,  SIGNAL(triggered()), SLOT(clearDataButton()));
     connect(clearAllAct,  SIGNAL(triggered()), SLOT(clearAllButton()));
 
@@ -397,9 +400,14 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     updateData(true);
 }
 
-void LorrisAnalyzer::saveDataButton()
+void LorrisAnalyzer::saveButton()
 {
     m_storage->SaveToFile(ui->dataArea, ui->devTabs);
+}
+
+void LorrisAnalyzer::saveAsButton()
+{
+    m_storage->SaveToFile("", ui->dataArea, ui->devTabs);
 }
 
 void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)

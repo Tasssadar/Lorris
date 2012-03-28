@@ -159,12 +159,48 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
     if(m_locked)
         return;
 
-    if(e->buttons() == Qt::LeftButton) //dragging
+    switch(e->buttons())
     {
-        if(m_dragAction == DRAG_MOVE)
-            dragMove(e);
-        else
-            dragResize(e);
+        case Qt::NoButton:
+        {
+            quint8 act = getDragAction(e->pos());
+            if(!act)
+            {
+                setCursor(Qt::ArrowCursor);
+                break;
+            }
+
+            switch(act)
+            {
+                case DRAG_MOVE:
+                    setCursor(Qt::SizeAllCursor);
+                    break;
+                case DRAG_RES_LEFT:
+                case DRAG_RES_RIGHT:
+                    setCursor(Qt::SizeHorCursor);
+                    break;
+                case DRAG_RES_BOTTOM:
+                    setCursor(Qt::SizeVerCursor);
+                    break;
+                case (DRAG_RES_LEFT | DRAG_RES_BOTTOM):
+                    setCursor(Qt::SizeBDiagCursor);
+                    break;
+                case (DRAG_RES_RIGHT | DRAG_RES_BOTTOM):
+                    setCursor(Qt::SizeFDiagCursor);
+                    break;
+            }
+            break;
+        }
+        case Qt::LeftButton:
+        {
+            if(m_dragAction == DRAG_MOVE)
+                dragMove(e);
+            else
+                dragResize(e);
+            break;
+        }
+        default:
+            break;
     }
 }
 
@@ -453,6 +489,8 @@ CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
     setStyleSheet("border-bottom: 1px solid black");
     setAlignment(Qt::AlignVCenter);
     setLocked(false);
+
+    setCursor(Qt::ArrowCursor);
 }
 
 void CloseLabel::mousePressEvent(QMouseEvent *event)

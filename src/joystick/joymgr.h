@@ -38,8 +38,9 @@
 #include "joystick.h"
 #include "joythread.h"
 
-class JoyMgr : public Singleton<JoyMgr>
+class JoyMgr : public QObject, public Singleton<JoyMgr>
 {
+    Q_OBJECT
 public:
     JoyMgr();
     ~JoyMgr();
@@ -59,6 +60,9 @@ public:
         m_joy_lock.unlock();
         return res;
     }
+
+public slots:
+    void removeJoystick(Joystick *joy);
 
 private:
     QHash<int, Joystick*> m_joysticks;
