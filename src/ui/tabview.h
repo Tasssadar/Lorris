@@ -33,13 +33,31 @@
 class TabView : public QWidget
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void newTab();
+    void openHomeTab(quint32 id);
+
 public:
     explicit TabView(QWidget *parent = 0);
 
-    void addTab(QWidget *widget, const QString& name);
+    TabWidget *getActiveWidget() const
+    {
+        Q_ASSERT(m_active_widget);
+        return m_active_widget;
+    }
+
+    TabWidget *getWidget(quint32 id)
+    {
+        if(m_tab_widgets.contains(id))
+            return m_tab_widgets[id];
+        return NULL;
+    }
 
 private slots:
-    void focusChanged(QWidget *prev, QWidget *now);
+    void split(bool horizontal, int index);
+    void removeWidget(quint32 id);
+    void changeActiveWidget(TabWidget *widget);
 
 private:
     TabWidget *newTabWidget(QLayout *l);

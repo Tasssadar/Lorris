@@ -108,7 +108,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
-    connect(actionCloseTab, SIGNAL(triggered()), this, SLOT(CloseTab()));
+    connect(actionCloseTab, SIGNAL(triggered()), this, SLOT(CloseTab())); // FIXME
 
     menuFile->addAction(actionNewTab);
     menuFile->addAction(actionCloseTab);

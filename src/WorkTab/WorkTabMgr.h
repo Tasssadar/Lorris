@@ -25,7 +25,7 @@
 #define WORKTABMGR_H
 
 #include <vector>
-#include <map>
+#include <QHash>
 
 #include "singleton.h"
 #include "WorkTab.h"
@@ -39,7 +39,7 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
     Q_OBJECT
 
     public:
-        typedef std::map<quint16, WorkTab*> WorkTabMap;
+        typedef QHash<quint32, WorkTab*> WorkTabMap;
         typedef QList<WorkTabInfo*> InfoList;
 
         WorkTabMgr();
@@ -49,26 +49,26 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 
         InfoList *GetWorkTabInfos();
         void SortTabInfos();
-        quint16 AddWorkTab(WorkTab *tab, QString label);
+        void AddWorkTab(WorkTab *tab, QString label);
 
-        WorkTab* getWorkTab(int id)
+        WorkTab* getWorkTab(quint32 id)
         {
             WorkTabMap::iterator itr = m_workTabs.find(id);
             if(itr != m_workTabs.end())
-                return itr->second;
+                return *itr;
             return NULL;
         }
 
-        void removeTab(quint16 id)
+        void removeTab(quint32 id)
         {
             WorkTabMap::iterator itr = m_workTabs.find(id);
             if(itr != m_workTabs.end())
-                removeTab(itr->second);
+                removeTab(*itr);
         }
 
         void removeTab(WorkTab *tab);
 
-        TabView *getWi() { return tabWidget; }
+        TabView *getWi() { return tabView; }
         TabView *CreateWidget(QWidget *parent);
 
         quint32 generateNewWidgetId()
@@ -87,13 +87,16 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
     public slots:
         void NewTabDialog();
 
+    private slots:
+        void OpenHomeTab(quint32 id);
+
     private:
         InfoList m_workTabInfos;
         WorkTabMap m_workTabs;
 
         quint32 tabWidgetCounter;
         quint32 tabIdCounter;
-        TabView *tabWidget;
+        TabView *tabView;
         HomeTab *hometab;
 };
 

@@ -27,6 +27,7 @@
 #include <QStyle>
 #include <QPushButton>
 
+#include "WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
 
 TabWidget::TabWidget(quint32 id, QWidget *parent) :
@@ -34,13 +35,106 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
 {
     m_id = id;
 
-    setTabBar(new TabBar(this));
+    m_tab_bar = new TabBar(this);
+    setTabBar(m_tab_bar);
     setMovable(true);
 
     QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", this);
-    connect(newTabBtn, SIGNAL(clicked()), SIGNAL(newTab()));
-
     setCornerWidget(newTabBtn);
+
+    connect(this,      SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
+    connect(m_tab_bar, SIGNAL(tabMoved(int,int)),      SLOT(tabMoved(int,int)));
+    connect(newTabBtn, SIGNAL(clicked()),              SIGNAL(newTab()));
+    connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
+}
+
+int TabWidget::addTab(QWidget *widget, const QString &name, quint32 tabId)
+{
+    int idx = QTabWidget::addTab(widget, name);
+
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
+    m_tab_ids.insert(itr, tabId);
+
+    setCurrentIndex(idx);
+
+    if(count() >= 2)
+        m_tab_bar->enableSplit(true);
+
+    setTabsClosable(true);
+    return idx;
+}
+
+void TabWidget::checkEmpty()
+{
+    if(count() < 2)
+        m_tab_bar->enableSplit(false);
+
+    if(count() != 0)
+        return;
+
+    if(m_id == 0) // check if we are the first tabWidget
+    {
+        emit openHomeTab(m_id);
+        setTabsClosable(false);
+    }
+    else
+        emit removeWidget(m_id);
+}
+
+void TabWidget::closeTab(int index)
+{
+    if(index < 0 || m_tab_ids.size() <= (uint)index)
+    {
+        Q_ASSERT(false);
+        return;
+    }
+
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
+
+    removeTab(index);
+    sWorkTabMgr.removeTab(*itr);
+    m_tab_ids.erase(itr);
+
+    checkEmpty();
+}
+
+void TabWidget::tabMoved(int from, int to)
+{
+    if(from < 0 || m_tab_ids.size() <= (uint)from)
+    {
+        Q_ASSERT(false);
+        return;
+    }
+
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + from;
+    quint32 id = *itr;
+
+    m_tab_ids.erase(itr);
+
+    itr = m_tab_ids.begin() + to;
+    m_tab_ids.insert(itr, id);
+}
+
+void TabWidget::pullTab(int index, TabWidget *origin)
+{
+    QString name = origin->tabText(index);
+
+    WorkTab *tab = (WorkTab*)origin->unregisterTab(index);
+    addTab(tab, name, tab->getId());
+}
+
+QWidget *TabWidget::unregisterTab(int index)
+{
+    QWidget *tab = widget(index);
+
+    Q_ASSERT(tab);
+
+    removeTab(index);
+
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
+    m_tab_ids.erase(itr);
+
+    return tab;
 }
 
 void TabWidget::mousePressEvent(QMouseEvent *event)
@@ -60,13 +154,34 @@ bool TabWidget::checkEvent(QMouseEvent *event)
     if(event->pos().y() > tabBar()->height())
         return false;
 
+    emit changeActiveWidget(this);
     emit newTab();
     return true;
+}
+
+void TabWidget::newTabBtn()
+{
+    emit changeActiveWidget(this);
+    emit newTab();
 }
 
 TabBar::TabBar(QWidget *parent) :
     QTabBar(parent)
 {
+    m_menu = new QMenu(this);
+
+    m_newTopBottom = m_menu->addAction(tr("Split view top/bottom"));
+    m_newLeftRight = m_menu->addAction(tr("Split view left/right"));
+    m_newTopBottom->setEnabled(false);
+    m_newLeftRight->setEnabled(false);
+
+    m_menu->addSeparator();
+
+    QAction *rename = m_menu->addAction(tr("Rename..."));
+
+    connect(rename,         SIGNAL(triggered()), SLOT(renameTab()));
+    connect(m_newTopBottom, SIGNAL(triggered()), SLOT(splitTop()));
+    connect(m_newLeftRight, SIGNAL(triggered()), SLOT(splitLeft()));
 }
 
 void TabBar::mousePressEvent(QMouseEvent *event)
@@ -87,20 +202,37 @@ void TabBar::mousePressEvent(QMouseEvent *event)
             if(tab == -1 || tabText(tab) == "Home")
                 break;
 
-            QMenu menu(this);
-            menu.addAction(tr("Rename..."));
-            QAction *act = menu.exec(event->globalPos());
-            if(act)
-            {
-                QString name = QInputDialog::getText(this, tr("Rename tab"), tr("New name:"),
-                                                     QLineEdit::Normal, tabText(tab));
-                if(!name.isEmpty())
-                    setTabText(tab, name);
-            }
+            m_cur_menu_tab = tab;
+
+            m_menu->exec(event->globalPos());
             break;
         }
         default:
             QTabBar::mousePressEvent(event);
             break;
     }
+}
+
+void TabBar::renameTab()
+{
+    QString name = QInputDialog::getText(this, tr("Rename tab"), tr("New name:"),
+                                         QLineEdit::Normal, tabText(m_cur_menu_tab));
+    if(!name.isEmpty())
+        setTabText(m_cur_menu_tab, name);
+}
+
+void TabBar::splitTop()
+{
+    emit split(true, m_cur_menu_tab);
+}
+
+void TabBar::splitLeft()
+{
+    emit split(false, m_cur_menu_tab);
+}
+
+void TabBar::enableSplit(bool enable)
+{
+    m_newTopBottom->setEnabled(enable);
+    m_newLeftRight->setEnabled(enable);
 }

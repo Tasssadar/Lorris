@@ -26,6 +26,10 @@
 
 #include <QTabWidget>
 #include <QTabBar>
+#include <QHash>
+
+class QMenu;
+class TabBar;
 
 class TabWidget : public QTabWidget
 {
@@ -33,31 +37,69 @@ class TabWidget : public QTabWidget
 
 Q_SIGNALS:
     void newTab();
+    void openHomeTab(quint32 id);
+    void removeWidget(quint32 id);
+    void split(bool horizontal, int index);
+    void changeActiveWidget(TabWidget *widget);
 
 public:
     explicit TabWidget(quint32 id, QWidget *parent = 0);
 
     quint32 getId() const { return m_id; }
 
+    int addTab(QWidget *widget, const QString& name)
+    {
+        return QTabWidget::addTab(widget, name);
+    }
+
+    int addTab(QWidget *widget, const QString& name, quint32 tabId);
+    void pullTab(int index, TabWidget *origin);
+    QWidget* unregisterTab(int index);
+
 protected:
     void mousePressEvent(QMouseEvent *ev);
     void mouseDoubleClickEvent(QMouseEvent *event);
 
+private slots:
+    void closeTab(int index);
+    void tabMoved(int from, int to);
+    void newTabBtn();
+
 private:
     bool checkEvent(QMouseEvent *event);
+    void checkEmpty();
 
     quint32 m_id;
+    std::vector<quint32> m_tab_ids;
+    TabBar *m_tab_bar;
 };
 
 class TabBar : public QTabBar
 {
     Q_OBJECT
 
+Q_SIGNALS:
+    void split(bool horizontal, int index);
+
 public:
     explicit TabBar(QWidget * parent = 0);
 
+    void enableSplit(bool enable);
+
 protected:
     void mousePressEvent(QMouseEvent * event);
+
+private slots:
+    void renameTab();
+    void splitTop();
+    void splitLeft();
+
+private:
+    int m_cur_menu_tab;
+
+    QMenu *m_menu;
+    QAction *m_newTopBottom;
+    QAction *m_newLeftRight;
 };
 
 #endif // MAINTABWIDGET_H

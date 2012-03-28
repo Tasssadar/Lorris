@@ -35,8 +35,6 @@ TabView::TabView(QWidget *parent) :
     m_layouts.insert(layout);
 
     m_active_widget = newTabWidget(layout);
-
-    connect(qApp,SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 }
 
 TabWidget *TabView::newTabWidget(QLayout *l)
@@ -46,20 +44,85 @@ TabWidget *TabView::newTabWidget(QLayout *l)
 
     l->addWidget(tabW);
 
-    connect(tabW, SIGNAL(newTab()), &sWorkTabMgr, SLOT(NewTabDialog()));
+    connect(tabW, SIGNAL(newTab()),                       SIGNAL(newTab()));
+    connect(tabW, SIGNAL(openHomeTab(quint32)),           SIGNAL(openHomeTab(quint32)));
+    connect(tabW, SIGNAL(split(bool,int)),                SLOT(split(bool,int)));
+    connect(tabW, SIGNAL(removeWidget(quint32)),          SLOT(removeWidget(quint32)));
+    connect(tabW, SIGNAL(changeActiveWidget(TabWidget*)), SLOT(changeActiveWidget(TabWidget*)));
 
     return tabW;
 }
 
-void TabView::focusChanged(QWidget */*prev*/, QWidget *now)
+void TabView::changeActiveWidget(TabWidget *widget)
 {
-    if(!now || !now->inherits("QTabWidget"))
-        return;
-
-    m_active_widget = (TabWidget*)now;
+    m_active_widget = widget;
 }
 
-void TabView::addTab(QWidget *widget, const QString &name)
+void TabView::removeWidget(quint32 id)
 {
-    m_active_widget->addTab(widget, name);
+    QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.find(id);
+    if(itr == m_tab_widgets.end())
+        return;
+
+    if(m_active_widget == *itr)
+        m_active_widget = m_tab_widgets[0];
+
+    delete *itr;
+    m_tab_widgets.erase(itr);
+}
+
+void TabView::split(bool horizontal, int index)
+{
+    Q_ASSERT(sender());
+
+    TabWidget *widget = (TabWidget*)sender();
+
+    QLayout *l = NULL;
+
+    for(std::set<QLayout*>::iterator itr = m_layouts.begin(); !l && itr != m_layouts.end(); ++itr)
+        if((*itr)->indexOf(widget) != -1)
+            l = *itr;
+
+    if(!l)
+        return;
+
+    if((horizontal && !l->inherits("QVBoxLayout")) || (!horizontal && !l->inherits("QHBoxLayout")))
+    {
+        if(l->count() == 1)
+        {
+            bool setAsMain = (layout() == l);
+
+            l->removeWidget(widget);
+            m_layouts.erase(l);
+            delete l;
+
+            if(horizontal) l = new QVBoxLayout();
+            else           l = new QHBoxLayout();
+
+            if(setAsMain)
+                setLayout(l);
+
+            m_layouts.insert(l);
+
+            l->addWidget(widget);
+        }
+        else
+        {
+            int pos = l->indexOf(widget);
+            l->removeWidget(widget);
+
+            QBoxLayout *newLayout = NULL;
+            if(horizontal) newLayout = new QVBoxLayout();
+            else           newLayout = new QHBoxLayout();
+
+            newLayout->addWidget(widget);
+            ((QBoxLayout*)l)->insertLayout(pos, newLayout);
+
+            m_layouts.insert(newLayout);
+            l = newLayout;
+        }
+    }
+
+    TabWidget *second = newTabWidget(l);
+    second->pullTab(index, widget);
 }
