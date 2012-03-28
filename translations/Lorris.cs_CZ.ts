@@ -2,54 +2,77 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="cs_CZ" sourcelanguage="en_US">
 <context>
+    <name>AnalyzerDataStorage</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="97"/>
+        <source>File has changed</source>
+        <translation>Soubor byl změněn</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="98"/>
+        <source>The file has been changed since last save.</source>
+        <translation>Soubor se od posledního uložení změnil.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="99"/>
+        <source>Ignore and save anyway?</source>
+        <translation>Chcete soubor přesto uložit?</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="236"/>
+        <source>Loading data file...</source>
+        <translation>Načítám datový soubor...</translation>
+    </message>
+</context>
+<context>
     <name>BarWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="64"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="63"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="65"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="64"/>
         <source>Rotation</source>
         <translation>Natočení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="69"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="68"/>
         <source>unsigned 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="70"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="69"/>
         <source>unsigned 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="72"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="71"/>
         <source>signed 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="73"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="72"/>
         <source>signed 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="73"/>
         <source>signed 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="105"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="104"/>
         <source>Vertical</source>
         <translation>Vertikální</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="106"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="105"/>
         <source>Horizontal</source>
         <translation>Horizontální</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="119"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="118"/>
         <source>Set range</source>
         <translation>Rozsah</translation>
     </message>
@@ -57,7 +80,7 @@
 <context>
     <name>BarWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="290"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="287"/>
         <source>Bar</source>
         <translation></translation>
     </message>
@@ -97,12 +120,12 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="481"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="526"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="482"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="527"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -194,12 +217,12 @@
         <translation>Změnit jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="296"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="339"/>
         <source>Set widget title</source>
         <translation>Nastavení jména widgetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="296"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="339"/>
         <source>Enter title:</source>
         <translation>Zadejne nové jméno:</translation>
     </message>
@@ -538,7 +561,7 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="37"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="202"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="214"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
@@ -579,6 +602,7 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="242"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="121"/>
         <source>Widgets</source>
         <translation>Widgety</translation>
     </message>
@@ -593,67 +617,77 @@
         <translation>Nový zdroj...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="101"/>
-        <source>Open data...</source>
-        <translation>Nahrát data...</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="102"/>
-        <source>Save data...</source>
-        <translation>Uložit data...</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="172"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="184"/>
         <source>Connecting...</source>
         <translation>Připojuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="182"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="192"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="207"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="194"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="204"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="219"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="193"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="205"/>
         <source>Can&apos;t open connection!</source>
         <translation>Nemůžu se připojit!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="255"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="384"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="506"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="526"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="267"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="396"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="523"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="543"/>
         <source> of </source>
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="481"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="498"/>
         <source>Clear everything?</source>
         <translation>Vymazat vše?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="482"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="499"/>
         <source>Do you really want to clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="104"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="105"/>
         <source>Clear received data</source>
         <translation>Vymazat data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="105"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="101"/>
+        <source>Open...</source>
+        <translation>Otevřít...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="102"/>
+        <source>Save as...</source>
+        <translation>Uložit jako...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="103"/>
+        <source>Save</source>
+        <translation>Uložit</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="106"/>
         <source>Clear everything</source>
         <translation>Vymazat vše</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="483"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="123"/>
+        <source>Show widget&apos;s title bar</source>
+        <translation>Ukázat titulek widgetů</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="500"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="484"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="501"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -1620,7 +1654,7 @@
         <translation>Exportovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="81"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="118"/>
         <source>Export Data</source>
         <translation>Export dat</translation>
     </message>
@@ -1632,41 +1666,42 @@
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="91"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="87"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="128"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="64"/>
         <source>Can&apos;t create/open file!</source>
         <translation>Nemůžu vytvořit/otevřít soubor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="80"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="117"/>
         <source>Compressed Lorris data file (*.cldta);;Lorris data file (*.ldta)</source>
         <translation>Komprimovaný datový soubor Lorris (*.cldta);;Datový soubor Lorris (*.ldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="171"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="539"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="220"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="556"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="104"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="172"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="221"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="105"/>
         <source>Import Data</source>
         <translation>Import dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="192"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="263"/>
         <source>Warning!</source>
         <translation>Pozor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="193"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="264"/>
         <source>You are opening file with old structure format, some things may be messed up!</source>
         <translation>Otevíráte soubor staré verze, něco může být rozbité!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="200"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="273"/>
         <source>Data file has wrong magic!</source>
         <translation>Data mají špatné magic číslo!</translation>
     </message>
@@ -1676,7 +1711,7 @@
         <translation>Importovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="179"/>
+        <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="231"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="105"/>
         <source>Can&apos;t open file!</source>
         <translation>Nemůžu otevřít soubor!</translation>
@@ -1928,7 +1963,7 @@
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="540"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="557"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
@@ -2021,7 +2056,7 @@ function onKeyPress(key) {
 }</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="180"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="184"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
@@ -2034,7 +2069,7 @@ function onKeyPress(key) {
         <translation>Script</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="59"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="57"/>
         <source>Set source...</source>
         <translation>Zdrojový kód scriptu...</translation>
     </message>
@@ -2042,7 +2077,7 @@ function onKeyPress(key) {
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="194"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="192"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
