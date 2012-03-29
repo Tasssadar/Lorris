@@ -76,6 +76,7 @@ private slots:
     void tabMoved(int from, int to);
     void newTabBtn();
     void currentIndexChanged(int idx);
+    void barChangeMenu(int idx);
 
 private:
     bool checkEvent(QMouseEvent *event);
@@ -92,6 +93,7 @@ class TabBar : public QTabBar
 
 Q_SIGNALS:
     void split(bool horizontal, int index);
+    void changeMenu(int idx);
 
 public:
     explicit TabBar(QWidget * parent = 0);

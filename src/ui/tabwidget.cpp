@@ -43,10 +43,11 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     setCornerWidget(newTabBtn);
 
     connect(this,      SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
+    connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
     connect(m_tab_bar, SIGNAL(tabMoved(int,int)),      SLOT(tabMoved(int,int)));
+    connect(m_tab_bar, SIGNAL(changeMenu(int)),        SLOT(barChangeMenu(int)));
     connect(newTabBtn, SIGNAL(clicked()),              SIGNAL(newTab()));
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
-    connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
@@ -180,6 +181,12 @@ void TabWidget::newTabBtn()
     emit newTab();
 }
 
+void TabWidget::barChangeMenu(int idx)
+{
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
+    emit changeMenu(*itr);
+}
+
 TabBar::TabBar(QWidget *parent) :
     QTabBar(parent)
 {
@@ -203,6 +210,15 @@ void TabBar::mousePressEvent(QMouseEvent *event)
 {
     switch(event->button())
     {
+        case Qt::LeftButton:
+        {
+            int tab = tabAt(event->pos());
+            if(tab != -1 && tab == currentIndex())
+                emit changeMenu(tab);
+
+            QTabBar::mousePressEvent(event);
+            break;
+        }
         case Qt::MidButton:
         {
             int tab = tabAt(event->pos());
