@@ -39,12 +39,12 @@ TabView::TabView(QWidget *parent) :
     m_active_widget = newTabWidget(layout);
 }
 
-TabWidget *TabView::newTabWidget(QLayout *l)
+TabWidget *TabView::newTabWidget(QBoxLayout *l)
 {
     TabWidget *tabW = new TabWidget(sWorkTabMgr.generateNewWidgetId(), this);
     m_tab_widgets.insert(tabW->getId(), tabW);
 
-    ((QBoxLayout*)l)->addWidget(tabW, 50);
+    l->addWidget(tabW, 50);
 
     connect(tabW, SIGNAL(newTab()),                       SIGNAL(newTab()));
     connect(tabW, SIGNAL(openHomeTab(quint32)),           SIGNAL(openHomeTab(quint32)));
@@ -53,7 +53,7 @@ TabWidget *TabView::newTabWidget(QLayout *l)
     connect(tabW, SIGNAL(removeWidget(quint32)),          SLOT(removeWidget(quint32)));
     connect(tabW, SIGNAL(changeActiveWidget(TabWidget*)), SLOT(changeActiveWidget(TabWidget*)));
 
-    updateResizeLines(layout());
+    updateResizeLines((QBoxLayout*)layout());
     return tabW;
 }
 
@@ -74,11 +74,11 @@ void TabView::removeWidget(quint32 id)
     delete *itr;
     m_tab_widgets.erase(itr);
 
-    updateResizeLines(layout());
+    updateResizeLines((QBoxLayout*)layout());
 
-    for(std::set<QLayout*>::iterator itr = m_layouts.begin(); itr != m_layouts.end();)
+    for(std::set<QBoxLayout*>::iterator itr = m_layouts.begin(); itr != m_layouts.end();)
     {
-        QLayout *l = *itr;
+        QBoxLayout *l = *itr;
         if(l->count() == 0)
         {
             m_layouts.erase(itr);
@@ -96,9 +96,9 @@ void TabView::split(bool horizontal, int index)
 
     TabWidget *widget = (TabWidget*)sender();
 
-    QLayout *l = NULL;
+    QBoxLayout *l = NULL;
 
-    for(std::set<QLayout*>::iterator itr = m_layouts.begin(); !l && itr != m_layouts.end(); ++itr)
+    for(std::set<QBoxLayout*>::iterator itr = m_layouts.begin(); !l && itr != m_layouts.end(); ++itr)
         if((*itr)->indexOf(widget) != -1)
             l = *itr;
 
@@ -123,7 +123,7 @@ void TabView::split(bool horizontal, int index)
 
             m_layouts.insert(l);
 
-            ((QBoxLayout*)l)->addWidget(widget, 50);
+            l->addWidget(widget, 50);
         }
         else
         {
@@ -135,7 +135,7 @@ void TabView::split(bool horizontal, int index)
             else           newLayout = new QHBoxLayout();
 
             newLayout->addWidget(widget, 50);
-            ((QBoxLayout*)l)->insertLayout(pos, newLayout, 50);
+            l->insertLayout(pos, newLayout, 50);
 
             m_layouts.insert(newLayout);
             l = newLayout;
@@ -145,10 +145,10 @@ void TabView::split(bool horizontal, int index)
     TabWidget *second = newTabWidget(l);
     second->pullTab(index, widget);
 
-    updateResizeLines(layout());
+    updateResizeLines((QBoxLayout*)layout());
 }
 
-void TabView::updateResizeLines(QLayout *l)
+void TabView::updateResizeLines(QBoxLayout *l)
 {
     QLayoutItem *prevItem = NULL;
     QLayoutItem *curItem = NULL;
@@ -157,7 +157,7 @@ void TabView::updateResizeLines(QLayout *l)
         curItem = l->itemAt(i);
 
         if(curItem->layout())
-            updateResizeLines(curItem->layout());
+            updateResizeLines((QBoxLayout*)curItem->layout());
 
         if(isResizeLine(curItem) && (isResizeLine(prevItem) || i+1 >= l->count()))
         {
@@ -170,7 +170,7 @@ void TabView::updateResizeLines(QLayout *l)
 
         if(prevItem && !isResizeLine(curItem) && !isResizeLine(prevItem))
         {
-            newResizeLine((QBoxLayout*)l, i);
+            newResizeLine(l, i);
             goto restart_loop;
         }
 
@@ -199,9 +199,9 @@ bool TabView::isResizeLine(QLayoutItem *item)
     return (item && item->widget() && item->widget()->inherits("ResizeLine"));
 }
 
-QLayout *TabView::getLayoutForLine(ResizeLine *line)
+QBoxLayout *TabView::getLayoutForLine(ResizeLine *line)
 {
-    QHash<ResizeLine*, QLayout*>::iterator itr = m_resize_lines.find(line);
+    QHash<ResizeLine*, QBoxLayout*>::iterator itr = m_resize_lines.find(line);
     if(itr != m_resize_lines.end())
         return *itr;
     return NULL;
@@ -226,7 +226,7 @@ ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)
 
 void ResizeLine::updateStretch()
 {
-    QLayout *l= m_tab_view->getLayoutForLine(this);
+    QBoxLayout *l= m_tab_view->getLayoutForLine(this);
     Q_ASSERT(l);
 
     if(l)
@@ -237,7 +237,7 @@ void ResizeLine::updateStretch()
             Q_ASSERT(false);
             return;
         }
-        m_cur_stretch = ((QBoxLayout*)l)->stretch(index-1);
+        m_cur_stretch = l->stretch(index-1);
     }
 }
 
@@ -317,8 +317,8 @@ void ResizeLine::mouseMoveEvent(QMouseEvent *event)
     if(m_cur_stretch > 100)    m_cur_stretch = 100;
     else if(m_cur_stretch < 0) m_cur_stretch = 0;
 
-    ((QBoxLayout*)m_resize_layout)->setStretch(m_resize_index-1, (int)m_cur_stretch);
-    ((QBoxLayout*)m_resize_layout)->setStretch(m_resize_index+1, 100 - (int)m_cur_stretch);
+    m_resize_layout->setStretch(m_resize_index-1, (int)m_cur_stretch);
+    m_resize_layout->setStretch(m_resize_index+1, 100 - (int)m_cur_stretch);
 
     m_mouse_pos = event->globalPos();
 }

@@ -59,7 +59,7 @@ public:
         return NULL;
     }
 
-    QLayout *getLayoutForLine(ResizeLine *line);
+    QBoxLayout *getLayoutForLine(ResizeLine *line);
 
 private slots:
     void split(bool horizontal, int index);
@@ -67,15 +67,15 @@ private slots:
     void changeActiveWidget(TabWidget *widget);
 
 private:
-    TabWidget *newTabWidget(QLayout *l);
-    void updateSize(QLayout *l);
+    TabWidget *newTabWidget(QBoxLayout *l);
+    void updateSize(QBoxLayout *l);
     inline bool isResizeLine(QLayoutItem *item);
-    void updateResizeLines(QLayout *l);
+    void updateResizeLines(QBoxLayout *l);
     inline void newResizeLine(QBoxLayout *l, int idx);
 
     QHash<quint32, TabWidget*> m_tab_widgets;
-    std::set<QLayout*> m_layouts;
-    QHash<ResizeLine*, QLayout*> m_resize_lines;
+    QHash<ResizeLine*, QBoxLayout*> m_resize_lines;
+    std::set<QBoxLayout*> m_layouts;
 
     TabWidget *m_active_widget;
 };
@@ -97,7 +97,7 @@ private:
     bool m_vertical;
     float m_cur_stretch;
     TabView *m_tab_view;
-    QLayout *m_resize_layout;
+    QBoxLayout *m_resize_layout;
     QPoint m_resize_pos[2];
     QPoint m_mouse_pos;
     int m_resize_index;
