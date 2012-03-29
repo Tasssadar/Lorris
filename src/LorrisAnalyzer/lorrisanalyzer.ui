@@ -169,7 +169,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="bottomHLayout" stretch="0,0,4,0,0">
+    <layout class="QHBoxLayout" name="bottomHLayout" stretch="0,0,1,0,0">
      <item>
       <widget class="Playback" name="playFrame">
        <property name="minimumSize">
@@ -258,7 +258,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>58</width>
+            <width>70</width>
             <height>263</height>
            </rect>
           </property>

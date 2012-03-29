@@ -39,10 +39,8 @@ public:
 
 private slots:
     void NewTab();
-    void CloseTab(int index = -1);
-    void QuitButton();
     void About();
-    void tabChanged(int index);
+    void changeMenu(quint32 id);
 
     void langChanged(int idx);
 

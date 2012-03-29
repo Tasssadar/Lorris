@@ -38,8 +38,8 @@ class WorkTab : public QWidget
 
         virtual ~WorkTab();
 
-        void setId(quint16 id) { m_id = id; }
-        quint16 getId() { return m_id; }
+        void setId(quint32 id) { m_id = id; }
+        quint32 getId() { return m_id; }
 
         virtual void setConnection(Connection *con);
 
@@ -59,7 +59,7 @@ class WorkTab : public QWidget
         void addTopMenu(QMenu *menu);
 
         Connection *m_con;
-        quint16 m_id;
+        quint32 m_id;
 
     private:
         std::vector<QMenu*> m_menus;

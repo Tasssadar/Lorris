@@ -87,13 +87,14 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/playback.cpp \
     src/LorrisAnalyzer/DataWidgets/inputwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.cpp \
-    src/ui/maintabwidget.cpp \
     src/shared/rotatebutton.cpp \
     src/joystick/joymgr.cpp \
     src/joystick/joystick.cpp \
     src/LorrisAnalyzer/DataWidgets/terminalwidget.cpp \
     src/joystick/joythread.cpp \
-    src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp
+    src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp \
+    src/ui/tabview.cpp \
+    src/ui/tabwidget.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -165,13 +166,14 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/playback.h \
     src/LorrisAnalyzer/DataWidgets/inputwidget.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.h \
-    src/ui/maintabwidget.h \
     src/shared/rotatebutton.h \
     src/joystick/joymgr.h \
     src/joystick/joystick.h \
     src/LorrisAnalyzer/DataWidgets/terminalwidget.h \
     src/joystick/joythread.h \
-    src/LorrisAnalyzer/DataWidgets/buttonwidget.h
+    src/LorrisAnalyzer/DataWidgets/buttonwidget.h \
+    src/ui/tabview.h \
+    src/ui/tabwidget.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
