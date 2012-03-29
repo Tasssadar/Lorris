@@ -43,6 +43,8 @@ Q_SIGNALS:
     void appendTerm(const QByteArray& text);
     void SendData(const QByteArray& data);
 
+    void stopUsingJoy(QObject *object);
+
 public:
     explicit ScriptEnv(AnalyzerDataArea *area , quint32 w_id, QObject *parent = 0);
     ~ScriptEnv();
@@ -68,20 +70,34 @@ public:
     int getWidth() { return m_width; }
     int getHeight() { return m_height; }
 
+    QScriptValue newTimer();
+
+    void onWidgetAdd(DataWidget *w);
+    void onWidgetRemove(DataWidget *w);
+    void callEventHandler(const QString& eventId);
+
 public slots:
     void keyPressed(const QByteArray& key);
 
 private slots:
     void widgetDestroyed(QObject *widget);
+    void onTitleChange(const QString& newTitle);
 
 private:
     void prepareNewContext();
+    QString sanitizeWidgetName(QString const & name);
 
     static QScriptValue __clearTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __appendTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __sendData(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getWidth(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getHeight(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __throwException(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getJoystick(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getJoystickNames(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __newTimer(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __addComboBoxItems(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __moveWidget(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);
@@ -96,6 +112,8 @@ private:
     QScriptValue  m_global;
     QScriptValue  m_on_data;
     QScriptValue  m_on_key;
+    QScriptValue  m_on_widget_add;
+    QScriptValue  m_on_widget_remove;
 
     qint32 m_widget_id;
     int m_x;
@@ -104,6 +122,7 @@ private:
     int m_height;
 
     QHash<quint32, DataWidget*> m_widgets;
+    std::list<QTimer*> m_timers;
 };
 
 #endif // SCRIPTENV_H

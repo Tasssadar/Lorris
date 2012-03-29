@@ -284,8 +284,11 @@ void ScrollDataLayout::SetData(const QByteArray& data)
             switch(m_header->len_fmt)
             {
                 case 0:
-                    lenChanged(m_header->length + (int)data[pos_h-1]);
+                {
+                    int len = m_header->length + (int)data[pos_h-1] + m_header->len_offset;
+                    lenChanged(len >= 0 ? len : 0);
                     break;
+                }
                 //TODO: implement
                 case 1:
                 case 2:
@@ -309,6 +312,7 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
                                LabelLayout *l, QWidget *parent, Qt::WindowFlags f) :
     QWidget(parent, f)
 {
+    setMinimumHeight(50);
     setFixedWidth(50);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 

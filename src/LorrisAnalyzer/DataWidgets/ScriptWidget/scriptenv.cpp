@@ -26,6 +26,8 @@
 #include <QScriptValueList>
 #include <QScriptEngineAgent>
 #include <QDebug>
+#include <QTimer>
+#include <QComboBox>
 
 #include <analyzerdataarea.h>
 #include "DataWidgets/GraphWidget/graphcurve.h"
@@ -33,6 +35,7 @@
 #include "DataWidgets/inputwidget.h"
 #include "scriptenv.h"
 #include "scriptagent.h"
+#include "joystick/joymgr.h"
 
 QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &in)
 { return engine->newQObject(in); }
@@ -67,6 +70,11 @@ ScriptEnv::~ScriptEnv()
 {
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
+
+    for(std::list<QTimer*>::iterator itr = m_timers.begin(); itr != m_timers.end(); ++itr)
+        delete *itr;
+
+    emit stopUsingJoy(this);
 }
 
 void ScriptEnv::widgetDestroyed(QObject *widget)
@@ -87,6 +95,12 @@ void ScriptEnv::prepareNewContext()
     QScriptValue sendData = newFunction(&__sendData);
     QScriptValue getW = newFunction(&__getWidth);
     QScriptValue getH = newFunction(&__getHeight);
+    QScriptValue throwEx = newFunction(&__throwException);
+    QScriptValue getJoy = newFunction(&__getJoystick);
+    QScriptValue getJoyName = newFunction(&__getJoystickNames);
+    QScriptValue newTimer = newFunction(&__newTimer);
+    QScriptValue addComboItems = newFunction(&__addComboBoxItems);
+    QScriptValue moveW = newFunction(&__moveWidget);
 
     QScriptValue numberW = newFunction(&__newNumberWidget);
     QScriptValue barW = newFunction(&__newBarWidget);
@@ -100,6 +114,12 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("sendData", sendData);
     m_global.setProperty("getWidth", getW);
     m_global.setProperty("getHeight", getH);
+    m_global.setProperty("throwException", throwEx);
+    m_global.setProperty("getJoystick", getJoy);
+    m_global.setProperty("getJoystickNames", getJoyName);
+    m_global.setProperty("newTimer", newTimer);
+    m_global.setProperty("addComboBoxItems", addComboItems);
+    m_global.setProperty("moveWidget", moveW);
 
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
@@ -115,8 +135,38 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("WIDGET_GRAPH",  QScriptValue(this, WIDGET_GRAPH));
     m_global.setProperty("WIDGET_INPUT",  QScriptValue(this, WIDGET_INPUT));
 
+    m_global.setProperty("NUM_UINT8",  QScriptValue(this, NUM_UINT8));
+    m_global.setProperty("NUM_UINT16", QScriptValue(this, NUM_UINT16));
+    m_global.setProperty("NUM_UINT32", QScriptValue(this, NUM_UINT32));
+    m_global.setProperty("NUM_UINT64", QScriptValue(this, NUM_UINT64));
+    m_global.setProperty("NUM_INT8",   QScriptValue(this, NUM_INT8));
+    m_global.setProperty("NUM_INT16",  QScriptValue(this, NUM_INT16));
+    m_global.setProperty("NUM_INT32",  QScriptValue(this, NUM_INT32));
+    m_global.setProperty("NUM_INT64",  QScriptValue(this, NUM_INT64));
+    m_global.setProperty("NUM_FLOAT",  QScriptValue(this, NUM_FLOAT));
+    m_global.setProperty("NUM_DOUBLE", QScriptValue(this, NUM_DOUBLE));
+
+    // objects
+    m_global.setProperty("script", newQObject(parent()));
+    m_global.setProperty("area", newQObject(m_area));
+
+    const AnalyzerDataArea::w_map& widgets = m_area->getWidgets();
+    for(AnalyzerDataArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
+    {
+        QString name = sanitizeWidgetName((*itr)->getTitle());
+        if(!name.isEmpty())
+            m_global.setProperty(name, newQObject(*itr));
+    }
+
+    // remove script created widgets and timer from previous script
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
+
+    for(std::list<QTimer*>::iterator itr = m_timers.begin(); itr != m_timers.end(); ++itr)
+        delete *itr;
+    m_timers.clear();
+
+    emit stopUsingJoy(this);
 
     qScriptRegisterMetaType(this, GraphCurveToScriptValue, GraphCurveFromScriptValue);
 }
@@ -137,6 +187,8 @@ void ScriptEnv::setSource(const QString &source)
 
     m_on_data = m_global.property("onDataChanged");
     m_on_key = m_global.property("onKeyPress");
+    m_on_widget_add = m_global.property("onWidgetAdd");
+    m_on_widget_remove = m_global.property("onWidgetRemove");
 }
 
 QString ScriptEnv::dataChanged(analyzer_data *data, quint32 index)
@@ -217,6 +269,78 @@ DataWidget *ScriptEnv::addWidget(quint8 type, QScriptContext *context, quint8 re
     return w;
 }
 
+QScriptValue ScriptEnv::newTimer()
+{
+    QTimer *t = new QTimer();
+    m_timers.push_back(t);
+    return newQObject(t);
+}
+
+QString ScriptEnv::sanitizeWidgetName(QString const & name)
+{
+    if (name.isEmpty())
+        return QString();
+
+    if (!name[0].isLetter() && name[0] != '_')
+       return QString();
+
+    for (int i = 1; i < name.size(); ++i)
+    {
+        if (!name[i].isLetterOrNumber() && name[i] != '_')
+            return QString();
+    }
+
+    return name;
+}
+
+void ScriptEnv::onWidgetAdd(DataWidget *w)
+{
+    QString name = sanitizeWidgetName(w->getTitle());
+    if(!name.isEmpty())
+        m_global.setProperty(name, newQObject(w));
+
+    connect(w, SIGNAL(titleChanged(QString)), SLOT(onTitleChange(QString)));
+
+    QScriptValueList args;
+    args << newQObject(w) << name;
+    m_on_widget_add.call(QScriptValue(), args);
+}
+
+void ScriptEnv::onWidgetRemove(DataWidget *w)
+{
+    QString name = sanitizeWidgetName(w->getTitle());
+    if(!name.isEmpty())
+        m_global.setProperty(name, undefinedValue());
+    disconnect(w, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChange(QString)));
+
+    QScriptValueList args;
+    args << newQObject(w) << name;
+    m_on_widget_remove.call(QScriptValue(), args);
+}
+
+void ScriptEnv::onTitleChange(const QString& newTitle)
+{
+    DataWidget *w = (DataWidget*)sender();
+    QString name = sanitizeWidgetName(w->getTitle());
+
+    if(!name.isEmpty())
+        m_global.setProperty(name, undefinedValue());
+
+    name = sanitizeWidgetName(newTitle);
+    if(!name.isEmpty())
+        m_global.setProperty(name, newQObject(w));
+}
+
+void ScriptEnv::callEventHandler(const QString& eventId)
+{
+    QScriptValue handler = m_global.property(eventId);
+
+    if(!handler.isFunction())
+        return;
+
+    handler.call();
+}
+
 QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
 {
     emit ((ScriptEnv*)engine)->clearTerm();
@@ -248,7 +372,8 @@ QScriptValue ScriptEnv::__sendData(QScriptContext *context, QScriptEngine *engin
             sendData.push_back(itr.value().toUInt16());
     }
 
-    sendData.chop(1); // last num is array len, wtf
+    if(sendData.size() > 1)
+        sendData.chop(1); // last num is array len, wtf
 
     emit ((ScriptEnv*)engine)->SendData(sendData);
     return QScriptValue();
@@ -308,4 +433,84 @@ QScriptValue ScriptEnv::__getWidth(QScriptContext */*context*/, QScriptEngine *e
 QScriptValue ScriptEnv::__getHeight(QScriptContext */*context*/, QScriptEngine *engine)
 {
     return ((ScriptEnv*)engine)->getHeight();
+}
+
+QScriptValue ScriptEnv::__throwException(QScriptContext *context, QScriptEngine */*engine*/)
+{
+    if(context->argumentCount() != 1)
+        return QScriptValue();
+
+    Utils::ThrowException(context->argument(0).toString());
+
+    return QScriptValue();
+}
+
+QScriptValue ScriptEnv::__getJoystick(QScriptContext *context, QScriptEngine *engine)
+{
+    if(context->argumentCount() != 1)
+        return QScriptValue();
+
+    Joystick *joy = sJoyMgr.getJoystick(context->argument(0).toInt32());
+    if(!joy)
+        return QScriptValue();
+
+    joy->startUsing(engine);
+
+    connect((ScriptEnv*)engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
+    return engine->newQObject(joy);
+}
+
+QScriptValue ScriptEnv::__newTimer(QScriptContext */*context*/, QScriptEngine *engine)
+{
+    return ((ScriptEnv*)engine)->newTimer();
+}
+
+QScriptValue ScriptEnv::__getJoystickNames(QScriptContext */*context*/, QScriptEngine *engine)
+{
+    sJoyMgr.updateJoystickNames();
+
+    const QHash<int, QString>& names = sJoyMgr.getNames();
+    QScriptValue val = engine->newArray(names.size());
+
+    for(int i = 0; i < names.size(); ++i)
+        val.setProperty(i, names[i]);
+
+    return val;
+}
+
+QScriptValue ScriptEnv::__addComboBoxItems(QScriptContext *context, QScriptEngine */*engine*/)
+{
+    if(context->argumentCount() != 2)
+        return QScriptValue();
+
+    if(!context->argument(0).isQObject() || !context->argument(1).isArray())
+        return QScriptValue();
+
+    if(!context->argument(0).toQObject()->inherits("QComboBox"))
+        return QScriptValue();
+
+    QComboBox *box = (QComboBox*)context->argument(0).toQObject();
+
+    QScriptValueIterator itr(context->argument(1));
+    while(itr.hasNext())
+    {
+        itr.next();
+        if(itr.value().isString())
+            box->addItem(itr.value().toString());
+    }
+    return QScriptValue();
+}
+
+QScriptValue ScriptEnv::__moveWidget(QScriptContext *context, QScriptEngine */*engine*/)
+{
+    if(context->argumentCount() != 3)
+        return QScriptValue();
+
+    if(!context->argument(0).isQObject() || !context->argument(0).toQObject()->inherits("QWidget"))
+        return QScriptValue();
+
+    QWidget *w = (QWidget*)context->argument(0).toQObject();
+    w->move(context->argument(1).toInt32(), context->argument(2).toInt32());
+
+    return QScriptValue();
 }

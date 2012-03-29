@@ -26,6 +26,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="startstopButton">
+         <property name="text">
+          <string>Stop</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
           <string>Chip ID:</string>
@@ -160,6 +167,9 @@
             <property name="editable">
              <bool>true</bool>
             </property>
+            <property name="currentIndex">
+             <number>3</number>
+            </property>
             <item>
              <property name="text">
               <string>250000</string>
@@ -209,6 +219,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>82</width>
+           <height>70</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
@@ -247,6 +263,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>82</width>
+           <height>70</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
@@ -281,6 +303,12 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>71</width>
+           <height>70</height>
+          </size>
          </property>
          <property name="text">
           <string>Erase</string>

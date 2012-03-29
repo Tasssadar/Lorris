@@ -33,6 +33,8 @@
 #include <QResizeEvent>
 #include <QClipboard>
 #include <QMenu>
+#include <QSignalMapper>
+#include <QStringBuilder>
 
 #include "common.h"
 #include "terminal.h"
@@ -55,7 +57,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     m_char_height = fontMetrics().height();
 
     m_paused = false;
-    m_fmt = FMT_TEXT;
+    m_fmt = FMT_MAX+1;
     m_input = INPUT_SEND_KEYPRESS;
     m_hex_pos = 0;
 
@@ -69,8 +71,28 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     QAction *paste = m_context_menu->addAction(tr("Paste"));
     paste->setShortcut(QKeySequence("Ctrl+V"));
 
+    m_context_menu->addSeparator();
+
+    QMenu *format = m_context_menu->addMenu(tr("Format"));
+    QSignalMapper *fmtMap = new QSignalMapper(this);
+    for(quint8 i = 0; i < FMT_MAX; ++i)
+    {
+        static const QString fmtText[] = { tr("Text"), tr("Hex dump") };
+
+        m_fmt_act[i] = format->addAction(fmtText[i]);
+        m_fmt_act[i]->setCheckable(true);
+        fmtMap->setMapping(m_fmt_act[i], i);
+        connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
+    }
+
+    QAction *clear = m_context_menu->addAction(tr("Clear"));
+
     connect(copy,  SIGNAL(triggered()), SLOT(copyToClipboard()));
     connect(paste, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
+    connect(clear, SIGNAL(triggered()), SLOT(clear()));
+    connect(fmtMap,SIGNAL(mapped(int)), SLOT(setFmt(int)));
+
+    setFmt(FMT_TEXT);
 }
 
 Terminal::~Terminal()
@@ -432,10 +454,12 @@ void Terminal::paintEvent(QPaintEvent *)
     int maxLines = i + height + 1;
     for(y = 0; (int)i < maxLines && i < lines().size(); ++i, y += m_char_height)
     {
-        QString l = lines()[i];
-        l.remove(0, startX);
-
-        painter.drawText(0, y, viewport()->width(), m_char_height, Qt::AlignLeft, l);
+        QString& l = lines()[i];
+        int len = l.length() - startX;
+        if(len <= 0)
+            continue;
+        painter.drawText(0, y, viewport()->width(), m_char_height, Qt::AlignLeft,
+                         QString::fromRawData(l.data()+startX, len));
     }
 }
 
@@ -557,10 +581,13 @@ void Terminal::focusOutEvent(QFocusEvent *)
     viewport()->update();
 }
 
-void Terminal::setFmt(quint8 fmt)
+void Terminal::setFmt(int fmt)
 {
     if(fmt == m_fmt)
         return;
+
+    for(quint8 i = 0; i < FMT_MAX; ++i)
+        m_fmt_act[i]->setChecked(i == fmt);
 
     m_fmt = fmt;
     m_lines.clear();

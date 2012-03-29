@@ -179,6 +179,34 @@ void Shupito::sendPacket(const QByteArray& packet)
     m_con->SendData(packet);
 }
 
+void Shupito::sendTunnelData(const QByteArray &data)
+{
+    if(!m_tunnel_pipe)
+        return;
+
+    int sent = 0;
+    const int data_len = data.length();
+
+    ShupitoPacket packet;
+    quint8 cmd = getTunnelCmd();
+    char pipe = getTunnelId();
+
+    while(sent != data_len)
+    {
+        int chunk = data_len - sent;
+        if(chunk > 14)
+            chunk = 14;
+
+        packet.set(false, cmd, chunk+1);
+        packet.getDataRef().append(pipe);
+        packet.getDataRef().append(data.mid(sent, chunk));
+
+        sendPacket(packet);
+
+        sent += chunk;
+    }
+}
+
 void Shupito::handlePacket(ShupitoPacket& p)
 {
     switch(m_wait_type)
@@ -203,11 +231,11 @@ void Shupito::handlePacket(ShupitoPacket& p)
             }
             else
             {
-                m_wait_max_packets = 0;
                 responseTimer->start(1000);
                 m_wait_data.append(p.getData());
                 if(p.getLen() < 15)
                 {
+                    m_wait_max_packets = 0;
                     m_wait_type = WAIT_NONE;
                     emit packetReveived();
                 }

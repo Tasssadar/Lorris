@@ -42,6 +42,8 @@ enum WidgetTypes
     WIDGET_GRAPH,
     WIDGET_SCRIPT,
     WIDGET_INPUT,
+    WIDGET_TERMINAL,
+    WIDGET_BUTTON,
 
     WIDGET_MAX
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
@@ -102,12 +104,17 @@ class DataWidget : public QFrame
 {
     Q_OBJECT
 
+    Q_PROPERTY(quint8 widgetType READ getWidgetType)
+
 Q_SIGNALS:
     void updateData();
     void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
     void SendData(const QByteArray& data);
+
+    void titleChanged(const QString& newTitle);
+    void scriptEvent(const QString& eventId);
 
 public:
     explicit DataWidget(QWidget *parent = 0);
@@ -141,11 +148,22 @@ public:
     void setWidgetControlled(qint32 widget);
     qint32 getWidgetControlled() { return m_widgetControlled; }
 
+    QString getTitle();
+
+    quint8 getWidgetType() const { return m_widgetType; }
+
 public slots:
     virtual void newData(analyzer_data *data, quint32);
     void setTitle(const QString& title);
     virtual void setValue(const QVariant &var);
     void lockTriggered();
+    void remove();
+    void setTitleVisibility(bool visible);
+
+    //events
+    virtual void onWidgetAdd(DataWidget *w);
+    virtual void onWidgetRemove(DataWidget *w);
+    virtual void onScriptEvent(const QString& eventId);
 
 protected:
     void mousePressEvent(QMouseEvent * event);
@@ -158,7 +176,6 @@ protected:
 
     virtual void processData(analyzer_data *data);
 
-    QString getTitle();
     void setIcon(QString path);
 
     quint8 m_widgetType;

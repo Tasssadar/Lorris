@@ -47,6 +47,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
 
     QWidget *w = new QWidget();
     scroll_layout = new ScrollDataLayout(&m_header, false, false, NULL, NULL, w);
+    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     ui->data_scroll->setWidget(w);
 
@@ -66,6 +67,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
     connect(ui->static_len_box, SIGNAL(valueChanged(int)),         this,          SLOT(staticLenChanged(int)));
     connect(ui->len_fmt_box,    SIGNAL(currentIndexChanged(int)),  this,          SLOT(lenFmtChanged(int)));
     connect(ui->ok_close_bBox,  SIGNAL(clicked(QAbstractButton*)), this,          SLOT(butonnBoxClicked(QAbstractButton*)));
+    connect(ui->offsetBox,      SIGNAL(valueChanged(int)),         this,          SLOT(offsetChanged(int)));
 
     setted = false;
     setFirst = false;
@@ -75,6 +77,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
 
     scroll_layout->lenChanged(m_header.packet_length);
     ui->len_box->setValue(m_header.packet_length);
+    ui->offsetBox->setValue(m_header.len_offset);
 
     for(quint8 i = 0; i < 4 && m_header.order[i] != 0; ++i)
     {
@@ -90,6 +93,16 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
     ui->endianBox->setCurrentIndex(!pkt->big_endian);
     lenFmtChanged(m_header.len_fmt);
     headerLenChanged(m_header.length);
+
+    if(m_header.data_mask & DATA_STATIC)
+    {
+        setFirst = false;
+        ui->static_len_box->setValue(pkt->header->static_len);
+        staticLenChanged(pkt->header->static_len);
+
+        for(quint8 i = 0; i < pkt->header->static_len; ++i)
+            ui->staticList->item(i)->setText(Utils::hexToString(pkt->static_data[i], true));
+    }
 }
 
 SourceDialog::~SourceDialog()
@@ -106,7 +119,12 @@ SourceDialog::~SourceDialog()
 void SourceDialog::butonnBoxClicked(QAbstractButton *b)
 {
     if(ui->ok_close_bBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
-        setted = true;
+    {
+        if(m_header.length + ui->len_box->value() == 0)
+            return Utils::ThrowException(tr("You have to set something!"), this);
+        else
+            setted = true;
+    }
     close();
 }
 
@@ -229,6 +247,11 @@ void SourceDialog::lenFmtChanged(int index)
 {
     m_header.len_fmt = index;
     scroll_layout->UpdateTypes();
+}
+
+void SourceDialog::offsetChanged(int val)
+{
+    m_header.len_offset = val;
 }
 
 analyzer_packet *SourceDialog::getStructure()

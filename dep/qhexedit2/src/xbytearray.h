@@ -28,6 +28,7 @@ public:
     QByteArray & data();
     void setData(QByteArray data);
 
+    bool dataChanged() const;
     bool dataChanged(int i);
     QByteArray dataChanged(int i, int len);
     void setDataChanged(int i, bool state);

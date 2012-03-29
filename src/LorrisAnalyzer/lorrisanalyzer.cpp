@@ -38,6 +38,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QFileDialog>
+#include <QStringBuilder>
 
 #include "lorrisanalyzer.h"
 #include "sourcedialog.h"
@@ -53,6 +54,8 @@
 #include "DataWidgets/colorwidget.h"
 #include "DataWidgets/GraphWidget/graphwidget.h"
 #include "DataWidgets/ScriptWidget/scriptwidget.h"
+#include "DataWidgets/terminalwidget.h"
+#include "DataWidgets/buttonwidget.h"
 #include "sourceselectdialog.h"
 
 LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
@@ -67,7 +70,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
     connect(ui->collapseLeft,    SIGNAL(clicked()),         SLOT(collapseLeftButton()));
-    connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearButton()));
+    connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearDataButton()));
     connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(timeSliderMoved(int)));
     connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
     connect(ui->updateTimeBox,   SIGNAL(valueChanged(int)), SLOT(updateTimeChanged(int)));
@@ -76,26 +79,53 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     connect(ui->timeSlider,      SIGNAL(rangeChanged(int,int)), ui->playFrame,  SLOT(rangeChanged(int,int)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
+    connect(ui->dataArea,        SIGNAL(updateData()),      SLOT(updateData()));
+    connect(ui->devTabs,         SIGNAL(updateData()),      SLOT(updateData()));
+    connect(ui->dataArea,        SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
+                                 SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
+    connect(this,                SIGNAL(newData(analyzer_data*,quint32)), ui->devTabs,
+                                 SLOT(handleData(analyzer_data*, quint32)));
+
+
+    int h = ui->collapseLeft->fontMetrics().height()+10;
+    ui->collapseLeft->setFixedWidth(h);
+    ui->collapseRight->setFixedWidth(h);
+    ui->collapseTop->setFixedHeight(h);
+    ui->collapseLeft->setRotation(ROTATE_270);
+    ui->collapseRight->setRotation(ROTATE_90);
 
     QMenu* menuData = new QMenu(tr("&Data"), this);
 
     QAction* newSource = menuData->addAction(tr("New source..."));
     menuData->addSeparator();
-    QAction* openAct = menuData->addAction(tr("Open data..."));
-    QAction* saveAct = menuData->addAction(tr("Save data..."));
+    QAction* openAct = menuData->addAction(tr("Open..."));
+    QAction* saveAsAct = menuData->addAction(tr("Save as..."));
+    QAction* saveAct = menuData->addAction(tr("Save"));
     menuData->addSeparator();
-    QAction* clearAct = menuData->addAction(tr("Clear data"));
+    QAction* clearAct = menuData->addAction(tr("Clear received data"));
+    QAction* clearAllAct = menuData->addAction(tr("Clear everything"));
 
     openAct->setShortcut(QKeySequence("Ctrl+O"));
+    saveAsAct->setShortcut(QKeySequence("Ctrl+Shift+S"));
     saveAct->setShortcut(QKeySequence("Ctrl+S"));
 
     connect(newSource, SIGNAL(triggered()), SLOT(onTabShow()));
     connect(openAct,   SIGNAL(triggered()), SLOT(openFile()));
-    connect(saveAct,   SIGNAL(triggered()), SLOT(saveDataButton()));
-    connect(clearAct,  SIGNAL(triggered()), SLOT(clearButton()));
+    connect(saveAsAct, SIGNAL(triggered()), SLOT(saveAsButton()));
+    connect(saveAct,   SIGNAL(triggered()), SLOT(saveButton()));
+    connect(clearAct,  SIGNAL(triggered()), SLOT(clearDataButton()));
+    connect(clearAllAct,  SIGNAL(triggered()), SLOT(clearAllButton()));
 
     addTopMenu(menuData);
 
+    QMenu *menuWidgets = new QMenu(tr("Widgets"), this);
+
+    m_title_action = menuWidgets->addAction(tr("Show widget's title bar"));
+    m_title_action->setCheckable(true);
+    m_title_action->setChecked(true);
+    connect(m_title_action, SIGNAL(triggered(bool)), SLOT(showTitleTriggered(bool)));
+
+    addTopMenu(menuWidgets);
 
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better
@@ -105,20 +135,9 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
 #endif
 
     m_storage = new AnalyzerDataStorage(this);
+    ui->dataArea->setAnalyzerAndStorage(this, m_storage);
 
-    m_dev_tabs = new DeviceTabWidget(this);
-    m_dev_tabs->addDevice();
-    ui->leftVLayout->insertWidget(1, m_dev_tabs);
-
-    connect(this, SIGNAL(newData(analyzer_data*,quint32)), m_dev_tabs, SLOT(handleData(analyzer_data*, quint32)));
-    connect(m_dev_tabs, SIGNAL(updateData()), this, SLOT(updateData()));
-
-    m_data_area = new AnalyzerDataArea(this, m_storage);
-    ui->bottomHLayout->insertWidget(2, m_data_area, 4);
-    ui->bottomHLayout->setStretch(1, 1);
-    connect(m_data_area, SIGNAL(updateData()), this, SLOT(updateData()));
-    connect(m_data_area, SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
-                         SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
+    ui->devTabs->addDevice();
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
@@ -127,6 +146,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     widgetBtnL->addWidget(new ColorWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new GraphWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new ScriptWidgetAddBtn(tmp));
+    widgetBtnL->addWidget(new TerminalWidgetAddBtn(tmp));
+    widgetBtnL->addWidget(new ButtonWidgetAddBtn(tmp));
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);
@@ -137,18 +158,22 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     m_curData = NULL;
 
     updateTime.start();
+
+    setAreaVisibility(AREA_LEFT, false);
+    setAreaVisibility(AREA_RIGHT, true);
+    setAreaVisibility(AREA_TOP, true);
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
 {
-    delete ui;
     delete m_storage;
     if(m_packet)
     {
         delete m_packet->header;
         delete m_packet;
     }
-    delete m_dev_tabs;
+    delete ui->devTabs;
+    delete ui;
     delete m_curData;
 }
 
@@ -288,11 +313,11 @@ void LorrisAnalyzer::onTabShow()
                     delete m_packet->header;
                     delete m_packet;
                 }
-                m_data_area->clear();
+                ui->dataArea->clear();
                 m_storage->Clear();
-                m_dev_tabs->removeAll();
-                m_dev_tabs->setHeader(packet->header);
-                m_dev_tabs->addDevice();
+                ui->devTabs->removeAll();
+                ui->devTabs->setHeader(packet->header);
+                ui->devTabs->addDevice();
 
                 m_storage->setPacket(packet);
                 m_packet = packet;
@@ -344,41 +369,52 @@ analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
 
 void LorrisAnalyzer::load(QString *name, quint8 mask)
 {
-    analyzer_packet *packet = m_storage->loadFromFile(name, mask, m_data_area, m_dev_tabs);
+    quint32 idx = 0;
+    analyzer_packet *packet = m_storage->loadFromFile(name, mask, ui->dataArea, ui->devTabs, idx);
     if(!packet)
         return;
 
     // old packet deleted in AnalyzerDataStorage::loadFromFile()
     m_packet = packet;
+
+    delete m_curData;
     m_curData = new analyzer_data(m_packet);
 
-    if(!m_dev_tabs->count())
+    if(!ui->devTabs->count())
     {
-        m_dev_tabs->removeAll();
-        m_dev_tabs->setHeader(packet->header);
-        m_dev_tabs->addDevice();
+        ui->devTabs->removeAll();
+        ui->devTabs->setHeader(packet->header);
+        ui->devTabs->addDevice();
     }
 
+    if(!idx)
+        idx = m_storage->getSize();
+
     ui->timeSlider->setMaximum(m_storage->getSize());
-    ui->timeSlider->setValue(m_storage->getSize());
+    ui->timeSlider->setValue(idx);
     ui->timeBox->setMaximum(m_storage->getSize());
     ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage->getSize()));
-    ui->timeBox->setValue(m_storage->getSize());
+    ui->timeBox->setValue(idx);
     m_state &= ~(STATE_DIALOG);
 
     updateData(true);
 }
 
-void LorrisAnalyzer::saveDataButton()
+void LorrisAnalyzer::saveButton()
 {
-    m_storage->SaveToFile(m_data_area, m_dev_tabs);
+    m_storage->SaveToFile(ui->dataArea, ui->devTabs);
+}
+
+void LorrisAnalyzer::saveAsButton()
+{
+    m_storage->SaveToFile("", ui->dataArea, ui->devTabs);
 }
 
 void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
 {
     if(parent != -1)
     {
-        DataWidget *w = m_data_area->getWidget(parent);
+        DataWidget *w = ui->dataArea->getWidget(parent);
         if(!w)
             return;
 
@@ -398,9 +434,9 @@ void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qi
         if(in)
         {
             if(highlightInfoNotNull && highlightInfo != info)
-                m_dev_tabs->setHighlightPos(highlightInfo, false);
+                ui->devTabs->setHighlightPos(highlightInfo, false);
 
-            bool found = m_dev_tabs->setHighlightPos(info, true);
+            bool found = ui->devTabs->setHighlightPos(info, true);
 
             if(found)
             {
@@ -412,7 +448,7 @@ void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qi
 
         if(highlightInfoNotNull)
         {
-            m_dev_tabs->setHighlightPos(highlightInfo, false);
+            ui->devTabs->setHighlightPos(highlightInfo, false);
             highlightInfoNotNull = false;
         }
     }
@@ -437,7 +473,7 @@ bool LorrisAnalyzer::isAreaVisible(quint8 area)
 {
     switch(area)
     {
-        case AREA_TOP:   return m_dev_tabs->isVisible();
+        case AREA_TOP:   return ui->devTabs->isVisible();
         case AREA_RIGHT: return ui->widgetsScrollArea->isVisible();
         case AREA_LEFT:  return ui->playFrame->isVisible();
     }
@@ -447,32 +483,20 @@ bool LorrisAnalyzer::isAreaVisible(quint8 area)
 void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
 {
     if(area & AREA_TOP)
-    {
-        if(visible) ui->collapseTop->setText("^");
-        else        ui->collapseTop->setText("v");
-        m_dev_tabs->setVisible(visible);
-    }
+        ui->devTabs->setVisible(visible);
 
     if(area & AREA_RIGHT)
-    {
-        if(visible) ui->collapseRight->setText(">");
-        else        ui->collapseRight->setText("<");
         ui->widgetsScrollArea->setVisible(visible);
-    }
 
     if(area & AREA_LEFT)
-    {
-        if(visible) ui->collapseLeft->setText("<");
-        else        ui->collapseLeft->setText(">");
         ui->playFrame->setVisible(visible);
-    }
 }
 
-void LorrisAnalyzer::clearButton()
+void LorrisAnalyzer::clearAllButton()
 {
     QMessageBox box(this);
-    box.setWindowTitle(tr("Clear data?"));
-    box.setText(tr("Do you really clear data, widgets and packet structure?"));
+    box.setWindowTitle(tr("Clear everything?"));
+    box.setText(tr("Do you really want to clear data, widgets and packet structure?"));
     box.addButton(tr("Yes"), QMessageBox::YesRole);
     box.addButton(tr("No"), QMessageBox::NoRole);
     box.setIcon(QMessageBox::Question);
@@ -483,18 +507,20 @@ void LorrisAnalyzer::clearButton()
     analyzer_packet *packet = m_packet;
     m_packet = NULL;
 
-    m_dev_tabs->removeAll();
-    m_dev_tabs->setHeader(NULL);
-    m_dev_tabs->addDevice();
+    ui->devTabs->removeAll();
+    ui->devTabs->setHeader(NULL);
+    ui->devTabs->addDevice();
 
-    m_data_area->clear();
+    ui->dataArea->clear();
 
+    delete m_curData;
     m_curData = NULL;
     m_storage->Clear();
     m_storage->setPacket(NULL);
 
     ui->timeSlider->setMaximum(0);
     ui->timeBox->setMaximum(0);
+    ui->timeBox->setSuffix(tr(" of ") % "0");
 
     if(packet)
     {
@@ -503,6 +529,20 @@ void LorrisAnalyzer::clearButton()
     }
 
     setAreaVisibility(AREA_TOP | AREA_RIGHT, true);
+    setAreaVisibility(AREA_LEFT, false);
+
+    updateData(true);
+}
+
+void LorrisAnalyzer::clearDataButton()
+{
+    m_storage->Clear();
+
+    ui->timeSlider->setMaximum(0);
+    ui->timeBox->setMaximum(0);
+    ui->timeBox->setSuffix(tr(" of ") % "0");
+
+    updateData(true);
 }
 
 void LorrisAnalyzer::updateTimeChanged(int value)
@@ -535,7 +575,6 @@ void LorrisAnalyzer::editStruture()
     analyzer_packet *packet = d->getStructure();
     delete d;
 
-    m_state &= ~(STATE_DIALOG);
     if(packet)
     {
         delete m_curData;
@@ -546,11 +585,30 @@ void LorrisAnalyzer::editStruture()
             delete m_packet->header;
             delete m_packet;
         }
-        m_dev_tabs->setHeader(packet->header);
+        ui->devTabs->setHeader(packet->header);
+
+        if(!m_packet)
+        {
+            ui->devTabs->removeAll();
+            ui->devTabs->addDevice();
+        }
 
         m_storage->setPacket(packet);
         m_packet = packet;
 
-         updateData(true);
+        updateData(true);
     }
+    m_state &= ~(STATE_DIALOG);
+}
+
+quint32 LorrisAnalyzer::getCurrentIndex()
+{
+    return ui->timeBox->value();
+}
+
+void LorrisAnalyzer::showTitleTriggered(bool checked)
+{
+    m_title_action->setChecked(checked);
+
+    emit setTitleVisibility(checked);
 }

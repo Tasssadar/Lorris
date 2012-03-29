@@ -41,12 +41,22 @@ Q_SIGNALS:
     void updateData();
     void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
 
+    void onWidgetAdd(DataWidget *w);
+    void onWidgetRemove(DataWidget *w);
+    void onScriptEvent(const QString& eventId);
+
 public:
     typedef QHash<quint32, DataWidget*> w_map;
     typedef QHash<quint32, QRect> mark_map;
 
-    explicit AnalyzerDataArea(LorrisAnalyzer* analyzer, AnalyzerDataStorage* storage);
+    explicit AnalyzerDataArea(QWidget *parent = 0);
     ~AnalyzerDataArea();
+
+    void setAnalyzerAndStorage(LorrisAnalyzer* analyzer, AnalyzerDataStorage* storage)
+    {
+        m_analyzer = analyzer;
+        m_storage = storage;
+    }
 
     void clear();
 
@@ -59,6 +69,11 @@ public:
     void skipNextMove() { m_skipNextMove = true; }
 
     DataWidget *getWidget(quint32 id);
+
+    const w_map& getWidgets()
+    {
+        return m_widgets;
+    }
 
 public slots:
     void removeWidget(quint32 id);

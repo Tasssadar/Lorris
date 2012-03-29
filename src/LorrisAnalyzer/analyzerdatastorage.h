@@ -52,19 +52,17 @@ public:
     explicit AnalyzerDataStorage(LorrisAnalyzer *analyzer);
     ~AnalyzerDataStorage();
 
-    void setPacket(analyzer_packet *packet)
-    {
-        m_packet = packet;
-    }
+    void setPacket(analyzer_packet *packet);
 
     void Clear();
 
     void addData(analyzer_data *data);
     quint32 getSize() { return m_size; }
     analyzer_data *get(quint32 index) { return m_data[index]; }
-    analyzer_packet *loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices);
+    analyzer_packet *loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices, quint32 &data_idx);
 
 public slots:
+    void SaveToFile(QString filename, AnalyzerDataArea *area, DeviceTabWidget *devices);
     void SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *devices);
 
 private:
@@ -74,6 +72,9 @@ private:
     analyzer_packet *m_packet;
     quint32 m_size;
     LorrisAnalyzer *m_analyzer;
+
+    QString m_filename;
+    QByteArray m_file_md5;
 };
 
 #endif // ANALYZERDATASTORAGE_H

@@ -6,5 +6,7 @@
         <file alias="graph.png">icons/graph.png</file>
         <file alias="script.png">icons/script.png</file>
         <file alias="input.png">icons/input.png</file>
+        <file alias="terminal.png">icons/terminal.png</file>
+        <file alias="button.png">icons/button.png</file>
     </qresource>
 </RCC>

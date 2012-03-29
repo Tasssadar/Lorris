@@ -28,6 +28,9 @@
 #include "shupito.h"
 #include "shupitodesc.h"
 #include "shared/hexfile.h"
+#include "shared/terminal.h"
+
+#include <QDateTime>
 
 enum state
 {
@@ -48,6 +51,14 @@ enum VddColor
     VDD_GREEN,
     VDD_RED,
     VDD_ORANGE
+};
+
+enum TabIndex
+{
+    TAB_FLASH = 0,
+    TAB_EEPROM,
+    TAB_TERMINAL,
+    TAB_MAX
 };
 
 namespace Ui {
@@ -126,15 +137,19 @@ private slots:
     void updateProgressDialog(int value);
     void updateProgressLabel(const QString& text);
 
+    void startstopChip();
     void startChip();
     void stopChip();
     void restartChip();
+    void updateStartStopUi(bool stopped);
 
     void modeSelected(int idx);
     void status(const QString& text);
 
     void loadFromFile(int memId);
+    void loadFromFile(int memId, const QString& filename);
     void saveToFile(int memId);
+    void focusChanged(QWidget *prev, QWidget *curr);
 
 private:
     void log(const QString& text);
@@ -154,6 +169,10 @@ private:
     void initMenus();
 
     void changeVddColor(float val);
+    void tryFileReload(quint8 memId);
+    inline int getMemIndex();
+
+    bool m_chipStopped;
 
     QAction *m_start_act;
     QAction *m_stop_act;
@@ -173,6 +192,9 @@ private:
     quint8 m_verify_mode;
 
     QHexEdit *m_hexAreas[MEM_FUSES];
+    Terminal *m_terminal;
+    QString m_hexFilenames[MEM_FUSES];
+    QDateTime m_hexWriteTimes[MEM_FUSES];
     ShupitoMode *m_modes[MODE_COUNT];
     quint8 m_cur_mode;
 

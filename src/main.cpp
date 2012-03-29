@@ -24,6 +24,7 @@
 #include <QtGui/QApplication>
 #include <QTranslator>
 #include <QLocale>
+#include <QLibraryInfo>
 #include <stdio.h>
 
 #include "revision.h"
@@ -61,6 +62,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Lorris");
 
     QLocale newLang = QLocale(langs[sConfig.get(CFG_QUINT32_LANGUAGE)]);
+
+    QTranslator qtTranslator;
+    qtTranslator.load("qt_" + newLang.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    a.installTranslator(&qtTranslator);
 
     QTranslator translator;
     bool loaded = translator.load("Lorris." + newLang.name(), "translations");

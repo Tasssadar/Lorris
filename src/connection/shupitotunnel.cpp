@@ -105,27 +105,7 @@ void ShupitoTunnel::SendData(const QByteArray &data)
     if(!opened || !m_shupito)
         return;
 
-    int sent = 0;
-    const int data_len = data.length();
-
-    ShupitoPacket packet;
-    quint8 cmd = m_shupito->getTunnelCmd();
-    char pipe = m_shupito->getTunnelId();
-
-    while(sent != data_len)
-    {
-        int chunk = data_len - sent;
-        if(chunk > 14)
-            chunk = 14;
-
-        packet.set(false, cmd, chunk+1);
-        packet.getDataRef().append(pipe);
-        packet.getDataRef().append(data.mid(sent, chunk));
-
-        m_shupito->sendPacket(packet);
-
-        sent += chunk;
-    }
+    m_shupito->sendTunnelData(data);
 }
 
 void ShupitoTunnelBuilder::addOptToTabDialog(QGridLayout *layout)

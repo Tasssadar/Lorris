@@ -38,14 +38,15 @@ enum DataBlocks
     BLOCK_CMD_TAB,
     BLOCK_DATA,
     BLOCK_WIDGETS,
-    BLOCK_WIDGET
+    BLOCK_WIDGET,
+    BLOCK_DATA_INDEX
 };
 
 class AnalyzerDataFile : public QBuffer
 {
     Q_OBJECT
 public:
-    explicit AnalyzerDataFile(const QString& filename, QObject *parent = 0);
+    explicit AnalyzerDataFile(QByteArray *data, QObject *parent = 0);
     ~AnalyzerDataFile();
 
     bool seekToNextBlock(DataBlocks block, qint32 maxDist);
@@ -60,13 +61,10 @@ public:
     
     char* getBlockName(DataBlocks block);
 
-    bool open ( OpenMode mode );
-    
 private:
     char *getBlockWithFormat(const char *block, quint8& lenght);
+
     int m_last_block;
-    QFile *m_file;
-    QString m_filename;
 };
 
 #endif // ANALYZERDATAFILE_H

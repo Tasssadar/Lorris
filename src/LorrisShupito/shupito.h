@@ -103,8 +103,8 @@ public:
         return waitForPacket(pkt.getData(false), cmd);
     }
 
-    QByteArray waitForStream(const QByteArray& data, quint8 cmd, quint16 max_packets = 32);
-    QByteArray waitForStream(ShupitoPacket& pkt, quint8 cmd, quint16 max_packets = 32)
+    QByteArray waitForStream(const QByteArray& data, quint8 cmd, quint16 max_packets = 1024);
+    QByteArray waitForStream(ShupitoPacket& pkt, quint8 cmd, quint16 max_packets = 1024)
     {
         return waitForStream(pkt.getData(false), cmd, max_packets);
     }
@@ -122,6 +122,9 @@ public:
     void setChipId(chip_definition cd) { m_chip_def = cd; }
     const chip_definition& getChipId() { return m_chip_def; }
     std::vector<chip_definition> &getDefs() { return m_chip_defs; }
+
+public slots:
+    void sendTunnelData(const QByteArray& data);
 
 private slots:
     void tunnelDataSend();

@@ -38,13 +38,14 @@ ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 
     m_widget = new QWidget(this);
     m_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_widget->setStyleSheet("border: 2px solid white; background-color: black");
+    m_widget->setStyleSheet("background-color: black");
 
+    layout->setContentsMargins(3, 0, 3, 3);
     layout->addWidget(m_widget, 1);
 
-    adjustSize();
+    resize(150, 100);
 
-    setMinimumSize(width(), width());
+    setMinimumSize(50, 50);
 
     m_brightness = 0;
     m_color_layout[0] = m_color_layout[1] = m_color_layout[2] = NULL;
@@ -88,7 +89,7 @@ void ColorWidget::processData(analyzer_data *data)
 
 void ColorWidget::updateColor()
 {
-    static const QString css = "border: 2px solid white; background-color: #";
+    static const QString css = "background-color: #";
 
     QString color_str = "";
 
@@ -165,7 +166,6 @@ void ColorWidget::loadWidgetInfo(AnalyzerDataFile *file)
             brightAct->setChecked(true);
         }
     }
-
 
     // color correction
     if(file->seekToNextBlock("clrWClrCor", BLOCK_WIDGET))

@@ -23,50 +23,15 @@
 
 #include "analyzerdatafile.h"
 
-AnalyzerDataFile::AnalyzerDataFile(const QString &filename, QObject *parent) :
-    QBuffer(parent)
+AnalyzerDataFile::AnalyzerDataFile(QByteArray *data, QObject *parent) :
+    QBuffer(data, parent)
 {
     m_last_block = 0;
-    m_file = NULL;
-    m_filename = filename;
 }
 
 AnalyzerDataFile::~AnalyzerDataFile()
 {
-    if(m_file)
-    {
-        if(m_file->openMode() & QIODevice::WriteOnly)
-        {
-            if(m_file->fileName().endsWith(".cldta"))
-                m_file->write(qCompress(data()));
-            else
-                m_file->write(data());
-        }
-        m_file->close();
-        delete m_file;
-    }
-}
 
-bool AnalyzerDataFile::open ( OpenMode mode )
-{
-    m_file = new QFile(m_filename);
-
-    bool res = m_file->open(mode);
-    if(!res)
-        return res;
-
-    if(mode & QIODevice::ReadOnly)
-    {
-        QByteArray dta = m_file->readAll();
-        if(m_filename.endsWith(".cldta"))
-            setData(qUncompress(dta));
-        else
-            setData(dta);
-    }
-
-    QBuffer::open(mode);
-
-    return res;
 }
 
 bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, qint32 maxDist)
@@ -174,16 +139,17 @@ char* AnalyzerDataFile::getBlockName(DataBlocks block)
 
     switch(block)
     {
-        case BLOCK_STATIC_DATA: strcpy(res, "staticDataBlock"); break;
-        case BLOCK_COLLAPSE_STATUS: strcpy(res, "collapseWStatus"); break;
-        case BLOCK_COLLAPSE_STATUS2: strcpy(res, "collapseWStatus2"); break;
-        case BLOCK_DEVICE_TABS: strcpy(res, "deviceTabsBlock"); break;
-        case BLOCK_DEVICE_TAB:  strcpy(res, "deviceTabBlock");  break;
-        case BLOCK_CMD_TABS:    strcpy(res, "cmdTabsBlock");    break;
-        case BLOCK_CMD_TAB:     strcpy(res, "cmdTabBlock");     break;
-        case BLOCK_DATA:        strcpy(res, "dataBlock");       break;
-        case BLOCK_WIDGETS:     strcpy(res, "widgetsBlock");    break;
-        case BLOCK_WIDGET:      strcpy(res, "widgetBlock");     break;
+        case BLOCK_STATIC_DATA:      strcpy(res, "staticDataBlock"); break;
+        case BLOCK_COLLAPSE_STATUS:  strcpy(res, "collapseWStatus"); break;
+        case BLOCK_COLLAPSE_STATUS2: strcpy(res, "collapseWStatus2");break;
+        case BLOCK_DEVICE_TABS:      strcpy(res, "deviceTabsBlock"); break;
+        case BLOCK_DEVICE_TAB:       strcpy(res, "deviceTabBlock");  break;
+        case BLOCK_CMD_TABS:         strcpy(res, "cmdTabsBlock");    break;
+        case BLOCK_CMD_TAB:          strcpy(res, "cmdTabBlock");     break;
+        case BLOCK_DATA:             strcpy(res, "dataBlock");       break;
+        case BLOCK_WIDGETS:          strcpy(res, "widgetsBlock");    break;
+        case BLOCK_WIDGET:           strcpy(res, "widgetBlock");     break;
+        case BLOCK_DATA_INDEX:       strcpy(res, "dataIndexBlock");  break;
         default: return NULL;
     }
     return res;

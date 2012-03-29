@@ -32,3 +32,6 @@
         Modified version of QHexEdit2(http://code.google.com/p/qhexedit2/),
             "QHexEdit is a Binary Edior for Qt",
             which is distributed under the LGPL v2.1 - see dep/qhexedit2/src/license.txt
+
+        SDL(http://www.libsdl.org), Simple directmedia layer,
+            which is distributed under the GNU LGPL v2.1

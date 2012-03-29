@@ -42,16 +42,21 @@ public:
     void saveWidgetInfo(AnalyzerDataFile *file);
     void loadWidgetInfo(AnalyzerDataFile *file);
 
-protected:
-     void newData(analyzer_data *data, quint32 index);
-     void moveEvent(QMoveEvent *);
-     void resizeEvent(QResizeEvent *);
+public slots:
+    void onWidgetAdd(DataWidget *w);
+    void onWidgetRemove(DataWidget *w);
+    void onScriptEvent(const QString& eventId);
 
-private slots:
+protected:
+    void newData(analyzer_data *data, quint32 index);
+    void moveEvent(QMoveEvent *);
+    void resizeEvent(QResizeEvent *);
+
+protected slots:
      void setSourceTriggered();
      void sourceSet(bool close);
 
-private:
+protected:
      ScriptEditor *m_editor;
      ScriptEnv *m_env;
      Terminal *m_terminal;

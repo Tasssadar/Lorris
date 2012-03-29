@@ -58,9 +58,6 @@ public:
     Terminal(QWidget *parent);
     ~Terminal();
 
-    void setFmt(quint8 fmt);
-    void setInput(quint8 input);
-
     void writeToFile(QFile *file);
 
     const QByteArray& getData()
@@ -68,10 +65,14 @@ public:
         return m_data;
     }
 
+    int getFmt() { return m_fmt; }
+
 public slots:
     void clear();
     void pause(bool pause);
     void appendText(QByteArray text);
+    void setFmt(int fmt);
+    void setInput(quint8 input);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -126,6 +127,7 @@ private:
     QByteArray m_command;
 
     QMenu *m_context_menu;
+    QAction *m_fmt_act[FMT_MAX];
 };
 
 #endif // TERMINAL_H

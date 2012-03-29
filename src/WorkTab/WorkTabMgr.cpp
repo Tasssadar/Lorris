@@ -27,10 +27,10 @@
 #include "ui/HomeTab.h"
 #include "ui/tabdialog.h"
 
-WorkTabMgr::WorkTabMgr()
+WorkTabMgr::WorkTabMgr() : QObject()
 {
     tabIdCounter = 0;
-    tabWidget = NULL;
+    tabView = NULL;
     hometab = NULL;
 }
 
@@ -58,54 +58,78 @@ WorkTabMgr::InfoList *WorkTabMgr::GetWorkTabInfos()
     return &m_workTabInfos;
 }
 
-quint16 WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
+void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
 {
-    quint16 id = tabIdCounter++;
+    quint32 id = generateNewTabId();
 
-    m_workTabs.insert(std::make_pair<quint16, WorkTab*>(id, tab));
+    CloseHomeTab();
+
+    m_workTabs.insert(id, tab);
     tab->setId(id);
 
-    tab->setParent(tabWidget);
-    quint16 index = tabWidget->addTab(tab, label);
-    if(tabWidget->count() > 1)
-    {
-        tabWidget->setTabsClosable(true);
-        tabWidget->setCurrentIndex(index);
-    }
-    CloseHomeTab();
-    return id;
+    TabWidget *activeWidget = tabView->getActiveWidget();
+
+    tab->setParent(activeWidget);
+    activeWidget->addTab(tab, label, id);
+    activeWidget->setTabsClosable(true);
+    return;
 }
 
 void WorkTabMgr::removeTab(WorkTab *tab)
 {
-    tabWidget->removeTab(tabWidget->indexOf(tab));
-    m_workTabs.erase(tab->getId());
-    if(tabWidget->count() == 0)
-    {
-        OpenHomeTab();
-        tabWidget->setTabsClosable(false);
-    }
+    m_workTabs.remove(tab->getId());
     delete tab;
+}
+
+
+void WorkTabMgr::OpenHomeTab(quint32 id)
+{
+    Q_ASSERT(!hometab);
+
+    TabWidget *tabWidget = tabView->getWidget(id);
+    if(!tabWidget)
+        return;
+
+    hometab = new HomeTab(tabWidget);
+    tabWidget->addTab(hometab, QObject::tr("Home"));
 }
 
 void WorkTabMgr::OpenHomeTab()
 {
-    hometab = new HomeTab(tabWidget);
-    tabWidget->addTab(hometab, QObject::tr("Home"));
+    TabWidget *activeWidget = tabView->getActiveWidget();
+
+    hometab = new HomeTab(activeWidget);
+    activeWidget->addTab(hometab, QObject::tr("Home"));
 }
 
 void WorkTabMgr::CloseHomeTab()
 {
     if(!hometab)
         return;
-    tabWidget->removeTab(tabWidget->indexOf(hometab));
+
+    TabWidget *activeWidget = tabView->getActiveWidget();
+    if(!activeWidget)
+    {
+        Q_ASSERT(false);
+        return;
+    }
+    activeWidget->removeTab(activeWidget->indexOf(hometab));
     delete hometab;
     hometab = NULL;
 }
 
 void WorkTabMgr::NewTabDialog()
 {
-    TabDialog *dialog = new TabDialog((QWidget*)tabWidget->parent());
+    TabDialog *dialog = new TabDialog;
     dialog->exec();
     delete dialog;
+}
+
+TabView *WorkTabMgr::CreateWidget(QWidget *parent)
+{
+    tabView = new TabView(parent);
+
+    connect(tabView, SIGNAL(newTab()), SLOT(NewTabDialog()));
+    connect(tabView, SIGNAL(openHomeTab(quint32)), SLOT(OpenHomeTab(quint32)));
+    return tabView;
 }

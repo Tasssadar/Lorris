@@ -25,6 +25,7 @@ public:
 
     void setData(QByteArray const &data);
     QByteArray data();
+    bool hasDataChanged() const;
     void clearDataChanged(); // Lorris change
 
     void setHighlightingColor(QColor const &color);

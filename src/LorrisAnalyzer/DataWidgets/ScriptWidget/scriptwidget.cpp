@@ -36,13 +36,11 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
     m_widgetType = WIDGET_SCRIPT;
     m_editor = NULL;
 
-
-    adjustSize();
-    setMinimumSize(width(), width());
-
     m_terminal = new Terminal(this);
     layout->setContentsMargins(5, 0, 5, 5);
     layout->addWidget(m_terminal, 4);
+
+    resize(120, 100);
 
     m_env = NULL;
 }
@@ -169,6 +167,24 @@ void ScriptWidget::resizeEvent(QResizeEvent *)
 {
     if(m_env)
         m_env->setSize(size());
+}
+
+void ScriptWidget::onWidgetAdd(DataWidget *w)
+{
+    if(m_env)
+        m_env->onWidgetAdd(w);
+}
+
+void ScriptWidget::onWidgetRemove(DataWidget *w)
+{
+    if(m_env)
+        m_env->onWidgetRemove(w);
+}
+
+void ScriptWidget::onScriptEvent(const QString& eventId)
+{
+    if(m_env)
+        m_env->callEventHandler(eventId);
 }
 
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

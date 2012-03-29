@@ -28,6 +28,7 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QSignalMapper>
+#include <QStringBuilder>
 
 #include "numberwidget.h"
 
@@ -97,7 +98,7 @@ void NumberWidget::setUp(AnalyzerDataStorage *storage)
         connect(bitsAction[i], SIGNAL(triggered()), signalMapBits, SLOT(map()));
     }
     bitsAction[0]->setChecked(true);
-    connect(signalMapBits, SIGNAL(mapped(int)), SLOT(bitsSelected(int)));
+    connect(signalMapBits, SIGNAL(mapped(int)), SLOT(setDataType(int)));
 
     static const QString formatStr[] =
     {
@@ -198,7 +199,7 @@ void NumberWidget::fmtSelected(int i)
     emit updateData();
 }
 
-void NumberWidget::bitsSelected(int i)
+void NumberWidget::setDataType(int i)
 {
     for(quint8 y = 0; y < NUM_COUNT; ++y)
         bitsAction[y]->setChecked(y == i);
@@ -256,7 +257,7 @@ void NumberWidget::loadWidgetInfo(AnalyzerDataFile *file)
     if(file->seekToNextBlock("numWType", BLOCK_WIDGET))
     {
         file->read((char*)&numberType, sizeof(numberType));
-        bitsSelected(numberType);
+        setDataType(numberType);
     }
 
     // Format

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>743</width>
-    <height>532</height>
+    <height>549</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,189 +31,236 @@
    <property name="title">
     <string>Header</string>
    </property>
-   <widget class="QDialogButtonBox" name="ok_close_bBox">
-    <property name="geometry">
-     <rect>
-      <x>530</x>
-      <y>300</y>
-      <width>181</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="standardButtons">
-     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-    </property>
-    <property name="centerButtons">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>180</y>
-      <width>701</width>
-      <height>106</height>
+      <y>28</y>
+      <width>691</width>
+      <height>291</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_8">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Static data:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QListWidget" name="staticList">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
-       </property>
-       <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOn</enum>
-       </property>
-       <property name="flow">
-        <enum>QListView::LeftToRight</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Changeable by double-click</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>701</width>
-      <height>141</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,2">
-     <item>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="1" column="0">
-        <widget class="QLabel" name="conten_label">
-         <property name="text">
-          <string>Content:</string>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="h_len_label">
+              <property name="text">
+               <string>Length:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QSpinBox" name="header_len_box"/>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="conten_label">
+              <property name="text">
+               <string>Content:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QCheckBox" name="static_check">
+              <property name="text">
+               <string>Static data (start bytes, etc)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QSpinBox" name="static_len_box">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="value">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QCheckBox" name="len_check">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>Packet length</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QComboBox" name="len_fmt_box">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <item>
+               <property name="text">
+                <string>8bit</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>16bit</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>32bit</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Offset:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QSpinBox" name="offsetBox">
+              <property name="minimum">
+               <number>-100</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QCheckBox" name="cmd_check">
+              <property name="text">
+               <string>Command (opcode)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QCheckBox" name="id_check">
+              <property name="text">
+               <string>Device ID</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QCheckBox" name="static_check">
-         <property name="text">
-          <string>Static data (start bytes, etc)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QSpinBox" name="static_len_box">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="value">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QCheckBox" name="len_check">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Packet length</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QComboBox" name="len_fmt_box">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
-          <property name="text">
-           <string>8bit</string>
-          </property>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>50</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item>
-          <property name="text">
-           <string>16bit</string>
-          </property>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Block order:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
          </item>
          <item>
-          <property name="text">
-           <string>32bit</string>
-          </property>
+          <widget class="QScrollArea" name="header_scroll">
+           <property name="horizontalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents_2">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>326</width>
+              <height>58</height>
+             </rect>
+            </property>
+           </widget>
+          </widget>
          </item>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QCheckBox" name="cmd_check">
-         <property name="text">
-          <string>Command (opcode)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QCheckBox" name="id_check">
-         <property name="text">
-          <string>Device ID</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="h_len_label">
-         <property name="text">
-          <string>Length</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QSpinBox" name="header_len_box"/>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Hint: Use drag &amp; drop
+to change order</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
-        <spacer name="verticalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Block order:</string>
+          <string>Static data:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -221,30 +268,25 @@
         </widget>
        </item>
        <item>
-        <widget class="QScrollArea" name="header_scroll">
-         <property name="horizontalScrollBarPolicy">
+        <widget class="QListWidget" name="staticList">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="verticalScrollBarPolicy">
           <enum>Qt::ScrollBarAlwaysOff</enum>
          </property>
-         <property name="widgetResizable">
-          <bool>true</bool>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOn</enum>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_2">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>270</width>
-            <height>58</height>
-           </rect>
-          </property>
-         </widget>
+         <property name="flow">
+          <enum>QListView::LeftToRight</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Hint: Use drag &amp; drop
-to change order</string>
+          <string>Changeable by double-click</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -262,161 +304,175 @@ to change order</string>
      <x>10</x>
      <y>0</y>
      <width>721</width>
-     <height>191</height>
+     <height>201</height>
     </rect>
    </property>
    <property name="title">
     <string>Packet Data</string>
    </property>
-   <widget class="QScrollArea" name="data_scroll">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>20</y>
       <width>701</width>
-      <height>101</height>
+      <height>151</height>
      </rect>
     </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">margin-bottom: 5px</string>
-    </property>
-    <property name="horizontalScrollBarPolicy">
-     <enum>Qt::ScrollBarAlwaysOn</enum>
-    </property>
-    <property name="widgetResizable">
-     <bool>true</bool>
-    </property>
-    <widget class="QWidget" name="scrollAreaWidgetContents">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>685</width>
-       <height>68</height>
-      </rect>
-     </property>
-    </widget>
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QScrollArea" name="data_scroll">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">margin-bottom: 5px</string>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
+       <property name="widgetResizable">
+        <bool>false</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>683</width>
+          <height>62</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="len_label">
+         <property name="text">
+          <string>Packet length</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QRadioButton" name="len_static">
+         <property name="text">
+          <string>Static</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QSpinBox" name="len_box"/>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Endianess</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QComboBox" name="endianBox">
+         <item>
+          <property name="text">
+           <string>Big-endian</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Little endian</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QRadioButton" name="len_dynamic">
+         <property name="text">
+          <string>Dynamic</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="7">
+        <widget class="QComboBox" name="fmt_combo">
+         <item>
+          <property name="text">
+           <string>Hex</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Byte</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>String</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </widget>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QDialogButtonBox" name="ok_close_bBox">
    <property name="geometry">
     <rect>
-     <x>21</x>
-     <y>131</y>
-     <width>701</width>
-     <height>50</height>
+     <x>550</x>
+     <y>520</y>
+     <width>181</width>
+     <height>25</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
-     <widget class="QLabel" name="len_label">
-      <property name="text">
-       <string>Packet length</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QRadioButton" name="len_static">
-      <property name="text">
-       <string>Static</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QSpinBox" name="len_box"/>
-    </item>
-    <item row="0" column="4">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Endianess</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="5">
-     <widget class="QComboBox" name="endianBox">
-      <item>
-       <property name="text">
-        <string>Big-endian</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Little endian</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QRadioButton" name="len_dynamic">
-      <property name="text">
-       <string>Dynamic</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Fixed</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="0" column="7">
-     <widget class="QComboBox" name="fmt_combo">
-      <item>
-       <property name="text">
-        <string>Hex</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Byte</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>String</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="0" column="6">
-     <spacer name="horizontalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-   </layout>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+   <property name="centerButtons">
+    <bool>false</bool>
+   </property>
   </widget>
  </widget>
  <resources/>

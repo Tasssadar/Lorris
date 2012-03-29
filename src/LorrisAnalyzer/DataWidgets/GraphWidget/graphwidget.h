@@ -71,6 +71,7 @@ private slots:
      void removeCurve(QString name);
      void showLegend(bool show);
      void toggleAutoScroll(bool scroll);
+     void updateSampleSize();
 
 private:
      void updateRemoveMapping();

@@ -60,6 +60,7 @@ struct analyzer_header
         static_len = 1;
         len_fmt = 0;
         packet_length = 0;
+        len_offset = 0;
         for(quint8 i = 0; i < 4; ++i)
             order[i] = 0;
     }
@@ -71,6 +72,7 @@ struct analyzer_header
         static_len = h->static_len;
         len_fmt = h->len_fmt;
         packet_length = h->packet_length;
+        len_offset = h->len_offset;
         for(quint8 i = 0; i < 4; ++i)
             order[i] = h->order[i];
     }
@@ -98,6 +100,32 @@ struct analyzer_header
                 continue;
             order[y++] = tmpOrder[i];
         }
+    }
+
+    quint32 length;
+    quint32 packet_length; // if packet has static size, it is here
+    quint8 data_mask; // from enum DataType
+    quint8 static_len; // static data length
+    quint8 len_fmt;
+    quint8 order[4];
+    qint8 len_offset;
+};
+
+
+// for old version header, used in data file load
+struct analyzer_header_v1
+{
+    void copyToNew(analyzer_header *h)
+    {
+        h->length = length;
+        h->packet_length = packet_length;
+        h->data_mask = data_mask;
+        h->static_len = static_len;
+        h->len_fmt = len_fmt;
+        h->len_offset = 0;
+
+        for(quint8 i = 0; i < 4; ++i)
+            h->order[i] = order[i];
     }
 
     quint32 length;
@@ -144,6 +172,11 @@ class analyzer_data
 {
 public:
     analyzer_data(analyzer_packet *packet);
+
+    void setPacket(analyzer_packet *packet)
+    {
+        m_packet = packet;
+    }
 
     void setData(QByteArray data)
     {

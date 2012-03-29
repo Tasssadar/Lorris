@@ -32,18 +32,16 @@
 #include "DataWidgets/GraphWidget/graphwidget.h"
 #include "DataWidgets/ScriptWidget/scriptwidget.h"
 #include "DataWidgets/inputwidget.h"
+#include "DataWidgets/terminalwidget.h"
+#include "DataWidgets/buttonwidget.h"
 #include "lorrisanalyzer.h"
 #include "analyzerdatafile.h"
 #include "analyzerdatastorage.h"
 
-AnalyzerDataArea::AnalyzerDataArea(LorrisAnalyzer *analyzer, AnalyzerDataStorage *storage) :
-    QFrame(analyzer)
+AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
+    QFrame(parent)
 {
-    setFrameStyle(QFrame::Panel | QFrame::Plain);
-    setAcceptDrops(true);
     m_widgetIdCounter = 0;
-    m_storage = storage;
-    m_analyzer = analyzer;
 
     m_skipNextMove = false;
 }
@@ -69,9 +67,9 @@ void AnalyzerDataArea::dropEvent(QDropEvent *event)
     QString data = event->mimeData()->text().remove(0, 1);
     quint8 type = data.toInt();
 
-    addWidget(event->pos(), type);
-
     event->acceptProposedAction();
+
+    addWidget(event->pos(), type);
 }
 
 DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
@@ -97,7 +95,17 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(w,          SIGNAL(updateData()),                       SIGNAL(updateData()));
     connect(w,  SIGNAL(mouseStatus(bool,data_widget_info,qint32)),  SIGNAL(mouseStatus(bool,data_widget_info,qint32)));
     connect(w,  SIGNAL(SendData(QByteArray)), m_analyzer->getCon(), SLOT(SendData(QByteArray)));
+    connect(m_analyzer, SIGNAL(setTitleVisibility(bool)),        w, SLOT(setTitleVisibility(bool)));
 
+    //events
+    connect(this,       SIGNAL(onWidgetAdd(DataWidget*)),        w, SLOT(onWidgetAdd(DataWidget*)));
+    connect(this,       SIGNAL(onWidgetRemove(DataWidget*)),     w, SLOT(onWidgetRemove(DataWidget*)));
+    connect(this,       SIGNAL(onScriptEvent(QString)),          w, SLOT(onScriptEvent(QString)));
+    connect(w,          SIGNAL(scriptEvent(QString)),         this, SIGNAL(onScriptEvent(QString)));
+
+    emit onWidgetAdd(w);
+
+    w->setTitleVisibility(m_analyzer->showTitleBars());
     return w;
 }
 
@@ -119,6 +127,8 @@ DataWidget *AnalyzerDataArea::newWidget(quint8 type, QWidget *parent)
         case WIDGET_GRAPH:   return new GraphWidget(parent);
         case WIDGET_SCRIPT:  return new ScriptWidget(parent);
         case WIDGET_INPUT:   return new InputWidget(parent);
+        case WIDGET_TERMINAL:return new TerminalWidget(parent);
+        case WIDGET_BUTTON:  return new ButtonWidget(parent);
     }
     return NULL;
 }
@@ -128,7 +138,10 @@ void AnalyzerDataArea::removeWidget(quint32 id)
     w_map::iterator itr = m_widgets.find(id);
     if(itr == m_widgets.end())
         return;
-    delete itr.value();
+
+    emit onWidgetRemove(*itr);
+
+    delete *itr;
     m_widgets.erase(itr);
 
     m_marks.remove(id);

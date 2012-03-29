@@ -49,7 +49,6 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     bar_l->addWidget(m_bar);
     layout->addLayout(bar_l);
     adjustSize();
-    setMinimumSize(size());
 }
 
 void BarWidget::setUp(AnalyzerDataStorage *storage)
@@ -96,7 +95,7 @@ void BarWidget::setUp(AnalyzerDataStorage *storage)
         ++y;
     }
     bitsAction[0]->setChecked(true);
-    connect(signalMapBits, SIGNAL(mapped(int)), SLOT(bitsSelected(int)));
+    connect(signalMapBits, SIGNAL(mapped(int)), SLOT(setDataType(int)));
 
     QSignalMapper *signalMapRot = new QSignalMapper(this);
 
@@ -152,7 +151,7 @@ void BarWidget::setRange(int min, int max)
     m_bar->setRange(min, max);
 }
 
-void BarWidget::bitsSelected(int i)
+void BarWidget::setDataType(int i)
 {
     for(quint8 y = 0; y < NUM_COUNT; ++y)
         if(bitsAction[y])
@@ -187,7 +186,7 @@ void BarWidget::rangeSelected()
     RangeSelectDialog *dialog = new RangeSelectDialog(m_bar->minimum(), m_bar->maximum(), max, min, this);
     dialog->exec();
     if(dialog->getRes())
-        m_bar->setRange(dialog->getMax(), dialog->getMin());
+        m_bar->setRange(dialog->getMin(), dialog->getMax());
 
     delete dialog;
     emit updateData();
@@ -200,10 +199,8 @@ void BarWidget::rotationSelected(int i)
 
     rotate(i);
 
-    setMinimumSize(0, 0);
     resize(0, 0);
     adjustSize();
-    setMinimumSize(size());
 
     if(i == 0)
         setMaximumSize(width(), 16777215);
@@ -264,7 +261,7 @@ void BarWidget::loadWidgetInfo(AnalyzerDataFile *file)
     if(file->seekToNextBlock("barWType", BLOCK_WIDGET))
     {
         file->read((char*)&m_numberType, sizeof(m_numberType));
-        bitsSelected(m_numberType);
+        setDataType(m_numberType);
     }
 
     // range
@@ -274,8 +271,7 @@ void BarWidget::loadWidgetInfo(AnalyzerDataFile *file)
         qint32 max = 0;
         file->read((char*)&min, sizeof(qint32));
         file->read((char*)&max, sizeof(qint32));
-        m_bar->setMaximum(max);
-        m_bar->setMinimum(min);
+        m_bar->setRange(min, max);
     }
 
     //rotation
@@ -299,18 +295,17 @@ RangeSelectDialog::RangeSelectDialog(int val_min, int val_max, int max, int min,
 {
     ui->setupUi(this);
 
-    connect(ui->maxBox, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
-    connect(ui->minBox, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
-
-    ui->maxBox->setMaximum(max);
-    ui->maxBox->setMinimum(min);
-    ui->minBox->setMaximum(max);
-    ui->minBox->setMinimum(min);
+    ui->maxBox->setRange(val_min, max);
+    ui->minBox->setRange(min, val_max);
     ui->maxBox->setValue(val_max);
     ui->minBox->setValue(val_min);
 
+    connect(ui->maxBox, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
+    connect(ui->minBox, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
     connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(boxClicked(QAbstractButton*)));
 
+    m_minRes = val_min;
+    m_maxRes = val_max;
     m_res = false;
 
     setFixedSize(size());

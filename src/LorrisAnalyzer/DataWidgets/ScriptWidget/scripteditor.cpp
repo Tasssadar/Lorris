@@ -59,6 +59,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& widgetName) :
     connect(loadAct,        SIGNAL(triggered()),               SLOT(loadFile()));
 
     ui->sourceEdit->setPlainText(source);
+    ui->sourceEdit->setTabStopWidth(ui->sourceEdit->fontMetrics().width(' ') * 4);
 }
 
 ScriptEditor::~ScriptEditor()
