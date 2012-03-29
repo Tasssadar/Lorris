@@ -5,11 +5,53 @@ Copyright (C) 2012 Vojtěch Boček
 Contact: <vbocek@gmail.com>
          https://github.com/Tasssadar
 
+Version 0.3.0 - git revision [262]
+================================================================
+ * Tabs can be opened and closed by mouse-clicking.
+   Middle button on tab to close it, outside tab to open new one
+ * Tabs can be renamed and reordered
+ * Tabs can be now splitted, so that you can see multiple tabs at once
+ * Translate default buttons ("Ok", "Apply", "cancel", ..)
+ * Add joystick support. Can be used in LorrisAnalyzer's ScriptWidget
+ * Optimize Terminal drawing code
+ * Lower SerialPort's polling time to 1ms. This will speed-up shupito's programming
+ * Disable module and connection selection while connecting to device
+
+ LorrisShupito:
+ * Add auto-reload of HEX files
+ * Add terminal tab
+ * Set default programming frequency to 2MHz
+ * Add start/stop button
+
+ LorrisAnalyzer:
+ * Add option to clear only received data, not structure and widgets
+ * GraphWidget's sample size is now set according to X axis' scale by default
+ * Fix bug in BarWidget's range settings
+ * Save position into data files
+ * Fix bug - properly load static data when chaning packet structure
+ * Add TerminalWidget. It is ScriptWidget with premade script
+ * Properly show resize cursor on DataWidgets when resize is possible
+ * You can now hide widget's title bars
+ * Data file handling was improved, you can now use "Ctrl+S" shortcut
+ * ScriptWidget: Fix bug with 1 byte long data in sendData()
+ * ScriptWidget: Implement throwException(string)
+ * ScriptWidget: export AnalyzerDataArea (as "area") and ScriptWidget (as "script") objects into script
+ * ScriptWidget: implement moveWidget(widget, x, y) method
+ * ScriptWidget: Implement DataWidget::remove()
+ * ScriptWidget: Implement event system for widgets, thanks to Avakar
+     - object is created in script for every widget, named by their title
+     - ButtonWidget added. This widget will raise onclick event, which script
+       can handle by implementing *widget's title*_clicked() method
+     - script can implement onWidgetAdd(widget, widget's title)
+       and onWidgetRemove(widget, widget's title) methods
+
 Version 0.2.1 - git revision [207]
+================================================================
  * Bugfix release - fix crash in LorrisAnalyzer when deleting widgets created by ScriptWidget
  * Implement getWidth and getHeight to ScriptWidget
 
 Version 0.2.0 - git revision [204]
+================================================================
  * LorrisAnalyzer: Implement ScriptWidget, which allows to parse data with user-defined script
  * LorrisAnalyzer: Implement playback function
  * LorrisAnalyzer: Improvements to GraphWidget code
@@ -18,4 +60,5 @@ Version 0.2.0 - git revision [204]
  * Bug fixes, crash fixes and random fixes
 
 Version 0.1.0 - git revision [164]
+================================================================
  * First release
