@@ -69,7 +69,6 @@ MainWindow::MainWindow(QWidget *parent) :
     menuHelp = new QMenu(tr("&Help"), this);
 
     QAction* actionNewTab = new QAction(tr("&New tab.."), this);
-    QAction* actionCloseTab = new QAction(tr("&Close tab"), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
     QAction* actionAbout = new QAction(tr("About Lorris..."), this);
 
@@ -103,27 +102,26 @@ MainWindow::MainWindow(QWidget *parent) :
 
     actionNewTab->setShortcut(QKeySequence("Ctrl+T"));
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
-    actionCloseTab->setShortcut(QKeySequence("Ctrl+W"));
 
     connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
-    connect(actionCloseTab, SIGNAL(triggered()), this, SLOT(CloseTab())); // FIXME
 
     menuFile->addAction(actionNewTab);
-    menuFile->addAction(actionCloseTab);
     menuFile->addAction(actionQuit);
     menuHelp->addAction(actionAbout);
     menuHelp->addMenu(menuLang);
     menuBar->addMenu(menuFile);
     menuBar->addMenu(menuHelp);
-    menuBar->addSeparator();
+
+    // FIXME: replace by addSeparator() when supported
+    QAction *sep = menuBar->addAction("|");
+    sep->setEnabled(false);
 
     setMenuBar(menuBar);
 
     //Tabs
     TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
-
     connect(tabWidget, SIGNAL(changeMenu(quint32)), SLOT(changeMenu(quint32)));
 
     // Sort tab infos after they were added by static variables
@@ -172,6 +170,10 @@ void MainWindow::changeMenu(quint32 id)
     menuBar->clear();
     menuBar->addMenu(menuFile);
     menuBar->addMenu(menuHelp);
+
+    // FIXME: replace by addSeparator() when supported
+    QAction *sep = menuBar->addAction("|");
+    sep->setEnabled(false);
 
     m_tab_menu = tab->getMenu();
     for(quint8 i = 0; i < m_tab_menu.size(); ++i)
