@@ -847,22 +847,22 @@
         <translation>Rychlost programování (Hz):</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="226"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="232"/>
         <source>Read</source>
         <translation>Číst</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="264"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="276"/>
         <source>Write</source>
         <translation>Programovat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="296"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="314"/>
         <source>Erase</source>
         <translation>Vymazat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="375"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.ui" line="393"/>
         <source>N/A</source>
         <translation></translation>
     </message>
@@ -1390,24 +1390,6 @@
     </message>
 </context>
 <context>
-    <name>MainTabBar</name>
-    <message>
-        <location filename="../src/ui/maintabwidget.cpp" line="82"/>
-        <source>Rename...</source>
-        <translation>Přejmenovat...</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/maintabwidget.cpp" line="86"/>
-        <source>Rename tab</source>
-        <translation>Přejmenovat panel</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/maintabwidget.cpp" line="86"/>
-        <source>New name:</source>
-        <translation>Nové jméno:</translation>
-    </message>
-</context>
-<context>
     <name>MainWindow</name>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="68"/>
@@ -1426,46 +1408,41 @@
     </message>
     <message>
         <location filename="../src/ui/mainwindow.cpp" line="72"/>
-        <source>&amp;Close tab</source>
-        <translation>&amp;Zavřít panel</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.cpp" line="73"/>
         <source>&amp;Quit</source>
         <translation>&amp;Ukončit</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="74"/>
+        <location filename="../src/ui/mainwindow.cpp" line="73"/>
         <source>About Lorris...</source>
         <translation>O Lorris...</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="76"/>
+        <location filename="../src/ui/mainwindow.cpp" line="75"/>
         <source>Language</source>
         <translation>Jazyk</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="86"/>
+        <location filename="../src/ui/mainwindow.cpp" line="85"/>
         <source>Same as OS - </source>
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="172"/>
+        <location filename="../src/ui/mainwindow.cpp" line="152"/>
         <source>Lorris version </source>
         <translation>Verze Lorris </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="177"/>
+        <location filename="../src/ui/mainwindow.cpp" line="157"/>
         <source>About Lorris</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="206"/>
+        <location filename="../src/ui/mainwindow.cpp" line="190"/>
         <source>Restart</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="207"/>
+        <location filename="../src/ui/mainwindow.cpp" line="191"/>
         <source>You need to restart Lorris for this change to take effect</source>
         <translation>Musíte restartovat Lorris aby se tato změna projevila</translation>
     </message>
@@ -1728,6 +1705,7 @@
     </message>
     <message>
         <location filename="../src/WorkTab/WorkTabMgr.cpp" line="94"/>
+        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="102"/>
         <source>Home</source>
         <translation></translation>
     </message>
@@ -2312,6 +2290,34 @@ ke změně uspořádání</translation>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.ui" line="141"/>
         <source>Browse</source>
         <translation>Vybrat soubor</translation>
+    </message>
+</context>
+<context>
+    <name>TabBar</name>
+    <message>
+        <location filename="../src/ui/tabwidget.cpp" line="195"/>
+        <source>Split view top/bottom</source>
+        <translation>Rozdělit na vrch a spodek</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabwidget.cpp" line="196"/>
+        <source>Split view left/right</source>
+        <translation>Rozdělit napravo a nalevo</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabwidget.cpp" line="202"/>
+        <source>Rename...</source>
+        <translation>Přejmenovat...</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabwidget.cpp" line="249"/>
+        <source>Rename tab</source>
+        <translation>Přejmenovat panel</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabwidget.cpp" line="249"/>
+        <source>New name:</source>
+        <translation>Nové jméno:</translation>
     </message>
 </context>
 <context>

@@ -196,6 +196,8 @@ TabBar::TabBar(QWidget *parent) :
     m_newLeftRight = m_menu->addAction(tr("Split view left/right"));
     m_newTopBottom->setEnabled(false);
     m_newLeftRight->setEnabled(false);
+    m_newTopBottom->setIcon(QIcon(":/icons/split_top.png"));
+    m_newLeftRight->setIcon(QIcon(":/icons/split_left.png"));
 
     m_menu->addSeparator();
 

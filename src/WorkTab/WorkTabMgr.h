@@ -100,8 +100,6 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
         HomeTab *hometab;
 };
 
-
 #define sWorkTabMgr WorkTabMgr::GetSingleton()
-
 
 #endif // WORKTABMGR_H
