@@ -48,7 +48,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
     connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
 
-    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 int TabWidget::addTab(QWidget *widget, const QString &name, quint32 tabId)

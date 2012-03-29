@@ -57,6 +57,16 @@ public:
     void pullTab(int index, TabWidget *origin);
     QWidget* unregisterTab(int index);
 
+    virtual QSize sizeHint() const
+    {
+        return QSize(100, 100);
+    }
+
+    virtual QSize minimumSizeHint() const
+    {
+        return QSize(0, 0);
+    }
+
 protected:
     void mousePressEvent(QMouseEvent *ev);
     void mouseDoubleClickEvent(QMouseEvent *event);
