@@ -30,6 +30,7 @@
 WorkTabMgr::WorkTabMgr() : QObject()
 {
     tabIdCounter = 0;
+    tabWidgetCounter = 0;
     tabView = NULL;
     hometab = NULL;
 }
