@@ -30,11 +30,13 @@
 #include "tabview.h"
 #include "WorkTab/WorkTabMgr.h"
 
+#define LAYOUT_MARGIN 4
 TabView::TabView(QWidget *parent) :
     QWidget(parent)
 {
     QHBoxLayout *layout = new QHBoxLayout(this);
     m_layouts.insert(layout);
+    layout->setMargin(LAYOUT_MARGIN);
 
     m_active_widget = newTabWidget(layout);
 }
@@ -132,6 +134,7 @@ void TabView::split(bool horizontal, int index)
                 parentLayout->insertLayout(idx, l, 50);
 
             m_layouts.insert(l);
+            l->setMargin(setAsMain ? LAYOUT_MARGIN : 0);
 
             l->addWidget(widget, 50);
         }
@@ -149,6 +152,7 @@ void TabView::split(bool horizontal, int index)
 
             m_layouts.insert(newLayout);
             l = newLayout;
+            l->setMargin(0);
         }
     }
 
@@ -162,14 +166,16 @@ void TabView::updateResizeLines(QBoxLayout *l)
 {
     QLayoutItem *prevItem = NULL;
     QLayoutItem *curItem = NULL;
-    for(int i = 0; i < l->count(); ++i)
+    int count = l->count();
+    for(int i = 0; i < count; ++i)
     {
         curItem = l->itemAt(i);
 
         if(curItem->layout())
             updateResizeLines((QBoxLayout*)curItem->layout());
 
-        if(isResizeLine(curItem) && (!prevItem || isResizeLine(prevItem) || i+1 >= l->count()))
+        // Remove ResizeLine if there are two in a row or if it is the first or last item
+        if(isResizeLine(curItem) && (!prevItem || i+1 >= count || isResizeLine(prevItem)))
         {
             ResizeLine *line = (ResizeLine*)curItem->widget();
             l->removeWidget(line);
@@ -184,15 +190,13 @@ void TabView::updateResizeLines(QBoxLayout *l)
             goto restart_loop;
         }
 
-        goto continue_loop;
+        prevItem = curItem;
+        continue;
 
 restart_loop:
         i = -1;
         prevItem = curItem = NULL;
-        continue;
-
-continue_loop:
-        prevItem = curItem;
+        count = l->count();
     }
 }
 
