@@ -26,12 +26,7 @@
 
 static const LorrisTerminalInfo info;
 
-LorrisTerminalInfo::LorrisTerminalInfo()
-{
-
-}
-
-LorrisTerminalInfo::~LorrisTerminalInfo()
+LorrisTerminalInfo::LorrisTerminalInfo() : WorkTabInfo()
 {
 
 }

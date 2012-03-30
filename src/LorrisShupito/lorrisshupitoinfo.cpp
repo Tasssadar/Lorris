@@ -26,12 +26,7 @@
 
 static const LorrisShupitoInfo info;
 
-LorrisShupitoInfo::LorrisShupitoInfo()
-{
-
-}
-
-LorrisShupitoInfo::~LorrisShupitoInfo()
+LorrisShupitoInfo::LorrisShupitoInfo() : WorkTabInfo()
 {
 
 }

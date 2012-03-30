@@ -30,7 +30,6 @@ class LorrisAnalyzerInfo : public WorkTabInfo
 {
 public:
     explicit LorrisAnalyzerInfo();
-    virtual ~LorrisAnalyzerInfo();
 
     WorkTab *GetNewTab();
     QString GetName();

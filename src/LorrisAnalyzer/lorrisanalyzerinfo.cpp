@@ -26,12 +26,7 @@
 
 static const LorrisAnalyzerInfo info;
 
-LorrisAnalyzerInfo::LorrisAnalyzerInfo()
-{
-
-}
-
-LorrisAnalyzerInfo::~LorrisAnalyzerInfo()
+LorrisAnalyzerInfo::LorrisAnalyzerInfo() : WorkTabInfo()
 {
 
 }

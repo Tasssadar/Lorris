@@ -32,16 +32,13 @@ class WorkTab;
 class WorkTabInfo
 {
     public:
-        virtual ~WorkTabInfo();
-
-        virtual WorkTab *GetNewTab();
-        virtual QString GetName();
-        virtual QString GetDescription();
-        virtual quint8 GetConType();
+        virtual WorkTab *GetNewTab() = 0;
+        virtual QString GetName() = 0;
+        virtual QString GetDescription() = 0;
+        virtual quint8 GetConType() = 0;
 
     protected:
         explicit WorkTabInfo();
-
 };
 
 #endif // WORKTABINFO_H

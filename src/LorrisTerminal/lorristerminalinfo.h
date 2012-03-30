@@ -30,7 +30,6 @@ class LorrisTerminalInfo : public WorkTabInfo
 {
 public:
     explicit LorrisTerminalInfo();
-    virtual ~LorrisTerminalInfo();
 
     WorkTab *GetNewTab();
     QString GetName();

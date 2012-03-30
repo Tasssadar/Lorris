@@ -26,12 +26,7 @@
 
 static const LorrisProxyInfo info;
 
-LorrisProxyInfo::LorrisProxyInfo()
-{
-
-}
-
-LorrisProxyInfo::~LorrisProxyInfo()
+LorrisProxyInfo::LorrisProxyInfo() : WorkTabInfo()
 {
 
 }
