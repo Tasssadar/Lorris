@@ -196,12 +196,12 @@ void ScriptEnv::setSource(const QString &source)
     if(hasUncaughtException())
         throw tr("%1 on line %2").arg(uncaughtException().toString()).arg(uncaughtExceptionLineNumber());
 
-    setAgent(new ScriptAgent(this));
-
     m_on_data = m_global.property("onDataChanged");
     m_on_key = m_global.property("onKeyPress");
     m_on_widget_add = m_global.property("onWidgetAdd");
     m_on_widget_remove = m_global.property("onWidgetRemove");
+
+    setAgent(new ScriptAgent(this));
 }
 
 QString ScriptEnv::dataChanged(analyzer_data *data, quint32 index)
