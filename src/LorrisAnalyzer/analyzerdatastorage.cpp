@@ -237,7 +237,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         loading_box->setStandardButtons(QMessageBox::NoButton);
         loading_box->setWindowModality(Qt::ApplicationModal);
         loading_box->setIcon(QMessageBox::Information);
-        loading_box->show();
+        loading_box->open();
 
         data = file.readAll();
         file.close();

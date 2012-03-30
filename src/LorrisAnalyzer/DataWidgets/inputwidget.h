@@ -43,8 +43,6 @@ public:
 public slots:
     QWidget *newWidget(const QString& name, int stretch = 0);
 
-private:
-    QUiLoader *m_loader;
 };
 
 #endif // INPUTWIDGET_H
