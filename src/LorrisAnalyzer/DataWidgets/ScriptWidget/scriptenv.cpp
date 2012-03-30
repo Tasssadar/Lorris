@@ -37,6 +37,19 @@
 #include "scriptagent.h"
 #include "joystick/joymgr.h"
 
+/* Simple JavaScript Inheritance
+ * By John Resig http://ejohn.org/
+ * MIT Licensed.
+ * http://ejohn.org/blog/simple-javascript-inheritance/
+ */
+static const QString classImplement =
+        "(function(){var i=false,fnTest=/xyz/.test(function(){xyz})?/\\b_super\\b/:/.*/;this.Class=function(){};"
+        "Class.extend=function(e){var f=this.prototype;i=true;var g=new this();i=false;for(var h in e){g[h]="
+        "typeof e[h]==\"function\"&&typeof f[h]==\"function\"&&fnTest.test(e[h])?(function(c,d){return function()"
+        "{var a=this._super;this._super=f[c];var b=d.apply(this,arguments);this._super=a;return b}})(h,e[h]):"
+        "e[h]}function Class(){if(!i&&this.init)this.init.apply(this,arguments)}Class.prototype=g;Class.proto"
+        "type.constructor=Class;Class.extend=arguments.callee;return Class}})();";
+
 QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &in)
 { return engine->newQObject(in); }
 
@@ -178,7 +191,7 @@ void ScriptEnv::setSource(const QString &source)
     popContext();
     prepareNewContext();
     setAgent(NULL);
-    evaluate(source);
+    evaluate(classImplement + source);
 
     if(hasUncaughtException())
         throw tr("%1 on line %2").arg(uncaughtException().toString()).arg(uncaughtExceptionLineNumber());
@@ -193,7 +206,8 @@ void ScriptEnv::setSource(const QString &source)
 
 QString ScriptEnv::dataChanged(analyzer_data *data, quint32 index)
 {
-    if(!m_on_data.isFunction())
+    // do not execute when setting source - agent() == NULL
+    if(!m_on_data.isFunction() || !agent())
         return "";
 
     const QByteArray& pkt_data = data->getData();
@@ -301,6 +315,8 @@ void ScriptEnv::onWidgetAdd(DataWidget *w)
 
     connect(w, SIGNAL(titleChanged(QString)), SLOT(onTitleChange(QString)));
 
+    if(!m_on_widget_add.isFunction())
+        return;
     QScriptValueList args;
     args << newQObject(w) << name;
     m_on_widget_add.call(QScriptValue(), args);
@@ -312,6 +328,9 @@ void ScriptEnv::onWidgetRemove(DataWidget *w)
     if(!name.isEmpty())
         m_global.setProperty(name, undefinedValue());
     disconnect(w, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChange(QString)));
+
+    if(!m_on_widget_remove.isFunction())
+        return;
 
     QScriptValueList args;
     args << newQObject(w) << name;
