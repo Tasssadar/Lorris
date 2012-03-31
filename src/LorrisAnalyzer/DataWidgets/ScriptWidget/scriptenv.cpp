@@ -77,10 +77,15 @@ ScriptEnv::ScriptEnv(AnalyzerDataArea* area, quint32 w_id, QObject *parent) :
     m_area = area;
     m_widget_id = w_id;
     m_x = m_y = 0;
+
+    m_storage = new ScriptStorage(this);
 }
 
 ScriptEnv::~ScriptEnv()
 {
+    if(m_on_script_exit.isFunction())
+        m_on_script_exit.call();
+
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
 
@@ -88,6 +93,8 @@ ScriptEnv::~ScriptEnv()
         delete *itr;
 
     emit stopUsingJoy(this);
+
+    delete m_storage;
 }
 
 void ScriptEnv::widgetDestroyed(QObject *widget)
@@ -162,6 +169,7 @@ void ScriptEnv::prepareNewContext()
     // objects
     m_global.setProperty("script", newQObject(parent()));
     m_global.setProperty("area", newQObject(m_area));
+    m_global.setProperty("storage", newQObject(m_storage));
 
     const AnalyzerDataArea::w_map& widgets = m_area->getWidgets();
     for(AnalyzerDataArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
@@ -188,6 +196,9 @@ void ScriptEnv::setSource(const QString &source)
 {
     m_source = source;
 
+    if(m_on_script_exit.isFunction())
+        m_on_script_exit.call();
+
     popContext();
     prepareNewContext();
     setAgent(NULL);
@@ -200,6 +211,7 @@ void ScriptEnv::setSource(const QString &source)
     m_on_key = m_global.property("onKeyPress");
     m_on_widget_add = m_global.property("onWidgetAdd");
     m_on_widget_remove = m_global.property("onWidgetRemove");
+    m_on_script_exit = m_global.property("onScriptExit");
 
     setAgent(new ScriptAgent(this));
 }

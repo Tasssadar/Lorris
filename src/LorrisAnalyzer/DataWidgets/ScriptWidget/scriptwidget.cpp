@@ -99,23 +99,23 @@ void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
         file->write((char*)&len, sizeof(quint32));
         file->write(data.data());
     }
+
+    // storage data
+    m_env->getStorage()->saveToFile(file);
 }
 
 void ScriptWidget::loadWidgetInfo(AnalyzerDataFile *file)
 {
     DataWidget::loadWidgetInfo(file);
 
+    QString source = "";
     // source
     if(file->seekToNextBlock("scriptWSource", BLOCK_WIDGET))
     {
         quint32 size = 0;
         file->read((char*)&size, sizeof(quint32));
 
-        QString source = QString::fromUtf8(file->read(size), size);
-        try
-        {
-            m_env->setSource(source);
-        } catch(const QString&) { }
+        source = QString::fromUtf8(file->read(size), size);
     }
 
     // terminal data
@@ -127,6 +127,14 @@ void ScriptWidget::loadWidgetInfo(AnalyzerDataFile *file)
         QByteArray data(file->read(size));
         m_terminal->appendText(data);
     }
+
+    // storage data
+    m_env->getStorage()->loadFromFile(file);
+
+    try
+    {
+        m_env->setSource(source);
+    } catch(const QString&) { }
 }
 
 void ScriptWidget::setSourceTriggered()
