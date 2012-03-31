@@ -153,16 +153,33 @@ void Terminal::addLines(QByteArray text)
             case '\b':
             {
                 if(line_end != line_start)
+                {
                     --line_end;
 
-                addLine(pos, line_start, line_end);
+                    addLine(pos, line_start, line_end);
 
-                if(*line_start == '\b')
+                    if(*line_start == '\b')
+                        ++line_end;
+                    line_start = line_end;
+                }
+                else
+                {
+                    std::vector<QString>::iterator linePos = m_lines.begin() + pos;
+                    if(linePos == m_lines.end())
+                        break;
+
+                    if(m_cursor_pos.x() != 0)
+                        --m_cursor_pos.rx();
+
                     ++line_end;
-                line_start = line_end;
+                    ++line_start;
 
-                if(m_cursor_pos.x() != 0)
-                    --m_cursor_pos.rx();
+                    if((*linePos).size() == 1)
+                        m_lines.erase(linePos);
+                    else
+                        (*linePos).chop(1);
+                }
+
                 break;
             }
             default:
