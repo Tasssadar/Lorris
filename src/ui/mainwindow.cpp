@@ -95,6 +95,8 @@ MainWindow::MainWindow(QWidget *parent) :
             menuLang->addSeparator();
     }
 
+    setStatusBar(new QStatusBar(this));
+
     quint32 curLang = sConfig.get(CFG_QUINT32_LANGUAGE);
     if(curLang >= m_lang_menu.size())
         curLang = 0;
@@ -122,7 +124,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Tabs
     TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
-    connect(tabWidget, SIGNAL(changeMenu(quint32)), SLOT(changeMenu(quint32)));
+    connect(tabWidget, SIGNAL(changeMenu(quint32)),                    SLOT(changeMenu(quint32)));
+    connect(tabWidget, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
 
     // Sort tab infos after they were added by static variables
     sWorkTabMgr.SortTabInfos();

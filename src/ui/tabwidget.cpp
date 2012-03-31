@@ -52,7 +52,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
-int TabWidget::addTab(QWidget *widget, const QString &name, quint32 tabId)
+int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
 {
     int idx = QTabWidget::addTab(widget, name);
 
@@ -66,6 +66,8 @@ int TabWidget::addTab(QWidget *widget, const QString &name, quint32 tabId)
 
     if(count() >= 2)
         m_tab_bar->enableSplit(true);
+
+    connect(widget, SIGNAL(statusBarMsg(QString,int)), SIGNAL(statusBarMsg(QString,int)));
 
     setTabsClosable(true);
     return idx;

@@ -636,18 +636,24 @@
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="267"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="396"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="523"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="543"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="529"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="549"/>
         <source> of </source>
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="498"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="408"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="416"/>
+        <source>File &quot;%1&quot; was saved</source>
+        <translation>Subor &quot;%1&quot; byl uložen</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="504"/>
         <source>Clear everything?</source>
         <translation>Vymazat vše?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="499"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="505"/>
         <source>Do you really want to clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
@@ -682,12 +688,12 @@
         <translation>Ukázat titulek widgetů</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="500"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="506"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="501"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="507"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -1427,22 +1433,22 @@
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="152"/>
+        <location filename="../src/ui/mainwindow.cpp" line="155"/>
         <source>Lorris version </source>
         <translation>Verze Lorris </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="157"/>
+        <location filename="../src/ui/mainwindow.cpp" line="160"/>
         <source>About Lorris</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="190"/>
+        <location filename="../src/ui/mainwindow.cpp" line="193"/>
         <source>Restart</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="191"/>
+        <location filename="../src/ui/mainwindow.cpp" line="194"/>
         <source>You need to restart Lorris for this change to take effect</source>
         <translation>Musíte restartovat Lorris aby se tato změna projevila</translation>
     </message>
@@ -1656,7 +1662,7 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="220"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="556"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="562"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="104"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -1694,28 +1700,28 @@
         <translation>Nemůžu otevřít soubor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminalinfo.cpp" line="46"/>
+        <location filename="../src/LorrisTerminal/lorristerminalinfo.cpp" line="41"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminalinfo.cpp" line="51"/>
+        <location filename="../src/LorrisTerminal/lorristerminalinfo.cpp" line="46"/>
         <source>Terminal can show input data from serial port, send key strokes to serial port and flash new programs to devices with bootloader.</source>
         <translation>Terminál umí zobrazit data ze sériového port, poslat do portu stisky kláves a nahrát nový program do čipu s bootloaderem.</translation>
     </message>
     <message>
-        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="94"/>
-        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="102"/>
+        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="95"/>
+        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="103"/>
         <source>Home</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="46"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="41"/>
         <source>Analyzer</source>
         <translation>Analyzér</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="51"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzerinfo.cpp" line="46"/>
         <source>Analyzer can parse any data you give it and show them as anything you like.You can mark packet in data source, mark its header or bottom, mark individual data blocks, select their data type and the way they will be showed to you.</source>
         <translation>Analyzér může překousat jakákoliv data které mu dáte a zobrazit je jak chcete. Můžete označit packet který se má v proudu dat vyhledávat, označit jeho hlavičku a konec, určit bloky data, jejich typ a způsob jakým budou zobrazeny.</translation>
     </message>
@@ -1725,12 +1731,12 @@
         <translation>Musíte vybrat alespoň jednu věc k načtení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupitoinfo.cpp" line="46"/>
+        <location filename="../src/LorrisShupito/lorrisshupitoinfo.cpp" line="41"/>
         <source>Shupito</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupitoinfo.cpp" line="51"/>
+        <location filename="../src/LorrisShupito/lorrisshupitoinfo.cpp" line="46"/>
         <source>Control program for shupito programmer.</source>
         <translation>Program pro obsluhu programátoru Shupito.</translation>
     </message>
@@ -1890,12 +1896,12 @@
         <translation>Program je příliš velký.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxyinfo.cpp" line="46"/>
+        <location filename="../src/LorrisProxy/lorrisproxyinfo.cpp" line="41"/>
         <source>Serial port proxy</source>
         <translation>Proxy SP&lt;-&gt;TCP</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxyinfo.cpp" line="51"/>
+        <location filename="../src/LorrisProxy/lorrisproxyinfo.cpp" line="46"/>
         <source>This module acts as proxy between serial port and TCP socket</source>
         <translation>Jednoduchá proxy mezi sériovým portem a TCP socketem</translation>
     </message>
@@ -1941,7 +1947,7 @@
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="557"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="563"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
@@ -2000,7 +2006,7 @@
 <context>
     <name>ScriptEnv</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="51"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="64"/>
         <source>// You can use clearTerm() and appendTerm(string) to set term content
 // You can use sendData(Array of ints) to send data to device. It expects array of uint8s
 
@@ -2034,7 +2040,7 @@ function onKeyPress(key) {
 }</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="184"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="208"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
@@ -2055,7 +2061,7 @@ function onKeyPress(key) {
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="192"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="201"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -2295,27 +2301,27 @@ ke změně uspořádání</translation>
 <context>
     <name>TabBar</name>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="195"/>
+        <location filename="../src/ui/tabwidget.cpp" line="197"/>
         <source>Split view top/bottom</source>
         <translation>Rozdělit na vrch a spodek</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="196"/>
+        <location filename="../src/ui/tabwidget.cpp" line="198"/>
         <source>Split view left/right</source>
         <translation>Rozdělit napravo a nalevo</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="202"/>
+        <location filename="../src/ui/tabwidget.cpp" line="206"/>
         <source>Rename...</source>
         <translation>Přejmenovat...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="249"/>
+        <location filename="../src/ui/tabwidget.cpp" line="253"/>
         <source>Rename tab</source>
         <translation>Přejmenovat panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="249"/>
+        <location filename="../src/ui/tabwidget.cpp" line="253"/>
         <source>New name:</source>
         <translation>Nové jméno:</translation>
     </message>

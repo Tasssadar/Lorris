@@ -30,6 +30,7 @@
 
 class QMenu;
 class TabBar;
+class WorkTab;
 
 class TabWidget : public QTabWidget
 {
@@ -42,6 +43,7 @@ Q_SIGNALS:
     void split(bool horizontal, int index);
     void changeActiveWidget(TabWidget *widget);
     void changeMenu(quint32 id);
+    void statusBarMsg(const QString& message, int timeout = 0);
 
 public:
     explicit TabWidget(quint32 id, QWidget *parent = 0);
@@ -53,7 +55,7 @@ public:
         return QTabWidget::addTab(widget, name);
     }
 
-    int addTab(QWidget *widget, const QString& name, quint32 tabId);
+    int addTab(WorkTab *widget, const QString& name, quint32 tabId);
     void pullTab(int index, TabWidget *origin);
     QWidget* unregisterTab(int index);
 

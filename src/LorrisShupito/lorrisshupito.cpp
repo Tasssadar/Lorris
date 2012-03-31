@@ -611,7 +611,7 @@ void LorrisShupito::log(const QString &text)
 
 void LorrisShupito::status(const QString &text)
 {
-    ui->statusLabel->setText(text);
+    emit statusBarMsg(text, 5000);
 }
 
 bool LorrisShupito::checkVoltage(bool active)

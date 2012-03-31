@@ -403,11 +403,17 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
 void LorrisAnalyzer::saveButton()
 {
     m_storage->SaveToFile(ui->dataArea, ui->devTabs);
+
+    QStringList name = m_storage->getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
+    emit statusBarMsg(tr("File \"%1\" was saved").arg(name.last()), 5000);
 }
 
 void LorrisAnalyzer::saveAsButton()
 {
     m_storage->SaveToFile("", ui->dataArea, ui->devTabs);
+
+    QStringList name = m_storage->getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
+    emit statusBarMsg(tr("File \"%1\" was saved").arg(name.last()), 5000);
 }
 
 void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
