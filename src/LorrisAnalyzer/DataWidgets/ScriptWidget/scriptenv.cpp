@@ -39,7 +39,7 @@
 
 /* Simple JavaScript Inheritance
  * By John Resig http://ejohn.org/
- * MIT Licensed.
+ * MIT Licensed, see MIT_LICENSE file
  * http://ejohn.org/blog/simple-javascript-inheritance/
  */
 static const QString classImplement =

@@ -1,5 +1,6 @@
-    Lorris - GUI tool for robotics (at least until I think of something which suits more)
-             https://github.com/Tasssadar/Lorris
+    Lorris - GUI tool for robotics (at least until I think of
+             something which suits more)
+           - https://github.com/Tasssadar/Lorris
 
     Copyright (C) 2012 Vojtěch Boček
     Contact: <vbocek@gmail.com>
@@ -19,19 +20,26 @@
 
 
     Lorris uses following libraries:
-        Qt Framework(http://qt.nokia.com/), the cross-platform application and UI framework,
-            which is distributed under the GNU LGPL v2.1
+        Qt Framework(http://qt.nokia.com/), the cross-platform application
+	    and UI framework, which is distributed under the GNU LGPL v2.1
 
         Qwt(http://qwt.sourceforge.net/), Qt Widgets for Technical Applications,
             which is distributed under the Qwt license - see dep/qwt/COPYING
 
         QExtSerialPort(http://code.google.com/p/qextserialport/),
             Qt interface class for old fashioned serial ports,
-            which is distributed under the New BSD License - see http://www.opensource.org/licenses/bsd-license.php
+            which is distributed under the New BSD License.
+            See http://www.opensource.org/licenses/bsd-license.php
 
         Modified version of QHexEdit2(http://code.google.com/p/qhexedit2/),
             "QHexEdit is a Binary Edior for Qt",
-            which is distributed under the LGPL v2.1 - see dep/qhexedit2/src/license.txt
+            which is distributed under the LGPL v2.1.
+            See dep/qhexedit2/src/license.txt
 
         SDL(http://www.libsdl.org), Simple directmedia layer,
             which is distributed under the GNU LGPL v2.1
+
+	Simple JavaScript Inheritance implementation by John Resig,
+	    http://ejohn.org/blog/simple-javascript-inheritance/
+	    which is distributed under the MIT license.
+	    See MIT_LICENSE file.
