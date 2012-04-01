@@ -30,8 +30,8 @@ QString Utils::hexToString(quint8 data, bool withZeroEx)
     static const char* hex = "0123456789ABCDEF";
 
     QString result(withZeroEx ? "0x" : "");
-    result[0] = hex[data >> 4];
-    result[1] = hex[data & 0x0F];
+    result += hex[data >> 4];
+    result += hex[data & 0x0F];
     return result;
 }
 
