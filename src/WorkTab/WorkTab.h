@@ -30,6 +30,7 @@
 
 #include "common.h"
 #include "connection/connection.h"
+#include "WorkTabInfo.h"
 
 class WorkTab : public QWidget
 {
@@ -52,6 +53,9 @@ public:
     virtual bool onTabClose();
     virtual std::vector<QMenu*>& getMenu() { return m_menus; }
 
+    WorkTabInfo *getInfo() const { return m_info; }
+    void setInfo(WorkTabInfo *info) { m_info = info; }
+
 protected slots:
     virtual void readData(const QByteArray &data);
     virtual void connectedStatus(bool connected);
@@ -66,6 +70,7 @@ protected:
 
 private:
     std::vector<QMenu*> m_menus;
+    WorkTabInfo *m_info;
 };
 
 #endif // WORKTAB_H

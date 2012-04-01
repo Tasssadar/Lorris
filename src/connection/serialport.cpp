@@ -33,6 +33,7 @@
 #include "connectionmgr.h"
 #include "config.h"
 #include "WorkTab/WorkTabMgr.h"
+#include "WorkTab/WorkTab.h"
 #include "WorkTab/WorkTabInfo.h"
 
 SerialPort::SerialPort() : Connection()
@@ -204,7 +205,7 @@ void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
     }
 }
 
-void SerialPortBuilder::CreateConnection(WorkTabInfo *info)
+void SerialPortBuilder::CreateConnection(WorkTab *tab)
 {
     QString portName = m_portBox->currentText();
     BaudRateType rate = BaudRateType(m_rateBox->itemData(m_rateBox->currentIndex()).toInt());
@@ -215,19 +216,22 @@ void SerialPortBuilder::CreateConnection(WorkTabInfo *info)
     SerialPort *port = (SerialPort*)sConMgr.FindConnection(CONNECTION_SERIAL_PORT, portName);
     if(port && port->isOpen())
     {
-        emit connectionSucces(port, info->GetName() + " - " + port->GetIDString(), info);
+        tab->setConnection(port);
+        emit connectionSucces(port, tab->getInfo()->GetName() + " - " + port->GetIDString(), tab);
     }
     else
     {
         emit setCreateBtnStatus(true);
 
-        m_tab_info = info;
+        m_tab = tab;
 
         if(!port)
         {
             port = new SerialPort();
             port->SetNameAndRate(portName, rate);
         }
+
+        m_tab->setConnection(port);
 
         connect(port, SIGNAL(connectResult(Connection*,bool)), SLOT(conResult(Connection*,bool)));
         port->OpenConcurrent();
@@ -238,12 +242,19 @@ void SerialPortBuilder::conResult(Connection *con, bool open)
 {
     if(open)
     {
-        emit connectionSucces(con, m_tab_info->GetName() + " - " + con->GetIDString(), m_tab_info);
+        emit connectionSucces(con, m_tab->getInfo()->GetName() + " - " + con->GetIDString(), m_tab);
+        m_tab = NULL;
     }
     else
     {
+        con->RemoveUsingTab(m_tab->getId());
+        m_tab->setConnection(NULL);
+
         if(!con->IsUsedByTab())
             delete con;
+
+        delete m_tab;
+        m_tab = NULL;
 
         emit setCreateBtnStatus(false);
         emit connectionFailed(tr("Failed to open serial port!"));

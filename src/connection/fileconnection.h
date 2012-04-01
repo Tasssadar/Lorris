@@ -46,7 +46,7 @@ public:
     {
     }
 
-    void CreateConnection(WorkTabInfo *info);
+    void CreateConnection(WorkTab *tab);
 };
 
 #endif // FILECONNECTION_H

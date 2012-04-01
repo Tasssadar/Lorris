@@ -59,19 +59,24 @@ WorkTabMgr::InfoList *WorkTabMgr::GetWorkTabInfos()
     return &m_workTabInfos;
 }
 
+WorkTab *WorkTabMgr::GetNewTab(WorkTabInfo *info)
+{
+    WorkTab *tab = info->GetNewTab();
+    tab->setInfo(info);
+    tab->setId(generateNewTabId());
+    return tab;
+}
+
 void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
 {
-    quint32 id = generateNewTabId();
-
     CloseHomeTab();
 
-    m_workTabs.insert(id, tab);
-    tab->setId(id);
+    m_workTabs.insert(tab->getId(), tab);
 
     TabWidget *activeWidget = tabView->getActiveWidget();
 
     tab->setParent(activeWidget);
-    activeWidget->addTab(tab, label, id);
+    activeWidget->addTab(tab, label, tab->getId());
     activeWidget->setTabsClosable(true);
     return;
 }

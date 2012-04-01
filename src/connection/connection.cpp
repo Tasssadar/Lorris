@@ -23,6 +23,7 @@
 
 #include "connection.h"
 #include "connectionmgr.h"
+#include "WorkTab/WorkTab.h"
 
 Connection::Connection()
 {
@@ -57,6 +58,16 @@ ConnectionBuilder::ConnectionBuilder(QWidget *parent, int moduleIdx) : QObject((
 {
     m_parent = parent;
     m_module_idx = moduleIdx;
+    m_tab = NULL;
+}
+
+ConnectionBuilder::~ConnectionBuilder()
+{
+    if(m_tab)
+    {
+        m_tab->setConnection(NULL);
+        delete m_tab;
+    }
 }
 
 void ConnectionBuilder::addOptToTabDialog(QGridLayout */*layout*/)
@@ -64,7 +75,7 @@ void ConnectionBuilder::addOptToTabDialog(QGridLayout */*layout*/)
 
 }
 
-void ConnectionBuilder::CreateConnection(WorkTabInfo */*info*/)
+void ConnectionBuilder::CreateConnection(WorkTab */*info*/)
 {
 }
 

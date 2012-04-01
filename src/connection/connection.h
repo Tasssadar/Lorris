@@ -92,19 +92,20 @@ class ConnectionBuilder : public QObject
 Q_SIGNALS:
     void setCreateBtnStatus(bool connecting);
     void connectionFailed(const QString& msg);
-    void connectionSucces(Connection *con, const QString& tabName, WorkTabInfo *info, qint16 conType = -1);
+    void connectionSucces(Connection *con, const QString& tabName, WorkTab *tab, qint16 conType = -1);
 
 public:
     ConnectionBuilder(QWidget *parent,  int moduleIdx);
+    ~ConnectionBuilder();
 
     virtual void addOptToTabDialog(QGridLayout *layout);
-    virtual void CreateConnection(WorkTabInfo *info);
+    virtual void CreateConnection(WorkTab *tab);
 
 protected:
     QWidget *m_parent;
     int m_module_idx;
 
-    WorkTabInfo *m_tab_info;
+    WorkTab *m_tab;
 };
 
 #endif // CONNECTION_H

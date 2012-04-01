@@ -80,7 +80,7 @@ public:
     }
 
     void addOptToTabDialog(QGridLayout *layout);
-    void CreateConnection(WorkTabInfo *info);
+    void CreateConnection(WorkTab *tab);
 
 private slots:
     void conResult(Connection *con, bool open);

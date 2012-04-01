@@ -23,6 +23,7 @@
 
 #include "fileconnection.h"
 #include "connectionmgr.h"
+#include "WorkTab/WorkTab.h"
 #include "WorkTab/WorkTabInfo.h"
 
 FileConnection::FileConnection()
@@ -45,11 +46,13 @@ void FileConnection::OpenConcurrent()
     emit connectResult(this, false);
 }
 
-void FileConnectionBuilder::CreateConnection(WorkTabInfo *info)
+void FileConnectionBuilder::CreateConnection(WorkTab *tab)
 {
     FileConnection *con = (FileConnection*)sConMgr.FindConnection(CONNECTION_FILE, "");
     if(!con)
         con = new FileConnection();
 
-    emit connectionSucces(con, info->GetName(), info);
+    tab->setConnection(con);
+
+    emit connectionSucces(con, tab->getInfo()->GetName(), tab);
 }
