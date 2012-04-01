@@ -128,6 +128,7 @@ void LorrisTerminal::initUI()
 
 LorrisTerminal::~LorrisTerminal()
 {
+    delete terminal;
     delete ui;
 }
 

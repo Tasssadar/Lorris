@@ -27,11 +27,11 @@
 
 QString Utils::hexToString(quint8 data, bool withZeroEx)
 {
-    QString result = QString::number(data, 16).toUpper();
-    if(result.count()%2)
-        result.push_front('0');
-    if(withZeroEx)
-        result.prepend("0x");
+    static const char* hex = "0123456789ABCDEF";
+
+    QString result(withZeroEx ? "0x" : "");
+    result[0] = hex[data >> 4];
+    result[1] = hex[data & 0x0F];
     return result;
 }
 
@@ -82,13 +82,4 @@ void Utils::ThrowException(const QString& text, QWidget* parent)
     box.setWindowTitle(tr("Error!"));
     box.setText(text);
     box.exec();
-}
-
-void Utils::parseForHexEditor(QByteArray& data)
-{
-    for(int i = 0; i < data.size(); ++i)
-    {
-        if((char)data[i] < 32 || (char)data[i] > 126)
-            data[i] = '.';
-    }
 }

@@ -28,6 +28,8 @@
 #include <QAbstractScrollArea>
 #include <vector>
 #include <QPoint>
+#include <QTime>
+#include <QTimer>
 
 class QMenu;
 class QByteArray;
@@ -60,7 +62,7 @@ public:
 
     void writeToFile(QFile *file);
 
-    const QByteArray& getData()
+    const char* getData()
     {
         return m_data;
     }
@@ -70,7 +72,7 @@ public:
 public slots:
     void clear();
     void pause(bool pause);
-    void appendText(QByteArray text);
+    void appendText(const QByteArray& text);
     void setFmt(int fmt);
     void setInput(quint8 input);
 
@@ -86,12 +88,12 @@ protected:
 private slots:
     void copyToClipboard();
     void pasteFromClipboard();
+    void updateScrollBars();
 
 private:
     void handleInput(const QByteArray& data, int key = 0);
-    void updateScrollBars();
     void addLine(quint32 pos, char *&line_start, char *&line_end);
-    void addLines(QByteArray text);
+    void addLines(char *text, quint32 size);
     void addHex();
     QPoint mouseToTextPos(const QPoint& pos);
 
@@ -99,14 +101,17 @@ private:
 
     inline void adjustSelectionWidth(int &w, quint32 i, quint32 max, int len);
 
-    inline std::vector<QString>& lines()
+    inline std::vector<QByteArray>& lines()
     {
         return m_paused ? m_pause_lines : m_lines;
     }
 
-    std::vector<QString> m_lines;
-    std::vector<QString> m_pause_lines;
-    QByteArray m_data;
+    std::vector<QByteArray> m_lines;
+    std::vector<QByteArray> m_pause_lines;
+
+    char *m_data;
+    quint32 m_data_alloc;
+    quint32 m_data_size;
 
     bool m_paused;
     quint8 m_fmt;
@@ -128,6 +133,10 @@ private:
 
     QMenu *m_context_menu;
     QAction *m_fmt_act[FMT_MAX];
+
+    QTimer m_updateTimer;
+
+    bool m_changed;
 };
 
 #endif // TERMINAL_H
