@@ -54,7 +54,7 @@ class Terminal : public QAbstractScrollArea
     Q_OBJECT
 
 Q_SIGNALS:
-    void keyPressedASCII(QByteArray key);
+    void keyPressed(QString key);
 
 public:
     Terminal(QWidget *parent);
@@ -72,6 +72,11 @@ public:
 public slots:
     void clear();
     void pause(bool pause);
+    void appendText(const QString& text)
+    {
+        appendText(text.toUtf8());
+    }
+
     void appendText(const QByteArray& text);
     void setFmt(int fmt);
     void setInput(quint8 input);
@@ -91,9 +96,9 @@ private slots:
     void updateScrollBars();
 
 private:
-    void handleInput(const QByteArray& data, int key = 0);
-    void addLine(quint32 pos, char *&line_start, char *&line_end);
-    void addLines(char *text, quint32 size);
+    void handleInput(const QString &data, int key = 0);
+    void addLine(quint32 pos, QChar *&line_start, QChar *&line_end);
+    void addLines(const QString& text);
     void addHex();
     QPoint mouseToTextPos(const QPoint& pos);
 
@@ -101,17 +106,19 @@ private:
 
     inline void adjustSelectionWidth(int &w, quint32 i, quint32 max, int len);
 
-    inline std::vector<QByteArray>& lines()
+    inline std::vector<QString>& lines()
     {
         return m_paused ? m_pause_lines : m_lines;
     }
 
-    std::vector<QByteArray> m_lines;
-    std::vector<QByteArray> m_pause_lines;
+    std::vector<QString> m_lines;
+    std::vector<QString> m_pause_lines;
 
     char *m_data;
     quint32 m_data_alloc;
     quint32 m_data_size;
+
+    QString m_command;
 
     bool m_paused;
     quint8 m_fmt;
@@ -128,8 +135,6 @@ private:
     QPoint m_sel_start;
     QPoint m_sel_begin;
     QPoint m_sel_stop;
-
-    QByteArray m_command;
 
     QMenu *m_context_menu;
     QAction *m_fmt_act[FMT_MAX];

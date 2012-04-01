@@ -113,7 +113,7 @@ void LorrisTerminal::initUI()
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
-    connect(terminal,          SIGNAL(keyPressedASCII(QByteArray)), SLOT(sendKeyEvent(QByteArray)));
+    connect(terminal,          SIGNAL(keyPressed(QString)),         SLOT(sendKeyEvent(QString)));
     connect(ui->browseBtn,     SIGNAL(clicked()),                   SLOT(browseForHex()));
     connect(ui->connectButton, SIGNAL(clicked()),                   SLOT(connectButton()));
     connect(ui->stopButton,    SIGNAL(clicked()),                   SLOT(stopButton()));
@@ -700,10 +700,10 @@ void LorrisTerminal::deviceIdTimeout()
     hex = NULL;
 }
 
-void LorrisTerminal::sendKeyEvent(QByteArray key)
+void LorrisTerminal::sendKeyEvent(const QString &key)
 {
     if(!(m_state & STATE_DISCONNECTED))
-        m_con->SendData(key);
+        m_con->SendData(key.toUtf8());
 }
 
 void LorrisTerminal::EnableButtons(quint16 buttons, bool enable)

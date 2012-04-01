@@ -123,7 +123,7 @@ void Terminal::appendText(const QByteArray& text)
 
     switch(m_fmt)
     {
-        case FMT_TEXT: addLines((char*)text.data(), text.size()); break;
+        case FMT_TEXT: addLines(QString::fromUtf8(text)); break;
         case FMT_HEX:  addHex();       break;
     }
 
@@ -131,15 +131,15 @@ void Terminal::appendText(const QByteArray& text)
         m_changed = true;
 }
 
-void Terminal::addLines(char *text, quint32 size)
+void Terminal::addLines(const QString &text)
 {
     quint32 pos = m_cursor_pos.y();
-    char *line_start = text;
-    char *line_end = text;
+    QChar *line_start = (QChar*)text.data();
+    QChar *line_end = line_start;
 
-    for(quint32 i = 0; i < size && *line_end; ++i)
+    for(int i = 0; i < text.size() && *line_end != 0; ++i)
     {
-        switch(*line_end)
+        switch((*line_end).unicode())
         {
             case '\f':
             {
@@ -175,7 +175,7 @@ void Terminal::addLines(char *text, quint32 size)
                 }
                 else
                 {
-                    std::vector<QByteArray>::iterator linePos = m_lines.begin() + pos;
+                    std::vector<QString>::iterator linePos = m_lines.begin() + pos;
                     if(linePos == m_lines.end())
                         break;
 
@@ -205,24 +205,24 @@ void Terminal::addLines(char *text, quint32 size)
         addLine(pos, line_start, line_end);
 }
 
-void Terminal::addLine(quint32 pos, char *&line_start, char *&line_end)
+void Terminal::addLine(quint32 pos, QChar *&line_start, QChar *&line_end)
 {
-    std::vector<QByteArray>::iterator linePos = m_lines.begin() + pos;
+    std::vector<QString>::iterator linePos = m_lines.begin() + pos;
     if(linePos != m_lines.end())
     {
         if((line_end - line_start + m_cursor_pos.x()) > (*linePos).length())
             (*linePos).resize(line_end - line_start + m_cursor_pos.x());
 
-        char *lineData = (*linePos).data()+m_cursor_pos.x();
+        QChar *lineData = (*linePos).data()+m_cursor_pos.x();
         std::copy(line_start, line_end, lineData);
 
         m_cursor_pos.rx() += (line_end - line_start);
     }
     else
     {
-        char tmp = *line_end;
+        QChar tmp = *line_end;
         *line_end = 0;
-        m_lines.insert(linePos, QByteArray(line_start));
+        m_lines.insert(linePos, QString(line_start));
         *line_end = tmp;
 
         m_cursor_pos.setX(m_lines[pos].length());
@@ -279,7 +279,7 @@ void Terminal::addHex()
         if(chunk_size != 16)
             *(line + chunk_size + 61) = '|';
 
-        m_lines.push_back(QByteArray(line, 62+chunk_size));
+        m_lines.push_back(QString::fromAscii(line, 62+chunk_size));
     }
     delete[] line;
     m_cursor_pos.setY(m_lines.size());
@@ -288,7 +288,7 @@ void Terminal::addHex()
 
 void Terminal::keyPressEvent(QKeyEvent *event)
 {
-    QByteArray key = event->text().toAscii();
+    QString key = event->text();
 
     if((event->modifiers() & Qt::ControlModifier))
     {
@@ -333,13 +333,13 @@ void Terminal::keyPressEvent(QKeyEvent *event)
     handleInput(key, event->key());
 }
 
-void Terminal::handleInput(const QByteArray &data, int key)
+void Terminal::handleInput(const QString &data, int key)
 {
     switch(m_input)
     {
         case INPUT_SEND_KEYPRESS:
         {
-            emit keyPressedASCII(data);
+            emit keyPressed(data);
             break;
         }
         case INPUT_SEND_COMMAND:
@@ -350,7 +350,7 @@ void Terminal::handleInput(const QByteArray &data, int key)
             if(key != Qt::Key_Return && key != Qt::Key_Enter)
                 break;
 
-            emit keyPressedASCII(m_command);
+            emit keyPressed(m_command);
             m_command.clear();
         }
     }
@@ -507,13 +507,13 @@ void Terminal::paintEvent(QPaintEvent *)
     int maxLen = viewport()->width()/m_char_width + 1;
     for(y = 0; (int)i < maxLines && i < lines().size(); ++i, y += m_char_height)
     {
-        QByteArray& l = lines()[i];
+        QString& l = lines()[i];
 
         int len = std::min(l.length() - startX, maxLen);
         if(len <= 0)
             continue;
         painter.drawText(0, y, viewport()->width(), m_char_height, Qt::AlignLeft,
-                         QByteArray::fromRawData(l.data()+startX, len));
+                         QString::fromRawData(l.data()+startX, len));
     }
 }
 
@@ -658,7 +658,7 @@ void Terminal::setFmt(int fmt)
 
     switch(fmt)
     {
-        case FMT_TEXT: addLines(m_data, m_data_size); break;
+        case FMT_TEXT: addLines(QString::fromUtf8(m_data, m_data_size)); break;
         case FMT_HEX:  addHex();         break;
     }
 
@@ -671,7 +671,7 @@ void Terminal::writeToFile(QFile *file)
 {
     for(quint32 i = 0; i < lines().size(); ++i)
     {
-        file->write(lines()[i]);
+        file->write(lines()[i].toUtf8());
         file->write("\n");
     }
 }

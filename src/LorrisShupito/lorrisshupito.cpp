@@ -125,7 +125,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     m_terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
     ui->memTabs->addTab(m_terminal, tr("Terminal"));
 
-    connect(m_terminal, SIGNAL(keyPressedASCII(QByteArray)), m_shupito,  SLOT(sendTunnelData(QByteArray)));
+    connect(m_terminal, SIGNAL(keyPressed(QString)),         m_shupito,  SLOT(sendTunnelData(QString)));
     connect(m_shupito,  SIGNAL(tunnelData(QByteArray)),      m_terminal, SLOT(appendText(QByteArray)));
 
     m_vcc = 0;

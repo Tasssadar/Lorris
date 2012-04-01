@@ -244,13 +244,13 @@ QString ScriptEnv::dataChanged(analyzer_data *data, quint32 index)
     return val.isUndefined() ? "" : val.toString();
 }
 
-void ScriptEnv::keyPressed(const QByteArray &key)
+void ScriptEnv::keyPressed(const QString &key)
 {
     if(!m_on_key.isFunction() || key.isEmpty())
         return;
 
     QScriptValueList args;
-    args << QString(key);
+    args << key;
 
     m_on_key.call(QScriptValue(), args);
 }
@@ -380,7 +380,7 @@ QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *
 
 QScriptValue ScriptEnv::__appendTerm(QScriptContext *context, QScriptEngine *engine)
 {
-    emit ((ScriptEnv*)engine)->appendTerm(context->argument(0).toString().toAscii());
+    emit ((ScriptEnv*)engine)->appendTerm(context->argument(0).toString());
     return QScriptValue();
 }
 

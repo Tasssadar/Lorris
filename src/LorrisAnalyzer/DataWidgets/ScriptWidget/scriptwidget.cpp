@@ -59,9 +59,9 @@ void ScriptWidget::setUp(AnalyzerDataStorage *storage)
 
     m_env = new ScriptEnv((AnalyzerDataArea*)parent(), getId(),  this);
 
-    connect(m_terminal, SIGNAL(keyPressedASCII(QByteArray)), m_env,      SLOT(keyPressed(QByteArray)));
+    connect(m_terminal, SIGNAL(keyPressed(QString)),         m_env,      SLOT(keyPressed(QString)));
     connect(m_env,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
-    connect(m_env,      SIGNAL(appendTerm(QByteArray)),      m_terminal, SLOT(appendText(QByteArray)));
+    connect(m_env,      SIGNAL(appendTerm(QString)),         m_terminal, SLOT(appendText(QString)));
     connect(m_env,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
 }
 
@@ -73,7 +73,7 @@ void ScriptWidget::newData(analyzer_data *data, quint32 index)
 
     QString res = m_env->dataChanged(data, index);
     if(!res.isEmpty())
-        m_terminal->appendText(res.toAscii());
+        m_terminal->appendText(res);
 }
 
 void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)

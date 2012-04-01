@@ -41,7 +41,7 @@ class ScriptEnv : public QScriptEngine
 
 Q_SIGNALS:
     void clearTerm();
-    void appendTerm(const QByteArray& text);
+    void appendTerm(const QString& text);
     void SendData(const QByteArray& data);
 
     void stopUsingJoy(QObject *object);
@@ -83,7 +83,7 @@ public:
     }
 
 public slots:
-    void keyPressed(const QByteArray& key);
+    void keyPressed(const QString &key);
 
 private slots:
     void widgetDestroyed(QObject *widget);
