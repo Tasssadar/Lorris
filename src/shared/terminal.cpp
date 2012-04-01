@@ -547,9 +547,10 @@ void Terminal::pause(bool pause)
 
 void Terminal::clear()
 {
-    free(m_data);
-    m_data = NULL;
-    m_data_size = m_data_alloc = 0;
+    m_data_alloc = 512;
+    m_data = (char*)realloc(m_data, m_data_alloc);
+    m_data_size = 0;
+
     m_lines.clear();
     m_pause_lines.clear();
     m_cursor_pos = m_cursor_pause_pos = QPoint(0, 0);

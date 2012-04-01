@@ -62,9 +62,9 @@ public:
 
     void writeToFile(QFile *file);
 
-    const char* getData()
+    QByteArray getData()
     {
-        return m_data;
+        return QByteArray(m_data, m_data_size);
     }
 
     int getFmt() { return m_fmt; }
