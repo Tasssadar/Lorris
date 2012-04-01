@@ -67,6 +67,8 @@ private:
 
     QFuture<bool> m_future;
     QFutureWatcher<bool> m_watcher;
+
+    QMutex m_port_mutex;
 };
 
 class SerialPortBuilder : public ConnectionBuilder

@@ -66,6 +66,8 @@ void SerialPort::connectResultSer(bool opened)
 
 void SerialPort::Close()
 {
+    m_port_mutex.lock();
+
     if(m_port)
     {
         m_thread->stop();
@@ -79,6 +81,9 @@ void SerialPort::Close()
 
         emit connected(false);
     }
+
+    m_port_mutex.unlock();
+
     opened = false;
 }
 
@@ -107,6 +112,8 @@ void SerialPort::OpenConcurrent()
 
 bool SerialPort::openPort()
 {
+    m_port_mutex.lock();
+
     m_port = new QextSerialPort(m_idString, QextSerialPort::EventDriven);
     m_port->setBaudRate(m_rate);
     m_port->setParity(PAR_NONE);
@@ -128,6 +135,7 @@ bool SerialPort::openPort()
         m_thread->start();
     }
 
+    m_port_mutex.unlock();
     return res;
 }
 
