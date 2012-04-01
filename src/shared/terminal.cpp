@@ -267,8 +267,8 @@ void Terminal::addHex()
 
         for(int x = 0; x < chunk_size; ++x)
         {
-            *(itr++) = hex[chunk[x] >> 4];
-            *(itr++) = hex[chunk[x] & 0x0F];
+            *(itr++) = hex[quint8(chunk[x]) >> 4];
+            *(itr++) = hex[quint8(chunk[x]) & 0x0F];
             *(itr++) = ' ';
 
             line[61+x] = (chunk[x] < 32 || chunk[x] > 126) ? '.' : chunk[x];
