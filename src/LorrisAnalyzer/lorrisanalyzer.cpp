@@ -162,6 +162,8 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     setAreaVisibility(AREA_LEFT, false);
     setAreaVisibility(AREA_RIGHT, true);
     setAreaVisibility(AREA_TOP, true);
+
+    m_data_changed = false;
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -202,7 +204,7 @@ void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
     if(!result)
     {
         ui->connectButton->setText(tr("Connect"));
-        showErrorBox(tr("Can't open connection!"));
+        Utils::ThrowException(tr("Can't open connection!"));
     }
 }
 
@@ -254,6 +256,7 @@ void LorrisAnalyzer::readData(const QByteArray& data)
             m_curData = new analyzer_data(m_packet);
         }
     }
+    m_data_changed = true;
 
     if(!canUpdateUi())
         return;
@@ -290,6 +293,7 @@ void LorrisAnalyzer::onTabShow()
             QString file = s->getFileName();
             quint8 mask = s->getDataMask();
             load(&file, mask);
+            m_data_changed = false;
             break;
         }
         case 1:
@@ -321,11 +325,37 @@ void LorrisAnalyzer::onTabShow()
 
                 m_storage->setPacket(packet);
                 m_packet = packet;
+                m_data_changed = true;
             }
             break;
         }
     }
     delete s;
+}
+
+bool LorrisAnalyzer::onTabClose()
+{
+    if(!m_data_changed)
+        return true;
+
+    QMessageBox box(this);
+    box.setText(tr("Data has been modified."));
+    box.setInformativeText(tr("Do you want to save your changes?"));
+    box.setIcon(QMessageBox::Question);
+    box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    box.setDefaultButton(QMessageBox::Save);
+
+    switch(box.exec())
+    {
+        case QMessageBox::Save:
+            saveButton();
+            return true;
+        case QMessageBox::Discard:
+            return true;
+        case QMessageBox::Cancel:
+            return false;
+    }
+    return true;
 }
 
 void LorrisAnalyzer::timeSliderMoved(int value)
@@ -350,6 +380,7 @@ void LorrisAnalyzer::updateData(bool ignoreTime)
         return;
 
     updateTime.restart();
+    m_data_changed = true;
 
     int val = ui->timeSlider->value();
 
@@ -398,6 +429,7 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     m_state &= ~(STATE_DIALOG);
 
     updateData(true);
+    m_data_changed = false;
 }
 
 void LorrisAnalyzer::saveButton()
@@ -406,6 +438,7 @@ void LorrisAnalyzer::saveButton()
 
     QStringList name = m_storage->getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
     emit statusBarMsg(tr("File \"%1\" was saved").arg(name.last()), 5000);
+    m_data_changed = false;
 }
 
 void LorrisAnalyzer::saveAsButton()
@@ -414,6 +447,7 @@ void LorrisAnalyzer::saveAsButton()
 
     QStringList name = m_storage->getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
     emit statusBarMsg(tr("File \"%1\" was saved").arg(name.last()), 5000);
+    m_data_changed = false;
 }
 
 void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
@@ -496,6 +530,8 @@ void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
 
     if(area & AREA_LEFT)
         ui->playFrame->setVisible(visible);
+
+    m_data_changed = true;
 }
 
 void LorrisAnalyzer::clearAllButton()

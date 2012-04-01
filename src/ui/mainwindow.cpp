@@ -43,6 +43,7 @@
 #include <QSignalMapper>
 #include <QLocale>
 #include <QTranslator>
+#include <QCloseEvent>
 
 #include "mainwindow.h"
 #include "HomeTab.h"
@@ -194,4 +195,12 @@ void MainWindow::langChanged(int idx)
     box.setText(tr("You need to restart Lorris for this change to take effect"));
     box.setIcon(QMessageBox::Information);
     box.exec();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(!sWorkTabMgr.onTabsClose())
+        event->ignore();
+    else
+        event->accept();
 }

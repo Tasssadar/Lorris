@@ -83,8 +83,10 @@ class LorrisAnalyzer : public WorkTab
 
     public slots:
         void onTabShow();
+        bool onTabClose();
         void updateData(bool ignoreTime = false);
         void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);
+        void setDataChanged(bool changed = true) { m_data_changed = changed; }
 
     private slots:
         void connectButton();
@@ -128,6 +130,8 @@ class LorrisAnalyzer : public WorkTab
         int minUpdateDelay;
 
         QAction *m_title_action;
+
+        bool m_data_changed;
 };
 
 #endif // LORRISANALYZER_H

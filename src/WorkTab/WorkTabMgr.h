@@ -84,6 +84,8 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
         void OpenHomeTab();
         void CloseHomeTab();
 
+        bool onTabsClose();
+
     public slots:
         void NewTabDialog();
 

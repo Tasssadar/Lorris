@@ -87,13 +87,9 @@ void WorkTab::onTabShow()
 
 }
 
-void WorkTab::showErrorBox(const QString &text)
+bool WorkTab::onTabClose()
 {
-    QMessageBox box(this);
-    box.setIcon(QMessageBox::Critical);
-    box.setWindowTitle(tr("Error!"));
-    box.setText(text);
-    box.exec();
+    return true;
 }
 
 void WorkTab::addTopMenu(QMenu *menu)

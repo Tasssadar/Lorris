@@ -82,7 +82,6 @@ void WorkTabMgr::removeTab(WorkTab *tab)
     delete tab;
 }
 
-
 void WorkTabMgr::OpenHomeTab(quint32 id)
 {
     Q_ASSERT(!hometab);
@@ -133,4 +132,14 @@ TabView *WorkTabMgr::CreateWidget(QWidget *parent)
     connect(tabView, SIGNAL(newTab()), SLOT(NewTabDialog()));
     connect(tabView, SIGNAL(openHomeTab(quint32)), SLOT(OpenHomeTab(quint32)));
     return tabView;
+}
+
+bool WorkTabMgr::onTabsClose()
+{
+    for(WorkTabMap::iterator itr = m_workTabs.begin(); itr != m_workTabs.end(); ++itr)
+    {
+        if(!(*itr)->onTabClose())
+            return false;
+    }
+    return true;
 }

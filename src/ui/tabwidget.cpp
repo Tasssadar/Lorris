@@ -100,8 +100,12 @@ void TabWidget::closeTab(int index)
 
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
 
+    WorkTab *tab = sWorkTabMgr.getWorkTab(*itr);
+    if(!tab->onTabClose())
+        return;
+
     removeTab(index);
-    sWorkTabMgr.removeTab(*itr);
+    sWorkTabMgr.removeTab(tab);
     m_tab_ids.erase(itr);
 
     checkEmpty();
