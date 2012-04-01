@@ -24,6 +24,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QCryptographicHash>
+#include <QCoreApplication>
 
 #include "analyzerdatastorage.h"
 #include "analyzerdataarea.h"
@@ -238,6 +239,12 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         loading_box->setWindowModality(Qt::ApplicationModal);
         loading_box->setIcon(QMessageBox::Information);
         loading_box->open();
+
+        // Proccess events to properly draw message box
+        // must be done twice, first one draws dialog
+        // and second draws content
+        QCoreApplication::processEvents();
+        QCoreApplication::processEvents();
 
         data = file.readAll();
         file.close();
