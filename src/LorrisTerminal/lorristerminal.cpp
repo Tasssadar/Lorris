@@ -139,7 +139,7 @@ void LorrisTerminal::browseForHex()
                                                     tr("Intel hex file (*.hex)"));
     ui->hexFile->setText(filename);
     if(filename.length() != 0)
-        sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
+        sConfig.set(CFG_STRING_HEX_FOLDER, filename);
 }
 
 void LorrisTerminal::clearButton()
@@ -752,7 +752,7 @@ void LorrisTerminal::loadText()
     terminal->appendText(file.readAll());
     file.close();
 
-    sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
+    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
 }
 
 void LorrisTerminal::saveText()
@@ -773,7 +773,7 @@ void LorrisTerminal::saveText()
     terminal->writeToFile(&file);
     file.close();
 
-    sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
+    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
 }
 
 void LorrisTerminal::inputAct(int act)

@@ -108,11 +108,11 @@ void SourceSelectDialog::browse()
 
     ui->contButton->setEnabled(filename.length() != 0);
 
-    if(filename.length() == 0)
+    if(filename.isEmpty())
         return;
 
     ui->fileEdit->setText(filename);
-    sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
+    sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
 }
 
 void SourceSelectDialog::loadRadioToggled(bool toggle)
