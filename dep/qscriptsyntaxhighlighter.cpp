@@ -56,7 +56,7 @@ enum ScriptIds {
     Label
 };
 
-#define MAX_KEYWORD 64
+#define MAX_KEYWORD 65
 static const char *const keywords[MAX_KEYWORD] = {
     "Class",
     "Infinity",
@@ -98,6 +98,7 @@ static const char *const keywords[MAX_KEYWORD] = {
     "long",
     "native",
     "new",
+    "null",
     "package",
     "private",
     "protected",
