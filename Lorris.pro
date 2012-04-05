@@ -95,7 +95,11 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp \
     src/ui/tabview.cpp \
     src/ui/tabwidget.cpp \
-    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.cpp
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.cpp \
+    src/LorrisAVR/lorrisavr.cpp \
+    src/LorrisAVR/lorrisavrinfo.cpp \
+    src/LorrisAVR/emulator.cpp \
+    src/LorrisAVR/mcu.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -175,7 +179,11 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/buttonwidget.h \
     src/ui/tabview.h \
     src/ui/tabwidget.h \
-    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.h
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.h \
+    src/LorrisAVR/lorrisavr.h \
+    src/LorrisAVR/lorrisavrinfo.h \
+    src/LorrisAVR/emulator.h \
+    src/LorrisAVR/mcu.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
