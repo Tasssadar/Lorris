@@ -68,7 +68,7 @@ void MCU::init(HexFile *hex)
 
         std::vector<quint8>& sec_data = itr->second;
 
-        for(quint32 i = 0; i+1 < sec_data.size();i+=2)
+        for(quint32 i = 0; i+1 < sec_data.size();)
         {
             quint8 first = sec_data[i];
             quint8 second = sec_data[i+1];
@@ -99,7 +99,7 @@ void MCU::init(HexFile *hex)
 
             m_instructions.insert(offset+i, inst);
 
-
+            i += prot->words*2;
         }
     }
 }
@@ -114,7 +114,7 @@ inst_prototype *MCU::getInstPrototype(quint16 val)
 
 void MCU::addInstHandlers()
 {
-
+    m_handlers
 }
 
 
