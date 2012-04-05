@@ -23,6 +23,7 @@
 
 #include <QFile>
 #include <QObject>
+#include <QDebug>
 
 #include "hexfile.h"
 #include "common.h"
@@ -142,6 +143,11 @@ void HexFile::LoadFromFile(const QString &path)
             throw QString(QObject::tr("Invalid record type (line %1)")).arg(lineno);
 
         addRegion(base + address, rec_nums.data() + 4, rec_nums.data() + rec_nums.size() - 1, lineno);
+    }
+
+    for(regionMap::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+    {
+        qDebug() << itr->first << itr->second.size();
     }
 }
 

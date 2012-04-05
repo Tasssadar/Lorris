@@ -183,7 +183,9 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAVR/lorrisavr.h \
     src/LorrisAVR/lorrisavrinfo.h \
     src/LorrisAVR/emulator.h \
-    src/LorrisAVR/mcu.h
+    src/LorrisAVR/mcu.h \
+    src/LorrisAVR/instructions.h \
+    src/LorrisAVR/mcu_prototype.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
