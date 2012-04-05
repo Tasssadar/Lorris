@@ -84,6 +84,8 @@ void MCU::init(HexFile *hex)
             {
                 Q_ASSERT(sec_data.size() > i+3);
                 next_inst = (sec_data[i+3] << 8) | sec_data[i+2];
+                m_prog_mem[offset + i+2] = sec_data[i+2];
+                m_prog_mem[offset + i+3] = sec_data[i+3];
             }
 
             if(!prot)
