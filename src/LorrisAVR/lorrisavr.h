@@ -26,11 +26,17 @@
 
 #include "WorkTab/WorkTab.h"
 
+class MCU;
+
 class LorrisAVR : public WorkTab
 {
     Q_OBJECT
 public:
-    explicit LorrisAVR(QWidget *parent = 0);    
+    explicit LorrisAVR(QWidget *parent = 0);
+    ~LorrisAVR();
+
+private:
+    MCU *m_mcu;
 };
 
 #endif // LORRISAVR_H

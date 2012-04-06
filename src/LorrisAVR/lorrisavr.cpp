@@ -30,6 +30,14 @@ LorrisAVR::LorrisAVR(QWidget *parent) :
     HexFile *hex = new HexFile();
     hex->LoadFromFile("/home/tassadar/data/yunimin/programs/emulator_test/default/emulator_test.hex");
 
-    MCU *mcu = new MCU();
-    mcu->init(hex);
+    m_mcu = new MCU();
+    m_mcu->init(hex);
+
+    m_mcu->startMCU();
+    delete hex;
+}
+
+LorrisAVR::~LorrisAVR()
+{
+    delete m_mcu;
 }

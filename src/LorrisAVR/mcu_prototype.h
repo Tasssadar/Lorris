@@ -40,6 +40,7 @@ enum sreg_flags
 
 struct mcu_prototype
 {
+    bool bit16;
     quint32 sram_size;
     quint32 prog_mem_size;
     quint32 eeprom_size;
@@ -58,6 +59,6 @@ struct mcu_prototype
     quint8 UCSR0A;
 };
 
-static mcu_prototype atmega328p = { 2048, 32768, 1024, 2, 0x5D, 0xC6, 0xC5, 0xC4, 0xC2, 0xC1, 0xC0 };
+static mcu_prototype atmega328p = {true,  2048, 32768, 1024, 2, 0x5D, 0xC6, 0xC5, 0xC4, 0xC2, 0xC1, 0xC0 };
 
 #endif // MCU_PROTOTYPE_H

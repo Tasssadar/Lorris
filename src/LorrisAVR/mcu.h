@@ -24,20 +24,25 @@
 #ifndef MCU_H
 #define MCU_H
 
-#include <QTypeInfo>
 #include <QHash>
+#include <QThread>
+#include <QTimer>
+#include <QMap>
+#include <QMutex>
 
 #include "hexfile.h"
 
 struct inst_prototype;
 struct mcu_prototype;
 
+class MCU;
+
 struct instruction
 {
     int arg1;
     int arg2;
     inst_prototype *prototype;
-    void (*handler)();
+    quint8 (MCU::*handler)(int, int);
 };
 
 struct wrapper_16
@@ -54,8 +59,8 @@ struct wrapper_16
 
     void set(quint16 val)
     {
-        addr[0] = (val >> 8);
-        addr[1] = (val & 0xFF);
+        addr[0] = (val & 0xFF);
+        addr[1] = (val >> 8);
     }
 
     quint16 get()
@@ -96,21 +101,36 @@ struct wrapper_16
     quint8 *addr;
 };
 
-class MCU
+class MCU : public QThread
 {
+    Q_OBJECT
 public:
-    typedef QMap<quint32, instruction> InstMap;
+    typedef QHash<quint32, instruction> InstMap;
+    typedef quint8 (MCU::*instHandler)(int, int);
     MCU();
     ~MCU();
 
     void init(HexFile *hex);
+    void startMCU();
+
+protected:
+    void run();
+
+private slots:
+    void checkCycles();
 
 private:
     inst_prototype *getInstPrototype(quint16 val);
     void addInstHandlers();
+    instHandler getInstHandler(quint8 id);
+    void setDataMem16(int idx, quint16 val);
 
     mcu_prototype *m_protype;
     quint32 m_freq;
+
+    MCU *m_self;
+
+    volatile bool m_run;
 
     // Memories
     /*
@@ -128,11 +148,7 @@ private:
     quint8 *m_prog_mem;
     quint8 *m_eeprom;
 
-    InstMap m_instructions;
-    QHash<quint16, quint8 (*)(int, int)> m_handlers;
-
-    // other
-    quint16 m_program_counter;
+    quint32 m_program_counter;
     wrapper_16 m_stack_pointer;
     wrapper_16 x_register;
     wrapper_16 y_register;
@@ -141,8 +157,35 @@ private:
     quint8 *m_data_section;
     quint8 *m_bss_section;
 
+    instruction **m_instructions;
+    QHash<quint8, instHandler> m_handlers;
+
+    // loop controls
+    QTimer m_cycles_timer;
+    quint8 m_cycles_debug;
+    quint64 m_cycles_debug_counter;
+    QMutex m_counter_mutex;
+    volatile quint64 m_nop_count;
+    volatile quint64 m_cycle_counter;
+    quint8 m_cycles_sleep;
 
     // instruction handlers
+    void check_ZNS(quint8 res);
+
+public:
+    quint8 __adiw(int arg1, int arg2);
+    quint8 __bclr(int arg1, int /*arg2*/);
+    quint8 __call(int arg1, int /*arg2*/);
+    quint8 __eor(int arg1, int arg2);
+    quint8 __jmp(int arg1, int /*arg2*/);
+    quint8 __ldd_y_plus(int arg1, int arg2);
+    quint8 __ldi(int arg1, int arg2);
+    quint8 __in(int arg1, int arg2);
+    quint8 __out(int arg1, int arg2);
+    quint8 __push(int arg1, int /*arg2*/);
+    quint8 __rcall(int arg1, int /*arg2*/);
+    quint8 __rjmp(int arg1, int /*arg2*/);
+    quint8 __std_y_plus(int arg1, int arg2);
 };
 
 
