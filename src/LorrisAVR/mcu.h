@@ -65,7 +65,7 @@ struct wrapper_16
 
     quint16 get()
     {
-        return (addr[1] << 8) || addr[0];
+        return ((addr[1] << 8) | addr[0]);
     }
 
     wrapper_16& operator= (const quint16 &val)

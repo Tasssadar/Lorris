@@ -46,6 +46,10 @@ MCU::~MCU()
     m_run = false;
     wait();
 
+    for(quint32 i = 0; i < m_protype->prog_mem_size; ++i)
+        delete m_instructions[i];
+    delete[] m_instructions;
+
     delete[] m_data_mem;
     delete[] m_prog_mem;
     delete[] m_eeprom;
@@ -75,7 +79,7 @@ void MCU::init(HexFile *hex)
     m_program_counter = 0x00;
 
     m_instructions = new instruction*[m_protype->prog_mem_size];
-    for(int i = 0; i < m_protype->prog_mem_size; ++i)
+    for(quint32 i = 0; i < m_protype->prog_mem_size; ++i)
         m_instructions[i] = NULL;
 
     addInstHandlers();
@@ -144,24 +148,29 @@ void MCU::init(HexFile *hex)
             i += 2;
         }
     }
-#if 0
-    for(InstMap::iterator itr = m_instructions.begin(); itr != m_instructions.end();++itr)
+#if DEBUG
+    for(quint32 i = 0; i < m_protype->prog_mem_size; ++i)
     {
+        if(!m_instructions[i])
+            continue;
+
+        instruction *inst = m_instructions[i];
+
         char buf[512];
 
-        int name_len = 8 - strlen((*itr).prototype->name);
+        int name_len = 8 - strlen(inst->prototype->name);
 
-        if((*itr).prototype->arg2 != NONE)
-            ::snprintf(buf, 512, "0x%04x: %s%*s0x%02x 0x%02x", itr.key(), (*itr).prototype->name, name_len, "", (*itr).arg1, (*itr).arg2);
-        else if((*itr).prototype->arg1 != NONE)
+        if(inst->prototype->arg2 != NONE)
+             ::snprintf(buf, 512, "0x%04x: %s%*s0x%02x 0x%02x", i, inst->prototype->name, name_len, "", inst->arg1, inst->arg2);
+        else if(inst->prototype->arg1 != NONE)
         {
-            if(!strcmp("rcall", (*itr).prototype->name) | !strcmp("rjmp", (*itr).prototype->name))
-                ::snprintf(buf, 512, "0x%04x: %s%*s.%d", itr.key(), (*itr).prototype->name, name_len, "", (*itr).arg1);
+            if(!strcmp("rcall", inst->prototype->name) | !strcmp("rjmp", inst->prototype->name))
+                ::snprintf(buf, 512, "0x%04x: %s%*s.%d", i, inst->prototype->name, name_len, "", inst->arg1);
             else
-                ::snprintf(buf, 512, "0x%04x: %s%*s0x%02x", itr.key(), (*itr).prototype->name, name_len, "", (*itr).arg1);
+                ::snprintf(buf, 512, "0x%04x: %s%*s0x%02x", i, inst->prototype->name, name_len, "", inst->arg1);
         }
         else
-            ::snprintf(buf, 512, "0x%04x: %s", itr.key(), (*itr).prototype->name);
+            ::snprintf(buf, 512, "0x%04x: %s", i, inst->prototype->name);
 
 
         qDebug() << QString::fromAscii(buf);
@@ -191,8 +200,6 @@ void MCU::startMCU()
 void MCU::run()
 {
     m_cycle_counter = 0;
-    m_nop_count = (1UL << 17);
-
     instruction *inst = NULL;
     while(m_run)
     {
@@ -200,7 +207,7 @@ void MCU::run()
 
         Q_ASSERT(inst);
 
-        m_program_counter += 2;
+        m_program_counter += (inst->prototype->words*2);
 
         if(inst->handler == NULL)
             qDebug("No handler for ints %s", inst->prototype->name);
@@ -219,25 +226,13 @@ void MCU::checkCycles()
 {
     //QMutexLocker l(&m_counter_mutex);
 
-    quint64 diff = labs(m_cycle_counter - m_freq);
-    if(diff < 100)
-    {
-        goto exit;
-    }
-
-    if(m_cycle_counter > m_freq)
-        m_nop_count += diff;
-    else
-        m_nop_count -= diff;
-
-exit:
     m_cycles_debug_counter += m_cycle_counter;
     m_cycle_counter = 0;
     ++m_cycles_debug;
 
     if(m_cycles_debug == 10)
     {
-        qDebug("Freq: %lu %u", m_cycles_debug_counter/5, ((m_data_mem[y_register.get()+1] << 8) | m_data_mem[y_register.get()]));
+        qDebug("Freq: %u %u", m_cycles_debug_counter/5, ((m_data_mem[y_register.get()+1] << 8) | m_data_mem[y_register.get()]));
         m_cycles_debug = 0;
         m_cycles_debug_counter = 0;
     }
@@ -296,10 +291,8 @@ void MCU::check_ZNS(quint8 res)
 
 quint8 MCU::__adiw(int arg1, int arg2)
 {
-    quint16 y = (m_data_mem[arg1+1] << 8) | m_data_mem[arg1];
-    y += arg2;
-    m_data_mem[arg1] = (y & 0xFF);
-    m_data_mem[arg1+1] = (y >> 8);
+    wrapper_16 wrap(m_data_mem + arg1);
+    wrap += arg2;
     return 2;
 }
 

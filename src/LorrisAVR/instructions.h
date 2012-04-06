@@ -102,7 +102,6 @@ namespace ArgResolvers
         return 0; // FIXME: return -1?
     }
 
-    // dunno why, stolen from AVR simulator :/
     static int addr_shift(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
     {
         int ret = ((code1 & 0x03F8) >> 3);
@@ -329,7 +328,7 @@ static inst_prototype instructions[] =
     {81, "lpm",   0x95C8, 0xFFFF, 1, NONE, NONE},
     {82, "lpm",   0x9004, 0xFE0F, 1, REG_D5, INDIR_ADDR},
     {83, "lpm",   0x9005, 0xFE0F, 1, REG_D5, INDIR_ADDR},
-    {84, "lsl",   0x0C00, 0xFC00, 1, SHIFT_LEFT},
+    {84, "lsl",   0x0C00, 0xFC00, 1, SHIFT_LEFT, NONE},
     {85, "lsr",   0x9406, 0xFE0F, 1, REG_D5, NONE},
     {86, "mov",   0x2C00, 0xFC00, 1, REG_D5, REG_S5},
     {87, "movw",  0x0100, 0xFF00, 1, WORD_D, WORD_S},
@@ -347,7 +346,7 @@ static inst_prototype instructions[] =
     {99, "ret",   0x9508, 0xFFFF, 1, NONE, NONE},
     {100,"reti",  0x9518, 0xFFFF, 1, NONE, NONE},
     {101,"rjmp",  0xC000, 0xF000, 1, ADDR_SHIFT12, NONE},
-    {102,"rol",   0x1c00, 0xFC00, 1, SHIFT_LEFT},
+    {102,"rol",   0x1c00, 0xFC00, 1, SHIFT_LEFT, NONE},
     {103,"ror",   0x9407, 0xFE0F, 1, REG_D5, NONE},
     {104,"sbc",   0x0800, 0xFC00, 1, REG_D5, REG_S5},
     {105,"sbci",  0x4000, 0xF000, 1, REG_D4, BYTE},
@@ -385,7 +384,7 @@ static inst_prototype instructions[] =
     {137,"sub",   0x1800, 0xFC00, 1, REG_D5, REG_S5},
     {138,"subi",  0x5000, 0xF000, 1, REG_D4, BYTE},
     {139,"swap",  0x9402, 0xFE0F, 1, REG_D5, NONE},
-    {140,"tst",   0x2000, 0xFC00, 1, SHIFT_LEFT},
+    {140,"tst",   0x2000, 0xFC00, 1, SHIFT_LEFT, NONE},
     {140,"wdr",   0x95A8, 0xFFFF, 1, NONE, NONE},
     {141,"xch",   0x9204, 0xFE0F, 1, REG_D5, NONE},
     {255, NULL,   0,      0,      0, NONE, NONE}

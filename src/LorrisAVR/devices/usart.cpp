@@ -20,31 +20,9 @@
 **    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
 **
 ****************************************************************************/
-#include <QHBoxLayout>
 
-#include "terminal.h"
-#include "lorrisavr.h"
-#include "mcu.h"
+#include "usart.h"
 
-LorrisAVR::LorrisAVR() :
-    WorkTab()
+USART::USART()
 {
-    QHBoxLayout *l = new QHBoxLayout(this);
-
-    m_terminal = new Terminal(this);
-    l->addWidget(m_terminal);
-
-    HexFile *hex = new HexFile();
-    hex->LoadFromFile("/home/tassadar/data/yunimin/programs/emulator_test/default/emulator_test.hex");
-
-    m_mcu = new MCU();
-    m_mcu->init(hex);
-
-    m_mcu->startMCU();
-    delete hex;
-}
-
-LorrisAVR::~LorrisAVR()
-{
-    delete m_mcu;
 }

@@ -99,7 +99,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAVR/lorrisavr.cpp \
     src/LorrisAVR/lorrisavrinfo.cpp \
     src/LorrisAVR/emulator.cpp \
-    src/LorrisAVR/mcu.cpp
+    src/LorrisAVR/mcu.cpp \
+    src/LorrisAVR/devices/usart.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -185,7 +186,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAVR/emulator.h \
     src/LorrisAVR/mcu.h \
     src/LorrisAVR/instructions.h \
-    src/LorrisAVR/mcu_prototype.h
+    src/LorrisAVR/mcu_prototype.h \
+    src/LorrisAVR/devices/usart.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
