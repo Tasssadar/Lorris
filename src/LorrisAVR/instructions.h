@@ -87,7 +87,7 @@ namespace ArgResolvers
         return (code1 & 0b111);
     }
 
-    static int reg_d4(quint16 code1, quint16 /*code2*/ quint32 /*address*/)
+    static int reg_d4(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
     {
         return ((code1 & 0x00F0) >> 4) | 0x10;
     }
@@ -103,7 +103,7 @@ namespace ArgResolvers
     }
 
     // dunno why, stolen from AVR simulator :/
-    static int addr_shift(quint16 code1, quint16 /*code2*/, quint32 address)
+    static int addr_shift(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
     {
         int ret = ((code1 & 0x03F8) >> 3);
         if(code1 & 0x0200)
@@ -119,7 +119,7 @@ namespace ArgResolvers
 
     static int port_all(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
     {
-        return ((code1 & 0b1100000) >> 5) | (code1 & 0x0F);
+        return ((code1 & 0x0600) >> 5) | (code1 & 0x0F);
     }
 
     static int byte(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
@@ -137,13 +137,16 @@ namespace ArgResolvers
         return ((code1 & 0x2000) >> 8) | ((code1 & 0x0C00) >> 7) | (code1 & 0b0111);
     }
 
-    static int addr_shift12(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
+    static int addr_shift12(quint16 code1, quint16 /*code2*/, quint32 address)
     {
         int ret = 0;
         if(code1 & 0x0800)
-            ret = (code1 | (-1^0xFFF));
+            ret = (code1 | (-1^0xFFF))*2;
         else
             ret = (code1 & 0x0FFF);
+#if DEBUG
+        qDebug("%04x", ret+address+2);
+#endif
         return ret;
     }
 
@@ -170,7 +173,7 @@ namespace ArgResolvers
 
     static int word_d(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
     {
-        return ((code1 & 0x00F0) >> 3)
+        return ((code1 & 0x00F0) >> 3);
     }
 
     static int word_s(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
@@ -178,7 +181,7 @@ namespace ArgResolvers
         return ((code1 & 0x000F) << 1);
     }
 
-    static int longcall(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
+    static int longcall(quint16 /*code1*/, quint16 /*code2*/, quint32 /*address*/)
     {
         //FIXME: What is this?
         return 0;
@@ -384,8 +387,7 @@ static inst_prototype instructions[] =
     {"tst",   0x2000, 0xFC00, 1, SHIFT_LEFT},
     {"wdr",   0x95A8, 0xFFFF, 1, NONE, NONE},
     {"xch",   0x9204, 0xFE0F, 1, REG_D5, NONE},
-
-    {NULL,    0,      0,      0, ARG_TYPE_MAX, ARG_TYPE_MAX, 0}
+    {NULL,    0,      0,      0, NONE, NONE}
 };
 
 #endif // INSTRUCTIONS_H

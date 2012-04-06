@@ -27,9 +27,10 @@
 #include <QTypeInfo>
 #include <QHash>
 
-#include "instructions.h"
-#include "mcu_prototype.h"
 #include "hexfile.h"
+
+struct inst_prototype;
+struct mcu_prototype;
 
 struct instruction
 {
@@ -41,6 +42,11 @@ struct instruction
 
 struct wrapper_16
 {
+    wrapper_16()
+    {
+        addr = NULL;
+    }
+
     wrapper_16(quint8 *low_byte)
     {
         this->addr = low_byte;
@@ -93,6 +99,7 @@ struct wrapper_16
 class MCU
 {
 public:
+    typedef QMap<quint32, instruction> InstMap;
     MCU();
     ~MCU();
 
@@ -100,6 +107,7 @@ public:
 
 private:
     inst_prototype *getInstPrototype(quint16 val);
+    void addInstHandlers();
 
     mcu_prototype *m_protype;
     quint32 m_freq;
@@ -120,7 +128,7 @@ private:
     quint8 *m_prog_mem;
     quint8 *m_eeprom;
 
-    QHash<quint32, instruction> m_instructions;
+    InstMap m_instructions;
     QHash<quint16, quint8 (*)(int, int)> m_handlers;
 
     // other

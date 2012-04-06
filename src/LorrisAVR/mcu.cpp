@@ -22,8 +22,13 @@
 ****************************************************************************/
 
 #include <QDebug>
+#include <stdio.h>
+
+#define DEBUG 1
 
 #include "mcu.h"
+#include "instructions.h"
+#include "mcu_prototype.h"
 
 MCU::MCU()
 {
@@ -92,19 +97,42 @@ void MCU::init(HexFile *hex)
             {
                 //Q_ASSERT?
                 qDebug() << "Unhandled instruction " << inst_num << second << first;
+                i += 2;
                 continue;
             }
-            int arg1 = arg_resolvers[prot->arg1](int_num, next_inst, offset+i);
-            int arg2 = arg_resolvers[prot->arg1](int_num, next_inst, offset+i);
+            int arg1 = arg_resolvers[prot->arg1](inst_num, next_inst, offset+i);
+            int arg2 = arg_resolvers[prot->arg2](inst_num, next_inst, offset+i);
 
-            instruction inst = {arg1, arg2, prot,};
+            instruction inst = {arg1, arg2, prot, NULL};
 
             m_instructions.insert(offset+i, inst);
 
             i += prot->words*2;
         }
     }
+#if DEBUG
+    for(InstMap::iterator itr = m_instructions.begin(); itr != m_instructions.end();++itr)
+    {
+        char buf[512];
+
+        if((*itr).prototype->arg2 != NONE)
+            ::snprintf(buf, 512, "0x%04x: %s 0x%02x 0x%02x", itr.key(), (*itr).prototype->name, (*itr).arg1, (*itr).arg2);
+        else if((*itr).prototype->arg1 != NONE)
+        {
+            if(!strcmp("rcall", (*itr).prototype->name) | !strcmp("rjmp", (*itr).prototype->name))
+                ::snprintf(buf, 512, "0x%04x: %s .%d", itr.key(), (*itr).prototype->name, (*itr).arg1);
+            else
+                ::snprintf(buf, 512, "0x%04x: %s 0x%02x", itr.key(), (*itr).prototype->name, (*itr).arg1);
+        }
+        else
+            ::snprintf(buf, 512, "0x%04x: %s", itr.key(), (*itr).prototype->name);
+
+
+        qDebug() << QString::fromAscii(buf);
+    }
+#endif
 }
+
 
 inst_prototype *MCU::getInstPrototype(quint16 val)
 {
@@ -116,7 +144,7 @@ inst_prototype *MCU::getInstPrototype(quint16 val)
 
 void MCU::addInstHandlers()
 {
-    m_handlers
+ //   m_handlers
 }
 
 

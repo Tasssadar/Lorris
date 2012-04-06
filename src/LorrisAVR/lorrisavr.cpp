@@ -22,8 +22,14 @@
 ****************************************************************************/
 
 #include "lorrisavr.h"
+#include "mcu.h"
 
 LorrisAVR::LorrisAVR(QWidget *parent) :
     WorkTab()
 {
+    HexFile *hex = new HexFile();
+    hex->LoadFromFile("/home/tassadar/data/yunimin/programs/emulator_test/default/emulator_test.hex");
+
+    MCU *mcu = new MCU();
+    mcu->init(hex);
 }
