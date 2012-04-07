@@ -42,7 +42,7 @@ void JoyThread::run()
             {
                 case SDL_JOYAXISMOTION:
                 {
-                    Joystick *joy = sJoyMgr.getJoystick(event.jaxis.which);
+                    Joystick *joy = sJoyMgr.getJoystick(event.jaxis.which, false);
                     if(!joy)
                         continue;
                     joy->__axisEvent(event.jaxis.axis, event.jaxis.value);
@@ -50,7 +50,7 @@ void JoyThread::run()
                 }
                 case SDL_JOYHATMOTION:
                 {
-                    Joystick *joy = sJoyMgr.getJoystick(event.jhat.which);
+                    Joystick *joy = sJoyMgr.getJoystick(event.jhat.which, false);
                     if(!joy)
                         continue;
                     joy->__hatEvent(event.jhat.hat, event.jhat.value);
@@ -58,7 +58,7 @@ void JoyThread::run()
                 }
                 case SDL_JOYBALLMOTION:
                 {
-                    Joystick *joy = sJoyMgr.getJoystick(event.jball.which);
+                    Joystick *joy = sJoyMgr.getJoystick(event.jball.which, false);
                     if(!joy)
                         continue;
                     joy->__ballEvent(event.jball.ball, event.jball.xrel, event.jball.yrel);
@@ -67,7 +67,7 @@ void JoyThread::run()
                 case SDL_JOYBUTTONDOWN:
                 case SDL_JOYBUTTONUP:
                 {
-                    Joystick *joy = sJoyMgr.getJoystick(event.jbutton.which);
+                    Joystick *joy = sJoyMgr.getJoystick(event.jbutton.which, false);
                     if(!joy)
                         continue;
                     joy->__buttonEvent(event.jbutton.button, event.jbutton.state);
