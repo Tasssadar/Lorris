@@ -60,7 +60,7 @@ void JoyMgr::updateJoystickNames()
     }
 }
 
-Joystick *JoyMgr::getJoystick(int id)
+Joystick *JoyMgr::getJoystick(int id, bool create)
 {
     QMutexLocker locker(&m_joy_lock);
 
@@ -69,6 +69,8 @@ Joystick *JoyMgr::getJoystick(int id)
 
     if(m_joysticks.contains(id))
         return m_joysticks[id];
+    else if(!create)
+        return NULL;
 
     Joystick *joy = new Joystick(id);
 

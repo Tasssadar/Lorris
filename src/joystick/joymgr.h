@@ -51,7 +51,7 @@ public:
     const QHash<int, QString>& getNames() { return m_names; }
     QStringList getNamesList();
 
-    Joystick *getJoystick(int id);
+    Joystick *getJoystick(int id, bool create = true);
 
     bool hasJoystick(int id)
     {
