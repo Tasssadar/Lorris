@@ -107,8 +107,9 @@ namespace ArgResolvers
         int ret = ((code1 & 0x03F8) >> 3);
         if(code1 & 0x0200)
             ret |= (-1<<7);
+
         // ret += address+1; FIXME: I think I'll handle that in instruction handler
-        return ret;
+        return ret*2;
     }
 
     static int port(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
@@ -254,25 +255,29 @@ static inst_prototype instructions[] =
     {7,  "bld",   0xF800, 0xFE08, 1, REG_D5, BIT_SREG2},
     {8,  "brbc",  0xF400, 0xFC00, 1, BIT_SREG2, ADDR_SHIFT},
     {9,  "brbs",  0xF000, 0xFC00, 1, BIT_SREG2, ADDR_SHIFT},
-    {10, "brcc",  0xF400, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {11, "brcs",  0xF000, 0xFC07, 1, ADDR_SHIFT, NONE},
+
+  // These are just named variations of brbs/brbc
+  //{10, "brcc",  0xF400, 0xFC07, 1, ADDR_SHIFT, NONE}, brbc 0, k
+  //{11, "brcs",  0xF000, 0xFC07, 1, ADDR_SHIFT, NONE}, brbs 0, k
+  //{13, "breq",  0xF001, 0xFC07, 1, ADDR_SHIFT, NONE}, brbs 1, k
+  //{14, "brge",  0xF404, 0xFC07, 1, ADDR_SHIFT, NONE}, brbc 4, k
+  //{15, "brhc",  0xF405, 0xFC07, 1, ADDR_SHIFT, NONE}, brbc 5, k
+  //{16, "brhs",  0xF005, 0xFC07, 1, ADDR_SHIFT, NONE}, brbs 5, k
+  //{17, "brid",  0xF407, 0xFC07, 1, ADDR_SHIFT, NONE}, brbc 7, k
+  //{18, "brie",  0xF007, 0xFC07, 1, ADDR_SHIFT, NONE}, brbs 7, k
+  //{19, "brlo",  0xF000, 0xFC07, 1, ADDR_SHIFT, NONE}, brbs 0, k
+  //{20, "brlt",  0xF004, 0xFC07, 1, ADDR_SHIFT, NONE}, brbs 4, k
+  //{21, "brmi",  0xF002, 0xFC07, 1, ADDR_SHIFT, NONE}, brbs 2, k
+  //{22, "brne",  0xF401, 0xFC07, 1, ADDR_SHIFT, NONE}, brbc 1, k
+  //{23, "brpl",  0xF402, 0xFC07, 1, ADDR_SHIFT, NONE}, brbc 2, k
+  //{24, "brsh",  0xF400, 0xFC07, 1, ADDR_SHIFT, NONE}, brbc 0, k
+  //{25, "brtc",  0xF406, 0xFC07, 1, ADDR_SHIFT, NONE}, brbc 6, k
+  //{26, "brts",  0xF006, 0xFC07, 1, ADDR_SHIFT, NONE}, brbs 6, k
+  //{27, "brvc",  0xF403, 0xFC07, 1, ADDR_SHIFT, NONE}, brbc 3, k
+  //{28, "brvs",  0xF003, 0xFC07, 1, ADDR_SHIFT, NONE}, brbs 3, k
+
   //{12, "break", 0x9598, 0xFFFF, NONE, NONE},     // - on-chip debug, NYI
-    {13, "breq",  0xF001, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {14, "brge",  0xF404, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {15, "brhc",  0xF405, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {16, "brhs",  0xF005, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {17, "brid",  0xF407, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {18, "brie",  0xF007, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {19, "brlo",  0xF000, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {20, "brlt",  0xF004, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {21, "brmi",  0xF002, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {22, "brne",  0xF401, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {23, "brpl",  0xF402, 0xFC07, 1, ADDR_SHIFT, NONE},
-  //{24, "brsh",  0xF400, 0xFC07, 1, ADDR_SHIFT, NONE}, // WTF? same as brcc
-    {25, "brtc",  0xF406, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {26, "brts",  0xF006, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {27, "brvc",  0xF403, 0xFC07, 1, ADDR_SHIFT, NONE},
-    {28, "brvs",  0xF003, 0xFC07, 1, ADDR_SHIFT, NONE},
+
     {29, "bset",  0x9408, 0xFF8F, 1, BIT_SREG, NONE},
     {30, "bst",   0xFA00, 0xFE08, 1, REG_D5, BIT_SREG2},
     {31, "call",  0x940E, 0xFE0E, 2, ADDR22, NONE},

@@ -155,25 +155,27 @@ void MCU::init(HexFile *hex)
             continue;
 
         instruction *inst = m_instructions[i];
+        int argType[] = { inst->prototype->arg1, inst->prototype->arg2 };
+        int arg[] = { inst->arg1, inst->arg2 };
 
-        char buf[512];
+        QString str = QString("0x%1: %2").arg(i, 4, 16, QChar('0')).arg(QString(inst->prototype->name), -5, QChar(' '));
 
-        int name_len = 8 - strlen(inst->prototype->name);
-
-        if(inst->prototype->arg2 != NONE)
-             ::snprintf(buf, 512, "0x%04x: %s%*s0x%02x 0x%02x", i, inst->prototype->name, name_len, "", inst->arg1, inst->arg2);
-        else if(inst->prototype->arg1 != NONE)
+        for(int i = 0; i < 2; ++i)
         {
-            if(!strcmp("rcall", inst->prototype->name) | !strcmp("rjmp", inst->prototype->name))
-                ::snprintf(buf, 512, "0x%04x: %s%*s.%d", i, inst->prototype->name, name_len, "", inst->arg1);
-            else
-                ::snprintf(buf, 512, "0x%04x: %s%*s0x%02x", i, inst->prototype->name, name_len, "", inst->arg1);
+            if(argType[i] == NONE)
+                continue;
+            switch(argType[i])
+            {
+                case ADDR_SHIFT:
+                case ADDR_SHIFT12:
+                    str += QString(".%1 ").arg(arg[i]);
+                    break;
+                default:
+                    str += QString("0x%1 ").arg(arg[i], 0, 16);
+                    break;
+            }
         }
-        else
-            ::snprintf(buf, 512, "0x%04x: %s", i, inst->prototype->name);
-
-
-        qDebug() << QString::fromAscii(buf);
+        qDebug() << str;
     }
 #endif
 }
