@@ -128,8 +128,6 @@ private:
     mcu_prototype *m_protype;
     quint32 m_freq;
 
-    MCU *m_self;
-
     volatile bool m_run;
 
     // Memories
@@ -165,7 +163,6 @@ private:
     quint8 m_cycles_debug;
     quint64 m_cycles_debug_counter;
     QMutex m_counter_mutex;
-    volatile quint64 m_nop_count;
     volatile quint64 m_cycle_counter;
     quint8 m_cycles_sleep;
 

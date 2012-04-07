@@ -188,19 +188,19 @@ inst_prototype *MCU::getInstPrototype(quint16 val)
 
 void MCU::startMCU()
 {
-    m_self = this;
     start();
 
     m_cycles_debug = 0;
     m_cycles_debug_counter = 0;
     connect(&m_cycles_timer, SIGNAL(timeout()), SLOT(checkCycles()));
-    m_cycles_timer.start(500);
+    m_cycles_timer.start(5000);
 }
 
 void MCU::run()
 {
     m_cycle_counter = 0;
     instruction *inst = NULL;
+
     while(m_run)
     {
         inst = m_instructions[m_program_counter];
@@ -212,11 +212,13 @@ void MCU::run()
         if(inst->handler == NULL)
             qDebug("No handler for ints %s", inst->prototype->name);
         else
-            m_cycles_sleep = ((*this).*inst->handler)(inst->arg1, inst->arg2);
+            cycle_sleep = ((*this).*inst->handler)(inst->arg1, inst->arg2);
 
-        for(;m_cycles_sleep != 0; --m_cycles_sleep)
+        //for(;cycle_sleep != 0; --cycle_sleep)
         {
-            sleep(0);
+            usleep(1);
+            //for(quint32 i = 0; i < 500; ++i)
+            //    __asm__ volatile ("nop");
             ++m_cycle_counter;
         }
     }
@@ -226,16 +228,8 @@ void MCU::checkCycles()
 {
     //QMutexLocker l(&m_counter_mutex);
 
-    m_cycles_debug_counter += m_cycle_counter;
+    qDebug("Freq: %u %u", m_cycle_counter/5, ((m_data_mem[y_register.get()+1] << 8) | m_data_mem[y_register.get()]));
     m_cycle_counter = 0;
-    ++m_cycles_debug;
-
-    if(m_cycles_debug == 10)
-    {
-        qDebug("Freq: %u %u", m_cycles_debug_counter/5, ((m_data_mem[y_register.get()+1] << 8) | m_data_mem[y_register.get()]));
-        m_cycles_debug = 0;
-        m_cycles_debug_counter = 0;
-    }
 }
 
 MCU::instHandler MCU::getInstHandler(quint8 id)
