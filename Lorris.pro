@@ -9,6 +9,7 @@ else:DESTDIR = $$PWD/bin/release
 OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc
 UI_DIR = $$PWD/ui
+RCC_DIR = $$PWD/qrc
 CONFIG += qwt
 LIBS += -L"$$PWD/dep/qwt/lib"
 LIBS += -L"$$PWD/dep/qextserialport/lib"
