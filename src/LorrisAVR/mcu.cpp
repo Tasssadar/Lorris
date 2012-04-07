@@ -212,8 +212,9 @@ void MCU::run()
         if(inst->handler == NULL)
             qDebug("No handler for ints %s", inst->prototype->name);
         else
-            cycle_sleep = ((*this).*inst->handler)(inst->arg1, inst->arg2);
+            (this->*inst->handler)(inst->arg1, inst->arg2);
 
+        m_counter_mutex.lock();
         //for(;cycle_sleep != 0; --cycle_sleep)
         {
             usleep(1);
@@ -221,12 +222,13 @@ void MCU::run()
             //    __asm__ volatile ("nop");
             ++m_cycle_counter;
         }
+        m_counter_mutex.unlock();
     }
 }
 
 void MCU::checkCycles()
 {
-    //QMutexLocker l(&m_counter_mutex);
+    QMutexLocker l(&m_counter_mutex);
 
     qDebug("Freq: %u %u", m_cycle_counter/5, ((m_data_mem[y_register.get()+1] << 8) | m_data_mem[y_register.get()]));
     m_cycle_counter = 0;
