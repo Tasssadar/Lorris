@@ -78,9 +78,7 @@ void MCU::init(HexFile *hex)
 
     m_program_counter = 0x00;
 
-    m_instructions = new instruction*[m_protype->prog_mem_size];
-    for(quint32 i = 0; i < m_protype->prog_mem_size; ++i)
-        m_instructions[i] = NULL;
+    m_instructions = new instruction*[m_protype->prog_mem_size]();
 
     addInstHandlers();
 
@@ -245,19 +243,19 @@ MCU::instHandler MCU::getInstHandler(quint8 id)
 
 void MCU::addInstHandlers()
 {
-    m_handlers.insert(2,   &MCU::__adiw);
-    m_handlers.insert(6,   &MCU::__bclr);
-    m_handlers.insert(31,  &MCU::__call);
-    m_handlers.insert(55,  &MCU::__eor);
-    m_handlers.insert(63,  &MCU::__jmp);
-    m_handlers.insert(76,  &MCU::__ldd_y_plus);
-    m_handlers.insert(78,  &MCU::__ldi);
-    m_handlers.insert(61,  &MCU::__in);
-    m_handlers.insert(95,  &MCU::__out);
-    m_handlers.insert(97,  &MCU::__push);
-    m_handlers.insert(98,  &MCU::__rcall);
-    m_handlers.insert(101, &MCU::__rjmp);
-    m_handlers.insert(130, &MCU::__std_y_plus);
+    m_handlers.insert(2,   &MCU::in_adiw);
+    m_handlers.insert(6,   &MCU::in_bclr);
+    m_handlers.insert(31,  &MCU::in_call);
+    m_handlers.insert(55,  &MCU::in_eor);
+    m_handlers.insert(63,  &MCU::in_jmp);
+    m_handlers.insert(76,  &MCU::in_ldd_y_plus);
+    m_handlers.insert(78,  &MCU::in_ldi);
+    m_handlers.insert(61,  &MCU::in_in);
+    m_handlers.insert(95,  &MCU::in_out);
+    m_handlers.insert(97,  &MCU::in_push);
+    m_handlers.insert(98,  &MCU::in_rcall);
+    m_handlers.insert(101, &MCU::in_rjmp);
+    m_handlers.insert(130, &MCU::in_std_y_plus);
 }
 
 void MCU::setDataMem16(int idx, quint16 val)
@@ -287,20 +285,20 @@ void MCU::check_ZNS(quint8 res)
     *m_sreg = val;
 }
 
-quint8 MCU::__adiw(int arg1, int arg2)
+quint8 MCU::in_adiw(int arg1, int arg2)
 {
     wrapper_16 wrap(m_data_mem + arg1);
     wrap += arg2;
     return 2;
 }
 
-quint8 MCU::__bclr(int arg1, int /*arg2*/)
+quint8 MCU::in_bclr(int arg1, int /*arg2*/)
 {
     *m_sreg &= ~(1 << arg1);
     return 1;
 }
 
-quint8 MCU::__call(int arg1, int /*arg2*/)
+quint8 MCU::in_call(int arg1, int /*arg2*/)
 {
     if(m_protype->bit16)
     {
@@ -320,7 +318,7 @@ quint8 MCU::__call(int arg1, int /*arg2*/)
     }
 }
 
-quint8 MCU::__eor(int arg1, int arg2)
+quint8 MCU::in_eor(int arg1, int arg2)
 {
     m_data_mem[arg1] ^= m_data_mem[arg2];
 
@@ -329,44 +327,44 @@ quint8 MCU::__eor(int arg1, int arg2)
     return 1;
 }
 
-quint8 MCU::__jmp(int arg1, int /*arg2*/)
+quint8 MCU::in_jmp(int arg1, int /*arg2*/)
 {
     m_program_counter = arg1;
     return 3;
 }
 
-quint8 MCU::__ldd_y_plus(int arg1, int arg2)
+quint8 MCU::in_ldd_y_plus(int arg1, int arg2)
 {
     m_data_mem[arg1] = m_data_mem[y_register.get()+arg2];
     return 3;
 }
 
-quint8 MCU::__ldi(int arg1, int arg2)
+quint8 MCU::in_ldi(int arg1, int arg2)
 {
     m_data_mem[arg1] = arg2;
     return 1;
 }
 
-quint8 MCU::__in(int arg1, int arg2)
+quint8 MCU::in_in(int arg1, int arg2)
 {
     m_data_mem[arg2] = m_data_mem[arg1];
     return 1;
 }
 
-quint8 MCU::__out(int arg1, int arg2)
+quint8 MCU::in_out(int arg1, int arg2)
 {
     m_data_mem[arg1] = m_data_mem[arg2];
     return 1;
 }
 
-quint8 MCU::__push(int arg1, int /*arg2*/)
+quint8 MCU::in_push(int arg1, int /*arg2*/)
 {
     --m_stack_pointer;
     m_data_mem[m_stack_pointer.get()] = m_data_mem[arg1];
     return 2;
 }
 
-quint8 MCU::__rcall(int arg1, int /*arg2*/)
+quint8 MCU::in_rcall(int arg1, int /*arg2*/)
 {
     if(m_protype->bit16)
     {
@@ -386,13 +384,13 @@ quint8 MCU::__rcall(int arg1, int /*arg2*/)
     }
 }
 
-quint8 MCU::__rjmp(int arg1, int /*arg2*/)
+quint8 MCU::in_rjmp(int arg1, int /*arg2*/)
 {
     m_program_counter += arg1;
     return 2;
 }
 
-quint8 MCU::__std_y_plus(int arg1, int arg2)
+quint8 MCU::in_std_y_plus(int arg1, int arg2)
 {
     m_data_mem[y_register.get()+arg1] = m_data_mem[arg2];
     return 2;

@@ -170,19 +170,19 @@ private:
     void check_ZNS(quint8 res);
 
 public:
-    quint8 __adiw(int arg1, int arg2);
-    quint8 __bclr(int arg1, int /*arg2*/);
-    quint8 __call(int arg1, int /*arg2*/);
-    quint8 __eor(int arg1, int arg2);
-    quint8 __jmp(int arg1, int /*arg2*/);
-    quint8 __ldd_y_plus(int arg1, int arg2);
-    quint8 __ldi(int arg1, int arg2);
-    quint8 __in(int arg1, int arg2);
-    quint8 __out(int arg1, int arg2);
-    quint8 __push(int arg1, int /*arg2*/);
-    quint8 __rcall(int arg1, int /*arg2*/);
-    quint8 __rjmp(int arg1, int /*arg2*/);
-    quint8 __std_y_plus(int arg1, int arg2);
+    quint8 in_adiw(int arg1, int arg2);
+    quint8 in_bclr(int arg1, int /*arg2*/);
+    quint8 in_call(int arg1, int /*arg2*/);
+    quint8 in_eor(int arg1, int arg2);
+    quint8 in_jmp(int arg1, int /*arg2*/);
+    quint8 in_ldd_y_plus(int arg1, int arg2);
+    quint8 in_ldi(int arg1, int arg2);
+    quint8 in_in(int arg1, int arg2);
+    quint8 in_out(int arg1, int arg2);
+    quint8 in_push(int arg1, int /*arg2*/);
+    quint8 in_rcall(int arg1, int /*arg2*/);
+    quint8 in_rjmp(int arg1, int /*arg2*/);
+    quint8 in_std_y_plus(int arg1, int arg2);
 };
 
 
