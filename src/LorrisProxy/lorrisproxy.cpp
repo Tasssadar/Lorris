@@ -93,6 +93,9 @@ void LorrisProxy::setConnection(Connection *con)
 {
     m_con = con;
 
+    if(!con)
+        return;
+
     connect(m_con,    SIGNAL(dataRead(QByteArray)), m_server, SLOT(SendData(QByteArray)));
     connect(m_server, SIGNAL(newData(QByteArray)),  m_con,    SLOT(SendData(QByteArray)));
     connect(m_con,    SIGNAL(connected(bool)),      this,     SLOT(connectedStatus(bool)));
