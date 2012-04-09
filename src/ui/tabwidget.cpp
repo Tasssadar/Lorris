@@ -189,7 +189,7 @@ void TabWidget::newTabBtn()
 
 void TabWidget::barChangeMenu(int idx)
 {
-    if(m_tab_ids.size() <= idx)
+    if(m_tab_ids.size() <= (uint)idx)
         return;
 
     emit changeMenu(m_tab_ids[idx]);

@@ -72,8 +72,15 @@ void SerialPort::Close()
     if(m_port)
     {
         m_thread->stop();
-        Q_ASSERT(m_thread->wait(500));
-        delete m_thread;
+
+        // I'll make this the you're-so-dumb comment:
+        // in release mode, Q_ASSERT does not crash the program,
+        // but also does NOT execute its thing. Keep that in mind.
+        // Q_ASSERT(m_thread->wait(500));
+        if(m_thread->wait(500))
+            delete m_thread;
+        else
+            Q_ASSERT(false);
         m_thread = NULL;
 
         m_port->close();
