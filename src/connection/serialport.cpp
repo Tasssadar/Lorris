@@ -74,7 +74,7 @@ void SerialPort::Close()
         m_thread->stop();
 
         // I'll make this the you're-so-dumb comment:
-        // in release mode, Q_ASSERT does not crash the program,
+        // in release mode, Q_ASSERT does not show error message,
         // but also does NOT execute its thing. Keep that in mind.
         // Q_ASSERT(m_thread->wait(500));
         if(m_thread->wait(500))
