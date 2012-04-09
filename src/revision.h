@@ -23,6 +23,6 @@
 
 #ifndef REVISION_H
 #define REVISION_H
- #define VERSION "0.3.1-release"
- #define REVISION 291
+ #define VERSION "0.4.0-dev"
+ #define REVISION 292
 #endif // REVISION_H
