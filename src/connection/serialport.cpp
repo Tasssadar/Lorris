@@ -254,12 +254,7 @@ void SerialPortBuilder::conResult(Connection *con, bool open)
     }
     else
     {
-        con->RemoveUsingTab(m_tab->getId());
-        m_tab->setConnection(NULL);
-
-        if(!con->IsUsedByTab())
-            delete con;
-
+        // Connection is deleted in WorkTab::~WorkTab()
         delete m_tab;
         m_tab = NULL;
 

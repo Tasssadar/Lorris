@@ -60,6 +60,12 @@ bool TcpSocket::Open()
 
 void TcpSocket::Close()
 {
+    if(m_future.isRunning())
+    {
+        m_future.cancel();
+        m_future.waitForFinished();
+    }
+
     m_socket->close();
 
     emit connected(false);
@@ -89,12 +95,12 @@ void TcpSocket::OpenConcurrent()
 bool TcpSocket::connectToHost()
 {
     int time = 0;
-    for(; time < CONNECT_TIMEOUT && m_socket->state() == QAbstractSocket::HostLookupState; ++time)
+    for(; !m_future.isCanceled() && time < CONNECT_TIMEOUT && m_socket->state() == QAbstractSocket::HostLookupState; ++time)
     {
         Utils::msleep(50);
     }
 
-    for(; time < CONNECT_TIMEOUT && m_socket->state() == QAbstractSocket::ConnectingState; ++time)
+    for(; !m_future.isCanceled() && time < CONNECT_TIMEOUT && m_socket->state() == QAbstractSocket::ConnectingState; ++time)
     {
         Utils::msleep(50);
     }
@@ -184,12 +190,7 @@ void TcpSocketBuilder::conResult(Connection *con, bool open)
     }
     else
     {
-        con->RemoveUsingTab(m_tab->getId());
-        m_tab->setConnection(NULL);
-
-        if(!con->IsUsedByTab())
-            delete con;
-
+        // Connection is deleted in WorkTab::~WorkTab()
         delete m_tab;
         m_tab = NULL;
 

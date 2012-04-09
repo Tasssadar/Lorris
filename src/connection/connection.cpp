@@ -63,11 +63,7 @@ ConnectionBuilder::ConnectionBuilder(QWidget *parent, int moduleIdx) : QObject((
 
 ConnectionBuilder::~ConnectionBuilder()
 {
-    if(m_tab)
-    {
-        m_tab->setConnection(NULL);
-        delete m_tab;
-    }
+    delete m_tab;
 }
 
 void ConnectionBuilder::addOptToTabDialog(QGridLayout */*layout*/)
