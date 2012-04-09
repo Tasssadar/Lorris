@@ -37,6 +37,9 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private slots:
     void NewTab();
     void About();

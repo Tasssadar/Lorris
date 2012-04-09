@@ -33,6 +33,7 @@
 #include "connectionmgr.h"
 #include "config.h"
 #include "WorkTab/WorkTabMgr.h"
+#include "WorkTab/WorkTab.h"
 #include "WorkTab/WorkTabInfo.h"
 
 SerialPort::SerialPort() : Connection()
@@ -66,11 +67,20 @@ void SerialPort::connectResultSer(bool opened)
 
 void SerialPort::Close()
 {
+    m_port_mutex.lock();
+
     if(m_port)
     {
         m_thread->stop();
-        Q_ASSERT(m_thread->wait(500));
-        delete m_thread;
+
+        // I'll make this the you're-so-dumb comment:
+        // in release mode, Q_ASSERT does not show error message,
+        // but also does NOT execute its thing. Keep that in mind.
+        // Q_ASSERT(m_thread->wait(500));
+        if(m_thread->wait(500))
+            delete m_thread;
+        else
+            Q_ASSERT(false);
         m_thread = NULL;
 
         m_port->close();
@@ -79,6 +89,9 @@ void SerialPort::Close()
 
         emit connected(false);
     }
+
+    m_port_mutex.unlock();
+
     opened = false;
 }
 
@@ -107,6 +120,8 @@ void SerialPort::OpenConcurrent()
 
 bool SerialPort::openPort()
 {
+    m_port_mutex.lock();
+
     m_port = new QextSerialPort(m_idString, QextSerialPort::EventDriven);
     m_port->setBaudRate(m_rate);
     m_port->setParity(PAR_NONE);
@@ -128,6 +143,7 @@ bool SerialPort::openPort()
         m_thread->start();
     }
 
+    m_port_mutex.unlock();
     return res;
 }
 
@@ -196,7 +212,7 @@ void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
     }
 }
 
-void SerialPortBuilder::CreateConnection(WorkTabInfo *info)
+void SerialPortBuilder::CreateConnection(WorkTab *tab)
 {
     QString portName = m_portBox->currentText();
     BaudRateType rate = BaudRateType(m_rateBox->itemData(m_rateBox->currentIndex()).toInt());
@@ -207,19 +223,22 @@ void SerialPortBuilder::CreateConnection(WorkTabInfo *info)
     SerialPort *port = (SerialPort*)sConMgr.FindConnection(CONNECTION_SERIAL_PORT, portName);
     if(port && port->isOpen())
     {
-        emit connectionSucces(port, info->GetName() + " - " + port->GetIDString(), info);
+        tab->setConnection(port);
+        emit connectionSucces(port, tab->getInfo()->GetName() + " - " + port->GetIDString(), tab);
     }
     else
     {
         emit setCreateBtnStatus(true);
 
-        m_tab_info = info;
+        m_tab = tab;
 
         if(!port)
         {
             port = new SerialPort();
             port->SetNameAndRate(portName, rate);
         }
+
+        m_tab->setConnection(port);
 
         connect(port, SIGNAL(connectResult(Connection*,bool)), SLOT(conResult(Connection*,bool)));
         port->OpenConcurrent();
@@ -230,12 +249,14 @@ void SerialPortBuilder::conResult(Connection *con, bool open)
 {
     if(open)
     {
-        emit connectionSucces(con, m_tab_info->GetName() + " - " + con->GetIDString(), m_tab_info);
+        emit connectionSucces(con, m_tab->getInfo()->GetName() + " - " + con->GetIDString(), m_tab);
+        m_tab = NULL;
     }
     else
     {
-        if(!con->IsUsedByTab())
-            delete con;
+        // Connection is deleted in WorkTab::~WorkTab()
+        delete m_tab;
+        m_tab = NULL;
 
         emit setCreateBtnStatus(false);
         emit connectionFailed(tr("Failed to open serial port!"));

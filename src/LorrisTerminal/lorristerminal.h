@@ -88,7 +88,7 @@ private slots:
     void inputAct(int act);
 
     void readData(const QByteArray& data);
-    void sendKeyEvent(QByteArray key);
+    void sendKeyEvent(const QString& key);
     void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);
 

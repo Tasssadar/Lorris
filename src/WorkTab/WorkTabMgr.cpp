@@ -30,6 +30,7 @@
 WorkTabMgr::WorkTabMgr() : QObject()
 {
     tabIdCounter = 0;
+    tabWidgetCounter = 0;
     tabView = NULL;
     hometab = NULL;
 }
@@ -58,19 +59,24 @@ WorkTabMgr::InfoList *WorkTabMgr::GetWorkTabInfos()
     return &m_workTabInfos;
 }
 
+WorkTab *WorkTabMgr::GetNewTab(WorkTabInfo *info)
+{
+    WorkTab *tab = info->GetNewTab();
+    tab->setInfo(info);
+    tab->setId(generateNewTabId());
+    return tab;
+}
+
 void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
 {
-    quint32 id = generateNewTabId();
-
     CloseHomeTab();
 
-    m_workTabs.insert(id, tab);
-    tab->setId(id);
+    m_workTabs.insert(tab->getId(), tab);
 
     TabWidget *activeWidget = tabView->getActiveWidget();
 
     tab->setParent(activeWidget);
-    activeWidget->addTab(tab, label, id);
+    activeWidget->addTab(tab, label, tab->getId());
     activeWidget->setTabsClosable(true);
     return;
 }
@@ -80,7 +86,6 @@ void WorkTabMgr::removeTab(WorkTab *tab)
     m_workTabs.remove(tab->getId());
     delete tab;
 }
-
 
 void WorkTabMgr::OpenHomeTab(quint32 id)
 {
@@ -132,4 +137,14 @@ TabView *WorkTabMgr::CreateWidget(QWidget *parent)
     connect(tabView, SIGNAL(newTab()), SLOT(NewTabDialog()));
     connect(tabView, SIGNAL(openHomeTab(quint32)), SLOT(OpenHomeTab(quint32)));
     return tabView;
+}
+
+bool WorkTabMgr::onTabsClose()
+{
+    for(WorkTabMap::iterator itr = m_workTabs.begin(); itr != m_workTabs.end(); ++itr)
+    {
+        if(!(*itr)->onTabClose())
+            return false;
+    }
+    return true;
 }

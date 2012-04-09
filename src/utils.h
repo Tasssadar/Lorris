@@ -33,7 +33,6 @@ class Utils : public QThread
 public:
     static QString hexToString(quint8 data, bool withZeroEx = false);
     static QString parseChar(char c);
-    static void parseForHexEditor(QByteArray& data);
 
     template <typename T> static inline void swapEndian(char *val);
 

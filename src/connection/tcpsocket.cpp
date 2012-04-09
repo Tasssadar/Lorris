@@ -32,6 +32,9 @@
 #include "connectionmgr.h"
 #include "tcpsocket.h"
 #include "WorkTab/WorkTabInfo.h"
+#include "WorkTab/WorkTab.h"
+
+static const int CONNECT_TIMEOUT = 10000 / 50; // 10s
 
 TcpSocket::TcpSocket() : Connection()
 {
@@ -57,6 +60,12 @@ bool TcpSocket::Open()
 
 void TcpSocket::Close()
 {
+    if(m_future.isRunning())
+    {
+        m_future.cancel();
+        m_future.waitForFinished();
+    }
+
     m_socket->close();
 
     emit connected(false);
@@ -85,12 +94,13 @@ void TcpSocket::OpenConcurrent()
 
 bool TcpSocket::connectToHost()
 {
-    while(m_socket->state() == QAbstractSocket::HostLookupState)
+    int time = 0;
+    for(; !m_future.isCanceled() && time < CONNECT_TIMEOUT && m_socket->state() == QAbstractSocket::HostLookupState; ++time)
     {
         Utils::msleep(50);
     }
 
-    while(m_socket->state() == QAbstractSocket::ConnectingState)
+    for(; !m_future.isCanceled() && time < CONNECT_TIMEOUT && m_socket->state() == QAbstractSocket::ConnectingState; ++time)
     {
         Utils::msleep(50);
     }
@@ -127,7 +137,7 @@ void TcpSocketBuilder::addOptToTabDialog(QGridLayout *layout)
     QLabel    *portLabel    = new QLabel(tr("Port:"), m_parent);
     m_port                  = new QSpinBox(m_parent);
 
-    m_port->setMaximum(65536);
+    m_port->setMaximum(0xFFFF);
     m_port->setValue(sConfig.get(CFG_QUINT32_TCP_PORT));
 
     m_address->setText(sConfig.get(CFG_STRING_TCP_ADDR));
@@ -138,7 +148,7 @@ void TcpSocketBuilder::addOptToTabDialog(QGridLayout *layout)
     layout->addWidget(m_port, 1, 3);
 }
 
-void TcpSocketBuilder::CreateConnection(WorkTabInfo *info)
+void TcpSocketBuilder::CreateConnection(WorkTab *tab)
 {
     QString address = m_address->text();
     quint16 port = m_port->value();
@@ -152,20 +162,22 @@ void TcpSocketBuilder::CreateConnection(WorkTabInfo *info)
     {
         emit setCreateBtnStatus(true);
 
-        m_tab_info = info;
+        m_tab = tab;
 
         if(!socket)
         {
             socket = new TcpSocket();
             socket->setAddress(address, port);
         }
+        m_tab->setConnection(socket);
 
         connect(socket, SIGNAL(connectResult(Connection*,bool)), SLOT(conResult(Connection*,bool)));
         socket->OpenConcurrent();
     }
     else
     {
-        emit connectionSucces(socket, info->GetName() + " - " + socket->GetIDString(), info);
+        tab->setConnection(socket);
+        emit connectionSucces(socket, tab->getInfo()->GetName() + " - " + socket->GetIDString(), tab);
     }
 }
 
@@ -173,12 +185,14 @@ void TcpSocketBuilder::conResult(Connection *con, bool open)
 {
     if(open)
     {
-        emit connectionSucces(con, m_tab_info->GetName() + " - " + con->GetIDString(), m_tab_info);
+        emit connectionSucces(con, m_tab->getInfo()->GetName() + " - " + con->GetIDString(), m_tab);
+        m_tab = NULL;
     }
     else
     {
-        if(!con->IsUsedByTab())
-            delete con;
+        // Connection is deleted in WorkTab::~WorkTab()
+        delete m_tab;
+        m_tab = NULL;
 
         emit setCreateBtnStatus(false);
         emit connectionFailed(tr("Error opening TCP socket!"));

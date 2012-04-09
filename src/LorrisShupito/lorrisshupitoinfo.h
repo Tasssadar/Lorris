@@ -30,7 +30,6 @@ class LorrisShupitoInfo : public WorkTabInfo
 {
 public:
     explicit LorrisShupitoInfo();
-    virtual ~LorrisShupitoInfo();
 
     WorkTab *GetNewTab();
     QString GetName();

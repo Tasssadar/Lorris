@@ -28,6 +28,7 @@
 #include "connectionmgr.h"
 #include "../LorrisShupito/shupito.h"
 
+#include "WorkTab/WorkTab.h"
 #include "WorkTab/WorkTabInfo.h"
 
 ShupitoTunnel::ShupitoTunnel()
@@ -121,7 +122,7 @@ void ShupitoTunnelBuilder::addOptToTabDialog(QGridLayout *layout)
      layout->addWidget(m_portBox, 1, 1);
 }
 
-void ShupitoTunnelBuilder::CreateConnection(WorkTabInfo *info)
+void ShupitoTunnelBuilder::CreateConnection(WorkTab *tab)
 {
     QString portName = m_portBox->currentText();
 
@@ -135,6 +136,8 @@ void ShupitoTunnelBuilder::CreateConnection(WorkTabInfo *info)
         tunnel = new ShupitoTunnel();
         tunnel->setShupito(shupito);
         tunnel->setIDString(portName);
+
+        tab->setConnection(tunnel);
         if(!tunnel->Open())
         {
             delete tunnel;
@@ -144,9 +147,13 @@ void ShupitoTunnelBuilder::CreateConnection(WorkTabInfo *info)
     else if(!tunnel->isOpen())
     {
         tunnel->setShupito(shupito);
+        tab->setConnection(tunnel);
+
         if(!tunnel->Open())
             return emit connectionFailed(tr("Failed to open tunnel!"));
     }
+    else
+        tab->setConnection(tunnel);
 
-    emit connectionSucces(tunnel, info->GetName() + " - " + tunnel->GetIDString(), info, CONNECTION_SHUPITO);
+    emit connectionSucces(tunnel, tab->getInfo()->GetName() + " - " + tunnel->GetIDString(), tab, CONNECTION_SHUPITO);
 }

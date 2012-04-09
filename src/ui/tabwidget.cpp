@@ -52,7 +52,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
-int TabWidget::addTab(QWidget *widget, const QString &name, quint32 tabId)
+int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
 {
     int idx = QTabWidget::addTab(widget, name);
 
@@ -66,6 +66,8 @@ int TabWidget::addTab(QWidget *widget, const QString &name, quint32 tabId)
 
     if(count() >= 2)
         m_tab_bar->enableSplit(true);
+
+    connect(widget, SIGNAL(statusBarMsg(QString,int)), SIGNAL(statusBarMsg(QString,int)));
 
     setTabsClosable(true);
     return idx;
@@ -98,8 +100,12 @@ void TabWidget::closeTab(int index)
 
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
 
+    WorkTab *tab = sWorkTabMgr.getWorkTab(*itr);
+    if(!tab->onTabClose())
+        return;
+
     removeTab(index);
-    sWorkTabMgr.removeTab(*itr);
+    sWorkTabMgr.removeTab(tab);
     m_tab_ids.erase(itr);
 
     checkEmpty();
@@ -183,8 +189,10 @@ void TabWidget::newTabBtn()
 
 void TabWidget::barChangeMenu(int idx)
 {
-    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
-    emit changeMenu(*itr);
+    if(m_tab_ids.size() <= (uint)idx)
+        return;
+
+    emit changeMenu(m_tab_ids[idx]);
 }
 
 TabBar::TabBar(QWidget *parent) :

@@ -61,6 +61,8 @@ public:
     analyzer_data *get(quint32 index) { return m_data[index]; }
     analyzer_packet *loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices, quint32 &data_idx);
 
+    const QString& getFilename() { return m_filename; }
+
 public slots:
     void SaveToFile(QString filename, AnalyzerDataArea *area, DeviceTabWidget *devices);
     void SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *devices);

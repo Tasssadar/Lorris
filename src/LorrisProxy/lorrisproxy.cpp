@@ -77,7 +77,7 @@ void LorrisProxy::connectionResult(Connection */*con*/,bool result)
     if(!result)
     {
         ui->connectButton->setText(tr("Connect to serial port"));
-        showErrorBox(tr("Can't open connection!"));
+        Utils::ThrowException(tr("Can't open connection!"));
     }
 }
 
@@ -92,6 +92,9 @@ void LorrisProxy::connectedStatus(bool connected)
 void LorrisProxy::setConnection(Connection *con)
 {
     m_con = con;
+
+    if(!con)
+        return;
 
     connect(m_con,    SIGNAL(dataRead(QByteArray)), m_server, SLOT(SendData(QByteArray)));
     connect(m_server, SIGNAL(newData(QByteArray)),  m_con,    SLOT(SendData(QByteArray)));

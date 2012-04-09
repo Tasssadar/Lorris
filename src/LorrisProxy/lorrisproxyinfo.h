@@ -30,7 +30,6 @@ class LorrisProxyInfo : public WorkTabInfo
 {
 public:
     explicit LorrisProxyInfo();
-    virtual ~LorrisProxyInfo();
 
     WorkTab *GetNewTab();
     QString GetName();

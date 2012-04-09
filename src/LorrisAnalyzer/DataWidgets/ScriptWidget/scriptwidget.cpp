@@ -59,9 +59,9 @@ void ScriptWidget::setUp(AnalyzerDataStorage *storage)
 
     m_env = new ScriptEnv((AnalyzerDataArea*)parent(), getId(),  this);
 
-    connect(m_terminal, SIGNAL(keyPressedASCII(QByteArray)), m_env,      SLOT(keyPressed(QByteArray)));
+    connect(m_terminal, SIGNAL(keyPressed(QString)),         m_env,      SLOT(keyPressed(QString)));
     connect(m_env,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
-    connect(m_env,      SIGNAL(appendTerm(QByteArray)),      m_terminal, SLOT(appendText(QByteArray)));
+    connect(m_env,      SIGNAL(appendTerm(QString)),         m_terminal, SLOT(appendText(QString)));
     connect(m_env,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
 }
 
@@ -73,7 +73,7 @@ void ScriptWidget::newData(analyzer_data *data, quint32 index)
 
     QString res = m_env->dataChanged(data, index);
     if(!res.isEmpty())
-        m_terminal->appendText(res.toAscii());
+        m_terminal->appendText(res);
 }
 
 void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
@@ -99,23 +99,23 @@ void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
         file->write((char*)&len, sizeof(quint32));
         file->write(data.data());
     }
+
+    // storage data
+    m_env->getStorage()->saveToFile(file);
 }
 
 void ScriptWidget::loadWidgetInfo(AnalyzerDataFile *file)
 {
     DataWidget::loadWidgetInfo(file);
 
+    QString source = "";
     // source
     if(file->seekToNextBlock("scriptWSource", BLOCK_WIDGET))
     {
         quint32 size = 0;
         file->read((char*)&size, sizeof(quint32));
 
-        QString source = QString::fromUtf8(file->read(size), size);
-        try
-        {
-            m_env->setSource(source);
-        } catch(const QString&) { }
+        source = QString::fromUtf8(file->read(size), size);
     }
 
     // terminal data
@@ -127,6 +127,14 @@ void ScriptWidget::loadWidgetInfo(AnalyzerDataFile *file)
         QByteArray data(file->read(size));
         m_terminal->appendText(data);
     }
+
+    // storage data
+    m_env->getStorage()->loadFromFile(file);
+
+    try
+    {
+        m_env->setSource(source);
+    } catch(const QString&) { }
 }
 
 void ScriptWidget::setSourceTriggered()
@@ -150,6 +158,7 @@ void ScriptWidget::sourceSet(bool close)
             m_editor->deleteLater();
             m_editor = NULL;
         }
+        emit updateData(true);
     }
     catch(const QString& text)
     {

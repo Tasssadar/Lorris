@@ -30,39 +30,47 @@
 
 #include "common.h"
 #include "connection/connection.h"
+#include "WorkTabInfo.h"
 
 class WorkTab : public QWidget
 {
     Q_OBJECT
-    public:
 
-        virtual ~WorkTab();
+Q_SIGNALS:
+    void statusBarMsg(const QString& message, int timeout = 0);
 
-        void setId(quint32 id) { m_id = id; }
-        quint32 getId() { return m_id; }
+public:
+    virtual ~WorkTab();
 
-        virtual void setConnection(Connection *con);
+    void setId(quint32 id) { m_id = id; }
+    quint32 getId() { return m_id; }
 
-        static void DeleteAllMembers(QLayout *layout);
+    virtual void setConnection(Connection *con);
 
-        virtual void onTabShow();
-        virtual std::vector<QMenu*>& getMenu() { return m_menus; }
+    static void DeleteAllMembers(QLayout *layout);
 
-    protected slots:
-        virtual void readData(const QByteArray &data);
-        virtual void connectedStatus(bool connected);
-        virtual void showErrorBox(const QString& text);
+    virtual void onTabShow();
+    virtual bool onTabClose();
+    virtual std::vector<QMenu*>& getMenu() { return m_menus; }
 
-    protected:
-        WorkTab();
+    WorkTabInfo *getInfo() const { return m_info; }
+    void setInfo(WorkTabInfo *info) { m_info = info; }
 
-        void addTopMenu(QMenu *menu);
+protected slots:
+    virtual void readData(const QByteArray &data);
+    virtual void connectedStatus(bool connected);
 
-        Connection *m_con;
-        quint32 m_id;
+protected:
+    WorkTab();
 
-    private:
-        std::vector<QMenu*> m_menus;
+    void addTopMenu(QMenu *menu);
+
+    Connection *m_con;
+    quint32 m_id;
+
+private:
+    std::vector<QMenu*> m_menus;
+    WorkTabInfo *m_info;
 };
 
 #endif // WORKTAB_H

@@ -109,8 +109,8 @@ void TabDialog::FillConOptions(int index)
 
     connect(m_con_builder, SIGNAL(setCreateBtnStatus(bool)),  SLOT(setCreateButtonState(bool)));
     connect(m_con_builder, SIGNAL(connectionFailed(QString)), SLOT(connectFailed(QString)));
-    connect(m_con_builder, SIGNAL(connectionSucces(Connection*,QString,WorkTabInfo*,qint16)),
-                           SLOT  (connectionSucces(Connection*,QString,WorkTabInfo*,qint16)));
+    connect(m_con_builder, SIGNAL(connectionSucces(Connection*,QString,WorkTab*,qint16)),
+                           SLOT  (connectionSucces(Connection*,QString,WorkTab*,qint16)));
 
     QWidget *conLabel = ui->conLayout->itemAtPosition(0, 0)->widget();
     QWidget *conBox   = ui->conLayout->itemAtPosition(0, 1)->widget();
@@ -137,7 +137,8 @@ void TabDialog::FillConOptions(int index)
 void TabDialog::CreateTab()
 {
     WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos()->at(ui->modulesList->currentIndex().row());
-    m_con_builder->CreateConnection(info);
+
+    m_con_builder->CreateConnection(sWorkTabMgr.GetNewTab(info));
 }
 
 void TabDialog::setCreateButtonState(bool connecting)
@@ -157,11 +158,9 @@ void TabDialog::connectFailed(const QString &text)
     box.exec();
 }
 
-void TabDialog::connectionSucces(Connection* con, const QString& tabName, WorkTabInfo *info, qint16 conType)
+void TabDialog::connectionSucces(Connection* con, const QString& tabName, WorkTab *tab, qint16 conType)
 {
-    WorkTab *tab = info->GetNewTab();
     sWorkTabMgr.AddWorkTab(tab, tabName);
-    tab->setConnection(con);
 
     if(conType == -1)
         conType = con->getType();

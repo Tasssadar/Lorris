@@ -30,6 +30,7 @@
 #include <QSize>
 
 #include "../../packet.h"
+#include "scriptstorage.h"
 
 class AnalyzerDataArea;
 class DataWidget;
@@ -40,7 +41,7 @@ class ScriptEnv : public QScriptEngine
 
 Q_SIGNALS:
     void clearTerm();
-    void appendTerm(const QByteArray& text);
+    void appendTerm(const QString& text);
     void SendData(const QByteArray& data);
 
     void stopUsingJoy(QObject *object);
@@ -76,8 +77,13 @@ public:
     void onWidgetRemove(DataWidget *w);
     void callEventHandler(const QString& eventId);
 
+    ScriptStorage *getStorage() const
+    {
+        return m_storage;
+    }
+
 public slots:
-    void keyPressed(const QByteArray& key);
+    void keyPressed(const QString &key);
 
 private slots:
     void widgetDestroyed(QObject *widget);
@@ -114,6 +120,7 @@ private:
     QScriptValue  m_on_key;
     QScriptValue  m_on_widget_add;
     QScriptValue  m_on_widget_remove;
+    QScriptValue  m_on_script_exit;
 
     qint32 m_widget_id;
     int m_x;
@@ -123,6 +130,8 @@ private:
 
     QHash<quint32, DataWidget*> m_widgets;
     std::list<QTimer*> m_timers;
+
+    ScriptStorage *m_storage;
 };
 
 #endif // SCRIPTENV_H

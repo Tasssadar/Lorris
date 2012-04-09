@@ -39,18 +39,16 @@ InputWidget::InputWidget(QWidget *parent) :
 
     layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
     layout->setContentsMargins(5, 0, 5, 5);
-
-    m_loader = new QUiLoader(this);
 }
 
 InputWidget::~InputWidget()
 {
-    delete m_loader;
 }
 
 QWidget *InputWidget::newWidget(const QString &name, int stretch)
 {
-    QWidget *w = m_loader->createWidget(name, this);
+    static QUiLoader loader;
+    QWidget *w = loader.createWidget(name, this);
     if(!w)
         return NULL;
 

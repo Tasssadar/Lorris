@@ -9,6 +9,7 @@ else:DESTDIR = $$PWD/bin/release
 OBJECTS_DIR = $$PWD/obj
 MOC_DIR = $$PWD/moc
 UI_DIR = $$PWD/ui
+RCC_DIR = $$PWD/qrc
 CONFIG += qwt
 LIBS += -L"$$PWD/dep/qwt/lib"
 LIBS += -L"$$PWD/dep/qextserialport/lib"
@@ -94,7 +95,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/joystick/joythread.cpp \
     src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp \
     src/ui/tabview.cpp \
-    src/ui/tabwidget.cpp
+    src/ui/tabwidget.cpp \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -173,7 +175,8 @@ HEADERS += src/ui/mainwindow.h \
     src/joystick/joythread.h \
     src/LorrisAnalyzer/DataWidgets/buttonwidget.h \
     src/ui/tabview.h \
-    src/ui/tabwidget.h
+    src/ui/tabwidget.h \
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include

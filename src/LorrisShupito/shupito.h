@@ -124,6 +124,11 @@ public:
     std::vector<chip_definition> &getDefs() { return m_chip_defs; }
 
 public slots:
+    void sendTunnelData(const QString& data)
+    {
+        sendTunnelData(data.toUtf8());
+    }
+
     void sendTunnelData(const QByteArray& data);
 
 private slots:

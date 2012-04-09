@@ -28,6 +28,8 @@
 #include <QAbstractScrollArea>
 #include <vector>
 #include <QPoint>
+#include <QTime>
+#include <QTimer>
 
 class QMenu;
 class QByteArray;
@@ -52,7 +54,7 @@ class Terminal : public QAbstractScrollArea
     Q_OBJECT
 
 Q_SIGNALS:
-    void keyPressedASCII(QByteArray key);
+    void keyPressed(QString key);
 
 public:
     Terminal(QWidget *parent);
@@ -60,9 +62,9 @@ public:
 
     void writeToFile(QFile *file);
 
-    const QByteArray& getData()
+    QByteArray getData()
     {
-        return m_data;
+        return QByteArray(m_data, m_data_size);
     }
 
     int getFmt() { return m_fmt; }
@@ -70,7 +72,12 @@ public:
 public slots:
     void clear();
     void pause(bool pause);
-    void appendText(QByteArray text);
+    void appendText(const QString& text)
+    {
+        appendText(text.toUtf8());
+    }
+
+    void appendText(const QByteArray& text);
     void setFmt(int fmt);
     void setInput(quint8 input);
 
@@ -86,12 +93,12 @@ protected:
 private slots:
     void copyToClipboard();
     void pasteFromClipboard();
+    void updateScrollBars();
 
 private:
-    void handleInput(const QByteArray& data, int key = 0);
-    void updateScrollBars();
-    void addLine(quint32 pos, char *&line_start, char *&line_end);
-    void addLines(QByteArray text);
+    void handleInput(const QString &data, int key = 0);
+    void addLine(quint32 pos, QChar *&line_start, QChar *&line_end);
+    void addLines(const QString& text);
     void addHex();
     QPoint mouseToTextPos(const QPoint& pos);
 
@@ -106,7 +113,12 @@ private:
 
     std::vector<QString> m_lines;
     std::vector<QString> m_pause_lines;
-    QByteArray m_data;
+
+    char *m_data;
+    quint32 m_data_alloc;
+    quint32 m_data_size;
+
+    QString m_command;
 
     bool m_paused;
     quint8 m_fmt;
@@ -124,10 +136,12 @@ private:
     QPoint m_sel_begin;
     QPoint m_sel_stop;
 
-    QByteArray m_command;
-
     QMenu *m_context_menu;
     QAction *m_fmt_act[FMT_MAX];
+
+    QTimer m_updateTimer;
+
+    bool m_changed;
 };
 
 #endif // TERMINAL_H

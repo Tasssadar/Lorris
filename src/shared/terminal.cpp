@@ -41,6 +41,10 @@
 
 Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 {
+    m_data_size = 0;
+    m_data_alloc = 512;
+    m_data = (char*)malloc(m_data_alloc);
+
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QColor color_black(0, 0, 0);
@@ -62,6 +66,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     m_hex_pos = 0;
 
     m_cursor.setSize(QSize(m_char_width, m_char_height));
+    m_changed = true;
     updateScrollBars();
 
     m_context_menu = new QMenu(this);
@@ -91,44 +96,50 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     connect(paste, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
     connect(clear, SIGNAL(triggered()), SLOT(clear()));
     connect(fmtMap,SIGNAL(mapped(int)), SLOT(setFmt(int)));
+    connect(&m_updateTimer, SIGNAL(timeout()), SLOT(updateScrollBars()));
 
     setFmt(FMT_TEXT);
+
+    m_updateTimer.start(100);
 }
 
 Terminal::~Terminal()
 {
-
+    free(m_data);
 }
 
-void Terminal::appendText(QByteArray text)
+void Terminal::appendText(const QByteArray& text)
 {
-    m_data.append(text);
+    m_data_size += text.size();
+    if(m_data_size > m_data_alloc)
+    {
+        while(m_data_alloc < m_data_size)
+            m_data_alloc += 512;
+
+        m_data = (char*)realloc(m_data, m_data_alloc);
+    }
+
+    std::copy(text.data(), text.data()+text.size(), m_data+m_data_size-text.size());
 
     switch(m_fmt)
     {
-        case FMT_TEXT: addLines(text); break;
+        case FMT_TEXT: addLines(QString::fromUtf8(text)); break;
         case FMT_HEX:  addHex();       break;
     }
 
     if(!m_paused)
-    {
-        updateScrollBars();
-        viewport()->update();
-    }
+        m_changed = true;
 }
 
-void Terminal::addLines(QByteArray text)
+void Terminal::addLines(const QString &text)
 {
     quint32 pos = m_cursor_pos.y();
+    QChar *line_start = (QChar*)text.data();
+    QChar *line_end = line_start;
 
-    char *in_data = text.data();
-
-    char *line_start = in_data;
-    char *line_end = in_data;
-
-    for(quint32 i = 0; *line_end && i < (quint32)text.size(); ++i)
+    for(int i = 0; i < text.size() && *line_end != 0; ++i)
     {
-        switch(*line_end)
+        switch((*line_end).unicode())
         {
             case '\f':
             {
@@ -153,16 +164,33 @@ void Terminal::addLines(QByteArray text)
             case '\b':
             {
                 if(line_end != line_start)
+                {
                     --line_end;
 
-                addLine(pos, line_start, line_end);
+                    addLine(pos, line_start, line_end);
 
-                if(*line_start == '\b')
+                    if(*line_start == '\b')
+                        ++line_end;
+                    line_start = line_end;
+                }
+                else
+                {
+                    std::vector<QString>::iterator linePos = m_lines.begin() + pos;
+                    if(linePos == m_lines.end())
+                        break;
+
+                    if(m_cursor_pos.x() != 0)
+                        --m_cursor_pos.rx();
+
                     ++line_end;
-                line_start = line_end;
+                    ++line_start;
 
-                if(m_cursor_pos.x() != 0)
-                    --m_cursor_pos.rx();
+                    if((*linePos).size() == 1)
+                        m_lines.erase(linePos);
+                    else
+                        (*linePos).chop(1);
+                }
+
                 break;
             }
             default:
@@ -177,7 +205,7 @@ void Terminal::addLines(QByteArray text)
         addLine(pos, line_start, line_end);
 }
 
-void Terminal::addLine(quint32 pos, char *&line_start, char *&line_end)
+void Terminal::addLine(quint32 pos, QChar *&line_start, QChar *&line_end)
 {
     std::vector<QString>::iterator linePos = m_lines.begin() + pos;
     if(linePos != m_lines.end())
@@ -185,19 +213,14 @@ void Terminal::addLine(quint32 pos, char *&line_start, char *&line_end)
         if((line_end - line_start + m_cursor_pos.x()) > (*linePos).length())
             (*linePos).resize(line_end - line_start + m_cursor_pos.x());
 
-        QChar *lineData = (*linePos).data();
-
-        QChar *line = new QChar[line_end - line_start];
-        QChar *line_itr = line;
-        for(char *itr = line_start; itr != line_end; ++itr,++line_itr)
-            *line_itr = *itr;
-        std::copy(line, line_itr, lineData+m_cursor_pos.x());
+        QChar *lineData = (*linePos).data()+m_cursor_pos.x();
+        std::copy(line_start, line_end, lineData);
 
         m_cursor_pos.rx() += (line_end - line_start);
     }
     else
     {
-        char tmp = *line_end;
+        QChar tmp = *line_end;
         *line_end = 0;
         m_lines.insert(linePos, QString(line_start));
         *line_end = tmp;
@@ -213,35 +236,59 @@ void Terminal::addLine(quint32 pos, char *&line_start, char *&line_end)
 
 void Terminal::addHex()
 {
-    QByteArray chunk;
     if(m_hex_pos%16 != 0)
     {
         m_hex_pos -= m_hex_pos%16;
         m_lines.pop_back();
     }
 
-    for(int i = m_hex_pos; i < m_data.length(); i += 16)
+    char *chunk = NULL;
+    char *end = m_data+m_data_size;
+
+    int chunk_size;
+    char *itr;
+    char *line = new char[78];
+
+    line[8] = line[57] = line[58] = line[59] = ' ';
+    line[60] = line[77] = '|';
+
+    for(quint32 i = m_hex_pos; i < m_data_size; i += 16)
     {
-        chunk = m_data.mid(i, 16);
-        QString line = QString("%1 ").arg(m_hex_pos, 8, 16, QChar('0')).toUpper();
-        m_hex_pos += chunk.size();
+        itr = line;
+        chunk = m_data+m_hex_pos;
+        chunk_size = std::min(int(end - chunk), 16);
 
-        for(int x = 0; x < chunk.size(); ++x)
-            line += Utils::hexToString(chunk[x]) % " ";
+        static const char* hex = "0123456789ABCDEF";
+        for(int x = 7; x >= 0; --x, ++itr)
+            *itr = hex[(m_hex_pos >> x*4) & 0x0F];
+        ++itr;
 
-        line += QString("%1").arg("", 3 + (16 - chunk.size())*3, QChar(' '));
+        m_hex_pos += chunk_size;
 
-        Utils::parseForHexEditor(chunk);
-        line += "|" % chunk % "|";
-        m_lines.push_back(line);
+        for(int x = 0; x < chunk_size; ++x)
+        {
+            *(itr++) = hex[quint8(chunk[x]) >> 4];
+            *(itr++) = hex[quint8(chunk[x]) & 0x0F];
+            *(itr++) = ' ';
+
+            line[61+x] = (chunk[x] < 32 || chunk[x] > 126) ? '.' : chunk[x];
+        }
+
+        memset(itr, ' ', (16 - chunk_size)*3);
+
+        if(chunk_size != 16)
+            *(line + chunk_size + 61) = '|';
+
+        m_lines.push_back(QString::fromAscii(line, 62+chunk_size));
     }
+    delete[] line;
     m_cursor_pos.setY(m_lines.size());
     m_cursor_pos.setX(0);
 }
 
 void Terminal::keyPressEvent(QKeyEvent *event)
 {
-    QByteArray key = event->text().toAscii();
+    QString key = event->text();
 
     if((event->modifiers() & Qt::ControlModifier))
     {
@@ -286,13 +333,13 @@ void Terminal::keyPressEvent(QKeyEvent *event)
     handleInput(key, event->key());
 }
 
-void Terminal::handleInput(const QByteArray &data, int key)
+void Terminal::handleInput(const QString &data, int key)
 {
     switch(m_input)
     {
         case INPUT_SEND_KEYPRESS:
         {
-            emit keyPressedASCII(data);
+            emit keyPressed(data);
             break;
         }
         case INPUT_SEND_COMMAND:
@@ -303,7 +350,7 @@ void Terminal::handleInput(const QByteArray &data, int key)
             if(key != Qt::Key_Return && key != Qt::Key_Enter)
                 break;
 
-            emit keyPressedASCII(m_command);
+            emit keyPressed(m_command);
             m_command.clear();
         }
     }
@@ -354,6 +401,10 @@ void Terminal::pasteFromClipboard()
 
 void Terminal::updateScrollBars()
 {
+    if(!m_changed)
+        return;
+
+    m_changed = false;
     QSize areaSize = viewport()->size();
     verticalScrollBar()->setPageStep(areaSize.height());
     horizontalScrollBar()->setPageStep(areaSize.width());
@@ -375,7 +426,8 @@ void Terminal::updateScrollBars()
     if(scroll)
         verticalScrollBar()->setValue(verticalScrollBar()->maximum());
 
-    this->update();
+    update();
+    viewport()->update();
 }
 
 void Terminal::paintEvent(QPaintEvent *)
@@ -452,10 +504,12 @@ void Terminal::paintEvent(QPaintEvent *)
     // draw text
     std::size_t i = startY;
     int maxLines = i + height + 1;
+    int maxLen = viewport()->width()/m_char_width + 1;
     for(y = 0; (int)i < maxLines && i < lines().size(); ++i, y += m_char_height)
     {
         QString& l = lines()[i];
-        int len = l.length() - startX;
+
+        int len = std::min(l.length() - startX, maxLen);
         if(len <= 0)
             continue;
         painter.drawText(0, y, viewport()->width(), m_char_height, Qt::AlignLeft,
@@ -484,25 +538,31 @@ void Terminal::pause(bool pause)
         m_pause_lines = m_lines;
         m_cursor_pause_pos = m_cursor_pos;
     }
+    else
+        m_pause_lines.clear();
 
+    m_changed = true;
     updateScrollBars();
-    viewport()->update();
 }
 
 void Terminal::clear()
 {
-    m_data.clear();
+    m_data_alloc = 512;
+    m_data = (char*)realloc(m_data, m_data_alloc);
+    m_data_size = 0;
+
     m_lines.clear();
     m_pause_lines.clear();
     m_cursor_pos = m_cursor_pause_pos = QPoint(0, 0);
     m_hex_pos = 0;
 
+    m_changed = true;
     updateScrollBars();
-    viewport()->update();
 }
 
 void Terminal::resizeEvent(QResizeEvent *)
 {
+    m_changed = true;
     updateScrollBars();
 }
 
@@ -599,10 +659,11 @@ void Terminal::setFmt(int fmt)
 
     switch(fmt)
     {
-        case FMT_TEXT: addLines(m_data); break;
+        case FMT_TEXT: addLines(QString::fromUtf8(m_data, m_data_size)); break;
         case FMT_HEX:  addHex();         break;
     }
 
+    m_changed = true;
     updateScrollBars();
     pause(paused);
 }
@@ -611,7 +672,7 @@ void Terminal::writeToFile(QFile *file)
 {
     for(quint32 i = 0; i < lines().size(); ++i)
     {
-        file->write(lines()[i].toAscii());
+        file->write(lines()[i].toUtf8());
         file->write("\n");
     }
 }

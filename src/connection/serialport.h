@@ -67,6 +67,8 @@ private:
 
     QFuture<bool> m_future;
     QFutureWatcher<bool> m_watcher;
+
+    QMutex m_port_mutex;
 };
 
 class SerialPortBuilder : public ConnectionBuilder
@@ -78,7 +80,7 @@ public:
     }
 
     void addOptToTabDialog(QGridLayout *layout);
-    void CreateConnection(WorkTabInfo *info);
+    void CreateConnection(WorkTab *tab);
 
 private slots:
     void conResult(Connection *con, bool open);

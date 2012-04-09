@@ -50,6 +50,7 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
         InfoList *GetWorkTabInfos();
         void SortTabInfos();
         void AddWorkTab(WorkTab *tab, QString label);
+        WorkTab* GetNewTab(WorkTabInfo *info);
 
         WorkTab* getWorkTab(quint32 id)
         {
@@ -83,6 +84,8 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 
         void OpenHomeTab();
         void CloseHomeTab();
+
+        bool onTabsClose();
 
     public slots:
         void NewTabDialog();

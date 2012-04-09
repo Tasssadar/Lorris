@@ -113,7 +113,7 @@ void LorrisTerminal::initUI()
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
-    connect(terminal,          SIGNAL(keyPressedASCII(QByteArray)), SLOT(sendKeyEvent(QByteArray)));
+    connect(terminal,          SIGNAL(keyPressed(QString)),         SLOT(sendKeyEvent(QString)));
     connect(ui->browseBtn,     SIGNAL(clicked()),                   SLOT(browseForHex()));
     connect(ui->connectButton, SIGNAL(clicked()),                   SLOT(connectButton()));
     connect(ui->stopButton,    SIGNAL(clicked()),                   SLOT(stopButton()));
@@ -128,6 +128,7 @@ void LorrisTerminal::initUI()
 
 LorrisTerminal::~LorrisTerminal()
 {
+    delete terminal;
     delete ui;
 }
 
@@ -138,7 +139,7 @@ void LorrisTerminal::browseForHex()
                                                     tr("Intel hex file (*.hex)"));
     ui->hexFile->setText(filename);
     if(filename.length() != 0)
-        sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
+        sConfig.set(CFG_STRING_HEX_FOLDER, filename);
 }
 
 void LorrisTerminal::clearButton()
@@ -204,7 +205,7 @@ void LorrisTerminal::eeprom_write(QString id)
     {
         m_state &= ~(STATE_EEPROM_WRITE);
 
-        showErrorBox(tr("Unsupported chip: ") + id);
+        Utils::ThrowException(tr("Unsupported chip: ") + id);
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
@@ -278,7 +279,7 @@ void LorrisTerminal::eeprom_read(QString id)
     {
         m_state &= ~(STATE_EEPROM_READ);
 
-        showErrorBox(tr("Unsupported chip: ") + id);
+        Utils::ThrowException(tr("Unsupported chip: ") + id);
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
@@ -391,7 +392,7 @@ void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
     {
         ui->connectButton->setText(tr("Connect"));
 
-        showErrorBox(tr("Can't open serial port!"));
+        Utils::ThrowException(tr("Can't open serial port!"));
     }
 }
 
@@ -510,7 +511,7 @@ void LorrisTerminal::stopTimerSig()
         ui->stopButton->setText(tr("Stop"));
         ui->stopButton->setEnabled(true);
 
-        showErrorBox(tr("Timeout on stopping chip!"));
+        Utils::ThrowException(tr("Timeout on stopping chip!"));
     }
 }
 
@@ -524,7 +525,7 @@ void LorrisTerminal::flashButton()
     }
     catch(QString ex)
     {
-        showErrorBox(tr("Error loading hex file: ") + ex);
+        Utils::ThrowException(tr("Error loading hex file: ") + ex);
 
         delete hex;
         hex = NULL;
@@ -554,7 +555,7 @@ void LorrisTerminal::flash_prepare(QString deviceId)
 
     if(cd.getName().isEmpty())
     {
-        showErrorBox(tr("Unsupported chip: ") + deviceId);
+        Utils::ThrowException(tr("Unsupported chip: ") + deviceId);
         delete hex;
         hex = NULL;
 
@@ -570,7 +571,7 @@ void LorrisTerminal::flash_prepare(QString deviceId)
     }
     catch(QString ex)
     {
-        showErrorBox(tr("Error making pages: ") + ex);
+        Utils::ThrowException(tr("Error making pages: ") + ex);
 
         delete hex;
         hex = NULL;
@@ -649,7 +650,7 @@ void LorrisTerminal::flashTimeout()
         m_state &= ~(STATE_EEPROM_READ);
         delete m_eeprom;
 
-        showErrorBox(tr("Timeout during reading EEPROM!"));
+        Utils::ThrowException(tr("Timeout during reading EEPROM!"));
         return;
     }
 
@@ -658,7 +659,7 @@ void LorrisTerminal::flashTimeout()
         m_state &= ~(STATE_EEPROM_WRITE);
         delete m_eeprom;
 
-        showErrorBox(tr("Timeout during writing EEPROM!"));
+        Utils::ThrowException(tr("Timeout during writing EEPROM!"));
         return;
     }
 
@@ -669,7 +670,7 @@ void LorrisTerminal::flashTimeout()
 
     ui->flashText->setText("");
 
-    showErrorBox(tr("Timeout during flashing!"));
+    Utils::ThrowException(tr("Timeout during flashing!"));
 }
 
 void LorrisTerminal::deviceIdTimeout()
@@ -679,7 +680,7 @@ void LorrisTerminal::deviceIdTimeout()
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    showErrorBox(tr("Can't get device id!"));
+    Utils::ThrowException(tr("Can't get device id!"));
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
 
@@ -699,10 +700,10 @@ void LorrisTerminal::deviceIdTimeout()
     hex = NULL;
 }
 
-void LorrisTerminal::sendKeyEvent(QByteArray key)
+void LorrisTerminal::sendKeyEvent(const QString &key)
 {
     if(!(m_state & STATE_DISCONNECTED))
-        m_con->SendData(key);
+        m_con->SendData(key.toUtf8());
 }
 
 void LorrisTerminal::EnableButtons(quint16 buttons, bool enable)
@@ -751,7 +752,7 @@ void LorrisTerminal::loadText()
     terminal->appendText(file.readAll());
     file.close();
 
-    sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
+    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
 }
 
 void LorrisTerminal::saveText()
@@ -772,7 +773,7 @@ void LorrisTerminal::saveText()
     terminal->writeToFile(&file);
     file.close();
 
-    sConfig.set(CFG_STRING_HEX_FOLDER, filename.left(filename.lastIndexOf(QRegExp("[\\/]"))));
+    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
 }
 
 void LorrisTerminal::inputAct(int act)

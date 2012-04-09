@@ -42,6 +42,7 @@ Q_SIGNALS:
     void newTab();
     void openHomeTab(quint32 id);
     void changeMenu(quint32 id);
+    void statusBarMsg(const QString& message, int timeout = 0);
 
 public:
     explicit TabView(QWidget *parent = 0);
