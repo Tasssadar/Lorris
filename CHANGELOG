@@ -5,6 +5,27 @@ Copyright (C) 2012 Vojtěch Boček
 Contact: <vbocek@gmail.com>
          https://github.com/Tasssadar
 
+Version 0.3.1 - git revision [291] - 8d32216a3dd901af2ce685aa2bd7c806f444f377
+================================================================
+ * Fix several bugs in split view feature
+ * Add status bar, can be used by modules
+   to notify you of various events
+ * Fix crash on click to Home tab's header
+ * Fix crash on Serial port disconnect
+ * Fix crash in LorrisProxy when connection to serial port fails
+
+ LorrisAnalyzer:
+ * Add JavaScript class implementation by John Resig into ScriptWidget
+   http://ejohn.org/blog/simple-javascript-inheritance/
+ * Fix several bugs in ScriptWidget's script processing
+ * Implement ScriptStorage - script can now save data
+ * Add "File was changed" dialog.
+
+ LorrisTerminal:
+ * Several bugfixes
+ * Improved performance
+ * Terminal now uses UTF8 encoding instead of ASCII
+
 Version 0.3.0 - git revision [262]
 ================================================================
  * Tabs can be opened and closed by mouse-clicking.
