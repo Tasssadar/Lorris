@@ -189,8 +189,10 @@ void TabWidget::newTabBtn()
 
 void TabWidget::barChangeMenu(int idx)
 {
-    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
-    emit changeMenu(*itr);
+    if(m_tab_ids.size() <= idx)
+        return;
+
+    emit changeMenu(m_tab_ids[idx]);
 }
 
 TabBar::TabBar(QWidget *parent) :
