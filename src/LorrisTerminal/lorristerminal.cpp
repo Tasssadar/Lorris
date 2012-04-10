@@ -111,6 +111,8 @@ void LorrisTerminal::initUI()
 
     inputAct(sConfig.get(CFG_QUINT32_TERMINAL_INPUT));
 
+    ui->hexFile->setText(sConfig.get(CFG_STRING_HEX_FOLDER));
+
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
     connect(terminal,          SIGNAL(keyPressed(QString)),         SLOT(sendKeyEvent(QString)));
@@ -737,7 +739,7 @@ void LorrisTerminal::loadText()
 {
     static const QString filters = tr("Text file (*.txt);;Any file (*.*)");
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                    sConfig.get(CFG_STRING_HEX_FOLDER),
+                                                    sConfig.get(CFG_STRING_TERMINAL_TEXTFILE),
                                                     filters);
     if(filename.isEmpty())
         return;
@@ -752,13 +754,14 @@ void LorrisTerminal::loadText()
     terminal->appendText(file.readAll());
     file.close();
 
-    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
+    sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);
 }
 
 void LorrisTerminal::saveText()
 {
     static const QString filters = tr("Text file (*.txt);;Any file (*.*)");
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save data"), sConfig.get(CFG_STRING_HEX_FOLDER), filters);
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save data"),
+                                                    sConfig.get(CFG_STRING_TERMINAL_TEXTFILE), filters);
 
     if(filename.isEmpty())
         return;
@@ -773,7 +776,7 @@ void LorrisTerminal::saveText()
     terminal->writeToFile(&file);
     file.close();
 
-    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
+    sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);
 }
 
 void LorrisTerminal::inputAct(int act)
