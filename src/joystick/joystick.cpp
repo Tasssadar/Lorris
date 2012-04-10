@@ -28,13 +28,17 @@ Joystick::Joystick(int id, QObject *parent) :
 {
     m_id = id;
     m_joy = NULL;
+    m_axes = NULL;
+    m_buttons = NULL;
 }
 
 Joystick::~Joystick()
 {
     delete[] m_axes;
     delete[] m_buttons;
-    SDL_JoystickClose(m_joy);
+
+    if(m_joy)
+        SDL_JoystickClose(m_joy);
 }
 
 bool Joystick::open()
