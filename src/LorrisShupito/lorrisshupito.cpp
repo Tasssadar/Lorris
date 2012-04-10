@@ -72,16 +72,10 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     ui->progSpeedBox->setEditText(QString::number(m_prog_speed_hz));
 
     if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_LOG))
-    {
         ui->logText->hide();
-        ui->hideLogBtn->setText("^");
-    }
 
     if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_FUSES))
-    {
         m_fuse_widget->hide();
-        ui->hideFusesBtn->setText("<");
-    }
 
     ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
 
@@ -97,6 +91,11 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
     connect(ui->startstopButton, SIGNAL(clicked()),                SLOT(startstopChip()));
     connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
+
+    int w = ui->hideFusesBtn->fontMetrics().height()+10;
+    ui->hideLogBtn->setFixedHeight(w);
+    ui->hideFusesBtn->setFixedWidth(w);
+    ui->hideFusesBtn->setRotation(ROTATE_90);
 
     initMenus();
 
@@ -704,11 +703,6 @@ void LorrisShupito::hideLogBtn()
 {
    ui->logText->setVisible(!ui->logText->isVisible());
    sConfig.set(CFG_BOOL_SHUPITO_SHOW_LOG, ui->logText->isVisible());
-
-   if(ui->logText->isVisible())
-       ui->hideLogBtn->setText("v");
-   else
-       ui->hideLogBtn->setText("^");
 }
 
 void LorrisShupito::hideFusesBtn()
@@ -720,11 +714,6 @@ void LorrisShupito::hideFuses(bool hide)
 {
     m_fuse_widget->setVisible(!hide);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_FUSES, !hide);
-
-    if(m_fuse_widget->isVisible())
-        ui->hideFusesBtn->setText(">");
-    else
-        ui->hideFusesBtn->setText("<");
 }
 
 chip_definition LorrisShupito::switchToFlashAndGetId()

@@ -428,10 +428,10 @@
         <string notr="true">padding:0px</string>
        </property>
        <property name="text">
-        <string notr="true">v</string>
+        <string>Log</string>
        </property>
        <property name="flat">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -445,7 +445,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="hideFusesBtn">
+    <widget class="RotateButton" name="hideFusesBtn">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -456,15 +456,22 @@
       <string notr="true">padding: 0px</string>
      </property>
      <property name="text">
-      <string notr="true">&gt;</string>
+      <string>Fuses</string>
      </property>
      <property name="flat">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RotateButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">rotatebutton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="shupitoicons.qrc"/>
  </resources>
