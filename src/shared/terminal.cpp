@@ -328,9 +328,9 @@ void Terminal::keyPressEvent(QKeyEvent *event)
     }
 
     if(key.isEmpty())
-        return;
-
-    handleInput(key, event->key());
+        QAbstractScrollArea::keyPressEvent(event);
+    else
+        handleInput(key, event->key());
 }
 
 void Terminal::handleInput(const QString &data, int key)
