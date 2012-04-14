@@ -111,7 +111,6 @@ private:
     QTimer *flashTimeoutTimer;
     QByteArray stopCmd;
     HexFile *hex;
-    Terminal *terminal;
 
     QAction *m_export_eeprom;
     QAction *m_import_eeprom;

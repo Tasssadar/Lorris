@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="mainLayout">
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,4">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,3,0,0,0,0">
      <item>
@@ -98,8 +98,26 @@
      </item>
     </layout>
    </item>
+   <item>
+    <widget class="Terminal" name="terminal">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Terminal</class>
+   <extends>QFrame</extends>
+   <header location="global">terminal.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

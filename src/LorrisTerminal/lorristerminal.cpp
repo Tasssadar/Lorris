@@ -51,7 +51,6 @@ LorrisTerminal::LorrisTerminal() : WorkTab(), ui(new Ui::LorrisTerminal)
     m_state = 0;
     stopTimer = NULL;
     hex = NULL;
-    terminal = NULL;
     m_eeprom = NULL;
 
     chip_definition::parse_default_chipsets(m_chip_defs);
@@ -62,9 +61,6 @@ LorrisTerminal::LorrisTerminal() : WorkTab(), ui(new Ui::LorrisTerminal)
 void LorrisTerminal::initUI()
 {
     ui->setupUi(this);
-
-    terminal = new Terminal(this);
-    ui->mainLayout->addWidget(terminal, 4);
 
     QMenu *eepromBar = new QMenu(tr("EEPROM"), this);
     addTopMenu(eepromBar);
@@ -115,7 +111,7 @@ void LorrisTerminal::initUI()
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
-    connect(terminal,          SIGNAL(keyPressed(QString)),         SLOT(sendKeyEvent(QString)));
+    connect(ui->terminal,      SIGNAL(keyPressed(QString)),         SLOT(sendKeyEvent(QString)));
     connect(ui->browseBtn,     SIGNAL(clicked()),                   SLOT(browseForHex()));
     connect(ui->connectButton, SIGNAL(clicked()),                   SLOT(connectButton()));
     connect(ui->stopButton,    SIGNAL(clicked()),                   SLOT(stopButton()));
@@ -130,7 +126,6 @@ void LorrisTerminal::initUI()
 
 LorrisTerminal::~LorrisTerminal()
 {
-    delete terminal;
     delete ui;
 }
 
@@ -146,7 +141,7 @@ void LorrisTerminal::browseForHex()
 
 void LorrisTerminal::clearButton()
 {
-    terminal->clear();
+    ui->terminal->clear();
 }
 
 void LorrisTerminal::pauseButton()
@@ -162,7 +157,7 @@ void LorrisTerminal::pauseButton()
         ui->pauseButton->setText(tr("Pause"));
     }
 
-    terminal->pause(m_state & STATE_PAUSED);
+    ui->terminal->pause(m_state & STATE_PAUSED);
 }
 
 void LorrisTerminal::eepromButton()
@@ -371,7 +366,7 @@ void LorrisTerminal::connectedStatus(bool connected)
         ui->stopButton->setEnabled(true);
         ui->stopButton->setText(tr("Stop"));
 
-        terminal->setFocus();
+        ui->terminal->setFocus();
     }
     else
     {
@@ -458,10 +453,10 @@ void LorrisTerminal::readData(const QByteArray& data)
         return;
     }
 
-    if(!terminal)
+    if(!ui->terminal)
         return;
 
-    terminal->appendText(data);
+    ui->terminal->appendText(data);
 }
 
 void LorrisTerminal::stopButton()
@@ -477,7 +472,7 @@ void LorrisTerminal::stopButton()
 
         EnableButtons((BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
-        terminal->setFocus();
+        ui->terminal->setFocus();
     }
     else
     {
@@ -732,7 +727,7 @@ void LorrisTerminal::fmtAction(int act)
         m_fmt_act[i]->setChecked(i == act);
 
     sConfig.set(CFG_QUINT32_TERMINAL_FMT, act);
-    terminal->setFmt(act);
+    ui->terminal->setFmt(act);
 }
 
 void LorrisTerminal::loadText()
@@ -751,7 +746,7 @@ void LorrisTerminal::loadText()
         return;
     }
 
-    terminal->appendText(file.readAll());
+    ui->terminal->appendText(file.readAll());
     file.close();
 
     sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);
@@ -773,7 +768,7 @@ void LorrisTerminal::saveText()
         return;
     }
 
-    terminal->writeToFile(&file);
+    ui->terminal->writeToFile(&file);
     file.close();
 
     sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);
@@ -785,5 +780,5 @@ void LorrisTerminal::inputAct(int act)
         m_input[i]->setChecked(i == act);
 
     sConfig.set(CFG_QUINT32_TERMINAL_INPUT, act);
-    terminal->setInput(act);
+    ui->terminal->setInput(act);
 }
