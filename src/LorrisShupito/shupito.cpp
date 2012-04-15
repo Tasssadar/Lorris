@@ -92,7 +92,6 @@ void Shupito::readData(const QByteArray &data)
             if(index == -1)
                 break;
             d_itr = d_start+index;
-            first = false;
             packet->Clear();
         }
 
