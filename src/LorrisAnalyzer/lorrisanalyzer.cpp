@@ -232,20 +232,19 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
     char *d_start = (char*)data.data();
     char *d_itr = d_start;
-    char *d_end = (char*)data.data() + data.size();
+    char *d_end = d_start + data.size();
 
-    static bool first = true;
     quint32 curRead = 1;
 
     while(d_itr != d_end)
     {
-        if(first || curRead == 0)
+        if(m_curData->isFresh() || curRead == 0)
         {
             int index = data.indexOf(m_curData->getStaticData(), d_itr - d_start);
             if(index == -1)
                 break;
             d_itr = d_start + index;
-            first = false;
+            m_curData->clear();
         }
         curRead = m_curData->addData(d_itr, d_end);
         d_itr += curRead;

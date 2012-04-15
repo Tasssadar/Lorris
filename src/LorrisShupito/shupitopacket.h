@@ -52,6 +52,7 @@ public:
 
     void Clear();
     bool isValid();
+    bool isFresh() const { return itr == 0; }
 
     quint8 addData(char *d_itr, char *d_end);
 

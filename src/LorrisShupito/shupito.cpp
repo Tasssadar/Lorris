@@ -76,8 +76,6 @@ void Shupito::readData(const QByteArray &data)
 {
     mutex.lock();
 
-    static bool first = true;
-
     std::vector<ShupitoPacket*> packets;
     ShupitoPacket *packet = m_packet;
 
@@ -88,16 +86,19 @@ void Shupito::readData(const QByteArray &data)
     quint8 curRead = 1;
     while(d_itr != d_end)
     {
-        if(first || curRead == 0)
+        if(packet->isFresh() || curRead == 0)
         {
             int index = data.indexOf(char(0x80), d_itr - d_start);
             if(index == -1)
                 break;
             d_itr = d_start+index;
             first = false;
+            packet->Clear();
         }
+
         curRead = packet->addData(d_itr, d_end);
         d_itr += curRead;
+
         if(packet->isValid())
         {
             packets.push_back(packet);

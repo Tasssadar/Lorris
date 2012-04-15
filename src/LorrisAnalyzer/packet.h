@@ -172,6 +172,7 @@ class analyzer_data
 {
 public:
     analyzer_data(analyzer_packet *packet);
+    void clear();
 
     void setPacket(analyzer_packet *packet)
     {
@@ -189,6 +190,7 @@ public:
     const QByteArray& getStaticData() { return m_static_data; }
 
     bool isValid();
+    bool isFresh() const { return itr == 0; }
 
     bool getDeviceId(quint8& id);
     bool getCmd(quint8& cmd);
