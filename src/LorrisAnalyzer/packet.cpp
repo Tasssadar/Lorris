@@ -41,7 +41,10 @@ quint32 analyzer_data::addData(char *d_itr, char *d_end)
     for(; itr < (quint32)m_static_data.length() && d_itr+read != d_end;)
     {
         if(*(d_itr+read) != m_static_data[itr])
+        {
+            itr = 0;
             return 0;
+        }
         m_data[itr++] = *(d_itr+read++);
     }
 
