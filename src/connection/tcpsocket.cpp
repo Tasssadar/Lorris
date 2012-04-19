@@ -68,22 +68,18 @@ void TcpSocket::Close()
 
     m_socket->close();
 
-    emit connected(false);
-    opened = false;
+    this->SetOpen(false);
 }
 
 void TcpSocket::connectResultSer(bool opened)
 {
-    this->opened = opened;
+    this->SetOpen(opened);
     emit connectResult(this, opened);
-
-    if(opened)
-        emit connected(true);
 }
 
 void TcpSocket::OpenConcurrent()
 {
-    if(opened)
+    if(this->isOpen())
         return;
 
     m_socket->connectToHost(m_address, m_port);
@@ -126,7 +122,7 @@ void TcpSocket::readyRead()
 
 void TcpSocket::stateChanged()
 {
-    if(opened && m_socket->state() != QAbstractSocket::ConnectedState)
+    if(this->isOpen() && m_socket->state() != QAbstractSocket::ConnectedState)
         Close();
 }
 
@@ -170,6 +166,7 @@ void TcpSocketBuilder::CreateConnection(WorkTab *tab)
             socket->setAddress(address, port);
         }
         m_tab->setConnection(socket);
+        socket->release();
 
         connect(socket, SIGNAL(connectResult(Connection*,bool)), SLOT(conResult(Connection*,bool)));
         socket->OpenConcurrent();
@@ -177,6 +174,7 @@ void TcpSocketBuilder::CreateConnection(WorkTab *tab)
     else
     {
         tab->setConnection(socket);
+        socket->release();
         emit connectionSuccess(socket, tab->getInfo()->GetName() + " - " + socket->GetIDString(), tab);
     }
 }

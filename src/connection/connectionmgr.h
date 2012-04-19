@@ -31,16 +31,6 @@
 #include "singleton.h"
 #include "connection.h"
 
-enum ConnectionType
-{
-    CONNECTION_SERIAL_PORT = 0,
-    CONNECTION_FILE        = 1,
-    CONNECTION_SHUPITO     = 2, // Do not use in WorkTabs, when connected to shupito, it identifies
-                                // as serial port from WorkTab's point of view
-    CONNECTION_TCP_SOCKET  = 3,
-    MAX_CON_TYPE           = 4
-};
-
 #define CON_MSK(con) (1 << con)
 
 class Shupito;

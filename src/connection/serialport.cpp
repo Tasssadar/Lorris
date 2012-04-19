@@ -36,7 +36,10 @@
 #include "WorkTab/WorkTab.h"
 #include "WorkTab/WorkTabInfo.h"
 
-SerialPort::SerialPort() : Connection()
+SerialPort::SerialPort()
+    : Connection(),
+      m_rate(BAUD38400),
+      m_devNameEditable(true)
 {
     m_type = CONNECTION_SERIAL_PORT;
     m_port = NULL;
@@ -58,11 +61,8 @@ bool SerialPort::Open()
 
 void SerialPort::connectResultSer(bool opened)
 {
-    this->opened = opened;
     emit connectResult(this, opened);
-
-    if(opened)
-        emit connected(true);
+    this->SetOpen(opened);
 }
 
 void SerialPort::Close()
@@ -86,18 +86,16 @@ void SerialPort::Close()
         m_port->close();
         delete m_port;
         m_port = NULL;
-
-        emit connected(false);
     }
 
     m_port_mutex.unlock();
 
-    opened = false;
+    this->SetOpen(false);
 }
 
 void SerialPort::SendData(const QByteArray& data)
 {
-    if(opened)
+    if(this->isOpen())
     {
         qint64 len = m_port->write(data);
         // FIXME: Some serial ports needs this
@@ -111,8 +109,10 @@ void SerialPort::SendData(const QByteArray& data)
 
 void SerialPort::OpenConcurrent()
 {
-    if(opened)
+    if(this->isOpen())
         return;
+
+    this->SetState(st_connecting);
 
     m_future = QtConcurrent::run(this, &SerialPort::openPort);
     m_watcher.setFuture(m_future);
@@ -122,7 +122,7 @@ bool SerialPort::openPort()
 {
     m_port_mutex.lock();
 
-    m_port = new QextSerialPort(m_idString, QextSerialPort::EventDriven);
+    m_port = new QextSerialPort(this->deviceName(), QextSerialPort::EventDriven);
     m_port->setBaudRate(m_rate);
     m_port->setParity(PAR_NONE);
     m_port->setDataBits(DATA_8);
@@ -150,6 +150,15 @@ bool SerialPort::openPort()
 void SerialPort::openResult()
 {
     connectResultSer(m_future.result());
+}
+
+void SerialPort::setDeviceName(QString const & value)
+{
+    if (m_deviceName != value)
+    {
+        m_deviceName = value;
+        emit changed();
+    }
 }
 
 void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
@@ -224,6 +233,7 @@ void SerialPortBuilder::CreateConnection(WorkTab *tab)
     if(port && port->isOpen())
     {
         tab->setConnection(port);
+        port->release();
         emit connectionSuccess(port, tab->getInfo()->GetName() + " - " + port->GetIDString(), tab);
     }
     else
@@ -235,10 +245,13 @@ void SerialPortBuilder::CreateConnection(WorkTab *tab)
         if(!port)
         {
             port = new SerialPort();
-            port->SetNameAndRate(portName, rate);
+            port->setBaudRate(rate);
+            port->setIDString(portName);
+            port->setDeviceName(portName);
         }
 
         m_tab->setConnection(port);
+        port->release();
 
         connect(port, SIGNAL(connectResult(Connection*,bool)), SLOT(conResult(Connection*,bool)));
         port->OpenConcurrent();

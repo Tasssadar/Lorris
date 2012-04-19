@@ -53,11 +53,10 @@ bool ShupitoTunnel::Open()
     if(!m_shupito)
         return false;
 
-    if(opened)
+    if(this->isOpen())
         return true;
 
-    opened = true;
-    emit connected(true);
+    this->SetOpen(true);
 
     if(!dataSigConnected)
     {
@@ -69,15 +68,13 @@ bool ShupitoTunnel::Open()
 
 void ShupitoTunnel::Close()
 {
-    if(!opened)
+    if(!this->isOpen())
         return;
-
-    emit connected(false);
 
     disconnect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, NULL);
 
     dataSigConnected = false;
-    opened = false;
+    this->SetOpen(false);
 }
 
 void ShupitoTunnel::OpenConcurrent()
@@ -95,7 +92,7 @@ void ShupitoTunnel::setShupito(Shupito* s)
         connect(s, SIGNAL(tunnelData(QByteArray)),     SIGNAL(dataRead(QByteArray)));
         dataSigConnected = true;
     }
-    else if(opened)
+    else if(!this->isOpen())
         Close();
 
     m_shupito = s;
@@ -103,7 +100,7 @@ void ShupitoTunnel::setShupito(Shupito* s)
 
 void ShupitoTunnel::SendData(const QByteArray &data)
 {
-    if(!opened || !m_shupito)
+    if(!this->isOpen() || !m_shupito)
         return;
 
     m_shupito->sendTunnelData(data);
@@ -138,6 +135,7 @@ void ShupitoTunnelBuilder::CreateConnection(WorkTab *tab)
         tunnel->setIDString(portName);
 
         tab->setConnection(tunnel);
+        tunnel->release();
         if(!tunnel->Open())
         {
             delete tunnel;
@@ -148,12 +146,16 @@ void ShupitoTunnelBuilder::CreateConnection(WorkTab *tab)
     {
         tunnel->setShupito(shupito);
         tab->setConnection(tunnel);
+        tunnel->release();
 
         if(!tunnel->Open())
             return emit connectionFailed(tr("Failed to open tunnel!"));
     }
     else
+    {
         tab->setConnection(tunnel);
+        tunnel->release();
+    }
 
     emit connectionSuccess(tunnel, tab->getInfo()->GetName() + " - " + tunnel->GetIDString(), tab, CONNECTION_SHUPITO);
 }

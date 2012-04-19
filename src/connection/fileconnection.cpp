@@ -53,6 +53,7 @@ void FileConnectionBuilder::CreateConnection(WorkTab *tab)
         con = new FileConnection();
 
     tab->setConnection(con);
+    con->release();
 
-    emit connectionSucces(con, tab->getInfo()->GetName(), tab);
+    emit connectionSuccess(con, tab->getInfo()->GetName(), tab);
 }

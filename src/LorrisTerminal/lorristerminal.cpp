@@ -39,6 +39,7 @@
 #include "shared/hexfile.h"
 #include "shared/chipdefs.h"
 #include "ui_lorristerminal.h"
+#include "../ui/chooseconnectiondlg.h"
 
 LorrisTerminal::LorrisTerminal() : WorkTab(), ui(new Ui::LorrisTerminal)
 {
@@ -113,7 +114,6 @@ void LorrisTerminal::initUI()
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
     connect(ui->terminal,      SIGNAL(keyPressed(QString)),         SLOT(sendKeyEvent(QString)));
     connect(ui->browseBtn,     SIGNAL(clicked()),                   SLOT(browseForHex()));
-    connect(ui->connectButton, SIGNAL(clicked()),                   SLOT(connectButton()));
     connect(ui->stopButton,    SIGNAL(clicked()),                   SLOT(stopButton()));
     connect(ui->flashButton,   SIGNAL(clicked()),                   SLOT(flashButton()));
     connect(ui->pauseButton,   SIGNAL(clicked()),                   SLOT(pauseButton()));
@@ -122,11 +122,29 @@ void LorrisTerminal::initUI()
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
+
+    m_connectButton = new ConnectButton(ui->connectButton2);
+    connect(m_connectButton, SIGNAL(connectionChosen(Connection*)), this, SLOT(connectionChosen(Connection*)));
 }
 
 LorrisTerminal::~LorrisTerminal()
 {
     delete ui;
+}
+
+void LorrisTerminal::connectionChosen(Connection * newConn)
+{
+    this->setConnection(newConn);
+}
+
+void LorrisTerminal::onTabShow()
+{
+    if (!m_con)
+    {
+        m_connectButton->choose();
+        if (m_con && !m_con->isOpen())
+            m_con->OpenConcurrent();
+    }
 }
 
 void LorrisTerminal::browseForHex()
@@ -342,26 +360,11 @@ void LorrisTerminal::eeprom_read_block(QByteArray data)
     }
 }
 
-void LorrisTerminal::connectButton()
-{
-    if(!(m_state & STATE_DISCONNECTED))
-        m_con->Close();
-    else
-    {
-        ui->connectButton->setText(tr("Connecting..."));
-        ui->connectButton->setEnabled(false);
-
-        connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
-        m_con->OpenConcurrent();
-    }
-}
-
 void LorrisTerminal::connectedStatus(bool connected)
 {
     if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
-        ui->connectButton->setText(tr("Disconnect"));
 
         ui->stopButton->setEnabled(true);
         ui->stopButton->setText(tr("Stop"));
@@ -373,8 +376,6 @@ void LorrisTerminal::connectedStatus(bool connected)
         m_state |= STATE_DISCONNECTED;
         m_state &= ~(STATE_STOPPING1 | STATE_STOPPING2 | STATE_STOPPED);
 
-        ui->connectButton->setText(tr("Connect"));
-
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
     }
 }
@@ -383,12 +384,8 @@ void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
 {
     disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
 
-    ui->connectButton->setEnabled(true);
-
     if(!result)
     {
-        ui->connectButton->setText(tr("Connect"));
-
         Utils::ThrowException(tr("Can't open serial port!"));
     }
 }
@@ -705,9 +702,6 @@ void LorrisTerminal::sendKeyEvent(const QString &key)
 
 void LorrisTerminal::EnableButtons(quint16 buttons, bool enable)
 {
-    if(buttons & BUTTON_DISCONNECT)
-        ui->connectButton->setEnabled(enable);
-
     if(buttons & BUTTON_STOP)
         ui->stopButton->setEnabled(enable);
 
@@ -781,4 +775,10 @@ void LorrisTerminal::inputAct(int act)
 
     sConfig.set(CFG_QUINT32_TERMINAL_INPUT, act);
     ui->terminal->setInput(act);
+}
+
+void LorrisTerminal::setConnection(Connection *con)
+{
+    this->WorkTab::setConnection(con);
+    m_connectButton->setConn(con);
 }

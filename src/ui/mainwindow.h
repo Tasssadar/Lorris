@@ -42,7 +42,9 @@ protected:
 
 private slots:
     void NewTab();
+    void NewTerminal();
     void About();
+    void OpenConnectionManager();
     void changeMenu(quint32 id);
 
     void langChanged(int idx);

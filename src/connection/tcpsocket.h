@@ -48,7 +48,7 @@ public:
     {
         m_address = address;
         m_port = port;
-        m_idString = address + ":" + QString::number(port);
+        this->setIDString(address + ":" + QString::number(port));
     }
     
 public slots:

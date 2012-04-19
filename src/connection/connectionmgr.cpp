@@ -116,4 +116,3 @@ ConnectionBuilder *ConnectionMgr::getConBuilder(quint8 conType, int moduleIdx, Q
     }
     return NULL;
 }
-

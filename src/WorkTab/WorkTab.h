@@ -59,6 +59,7 @@ public:
 protected slots:
     virtual void readData(const QByteArray &data);
     virtual void connectedStatus(bool connected);
+    virtual void connectionDestroyed();
 
 protected:
     WorkTab();

@@ -53,6 +53,7 @@
 #include "tabdialog.h"
 #include "revision.h"
 #include "config.h"
+#include "chooseconnectiondlg.h"
 
 QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
 
@@ -69,9 +70,11 @@ MainWindow::MainWindow(QWidget *parent) :
     menuFile = new QMenu(tr("&File"), this);
     menuHelp = new QMenu(tr("&Help"), this);
 
-    QAction* actionNewTab = new QAction(tr("&New tab.."), this);
+    QAction* actionNewTab = new QAction(tr("&New tab..."), this);
+    QAction* actionNewTerminal = new QAction(tr("New &terminal"), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
     QAction* actionAbout = new QAction(tr("About Lorris..."), this);
+    QAction* actionConnectionManager = new QAction(tr("Connection &manager"), this);
 
     QMenu* menuLang = new QMenu(tr("Language"), this);
 
@@ -107,10 +110,15 @@ MainWindow::MainWindow(QWidget *parent) :
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
     connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
+    connect(actionNewTerminal,   SIGNAL(triggered()), this, SLOT(NewTerminal()));
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
+    connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
 
+    menuFile->addAction(actionNewTerminal);
     menuFile->addAction(actionNewTab);
+    menuFile->addSeparator();
+    menuFile->addAction(actionConnectionManager);
     menuFile->addAction(actionQuit);
     menuHelp->addAction(actionAbout);
     menuHelp->addMenu(menuLang);
@@ -146,9 +154,24 @@ QString MainWindow::getVersionString()
     return ver;
 }
 
+#include "LorrisTerminal/lorristerminal.h"
+
+void MainWindow::NewTerminal()
+{
+    LorrisTerminal * tab = new LorrisTerminal();
+    sWorkTabMgr.AddWorkTab(tab, "Terminal");
+    tab->onTabShow();
+}
+
 void MainWindow::NewTab()
 {
     sWorkTabMgr.NewTabDialog();
+}
+
+void MainWindow::OpenConnectionManager()
+{
+    ChooseConnectionDlg dialog(0, this);
+    dialog.exec();
 }
 
 void MainWindow::About()

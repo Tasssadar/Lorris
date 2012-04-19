@@ -36,19 +36,17 @@ WorkTab::WorkTab() : QWidget(NULL)
 WorkTab::~WorkTab()
 {
     if(m_con)
-    {
-        m_con->RemoveUsingTab(m_id);
-        if(!m_con->IsUsedByTab())
-        {
-            m_con->removeFromMgr();
-            m_con->Close();
-            delete m_con;
-        }
-    }
+        m_con->release();
 }
 
 void WorkTab::setConnection(Connection *con)
 {
+    if (m_con)
+    {
+        disconnect(m_con, 0, this, 0);
+        m_con->release();
+    }
+
     m_con = con;
 
     if(!con)
@@ -56,7 +54,13 @@ void WorkTab::setConnection(Connection *con)
 
     connect(m_con, SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
     connect(m_con, SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
-    m_con->AddUsingTab(m_id);
+    connect(m_con, SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
+    m_con->addRef();
+}
+
+void WorkTab::connectionDestroyed()
+{
+    m_con = 0;
 }
 
 void WorkTab::readData(const QByteArray& /*data*/)
