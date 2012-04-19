@@ -61,8 +61,8 @@ bool SerialPort::Open()
 
 void SerialPort::connectResultSer(bool opened)
 {
-    emit connectResult(this, opened);
     this->SetOpen(opened);
+    emit connectResult(this, opened);
 }
 
 void SerialPort::Close()
@@ -109,7 +109,7 @@ void SerialPort::SendData(const QByteArray& data)
 
 void SerialPort::OpenConcurrent()
 {
-    if(this->isOpen())
+    if(this->state() != st_disconnected)
         return;
 
     this->SetState(st_connecting);
