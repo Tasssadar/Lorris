@@ -71,7 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
     menuHelp = new QMenu(tr("&Help"), this);
 
     QAction* actionNewTab = new QAction(tr("&New tab..."), this);
-    QAction* actionNewTerminal = new QAction(tr("New &terminal"), this);
+    QAction* actionNewTerminal = new QAction(tr("New &Terminal"), this);
+    QAction* actionNewAnalyzer = new QAction(tr("New &Analyzer"), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
     QAction* actionAbout = new QAction(tr("About Lorris..."), this);
     QAction* actionConnectionManager = new QAction(tr("Connection &manager"), this);
@@ -111,11 +112,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
     connect(actionNewTerminal,   SIGNAL(triggered()), this, SLOT(NewTerminal()));
+    connect(actionNewAnalyzer,   SIGNAL(triggered()), this, SLOT(NewAnalyzer()));
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
     connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
 
     menuFile->addAction(actionNewTerminal);
+    menuFile->addAction(actionNewAnalyzer);
     menuFile->addAction(actionNewTab);
     menuFile->addSeparator();
     menuFile->addAction(actionConnectionManager);
@@ -154,13 +157,16 @@ QString MainWindow::getVersionString()
     return ver;
 }
 
-#include "LorrisTerminal/lorristerminal.h"
-
 void MainWindow::NewTerminal()
 {
-    LorrisTerminal * tab = new LorrisTerminal();
-    sWorkTabMgr.AddWorkTab(tab, "Terminal");
-    tab->onTabShow();
+    void CreateLorrisTerminal();
+    CreateLorrisTerminal();
+}
+
+void MainWindow::NewAnalyzer()
+{
+    void CreateLorrisAnalyzer();
+    CreateLorrisAnalyzer();
 }
 
 void MainWindow::NewTab()

@@ -782,3 +782,12 @@ void LorrisTerminal::setConnection(Connection *con)
     this->WorkTab::setConnection(con);
     m_connectButton->setConn(con);
 }
+
+#include "../WorkTab/WorkTabMgr.h"
+
+void CreateLorrisTerminal()
+{
+    LorrisTerminal * tab = new LorrisTerminal();
+    sWorkTabMgr.AddWorkTab(tab, "Terminal");
+    tab->onTabShow();
+}

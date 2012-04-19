@@ -45,8 +45,6 @@ public:
     void setId(quint32 id) { m_id = id; }
     quint32 getId() { return m_id; }
 
-    virtual void setConnection(Connection *con);
-
     static void DeleteAllMembers(QLayout *layout);
 
     virtual void onTabShow();
@@ -55,6 +53,9 @@ public:
 
     WorkTabInfo *getInfo() const { return m_info; }
     void setInfo(WorkTabInfo *info) { m_info = info; }
+
+public slots:
+    virtual void setConnection(Connection *con);
 
 protected slots:
     virtual void readData(const QByteArray &data);

@@ -58,7 +58,7 @@
 #include "DataWidgets/buttonwidget.h"
 #include "sourceselectdialog.h"
 
-LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
+LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer), m_connectButton(0)
 {
     ui->setupUi(this);
 
@@ -66,7 +66,6 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     ui->updateTimeBox->setValue(minUpdateDelay);
 
     connect(ui->structureBtn,    SIGNAL(clicked()),         SLOT(editStruture()));
-    connect(ui->connectButton,   SIGNAL(clicked()),         SLOT(connectButton()));
     connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
     connect(ui->collapseLeft,    SIGNAL(clicked()),         SLOT(collapseLeftButton()));
@@ -109,7 +108,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     saveAsAct->setShortcut(QKeySequence("Ctrl+Shift+S"));
     saveAct->setShortcut(QKeySequence("Ctrl+S"));
 
-    connect(newSource, SIGNAL(triggered()), SLOT(onTabShow()));
+    connect(newSource, SIGNAL(triggered()), SLOT(doNewSource()));
     connect(openAct,   SIGNAL(triggered()), SLOT(openFile()));
     connect(saveAsAct, SIGNAL(triggered()), SLOT(saveAsButton()));
     connect(saveAct,   SIGNAL(triggered()), SLOT(saveButton()));
@@ -164,6 +163,9 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer)
     setAreaVisibility(AREA_TOP, true);
 
     m_data_changed = false;
+
+    m_connectButton = new ConnectButton(ui->connectButton);
+    connect(m_connectButton, SIGNAL(connectionChosen(Connection*)), this, SLOT(setConnection(Connection*)));
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -179,31 +181,11 @@ LorrisAnalyzer::~LorrisAnalyzer()
     delete m_curData;
 }
 
-void LorrisAnalyzer::connectButton()
-{
-    if(m_state & STATE_DISCONNECTED)
-    {
-        ui->connectButton->setText(tr("Connecting..."));
-        ui->connectButton->setEnabled(false);
-        connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
-        m_con->OpenConcurrent();
-    }
-    else
-    {
-        m_con->Close();
-        m_state |= STATE_DISCONNECTED;
-
-        ui->connectButton->setText(tr("Connect"));
-    }
-}
-
 void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
 {
     disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-    ui->connectButton->setEnabled(true);
     if(!result)
     {
-        ui->connectButton->setText(tr("Connect"));
         Utils::ThrowException(tr("Can't open connection!"));
     }
 }
@@ -213,12 +195,10 @@ void LorrisAnalyzer::connectedStatus(bool connected)
     if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
-        ui->connectButton->setText(tr("Disconnect"));
     }
     else
     {
         m_state |= STATE_DISCONNECTED;
-        ui->connectButton->setText(tr("Connect"));
     }
 }
 
@@ -275,10 +255,23 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
 void LorrisAnalyzer::onTabShow()
 {
+    if (!m_con)
+    {
+        m_connectButton->choose();
+        if (m_con && !m_con->isOpen())
+            m_con->OpenConcurrent();
+    }
+
+    if (m_con)
+        this->doNewSource();
+}
+
+void LorrisAnalyzer::doNewSource()
+{
     m_state |= STATE_DIALOG;
     SourceSelectDialog *s = new SourceSelectDialog(this);
 
-    if(m_con->getType() == CONNECTION_FILE)
+    if(m_con && m_con->getType() == CONNECTION_FILE)
         s->DisableNew();
 
     qint8 res = s->get();
@@ -299,7 +292,8 @@ void LorrisAnalyzer::onTabShow()
         {
             SourceDialog *d = new SourceDialog(NULL, this);
             m_state |= STATE_DIALOG;
-            connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
+            if (m_con)
+                connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
 
             analyzer_packet *packet = d->getStructure();
             delete d;
@@ -611,7 +605,8 @@ void LorrisAnalyzer::editStruture()
 {
     SourceDialog *d = new SourceDialog(m_packet, this);
     m_state |= STATE_DIALOG;
-    connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
+    if (m_con)
+        connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
 
     analyzer_packet *packet = d->getStructure();
     delete d;
@@ -652,4 +647,19 @@ void LorrisAnalyzer::showTitleTriggered(bool checked)
     m_title_action->setChecked(checked);
 
     emit setTitleVisibility(checked);
+}
+
+void LorrisAnalyzer::setConnection(Connection *con)
+{
+    this->WorkTab::setConnection(con);
+    m_connectButton->setConn(con);
+}
+
+#include "../WorkTab/WorkTabMgr.h"
+
+void CreateLorrisAnalyzer()
+{
+    LorrisAnalyzer * tab = new LorrisAnalyzer();
+    sWorkTabMgr.AddWorkTab(tab, "Analyzer");
+    tab->onTabShow();
 }

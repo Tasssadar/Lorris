@@ -43,6 +43,7 @@ protected:
 private slots:
     void NewTab();
     void NewTerminal();
+    void NewAnalyzer();
     void About();
     void OpenConnectionManager();
     void changeMenu(quint32 id);
