@@ -177,7 +177,7 @@ void TcpSocketBuilder::CreateConnection(WorkTab *tab)
     else
     {
         tab->setConnection(socket);
-        emit connectionSucces(socket, tab->getInfo()->GetName() + " - " + socket->GetIDString(), tab);
+        emit connectionSuccess(socket, tab->getInfo()->GetName() + " - " + socket->GetIDString(), tab);
     }
 }
 
@@ -185,7 +185,7 @@ void TcpSocketBuilder::conResult(Connection *con, bool open)
 {
     if(open)
     {
-        emit connectionSucces(con, m_tab->getInfo()->GetName() + " - " + con->GetIDString(), m_tab);
+        emit connectionSuccess(con, m_tab->getInfo()->GetName() + " - " + con->GetIDString(), m_tab);
         m_tab = NULL;
     }
     else

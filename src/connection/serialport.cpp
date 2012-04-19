@@ -224,7 +224,7 @@ void SerialPortBuilder::CreateConnection(WorkTab *tab)
     if(port && port->isOpen())
     {
         tab->setConnection(port);
-        emit connectionSucces(port, tab->getInfo()->GetName() + " - " + port->GetIDString(), tab);
+        emit connectionSuccess(port, tab->getInfo()->GetName() + " - " + port->GetIDString(), tab);
     }
     else
     {
@@ -249,7 +249,7 @@ void SerialPortBuilder::conResult(Connection *con, bool open)
 {
     if(open)
     {
-        emit connectionSucces(con, m_tab->getInfo()->GetName() + " - " + con->GetIDString(), m_tab);
+        emit connectionSuccess(con, m_tab->getInfo()->GetName() + " - " + con->GetIDString(), m_tab);
         m_tab = NULL;
     }
     else

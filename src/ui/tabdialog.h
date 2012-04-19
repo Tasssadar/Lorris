@@ -53,7 +53,7 @@ private slots:
     void FillConOptions(int index);
     void setCreateButtonState(bool connecting);
     void connectFailed(const QString& text);
-    void connectionSucces(Connection *con, const QString &tabName, WorkTab *tab, qint16 conType);
+    void connectionSuccess(Connection *con, const QString &tabName, WorkTab *tab, qint16 conType);
 
 private:
     ConnectionBuilder *m_con_builder;

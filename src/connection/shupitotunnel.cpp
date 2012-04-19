@@ -155,5 +155,5 @@ void ShupitoTunnelBuilder::CreateConnection(WorkTab *tab)
     else
         tab->setConnection(tunnel);
 
-    emit connectionSucces(tunnel, tab->getInfo()->GetName() + " - " + tunnel->GetIDString(), tab, CONNECTION_SHUPITO);
+    emit connectionSuccess(tunnel, tab->getInfo()->GetName() + " - " + tunnel->GetIDString(), tab, CONNECTION_SHUPITO);
 }
