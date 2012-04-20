@@ -26,10 +26,10 @@
 #include <qextserialport.h>
 #include <QLabel>
 #include <QComboBox>
+#include <QApplication>
 #include <qextserialenumerator.h>
 
 #include "serialport.h"
-#include "serialportthread.h"
 #include "connectionmgr.h"
 #include "config.h"
 #include "WorkTab/WorkTabMgr.h"
@@ -40,8 +40,6 @@ SerialPort::SerialPort() : Connection()
 {
     m_type = CONNECTION_SERIAL_PORT;
     m_port = NULL;
-
-    m_thread = NULL;
 
     connect(&m_watcher, SIGNAL(finished()), SLOT(openResult()));
 }
@@ -71,18 +69,6 @@ void SerialPort::Close()
 
     if(m_port)
     {
-        m_thread->stop();
-
-        // I'll make this the you're-so-dumb comment:
-        // in release mode, Q_ASSERT does not show error message,
-        // but also does NOT execute its thing. Keep that in mind.
-        // Q_ASSERT(m_thread->wait(500));
-        if(m_thread->wait(500))
-            delete m_thread;
-        else
-            Q_ASSERT(false);
-        m_thread = NULL;
-
         m_port->close();
         delete m_port;
         m_port = NULL;
@@ -138,13 +124,17 @@ bool SerialPort::openPort()
     }
     else
     {
-        m_thread = new SerialPortThread(m_port);
-        connect(m_thread, SIGNAL(dataRead(QByteArray)), this, SIGNAL(dataRead(QByteArray)), Qt::QueuedConnection);
-        m_thread->start();
+        m_port->moveToThread(QApplication::instance()->thread());
+        connect(m_port, SIGNAL(readyRead()), SLOT(readyRead()));
     }
 
     m_port_mutex.unlock();
     return res;
+}
+
+void SerialPort::readyRead()
+{
+    emit dataRead(m_port->readAll());
 }
 
 void SerialPort::openResult()

@@ -68,7 +68,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/shared/chipdefs.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp \
-    src/connection/serialportthread.cpp \
     src/LorrisShupito/flashbuttonmenu.cpp \
     src/LorrisShupito/modes/shupitospi.cpp \
     src/LorrisShupito/modes/shupitopdi.cpp \
@@ -148,7 +147,6 @@ HEADERS += src/ui/mainwindow.h \
     src/shared/chipdefs.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h \
-    src/connection/serialportthread.h \
     src/LorrisShupito/flashbuttonmenu.h \
     src/LorrisShupito/modes/shupitospi.h \
     src/LorrisShupito/modes/shupitopdi.h \

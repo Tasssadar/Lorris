@@ -57,12 +57,12 @@ public:
 private slots:
     void connectResultSer(bool opened);
     void openResult();
+    void readyRead();
 
 private:
     bool openPort();
 
     QextSerialPort *m_port;
-    SerialPortThread *m_thread;
     BaudRateType m_rate;
 
     QFuture<bool> m_future;
