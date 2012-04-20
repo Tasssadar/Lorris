@@ -87,9 +87,8 @@ private slots:
     void connChanged();
 
     void on_spDeviceNameEdit_textChanged(const QString &arg1);
-    void on_spBaudRateEdit_currentIndexChanged(int index);
-
     void on_connectionsList_doubleClicked(const QModelIndex &index);
+    void on_spBaudRateEdit_editTextChanged(const QString &arg1);
 
 private:
     void init(Connection * preselectedConn);

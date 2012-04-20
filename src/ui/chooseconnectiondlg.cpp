@@ -203,7 +203,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
         {
             SerialPort * sp = static_cast<SerialPort *>(conn);
             ui->settingsStack->setCurrentWidget(ui->serialPortPage);
-            ui->spBaudRateEdit->setCurrentIndex(sp->baudRate());
+            ui->spBaudRateEdit->setEditText(QString::number((int)sp->baudRate()));
             ui->spDeviceNameEdit->setText(sp->deviceName());
             ui->spDeviceNameEdit->setEnabled(sp->devNameEditable());
         }
@@ -277,17 +277,22 @@ void ChooseConnectionDlg::on_spDeviceNameEdit_textChanged(const QString &arg1)
     static_cast<SerialPort *>(m_current)->setDeviceName(arg1);
 }
 
-void ChooseConnectionDlg::on_spBaudRateEdit_currentIndexChanged(int index)
-{
-    if (!m_current)
-        return;
-
-    Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT);
-    static_cast<SerialPort *>(m_current)->setBaudRate(BaudRateType(index));
-}
-
 void ChooseConnectionDlg::on_connectionsList_doubleClicked(const QModelIndex &index)
 {
     if (index.isValid())
         this->accept();
+}
+
+void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT);
+
+    bool ok;
+    int editValue = arg1.toInt(&ok);
+    if (!ok)
+        return;
+
+    static_cast<SerialPort *>(m_current)->setBaudRate(BaudRateType(editValue));
 }
