@@ -25,6 +25,7 @@
 #define LORRISPROXY_H
 
 #include "WorkTab/WorkTab.h"
+#include "../ui/connectbutton.h"
 
 namespace Ui {
     class LorrisProxy;
@@ -42,19 +43,21 @@ public:
     ~LorrisProxy();
 
     void setConnection(Connection *con);
+    void onTabShow();
 
 private slots:
     void updateAddressText();
     void listenChanged();
     void addConnection(QTcpSocket *connection, quint32 id);
     void removeConnection(quint32 id);
-    void connectButton();
     void connectionResult(Connection *con,bool result);
-    void connectedStatus(bool connected);
 
 private:
     Ui::LorrisProxy *ui;
     TcpServer *m_server;
+    ConnectButton * m_connectButton;
 };
+
+void CreateLorrisProxy();
 
 #endif // LORRISPROXY_H

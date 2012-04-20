@@ -67,28 +67,30 @@ void SerialPort::connectResultSer(bool opened)
 
 void SerialPort::Close()
 {
-    m_port_mutex.lock();
-
-    if(m_port)
     {
-        m_thread->stop();
+        QMutexLocker l(&m_port_mutex);
 
-        // I'll make this the you're-so-dumb comment:
-        // in release mode, Q_ASSERT does not show error message,
-        // but also does NOT execute its thing. Keep that in mind.
-        // Q_ASSERT(m_thread->wait(500));
-        if(m_thread->wait(500))
-            delete m_thread;
-        else
-            Q_ASSERT(false);
-        m_thread = NULL;
+        if(m_port)
+        {
+            emit disconnecting();
 
-        m_port->close();
-        delete m_port;
-        m_port = NULL;
+            m_thread->stop();
+
+            // I'll make this the you're-so-dumb comment:
+            // in release mode, Q_ASSERT does not show error message,
+            // but also does NOT execute its thing. Keep that in mind.
+            // Q_ASSERT(m_thread->wait(500));
+            if(m_thread->wait(500))
+                delete m_thread;
+            else
+                Q_ASSERT(false);
+            m_thread = NULL;
+
+            m_port->close();
+            delete m_port;
+            m_port = NULL;
+        }
     }
-
-    m_port_mutex.unlock();
 
     this->SetOpen(false);
 }

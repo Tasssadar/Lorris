@@ -87,6 +87,10 @@ Q_SIGNALS:
     void changed();
     void dataRead(const QByteArray& data);
 
+    // This will be emitted right before a *planned* disconnect happens
+    // to allow clients to send shutdown chatter.
+    void disconnecting();
+
 public slots:
     virtual void SendData(const QByteArray &data) {}
 

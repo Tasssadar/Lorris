@@ -79,7 +79,6 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
     ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
 
-    connect(ui->connectButton,   SIGNAL(clicked()),                SLOT(connectButton()));
     connect(ui->tunnelSpeedBox,  SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
     connect(ui->tunnelCheck,     SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
     connect(ui->progSpeedBox,    SIGNAL(editTextChanged(QString)), SLOT(progSpeedChanged(QString)));
@@ -141,6 +140,9 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     m_vdd_signals = NULL;
 
     m_state = 0;
+
+    m_connectButton = new ConnectButton(ui->connectButton);
+    connect(m_connectButton, SIGNAL(connectionChosen(Connection*)), this, SLOT(setConnection(Connection*)));
 }
 
 LorrisShupito::~LorrisShupito()
@@ -254,33 +256,17 @@ void LorrisShupito::initMenus()
     connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
 }
 
-void LorrisShupito::connectButton()
+void LorrisShupito::connDisconnecting()
 {
-    if(m_state & STATE_DISCONNECTED)
-    {
-        ui->connectButton->setText(tr("Connecting..."));
-        ui->connectButton->setEnabled(false);
-        connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
-        m_con->OpenConcurrent();
-    }
-    else
-    {
-        stopAll(false);
-        m_con->Close();
-        m_state |= STATE_DISCONNECTED;
-
-        ui->connectButton->setText(tr("Connect"));
-    }
+    stopAll(false);
 }
 
 void LorrisShupito::connectionResult(Connection */*con*/,bool result)
 {
     disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
 
-    ui->connectButton->setEnabled(true);
     if(!result)
     {
-        ui->connectButton->setText(tr("Connect"));
         Utils::ThrowException(tr("Can't open connection!"));
     }
 }
@@ -290,7 +276,6 @@ void LorrisShupito::connectedStatus(bool connected)
     if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
-        ui->connectButton->setText(tr("Disconnect"));
         stopAll(true);
 
         delete m_desc;
@@ -301,7 +286,6 @@ void LorrisShupito::connectedStatus(bool connected)
     else
     {
         m_state |= STATE_DISCONNECTED;
-        ui->connectButton->setText(tr("Connect"));  
         updateStartStopUi(false);
     }
     ui->startstopButton->setEnabled(connected);
@@ -353,7 +337,14 @@ void LorrisShupito::stopAll(bool wait)
 
 void LorrisShupito::onTabShow()
 {
-    if(m_con->getType() == CONNECTION_SERIAL_PORT)
+    if (!m_con)
+    {
+        m_connectButton->choose();
+        if (m_con && !m_con->isOpen())
+            m_con->OpenConcurrent();
+    }
+
+    if(m_con && m_con->getType() == CONNECTION_SERIAL_PORT)
         sConfig.set(CFG_STRING_SHUPITO_PORT, m_con->GetIDString());
 }
 
@@ -1257,4 +1248,23 @@ int LorrisShupito::getMemIndex()
     if(res == TAB_TERMINAL)
         res = TAB_FLASH;
     return res;
+}
+
+void LorrisShupito::setConnection(Connection *con)
+{
+    if (m_con)
+        disconnect(m_con, 0, this, 0);
+    this->WorkTab::setConnection(con);
+    m_connectButton->setConn(con);
+    if (m_con)
+        connect(m_con, SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
+}
+
+#include "../WorkTab/WorkTabMgr.h"
+
+void CreateLorrisShupito()
+{
+    LorrisShupito * tab = new LorrisShupito();
+    sWorkTabMgr.AddWorkTab(tab, "Shupito");
+    ((WorkTab *)tab)->onTabShow();
 }

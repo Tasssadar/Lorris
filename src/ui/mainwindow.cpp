@@ -71,11 +71,13 @@ MainWindow::MainWindow(QWidget *parent) :
     menuHelp = new QMenu(tr("&Help"), this);
 
     QAction* actionNewTab = new QAction(tr("&New tab..."), this);
-    QAction* actionNewTerminal = new QAction(tr("New &Terminal"), this);
-    QAction* actionNewAnalyzer = new QAction(tr("New &Analyzer"), this);
+    QAction* actionNewTerminal = new QAction(tr("&Terminal"), this);
+    QAction* actionNewAnalyzer = new QAction(tr("&Analyzer"), this);
+    QAction* actionNewShupito = new QAction(tr("&Shupito"), this);
+    QAction* actionNewProxy = new QAction(tr("TCP &Proxy"), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
     QAction* actionAbout = new QAction(tr("About Lorris..."), this);
-    QAction* actionConnectionManager = new QAction(tr("Connection &manager"), this);
+    QAction* actionConnectionManager = new QAction(tr("Connection &manager..."), this);
 
     QMenu* menuLang = new QMenu(tr("Language"), this);
 
@@ -113,14 +115,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
     connect(actionNewTerminal,   SIGNAL(triggered()), this, SLOT(NewTerminal()));
     connect(actionNewAnalyzer,   SIGNAL(triggered()), this, SLOT(NewAnalyzer()));
+    connect(actionNewShupito,    SIGNAL(triggered()), this, SLOT(NewShupito()));
+    connect(actionNewProxy,      SIGNAL(triggered()), this, SLOT(NewProxy()));
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
     connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
 
-    menuFile->addAction(actionNewTerminal);
-    menuFile->addAction(actionNewAnalyzer);
-    menuFile->addAction(actionNewTab);
-    menuFile->addSeparator();
+    QMenu * menuFileNew = menuFile->addMenu(tr("&New"));
+    menuFileNew->addAction(actionNewTerminal);
+    menuFileNew->addAction(actionNewAnalyzer);
+    menuFileNew->addAction(actionNewShupito);
+    menuFileNew->addAction(actionNewProxy);
+    menuFileNew->addSeparator();
+    menuFileNew->addAction(actionNewTab);
+
     menuFile->addAction(actionConnectionManager);
     menuFile->addAction(actionQuit);
     menuHelp->addAction(actionAbout);
@@ -167,6 +175,18 @@ void MainWindow::NewAnalyzer()
 {
     void CreateLorrisAnalyzer();
     CreateLorrisAnalyzer();
+}
+
+void MainWindow::NewShupito()
+{
+    void CreateLorrisShupito();
+    CreateLorrisShupito();
+}
+
+void MainWindow::NewProxy()
+{
+    void CreateLorrisProxy();
+    CreateLorrisProxy();
 }
 
 void MainWindow::NewTab()
