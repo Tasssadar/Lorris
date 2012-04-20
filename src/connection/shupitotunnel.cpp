@@ -31,7 +31,7 @@
 #include "WorkTab/WorkTab.h"
 #include "WorkTab/WorkTabInfo.h"
 
-ShupitoTunnel::ShupitoTunnel()
+ShupitoTunnel::ShupitoTunnel() : Connection()
 {
     m_shupito = NULL;
     dataSigConnected = false;

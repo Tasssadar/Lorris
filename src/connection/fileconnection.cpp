@@ -26,7 +26,7 @@
 #include "WorkTab/WorkTab.h"
 #include "WorkTab/WorkTabInfo.h"
 
-FileConnection::FileConnection()
+FileConnection::FileConnection() : Connection()
 {
     m_type = CONNECTION_FILE;
 }

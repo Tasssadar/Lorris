@@ -25,7 +25,7 @@
 #include "connectionmgr.h"
 #include "WorkTab/WorkTab.h"
 
-Connection::Connection()
+Connection::Connection() : QObject()
 {
     opened = false;
 }
