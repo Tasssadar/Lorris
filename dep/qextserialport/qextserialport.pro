@@ -1,8 +1,8 @@
-#
 DESTDIR = $$PWD/lib
-TEMPLATE = subdirs
-CONFIG   += ordered
-SUBDIRS  = src \
-           examples/enumerator \
-           examples/event
+TEMPLATE=subdirs
+CONFIG += ordered
+include(common.pri)
+qextserialport-library:SUBDIRS=buildlib
+#SUBDIRS+=examples
 
+include(doc/doc.pri)
