@@ -68,7 +68,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/shared/chipdefs.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp \
-    src/connection/serialportthread.cpp \
     src/LorrisShupito/flashbuttonmenu.cpp \
     src/LorrisShupito/modes/shupitospi.cpp \
     src/LorrisShupito/modes/shupitopdi.cpp \
@@ -150,7 +149,6 @@ HEADERS += src/ui/mainwindow.h \
     src/shared/chipdefs.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h \
-    src/connection/serialportthread.h \
     src/LorrisShupito/flashbuttonmenu.h \
     src/LorrisShupito/modes/shupitospi.h \
     src/LorrisShupito/modes/shupitopdi.h \
@@ -188,9 +186,9 @@ win32 {
     DEFINES += QT_DLL QWT_DLL
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
-    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl
-    CONFIG(debug, debug|release):LIBS += -lqwtd -lqextserialportd1
-    else:LIBS += -lqwt -lqextserialport1
+    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lqextserialport-1.2
+    CONFIG(debug, debug|release):LIBS += -lqwtd
+    else:LIBS += -lqwt
 }
 unix:!macx:!symbian {
     LIBS += -lqwt -ludev -lqextserialport -lSDL
@@ -202,7 +200,7 @@ unix:!macx:!symbian {
         "$$DESTDIR/translations/"
 }
 macx {
-    LIBS += -lqwt -lqextserialport1 -lSDL
+    LIBS += -lqwt -lqextserialport -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \

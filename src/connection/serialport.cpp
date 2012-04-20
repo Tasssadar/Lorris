@@ -26,10 +26,12 @@
 #include <qextserialport.h>
 #include <QLabel>
 #include <QComboBox>
+#include <QApplication>
+#include <QPushButton>
+#include <QStyle>
 #include <qextserialenumerator.h>
 
 #include "serialport.h"
-#include "serialportthread.h"
 #include "connectionmgr.h"
 #include "config.h"
 #include "WorkTab/WorkTabMgr.h"
@@ -43,8 +45,6 @@ SerialPort::SerialPort()
 {
     m_type = CONNECTION_SERIAL_PORT;
     m_port = NULL;
-
-    m_thread = NULL;
 
     connect(&m_watcher, SIGNAL(finished()), SLOT(openResult()));
 }
@@ -73,18 +73,6 @@ void SerialPort::Close()
         if(m_port)
         {
             emit disconnecting();
-
-            m_thread->stop();
-
-            // I'll make this the you're-so-dumb comment:
-            // in release mode, Q_ASSERT does not show error message,
-            // but also does NOT execute its thing. Keep that in mind.
-            // Q_ASSERT(m_thread->wait(500));
-            if(m_thread->wait(500))
-                delete m_thread;
-            else
-                Q_ASSERT(false);
-            m_thread = NULL;
 
             m_port->close();
             delete m_port;
@@ -140,13 +128,17 @@ bool SerialPort::openPort()
     }
     else
     {
-        m_thread = new SerialPortThread(m_port);
-        connect(m_thread, SIGNAL(dataRead(QByteArray)), this, SIGNAL(dataRead(QByteArray)), Qt::QueuedConnection);
-        m_thread->start();
+        m_port->moveToThread(QApplication::instance()->thread());
+        connect(m_port, SIGNAL(readyRead()), SLOT(readyRead()));
     }
 
     m_port_mutex.unlock();
     return res;
+}
+
+void SerialPort::readyRead()
+{
+    emit dataRead(m_port->readAll());
 }
 
 void SerialPort::openResult()
@@ -168,24 +160,17 @@ void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
     QLabel *portLabel = new QLabel(tr("Port: "), NULL, Qt::WindowFlags(0));
     m_portBox = new QComboBox(m_parent);
     m_portBox->setEditable(true);
+    QPushButton *refreshButton = new QPushButton(m_parent);
+    refreshButton->setIcon(refreshButton->style()->standardIcon(QStyle::SP_BrowserReload));
+    refreshButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
-    QStringList portNames;
-    for (int i = 0; i < ports.size(); i++)
-    {
-#ifdef Q_OS_WIN
-        QString name = ports.at(i).portName;
-        name.replace(QRegExp("[^\\w]"), "");
-        portNames.push_back(name);
-#else
-        portNames.push_back(ports.at(i).physName);
-#endif
-    }
-    portNames.sort();
-    m_portBox->addItems(portNames);
+    connect(refreshButton, SIGNAL(clicked()), SLOT(addPortNames()));
+
+    addPortNames();
 
     layout->addWidget(portLabel, 1, 0);
     layout->addWidget(m_portBox, 1, 1);
+    layout->addWidget(refreshButton, 1, 2);
 
     QLabel *rateLabel = new QLabel(tr("Baud Rate: "), m_parent);
     m_rateBox = new QComboBox(m_parent);
@@ -197,8 +182,8 @@ void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
     m_rateBox->addItem("57600",   BAUD57600);
     m_rateBox->addItem("115200",  BAUD115200);
 
-    layout->addWidget(rateLabel, 1, 2);
-    layout->addWidget(m_rateBox, 1, 3);
+    layout->addWidget(rateLabel, 1, 3);
+    layout->addWidget(m_rateBox, 1, 4);
 
     int baud = sConfig.get(CFG_QUINT32_SERIAL_BAUD);
     for(quint8 i = 0; i < m_rateBox->count(); ++i)
@@ -221,6 +206,27 @@ void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
         if(info->GetName().contains("Shupito", Qt::CaseInsensitive))
             m_portBox->setEditText(port);
     }
+}
+
+void SerialPortBuilder::addPortNames()
+{
+    QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
+
+    QStringList portNames;
+    for (int i = 0; i < ports.size(); i++)
+    {
+#ifdef Q_OS_WIN
+        QString name = ports.at(i).portName;
+        name.replace(QRegExp("[^\\w]"), "");
+        portNames.push_back(name);
+#else
+        portNames.push_back(ports.at(i).physName);
+#endif
+    }
+    portNames.sort();
+
+    m_portBox->clear();
+    m_portBox->addItems(portNames);
 }
 
 void SerialPortBuilder::CreateConnection(WorkTab *tab)

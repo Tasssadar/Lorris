@@ -62,6 +62,7 @@ public:
 private slots:
     void connectResultSer(bool opened);
     void openResult();
+    void readyRead();
 
 private:
     bool openPort();
@@ -69,7 +70,6 @@ private:
     QString m_deviceName;
 
     QextSerialPort *m_port;
-    SerialPortThread *m_thread;
     BaudRateType m_rate;
 
     QFuture<bool> m_future;
@@ -92,6 +92,7 @@ public:
 
 private slots:
     void conResult(Connection *con, bool open);
+    void addPortNames();
 
 private:
     QComboBox *m_rateBox;
