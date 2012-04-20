@@ -1,6 +1,5 @@
 TEMPLATE=lib
 CONFIG += qt qextserialport-buildlib
-CONFIG += qextserialport-static
 # Include .pri file before using "qextserialport-static"
 # and after CONFIG += "qextserialport-buildlib"
 include(../src/qextserialport.pri)

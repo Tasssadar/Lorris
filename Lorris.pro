@@ -182,9 +182,9 @@ win32 {
     DEFINES += QT_DLL QWT_DLL
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
-    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl
-    CONFIG(debug, debug|release):LIBS += -lqwtd -lqextserialportd1
-    else:LIBS += -lqwt -lqextserialport1
+    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lqextserialport-1.2
+    CONFIG(debug, debug|release):LIBS += -lqwtd
+    else:LIBS += -lqwt
 }
 unix:!macx:!symbian {
     LIBS += -lqwt -ludev -lqextserialport -lSDL
@@ -196,7 +196,7 @@ unix:!macx:!symbian {
         "$$DESTDIR/translations/"
 }
 macx {
-    LIBS += -lqwt -lqextserialport1 -lSDL
+    LIBS += -lqwt -lqextserialport -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
