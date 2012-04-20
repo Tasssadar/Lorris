@@ -89,6 +89,10 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 
     public slots:
         void NewTabDialog();
+        void NewTerminal();
+        void NewAnalyzer();
+        void NewShupito();
+        void NewProxy();
 
     private slots:
         void OpenHomeTab(quint32 id);

@@ -38,12 +38,6 @@ public:
     HomeTab(QWidget *parent);
     ~HomeTab();
 
-protected:
-    void showEvent(QShowEvent *);
-
-private slots:
-    void NewTab();
-
 private:
     Ui::HomeTab *ui;
 };

@@ -130,6 +130,30 @@ void WorkTabMgr::NewTabDialog()
     delete dialog;
 }
 
+void WorkTabMgr::NewTerminal()
+{
+    void CreateLorrisTerminal();
+    CreateLorrisTerminal();
+}
+
+void WorkTabMgr::NewAnalyzer()
+{
+    void CreateLorrisAnalyzer();
+    CreateLorrisAnalyzer();
+}
+
+void WorkTabMgr::NewShupito()
+{
+    void CreateLorrisShupito();
+    CreateLorrisShupito();
+}
+
+void WorkTabMgr::NewProxy()
+{
+    void CreateLorrisProxy();
+    CreateLorrisProxy();
+}
+
 TabView *WorkTabMgr::CreateWidget(QWidget *parent)
 {
     tabView = new TabView(parent);

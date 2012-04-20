@@ -113,10 +113,10 @@ MainWindow::MainWindow(QWidget *parent) :
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
     connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
-    connect(actionNewTerminal,   SIGNAL(triggered()), this, SLOT(NewTerminal()));
-    connect(actionNewAnalyzer,   SIGNAL(triggered()), this, SLOT(NewAnalyzer()));
-    connect(actionNewShupito,    SIGNAL(triggered()), this, SLOT(NewShupito()));
-    connect(actionNewProxy,      SIGNAL(triggered()), this, SLOT(NewProxy()));
+    connect(actionNewTerminal,   SIGNAL(triggered()), &sWorkTabMgr, SLOT(NewTerminal()));
+    connect(actionNewAnalyzer,   SIGNAL(triggered()), &sWorkTabMgr, SLOT(NewAnalyzer()));
+    connect(actionNewShupito,    SIGNAL(triggered()), &sWorkTabMgr, SLOT(NewShupito()));
+    connect(actionNewProxy,      SIGNAL(triggered()), &sWorkTabMgr, SLOT(NewProxy()));
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
     connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
@@ -163,30 +163,6 @@ QString MainWindow::getVersionString()
 {
     QString ver = "Lorris v" + QString::number(REVISION);
     return ver;
-}
-
-void MainWindow::NewTerminal()
-{
-    void CreateLorrisTerminal();
-    CreateLorrisTerminal();
-}
-
-void MainWindow::NewAnalyzer()
-{
-    void CreateLorrisAnalyzer();
-    CreateLorrisAnalyzer();
-}
-
-void MainWindow::NewShupito()
-{
-    void CreateLorrisShupito();
-    CreateLorrisShupito();
-}
-
-void MainWindow::NewProxy()
-{
-    void CreateLorrisProxy();
-    CreateLorrisProxy();
 }
 
 void MainWindow::NewTab()

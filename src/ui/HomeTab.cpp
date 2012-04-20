@@ -34,20 +34,13 @@
 HomeTab::HomeTab(QWidget *parent) : QWidget(parent), ui(new Ui::HomeTab)
 {
     ui->setupUi(this);
-    connect(ui->newTabBtn, SIGNAL(clicked()), this, SLOT(NewTab()));
+    connect(ui->newAnalyzerBtn, SIGNAL(clicked()), &sWorkTabMgr, SLOT(NewAnalyzer()));
+    connect(ui->newTerminalBtn, SIGNAL(clicked()), &sWorkTabMgr, SLOT(NewTerminal()));
+    connect(ui->newShupitoBtn, SIGNAL(clicked()), &sWorkTabMgr, SLOT(NewShupito()));
+    connect(ui->newProxyBtn, SIGNAL(clicked()), &sWorkTabMgr, SLOT(NewProxy()));
 }
 
 HomeTab::~HomeTab()
 {
     delete ui;
-}
-
-void HomeTab::NewTab()
-{
-   sWorkTabMgr.NewTabDialog();
-}
-
-void HomeTab::showEvent(QShowEvent *)
-{
-    ui->newTabBtn->setFocus();
 }
