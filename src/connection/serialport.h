@@ -84,6 +84,7 @@ public:
 
 private slots:
     void conResult(Connection *con, bool open);
+    void addPortNames();
 
 private:
     QComboBox *m_rateBox;

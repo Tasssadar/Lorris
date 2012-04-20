@@ -27,6 +27,8 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QApplication>
+#include <QPushButton>
+#include <QStyle>
 #include <qextserialenumerator.h>
 
 #include "serialport.h"
@@ -147,24 +149,17 @@ void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
     QLabel *portLabel = new QLabel(tr("Port: "), NULL, Qt::WindowFlags(0));
     m_portBox = new QComboBox(m_parent);
     m_portBox->setEditable(true);
+    QPushButton *refreshButton = new QPushButton(m_parent);
+    refreshButton->setIcon(refreshButton->style()->standardIcon(QStyle::SP_BrowserReload));
+    refreshButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
-    QStringList portNames;
-    for (int i = 0; i < ports.size(); i++)
-    {
-#ifdef Q_OS_WIN
-        QString name = ports.at(i).portName;
-        name.replace(QRegExp("[^\\w]"), "");
-        portNames.push_back(name);
-#else
-        portNames.push_back(ports.at(i).physName);
-#endif
-    }
-    portNames.sort();
-    m_portBox->addItems(portNames);
+    connect(refreshButton, SIGNAL(clicked()), SLOT(addPortNames()));
+
+    addPortNames();
 
     layout->addWidget(portLabel, 1, 0);
     layout->addWidget(m_portBox, 1, 1);
+    layout->addWidget(refreshButton, 1, 2);
 
     QLabel *rateLabel = new QLabel(tr("Baud Rate: "), m_parent);
     m_rateBox = new QComboBox(m_parent);
@@ -176,8 +171,8 @@ void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
     m_rateBox->addItem("57600",   BAUD57600);
     m_rateBox->addItem("115200",  BAUD115200);
 
-    layout->addWidget(rateLabel, 1, 2);
-    layout->addWidget(m_rateBox, 1, 3);
+    layout->addWidget(rateLabel, 1, 3);
+    layout->addWidget(m_rateBox, 1, 4);
 
     int baud = sConfig.get(CFG_QUINT32_SERIAL_BAUD);
     for(quint8 i = 0; i < m_rateBox->count(); ++i)
@@ -200,6 +195,27 @@ void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
         if(info->GetName().contains("Shupito", Qt::CaseInsensitive))
             m_portBox->setEditText(port);
     }
+}
+
+void SerialPortBuilder::addPortNames()
+{
+    QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
+
+    QStringList portNames;
+    for (int i = 0; i < ports.size(); i++)
+    {
+#ifdef Q_OS_WIN
+        QString name = ports.at(i).portName;
+        name.replace(QRegExp("[^\\w]"), "");
+        portNames.push_back(name);
+#else
+        portNames.push_back(ports.at(i).physName);
+#endif
+    }
+    portNames.sort();
+
+    m_portBox->clear();
+    m_portBox->addItems(portNames);
 }
 
 void SerialPortBuilder::CreateConnection(WorkTab *tab)
