@@ -31,6 +31,8 @@
 #include "ui/mainwindow.h"
 #include "config.h"
 
+#include "connection/connectionmgr2.h"
+
 int main(int argc, char *argv[])
 {
     if(argc == 2)
@@ -55,6 +57,7 @@ int main(int argc, char *argv[])
     }
 
     QApplication a(argc, argv);
+    psConMgr2 = new ConnectionManager2(&a);
 
     //TODO: found an organization
     //QCoreApplication::setOrganizationName("-");

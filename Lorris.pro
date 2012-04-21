@@ -99,7 +99,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/ui/chooseconnectiondlg.cpp \
     src/ui/connectbutton.cpp \
     dep/qextserialport/src/qextserialport.cpp \
-    dep/qextserialport/src/qextserialenumerator.cpp
+    dep/qextserialport/src/qextserialenumerator.cpp \
+    src/connection/connectionmgr2.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -185,7 +186,8 @@ HEADERS += src/ui/mainwindow.h \
     dep/qextserialport/src/qextserialport_global.h \
     dep/qextserialport/src/qextserialport.h \
     dep/qextserialport/src/qextserialenumerator_p.h \
-    dep/qextserialport/src/qextserialenumerator.h
+    dep/qextserialport/src/qextserialenumerator.h \
+    src/connection/connectionmgr2.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
