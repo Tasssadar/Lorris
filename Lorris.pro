@@ -190,7 +190,7 @@ HEADERS += src/ui/mainwindow.h \
 win32 {
     INCLUDEPATH += dep/SDL/include
 
-    DEFINES += QT_DLL QWT_DLL
+    DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
     HEADERS += \
@@ -200,7 +200,7 @@ win32 {
         dep/qextserialport/src/qextwineventnotifier_p.cpp \
         dep/qextserialport/src/qextserialport_win.cpp
 
-    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl
+    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lsetupapi
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 }
