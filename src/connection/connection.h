@@ -92,7 +92,7 @@ Q_SIGNALS:
     void disconnecting();
 
 public slots:
-    virtual void SendData(const QByteArray &data) {}
+    virtual void SendData(const QByteArray & data);
 
 protected:
     void SetState(ConnectionState state);

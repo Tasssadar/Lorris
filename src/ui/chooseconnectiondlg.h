@@ -7,6 +7,7 @@
 #include <QListWidgetItem>
 #include <QTimer>
 #include "singleton.h"
+#include <set>
 
 #include "../connection/connection.h"
 class SerialPort;
@@ -30,7 +31,7 @@ private slots:
     void connectionDestroyed();
 
 private:
-    QSet<SerialPort *> m_ownedPorts;
+    std::set<SerialPort *> m_ownedPorts;
     QHash<QString, SerialPort *> m_portMap;
 
     QTimer m_refreshTimer;

@@ -72,6 +72,10 @@ void Connection::release()
         delete this;
 }
 
+void Connection::SendData(const QByteArray & /*data*/)
+{
+}
+
 //----------------------------------------------------------------------------
 ConnectionBuilder::ConnectionBuilder(QWidget *parent, int moduleIdx) : QObject((QObject*)parent)
 {

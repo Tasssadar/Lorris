@@ -97,7 +97,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/ui/tabwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.cpp \
     src/ui/chooseconnectiondlg.cpp \
-    src/ui/connectbutton.cpp
+    src/ui/connectbutton.cpp \
+    dep/qextserialport/src/qextserialport.cpp \
+    dep/qextserialport/src/qextserialenumerator.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -178,7 +180,12 @@ HEADERS += src/ui/mainwindow.h \
     src/ui/tabwidget.h \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.h \
     src/ui/chooseconnectiondlg.h \
-    src/ui/connectbutton.h
+    src/ui/connectbutton.h \
+    dep/qextserialport/src/qextserialport_p.h \
+    dep/qextserialport/src/qextserialport_global.h \
+    dep/qextserialport/src/qextserialport.h \
+    dep/qextserialport/src/qextserialenumerator_p.h \
+    dep/qextserialport/src/qextserialenumerator.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
@@ -186,12 +193,23 @@ win32 {
     DEFINES += QT_DLL QWT_DLL
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
-    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lqextserialport-1.2
+    HEADERS += \
+        dep/qextserialport/src/qextwineventnotifier_p.h
+    SOURCES += \
+        dep/qextserialport/src/qextserialenumerator_win.cpp \
+        dep/qextserialport/src/qextwineventnotifier_p.cpp \
+        dep/qextserialport/src/qextserialport_win.cpp
+
+    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 }
 unix:!macx:!symbian {
-    LIBS += -lqwt -ludev -lqextserialport -lSDL
+    SOURCES += \
+        dep/qextserialport/src/qextserialport_unix.cpp \
+        dep/qextserialport/src/qextserialenumerator_unix.cpp
+
+    LIBS += -lqwt -ludev -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -200,6 +218,9 @@ unix:!macx:!symbian {
         "$$DESTDIR/translations/"
 }
 macx {
+    SOURCES += \
+        dep/qextserialport/src/qextserialenumerator_osx.cpp
+
     LIBS += -lqwt -lqextserialport -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
@@ -231,3 +252,6 @@ RESOURCES += \
     src/icons.qrc
 
 RC_FILE = src/winicon.rc
+
+OTHER_FILES += \
+    dep/qextserialport/src/qextserialport.pri

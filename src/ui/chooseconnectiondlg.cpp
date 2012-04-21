@@ -13,16 +13,16 @@ SerialPortEnumerator::SerialPortEnumerator()
 
 SerialPortEnumerator::~SerialPortEnumerator()
 {
-    QSet<SerialPort *> portsToClear;
+    std::set<SerialPort *> portsToClear;
     portsToClear.swap(m_ownedPorts);
 
-    for (QSet<SerialPort *>::iterator it = portsToClear.begin(); it != portsToClear.end(); ++it)
+    for (std::set<SerialPort *>::iterator it = portsToClear.begin(); it != portsToClear.end(); ++it)
         delete *it;
 }
 
 void SerialPortEnumerator::refresh()
 {
-    QSet<SerialPort *> portsToDisown = m_ownedPorts;
+    std::set<SerialPort *> portsToDisown = m_ownedPorts;
 
     QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
     for (int i = 0; i < ports.size(); ++i)
@@ -51,7 +51,7 @@ void SerialPortEnumerator::refresh()
         {
             SerialPort * port = it.value();
 
-            if (!m_ownedPorts.contains(port))
+            if (m_ownedPorts.find(port) == m_ownedPorts.end())
             {
                 m_ownedPorts.insert(port);
                 port->setRemovable(false);
@@ -59,15 +59,15 @@ void SerialPortEnumerator::refresh()
             }
             else
             {
-                portsToDisown.remove(port);
+                portsToDisown.erase(port);
             }
         }
     }
 
-    for (QSet<SerialPort *>::const_iterator it = portsToDisown.begin(); it != portsToDisown.end(); ++it)
+    for (std::set<SerialPort *>::const_iterator it = portsToDisown.begin(); it != portsToDisown.end(); ++it)
     {
         SerialPort * port = *it;
-        m_ownedPorts.remove(port);
+        m_ownedPorts.erase(port);
         port->setRemovable(true);
         port->release();
     }
@@ -76,7 +76,7 @@ void SerialPortEnumerator::refresh()
 void SerialPortEnumerator::connectionDestroyed()
 {
     SerialPort * port = static_cast<SerialPort *>(this->sender());
-    Q_ASSERT(!m_ownedPorts.contains(port));
+    Q_ASSERT(m_ownedPorts.find(port) == m_ownedPorts.end());
     m_portMap.remove(port->deviceName());
 }
 
