@@ -48,9 +48,14 @@ public:
     {
         m_address = address;
         m_port = port;
-        this->setIDString(address + ":" + QString::number(port));
     }
-    
+
+    QString host() const { return m_address; }
+    void setHost(QString const & value);
+
+    quint16 port() const { return m_port; }
+    void setPort(quint16 value);
+
 public slots:
     void connectResultSer(bool opened);
     void tcpConnectResult();

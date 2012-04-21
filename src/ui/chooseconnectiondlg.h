@@ -11,6 +11,7 @@
 
 #include "../connection/connection.h"
 class SerialPort;
+class TcpSocket;
 
 namespace Ui {
 class ChooseConnectionDlg;
@@ -51,6 +52,7 @@ public:
     void refresh();
 
     SerialPort * createSerialPort();
+    TcpSocket * createTcpSocket();
 
 Q_SIGNALS:
     void connAdded(Connection * conn);
@@ -90,6 +92,12 @@ private slots:
     void on_spDeviceNameEdit_textChanged(const QString &arg1);
     void on_connectionsList_doubleClicked(const QModelIndex &index);
     void on_spBaudRateEdit_editTextChanged(const QString &arg1);
+
+    void on_actionCreateTcpClient_triggered();
+
+    void on_tcHostEdit_textChanged(const QString &arg1);
+
+    void on_tcPortEdit_valueChanged(int arg1);
 
 private:
     void init(Connection * preselectedConn);

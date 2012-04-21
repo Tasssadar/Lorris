@@ -82,6 +82,7 @@ void TcpSocket::OpenConcurrent()
     if(this->isOpen())
         return;
 
+    this->SetState(st_connecting);
     m_socket->connectToHost(m_address, m_port);
 
     m_future = QtConcurrent::run(this, &TcpSocket::connectToHost);
@@ -124,6 +125,24 @@ void TcpSocket::stateChanged()
 {
     if(this->isOpen() && m_socket->state() != QAbstractSocket::ConnectedState)
         Close();
+}
+
+void TcpSocket::setHost(QString const & value)
+{
+    if (value != m_address)
+    {
+        m_address = value;
+        emit changed();
+    }
+}
+
+void TcpSocket::setPort(quint16 value)
+{
+    if (value != m_port)
+    {
+        m_port = value;
+        emit changed();
+    }
 }
 
 void TcpSocketBuilder::addOptToTabDialog(QGridLayout *layout)

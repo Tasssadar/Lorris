@@ -2,6 +2,7 @@
 #include "ui_chooseconnectiondlg.h"
 #include "../connection/connectionmgr.h"
 #include "../connection/serialport.h"
+#include "../connection/tcpsocket.h"
 #include <QMenu>
 #include <qextserialenumerator.h>
 
@@ -110,6 +111,13 @@ SerialPort * ConnectionManager2::createSerialPort()
     return conn.take();
 }
 
+TcpSocket * ConnectionManager2::createTcpSocket()
+{
+    QScopedPointer<TcpSocket> conn(new TcpSocket());
+    this->addConnection(conn.data());
+    return conn.take();
+}
+
 void ConnectionManager2::addConnection(Connection * conn)
 {
     connect(conn, SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
@@ -149,6 +157,7 @@ void ChooseConnectionDlg::init(Connection * preselectedConn)
 
     QMenu * menu = new QMenu(this);
     menu->addAction(ui->actionCreateSerialPort);
+    menu->addAction(ui->actionCreateTcpClient);
     ui->createConnectionBtn->setMenu(menu);
 
     sConMgr2.refresh();
@@ -208,6 +217,14 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             ui->spDeviceNameEdit->setEnabled(sp->devNameEditable());
         }
         break;
+    case CONNECTION_TCP_SOCKET:
+        {
+            TcpSocket * tc = static_cast<TcpSocket *>(conn);
+            ui->settingsStack->setCurrentWidget(ui->tcpClientPage);
+            ui->tcHostEdit->setText(tc->host());
+            ui->tcPortEdit->setValue(tc->port());
+        }
+        break;
     }
 }
 
@@ -221,8 +238,21 @@ void ChooseConnectionDlg::on_actionCreateSerialPort_triggered()
     SerialPort * port = sConMgr2.createSerialPort();
     port->setName(tr("New Serial Port"));
     port->setDeviceName("COM1");
-    m_connectionItemMap[port]->setSelected(true);
+    QListWidgetItem * item = m_connectionItemMap[port];
+    item->setSelected(true);
+    ui->connectionsList->scrollToItem(item);
     ui->connectionNameEdit->setFocus();
+}
+
+void ChooseConnectionDlg::on_actionCreateTcpClient_triggered()
+{
+    TcpSocket * port = sConMgr2.createTcpSocket();
+    port->setName(tr("New TCP client"));
+    port->setHost("localhost");
+    port->setPort(80);
+    QListWidgetItem * item = m_connectionItemMap[port];
+    item->setSelected(true);
+    ui->connectionsList->scrollToItem(item);
 }
 
 void ChooseConnectionDlg::on_actionRemoveConnection_triggered()
@@ -295,4 +325,20 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
         return;
 
     static_cast<SerialPort *>(m_current)->setBaudRate(BaudRateType(editValue));
+}
+
+void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(m_current->getType() == CONNECTION_TCP_SOCKET);
+    static_cast<TcpSocket *>(m_current)->setHost(arg1);
+}
+
+void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(m_current->getType() == CONNECTION_TCP_SOCKET);
+    static_cast<TcpSocket *>(m_current)->setPort(arg1);
 }
