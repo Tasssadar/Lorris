@@ -71,11 +71,7 @@ void QextSerialPortPrivate::platformSpecificDestruct() {
 */
 static QString fullPortNameWin(const QString & name)
 {
-    QRegExp rx(QLatin1String("^COM(\\d+)"));
-    QString fullName(name);
-    if(fullName.contains(rx))
-        fullName.prepend(QLatin1String("\\\\.\\"));
-    return fullName;
+    return name.startsWith("\\\\.\\")? name: "\\\\.\\" + name;
 }
 
 bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)

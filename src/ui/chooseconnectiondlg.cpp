@@ -29,17 +29,17 @@ void SerialPortEnumerator::refresh()
     {
         QextPortInfo info = ports[i];
 
-        QHash<QString, SerialPort *>::const_iterator it = m_portMap.find(ports[i].portName);
+        QHash<QString, SerialPort *>::const_iterator it = m_portMap.find(ports[i].physName);
         if (it == m_portMap.end())
         {
             QScopedPointer<SerialPort> portGuard(new SerialPort());
             portGuard->setName(info.portName);
-            portGuard->setDeviceName(info.portName);
+            portGuard->setDeviceName(info.physName);
             portGuard->setBaudRate(BAUD38400);
             portGuard->setDevNameEditable(false);
 
             connect(portGuard.data(), SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
-            m_portMap[info.portName] = portGuard.data();
+            m_portMap[info.physName] = portGuard.data();
 
             sConMgr2.addConnection(portGuard.data());
 
