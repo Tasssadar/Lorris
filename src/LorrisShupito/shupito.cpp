@@ -379,6 +379,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
 
                     m_tunnel_conn.reset(new ShupitoTunnel());
                     m_tunnel_conn->setName("Shupito at " + m_con->GetIDString());
+                    m_tunnel_conn->setRemovable(false);
                     m_tunnel_conn->setShupito(this);
                     m_tunnel_conn->Open();
                     sConMgr2.addConnection(m_tunnel_conn.data());
