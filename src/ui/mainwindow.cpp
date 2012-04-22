@@ -47,12 +47,12 @@
 
 #include "mainwindow.h"
 #include "HomeTab.h"
-#include "WorkTab/WorkTab.h"
-#include "WorkTab/WorkTabMgr.h"
-#include "WorkTab/WorkTabInfo.h"
-#include "tabdialog.h"
-#include "revision.h"
-#include "config.h"
+#include "../WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTabInfo.h"
+#include "../revision.h"
+#include "../config.h"
+#include "../ui/chooseconnectiondlg.h"
 
 QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
 
@@ -69,9 +69,9 @@ MainWindow::MainWindow(QWidget *parent) :
     menuFile = new QMenu(tr("&File"), this);
     menuHelp = new QMenu(tr("&Help"), this);
 
-    QAction* actionNewTab = new QAction(tr("&New tab.."), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
     QAction* actionAbout = new QAction(tr("About Lorris..."), this);
+    QAction* actionConnectionManager = new QAction(tr("Connection &manager..."), this);
 
     QMenu* menuLang = new QMenu(tr("Language"), this);
 
@@ -103,14 +103,30 @@ MainWindow::MainWindow(QWidget *parent) :
         curLang = 0;
     m_lang_menu[curLang]->setChecked(true);
 
-    actionNewTab->setShortcut(QKeySequence("Ctrl+T"));
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
-    connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
+    connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
 
-    menuFile->addAction(actionNewTab);
+    // Sort tab infos after they were added by static variables
+    sWorkTabMgr.SortTabInfos();
+
+    QMenu * menuFileNew = menuFile->addMenu(tr("&New"));
+
+    {
+        WorkTabMgr::InfoList const & infos = sWorkTabMgr.GetWorkTabInfos();
+        for (int i = 0; i < infos.size(); ++i)
+        {
+            WorkTabInfo * info = infos[i];
+            QAction * action = new QAction(info->GetName(), this);
+            m_actionTabInfoMap[action] = info;
+            connect(action, SIGNAL(triggered()), this, SLOT(NewSpecificTab()));
+            menuFileNew->addAction(action);
+        }
+    }
+
+    menuFile->addAction(actionConnectionManager);
     menuFile->addAction(actionQuit);
     menuHelp->addAction(actionAbout);
     menuHelp->addMenu(menuLang);
@@ -128,9 +144,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(tabWidget, SIGNAL(changeMenu(quint32)),                    SLOT(changeMenu(quint32)));
     connect(tabWidget, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
 
-    // Sort tab infos after they were added by static variables
-    sWorkTabMgr.SortTabInfos();
-
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);
 }
@@ -146,9 +159,10 @@ QString MainWindow::getVersionString()
     return ver;
 }
 
-void MainWindow::NewTab()
+void MainWindow::OpenConnectionManager()
 {
-    sWorkTabMgr.NewTabDialog();
+    ChooseConnectionDlg dialog(0, this);
+    dialog.exec();
 }
 
 void MainWindow::About()
@@ -203,4 +217,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
     else
         event->accept();
+}
+
+void MainWindow::NewSpecificTab()
+{
+    WorkTabInfo * info = m_actionTabInfoMap.value(this->sender());
+    if (info)
+        sWorkTabMgr.AddWorkTab(info);
 }

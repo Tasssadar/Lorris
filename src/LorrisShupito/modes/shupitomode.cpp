@@ -24,14 +24,14 @@
 #include <QObject>
 #include <set>
 
-#include "common.h"
+#include "../../common.h"
 #include "../shupito.h"
 #include "shupitomode.h"
 #include "shupitospi.h"
 #include "shupitopdi.h"
 #include "shupitocc25xx.h"
-#include "shared/chipdefs.h"
-#include "shared/hexfile.h"
+#include "../../shared/chipdefs.h"
+#include "../../shared/hexfile.h"
 
 ShupitoMode::ShupitoMode(Shupito *shupito) : QObject()
 {

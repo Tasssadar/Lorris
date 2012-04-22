@@ -43,7 +43,6 @@ QString LorrisTerminalInfo::GetName()
 
 QString LorrisTerminalInfo::GetDescription()
 {
-    return QObject::tr("Terminal can show input data from serial port, send key strokes "
-           "to serial port and flash new programs to devices with bootloader.");
+    return QObject::tr("Terminal can show input data from connections, send key strokes "
+           "and flash new programs to devices with a bootloader.");
 }
-

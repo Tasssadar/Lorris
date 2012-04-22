@@ -25,8 +25,9 @@
 #define HOMETAB_H
 
 #include <QWidget>
+#include <QHash>
 
-class MainWindow;
+class WorkTabInfo;
 
 namespace Ui {
     class HomeTab;
@@ -38,14 +39,13 @@ public:
     HomeTab(QWidget *parent);
     ~HomeTab();
 
-protected:
-    void showEvent(QShowEvent *);
-
 private slots:
-    void NewTab();
+    void buttonClicked();
 
 private:
     Ui::HomeTab *ui;
+
+    QHash<QObject *, WorkTabInfo *> m_buttonInfoMap;
 };
 
 #endif // HOMETAB_H

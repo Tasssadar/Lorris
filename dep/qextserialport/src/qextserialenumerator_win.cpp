@@ -164,12 +164,11 @@ static bool getDeviceDetailsWin( QextPortInfo* portInfo, HDEVINFO devInfo, PSP_D
                                  , WPARAM wParam = DBT_DEVICEARRIVAL)
 {
     portInfo->friendName = getDeviceProperty(devInfo, devData, SPDRP_FRIENDLYNAME);
-    if( wParam == DBT_DEVICEARRIVAL)
-        portInfo->physName = getDeviceProperty(devInfo, devData, SPDRP_PHYSICAL_DEVICE_OBJECT_NAME);
     portInfo->enumName = getDeviceProperty(devInfo, devData, SPDRP_ENUMERATOR_NAME);
     QString hardwareIDs = getDeviceProperty(devInfo, devData, SPDRP_HARDWAREID);
     HKEY devKey = ::SetupDiOpenDevRegKey(devInfo, devData, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_QUERY_VALUE);
     portInfo->portName = getRegKeyValue(devKey, TEXT("PortName"));
+    portInfo->physName = "\\\\.\\" + portInfo->portName;
     QRegExp idRx(QLatin1String("VID_(\\w+)&PID_(\\w+)"));
     if(hardwareIDs.toUpper().contains(idRx)) {
         bool dummy;

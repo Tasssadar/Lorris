@@ -31,7 +31,7 @@
 
 #include "devicetabwidget.h"
 #include "labellayout.h"
-#include "common.h"
+#include "../common.h"
 #include "DataWidgets/datawidget.h"
 #include "lorrisanalyzer.h"
 #include "analyzerdatafile.h"

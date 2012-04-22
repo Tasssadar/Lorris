@@ -25,7 +25,7 @@
 #include <QMessageBox>
 
 #include "eeprom.h"
-#include "common.h"
+#include "../common.h"
 
 EEPROM::EEPROM(QWidget *parent, chip_definition& chip)
 {

@@ -28,7 +28,7 @@
 #include <QMouseEvent>
 
 #include "tabview.h"
-#include "WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTabMgr.h"
 
 #define LAYOUT_MARGIN 4
 TabView::TabView(QWidget *parent) :

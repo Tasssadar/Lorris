@@ -27,9 +27,10 @@
 #include <QMutex>
 #include <QTime>
 
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 #include "packet.h"
 #include "DataWidgets/datawidget.h"
+#include "../ui/connectbutton.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -59,7 +60,7 @@ namespace Ui {
   class LorrisAnalyzer;
 }
 
-class LorrisAnalyzer : public WorkTab
+class LorrisAnalyzer : public PortConnWorkTab
 {
     Q_OBJECT
 
@@ -81,6 +82,8 @@ class LorrisAnalyzer : public WorkTab
 
         bool showTitleBars() const { return m_title_action->isChecked(); }
 
+        void setConnection(PortConnection *con);
+
     public slots:
         void onTabShow();
         bool onTabClose();
@@ -89,7 +92,8 @@ class LorrisAnalyzer : public WorkTab
         void setDataChanged(bool changed = true) { m_data_changed = changed; }
 
     private slots:
-        void connectButton();
+        void doNewSource();
+
         void saveButton();
         void saveAsButton();
         void clearAllButton();
@@ -132,6 +136,8 @@ class LorrisAnalyzer : public WorkTab
         QAction *m_title_action;
 
         bool m_data_changed;
+
+        ConnectButton * m_connectButton;
 };
 
 #endif // LORRISANALYZER_H

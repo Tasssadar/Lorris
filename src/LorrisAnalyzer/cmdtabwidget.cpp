@@ -27,7 +27,7 @@
 #include <QFile>
 
 #include "cmdtabwidget.h"
-#include "common.h"
+#include "../common.h"
 #include "DataWidgets/datawidget.h"
 #include "analyzerdatafile.h"
 

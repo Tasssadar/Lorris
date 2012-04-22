@@ -28,9 +28,12 @@
 #include <QLineEdit>
 #include <QTimer>
 #include <QByteArray>
+#include <QToolButton>
 
-#include "WorkTab/WorkTab.h"
-#include "terminal.h"
+#include "../WorkTab/WorkTab.h"
+#include "../shared/terminal.h"
+#include "../ui/chooseconnectiondlg.h"
+#include "../ui/connectbutton.h"
 
 class QVBoxLayout;
 class QTextEdit;
@@ -54,7 +57,6 @@ enum states_
 
 enum buttons_
 {
-    BUTTON_DISCONNECT  = 0x01,
     BUTTON_STOP        = 0x02,
     BUTTON_FLASH       = 0x04,
     BUTTON_EEPROM_READ = 0x08,
@@ -65,12 +67,15 @@ namespace Ui {
     class LorrisTerminal;
 }
 
-class LorrisTerminal : public WorkTab
+class LorrisTerminal : public PortConnWorkTab
 {
     Q_OBJECT
 public:
     explicit LorrisTerminal();
     virtual ~LorrisTerminal();
+
+    void onTabShow();
+    virtual void setConnection(PortConnection *con);
 
 private slots:
     //Buttons
@@ -79,7 +84,6 @@ private slots:
     void stopButton();
     void flashButton();
     void pauseButton();
-    void connectButton();
     void eepromButton();
     void eepromImportButton();
     void fmtAction(int act);
@@ -125,6 +129,7 @@ private:
     std::vector<page> m_pages;
     quint32 m_cur_page;
 
+    ConnectButton * m_connectButton;
     Ui::LorrisTerminal *ui;
 };
 

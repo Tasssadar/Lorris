@@ -31,7 +31,7 @@
 #include <QInputDialog>
 
 #include "datawidget.h"
-#include "WorkTab/WorkTab.h"
+#include "../../WorkTab/WorkTab.h"
 #include "../analyzerdataarea.h"
 #include "../analyzerdatafile.h"
 

@@ -24,11 +24,12 @@
 #ifndef LORRISSHUPITO_H
 #define LORRISSHUPITO_H
 
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 #include "shupito.h"
 #include "shupitodesc.h"
-#include "shared/hexfile.h"
-#include "shared/terminal.h"
+#include "../shared/hexfile.h"
+#include "../shared/terminal.h"
+#include "../ui/connectbutton.h"
 
 #include <QDateTime>
 
@@ -76,7 +77,7 @@ class chip_definition;
 class FuseWidget;
 class ProgressDialog;
 
-class LorrisShupito : public WorkTab
+class LorrisShupito : public PortConnWorkTab
 {
     Q_OBJECT
 Q_SIGNALS:
@@ -86,11 +87,12 @@ public:
     LorrisShupito();
     ~LorrisShupito();
 
+    void setConnection(PortConnection *con);
     void stopAll(bool wait);
 
 private slots:
-    void connectButton();
     void onTabShow();
+    void connDisconnecting();
 
     void connectionResult(Connection*,bool);
     void connectedStatus(bool connected);
@@ -213,6 +215,8 @@ private:
     FuseWidget *m_fuse_widget;
 
     chip_definition m_cur_def;
+
+    ConnectButton * m_connectButton;
 };
 
 #endif // LORRISSHUPITO_H

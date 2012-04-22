@@ -22,56 +22,62 @@
 ****************************************************************************/
 
 #include "connection.h"
-#include "connectionmgr.h"
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 
-Connection::Connection() : QObject()
+Connection::Connection()
+    : m_type(0), m_state(st_disconnected), m_refcount(1), m_removable(true)
 {
-    opened = false;
 }
 
 Connection::~Connection()
 {
-
+    // Note that m_refcount need not be 0 here. We allow connections
+    // to be destroyed explicitly and clients must listen to destroyed()
+    // signal.
 }
 
-bool Connection::Open()
+void Connection::SetState(ConnectionState state)
 {
-    return false;
+    bool oldOpen = (m_state == st_connected);
+    bool newOpen = (state == st_connected);
+
+    if(state != m_state)
+    {
+        m_state = state;
+        if (oldOpen != newOpen)
+            emit connected(newOpen);
+        emit stateChanged(state);
+    }
 }
 
-void Connection::SendData(const QByteArray& /*data*/)
+void Connection::SetOpen(bool open)
 {
-
+    if (open)
+        this->SetState(st_connected);
+    else
+        this->SetState(st_disconnected);
 }
 
-void Connection::OpenConcurrent()
+void Connection::addRef()
 {
+    ++m_refcount;
 }
 
-void Connection::removeFromMgr()
+void Connection::release()
 {
-     sConMgr.RemoveCon(m_type, this);
+    if (--m_refcount == 0)
+        delete this;
 }
 
-ConnectionBuilder::ConnectionBuilder(QWidget *parent, int moduleIdx) : QObject((QObject*)parent)
+QHash<QString, QVariant> Connection::config() const
 {
-    m_parent = parent;
-    m_module_idx = moduleIdx;
-    m_tab = NULL;
+    QHash<QString, QVariant> res;
+    res["name"] = this->name();
+    return res;
 }
 
-ConnectionBuilder::~ConnectionBuilder()
+bool Connection::applyConfig(QHash<QString, QVariant> const & config)
 {
-    delete m_tab;
+    this->setName(config.value("name").toString());
+    return true;
 }
-
-void ConnectionBuilder::addOptToTabDialog(QGridLayout */*layout*/)
-{
-
-}
-
-void ConnectionBuilder::CreateConnection(WorkTab */*info*/)
-{
-}
-

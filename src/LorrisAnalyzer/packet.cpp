@@ -22,7 +22,7 @@
 ****************************************************************************/
 
 #include "packet.h"
-#include "common.h"
+#include "../common.h"
 
 analyzer_data::analyzer_data(analyzer_packet *packet)
 {
