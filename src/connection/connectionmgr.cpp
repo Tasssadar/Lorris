@@ -29,7 +29,6 @@
 #include "shupitotunnel.h"
 #include "serialport.h"
 #include "tcpsocket.h"
-#include "fileconnection.h"
 
 ConnectionMgr::ConnectionMgr()
 {
@@ -111,7 +110,6 @@ ConnectionBuilder *ConnectionMgr::getConBuilder(quint8 conType, int moduleIdx, Q
     {
         case CONNECTION_SERIAL_PORT: return new SerialPortBuilder    (parent, moduleIdx);
         case CONNECTION_SHUPITO:     return new ShupitoTunnelBuilder (parent, moduleIdx);
-        case CONNECTION_FILE:        return new FileConnectionBuilder(parent, moduleIdx);
         case CONNECTION_TCP_SOCKET:  return new TcpSocketBuilder     (parent, moduleIdx);
     }
     return NULL;

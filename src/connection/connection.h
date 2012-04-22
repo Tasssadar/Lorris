@@ -44,7 +44,6 @@ enum ConnectionState {
 enum ConnectionType
 {
     CONNECTION_SERIAL_PORT = 0,
-    CONNECTION_FILE        = 1,
     CONNECTION_SHUPITO     = 2, // Do not use in WorkTabs, when connected to shupito, it identifies
                                 // as serial port from WorkTab's point of view
     CONNECTION_TCP_SOCKET  = 3,

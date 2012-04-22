@@ -271,7 +271,7 @@ void LorrisAnalyzer::doNewSource()
     m_state |= STATE_DIALOG;
     SourceSelectDialog *s = new SourceSelectDialog(this);
 
-    if(m_con && m_con->getType() == CONNECTION_FILE)
+    if(!m_con)
         s->DisableNew();
 
     qint8 res = s->get();

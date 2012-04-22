@@ -41,7 +41,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/analyzerdatastorage.cpp \
     src/LorrisAnalyzer/devicetabwidget.cpp \
     src/LorrisAnalyzer/cmdtabwidget.cpp \
-    src/connection/fileconnection.cpp \
     src/LorrisAnalyzer/analyzerdataarea.cpp \
     src/LorrisAnalyzer/DataWidgets/datawidget.cpp \
     src/LorrisAnalyzer/DataWidgets/numberwidget.cpp \
@@ -123,7 +122,6 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/analyzerdatastorage.h \
     src/LorrisAnalyzer/devicetabwidget.h \
     src/LorrisAnalyzer/cmdtabwidget.h \
-    src/connection/fileconnection.h \
     src/LorrisAnalyzer/analyzerdataarea.h \
     src/LorrisAnalyzer/DataWidgets/datawidget.h \
     src/LorrisAnalyzer/DataWidgets/numberwidget.h \
