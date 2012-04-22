@@ -80,6 +80,9 @@ public:
     void addRef();
     void release();
 
+    virtual QHash<QString, QVariant> config() const;
+    virtual bool applyConfig(QHash<QString, QVariant> const & config);
+
 Q_SIGNALS:
     void connectResult(Connection *con, bool open);
     void connected(bool connected);

@@ -155,6 +155,21 @@ void SerialPort::setDeviceName(QString const & value)
     }
 }
 
+QHash<QString, QVariant> SerialPort::config() const
+{
+    QHash<QString, QVariant> res = this->Connection::config();
+    res["device_name"] = this->deviceName();
+    res["baud_rate"] = (int)this->baudRate();
+    return res;
+}
+
+bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
+{
+    this->setDeviceName(config.value("device_name").toString());
+    this->setBaudRate((BaudRateType)config.value("baud_rate", 38400).toInt());
+    return this->Connection::applyConfig(config);
+}
+
 void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
 {
     QLabel *portLabel = new QLabel(tr("Port: "), NULL, Qt::WindowFlags(0));

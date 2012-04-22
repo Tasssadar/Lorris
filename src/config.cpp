@@ -68,6 +68,11 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/show_fuses",         // CFG_BOOL_SHUPITO_SHOW_FUSES
 };
 
+static const QString keys_variant[CFG_VARIANT_NUM] =
+{
+    "general/connections",        // CFG_VARIANT_CONNECTIONS
+};
+
 Config::Config()
 {
     openSettings();
@@ -164,4 +169,14 @@ bool Config::get(cfg_bool item)
 void Config::set(cfg_bool item, bool val)
 {
     m_settings->setValue(keys_bool[item], val);
+}
+
+QVariant Config::get(cfg_variant item)
+{
+    return m_settings->value(keys_variant[item]);
+}
+
+void Config::set(cfg_variant item, QVariant const & val)
+{
+    m_settings->setValue(keys_variant[item], val);
 }

@@ -59,6 +59,9 @@ public:
     bool devNameEditable() const { return m_devNameEditable; }
     void setDevNameEditable(bool value) { m_devNameEditable = value; }
 
+    QHash<QString, QVariant> config() const;
+    bool applyConfig(QHash<QString, QVariant> const & config);
+
 private slots:
     void connectResultSer(bool opened);
     void openResult();

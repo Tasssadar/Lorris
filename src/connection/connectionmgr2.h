@@ -4,6 +4,7 @@
 #include "../connection/connection.h"
 #include <QTimer>
 #include <QHash>
+#include <QSet>
 #include <set>
 
 class SerialPort;
@@ -46,6 +47,9 @@ public:
     SerialPort * createSerialPort();
     TcpSocket * createTcpSocket();
 
+    QVariant config() const;
+    bool applyConfig(QVariant const & config);
+
 Q_SIGNALS:
     void connAdded(Connection * conn);
     void connRemoved(Connection * conn);
@@ -54,6 +58,10 @@ private slots:
     void connectionDestroyed();
 
 private:
+    void addUserOwnedConn(Connection * conn);
+    void clearUserOwnedConns();
+    QSet<Connection *> m_userOwnedConns;
+
     QList<Connection *> m_conns;
     QScopedPointer<SerialPortEnumerator> m_serialPortEnumerator;
 };

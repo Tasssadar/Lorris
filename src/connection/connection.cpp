@@ -76,6 +76,19 @@ void Connection::SendData(const QByteArray & /*data*/)
 {
 }
 
+QHash<QString, QVariant> Connection::config() const
+{
+    QHash<QString, QVariant> res;
+    res["name"] = this->name();
+    return res;
+}
+
+bool Connection::applyConfig(QHash<QString, QVariant> const & config)
+{
+    this->setName(config.value("name").toString());
+    return true;
+}
+
 //----------------------------------------------------------------------------
 ConnectionBuilder::ConnectionBuilder(QWidget *parent, int moduleIdx) : QObject((QObject*)parent)
 {

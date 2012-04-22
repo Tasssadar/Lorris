@@ -56,6 +56,9 @@ public:
     quint16 port() const { return m_port; }
     void setPort(quint16 value);
 
+    QHash<QString, QVariant> config() const;
+    bool applyConfig(QHash<QString, QVariant> const & config);
+
 public slots:
     void connectResultSer(bool opened);
     void tcpConnectResult();
