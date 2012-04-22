@@ -36,7 +36,7 @@ ShupitoTunnel::ShupitoTunnel()
     m_shupito = NULL;
     dataSigConnected = false;
 
-    m_type = CONNECTION_SERIAL_PORT;
+    m_type = CONNECTION_SHUPITO_TUNNEL;
 }
 
 ShupitoTunnel::~ShupitoTunnel()

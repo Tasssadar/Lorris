@@ -65,6 +65,7 @@ enum VerifyMode
 };
 
 class PortConnection;
+class ShupitoTunnel;
 
 // device.hpp, 122
 struct vdd_point
@@ -142,6 +143,8 @@ private:
     void SendSetComSpeed();
 
     PortConnection *m_con;
+    QScopedPointer<ShupitoTunnel> m_tunnel_conn;
+
     ShupitoPacket *m_packet;
     ShupitoDesc *m_desc;
     QMutex mutex;

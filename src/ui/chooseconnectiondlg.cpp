@@ -103,6 +103,10 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             ui->tcPortEdit->setValue(tc->port());
         }
         break;
+    default:
+        {
+            ui->settingsStack->setCurrentWidget(ui->homePage);
+        }
     }
 }
 

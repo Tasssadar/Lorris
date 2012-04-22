@@ -41,11 +41,12 @@ enum ConnectionState {
     st_connected
 };
 
+// TODO: maybe we should just remove this and use dynamic_cast?
 enum ConnectionType
 {
     CONNECTION_SERIAL_PORT = 0,
-    CONNECTION_SHUPITO     = 2, // Do not use in WorkTabs, when connected to shupito, it identifies
-                                // as serial port from WorkTab's point of view
+    CONNECTION_SHUPITO_TUNNEL = 1,
+    CONNECTION_SHUPITO     = 2,
     CONNECTION_TCP_SOCKET  = 3,
     MAX_CON_TYPE           = 4
 };

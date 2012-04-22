@@ -28,7 +28,8 @@
 #include "shupito.h"
 #include "lorrisshupito.h"
 #include "shupitodesc.h"
-#include "../connection/connectionmgr.h"
+#include "../connection/shupitotunnel.h"
+#include "../connection/connectionmgr2.h"
 
 Shupito::Shupito(QObject *parent) :
     QObject(parent)
@@ -51,7 +52,6 @@ Shupito::Shupito(QObject *parent) :
 Shupito::~Shupito()
 {
     delete m_packet;
-    sConMgr.RemoveShupito(this);
 }
 
 void Shupito::init(PortConnection *con, ShupitoDesc *desc)
@@ -377,7 +377,12 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
 
                     SendSetComSpeed();
 
-                    sConMgr.AddShupito(m_con->GetIDString(), this);
+                    m_tunnel_conn.reset(new ShupitoTunnel());
+                    m_tunnel_conn->setName("Shupito at " + m_con->GetIDString());
+                    m_tunnel_conn->setShupito(this);
+                    m_tunnel_conn->Open();
+                    sConMgr2.addConnection(m_tunnel_conn.data());
+
                     emit tunnelStatus(true);
 
                     m_tunnel_data.clear();
@@ -394,7 +399,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
                 {
                     m_tunnel_pipe = 0;
 
-                    sConMgr.RemoveShupito(this);
+                    m_tunnel_conn.reset();
                     emit tunnelStatus(false);
 
                     disconnect(&m_tunnel_timer, SIGNAL(timeout()), this, SLOT(tunnelDataSend()));
