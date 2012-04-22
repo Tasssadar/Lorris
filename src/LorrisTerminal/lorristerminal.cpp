@@ -135,6 +135,8 @@ LorrisTerminal::~LorrisTerminal()
 
 void LorrisTerminal::onTabShow()
 {
+    this->connectedStatus(m_con && m_con->isOpen());
+
     if (!m_con)
     {
         m_connectButton->choose();
@@ -692,7 +694,7 @@ void LorrisTerminal::deviceIdTimeout()
 
 void LorrisTerminal::sendKeyEvent(const QString &key)
 {
-    if(!(m_state & STATE_DISCONNECTED))
+    if(m_con && m_con->isOpen())
         m_con->SendData(key.toUtf8());
 }
 
