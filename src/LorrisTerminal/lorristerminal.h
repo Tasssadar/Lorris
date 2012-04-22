@@ -30,8 +30,8 @@
 #include <QByteArray>
 #include <QToolButton>
 
-#include "WorkTab/WorkTab.h"
-#include "terminal.h"
+#include "../WorkTab/WorkTab.h"
+#include "../shared/terminal.h"
 #include "../ui/chooseconnectiondlg.h"
 #include "../ui/connectbutton.h"
 

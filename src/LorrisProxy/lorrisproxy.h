@@ -24,7 +24,7 @@
 #ifndef LORRISPROXY_H
 #define LORRISPROXY_H
 
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 #include "../ui/connectbutton.h"
 
 namespace Ui {

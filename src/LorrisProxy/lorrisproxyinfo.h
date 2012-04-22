@@ -24,7 +24,7 @@
 #ifndef LORRISPROXYINFO_H
 #define LORRISPROXYINFO_H
 
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 class LorrisProxyInfo : public WorkTabInfo
 {

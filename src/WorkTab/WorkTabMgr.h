@@ -27,9 +27,9 @@
 #include <vector>
 #include <QHash>
 
-#include "singleton.h"
+#include "../singleton.h"
 #include "WorkTab.h"
-#include "ui/tabview.h"
+#include "../ui/tabview.h"
 
 class WorkTabInfo;
 class HomeTab;

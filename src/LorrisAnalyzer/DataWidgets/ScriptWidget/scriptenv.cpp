@@ -29,13 +29,13 @@
 #include <QTimer>
 #include <QComboBox>
 
-#include <analyzerdataarea.h>
-#include "DataWidgets/GraphWidget/graphcurve.h"
-#include "DataWidgets/datawidget.h"
-#include "DataWidgets/inputwidget.h"
+#include "../../analyzerdataarea.h"
+#include "../GraphWidget/graphcurve.h"
+#include "../datawidget.h"
+#include "../inputwidget.h"
 #include "scriptenv.h"
 #include "scriptagent.h"
-#include "joystick/joymgr.h"
+#include "../../../joystick/joymgr.h"
 
 /* Simple JavaScript Inheritance
  * By John Resig http://ejohn.org/

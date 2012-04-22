@@ -28,8 +28,8 @@
 #include <vector>
 #include <QMenu>
 
-#include "common.h"
-#include "connection/connection.h"
+#include "../common.h"
+#include "../connection/connection.h"
 #include "WorkTabInfo.h"
 
 class WorkTab : public QWidget

@@ -29,9 +29,9 @@
 #include <QDialogButtonBox>
 #include <QListWidget>
 
-#include "common.h"
+#include "../common.h"
 #include "sourcedialog.h"
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 #include "ui_sourcedialog.h"
 #include "labellayout.h"
 #include "packet.h"

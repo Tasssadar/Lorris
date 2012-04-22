@@ -27,7 +27,7 @@
 
 #include "labellayout.h"
 #include "sourcedialog.h"
-#include "common.h"
+#include "../common.h"
 #include "packet.h"
 #include "devicetabwidget.h"
 #include "cmdtabwidget.h"

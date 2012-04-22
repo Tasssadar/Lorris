@@ -34,11 +34,11 @@
 #include <QSignalMapper>
 
 #include "lorristerminal.h"
-#include "terminal.h"
+#include "../shared/terminal.h"
 #include "eeprom.h"
-#include "shared/hexfile.h"
-#include "shared/chipdefs.h"
-#include "ui_lorristerminal.h"
+#include "../shared/hexfile.h"
+#include "../shared/chipdefs.h"
+#include "../ui/ui_lorristerminal.h"
 #include "../ui/chooseconnectiondlg.h"
 
 LorrisTerminal::LorrisTerminal() : WorkTab(), ui(new Ui::LorrisTerminal)

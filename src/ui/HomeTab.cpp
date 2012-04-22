@@ -28,9 +28,9 @@
 
 #include "HomeTab.h"
 #include "mainwindow.h"
-#include "WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTabMgr.h"
 
-#include "ui_hometab.h"
+#include "../ui/ui_hometab.h"
 
 HomeTab::HomeTab(QWidget *parent) : QWidget(parent), ui(new Ui::HomeTab)
 {

@@ -23,10 +23,10 @@
 
 #include <QMessageBox>
 
-#include "common.h"
-#include "WorkTab/WorkTabMgr.h"
-#include "WorkTab/WorkTabInfo.h"
-#include "WorkTab/WorkTab.h"
+#include "../common.h"
+#include "../WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTab.h"
 #include "tabdialog.h"
 
 #include "ui_tabdialog.h"

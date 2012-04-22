@@ -28,11 +28,11 @@
 #include <QLineEdit>
 #include <QSpinBox>
 
-#include "common.h"
+#include "../common.h"
 #include "connectionmgr.h"
 #include "tcpsocket.h"
-#include "WorkTab/WorkTabInfo.h"
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTab.h"
 
 static const int CONNECT_TIMEOUT = 10000 / 50; // 10s
 

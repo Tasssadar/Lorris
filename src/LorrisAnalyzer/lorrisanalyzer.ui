@@ -296,24 +296,24 @@
   <customwidget>
    <class>Playback</class>
    <extends>QFrame</extends>
-   <header location="global">playback.h</header>
+   <header>../src/LorrisAnalyzer/playback.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RotateButton</class>
    <extends>QPushButton</extends>
-   <header location="global">rotatebutton.h</header>
+   <header>../src/shared/rotatebutton.h</header>
   </customwidget>
   <customwidget>
    <class>AnalyzerDataArea</class>
    <extends>QFrame</extends>
-   <header location="global">analyzerdataarea.h</header>
+   <header>../src/LorrisAnalyzer/analyzerdataarea.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>DeviceTabWidget</class>
    <extends>QTabWidget</extends>
-   <header location="global">devicetabwidget.h</header>
+   <header>../src/LorrisAnalyzer/devicetabwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

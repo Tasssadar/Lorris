@@ -24,11 +24,11 @@
 #ifndef LORRISSHUPITO_H
 #define LORRISSHUPITO_H
 
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 #include "shupito.h"
 #include "shupitodesc.h"
-#include "shared/hexfile.h"
-#include "shared/terminal.h"
+#include "../shared/hexfile.h"
+#include "../shared/terminal.h"
 #include "../ui/connectbutton.h"
 
 #include <QDateTime>

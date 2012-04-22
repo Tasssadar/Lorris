@@ -22,7 +22,7 @@
 ****************************************************************************/
 
 #include "scriptstorage.h"
-#include "analyzerdatafile.h"
+#include "../../analyzerdatafile.h"
 
 ScriptStorage::ScriptStorage(QObject *parent) :
     QObject(parent)

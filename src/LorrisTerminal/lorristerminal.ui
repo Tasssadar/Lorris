@@ -132,7 +132,7 @@
   <customwidget>
    <class>Terminal</class>
    <extends>QFrame</extends>
-   <header location="global">terminal.h</header>
+   <header>../src/shared/terminal.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

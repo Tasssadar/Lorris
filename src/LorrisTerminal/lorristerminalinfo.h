@@ -24,7 +24,7 @@
 #ifndef LORRISTERMINALINFO_H
 #define LORRISTERMINALINFO_H
 
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 class LorrisTerminalInfo : public WorkTabInfo
 {

@@ -24,7 +24,7 @@
 #ifndef LORRISANALYZERINFO_H
 #define LORRISANALYZERINFO_H
 
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 class LorrisAnalyzerInfo : public WorkTabInfo
 {

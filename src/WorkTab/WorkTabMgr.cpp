@@ -24,8 +24,8 @@
 
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
-#include "ui/HomeTab.h"
-#include "ui/tabdialog.h"
+#include "../ui/HomeTab.h"
+#include "../ui/tabdialog.h"
 
 WorkTabMgr::WorkTabMgr() : QObject()
 {

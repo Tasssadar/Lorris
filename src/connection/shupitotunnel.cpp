@@ -28,8 +28,8 @@
 #include "connectionmgr.h"
 #include "../LorrisShupito/shupito.h"
 
-#include "WorkTab/WorkTab.h"
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 ShupitoTunnel::ShupitoTunnel() : Connection()
 {

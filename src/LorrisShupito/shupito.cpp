@@ -28,7 +28,7 @@
 #include "shupito.h"
 #include "lorrisshupito.h"
 #include "shupitodesc.h"
-#include "connection/connectionmgr.h"
+#include "../connection/connectionmgr.h"
 
 Shupito::Shupito(QObject *parent) :
     QObject(parent)

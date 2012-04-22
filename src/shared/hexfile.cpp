@@ -25,7 +25,7 @@
 #include <QObject>
 
 #include "hexfile.h"
-#include "common.h"
+#include "../common.h"
 #include "chipdefs.h"
 
 // Most of this file is ported from avr232client, file program.hpp

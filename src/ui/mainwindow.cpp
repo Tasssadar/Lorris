@@ -47,13 +47,13 @@
 
 #include "mainwindow.h"
 #include "HomeTab.h"
-#include "WorkTab/WorkTab.h"
-#include "WorkTab/WorkTabMgr.h"
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTabInfo.h"
 #include "tabdialog.h"
-#include "revision.h"
-#include "config.h"
-#include "chooseconnectiondlg.h"
+#include "../revision.h"
+#include "../config.h"
+#include "../ui/chooseconnectiondlg.h"
 
 QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
 

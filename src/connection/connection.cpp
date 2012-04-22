@@ -23,7 +23,7 @@
 
 #include "connection.h"
 #include "connectionmgr.h"
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 
 Connection::Connection()
     : m_type(0), m_state(st_disconnected), m_refcount(1), m_removable(true)

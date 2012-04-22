@@ -33,10 +33,10 @@
 
 #include "serialport.h"
 #include "connectionmgr.h"
-#include "config.h"
-#include "WorkTab/WorkTabMgr.h"
-#include "WorkTab/WorkTab.h"
-#include "WorkTab/WorkTabInfo.h"
+#include "../config.h"
+#include "../WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 SerialPort::SerialPort()
     : Connection(),

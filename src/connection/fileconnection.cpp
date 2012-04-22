@@ -23,8 +23,8 @@
 
 #include "fileconnection.h"
 #include "connectionmgr.h"
-#include "WorkTab/WorkTab.h"
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 FileConnection::FileConnection() : Connection()
 {

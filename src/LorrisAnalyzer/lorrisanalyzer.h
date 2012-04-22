@@ -27,7 +27,7 @@
 #include <QMutex>
 #include <QTime>
 
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 #include "packet.h"
 #include "DataWidgets/datawidget.h"
 #include "../ui/connectbutton.h"

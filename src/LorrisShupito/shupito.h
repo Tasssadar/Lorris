@@ -31,7 +31,7 @@
 
 #include "shupitopacket.h"
 #include "shupitodesc.h"
-#include "shared/chipdefs.h"
+#include "../shared/chipdefs.h"
 
 enum Opcodes
 {

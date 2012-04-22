@@ -24,7 +24,7 @@
 #ifndef LORRISSHUPITOINFO_H
 #define LORRISSHUPITOINFO_H
 
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 class LorrisShupitoInfo : public WorkTabInfo
 {

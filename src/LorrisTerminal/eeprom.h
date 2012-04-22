@@ -27,8 +27,8 @@
 #include <QByteArray>
 #include <QWidget>
 
-#include "shared/chipdefs.h"
-#include "shared/hexfile.h"
+#include "../shared/chipdefs.h"
+#include "../shared/hexfile.h"
 
 class EEPROM
 {

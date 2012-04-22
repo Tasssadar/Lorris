@@ -18,7 +18,7 @@ TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += dep/qhexedit2/src
-INCLUDEPATH += src ui src/shared dep src/LorrisAnalyzer
+INCLUDEPATH += dep
 INCLUDEPATH += dep/qextserialport/src
 SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \

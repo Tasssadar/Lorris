@@ -28,7 +28,7 @@
 #include <map>
 #include <QDebug>
 
-#include "singleton.h"
+#include "../singleton.h"
 #include "connection.h"
 
 #define CON_MSK(con) (1 << con)

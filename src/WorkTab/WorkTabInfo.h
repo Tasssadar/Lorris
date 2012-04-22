@@ -25,7 +25,7 @@
 #define WORKTABINFO_H
 
 #include <QString>
-#include "connection/connectionmgr.h"
+#include "../connection/connectionmgr.h"
 
 class WorkTab;
 

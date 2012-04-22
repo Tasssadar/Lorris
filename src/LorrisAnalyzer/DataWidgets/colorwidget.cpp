@@ -26,7 +26,7 @@
 #include <QMenu>
 #include <QSignalMapper>
 
-#include "WorkTab/WorkTab.h"
+#include "../../WorkTab/WorkTab.h"
 #include "colorwidget.h"
 
 ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)

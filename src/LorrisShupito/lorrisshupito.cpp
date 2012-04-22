@@ -38,10 +38,10 @@
 #include "lorrisshupito.h"
 #include "modes/shupitomode.h"
 #include "fusewidget.h"
-#include "shared/hexfile.h"
-#include "shared/chipdefs.h"
+#include "../shared/hexfile.h"
+#include "../shared/chipdefs.h"
 #include "flashbuttonmenu.h"
-#include "connection/connectionmgr.h"
+#include "../connection/connectionmgr.h"
 
 #include "ui_lorrisshupito.h"
 
