@@ -33,7 +33,7 @@
 class QComboBox;
 class SerialPortThread;
 
-class SerialPort : public Connection
+class SerialPort : public PortConnection
 {
     Q_OBJECT
 
@@ -81,26 +81,5 @@ private:
     QMutex m_port_mutex;
     bool m_devNameEditable;
 };
-
-class SerialPortBuilder : public ConnectionBuilder
-{
-    Q_OBJECT
-public:
-    SerialPortBuilder(QWidget *parent,  int moduleIdx) : ConnectionBuilder(parent, moduleIdx)
-    {
-    }
-
-    void addOptToTabDialog(QGridLayout *layout);
-    void CreateConnection(WorkTab *tab);
-
-private slots:
-    void conResult(Connection *con, bool open);
-    void addPortNames();
-
-private:
-    QComboBox *m_rateBox;
-    QComboBox *m_portBox;
-};
-
 
 #endif // SERIALPORT_H

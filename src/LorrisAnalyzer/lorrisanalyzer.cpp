@@ -58,7 +58,9 @@
 #include "DataWidgets/buttonwidget.h"
 #include "sourceselectdialog.h"
 
-LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer), m_connectButton(0)
+LorrisAnalyzer::LorrisAnalyzer()
+    : ui(new Ui::LorrisAnalyzer),
+      m_connectButton(0)
 {
     ui->setupUi(this);
 
@@ -165,7 +167,7 @@ LorrisAnalyzer::LorrisAnalyzer() : WorkTab(),ui(new Ui::LorrisAnalyzer), m_conne
     m_data_changed = false;
 
     m_connectButton = new ConnectButton(ui->connectButton);
-    connect(m_connectButton, SIGNAL(connectionChosen(Connection*)), this, SLOT(setConnection(Connection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -649,8 +651,8 @@ void LorrisAnalyzer::showTitleTriggered(bool checked)
     emit setTitleVisibility(checked);
 }
 
-void LorrisAnalyzer::setConnection(Connection *con)
+void LorrisAnalyzer::setConnection(PortConnection *con)
 {
-    this->WorkTab::setConnection(con);
+    this->PortConnWorkTab::setConnection(con);
     m_connectButton->setConn(con);
 }

@@ -30,7 +30,8 @@
 
 #include "ui_lorrisproxy.h"
 
-LorrisProxy::LorrisProxy() : WorkTab(), ui(new Ui::LorrisProxy)
+LorrisProxy::LorrisProxy()
+    : ui(new Ui::LorrisProxy)
 {
     m_server = new TcpServer();
 
@@ -46,7 +47,7 @@ LorrisProxy::LorrisProxy() : WorkTab(), ui(new Ui::LorrisProxy)
     ui->portBox->setValue(sConfig.get(CFG_QUINT32_PROXY_PORT));
 
     m_connectButton = new ConnectButton(ui->connectButton);
-    connect(m_connectButton, SIGNAL(connectionChosen(Connection*)), this, SLOT(setConnection(Connection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
 }
 
 LorrisProxy::~LorrisProxy()
@@ -65,9 +66,9 @@ void LorrisProxy::connectionResult(Connection */*con*/,bool result)
     }
 }
 
-void LorrisProxy::setConnection(Connection *con)
+void LorrisProxy::setConnection(PortConnection *con)
 {
-    this->WorkTab::setConnection(con);
+    this->PortConnWorkTab::setConnection(con);
     m_connectButton->setConn(con);
     connect(m_con,    SIGNAL(dataRead(QByteArray)), m_server, SLOT(SendData(QByteArray)));
     connect(m_server, SIGNAL(newData(QByteArray)),  m_con,    SLOT(SendData(QByteArray)));

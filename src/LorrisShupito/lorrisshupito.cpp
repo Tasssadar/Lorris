@@ -52,7 +52,8 @@ static const QString memNames[] = { "", "flash", "eeprom" };
 
 static const QString filters = QObject::tr("Intel HEX file (*.hex)");
 
-LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
+LorrisShupito::LorrisShupito()
+    : ui(new Ui::LorrisShupito)
 {
     ui->setupUi(this);
 
@@ -142,7 +143,7 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     m_state = 0;
 
     m_connectButton = new ConnectButton(ui->connectButton);
-    connect(m_connectButton, SIGNAL(connectionChosen(Connection*)), this, SLOT(setConnection(Connection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
 }
 
 LorrisShupito::~LorrisShupito()
@@ -1250,11 +1251,11 @@ int LorrisShupito::getMemIndex()
     return res;
 }
 
-void LorrisShupito::setConnection(Connection *con)
+void LorrisShupito::setConnection(PortConnection *con)
 {
     if (m_con)
         disconnect(m_con, 0, this, 0);
-    this->WorkTab::setConnection(con);
+    this->PortConnWorkTab::setConnection(con);
     m_connectButton->setConn(con);
     if (m_con)
         connect(m_con, SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));

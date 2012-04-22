@@ -19,7 +19,7 @@ public slots:
     Connection * choose();
 
 Q_SIGNALS:
-    void connectionChosen(Connection * newConnection);
+    void connectionChosen(PortConnection * newConnection);
 
 private slots:
     void connectTriggered();

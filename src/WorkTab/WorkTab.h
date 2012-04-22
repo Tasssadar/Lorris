@@ -54,25 +54,36 @@ public:
     WorkTabInfo *getInfo() const { return m_info; }
     void setInfo(WorkTabInfo *info) { m_info = info; }
 
-public slots:
-    virtual void setConnection(Connection *con);
-
-protected slots:
-    virtual void readData(const QByteArray &data);
-    virtual void connectedStatus(bool connected);
-    virtual void connectionDestroyed();
-
 protected:
     WorkTab();
 
     void addTopMenu(QMenu *menu);
 
-    Connection *m_con;
     quint32 m_id;
 
 private:
     std::vector<QMenu*> m_menus;
     WorkTabInfo *m_info;
+};
+
+class PortConnWorkTab : public WorkTab
+{
+    Q_OBJECT
+
+public:
+    PortConnWorkTab();
+    ~PortConnWorkTab();
+
+public slots:
+    virtual void setConnection(PortConnection *con);
+
+protected:
+    PortConnection *m_con;
+
+protected slots:
+    virtual void readData(const QByteArray &data);
+    virtual void connectedStatus(bool connected);
+    virtual void connectionDestroyed();
 };
 
 #endif // WORKTAB_H

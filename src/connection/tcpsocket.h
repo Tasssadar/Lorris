@@ -33,7 +33,7 @@ class QSpinBox;
 class QLineEdit;
 class QTcpSocket;
 
-class TcpSocket : public Connection
+class TcpSocket : public PortConnection
 {
     Q_OBJECT
 public:
@@ -75,25 +75,5 @@ private:
     QFuture<bool> m_future;
     QFutureWatcher<bool> m_watcher;
 };
-
-class TcpSocketBuilder : public ConnectionBuilder
-{
-    Q_OBJECT
-public:
-    TcpSocketBuilder(QWidget *parent, int moduleIdx) : ConnectionBuilder(parent, moduleIdx)
-    {
-    }
-
-    void addOptToTabDialog(QGridLayout *layout);
-    void CreateConnection(WorkTab *tab);
-
-private slots:
-    void conResult(Connection *con, bool open);
-
-private:
-    QLineEdit *m_address;
-    QSpinBox *m_port;
-};
-
 
 #endif // TCPSOCKET_H

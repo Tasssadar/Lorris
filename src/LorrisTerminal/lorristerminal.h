@@ -67,7 +67,7 @@ namespace Ui {
     class LorrisTerminal;
 }
 
-class LorrisTerminal : public WorkTab
+class LorrisTerminal : public PortConnWorkTab
 {
     Q_OBJECT
 public:
@@ -75,7 +75,7 @@ public:
     virtual ~LorrisTerminal();
 
     void onTabShow();
-    virtual void setConnection(Connection *con);
+    virtual void setConnection(PortConnection *con);
 
 private slots:
     //Buttons
@@ -95,7 +95,6 @@ private slots:
     void sendKeyEvent(const QString& key);
     void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);
-    void connectionChosen(Connection *newConn);
 
     //Timers
     void stopTimerSig();

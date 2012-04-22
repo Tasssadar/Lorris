@@ -34,7 +34,7 @@ namespace Ui {
 class TcpServer;
 class QTcpSocket;
 
-class LorrisProxy : public WorkTab
+class LorrisProxy : public PortConnWorkTab
 {
     Q_OBJECT
     
@@ -42,7 +42,7 @@ public:
     explicit LorrisProxy();
     ~LorrisProxy();
 
-    void setConnection(Connection *con);
+    void setConnection(PortConnection *con);
     void onTabShow();
 
 private slots:

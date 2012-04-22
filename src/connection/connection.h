@@ -87,14 +87,10 @@ Q_SIGNALS:
     void connected(bool connected);
     void stateChanged(ConnectionState state);
     void changed();
-    void dataRead(const QByteArray& data);
 
     // This will be emitted right before a *planned* disconnect happens
     // to allow clients to send shutdown chatter.
     void disconnecting();
-
-public slots:
-    virtual void SendData(const QByteArray & data);
 
 protected:
     void SetState(ConnectionState state);
@@ -110,6 +106,17 @@ private:
 };
 
 Q_DECLARE_METATYPE(Connection *)
+
+class PortConnection : public Connection
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void dataRead(const QByteArray& data);
+
+public slots:
+    virtual void SendData(const QByteArray & data) {}
+};
 
 class ConnectionBuilder : public QObject
 {

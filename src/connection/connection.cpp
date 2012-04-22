@@ -72,10 +72,6 @@ void Connection::release()
         delete this;
 }
 
-void Connection::SendData(const QByteArray & /*data*/)
-{
-}
-
 QHash<QString, QVariant> Connection::config() const
 {
     QHash<QString, QVariant> res;

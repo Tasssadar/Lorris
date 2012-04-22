@@ -30,7 +30,7 @@
 class QComboBox;
 class Shupito;
 
-class ShupitoTunnel : public Connection
+class ShupitoTunnel : public PortConnection
 {
     Q_OBJECT
 
@@ -50,21 +50,5 @@ private:
     Shupito *m_shupito;
     bool dataSigConnected;
 };
-
-class ShupitoTunnelBuilder : public ConnectionBuilder
-{
-    Q_OBJECT
-public:
-    ShupitoTunnelBuilder(QWidget *parent, int moduleIdx) : ConnectionBuilder(parent, moduleIdx)
-    {
-    }
-
-    void addOptToTabDialog(QGridLayout *layout);
-    void CreateConnection(WorkTab *tab);
-
-private:
-    QComboBox *m_portBox;
-};
-
 
 #endif // SHUPITOTUNNEL_H

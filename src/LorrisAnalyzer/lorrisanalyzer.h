@@ -60,7 +60,7 @@ namespace Ui {
   class LorrisAnalyzer;
 }
 
-class LorrisAnalyzer : public WorkTab
+class LorrisAnalyzer : public PortConnWorkTab
 {
     Q_OBJECT
 
@@ -82,7 +82,7 @@ class LorrisAnalyzer : public WorkTab
 
         bool showTitleBars() const { return m_title_action->isChecked(); }
 
-        void setConnection(Connection *con);
+        void setConnection(PortConnection *con);
 
     public slots:
         void onTabShow();

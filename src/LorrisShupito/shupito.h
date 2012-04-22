@@ -64,7 +64,7 @@ enum VerifyMode
     VERIFY_MAX
 };
 
-class Connection;
+class PortConnection;
 
 // device.hpp, 122
 struct vdd_point
@@ -92,7 +92,7 @@ Q_SIGNALS:
 public:
     explicit Shupito(QObject *parent);
     ~Shupito();
-    void init(Connection *con, ShupitoDesc *desc);
+    void init(PortConnection *con, ShupitoDesc *desc);
 
     void readData(const QByteArray& data);
     void sendPacket(ShupitoPacket packet);
@@ -141,7 +141,7 @@ private:
 
     void SendSetComSpeed();
 
-    Connection *m_con;
+    PortConnection *m_con;
     ShupitoPacket *m_packet;
     ShupitoDesc *m_desc;
     QMutex mutex;

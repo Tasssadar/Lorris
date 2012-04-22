@@ -31,7 +31,7 @@
 #include "../WorkTab/WorkTab.h"
 #include "../WorkTab/WorkTabInfo.h"
 
-ShupitoTunnel::ShupitoTunnel() : Connection()
+ShupitoTunnel::ShupitoTunnel()
 {
     m_shupito = NULL;
     dataSigConnected = false;
@@ -104,58 +104,4 @@ void ShupitoTunnel::SendData(const QByteArray &data)
         return;
 
     m_shupito->sendTunnelData(data);
-}
-
-void ShupitoTunnelBuilder::addOptToTabDialog(QGridLayout *layout)
-{
-     QLabel *portLabel = new QLabel(tr("Port: "), m_parent);
-     m_portBox = new QComboBox(m_parent);
-
-     QStringList shupitoList;
-     sConMgr.GetShupitoIds(shupitoList);
-     m_portBox->addItems(shupitoList);
-
-     layout->addWidget(portLabel, 1, 0);
-     layout->addWidget(m_portBox, 1, 1);
-}
-
-void ShupitoTunnelBuilder::CreateConnection(WorkTab *tab)
-{
-    QString portName = m_portBox->currentText();
-
-    Shupito *shupito = sConMgr.GetShupito(portName);
-    if(!shupito)
-        return emit connectionFailed(tr("That Shupito does not exist anymore"));
-
-    ShupitoTunnel *tunnel = (ShupitoTunnel*)sConMgr.FindConnection(CONNECTION_SHUPITO, portName);
-    if(!tunnel)
-    {
-        tunnel = new ShupitoTunnel();
-        tunnel->setShupito(shupito);
-        tunnel->setIDString(portName);
-
-        tab->setConnection(tunnel);
-        tunnel->release();
-        if(!tunnel->Open())
-        {
-            delete tunnel;
-            return emit connectionFailed(tr("Failed to open tunnel!"));
-        }
-    }
-    else if(!tunnel->isOpen())
-    {
-        tunnel->setShupito(shupito);
-        tab->setConnection(tunnel);
-        tunnel->release();
-
-        if(!tunnel->Open())
-            return emit connectionFailed(tr("Failed to open tunnel!"));
-    }
-    else
-    {
-        tab->setConnection(tunnel);
-        tunnel->release();
-    }
-
-    emit connectionSuccess(tunnel, tab->getInfo()->GetName() + " - " + tunnel->GetIDString(), tab, CONNECTION_SHUPITO);
 }

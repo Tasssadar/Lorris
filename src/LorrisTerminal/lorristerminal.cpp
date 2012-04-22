@@ -41,7 +41,8 @@
 #include "../ui/ui_lorristerminal.h"
 #include "../ui/chooseconnectiondlg.h"
 
-LorrisTerminal::LorrisTerminal() : WorkTab(), ui(new Ui::LorrisTerminal)
+LorrisTerminal::LorrisTerminal()
+    : ui(new Ui::LorrisTerminal)
 {
     stopCmd.resize(4);
     stopCmd[0] = 0x74;
@@ -124,17 +125,12 @@ void LorrisTerminal::initUI()
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
-    connect(m_connectButton, SIGNAL(connectionChosen(Connection*)), this, SLOT(connectionChosen(Connection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
 }
 
 LorrisTerminal::~LorrisTerminal()
 {
     delete ui;
-}
-
-void LorrisTerminal::connectionChosen(Connection * newConn)
-{
-    this->setConnection(newConn);
 }
 
 void LorrisTerminal::onTabShow()
@@ -777,8 +773,8 @@ void LorrisTerminal::inputAct(int act)
     ui->terminal->setInput(act);
 }
 
-void LorrisTerminal::setConnection(Connection *con)
+void LorrisTerminal::setConnection(PortConnection *con)
 {
-    this->WorkTab::setConnection(con);
+    this->PortConnWorkTab::setConnection(con);
     m_connectButton->setConn(con);
 }

@@ -54,7 +54,7 @@ Shupito::~Shupito()
     sConMgr.RemoveShupito(this);
 }
 
-void Shupito::init(Connection *con, ShupitoDesc *desc)
+void Shupito::init(PortConnection *con, ShupitoDesc *desc)
 {
     m_con = con;
     m_desc = desc;

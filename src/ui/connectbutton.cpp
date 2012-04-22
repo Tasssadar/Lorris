@@ -67,7 +67,8 @@ void ConnectButton::setConn(Connection *conn)
             this->connectionStateChanged(st_disconnected);
         }
 
-        emit connectionChosen(newConn);
+        if (PortConnection * c = dynamic_cast<PortConnection *>(newConn))
+            emit connectionChosen(c);
     }
 }
 

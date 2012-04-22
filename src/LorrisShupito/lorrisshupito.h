@@ -77,7 +77,7 @@ class chip_definition;
 class FuseWidget;
 class ProgressDialog;
 
-class LorrisShupito : public WorkTab
+class LorrisShupito : public PortConnWorkTab
 {
     Q_OBJECT
 Q_SIGNALS:
@@ -87,7 +87,7 @@ public:
     LorrisShupito();
     ~LorrisShupito();
 
-    void setConnection(Connection *con);
+    void setConnection(PortConnection *con);
     void stopAll(bool wait);
 
 private slots:
