@@ -117,7 +117,6 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisTerminal/eeprom.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
     src/LorrisAnalyzer/lorrisanalyzerinfo.h \
-    src/LorrisAnalyzer/lorrisanalyzer.h \
     src/common.h \
     src/LorrisAnalyzer/sourcedialog.h \
     src/utils.h \
