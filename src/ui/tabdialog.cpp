@@ -38,8 +38,8 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0)), ui(
     m_cur_con = -1;
     m_con_builder = NULL;
 
-    WorkTabMgr::InfoList *tabs = sWorkTabMgr.GetWorkTabInfos();
-    for(WorkTabMgr::InfoList::iterator i = tabs->begin(); i != tabs->end(); ++i)
+    WorkTabMgr::InfoList const & tabs = sWorkTabMgr.GetWorkTabInfos();
+    for(WorkTabMgr::InfoList::const_iterator i = tabs.begin(); i != tabs.end(); ++i)
         ui->modulesList->addItem((*i)->GetName());
 
     connect(ui->modulesList,  SIGNAL(currentRowChanged(int)),   SLOT(PluginSelected(int)));
@@ -47,7 +47,7 @@ TabDialog::TabDialog(QWidget *parent) : QDialog(parent, Qt::WindowFlags(0)), ui(
     connect(ui->createButton, SIGNAL(clicked()),                SLOT(CreateTab()));
 
     quint32 lastSelected = sConfig.get(CFG_QUINT32_TAB_TYPE);
-    if(lastSelected >= (quint32)sWorkTabMgr.GetWorkTabInfos()->size())
+    if(lastSelected >= (quint32)sWorkTabMgr.GetWorkTabInfos().size())
         lastSelected = 0;
     ui->modulesList->setCurrentRow(lastSelected);
 }
@@ -60,10 +60,10 @@ TabDialog::~TabDialog()
 
 void TabDialog::PluginSelected(int index)
 {
-    WorkTabMgr::InfoList *tabs = sWorkTabMgr.GetWorkTabInfos();
-    quint8 conn = tabs->at(index)->GetConType();
+    WorkTabMgr::InfoList const & tabs = sWorkTabMgr.GetWorkTabInfos();
+    quint8 conn = tabs.at(index)->GetConType();
 
-    ui->descLabel->setText(tabs->at(index)->GetDescription());
+    ui->descLabel->setText(tabs.at(index)->GetDescription());
     ui->conBox->clear();
 
     if(conn & CON_MSK(CONNECTION_SERIAL_PORT))
@@ -136,7 +136,7 @@ void TabDialog::FillConOptions(int index)
 
 void TabDialog::CreateTab()
 {
-    WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos()->at(ui->modulesList->currentIndex().row());
+    WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos().at(ui->modulesList->currentIndex().row());
 
     m_con_builder->CreateConnection(sWorkTabMgr.GetNewTab(info));
 }

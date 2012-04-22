@@ -47,7 +47,7 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 
         void RegisterTabInfo(WorkTabInfo *info);
 
-        InfoList *GetWorkTabInfos();
+        InfoList const & GetWorkTabInfos() const;
         void SortTabInfos();
         void AddWorkTab(WorkTab *tab, QString label);
         WorkTab* GetNewTab(WorkTabInfo *info);
@@ -89,10 +89,6 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 
     public slots:
         void NewTabDialog();
-        void NewTerminal();
-        void NewAnalyzer();
-        void NewShupito();
-        void NewProxy();
 
     private slots:
         void OpenHomeTab(quint32 id);

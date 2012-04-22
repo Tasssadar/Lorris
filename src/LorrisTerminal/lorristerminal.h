@@ -134,6 +134,4 @@ private:
     Ui::LorrisTerminal *ui;
 };
 
-void CreateLorrisTerminal();
-
 #endif // LORRISTERMINAL_H

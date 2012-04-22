@@ -54,9 +54,9 @@ void WorkTabMgr::SortTabInfos()
     m_workTabInfos = map.values();
 }
 
-WorkTabMgr::InfoList *WorkTabMgr::GetWorkTabInfos()
+WorkTabMgr::InfoList const & WorkTabMgr::GetWorkTabInfos() const
 {
-    return &m_workTabInfos;
+    return m_workTabInfos;
 }
 
 WorkTab *WorkTabMgr::GetNewTab(WorkTabInfo *info)
@@ -128,30 +128,6 @@ void WorkTabMgr::NewTabDialog()
     TabDialog *dialog = new TabDialog;
     dialog->exec();
     delete dialog;
-}
-
-void WorkTabMgr::NewTerminal()
-{
-    void CreateLorrisTerminal();
-    CreateLorrisTerminal();
-}
-
-void WorkTabMgr::NewAnalyzer()
-{
-    void CreateLorrisAnalyzer();
-    CreateLorrisAnalyzer();
-}
-
-void WorkTabMgr::NewShupito()
-{
-    void CreateLorrisShupito();
-    CreateLorrisShupito();
-}
-
-void WorkTabMgr::NewProxy()
-{
-    void CreateLorrisProxy();
-    CreateLorrisProxy();
 }
 
 TabView *WorkTabMgr::CreateWidget(QWidget *parent)

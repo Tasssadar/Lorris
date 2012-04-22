@@ -58,6 +58,4 @@ private:
     ConnectButton * m_connectButton;
 };
 
-void CreateLorrisProxy();
-
 #endif // LORRISPROXY_H

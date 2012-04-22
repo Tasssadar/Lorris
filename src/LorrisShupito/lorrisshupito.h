@@ -219,6 +219,4 @@ private:
     ConnectButton * m_connectButton;
 };
 
-void CreateLorrisShupito();
-
 #endif // LORRISSHUPITO_H

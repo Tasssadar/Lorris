@@ -140,6 +140,4 @@ class LorrisAnalyzer : public WorkTab
         ConnectButton * m_connectButton;
 };
 
-void CreateLorrisAnalyzer();
-
 #endif // LORRISANALYZER_H

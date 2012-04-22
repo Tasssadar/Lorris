@@ -24,6 +24,7 @@
 #include <QPushButton>
 #include <QTabWidget>
 #include <QHBoxLayout>
+#include <QCommandLinkButton>
 
 #include "HomeTab.h"
 #include "mainwindow.h"
@@ -34,13 +35,39 @@
 HomeTab::HomeTab(QWidget *parent) : QWidget(parent), ui(new Ui::HomeTab)
 {
     ui->setupUi(this);
-    connect(ui->newAnalyzerBtn, SIGNAL(clicked()), &sWorkTabMgr, SLOT(NewAnalyzer()));
-    connect(ui->newTerminalBtn, SIGNAL(clicked()), &sWorkTabMgr, SLOT(NewTerminal()));
-    connect(ui->newShupitoBtn, SIGNAL(clicked()), &sWorkTabMgr, SLOT(NewShupito()));
-    connect(ui->newProxyBtn, SIGNAL(clicked()), &sWorkTabMgr, SLOT(NewProxy()));
+
+    QLayoutItem * vertStretch = ui->tabButtonsWidget->layout()->takeAt(0);
+
+    WorkTabMgr::InfoList const & infoList = sWorkTabMgr.GetWorkTabInfos();
+    for (int i = 0; i < infoList.size(); ++i)
+    {
+        WorkTabInfo * info = infoList[i];
+
+        QCommandLinkButton * btn = new QCommandLinkButton(ui->tabButtonsWidget);
+        m_buttonInfoMap[btn] = info;
+
+        btn->setText(info->GetName());
+        btn->setDescription(info->GetDescription());
+        btn->setMaximumHeight(100);
+        btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        ui->tabButtonsWidget->layout()->addWidget(btn);
+
+        connect(btn, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    }
+
+    ui->tabButtonsWidget->layout()->addItem(vertStretch);
 }
 
 HomeTab::~HomeTab()
 {
     delete ui;
+}
+
+void HomeTab::buttonClicked()
+{
+    WorkTabInfo * info = m_buttonInfoMap.value(this->sender());
+
+    QScopedPointer<WorkTab> tab(info->GetNewTab());
+    sWorkTabMgr.AddWorkTab(tab.data(), info->GetName());
+    tab.take()->onTabShow();
 }

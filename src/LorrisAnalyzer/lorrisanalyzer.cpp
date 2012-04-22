@@ -654,12 +654,3 @@ void LorrisAnalyzer::setConnection(Connection *con)
     this->WorkTab::setConnection(con);
     m_connectButton->setConn(con);
 }
-
-#include "../WorkTab/WorkTabMgr.h"
-
-void CreateLorrisAnalyzer()
-{
-    LorrisAnalyzer * tab = new LorrisAnalyzer();
-    sWorkTabMgr.AddWorkTab(tab, "Analyzer");
-    tab->onTabShow();
-}

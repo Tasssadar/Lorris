@@ -1259,12 +1259,3 @@ void LorrisShupito::setConnection(Connection *con)
     if (m_con)
         connect(m_con, SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
 }
-
-#include "../WorkTab/WorkTabMgr.h"
-
-void CreateLorrisShupito()
-{
-    LorrisShupito * tab = new LorrisShupito();
-    sWorkTabMgr.AddWorkTab(tab, "Shupito");
-    ((WorkTab *)tab)->onTabShow();
-}

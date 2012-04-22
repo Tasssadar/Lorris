@@ -149,12 +149,3 @@ void LorrisProxy::onTabShow()
             m_con->OpenConcurrent();
     }
 }
-
-#include "../WorkTab/WorkTabMgr.h"
-
-void CreateLorrisProxy()
-{
-    LorrisProxy * tab = new LorrisProxy();
-    sWorkTabMgr.AddWorkTab(tab, "Proxy");
-    tab->onTabShow();
-}

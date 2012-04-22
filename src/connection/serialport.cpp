@@ -215,9 +215,9 @@ void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
         m_portBox->setEditText(port);
 
     port = sConfig.get(CFG_STRING_SHUPITO_PORT);
-    if(m_module_idx >= 0 && m_module_idx < (int)sWorkTabMgr.GetWorkTabInfos()->size() && port.length() != 0)
+    if(m_module_idx >= 0 && m_module_idx < (int)sWorkTabMgr.GetWorkTabInfos().size() && port.length() != 0)
     {
-        WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos()->at(m_module_idx);
+        WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos().at(m_module_idx);
         if(info->GetName().contains("Shupito", Qt::CaseInsensitive))
             m_portBox->setEditText(port);
     }
