@@ -116,7 +116,7 @@ Q_SIGNALS:
     void dataRead(const QByteArray& data);
 
 public slots:
-    virtual void SendData(const QByteArray & data) {}
+    virtual void SendData(const QByteArray & /*data*/) {}
 };
 
 #endif // CONNECTION_H

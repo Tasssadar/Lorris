@@ -25,6 +25,7 @@
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
 #include "../ui/HomeTab.h"
+#include <algorithm>
 
 WorkTabMgr::WorkTabMgr() : QObject()
 {

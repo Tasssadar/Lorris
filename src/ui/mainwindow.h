@@ -28,6 +28,7 @@
 #include <map>
 #include <vector>
 #include <QLocale>
+#include <QHash>
 
 extern QLocale::Language langs[];
 
