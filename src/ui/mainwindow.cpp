@@ -71,10 +71,6 @@ MainWindow::MainWindow(QWidget *parent) :
     menuHelp = new QMenu(tr("&Help"), this);
 
     QAction* actionNewTab = new QAction(tr("&New tab..."), this);
-    QAction* actionNewTerminal = new QAction(tr("&Terminal"), this);
-    QAction* actionNewAnalyzer = new QAction(tr("&Analyzer"), this);
-    QAction* actionNewShupito = new QAction(tr("&Shupito"), this);
-    QAction* actionNewProxy = new QAction(tr("TCP &Proxy"), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
     QAction* actionAbout = new QAction(tr("About Lorris..."), this);
     QAction* actionConnectionManager = new QAction(tr("Connection &manager..."), this);
@@ -113,19 +109,28 @@ MainWindow::MainWindow(QWidget *parent) :
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
     connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
-    connect(actionNewTerminal,   SIGNAL(triggered()), &sWorkTabMgr, SLOT(NewTerminal()));
-    connect(actionNewAnalyzer,   SIGNAL(triggered()), &sWorkTabMgr, SLOT(NewAnalyzer()));
-    connect(actionNewShupito,    SIGNAL(triggered()), &sWorkTabMgr, SLOT(NewShupito()));
-    connect(actionNewProxy,      SIGNAL(triggered()), &sWorkTabMgr, SLOT(NewProxy()));
+
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
     connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
 
+    // Sort tab infos after they were added by static variables
+    sWorkTabMgr.SortTabInfos();
+
     QMenu * menuFileNew = menuFile->addMenu(tr("&New"));
-    menuFileNew->addAction(actionNewTerminal);
-    menuFileNew->addAction(actionNewAnalyzer);
-    menuFileNew->addAction(actionNewShupito);
-    menuFileNew->addAction(actionNewProxy);
+
+    {
+        WorkTabMgr::InfoList const & infos = sWorkTabMgr.GetWorkTabInfos();
+        for (int i = 0; i < infos.size(); ++i)
+        {
+            WorkTabInfo * info = infos[i];
+            QAction * action = new QAction(info->GetName(), this);
+            m_actionTabInfoMap[action] = info;
+            connect(action, SIGNAL(triggered()), this, SLOT(NewSpecificTab()));
+            menuFileNew->addAction(action);
+        }
+    }
+
     menuFileNew->addSeparator();
     menuFileNew->addAction(actionNewTab);
 
@@ -146,9 +151,6 @@ MainWindow::MainWindow(QWidget *parent) :
     TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
     connect(tabWidget, SIGNAL(changeMenu(quint32)),                    SLOT(changeMenu(quint32)));
     connect(tabWidget, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
-
-    // Sort tab infos after they were added by static variables
-    sWorkTabMgr.SortTabInfos();
 
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);
@@ -228,4 +230,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
     else
         event->accept();
+}
+
+void MainWindow::NewSpecificTab()
+{
+    WorkTabInfo * info = m_actionTabInfoMap.value(this->sender());
+    if (info)
+        sWorkTabMgr.AddWorkTab(info);
 }

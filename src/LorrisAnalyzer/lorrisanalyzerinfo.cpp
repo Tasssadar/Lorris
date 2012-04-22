@@ -43,7 +43,7 @@ QString LorrisAnalyzerInfo::GetName()
 
 QString LorrisAnalyzerInfo::GetDescription()
 {
-    return QObject::tr("Analyzer can parse any data you give it and show them as anything you like."
-                       "You can mark packet in data source, mark its header or bottom, mark individual data blocks, "
-                       "select their data type and the way they will be showed to you.");
+    return QObject::tr("Analyzer can parse any data you give it and display it in various ways. "
+                       "You can mark packets in the data source, mark their headers or tails, mark individual data blocks, "
+                       "select their data type and the way they will be shown to you.");
 }

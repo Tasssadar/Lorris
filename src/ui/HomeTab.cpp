@@ -66,8 +66,6 @@ HomeTab::~HomeTab()
 void HomeTab::buttonClicked()
 {
     WorkTabInfo * info = m_buttonInfoMap.value(this->sender());
-
-    QScopedPointer<WorkTab> tab(info->GetNewTab());
-    sWorkTabMgr.AddWorkTab(tab.data(), info->GetName());
-    tab.take()->onTabShow();
+    if (info)
+        sWorkTabMgr.AddWorkTab(info);
 }
