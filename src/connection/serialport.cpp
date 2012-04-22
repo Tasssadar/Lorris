@@ -32,7 +32,6 @@
 #include <qextserialenumerator.h>
 
 #include "serialport.h"
-#include "connectionmgr.h"
 #include "../config.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../WorkTab/WorkTab.h"

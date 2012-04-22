@@ -22,7 +22,6 @@
 ****************************************************************************/
 
 #include "connection.h"
-#include "connectionmgr.h"
 #include "../WorkTab/WorkTab.h"
 
 Connection::Connection()
@@ -35,8 +34,6 @@ Connection::~Connection()
     // Note that m_refcount need not be 0 here. We allow connections
     // to be destroyed explicitly and clients must listen to destroyed()
     // signal.
-
-    sConMgr.RemoveCon(m_type, this);
 }
 
 void Connection::SetState(ConnectionState state)
@@ -84,26 +81,3 @@ bool Connection::applyConfig(QHash<QString, QVariant> const & config)
     this->setName(config.value("name").toString());
     return true;
 }
-
-//----------------------------------------------------------------------------
-ConnectionBuilder::ConnectionBuilder(QWidget *parent, int moduleIdx) : QObject((QObject*)parent)
-{
-    m_parent = parent;
-    m_module_idx = moduleIdx;
-    m_tab = NULL;
-}
-
-ConnectionBuilder::~ConnectionBuilder()
-{
-    delete m_tab;
-}
-
-void ConnectionBuilder::addOptToTabDialog(QGridLayout */*layout*/)
-{
-
-}
-
-void ConnectionBuilder::CreateConnection(WorkTab */*info*/)
-{
-}
-

@@ -41,7 +41,6 @@
 #include "../shared/hexfile.h"
 #include "../shared/chipdefs.h"
 #include "flashbuttonmenu.h"
-#include "../connection/connectionmgr.h"
 
 #include "ui_lorrisshupito.h"
 

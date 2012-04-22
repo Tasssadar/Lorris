@@ -47,7 +47,6 @@
 #include "analyzerdatastorage.h"
 #include "devicetabwidget.h"
 #include "analyzerdataarea.h"
-#include "../connection/connectionmgr.h"
 #include "DataWidgets/datawidget.h"
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"

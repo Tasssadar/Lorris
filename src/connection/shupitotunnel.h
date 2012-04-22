@@ -25,7 +25,6 @@
 #define SHUPITOTUNNEL_H
 
 #include "connection.h"
-#include "connectionmgr.h"
 
 class QComboBox;
 class Shupito;
@@ -44,7 +43,6 @@ public:
     void SendData(const QByteArray &data);
 
     void setShupito(Shupito* s);
-    void removeFromMgr();
 
 private:
     Shupito *m_shupito;

@@ -26,7 +26,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/WorkTab/WorkTab.cpp \
     src/WorkTab/WorkTabMgr.cpp \
     src/WorkTab/WorkTabInfo.cpp \
-    src/connection/connectionmgr.cpp \
     src/LorrisTerminal/lorristerminal.cpp \
     src/LorrisTerminal/lorristerminalinfo.cpp \
     src/connection/connection.cpp \
@@ -105,7 +104,6 @@ HEADERS += src/ui/mainwindow.h \
     src/WorkTab/WorkTab.h \
     src/WorkTab/WorkTabMgr.h \
     src/WorkTab/WorkTabInfo.h \
-    src/connection/connectionmgr.h \
     src/singleton.h \
     src/LorrisTerminal/lorristerminal.h \
     src/LorrisTerminal/lorristerminalinfo.h \

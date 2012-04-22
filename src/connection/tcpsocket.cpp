@@ -29,7 +29,6 @@
 #include <QSpinBox>
 
 #include "../common.h"
-#include "connectionmgr.h"
 #include "tcpsocket.h"
 #include "../WorkTab/WorkTabInfo.h"
 #include "../WorkTab/WorkTab.h"

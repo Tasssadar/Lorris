@@ -34,7 +34,6 @@ public:
     WorkTab *GetNewTab();
     QString GetName();
     QString GetDescription();
-    quint8 GetConType() { return CON_MSK(CONNECTION_SERIAL_PORT); }
 };
 
 #endif // LORRISPROXYINFO_H

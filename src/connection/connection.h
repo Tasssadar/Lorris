@@ -119,27 +119,4 @@ public slots:
     virtual void SendData(const QByteArray & data) {}
 };
 
-class ConnectionBuilder : public QObject
-{
-    Q_OBJECT
-
-Q_SIGNALS:
-    void setCreateBtnStatus(bool connecting);
-    void connectionFailed(const QString& msg);
-    void connectionSuccess(Connection *con, const QString& tabName, WorkTab *tab, qint16 conType = -1);
-
-public:
-    ConnectionBuilder(QWidget *parent,  int moduleIdx);
-    ~ConnectionBuilder();
-
-    virtual void addOptToTabDialog(QGridLayout *layout);
-    virtual void CreateConnection(WorkTab *tab);
-
-protected:
-    QWidget *m_parent;
-    int m_module_idx;
-
-    WorkTab *m_tab;
-};
-
 #endif // CONNECTION_H

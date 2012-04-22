@@ -25,7 +25,6 @@
 #include <QComboBox>
 
 #include "shupitotunnel.h"
-#include "connectionmgr.h"
 #include "../LorrisShupito/shupito.h"
 
 #include "../WorkTab/WorkTab.h"
@@ -41,11 +40,6 @@ ShupitoTunnel::ShupitoTunnel()
 
 ShupitoTunnel::~ShupitoTunnel()
 {
-}
-
-void ShupitoTunnel::removeFromMgr()
-{
-    sConMgr.RemoveCon(CONNECTION_SHUPITO, this);
 }
 
 bool ShupitoTunnel::Open()
