@@ -73,10 +73,15 @@ void ChooseConnectionDlg::connChanged()
         this->updateDetailsUi(conn);
 }
 
+static void updateEditText(QLineEdit * w, QString const & value)
+{
+    if (w->text() != value)
+        w->setText(value);
+}
+
 void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
 {
-    if (ui->connectionNameEdit->text() != conn->name())
-        ui->connectionNameEdit->setText(conn->name());
+    updateEditText(ui->connectionNameEdit, conn->name());
     ui->actionRemoveConnection->setEnabled(conn->removable());
 
     switch (conn->getType())
@@ -85,8 +90,8 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
         {
             SerialPort * sp = static_cast<SerialPort *>(conn);
             ui->settingsStack->setCurrentWidget(ui->serialPortPage);
-            ui->spBaudRateEdit->setEditText(QString::number((int)sp->baudRate()));
-            ui->spDeviceNameEdit->setText(sp->deviceName());
+            updateEditText(ui->spBaudRateEdit->lineEdit(), QString::number((int)sp->baudRate()));
+            updateEditText(ui->spDeviceNameEdit, sp->deviceName());
             ui->spDeviceNameEdit->setEnabled(sp->devNameEditable());
         }
         break;
@@ -94,7 +99,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
         {
             TcpSocket * tc = static_cast<TcpSocket *>(conn);
             ui->settingsStack->setCurrentWidget(ui->tcpClientPage);
-            ui->tcHostEdit->setText(tc->host());
+            updateEditText(ui->tcHostEdit, tc->host());
             ui->tcPortEdit->setValue(tc->port());
         }
         break;
