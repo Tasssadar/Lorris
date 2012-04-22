@@ -25,7 +25,6 @@
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
 #include "../ui/HomeTab.h"
-#include "../ui/tabdialog.h"
 
 WorkTabMgr::WorkTabMgr() : QObject()
 {
@@ -133,18 +132,11 @@ void WorkTabMgr::CloseHomeTab()
     hometab = NULL;
 }
 
-void WorkTabMgr::NewTabDialog()
-{
-    TabDialog *dialog = new TabDialog;
-    dialog->exec();
-    delete dialog;
-}
-
 TabView *WorkTabMgr::CreateWidget(QWidget *parent)
 {
     tabView = new TabView(parent);
 
-    connect(tabView, SIGNAL(newTab()), SLOT(NewTabDialog()));
+    // FIXME: connect newTab (it should probably display the home tab
     connect(tabView, SIGNAL(openHomeTab(quint32)), SLOT(OpenHomeTab(quint32)));
     return tabView;
 }

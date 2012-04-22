@@ -43,7 +43,6 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void NewTab();
     void NewSpecificTab();
     void About();
     void OpenConnectionManager();

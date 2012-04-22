@@ -50,7 +50,6 @@
 #include "../WorkTab/WorkTab.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../WorkTab/WorkTabInfo.h"
-#include "tabdialog.h"
 #include "../revision.h"
 #include "../config.h"
 #include "../ui/chooseconnectiondlg.h"
@@ -70,7 +69,6 @@ MainWindow::MainWindow(QWidget *parent) :
     menuFile = new QMenu(tr("&File"), this);
     menuHelp = new QMenu(tr("&Help"), this);
 
-    QAction* actionNewTab = new QAction(tr("&New tab..."), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
     QAction* actionAbout = new QAction(tr("About Lorris..."), this);
     QAction* actionConnectionManager = new QAction(tr("Connection &manager..."), this);
@@ -105,10 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
         curLang = 0;
     m_lang_menu[curLang]->setChecked(true);
 
-    actionNewTab->setShortcut(QKeySequence("Ctrl+T"));
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
-
-    connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
 
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
@@ -130,9 +125,6 @@ MainWindow::MainWindow(QWidget *parent) :
             menuFileNew->addAction(action);
         }
     }
-
-    menuFileNew->addSeparator();
-    menuFileNew->addAction(actionNewTab);
 
     menuFile->addAction(actionConnectionManager);
     menuFile->addAction(actionQuit);
@@ -165,11 +157,6 @@ QString MainWindow::getVersionString()
 {
     QString ver = "Lorris v" + QString::number(REVISION);
     return ver;
-}
-
-void MainWindow::NewTab()
-{
-    sWorkTabMgr.NewTabDialog();
 }
 
 void MainWindow::OpenConnectionManager()

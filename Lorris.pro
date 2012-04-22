@@ -27,7 +27,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/WorkTab/WorkTabMgr.cpp \
     src/WorkTab/WorkTabInfo.cpp \
     src/connection/connectionmgr.cpp \
-    src/ui/tabdialog.cpp \
     src/LorrisTerminal/lorristerminal.cpp \
     src/LorrisTerminal/lorristerminalinfo.cpp \
     src/connection/connection.cpp \
@@ -108,7 +107,6 @@ HEADERS += src/ui/mainwindow.h \
     src/WorkTab/WorkTabMgr.h \
     src/WorkTab/WorkTabInfo.h \
     src/connection/connectionmgr.h \
-    src/ui/tabdialog.h \
     src/singleton.h \
     src/LorrisTerminal/lorristerminal.h \
     src/LorrisTerminal/lorristerminalinfo.h \
@@ -242,7 +240,6 @@ FORMS += \
     src/LorrisTerminal/lorristerminal.ui \
     src/ui/hometab.ui \
     src/LorrisProxy/lorrisproxy.ui \
-    src/ui/tabdialog.ui \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
     src/LorrisAnalyzer/playback.ui \
     src/ui/chooseconnectiondlg.ui
