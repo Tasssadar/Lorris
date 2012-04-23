@@ -24,8 +24,8 @@
 
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
-#include "ui/HomeTab.h"
-#include "ui/tabdialog.h"
+#include "../ui/HomeTab.h"
+#include <algorithm>
 
 WorkTabMgr::WorkTabMgr() : QObject()
 {
@@ -44,27 +44,27 @@ void WorkTabMgr::RegisterTabInfo(WorkTabInfo *info)
     m_workTabInfos.push_back(info);
 }
 
-void WorkTabMgr::SortTabInfos()
+static bool compareTabInfos(WorkTabInfo * lhs, WorkTabInfo * rhs)
 {
-    QMap<QString, WorkTabInfo*> map;
-
-    for(InfoList::iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
-        map.insert((*itr)->GetName(), *itr);
-
-    m_workTabInfos = map.values();
+    return lhs->GetName() < rhs->GetName();
 }
 
-WorkTabMgr::InfoList *WorkTabMgr::GetWorkTabInfos()
+void WorkTabMgr::SortTabInfos()
 {
-    return &m_workTabInfos;
+    std::sort(m_workTabInfos.begin(), m_workTabInfos.end(), compareTabInfos);
+}
+
+WorkTabMgr::InfoList const & WorkTabMgr::GetWorkTabInfos() const
+{
+    return m_workTabInfos;
 }
 
 WorkTab *WorkTabMgr::GetNewTab(WorkTabInfo *info)
 {
-    WorkTab *tab = info->GetNewTab();
+    QScopedPointer<WorkTab> tab(info->GetNewTab());
     tab->setInfo(info);
     tab->setId(generateNewTabId());
-    return tab;
+    return tab.take();
 }
 
 void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
@@ -79,6 +79,16 @@ void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
     activeWidget->addTab(tab, label, tab->getId());
     activeWidget->setTabsClosable(true);
     return;
+}
+
+WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info)
+{
+    QScopedPointer<WorkTab> tab(this->GetNewTab(info));
+    this->AddWorkTab(tab.data(), info->GetName());
+
+    WorkTab * tabp = tab.take();
+    tabp->onTabShow();
+    return tabp;
 }
 
 void WorkTabMgr::removeTab(WorkTab *tab)
@@ -123,18 +133,11 @@ void WorkTabMgr::CloseHomeTab()
     hometab = NULL;
 }
 
-void WorkTabMgr::NewTabDialog()
-{
-    TabDialog *dialog = new TabDialog;
-    dialog->exec();
-    delete dialog;
-}
-
 TabView *WorkTabMgr::CreateWidget(QWidget *parent)
 {
     tabView = new TabView(parent);
 
-    connect(tabView, SIGNAL(newTab()), SLOT(NewTabDialog()));
+    // FIXME: connect newTab (it should probably display the home tab
     connect(tabView, SIGNAL(openHomeTab(quint32)), SLOT(OpenHomeTab(quint32)));
     return tabView;
 }

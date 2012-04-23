@@ -18,7 +18,7 @@ TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += dep/qhexedit2/src
-INCLUDEPATH += src ui src/shared dep src/LorrisAnalyzer
+INCLUDEPATH += dep
 INCLUDEPATH += dep/qextserialport/src
 SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
@@ -26,8 +26,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/WorkTab/WorkTab.cpp \
     src/WorkTab/WorkTabMgr.cpp \
     src/WorkTab/WorkTabInfo.cpp \
-    src/connection/connectionmgr.cpp \
-    src/ui/tabdialog.cpp \
     src/LorrisTerminal/lorristerminal.cpp \
     src/LorrisTerminal/lorristerminalinfo.cpp \
     src/connection/connection.cpp \
@@ -42,7 +40,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/analyzerdatastorage.cpp \
     src/LorrisAnalyzer/devicetabwidget.cpp \
     src/LorrisAnalyzer/cmdtabwidget.cpp \
-    src/connection/fileconnection.cpp \
     src/LorrisAnalyzer/analyzerdataarea.cpp \
     src/LorrisAnalyzer/DataWidgets/datawidget.cpp \
     src/LorrisAnalyzer/DataWidgets/numberwidget.cpp \
@@ -95,15 +92,18 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp \
     src/ui/tabview.cpp \
     src/ui/tabwidget.cpp \
-    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.cpp
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.cpp \
+    src/ui/chooseconnectiondlg.cpp \
+    src/ui/connectbutton.cpp \
+    dep/qextserialport/src/qextserialport.cpp \
+    dep/qextserialport/src/qextserialenumerator.cpp \
+    src/connection/connectionmgr2.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
     src/WorkTab/WorkTab.h \
     src/WorkTab/WorkTabMgr.h \
     src/WorkTab/WorkTabInfo.h \
-    src/connection/connectionmgr.h \
-    src/ui/tabdialog.h \
     src/singleton.h \
     src/LorrisTerminal/lorristerminal.h \
     src/LorrisTerminal/lorristerminalinfo.h \
@@ -112,7 +112,6 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisTerminal/eeprom.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
     src/LorrisAnalyzer/lorrisanalyzerinfo.h \
-    src/LorrisAnalyzer/lorrisanalyzer.h \
     src/common.h \
     src/LorrisAnalyzer/sourcedialog.h \
     src/utils.h \
@@ -121,7 +120,6 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/analyzerdatastorage.h \
     src/LorrisAnalyzer/devicetabwidget.h \
     src/LorrisAnalyzer/cmdtabwidget.h \
-    src/connection/fileconnection.h \
     src/LorrisAnalyzer/analyzerdataarea.h \
     src/LorrisAnalyzer/DataWidgets/datawidget.h \
     src/LorrisAnalyzer/DataWidgets/numberwidget.h \
@@ -174,20 +172,39 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/buttonwidget.h \
     src/ui/tabview.h \
     src/ui/tabwidget.h \
-    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.h
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.h \
+    src/ui/chooseconnectiondlg.h \
+    src/ui/connectbutton.h \
+    dep/qextserialport/src/qextserialport_p.h \
+    dep/qextserialport/src/qextserialport_global.h \
+    dep/qextserialport/src/qextserialport.h \
+    dep/qextserialport/src/qextserialenumerator_p.h \
+    dep/qextserialport/src/qextserialenumerator.h \
+    src/connection/connectionmgr2.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
 
-    DEFINES += QT_DLL QWT_DLL
+    DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
-    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lqextserialport-1.2
+    HEADERS += \
+        dep/qextserialport/src/qextwineventnotifier_p.h
+    SOURCES += \
+        dep/qextserialport/src/qextserialenumerator_win.cpp \
+        dep/qextserialport/src/qextwineventnotifier_p.cpp \
+        dep/qextserialport/src/qextserialport_win.cpp
+
+    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lsetupapi
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 }
 unix:!macx:!symbian {
-    LIBS += -lqwt -ludev -lqextserialport -lSDL
+    SOURCES += \
+        dep/qextserialport/src/qextserialport_unix.cpp \
+        dep/qextserialport/src/qextserialenumerator_unix.cpp
+
+    LIBS += -lqwt -ludev -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -196,6 +213,9 @@ unix:!macx:!symbian {
         "$$DESTDIR/translations/"
 }
 macx {
+    SOURCES += \
+        dep/qextserialport/src/qextserialenumerator_osx.cpp
+
     LIBS += -lqwt -lqextserialport -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
@@ -216,9 +236,9 @@ FORMS += \
     src/LorrisTerminal/lorristerminal.ui \
     src/ui/hometab.ui \
     src/LorrisProxy/lorrisproxy.ui \
-    src/ui/tabdialog.ui \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
-    src/LorrisAnalyzer/playback.ui
+    src/LorrisAnalyzer/playback.ui \
+    src/ui/chooseconnectiondlg.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \
@@ -226,3 +246,6 @@ RESOURCES += \
     src/icons.qrc
 
 RC_FILE = src/winicon.rc
+
+OTHER_FILES += \
+    dep/qextserialport/src/qextserialport.pri

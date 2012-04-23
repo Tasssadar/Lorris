@@ -26,7 +26,7 @@
 #include "scriptwidget.h"
 #include "scripteditor.h"
 #include "scriptenv.h"
-#include "terminal.h"
+#include "../../../shared/terminal.h"
 
 ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 {

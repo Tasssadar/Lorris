@@ -27,9 +27,9 @@
 #include <vector>
 #include <QHash>
 
-#include "singleton.h"
+#include "../singleton.h"
 #include "WorkTab.h"
-#include "ui/tabview.h"
+#include "../ui/tabview.h"
 
 class WorkTabInfo;
 class HomeTab;
@@ -47,9 +47,10 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 
         void RegisterTabInfo(WorkTabInfo *info);
 
-        InfoList *GetWorkTabInfos();
+        InfoList const & GetWorkTabInfos() const;
         void SortTabInfos();
         void AddWorkTab(WorkTab *tab, QString label);
+        WorkTab *AddWorkTab(WorkTabInfo * info);
         WorkTab* GetNewTab(WorkTabInfo *info);
 
         WorkTab* getWorkTab(quint32 id)
@@ -86,9 +87,6 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
         void CloseHomeTab();
 
         bool onTabsClose();
-
-    public slots:
-        void NewTabDialog();
 
     private slots:
         void OpenHomeTab(quint32 id);

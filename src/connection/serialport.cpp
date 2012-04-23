@@ -32,13 +32,14 @@
 #include <qextserialenumerator.h>
 
 #include "serialport.h"
-#include "connectionmgr.h"
-#include "config.h"
-#include "WorkTab/WorkTabMgr.h"
-#include "WorkTab/WorkTab.h"
-#include "WorkTab/WorkTabInfo.h"
+#include "../config.h"
+#include "../WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabInfo.h"
 
-SerialPort::SerialPort() : Connection()
+SerialPort::SerialPort()
+    : m_rate(BAUD38400),
+      m_devNameEditable(true)
 {
     m_type = CONNECTION_SERIAL_PORT;
     m_port = NULL;
@@ -58,34 +59,31 @@ bool SerialPort::Open()
 
 void SerialPort::connectResultSer(bool opened)
 {
-    this->opened = opened;
+    this->SetOpen(opened);
     emit connectResult(this, opened);
-
-    if(opened)
-        emit connected(true);
 }
 
 void SerialPort::Close()
 {
-    m_port_mutex.lock();
-
-    if(m_port)
     {
-        m_port->close();
-        delete m_port;
-        m_port = NULL;
+        QMutexLocker l(&m_port_mutex);
 
-        emit connected(false);
+        if(m_port)
+        {
+            emit disconnecting();
+
+            m_port->close();
+            delete m_port;
+            m_port = NULL;
+        }
     }
 
-    m_port_mutex.unlock();
-
-    opened = false;
+    this->SetOpen(false);
 }
 
 void SerialPort::SendData(const QByteArray& data)
 {
-    if(opened)
+    if(this->isOpen())
     {
         qint64 len = m_port->write(data);
         // FIXME: Some serial ports needs this
@@ -99,8 +97,10 @@ void SerialPort::SendData(const QByteArray& data)
 
 void SerialPort::OpenConcurrent()
 {
-    if(opened)
+    if(this->state() != st_disconnected)
         return;
+
+    this->SetState(st_connecting);
 
     m_future = QtConcurrent::run(this, &SerialPort::openPort);
     m_watcher.setFuture(m_future);
@@ -110,7 +110,7 @@ bool SerialPort::openPort()
 {
     m_port_mutex.lock();
 
-    m_port = new QextSerialPort(m_idString, QextSerialPort::EventDriven);
+    m_port = new QextSerialPort(this->deviceName(), QextSerialPort::EventDriven);
     m_port->setBaudRate(m_rate);
     m_port->setParity(PAR_NONE);
     m_port->setDataBits(DATA_8);
@@ -144,127 +144,26 @@ void SerialPort::openResult()
     connectResultSer(m_future.result());
 }
 
-void SerialPortBuilder::addOptToTabDialog(QGridLayout *layout)
+void SerialPort::setDeviceName(QString const & value)
 {
-    QLabel *portLabel = new QLabel(tr("Port: "), NULL, Qt::WindowFlags(0));
-    m_portBox = new QComboBox(m_parent);
-    m_portBox->setEditable(true);
-    QPushButton *refreshButton = new QPushButton(m_parent);
-    refreshButton->setIcon(refreshButton->style()->standardIcon(QStyle::SP_BrowserReload));
-    refreshButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
-    connect(refreshButton, SIGNAL(clicked()), SLOT(addPortNames()));
-
-    addPortNames();
-
-    layout->addWidget(portLabel, 1, 0);
-    layout->addWidget(m_portBox, 1, 1);
-    layout->addWidget(refreshButton, 1, 2);
-
-    QLabel *rateLabel = new QLabel(tr("Baud Rate: "), m_parent);
-    m_rateBox = new QComboBox(m_parent);
-
-    m_rateBox->addItem("38400",   BAUD38400);
-    m_rateBox->addItem("2400",    BAUD2400);
-    m_rateBox->addItem("4800",    BAUD4800);
-    m_rateBox->addItem("19200",   BAUD19200);
-    m_rateBox->addItem("57600",   BAUD57600);
-    m_rateBox->addItem("115200",  BAUD115200);
-
-    layout->addWidget(rateLabel, 1, 3);
-    layout->addWidget(m_rateBox, 1, 4);
-
-    int baud = sConfig.get(CFG_QUINT32_SERIAL_BAUD);
-    for(quint8 i = 0; i < m_rateBox->count(); ++i)
+    if (m_deviceName != value)
     {
-        if(baud == m_rateBox->itemData(i).toInt())
-        {
-            m_rateBox->setCurrentIndex(i);
-            break;
-        }
-    }
-
-    QString port = sConfig.get(CFG_STRING_SERIAL_PORT);
-    if(port.length() != 0)
-        m_portBox->setEditText(port);
-
-    port = sConfig.get(CFG_STRING_SHUPITO_PORT);
-    if(m_module_idx >= 0 && m_module_idx < (int)sWorkTabMgr.GetWorkTabInfos()->size() && port.length() != 0)
-    {
-        WorkTabInfo *info = sWorkTabMgr.GetWorkTabInfos()->at(m_module_idx);
-        if(info->GetName().contains("Shupito", Qt::CaseInsensitive))
-            m_portBox->setEditText(port);
+        m_deviceName = value;
+        emit changed();
     }
 }
 
-void SerialPortBuilder::addPortNames()
+QHash<QString, QVariant> SerialPort::config() const
 {
-    QList<QextPortInfo> ports = QextSerialEnumerator::getPorts();
-
-    QStringList portNames;
-    for (int i = 0; i < ports.size(); i++)
-    {
-#ifdef Q_OS_WIN
-        QString name = ports.at(i).portName;
-        name.replace(QRegExp("[^\\w]"), "");
-        portNames.push_back(name);
-#else
-        portNames.push_back(ports.at(i).physName);
-#endif
-    }
-    portNames.sort();
-
-    m_portBox->clear();
-    m_portBox->addItems(portNames);
+    QHash<QString, QVariant> res = this->Connection::config();
+    res["device_name"] = this->deviceName();
+    res["baud_rate"] = (int)this->baudRate();
+    return res;
 }
 
-void SerialPortBuilder::CreateConnection(WorkTab *tab)
+bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
 {
-    QString portName = m_portBox->currentText();
-    BaudRateType rate = BaudRateType(m_rateBox->itemData(m_rateBox->currentIndex()).toInt());
-
-    sConfig.set(CFG_STRING_SERIAL_PORT, portName);
-    sConfig.set(CFG_QUINT32_SERIAL_BAUD, (quint32)rate);
-
-    SerialPort *port = (SerialPort*)sConMgr.FindConnection(CONNECTION_SERIAL_PORT, portName);
-    if(port && port->isOpen())
-    {
-        tab->setConnection(port);
-        emit connectionSucces(port, tab->getInfo()->GetName() + " - " + port->GetIDString(), tab);
-    }
-    else
-    {
-        emit setCreateBtnStatus(true);
-
-        m_tab = tab;
-
-        if(!port)
-        {
-            port = new SerialPort();
-            port->SetNameAndRate(portName, rate);
-        }
-
-        m_tab->setConnection(port);
-
-        connect(port, SIGNAL(connectResult(Connection*,bool)), SLOT(conResult(Connection*,bool)));
-        port->OpenConcurrent();
-    }
-}
-
-void SerialPortBuilder::conResult(Connection *con, bool open)
-{
-    if(open)
-    {
-        emit connectionSucces(con, m_tab->getInfo()->GetName() + " - " + con->GetIDString(), m_tab);
-        m_tab = NULL;
-    }
-    else
-    {
-        // Connection is deleted in WorkTab::~WorkTab()
-        delete m_tab;
-        m_tab = NULL;
-
-        emit setCreateBtnStatus(false);
-        emit connectionFailed(tr("Failed to open serial port!"));
-    }
+    this->setDeviceName(config.value("device_name").toString());
+    this->setBaudRate((BaudRateType)config.value("baud_rate", 38400).toInt());
+    return this->Connection::applyConfig(config);
 }

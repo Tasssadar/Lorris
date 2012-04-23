@@ -26,6 +26,7 @@
 
 #include <QSettings>
 #include <QHash>
+#include <QVariant>
 
 #include "singleton.h"
 
@@ -74,6 +75,12 @@ enum cfg_bool
     CFG_BOOL_NUM
 };
 
+enum cfg_variant
+{
+    CFG_VARIANT_CONNECTIONS,
+    CFG_VARIANT_NUM
+};
+
 class Config : public Singleton<Config>
 {
     typedef QHash<cfg_quint32, quint32> def_map_quint32;
@@ -87,10 +94,12 @@ public:
     quint32 get(cfg_quint32 item);
     QString get(cfg_string item);
     bool    get(cfg_bool item);
+    QVariant get(cfg_variant item);
 
     void set(cfg_quint32 item, quint32        val);
     void set(cfg_string  item, const QString& val);
     void set(cfg_bool    item, bool           val);
+    void set(cfg_variant item, QVariant const & val);
 
 private:
     void openSettings();

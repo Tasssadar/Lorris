@@ -36,7 +36,7 @@
 #include <QSignalMapper>
 #include <QStringBuilder>
 
-#include "common.h"
+#include "../common.h"
 #include "terminal.h"
 
 Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)

@@ -34,7 +34,7 @@
     #include <SDL/SDL.h>
 #endif
 
-#include "singleton.h"
+#include "../singleton.h"
 #include "joystick.h"
 #include "joythread.h"
 

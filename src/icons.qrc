@@ -3,5 +3,7 @@
         <file alias="icon.png">icons/icon.png</file>
         <file alias="split_left.png">icons/split_left.png</file>
         <file alias="split_top.png">icons/split_top.png</file>
+        <file>icons/list-add.png</file>
+        <file>icons/list-remove.png</file>
     </qresource>
 </RCC>

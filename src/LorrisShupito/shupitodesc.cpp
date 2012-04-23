@@ -21,7 +21,7 @@
 **
 ****************************************************************************/
 
-#include "common.h"
+#include "../common.h"
 #include "shupito.h"
 #include "shupitodesc.h"
 

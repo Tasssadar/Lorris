@@ -24,7 +24,8 @@
 #ifndef LORRISPROXY_H
 #define LORRISPROXY_H
 
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
+#include "../ui/connectbutton.h"
 
 namespace Ui {
     class LorrisProxy;
@@ -33,7 +34,7 @@ namespace Ui {
 class TcpServer;
 class QTcpSocket;
 
-class LorrisProxy : public WorkTab
+class LorrisProxy : public PortConnWorkTab
 {
     Q_OBJECT
     
@@ -41,20 +42,20 @@ public:
     explicit LorrisProxy();
     ~LorrisProxy();
 
-    void setConnection(Connection *con);
+    void setConnection(PortConnection *con);
+    void onTabShow();
 
 private slots:
     void updateAddressText();
     void listenChanged();
     void addConnection(QTcpSocket *connection, quint32 id);
     void removeConnection(quint32 id);
-    void connectButton();
     void connectionResult(Connection *con,bool result);
-    void connectedStatus(bool connected);
 
 private:
     Ui::LorrisProxy *ui;
     TcpServer *m_server;
+    ConnectButton * m_connectButton;
 };
 
 #endif // LORRISPROXY_H

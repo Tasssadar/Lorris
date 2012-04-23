@@ -28,7 +28,7 @@
 #include <QByteArray>
 #include <algorithm>
 
-#include "common.h"
+#include "../common.h"
 
 enum DataType
 {

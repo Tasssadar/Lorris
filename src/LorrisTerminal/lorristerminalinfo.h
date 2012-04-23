@@ -24,7 +24,7 @@
 #ifndef LORRISTERMINALINFO_H
 #define LORRISTERMINALINFO_H
 
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 class LorrisTerminalInfo : public WorkTabInfo
 {
@@ -34,7 +34,6 @@ public:
     WorkTab *GetNewTab();
     QString GetName();
     QString GetDescription();
-    quint8 GetConType() { return CON_MSK(CONNECTION_SERIAL_PORT) | CON_MSK(CONNECTION_TCP_SOCKET); }
 };
 
 #endif // LORRISTERMINALINFO_H

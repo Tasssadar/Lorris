@@ -23,7 +23,7 @@
 
 #include <QTimer>
 
-#include "common.h"
+#include "../common.h"
 #include "playback.h"
 #include "ui_playback.h"
 

@@ -27,7 +27,7 @@
 #include <QStyle>
 #include <QPushButton>
 
-#include "WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
 
 TabWidget::TabWidget(quint32 id, QWidget *parent) :

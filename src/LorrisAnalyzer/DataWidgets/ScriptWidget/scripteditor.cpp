@@ -29,7 +29,7 @@
 
 #include "scripteditor.h"
 #include "ui_scripteditor.h"
-#include "common.h"
+#include "../../../common.h"
 
 ScriptEditor::ScriptEditor(const QString& source, const QString& widgetName) :
     QDialog(),

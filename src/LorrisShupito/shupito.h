@@ -31,7 +31,7 @@
 
 #include "shupitopacket.h"
 #include "shupitodesc.h"
-#include "shared/chipdefs.h"
+#include "../shared/chipdefs.h"
 
 enum Opcodes
 {
@@ -64,7 +64,8 @@ enum VerifyMode
     VERIFY_MAX
 };
 
-class Connection;
+class PortConnection;
+class ShupitoTunnel;
 
 // device.hpp, 122
 struct vdd_point
@@ -92,7 +93,7 @@ Q_SIGNALS:
 public:
     explicit Shupito(QObject *parent);
     ~Shupito();
-    void init(Connection *con, ShupitoDesc *desc);
+    void init(PortConnection *con, ShupitoDesc *desc);
 
     void readData(const QByteArray& data);
     void sendPacket(ShupitoPacket packet);
@@ -141,7 +142,9 @@ private:
 
     void SendSetComSpeed();
 
-    Connection *m_con;
+    PortConnection *m_con;
+    QScopedPointer<ShupitoTunnel> m_tunnel_conn;
+
     ShupitoPacket *m_packet;
     ShupitoDesc *m_desc;
     QMutex mutex;

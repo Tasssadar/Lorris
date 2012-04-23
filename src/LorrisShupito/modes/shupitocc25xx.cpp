@@ -21,10 +21,10 @@
 **
 ****************************************************************************/
 
-#include "common.h"
+#include "../../common.h"
 #include "../shupito.h"
 #include "shupitocc25xx.h"
-#include "shared/hexfile.h"
+#include "../../shared/hexfile.h"
 
 ShupitoCC25XX::ShupitoCC25XX(Shupito *shupito) : ShupitoMode(shupito)
 {

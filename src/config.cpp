@@ -26,8 +26,8 @@
 #include <QDesktopServices>
 #include <qextserialport.h>
 
+#include "connection/connection.h"
 #include "config.h"
-#include "connection/connectionmgr.h"
 
 static const QString keys_quint32[CFG_QUINT32_NUM] =
 {
@@ -66,6 +66,11 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
     "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
     "shupito/show_fuses",         // CFG_BOOL_SHUPITO_SHOW_FUSES
+};
+
+static const QString keys_variant[CFG_VARIANT_NUM] =
+{
+    "general/connections",        // CFG_VARIANT_CONNECTIONS
 };
 
 Config::Config()
@@ -164,4 +169,14 @@ bool Config::get(cfg_bool item)
 void Config::set(cfg_bool item, bool val)
 {
     m_settings->setValue(keys_bool[item], val);
+}
+
+QVariant Config::get(cfg_variant item)
+{
+    return m_settings->value(keys_variant[item]);
+}
+
+void Config::set(cfg_variant item, QVariant const & val)
+{
+    m_settings->setValue(keys_variant[item], val);
 }
