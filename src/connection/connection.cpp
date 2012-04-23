@@ -25,7 +25,7 @@
 #include "../WorkTab/WorkTab.h"
 
 Connection::Connection()
-    : m_type(0), m_state(st_disconnected), m_refcount(1), m_removable(true)
+    : m_type(0), m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_removable(true)
 {
 }
 
@@ -67,6 +67,19 @@ void Connection::release()
 {
     if (--m_refcount == 0)
         delete this;
+}
+
+void Connection::addTabRef()
+{
+    addRef();
+    ++m_tabcount;
+}
+
+void Connection::releaseTab()
+{
+    if(--m_tabcount == 0)
+        Close();
+    release();
 }
 
 QHash<QString, QVariant> Connection::config() const

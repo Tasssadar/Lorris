@@ -78,7 +78,7 @@ PortConnWorkTab::PortConnWorkTab()
 PortConnWorkTab::~PortConnWorkTab()
 {
     if (m_con)
-        m_con->release();
+        m_con->releaseTab();
 }
 
 void PortConnWorkTab::setConnection(PortConnection *con)
@@ -86,7 +86,7 @@ void PortConnWorkTab::setConnection(PortConnection *con)
     if (m_con)
     {
         disconnect(m_con, 0, this, 0);
-        m_con->release();
+        m_con->releaseTab();
     }
 
     m_con = con;
@@ -97,7 +97,7 @@ void PortConnWorkTab::setConnection(PortConnection *con)
     connect(m_con, SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
     connect(m_con, SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
     connect(m_con, SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
-    m_con->addRef();
+    m_con->addTabRef();
 }
 
 void PortConnWorkTab::connectionDestroyed()

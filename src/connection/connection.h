@@ -79,6 +79,8 @@ public:
 
     void addRef();
     void release();
+    void addTabRef();
+    void releaseTab();
 
     virtual QHash<QString, QVariant> config() const;
     virtual bool applyConfig(QHash<QString, QVariant> const & config);
@@ -103,6 +105,7 @@ private:
     ConnectionState m_state;
     QString m_idString;
     int m_refcount;
+    int m_tabcount;
     bool m_removable;
 };
 
