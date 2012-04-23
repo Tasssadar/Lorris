@@ -4,6 +4,7 @@
 #include "../connection/serialport.h"
 #include "../connection/tcpsocket.h"
 #include <QMenu>
+#include <QPushButton>
 
 ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     QDialog(parent),
@@ -164,7 +165,7 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
     {
         ui->settingsStack->setCurrentWidget(ui->homePage);
         ui->actionRemoveConnection->setEnabled(false);
-        ui->okBtn->setEnabled(false);
+        ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(false);
         ui->connectionNameEdit->setText(QString());
         ui->connectionNameEdit->setEnabled(false);
         return;
@@ -173,7 +174,7 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
     QListWidgetItem * item = selected[0];
     Connection * conn = item->data(Qt::UserRole).value<Connection *>();
 
-    ui->okBtn->setEnabled(true);
+    ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(true);
     ui->connectionNameEdit->setEnabled(true);
 
     this->updateDetailsUi(conn);
