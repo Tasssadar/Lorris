@@ -639,4 +639,7 @@ void LorrisAnalyzer::setConnection(PortConnection *con)
 {
     this->PortConnWorkTab::setConnection(con);
     m_connectButton->setConn(con);
+
+    if(con)
+        connect(this, SIGNAL(SendData(QByteArray)), con, SLOT(SendData(QByteArray)));
 }

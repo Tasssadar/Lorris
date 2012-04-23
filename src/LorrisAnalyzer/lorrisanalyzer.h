@@ -67,6 +67,7 @@ class LorrisAnalyzer : public PortConnWorkTab
     Q_SIGNALS:
         void newData(analyzer_data *data, quint32 index);
         void setTitleVisibility(bool visible);
+        void SendData(const QByteArray& data);
 
     public:
         explicit LorrisAnalyzer();
