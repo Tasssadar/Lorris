@@ -294,7 +294,7 @@ bool CmdTabWidget::setHighlightPos(const data_widget_info& info, bool highlight)
 void CmdTabWidget::setHeader(analyzer_header *header)
 {
     m_header = header;
-    new_cmd_act->setEnabled(!(header->data_mask & DATA_OPCODE));
+    new_cmd_act->setEnabled(header->data_mask & DATA_OPCODE);
 
     if(m_all_cmds && m_all_cmds->l)
         m_all_cmds->l->setHeader(header);

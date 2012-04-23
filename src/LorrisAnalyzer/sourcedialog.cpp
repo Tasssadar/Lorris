@@ -213,13 +213,13 @@ void SourceDialog::staticCheckToggled(bool checked)
 void SourceDialog::cmdCheckToggled(bool checked)
 {
     AddOrRmHeaderType(checked, DATA_OPCODE);
-    ui->cmd_check->setChecked(true);
+    ui->cmd_check->setChecked(checked);
 }
 
 void SourceDialog::idCheckToggled(bool checked)
 {
     AddOrRmHeaderType(checked, DATA_DEVICE_ID);
-    ui->id_check->setChecked(true);
+    ui->id_check->setChecked(checked);
 }
 
 void SourceDialog::staticLenChanged(int value)
