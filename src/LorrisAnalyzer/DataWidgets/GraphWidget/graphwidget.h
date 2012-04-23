@@ -81,7 +81,7 @@ private:
      QString m_drop_data;
      AnalyzerDataStorage *m_storage;
 
-     QAction *m_sample_act[8];
+     QAction *m_sample_act[9];
      QAction *m_editCurve;
      QAction *m_showLegend;
      QAction *m_autoScroll;

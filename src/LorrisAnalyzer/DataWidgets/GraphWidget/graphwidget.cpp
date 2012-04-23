@@ -101,7 +101,6 @@ void GraphWidget::setUp(AnalyzerDataStorage *storage)
     m_showLegend = contextMenu->addAction(tr("Show legend"));
     m_showLegend->setCheckable(true);
     m_showLegend->setChecked(true);
-    m_showLegend->setEnabled(false);
 
     m_autoScroll = contextMenu->addAction(tr("Automaticaly scroll graph"));
     m_autoScroll->setCheckable(true);
