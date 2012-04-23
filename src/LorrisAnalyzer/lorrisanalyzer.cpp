@@ -68,8 +68,8 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
     connect(ui->collapseLeft,    SIGNAL(clicked()),         SLOT(collapseLeftButton()));
     connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearDataButton()));
-    connect(ui->timeSlider,      SIGNAL(sliderMoved(int)),  SLOT(timeSliderMoved(int)));
-    connect(ui->timeBox,         SIGNAL(editingFinished()), SLOT(timeBoxEdited()));
+    connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(indexChanged(int)));
+    connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(indexChanged(int)));
     connect(ui->playFrame,       SIGNAL(setPos(int)),           ui->timeBox,    SLOT(setValue(int)));
     connect(ui->timeSlider,      SIGNAL(valueChanged(int)),     ui->playFrame,  SLOT(valChanged(int)));
     connect(ui->timeSlider,      SIGNAL(rangeChanged(int,int)), ui->playFrame,  SLOT(rangeChanged(int,int)));
@@ -152,6 +152,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     m_state = 0;
     highlightInfoNotNull = false;
     m_curData = NULL;
+    m_curIndex = 0;
 
     setAreaVisibility(AREA_LEFT, false);
     setAreaVisibility(AREA_RIGHT, true);
@@ -206,8 +207,7 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     char *d_end = d_start + data.size();
 
     quint32 curRead = 1;
-    bool update = ui->timeSlider->value() == ui->timeSlider->maximum();
-
+    bool update = m_curIndex == ui->timeSlider->maximum();
 
     while(d_itr != d_end)
     {
@@ -227,7 +227,7 @@ void LorrisAnalyzer::readData(const QByteArray& data)
             m_storage->addData(m_curData);
 
             if(update)
-                emit newData(m_curData, m_storage->getSize()-1);
+                emit newData(m_curData, m_storage->getSize());
 
             m_curData = new analyzer_data(m_packet);
         }
@@ -244,6 +244,7 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
     if(update)
     {
+        m_curIndex = size;
         ui->timeBox->setValue(size);
         ui->timeSlider->setValue(size);
     }
@@ -347,40 +348,33 @@ bool LorrisAnalyzer::onTabClose()
     return true;
 }
 
-void LorrisAnalyzer::timeSliderMoved(int value)
+void LorrisAnalyzer::indexChanged(int value)
 {
-    bool down = ui->timeSlider->isSliderDown();
-    bool enabled = ui->timeSlider->isEnabled();
-    if(value != 0)
-        updateData();
+    if(value == m_curIndex)
+        return;
 
-    if(down && enabled)
-        ui->timeBox->setValue(value);
-}
-
-void LorrisAnalyzer::timeBoxEdited()
-{
-    ui->timeSlider->setValue(ui->timeBox->value());
+    m_curIndex = value;
+    updateData();
 }
 
 void LorrisAnalyzer::updateData()
 {
     m_data_changed = true;
 
-    int val = ui->timeSlider->value();
+    ui->timeBox->setValue(m_curIndex);
+    ui->timeSlider->setValue(m_curIndex);
 
-    if(val != 0 && (quint32)val <= m_storage->getSize())
-        emit newData(m_storage->get(val-1), val-1);
+    if(m_curIndex && (quint32)m_curIndex <= m_storage->getSize())
+        emit newData(m_storage->get(m_curIndex-1), m_curIndex-1);
 }
 
 analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
 {
-    int val = ui->timeSlider->value();
-    if(!val)
+    if(!m_storage->getSize())
         return NULL;
 
-    idx = --val;
-    return m_storage->get(val);
+    idx = m_curIndex-1;
+    return m_storage->get(m_curIndex-1);
 }
 
 void LorrisAnalyzer::load(QString *name, quint8 mask)
@@ -406,6 +400,7 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     if(!idx)
         idx = m_storage->getSize();
 
+    m_curIndex = idx;
     ui->timeSlider->setMaximum(m_storage->getSize());
     ui->timeSlider->setValue(idx);
     ui->timeBox->setMaximum(m_storage->getSize());
@@ -545,6 +540,7 @@ void LorrisAnalyzer::clearAllButton()
     m_storage->Clear();
     m_storage->setPacket(NULL);
 
+    m_curIndex = 0;
     ui->timeSlider->setMaximum(0);
     ui->timeBox->setMaximum(0);
     ui->timeBox->setSuffix(tr(" of ") % "0");
@@ -565,6 +561,7 @@ void LorrisAnalyzer::clearDataButton()
 {
     m_storage->Clear();
 
+    m_curIndex = 0;
     ui->timeSlider->setMaximum(0);
     ui->timeBox->setMaximum(0);
     ui->timeBox->setSuffix(tr(" of ") % "0");
@@ -625,7 +622,7 @@ void LorrisAnalyzer::editStruture()
 
 quint32 LorrisAnalyzer::getCurrentIndex()
 {
-    return ui->timeBox->value();
+    return m_curIndex;
 }
 
 void LorrisAnalyzer::showTitleTriggered(bool checked)

@@ -108,8 +108,7 @@ class LorrisAnalyzer : public PortConnWorkTab
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
-        void timeSliderMoved(int value);
-        void timeBoxEdited();
+        void indexChanged(int value);
         void showTitleTriggered(bool checked);
 
     private:
@@ -127,6 +126,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         QAction *m_title_action;
 
         bool m_data_changed;
+        qint32 m_curIndex;
 
         ConnectButton * m_connectButton;
 };

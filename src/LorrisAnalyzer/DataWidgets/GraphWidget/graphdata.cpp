@@ -167,6 +167,9 @@ void GraphData::eraseSpareData(qint32 absPos, quint32 pos)
                 if(m_data[i]->itr < pos)
                     break;
 
+            if(i == -1)
+                i = 0;
+
             for(storage::iterator itr = m_data.begin()+i; itr != m_data.end(); ++itr)
                 delete *itr;
             m_data.erase(m_data.begin()+i, m_data.end());
