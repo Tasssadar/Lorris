@@ -63,23 +63,19 @@ LorrisAnalyzer::LorrisAnalyzer()
 {
     ui->setupUi(this);
 
-    minUpdateDelay = sConfig.get(CFG_QUINT32_ANALYZER_UPDATE_TIME);
-    ui->updateTimeBox->setValue(minUpdateDelay);
-
     connect(ui->structureBtn,    SIGNAL(clicked()),         SLOT(editStruture()));
     connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
     connect(ui->collapseLeft,    SIGNAL(clicked()),         SLOT(collapseLeftButton()));
     connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearDataButton()));
-    connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(timeSliderMoved(int)));
-    connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(timeBoxChanged(int)));
-    connect(ui->updateTimeBox,   SIGNAL(valueChanged(int)), SLOT(updateTimeChanged(int)));
+    connect(ui->timeSlider,      SIGNAL(sliderMoved(int)),  SLOT(timeSliderMoved(int)));
+    connect(ui->timeBox,         SIGNAL(editingFinished()), SLOT(timeBoxEdited()));
     connect(ui->playFrame,       SIGNAL(setPos(int)),           ui->timeBox,    SLOT(setValue(int)));
     connect(ui->timeSlider,      SIGNAL(valueChanged(int)),     ui->playFrame,  SLOT(valChanged(int)));
     connect(ui->timeSlider,      SIGNAL(rangeChanged(int,int)), ui->playFrame,  SLOT(rangeChanged(int,int)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
-    connect(ui->dataArea,        SIGNAL(updateData(bool)),  SLOT(updateData(bool)));
+    connect(ui->dataArea,        SIGNAL(updateData()),      SLOT(updateData()));
     connect(ui->devTabs,         SIGNAL(updateData()),      SLOT(updateData()));
     connect(ui->dataArea,        SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
                                  SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
@@ -157,8 +153,6 @@ LorrisAnalyzer::LorrisAnalyzer()
     highlightInfoNotNull = false;
     m_curData = NULL;
 
-    updateTime.start();
-
     setAreaVisibility(AREA_LEFT, false);
     setAreaVisibility(AREA_RIGHT, true);
     setAreaVisibility(AREA_TOP, true);
@@ -194,13 +188,9 @@ void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
 void LorrisAnalyzer::connectedStatus(bool connected)
 {
     if(connected)
-    {
         m_state &= ~(STATE_DISCONNECTED);
-    }
     else
-    {
         m_state |= STATE_DISCONNECTED;
-    }
 }
 
 void LorrisAnalyzer::readData(const QByteArray& data)
@@ -216,6 +206,8 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     char *d_end = d_start + data.size();
 
     quint32 curRead = 1;
+    bool update = ui->timeSlider->value() == ui->timeSlider->maximum();
+
 
     while(d_itr != d_end)
     {
@@ -233,16 +225,16 @@ void LorrisAnalyzer::readData(const QByteArray& data)
         if(m_curData->isValid())
         {
             m_storage->addData(m_curData);
+
+            if(update)
+                emit newData(m_curData, m_storage->getSize()-1);
+
             m_curData = new analyzer_data(m_packet);
         }
     }
     m_data_changed = true;
 
-    if(!canUpdateUi())
-        return;
-
     int size = m_storage->getSize();
-    bool update = ui->timeSlider->value() == ui->timeSlider->maximum();
 
     ui->timeSlider->setMaximum(size);
     ui->timeBox->setMaximum(size);
@@ -251,7 +243,10 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     ui->timeBox->setSuffix(ofString % QString::number(size));
 
     if(update)
+    {
         ui->timeBox->setValue(size);
+        ui->timeSlider->setValue(size);
+    }
 }
 
 void LorrisAnalyzer::onTabShow()
@@ -357,23 +352,19 @@ void LorrisAnalyzer::timeSliderMoved(int value)
     bool down = ui->timeSlider->isSliderDown();
     bool enabled = ui->timeSlider->isEnabled();
     if(value != 0)
-        updateData(down || !enabled);
+        updateData();
 
     if(down && enabled)
         ui->timeBox->setValue(value);
 }
 
-void LorrisAnalyzer::timeBoxChanged(int value)
+void LorrisAnalyzer::timeBoxEdited()
 {
-    ui->timeSlider->setValue(value);
+    ui->timeSlider->setValue(ui->timeBox->value());
 }
 
-void LorrisAnalyzer::updateData(bool ignoreTime)
+void LorrisAnalyzer::updateData()
 {
-    if(!canUpdateUi(ignoreTime))
-        return;
-
-    updateTime.restart();
     m_data_changed = true;
 
     int val = ui->timeSlider->value();
@@ -422,7 +413,7 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     ui->timeBox->setValue(idx);
     m_state &= ~(STATE_DIALOG);
 
-    updateData(true);
+    updateData();
     m_data_changed = false;
 }
 
@@ -567,7 +558,7 @@ void LorrisAnalyzer::clearAllButton()
     setAreaVisibility(AREA_TOP | AREA_RIGHT, true);
     setAreaVisibility(AREA_LEFT, false);
 
-    updateData(true);
+    updateData();
 }
 
 void LorrisAnalyzer::clearDataButton()
@@ -578,13 +569,7 @@ void LorrisAnalyzer::clearDataButton()
     ui->timeBox->setMaximum(0);
     ui->timeBox->setSuffix(tr(" of ") % "0");
 
-    updateData(true);
-}
-
-void LorrisAnalyzer::updateTimeChanged(int value)
-{
-    minUpdateDelay = value;
-    sConfig.set(CFG_QUINT32_ANALYZER_UPDATE_TIME, minUpdateDelay);
+    updateData();
 }
 
 void LorrisAnalyzer::openFile()
@@ -633,7 +618,7 @@ void LorrisAnalyzer::editStruture()
         m_storage->setPacket(packet);
         m_packet = packet;
 
-        updateData(true);
+        updateData();
     }
     m_state &= ~(STATE_DIALOG);
 }

@@ -87,7 +87,7 @@ class LorrisAnalyzer : public PortConnWorkTab
     public slots:
         void onTabShow();
         bool onTabClose();
-        void updateData(bool ignoreTime = false);
+        void updateData();
         void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);
         void setDataChanged(bool changed = true) { m_data_changed = changed; }
 
@@ -108,19 +108,12 @@ class LorrisAnalyzer : public PortConnWorkTab
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
         void timeSliderMoved(int value);
-        void timeBoxChanged(int value);
+        void timeBoxEdited();
         void showTitleTriggered(bool checked);
-
-        void updateTimeChanged(int value);
 
     private:
         void readData(const QByteArray& data);
         void load(QString *name, quint8 mask);
-
-        inline bool canUpdateUi(bool ignore = false)
-        {
-            return ignore || updateTime.elapsed() > minUpdateDelay;
-        }
 
         quint16 m_state;
         bool highlightInfoNotNull;
@@ -129,9 +122,6 @@ class LorrisAnalyzer : public PortConnWorkTab
         AnalyzerDataStorage *m_storage;
         analyzer_packet *m_packet;
         analyzer_data *m_curData;
-
-        QTime updateTime;
-        int minUpdateDelay;
 
         QAction *m_title_action;
 

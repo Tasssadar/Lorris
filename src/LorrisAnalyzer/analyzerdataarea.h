@@ -38,7 +38,7 @@ class AnalyzerDataArea : public QFrame
     Q_OBJECT
 
 Q_SIGNALS:
-    void updateData(bool ignoreTime = false);
+    void updateData();
     void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
 
     void onWidgetAdd(DataWidget *w);

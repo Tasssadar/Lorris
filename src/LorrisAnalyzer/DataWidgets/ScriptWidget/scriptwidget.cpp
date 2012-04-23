@@ -158,7 +158,7 @@ void ScriptWidget::sourceSet(bool close)
             m_editor->deleteLater();
             m_editor = NULL;
         }
-        emit updateData(true);
+        emit updateData();
     }
     catch(const QString& text)
     {

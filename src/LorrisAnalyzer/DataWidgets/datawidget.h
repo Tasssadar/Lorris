@@ -107,7 +107,7 @@ class DataWidget : public QFrame
     Q_PROPERTY(quint8 widgetType READ getWidgetType)
 
 Q_SIGNALS:
-    void updateData(bool ignoreTime = false);
+    void updateData();
     void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
