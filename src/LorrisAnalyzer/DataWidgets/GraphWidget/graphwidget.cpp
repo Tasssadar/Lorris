@@ -536,7 +536,7 @@ void GraphWidget::updateSampleSize()
     if(m_sample_size != -3)
         return;
 
-    qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound());
+    qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound())*2;
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
         m_curves[i]->curve->setSampleSize(size);
