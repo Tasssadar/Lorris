@@ -42,6 +42,7 @@ class DeviceTabWidget : public QTabWidget
 
 Q_SIGNALS:
     void updateData();
+    void disableDeviceAdd(bool disable);
 
 public:
     typedef std::map<quint8,CmdTabWidget*> dev_map;

@@ -35,15 +35,22 @@
 #include "DataWidgets/datawidget.h"
 #include "lorrisanalyzer.h"
 #include "analyzerdatafile.h"
+#include "../ui/plustabbar.h"
 
 DeviceTabWidget::DeviceTabWidget(QWidget *parent) :
     QTabWidget(parent)
 {
-    m_id_enabled = false;
+    PlusTabBar *bar = new PlusTabBar(this);
+    setTabBar(bar);
+    connect(bar,  SIGNAL(plusPressed()),               SLOT(newDevice()));
+    connect(this, SIGNAL(disableDeviceAdd(bool)), bar, SLOT(setDisablePlus(bool)));
 
     QAction *new_device_act = new QAction(tr("Add device"), this);
     connect(new_device_act, SIGNAL(triggered()), this, SLOT(newDevice()));
     addAction(new_device_act);
+
+    emit disableDeviceAdd(true);
+    new_device_act->setEnabled(false);
 
     m_add_all_act = new QAction(tr("Add \"All devices\" tab"), this);
     m_add_all_act->setEnabled(false);
@@ -56,6 +63,7 @@ DeviceTabWidget::DeviceTabWidget(QWidget *parent) :
     m_all_devices = NULL;
 
     m_header = NULL;
+    m_id_enabled = false;
 }
 
 DeviceTabWidget::~DeviceTabWidget()
@@ -74,6 +82,7 @@ void DeviceTabWidget::setHeader(analyzer_header *h)
     m_header = h;
     bool enable = h ? m_header->data_mask & DATA_DEVICE_ID : false;
     (*actions().begin())->setEnabled(enable);
+    emit disableDeviceAdd(!enable);
 
     for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
         itr->second->setHeader(h);
@@ -146,6 +155,9 @@ void DeviceTabWidget::newDevice()
     QString text = QInputDialog::getText(this, tr("New device"),
                                          tr("Device ID (hex or normal number):"), QLineEdit::Normal,
                                          "", &ok);
+    if(!ok)
+        return;
+
     int id = 0;
     quint8 res = 0;
     if(ok && !text.isEmpty())

@@ -24,23 +24,38 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QIcon>
+#include <QStyle>
 #include "plustabbar.h"
 
 PlusTabBar::PlusTabBar(QWidget *parent) :
     QTabBar(parent)
 {
-    m_plusRect = QRect(2, 3, 16, 16);
+    m_plusRect = QRect(2, 4, 16, 16);
+    m_disabled = false;
+
+    QIcon icon(":/icons/icons/list-add.png");
+    m_pixmap = icon.pixmap(16, 16);
 }
 
 void PlusTabBar::updateRect()
 {
     if(count() == 0)
-        m_plusRect = QRect(2, 3, 16, 16);
+        m_plusRect.moveLeft(2);
     else
     {
         QRect rect = tabRect(count()-1);
         m_plusRect.moveLeft(rect.x()+rect.width()+2);
     }
+
+    if(shape() == QTabBar::RoundedNorth)
+        m_plusRect.moveTop(4);
+    else
+        m_plusRect.moveTop(7);
+}
+
+void PlusTabBar::tabLayoutChange()
+{
+    updateRect();
 }
 
 void PlusTabBar::paintEvent(QPaintEvent *event)
@@ -48,22 +63,26 @@ void PlusTabBar::paintEvent(QPaintEvent *event)
     QTabBar::paintEvent(event);
 
     QPainter painter(this);
-
-    static QPixmap map;
-    if(map.isNull())
-    {
-        QIcon icon(":/icons/icons/list-add.png");
-        map = icon.pixmap(16, 16);
-    }
-    updateRect();
-    painter.drawPixmap(m_plusRect, map);
+    painter.drawPixmap(m_plusRect, m_pixmap);
 }
 
 void PlusTabBar::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() != Qt::LeftButton || !m_plusRect.contains(event->pos()))
+    if(m_disabled || event->button() != Qt::LeftButton || !m_plusRect.contains(event->pos()))
         return QTabBar::mousePressEvent(event);
 
     event->accept();
     emit plusPressed();
+}
+
+void PlusTabBar::setDisablePlus(bool disable)
+{
+    if(disable == m_disabled)
+        return;
+
+    m_disabled = disable;
+
+    QIcon icon(":/icons/icons/list-add.png");
+    m_pixmap = icon.pixmap(16, 16, disable ? QIcon::Disabled : QIcon::Normal);
+    update();
 }
