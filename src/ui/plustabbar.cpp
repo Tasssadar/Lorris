@@ -25,6 +25,8 @@
 #include <QPaintEvent>
 #include <QIcon>
 #include <QStyle>
+#include <QStyleOption>
+
 #include "plustabbar.h"
 
 PlusTabBar::PlusTabBar(QWidget *parent) :
@@ -45,12 +47,12 @@ void PlusTabBar::updateRect()
     {
         QRect rect = tabRect(count()-1);
         m_plusRect.moveLeft(rect.x()+rect.width()+2);
-    }
 
-    if(shape() == QTabBar::RoundedNorth)
-        m_plusRect.moveTop(4);
-    else
-        m_plusRect.moveTop(7);
+        QStyleOptionTabV3 tab;
+        initStyleOption(&tab, count()-1);
+        rect = style()->subElementRect(QStyle::SE_TabBarTabText, &tab, this);
+        m_plusRect.moveTop(rect.y() + ((rect.height() - m_plusRect.height()) / 2));
+    }
 }
 
 void PlusTabBar::tabLayoutChange()
