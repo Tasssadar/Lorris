@@ -34,7 +34,7 @@
 #include "graphcurve.h"
 #include "../../analyzerdatastorage.h"
 
-static const int sampleValues[] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
+static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
 GraphWidget::GraphWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -76,12 +76,12 @@ void GraphWidget::setUp(AnalyzerDataStorage *storage)
     QMenu *sampleSize = contextMenu->addMenu(tr("Sample size"));
 
     QSignalMapper *sampleMap = new QSignalMapper(this);
-    static const QString sampleNames[] =
+    static const QString sampleNames[SAMPLE_ACT_COUNT] =
     {
         tr("Show all data"), tr("Set custom..."), tr("According to X axis"), "10", "50", "100", "200", "500", "1000"
     };
 
-    for(quint8 i = 0; i < sizeof(sampleValues)/sizeof(int); ++i)
+    for(quint8 i = 0; i < SAMPLE_ACT_COUNT; ++i)
     {
         if(i == 3)
             sampleSize->addSeparator();

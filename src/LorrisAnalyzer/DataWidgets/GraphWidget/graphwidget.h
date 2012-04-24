@@ -31,6 +31,8 @@ class Graph;
 class GraphCurveAddDialog;
 class GraphCurve;
 
+#define SAMPLE_ACT_COUNT 9
+
 struct GraphCurveInfo
 {
     GraphCurveInfo(GraphCurve* curve, data_widget_info& info)
@@ -81,7 +83,7 @@ private:
      QString m_drop_data;
      AnalyzerDataStorage *m_storage;
 
-     QAction *m_sample_act[9];
+     QAction *m_sample_act[SAMPLE_ACT_COUNT];
      QAction *m_editCurve;
      QAction *m_showLegend;
      QAction *m_autoScroll;
