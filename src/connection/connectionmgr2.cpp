@@ -59,6 +59,7 @@ void SerialPortEnumerator::refresh()
             QScopedPointer<SerialPort> portGuard(new SerialPort());
             portGuard->setName(info.portName);
             portGuard->setDeviceName(info.physName);
+            portGuard->setFriendlyName(info.friendName);
             portGuard->setBaudRate(BAUD38400);
             portGuard->setDevNameEditable(false);
 

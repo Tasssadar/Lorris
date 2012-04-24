@@ -70,6 +70,8 @@ public:
     QString const & name() const { return m_idString; }
     void setName(const QString& str) { this->setIDString(str); }
 
+    virtual QString details() const { return QString(); }
+
     virtual bool Open() = 0;
     virtual void OpenConcurrent() = 0;
     virtual void Close() {}

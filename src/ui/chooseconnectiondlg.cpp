@@ -28,6 +28,86 @@
 #include "../connection/tcpsocket.h"
 #include <QMenu>
 #include <QPushButton>
+#include <QStyledItemDelegate>
+#include <QPainter>
+
+namespace {
+
+class ConnectionListItemDelegate
+        : public QStyledItemDelegate
+{
+public:
+    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index ) const
+    {
+        QStyleOptionViewItemV4 const & opt = static_cast<QStyleOptionViewItemV4 const &>(option);
+
+        QSize res;
+
+        QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+        int vmargin = style->pixelMetric(QStyle::PM_FocusFrameVMargin, &opt, opt.widget);
+        res.setHeight(2 * opt.fontMetrics.lineSpacing()+2*vmargin);
+
+        int line1w = opt.fontMetrics.width(index.data(Qt::DisplayRole).toString());
+        int line2w = opt.fontMetrics.width(index.data(Qt::UserRole+1).toString());
+
+        int margin = style->pixelMetric(QStyle::PM_FocusFrameHMargin, &opt, opt.widget);
+        res.setWidth(2*opt.fontMetrics.lineSpacing() + 3*margin + (std::max)(line1w, line2w));
+
+        return res;
+    }
+
+    void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+    {
+        QStyleOptionViewItemV4 const & opt = static_cast<QStyleOptionViewItemV4 const &>(option);
+        QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+
+        // background
+        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
+
+        int vmargin = style->pixelMetric(QStyle::PM_FocusFrameVMargin, &opt, opt.widget);
+        int margin = style->pixelMetric(QStyle::PM_FocusFrameHMargin, &opt, opt.widget);
+
+        QRect iconRect;
+        iconRect.setLeft(opt.rect.left() + margin);
+        iconRect.setTop(opt.rect.top() + vmargin);
+        iconRect.setHeight(opt.rect.height());
+        iconRect.setWidth(opt.rect.height());
+
+        QIcon::Mode mode = QIcon::Normal;
+        if (!(opt.state & QStyle::State_Enabled))
+            mode = QIcon::Disabled;
+        else if (opt.state & QStyle::State_Selected)
+            mode = QIcon::Selected;
+        QIcon::State state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
+        index.data(Qt::DecorationRole).value<QIcon>().paint(painter, iconRect, opt.decorationAlignment, mode, state);
+
+        QPalette::ColorGroup cg = opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
+        if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active))
+            cg = QPalette::Inactive;
+        QColor penColor;
+
+        // FIXME: HighlightedText is white even on Vista, where the highlight shouldn't change
+        // the text color. How should we handle this?
+        /*if (opt.state & QStyle::State_Selected)
+            penColor = opt.palette.color(cg, QPalette::HighlightedText);
+        else*/
+            penColor = opt.palette.color(cg, QPalette::Text);
+        painter->setPen(penColor);
+
+        QRect textRect = opt.rect;
+        textRect.setLeft(iconRect.right() + 1 + margin);
+        textRect.setTop(textRect.top() + vmargin);
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::DisplayRole).toString());
+
+        penColor.setAlpha(128);
+        painter->setPen(penColor);
+
+        textRect.setTop(textRect.top() + opt.fontMetrics.lineSpacing());
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::UserRole+1).toString());
+    }
+};
+
+}
 
 ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     QDialog(parent),
@@ -63,6 +143,8 @@ void ChooseConnectionDlg::init(Connection * preselectedConn)
         this->connAdded(conns[i]);
     ui->connectionsList->sortItems();
 
+    ui->connectionsList->setItemDelegate(new ConnectionListItemDelegate());
+
     // Note that the preselected connection may be handled by a different manager
     // and as such may be missing in the map.
     if (m_connectionItemMap.contains(preselectedConn))
@@ -77,7 +159,12 @@ void ChooseConnectionDlg::init(Connection * preselectedConn)
 void ChooseConnectionDlg::connAdded(Connection * conn)
 {
     QListWidgetItem * item = new QListWidgetItem(conn->name(), ui->connectionsList);
+
+    // TODO: set icon based on the connection type
+    item->setIcon(QIcon(":/icons/icons/network-wired.png"));
+
     item->setData(Qt::UserRole, QVariant::fromValue(conn));
+    item->setData(Qt::UserRole+1, conn->details());
     m_connectionItemMap[conn] = item;
     connect(conn, SIGNAL(changed()), this, SLOT(connChanged()));
 }
@@ -93,6 +180,7 @@ void ChooseConnectionDlg::connChanged()
     Connection * conn = static_cast<Connection *>(this->sender());
     QListWidgetItem * item = m_connectionItemMap[conn];
     item->setText(conn->name());
+    item->setData(Qt::UserRole+1, conn->details());
     if (conn == m_current)
         this->updateDetailsUi(conn);
 }

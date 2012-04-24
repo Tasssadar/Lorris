@@ -44,6 +44,8 @@ public:
     SerialPort();
     virtual ~SerialPort();
 
+    virtual QString details() const;
+
     bool Open();
     void Close();
     void OpenConcurrent();
@@ -53,8 +55,11 @@ public:
     BaudRateType baudRate() const { return m_rate; }
     void setBaudRate(BaudRateType value) { m_rate = value; emit changed(); }
 
-    QString deviceName() const { return m_deviceName; } // FIXME: id and devname should be separate
+    QString deviceName() const { return m_deviceName; }
     void setDeviceName(QString const & value);
+
+    QString friendlyName() const { return m_deviceName; }
+    void setFriendlyName(QString const & value);
 
     bool devNameEditable() const { return m_devNameEditable; }
     void setDevNameEditable(bool value) { m_devNameEditable = value; }
@@ -71,6 +76,7 @@ private:
     bool openPort();
 
     QString m_deviceName;
+    QString m_friendlyName;
 
     QextSerialPort *m_port;
     BaudRateType m_rate;

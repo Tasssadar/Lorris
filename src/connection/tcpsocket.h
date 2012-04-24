@@ -40,6 +40,8 @@ public:
     explicit TcpSocket();
     ~TcpSocket();
 
+    virtual QString details() const;
+
     bool Open();
     void OpenConcurrent();
     void Close();

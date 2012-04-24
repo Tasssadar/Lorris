@@ -27,6 +27,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QStringBuilder>
 
 #include "../common.h"
 #include "tcpsocket.h"
@@ -50,6 +51,11 @@ TcpSocket::~TcpSocket()
 {
     Close();
     delete m_socket;
+}
+
+QString TcpSocket::details() const
+{
+    return this->host() % ":" % QString::number(this->port());
 }
 
 bool TcpSocket::Open()

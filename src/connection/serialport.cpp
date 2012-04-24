@@ -52,6 +52,11 @@ SerialPort::~SerialPort()
     Close();
 }
 
+QString SerialPort::details() const
+{
+    return m_friendlyName.isEmpty()? m_deviceName: m_friendlyName;
+}
+
 bool SerialPort::Open()
 {
     return false;
@@ -149,6 +154,15 @@ void SerialPort::setDeviceName(QString const & value)
     if (m_deviceName != value)
     {
         m_deviceName = value;
+        emit changed();
+    }
+}
+
+void SerialPort::setFriendlyName(QString const & value)
+{
+    if (m_friendlyName != value)
+    {
+        m_friendlyName = value;
         emit changed();
     }
 }
