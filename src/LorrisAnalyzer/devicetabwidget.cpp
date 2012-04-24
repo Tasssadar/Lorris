@@ -201,18 +201,19 @@ void DeviceTabWidget::tabClose(int index)
         delete m_all_devices;
         m_all_devices = NULL;
         m_add_all_act->setEnabled(true);
-        return;
     }
-
-    for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
+    else
     {
-        if(itr->second == w)
+        for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
         {
-            m_devices.erase(itr);
-            break;
+            if(itr->second == w)
+            {
+                m_devices.erase(itr);
+                break;
+            }
         }
+        delete w;
     }
-    delete w;
 
     if(count() < 2)
     {

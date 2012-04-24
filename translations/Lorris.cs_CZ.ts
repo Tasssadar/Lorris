@@ -306,42 +306,42 @@
 <context>
     <name>CmdTabWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="39"/>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="45"/>
         <source>Add command</source>
         <translation>Přidat příkaz</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="45"/>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="54"/>
         <source>Add &quot;All commands&quot; tab</source>
         <translation>Přidat záložku &quot;Všechny příkazy&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="110"/>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="119"/>
         <source>Command</source>
         <translation>Příkaz</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="116"/>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="125"/>
         <source>All commands</source>
         <translation>Všechny příkazy</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="141"/>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="150"/>
         <source>New command</source>
         <translation>Nový příkaz</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="142"/>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="151"/>
         <source>Command (hex or normal number):</source>
         <translation>Příkaz (hex nebo normální číslo):</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="164"/>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="176"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="165"/>
+        <location filename="../src/LorrisAnalyzer/cmdtabwidget.cpp" line="177"/>
         <source>Wrong format, must be 8bit hex or normal number</source>
         <translation>Špatný formát, musí být 8 bitový hex nebo normální číslo</translation>
     </message>
@@ -427,42 +427,42 @@
 <context>
     <name>DeviceTabWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="44"/>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="48"/>
         <source>Add device</source>
         <translation>Přidat zařízení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="48"/>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="55"/>
         <source>Add &quot;All devices&quot; tab</source>
-        <translation>Přidat záložku &quot;Všechny zařízení&quot;</translation>
+        <translation type="unfinished">Přidat záložku &quot;Všechna zařízení&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="114"/>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="123"/>
         <source>Device</source>
         <translation>Zařízení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="120"/>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="129"/>
         <source>All devices</source>
         <translation>Všechna zařízení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="146"/>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="155"/>
         <source>New device</source>
         <translation>Nové zařízení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="147"/>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="156"/>
         <source>Device ID (hex or normal number):</source>
         <translation>ID zařízení (hex nebo normální číslo):</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="169"/>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="181"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="170"/>
+        <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="182"/>
         <source>Wrong format, must be 8bit hex or normal number</source>
         <translation>Špatný formát, musí být 8 bitový hex nebo normální číslo</translation>
     </message>
@@ -1195,7 +1195,7 @@
     <message>
         <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="885"/>
         <source> | h:mm:ss d.M.yyyy</source>
-        <translation type="unfinished"> | h:mm:ss d.M.yyyy</translation>
+        <translation> | h:mm:ss d.M.yyyy</translation>
     </message>
     <message>
         <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1066"/>
@@ -1564,63 +1564,63 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="69"/>
+        <location filename="../src/ui/mainwindow.cpp" line="70"/>
         <source>&amp;File</source>
         <translation>&amp;Soubor</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="70"/>
+        <location filename="../src/ui/mainwindow.cpp" line="71"/>
         <source>&amp;Help</source>
         <translation>&amp;Nápověda</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="72"/>
+        <location filename="../src/ui/mainwindow.cpp" line="73"/>
         <source>&amp;Quit</source>
         <translation>&amp;Ukončit</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="73"/>
+        <location filename="../src/ui/mainwindow.cpp" line="74"/>
         <source>About Lorris...</source>
         <translation>O Lorris...</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="74"/>
+        <location filename="../src/ui/mainwindow.cpp" line="75"/>
         <source>Connection &amp;manager...</source>
         <translatorcomment>Lepší by byl správce, ale není tam &quot;m&quot; na zkratku</translatorcomment>
         <translation>&amp;Manažer připojení...</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="76"/>
+        <location filename="../src/ui/mainwindow.cpp" line="77"/>
         <source>Language</source>
         <translation>Jazyk</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="86"/>
+        <location filename="../src/ui/mainwindow.cpp" line="87"/>
         <source>Same as OS - </source>
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="115"/>
+        <location filename="../src/ui/mainwindow.cpp" line="116"/>
         <source>&amp;New</source>
         <translation>&amp;Nový</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="170"/>
+        <location filename="../src/ui/mainwindow.cpp" line="172"/>
         <source>Lorris version </source>
         <translation>Verze Lorris </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="175"/>
+        <location filename="../src/ui/mainwindow.cpp" line="177"/>
         <source>About Lorris</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="208"/>
+        <location filename="../src/ui/mainwindow.cpp" line="210"/>
         <source>Restart</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="209"/>
+        <location filename="../src/ui/mainwindow.cpp" line="211"/>
         <source>You need to restart Lorris for this change to take effect</source>
         <translation>Musíte restartovat Lorris aby se tato změna projevila</translation>
     </message>
@@ -2534,27 +2534,27 @@ ke změně uspořádání</translation>
 <context>
     <name>TabBar</name>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="203"/>
+        <location filename="../src/ui/tabwidget.cpp" line="206"/>
         <source>Split view top/bottom</source>
         <translation>Rozdělit na vrch a spodek</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="204"/>
+        <location filename="../src/ui/tabwidget.cpp" line="207"/>
         <source>Split view left/right</source>
         <translation>Rozdělit napravo a nalevo</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="212"/>
+        <location filename="../src/ui/tabwidget.cpp" line="215"/>
         <source>Rename...</source>
         <translation>Přejmenovat...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="259"/>
+        <location filename="../src/ui/tabwidget.cpp" line="262"/>
         <source>Rename tab</source>
         <translation>Přejmenovat panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="259"/>
+        <location filename="../src/ui/tabwidget.cpp" line="262"/>
         <source>New name:</source>
         <translation>Nové jméno:</translation>
     </message>

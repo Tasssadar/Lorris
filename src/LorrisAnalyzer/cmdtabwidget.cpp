@@ -205,19 +205,19 @@ void CmdTabWidget::tabClose(int index)
         delete m_all_cmds;
         m_all_cmds = NULL;
         m_add_all_act->setEnabled(true);
-        return;
     }
-
-    for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
+    else
     {
-        if(itr->second->a == w)
+        for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
         {
-            delete itr->second;
-            m_cmds.erase(itr);
-            break;
+            if(itr->second->a == w)
+            {
+                delete itr->second;
+                m_cmds.erase(itr);
+                break;
+            }
         }
     }
-
     if(count() < 2)
     {
         setTabsClosable(false);
