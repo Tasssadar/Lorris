@@ -27,6 +27,7 @@
 #include <QTabWidget>
 #include <QTabBar>
 #include <QHash>
+#include "plustabbar.h"
 
 class QMenu;
 class TabBar;
@@ -89,7 +90,7 @@ private:
     TabBar *m_tab_bar;
 };
 
-class TabBar : public QTabBar
+class TabBar : public PlusTabBar
 {
     Q_OBJECT
 

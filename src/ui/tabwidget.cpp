@@ -26,6 +26,8 @@
 #include <QMenu>
 #include <QStyle>
 #include <QPushButton>
+#include <QPaintEvent>
+#include <QPainter>
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
@@ -48,6 +50,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     connect(m_tab_bar, SIGNAL(changeMenu(int)),        SLOT(barChangeMenu(int)));
     connect(newTabBtn, SIGNAL(clicked()),              SIGNAL(newTab()));
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
+    connect(m_tab_bar, SIGNAL(plusPressed()),          SIGNAL(newTab()));
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
@@ -196,7 +199,7 @@ void TabWidget::barChangeMenu(int idx)
 }
 
 TabBar::TabBar(QWidget *parent) :
-    QTabBar(parent)
+    PlusTabBar(parent)
 {
     m_menu = new QMenu(this);
 
@@ -226,7 +229,7 @@ void TabBar::mousePressEvent(QMouseEvent *event)
             if(tab != -1 && tab == currentIndex())
                 emit changeMenu(tab);
 
-            QTabBar::mousePressEvent(event);
+            PlusTabBar::mousePressEvent(event);
             break;
         }
         case Qt::MidButton:
@@ -249,7 +252,7 @@ void TabBar::mousePressEvent(QMouseEvent *event)
             break;
         }
         default:
-            QTabBar::mousePressEvent(event);
+            PlusTabBar::mousePressEvent(event);
             break;
     }
 }

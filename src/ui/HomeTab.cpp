@@ -67,5 +67,8 @@ void HomeTab::buttonClicked()
 {
     WorkTabInfo * info = m_buttonInfoMap.value(this->sender());
     if (info)
+    {
+        emit tabOpened();
         sWorkTabMgr.AddWorkTab(info);
+    }
 }

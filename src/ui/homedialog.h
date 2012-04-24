@@ -21,8 +21,16 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.4.0-dev"
- #define REVISION 315
-#endif // REVISION_H
+#ifndef HOMEDIALOG_H
+#define HOMEDIALOG_H
+
+#include <QDialog>
+
+class HomeDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    explicit HomeDialog(QWidget *parent = 0);
+};
+
+#endif // HOMEDIALOG_H

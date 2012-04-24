@@ -21,8 +21,49 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.4.0-dev"
- #define REVISION 315
-#endif // REVISION_H
+#include <QPainter>
+#include <QPaintEvent>
+#include <QIcon>
+#include "plustabbar.h"
+
+PlusTabBar::PlusTabBar(QWidget *parent) :
+    QTabBar(parent)
+{
+    m_plusRect = QRect(2, 3, 16, 16);
+}
+
+void PlusTabBar::updateRect()
+{
+    if(count() == 0)
+        m_plusRect = QRect(2, 3, 16, 16);
+    else
+    {
+        QRect rect = tabRect(count()-1);
+        m_plusRect.moveLeft(rect.x()+rect.width()+2);
+    }
+}
+
+void PlusTabBar::paintEvent(QPaintEvent *event)
+{
+    QTabBar::paintEvent(event);
+
+    QPainter painter(this);
+
+    static QPixmap map;
+    if(map.isNull())
+    {
+        QIcon icon(":/icons/icons/list-add.png");
+        map = icon.pixmap(16, 16);
+    }
+    updateRect();
+    painter.drawPixmap(m_plusRect, map);
+}
+
+void PlusTabBar::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() != Qt::LeftButton || !m_plusRect.contains(event->pos()))
+        return QTabBar::mousePressEvent(event);
+
+    event->accept();
+    emit plusPressed();
+}

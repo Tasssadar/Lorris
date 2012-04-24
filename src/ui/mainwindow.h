@@ -45,6 +45,7 @@ protected:
 
 private slots:
     void NewSpecificTab();
+    void newTab();
     void About();
     void OpenConnectionManager();
     void changeMenu(quint32 id);

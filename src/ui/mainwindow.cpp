@@ -47,6 +47,7 @@
 
 #include "mainwindow.h"
 #include "HomeTab.h"
+#include "homedialog.h"
 #include "../WorkTab/WorkTab.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../WorkTab/WorkTabInfo.h"
@@ -143,6 +144,7 @@ MainWindow::MainWindow(QWidget *parent) :
     TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
     connect(tabWidget, SIGNAL(changeMenu(quint32)),                    SLOT(changeMenu(quint32)));
     connect(tabWidget, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
+    connect(tabWidget, SIGNAL(newTab()),                               SLOT(newTab()));
 
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);
@@ -224,4 +226,10 @@ void MainWindow::NewSpecificTab()
     WorkTabInfo * info = m_actionTabInfoMap.value(this->sender());
     if (info)
         sWorkTabMgr.AddWorkTab(info);
+}
+
+void MainWindow::newTab()
+{
+    HomeDialog dialog(this);
+    dialog.exec();
 }

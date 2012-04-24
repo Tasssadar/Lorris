@@ -21,8 +21,34 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.4.0-dev"
- #define REVISION 315
-#endif // REVISION_H
+#ifndef PLUSTABBAR_H
+#define PLUSTABBAR_H
+
+#include <QTabBar>
+
+class PlusTabBar : public QTabBar
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void plusPressed();
+
+public:
+    explicit PlusTabBar(QWidget *parent = 0);
+
+    void paintEvent(QPaintEvent *event);
+    QSize sizeHint() const
+    {
+        return QTabBar::sizeHint() + QSize(20, 0);
+    }
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+
+private:
+    void updateRect();
+
+    QRect m_plusRect;
+};
+
+#endif // PLUSTABBAR_H

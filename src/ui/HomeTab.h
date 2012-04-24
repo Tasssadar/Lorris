@@ -35,6 +35,10 @@ namespace Ui {
 
 class HomeTab : public QWidget {
     Q_OBJECT
+
+Q_SIGNALS:
+    void tabOpened();
+
 public:
     HomeTab(QWidget *parent);
     ~HomeTab();

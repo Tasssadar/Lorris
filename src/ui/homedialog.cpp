@@ -21,8 +21,19 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.4.0-dev"
- #define REVISION 315
-#endif // REVISION_H
+#include <QVBoxLayout>
+#include "homedialog.h"
+#include "HomeTab.h"
+
+HomeDialog::HomeDialog(QWidget *parent) :
+    QDialog(parent)
+{
+    QVBoxLayout *l = new QVBoxLayout(this);
+
+    HomeTab *widget = new HomeTab(this);
+    l->addWidget(widget);
+
+    connect(widget, SIGNAL(tabOpened()), SLOT(accept()));
+
+    resize(800, 450);
+}

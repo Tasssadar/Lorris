@@ -98,7 +98,9 @@ SOURCES += src/ui/mainwindow.cpp \
     dep/qextserialport/src/qextserialport.cpp \
     dep/qextserialport/src/qextserialenumerator.cpp \
     src/connection/connectionmgr2.cpp \
-    src/LorrisAnalyzer/packetparser.cpp
+    src/LorrisAnalyzer/packetparser.cpp \
+    src/ui/plustabbar.cpp \
+    src/ui/homedialog.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -182,7 +184,9 @@ HEADERS += src/ui/mainwindow.h \
     dep/qextserialport/src/qextserialenumerator_p.h \
     dep/qextserialport/src/qextserialenumerator.h \
     src/connection/connectionmgr2.h \
-    src/LorrisAnalyzer/packetparser.h
+    src/LorrisAnalyzer/packetparser.h \
+    src/ui/plustabbar.h \
+    src/ui/homedialog.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include

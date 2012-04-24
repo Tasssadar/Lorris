@@ -137,7 +137,6 @@ TabView *WorkTabMgr::CreateWidget(QWidget *parent)
 {
     tabView = new TabView(parent);
 
-    // FIXME: connect newTab (it should probably display the home tab
     connect(tabView, SIGNAL(openHomeTab(quint32)), SLOT(OpenHomeTab(quint32)));
     return tabView;
 }
