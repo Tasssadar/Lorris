@@ -434,7 +434,7 @@
     <message>
         <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="55"/>
         <source>Add &quot;All devices&quot; tab</source>
-        <translation type="unfinished">Přidat záložku &quot;Všechna zařízení&quot;</translation>
+        <translation>Přidat záložku &quot;Všechna zařízení&quot;</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/devicetabwidget.cpp" line="123"/>
