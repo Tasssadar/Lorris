@@ -21,8 +21,42 @@
 **
 ****************************************************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.4.0-dev"
- #define REVISION 313
-#endif // REVISION_H
+#ifndef PACKETPARSER_H
+#define PACKETPARSER_H
+
+#include <QObject>
+#include <QByteArray>
+
+class analyzer_data;
+class analyzer_packet;
+class AnalyzerDataStorage;
+
+class PacketParser : public QObject
+{
+    Q_OBJECT
+Q_SIGNALS:
+    void packetReceived(analyzer_data *data, quint32 index);
+
+public:
+    explicit PacketParser(AnalyzerDataStorage *storage, QObject *parent = 0);
+    ~PacketParser();
+
+    void setPaused(bool pause)
+    {
+        m_paused = pause;
+    }
+
+    void setPacket(analyzer_packet *packet);
+    
+public slots:
+    bool newData(const QByteArray& data, bool emitSig = true);
+    void resetCurPacket();
+
+private:
+    bool m_paused;
+    analyzer_data *m_curData;
+    analyzer_packet *m_packet;
+    AnalyzerDataStorage *m_storage;
+};
+
+#endif // PACKETPARSER_H

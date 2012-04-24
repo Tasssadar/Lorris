@@ -41,13 +41,8 @@ class DeviceTabWidget;
 class AnalyzerDataArea;
 class QSpinBox;
 class QScrollArea;
+class PacketParser;
 struct analyzer_packet;
-
-enum states_
-{
-    STATE_DISCONNECTED    = 0x01,
-    STATE_DIALOG          = 0x02
-};
 
 enum hideable_areas
 {
@@ -115,13 +110,12 @@ class LorrisAnalyzer : public PortConnWorkTab
         void readData(const QByteArray& data);
         void load(QString *name, quint8 mask);
 
-        quint16 m_state;
         bool highlightInfoNotNull;
         data_widget_info highlightInfo;
         Ui::LorrisAnalyzer *ui;
         AnalyzerDataStorage *m_storage;
         analyzer_packet *m_packet;
-        analyzer_data *m_curData;
+        PacketParser *m_parser;
 
         QAction *m_title_action;
 

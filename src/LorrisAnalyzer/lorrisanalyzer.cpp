@@ -56,6 +56,7 @@
 #include "DataWidgets/terminalwidget.h"
 #include "DataWidgets/buttonwidget.h"
 #include "sourceselectdialog.h"
+#include "packetparser.h"
 
 LorrisAnalyzer::LorrisAnalyzer()
     : ui(new Ui::LorrisAnalyzer),
@@ -133,6 +134,9 @@ LorrisAnalyzer::LorrisAnalyzer()
     m_storage = new AnalyzerDataStorage(this);
     ui->dataArea->setAnalyzerAndStorage(this, m_storage);
 
+    m_parser = new PacketParser(m_storage, this);
+    connect(m_parser, SIGNAL(packetReceived(analyzer_data*,quint32)), SIGNAL(newData(analyzer_data*,quint32)));
+
     ui->devTabs->addDevice();
 
     QWidget *tmp = new QWidget(this);
@@ -149,9 +153,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     ui->widgetsScrollArea->setWidget(tmp);
 
     m_packet = NULL;
-    m_state = 0;
     highlightInfoNotNull = false;
-    m_curData = NULL;
     m_curIndex = 0;
 
     setAreaVisibility(AREA_LEFT, false);
@@ -166,6 +168,7 @@ LorrisAnalyzer::LorrisAnalyzer()
 
 LorrisAnalyzer::~LorrisAnalyzer()
 {
+    delete m_parser;
     delete m_storage;
     if(m_packet)
     {
@@ -174,7 +177,6 @@ LorrisAnalyzer::~LorrisAnalyzer()
     }
     delete ui->devTabs;
     delete ui;
-    delete m_curData;
 }
 
 void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
@@ -186,54 +188,18 @@ void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
     }
 }
 
-void LorrisAnalyzer::connectedStatus(bool connected)
+void LorrisAnalyzer::connectedStatus(bool)
 {
-    if(connected)
-        m_state &= ~(STATE_DISCONNECTED);
-    else
-        m_state |= STATE_DISCONNECTED;
+
 }
 
 void LorrisAnalyzer::readData(const QByteArray& data)
 {
-    if((m_state & STATE_DIALOG) != 0 || !m_packet)
+    bool update = m_curIndex == ui->timeSlider->maximum();
+    if(!m_parser->newData(data, update))
         return;
 
-    if(!m_curData)
-        m_curData = new analyzer_data(m_packet);
-
-    char *d_start = (char*)data.data();
-    char *d_itr = d_start;
-    char *d_end = d_start + data.size();
-
-    quint32 curRead = 1;
-    bool update = m_curIndex == ui->timeSlider->maximum();
-
-    while(d_itr != d_end)
-    {
-        if(m_curData->isFresh() || curRead == 0)
-        {
-            int index = data.indexOf(m_curData->getStaticData(), d_itr - d_start);
-            if(index == -1)
-                break;
-            d_itr = d_start + index;
-            m_curData->clear();
-        }
-        curRead = m_curData->addData(d_itr, d_end);
-        d_itr += curRead;
-
-        if(m_curData->isValid())
-        {
-            m_storage->addData(m_curData);
-
-            if(update)
-                emit newData(m_curData, m_storage->getSize());
-
-            m_curData = new analyzer_data(m_packet);
-        }
-    }
     m_data_changed = true;
-
     int size = m_storage->getSize();
 
     ui->timeSlider->setMaximum(size);
@@ -265,17 +231,16 @@ void LorrisAnalyzer::onTabShow()
 
 void LorrisAnalyzer::doNewSource()
 {
-    m_state |= STATE_DIALOG;
+    m_parser->setPaused(true);
     SourceSelectDialog *s = new SourceSelectDialog(this);
 
     if(!m_con)
         s->DisableNew();
 
-    qint8 res = s->get();
-    switch(res)
+    switch(s->get())
     {
         case -1:
-            m_state &= ~(STATE_DIALOG);
+            m_parser->setPaused(false);
             break;
         case 0:
         {
@@ -288,35 +253,31 @@ void LorrisAnalyzer::doNewSource()
         case 1:
         {
             SourceDialog *d = new SourceDialog(NULL, this);
-            m_state |= STATE_DIALOG;
             if (m_con)
-                connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
+                connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
 
             analyzer_packet *packet = d->getStructure();
             delete d;
 
+            m_parser->setPaused(false);
+            if(!packet)
+                break;
+
+            if(m_packet)
             {
-                m_state &= ~(STATE_DIALOG);
-                if(!packet)
-                    return;
-
-                m_curData = new analyzer_data(packet);
-
-                if(m_packet)
-                {
-                    delete m_packet->header;
-                    delete m_packet;
-                }
-                ui->dataArea->clear();
-                m_storage->Clear();
-                ui->devTabs->removeAll();
-                ui->devTabs->setHeader(packet->header);
-                ui->devTabs->addDevice();
-
-                m_storage->setPacket(packet);
-                m_packet = packet;
-                m_data_changed = true;
+                delete m_packet->header;
+                delete m_packet;
             }
+            ui->dataArea->clear();
+            m_storage->Clear();
+            ui->devTabs->removeAll();
+            ui->devTabs->setHeader(packet->header);
+            ui->devTabs->addDevice();
+
+            m_storage->setPacket(packet);
+            m_parser->setPacket(packet);
+            m_packet = packet;
+            m_data_changed = true;
             break;
         }
     }
@@ -386,9 +347,7 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
 
     // old packet deleted in AnalyzerDataStorage::loadFromFile()
     m_packet = packet;
-
-    delete m_curData;
-    m_curData = new analyzer_data(m_packet);
+    m_parser->setPacket(packet);
 
     if(!ui->devTabs->count())
     {
@@ -406,7 +365,7 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
     ui->timeBox->setMaximum(m_storage->getSize());
     ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage->getSize()));
     ui->timeBox->setValue(idx);
-    m_state &= ~(STATE_DIALOG);
+    m_parser->setPaused(false);
 
     updateData();
     m_data_changed = false;
@@ -535,8 +494,7 @@ void LorrisAnalyzer::clearAllButton()
 
     ui->dataArea->clear();
 
-    delete m_curData;
-    m_curData = NULL;
+    m_parser->setPacket(NULL);
     m_storage->Clear();
     m_storage->setPacket(NULL);
 
@@ -587,17 +545,16 @@ void LorrisAnalyzer::openFile()
 void LorrisAnalyzer::editStruture()
 {
     SourceDialog *d = new SourceDialog(m_packet, this);
-    m_state |= STATE_DIALOG;
+    m_parser->setPaused(true);
     if (m_con)
-        connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SLOT(readData(QByteArray)));
+        connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
 
     analyzer_packet *packet = d->getStructure();
     delete d;
 
     if(packet)
     {
-        delete m_curData;
-        m_curData = new analyzer_data(packet);
+        m_parser->setPacket(packet);
 
         if(m_packet)
         {
@@ -617,7 +574,7 @@ void LorrisAnalyzer::editStruture()
 
         updateData();
     }
-    m_state &= ~(STATE_DIALOG);
+    m_parser->setPaused(false);
 }
 
 quint32 LorrisAnalyzer::getCurrentIndex()

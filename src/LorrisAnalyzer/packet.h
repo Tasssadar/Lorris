@@ -150,9 +150,22 @@ struct analyzer_packet
         static_data = s_d;
     }
 
+    analyzer_packet(analyzer_packet *p)
+    {
+        copy(p);
+    }
+
     ~analyzer_packet()
     {
         delete[] static_data;
+    }
+
+    void copy(analyzer_packet *p)
+    {
+        header = new analyzer_header(p->header);
+        big_endian = p->big_endian;
+        static_data = new quint8[header->static_len];
+        std::copy(p->static_data, p->static_data+header->static_len, static_data);
     }
 
     void Reset()
