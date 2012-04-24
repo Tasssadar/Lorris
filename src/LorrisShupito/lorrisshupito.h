@@ -148,6 +148,11 @@ private slots:
     void modeSelected(int idx);
     void status(const QString& text);
 
+    void loadFromFile()
+    {
+        loadFromFile(MEM_FLASH);
+    }
+
     void loadFromFile(int memId);
     void loadFromFile(int memId, const QString& filename);
     void saveToFile(int memId);

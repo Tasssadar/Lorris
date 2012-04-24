@@ -32,6 +32,7 @@
 #include <QProgressDialog>
 #include <QSignalMapper>
 #include <QRadioButton>
+#include <QFileInfo>
 
 #include "progressdialog.h"
 #include "shupito.h"
@@ -85,10 +86,11 @@ LorrisShupito::LorrisShupito()
     connect(ui->hideLogBtn,      SIGNAL(clicked()),                SLOT(hideLogBtn()));
     connect(ui->eraseButton,     SIGNAL(clicked()),                SLOT(eraseDevice()));
     connect(ui->hideFusesBtn,    SIGNAL(clicked()),                SLOT(hideFusesBtn()));
+    connect(ui->startstopButton, SIGNAL(clicked()),                SLOT(startstopChip()));
+    connect(ui->loadBtn,         SIGNAL(clicked()),                SLOT(loadFromFile()));
     connect(m_fuse_widget,       SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
-    connect(ui->startstopButton, SIGNAL(clicked()),                SLOT(startstopChip()));
     connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 
     int w = ui->hideFusesBtn->fontMetrics().height()+10;
@@ -873,6 +875,17 @@ void LorrisShupito::loadFromFile(int memId, const QString& filename)
     m_hexAreas[memId]->setBackgroundColor(colorFromFile);
     m_hexFilenames[memId] = filename;
     m_hexWriteTimes[memId] = loadTimestamp;
+
+    if(memId == MEM_FLASH)
+    {
+        ui->filename->setText(filename);
+        ui->filename->setToolTip(filename);
+
+        QDateTime lastMod = QFileInfo(filename).lastModified();
+        QString time = lastMod.toString(tr(" | h:mm:ss d.M.yyyy"));
+        ui->filedate->setText(time);
+        ui->filedate->setToolTip(time);
+    }
 
     status(tr("File loaded"));
 }
