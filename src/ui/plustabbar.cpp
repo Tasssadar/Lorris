@@ -34,9 +34,15 @@ PlusTabBar::PlusTabBar(QWidget *parent) :
 {
     m_plusRect = QRect(2, 4, 16, 16);
     m_disabled = false;
+    m_hover = false;
 
     QIcon icon(":/icons/icons/list-add.png");
     m_pixmap = icon.pixmap(16, 16);
+
+    icon = QIcon(":/icons/icons/list-add-glow.png");
+    m_hover_pixmap = icon.pixmap(16, 16);
+
+    setMouseTracking(true);
 }
 
 void PlusTabBar::updateRect()
@@ -65,7 +71,7 @@ void PlusTabBar::paintEvent(QPaintEvent *event)
     QTabBar::paintEvent(event);
 
     QPainter painter(this);
-    painter.drawPixmap(m_plusRect, m_pixmap);
+    painter.drawPixmap(m_plusRect, getMap());
 }
 
 void PlusTabBar::mousePressEvent(QMouseEvent *event)
@@ -77,12 +83,39 @@ void PlusTabBar::mousePressEvent(QMouseEvent *event)
     emit plusPressed();
 }
 
+void PlusTabBar::mouseMoveEvent(QMouseEvent *event)
+{
+    if(m_disabled)
+        return QTabBar::mouseMoveEvent(event);
+
+    bool in = m_plusRect.contains(event->pos());
+    if(!in && !m_hover)
+        return QTabBar::mouseMoveEvent(event);
+
+    m_hover = in;
+    update();
+    QTabBar::mouseMoveEvent(event);
+}
+
+void PlusTabBar::leaveEvent(QEvent *event)
+{
+    if(m_hover)
+    {
+        m_hover = false;
+        update();
+    }
+    QTabBar::leaveEvent(event);
+}
+
 void PlusTabBar::setDisablePlus(bool disable)
 {
     if(disable == m_disabled)
         return;
 
     m_disabled = disable;
+
+    if(disable)
+        m_hover = false;
 
     QIcon icon(":/icons/icons/list-add.png");
     m_pixmap = icon.pixmap(16, 16, disable ? QIcon::Disabled : QIcon::Normal);
