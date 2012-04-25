@@ -30,7 +30,10 @@
 #include <QPushButton>
 #include <QStyledItemDelegate>
 #include <QPainter>
+
+#ifdef Q_WS_WIN
 #include <QWindowsVistaStyle>
+#endif
 
 namespace {
 
@@ -92,10 +95,19 @@ public:
             cg = QPalette::Inactive;
 
         QColor textColor;
-        if (dynamic_cast<QWindowsVistaStyle *>(style))
-            textColor = opt.palette.color(QPalette::Active, QPalette::Text);
+        if (opt.state & QStyle::State_Selected)
+        {
+#ifdef Q_WS_WIN
+            if (dynamic_cast<QWindowsVistaStyle *>(style))
+                textColor = opt.palette.color(QPalette::Active, QPalette::Text);
+            else
+#endif
+                textColor = opt.palette.color(cg, QPalette::HighlightedText);
+        }
         else
+        {
             textColor = opt.palette.color(cg, QPalette::Text);
+        }
         painter->setPen(textColor);
 
         QRect textRect = opt.rect;
