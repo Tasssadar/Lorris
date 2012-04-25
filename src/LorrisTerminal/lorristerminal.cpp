@@ -107,9 +107,12 @@ void LorrisTerminal::initUI()
         connect(m_input[i], SIGNAL(triggered()), inputMap, SLOT(map()));
     }
 
+    QAction *chgFont = dataMenu->addAction(tr("Change font..."));
+
     inputAct(sConfig.get(CFG_QUINT32_TERMINAL_INPUT));
 
     ui->hexFile->setText(sConfig.get(CFG_STRING_HEX_FOLDER));
+    ui->terminal->loadFont(sConfig.get(CFG_STRING_TERMINAL_FONT));
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
@@ -119,10 +122,12 @@ void LorrisTerminal::initUI()
     connect(ui->flashButton,   SIGNAL(clicked()),                   SLOT(flashButton()));
     connect(ui->pauseButton,   SIGNAL(clicked()),                   SLOT(pauseButton()));
     connect(ui->clearButton,   SIGNAL(clicked()),                   SLOT(clearButton()));
+    connect(ui->terminal,      SIGNAL(fontChanged(QString)),        SLOT(saveTermFont(QString)));
     connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromButton()));
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
+    connect(chgFont,           SIGNAL(triggered()),   ui->terminal, SLOT(showFontDialog()));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
@@ -779,4 +784,9 @@ void LorrisTerminal::setConnection(PortConnection *con)
 {
     this->PortConnWorkTab::setConnection(con);
     m_connectButton->setConn(con);
+}
+
+void LorrisTerminal::saveTermFont(const QString &fontData)
+{
+    sConfig.set(CFG_STRING_TERMINAL_FONT, fontData);
 }

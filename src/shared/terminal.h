@@ -55,6 +55,7 @@ class Terminal : public QAbstractScrollArea
 
 Q_SIGNALS:
     void keyPressed(QString key);
+    void fontChanged(const QString& fontData);
 
 public:
     Terminal(QWidget *parent);
@@ -68,6 +69,9 @@ public:
     }
 
     int getFmt() { return m_fmt; }
+    void setFont(const QFont &f);
+    void loadFont(const QString& str);
+    QString getFontData();
 
 public slots:
     void clear();
@@ -80,6 +84,7 @@ public slots:
     void appendText(const QByteArray& text);
     void setFmt(int fmt);
     void setInput(quint8 input);
+    void showFontDialog();
 
 protected:
     void keyPressEvent(QKeyEvent *event);

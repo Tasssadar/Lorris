@@ -95,6 +95,7 @@ private slots:
     void sendKeyEvent(const QString& key);
     void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);
+    void saveTermFont(const QString& fontData);
 
     //Timers
     void stopTimerSig();
