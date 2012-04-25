@@ -30,6 +30,7 @@
 #include <QPushButton>
 #include <QStyledItemDelegate>
 #include <QPainter>
+#include <QWindowsVistaStyle>
 
 namespace {
 
@@ -37,6 +38,11 @@ class ConnectionListItemDelegate
         : public QStyledItemDelegate
 {
 public:
+    explicit ConnectionListItemDelegate(QObject * parent = 0)
+        : QStyledItemDelegate(parent)
+    {
+    }
+
     QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index ) const
     {
         QStyleOptionViewItemV4 const & opt = static_cast<QStyleOptionViewItemV4 const &>(option);
@@ -84,23 +90,21 @@ public:
         QPalette::ColorGroup cg = opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
         if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active))
             cg = QPalette::Inactive;
-        QColor penColor;
 
-        // FIXME: HighlightedText is white even on Vista, where the highlight shouldn't change
-        // the text color. How should we handle this?
-        /*if (opt.state & QStyle::State_Selected)
-            penColor = opt.palette.color(cg, QPalette::HighlightedText);
-        else*/
-            penColor = opt.palette.color(cg, QPalette::Text);
-        painter->setPen(penColor);
+        QColor textColor;
+        if (dynamic_cast<QWindowsVistaStyle *>(style))
+            textColor = opt.palette.color(QPalette::Active, QPalette::Text);
+        else
+            textColor = opt.palette.color(cg, QPalette::Text);
+        painter->setPen(textColor);
 
         QRect textRect = opt.rect;
         textRect.setLeft(iconRect.right() + 1 + margin);
         textRect.setTop(textRect.top() + vmargin);
         painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::DisplayRole).toString());
 
-        penColor.setAlpha(128);
-        painter->setPen(penColor);
+        textColor.setAlpha(128);
+        painter->setPen(textColor);
 
         textRect.setTop(textRect.top() + opt.fontMetrics.lineSpacing());
         painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::UserRole+1).toString());
@@ -143,7 +147,7 @@ void ChooseConnectionDlg::init(Connection * preselectedConn)
         this->connAdded(conns[i]);
     ui->connectionsList->sortItems();
 
-    ui->connectionsList->setItemDelegate(new ConnectionListItemDelegate());
+    ui->connectionsList->setItemDelegate(new ConnectionListItemDelegate(this));
 
     // Note that the preselected connection may be handled by a different manager
     // and as such may be missing in the map.
