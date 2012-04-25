@@ -21,6 +21,17 @@
 **
 ****************************************************************************/
 
+/*
+ * This terminal supports UTF8 encoding, it can output data
+ * as text or hex dump and pause output. It also allows font selection,
+ * but if user selects non-monospace font, cursor position and maybe something
+ * else will get ugly. I do not want to add support for non-monospace fonts
+ * because it is completely useless - it is expected that user will want to
+ * change only font size.
+ *
+ * This QWidget should be usable outside Lorris without problems.
+ */
+
 #define QT_USE_FAST_CONCATENATION
 
 #include <QApplication>
@@ -732,7 +743,7 @@ void Terminal::setFont(const QFont &f)
 {
     QAbstractScrollArea::setFont(f);
 
-    m_char_width = fontMetrics().width(QLatin1Char('9'));
+    m_char_width = fontMetrics().width(QLatin1Char('m'));
     m_char_height = fontMetrics().height();
 
     m_cursor.setSize(QSize(m_char_width, m_char_height));
