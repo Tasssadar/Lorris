@@ -150,6 +150,8 @@ QWidget *TabWidget::unregisterTab(int index)
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
     m_tab_ids.erase(itr);
 
+    checkEmpty();
+
     return tab;
 }
 
