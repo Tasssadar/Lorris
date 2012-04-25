@@ -89,11 +89,11 @@ void PlusTabBar::mouseMoveEvent(QMouseEvent *event)
         return QTabBar::mouseMoveEvent(event);
 
     bool in = m_plusRect.contains(event->pos());
-    if(!in && !m_hover)
-        return QTabBar::mouseMoveEvent(event);
-
-    m_hover = in;
-    update();
+    if(in != m_hover)
+    {
+        m_hover = in;
+        update();
+    }
     QTabBar::mouseMoveEvent(event);
 }
 
