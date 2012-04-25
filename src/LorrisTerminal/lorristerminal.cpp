@@ -167,16 +167,12 @@ void LorrisTerminal::clearButton()
 
 void LorrisTerminal::pauseButton()
 {
-    if(!(m_state & STATE_PAUSED))
-    {
-        m_state |= STATE_PAUSED;
+    m_state ^= STATE_PAUSED;
+
+    if(m_state & STATE_PAUSED)
         ui->pauseButton->setText(tr("Unpause"));
-    }
     else
-    {
-        m_state &= ~(STATE_PAUSED);
         ui->pauseButton->setText(tr("Pause"));
-    }
 
     ui->terminal->pause(m_state & STATE_PAUSED);
 }
