@@ -380,7 +380,25 @@ QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *
 
 QScriptValue ScriptEnv::__appendTerm(QScriptContext *context, QScriptEngine *engine)
 {
-    emit ((ScriptEnv*)engine)->appendTerm(context->argument(0).toString());
+    ScriptEnv *eng = (ScriptEnv*)engine;
+    QScriptValue arg = context->argument(0);
+
+    if(!arg.isArray())
+        emit eng->appendTerm(arg.toString());
+    else
+    {
+        QByteArray data;
+
+        QScriptValueIterator itr(arg);
+        while(itr.hasNext())
+        {
+            itr.next();
+            if(itr.value().isNumber() && itr.name() != "length")
+                data.push_back(itr.value().toUInt16());
+        }
+        emit eng->appendTermRaw(data);
+    }
+
     return QScriptValue();
 }
 
@@ -399,12 +417,9 @@ QScriptValue ScriptEnv::__sendData(QScriptContext *context, QScriptEngine *engin
     while(itr.hasNext())
     {
         itr.next();
-        if(itr.value().isNumber())
+        if(itr.value().isNumber() && itr.name() != "length")
             sendData.push_back(itr.value().toUInt16());
     }
-
-    if(sendData.size() > 1)
-        sendData.chop(1); // last num is array len, wtf
 
     emit ((ScriptEnv*)engine)->SendData(sendData);
     return QScriptValue();

@@ -30,8 +30,6 @@ TerminalWidget::TerminalWidget(QWidget *parent) : ScriptWidget(parent)
     setIcon(":/dataWidgetIcons/terminal.png");
 
     m_widgetType = WIDGET_TERMINAL;
-
-
 }
 
 void TerminalWidget::setUp(AnalyzerDataStorage *storage)
@@ -39,11 +37,11 @@ void TerminalWidget::setUp(AnalyzerDataStorage *storage)
     ScriptWidget::setUp(storage);
 
     m_env->setSource("function onDataChanged(data, dev, cmd, index) {\n"
-                     "    return \"\";\n"
+                     "    appendTerm(data);\n"
                      "}\n"
                      "\n"
                      "function onKeyPress(key) {\n"
-                     "    sendData(key.charCodeAt(0));\n"
+                     "    sendData(new Array(key.charCodeAt(0)));\n"
                      "}\n");
 }
 

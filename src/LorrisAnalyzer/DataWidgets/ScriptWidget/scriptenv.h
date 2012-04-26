@@ -42,6 +42,7 @@ class ScriptEnv : public QScriptEngine
 Q_SIGNALS:
     void clearTerm();
     void appendTerm(const QString& text);
+    void appendTermRaw(const QByteArray& text);
     void SendData(const QByteArray& data);
 
     void stopUsingJoy(QObject *object);
