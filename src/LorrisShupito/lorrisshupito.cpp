@@ -124,8 +124,10 @@ LorrisShupito::LorrisShupito()
 
     m_terminal = new Terminal(this);
     m_terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
+    m_terminal->loadFont(sConfig.get(CFG_STRING_SHUPITO_TERM_FONT));
     ui->memTabs->addTab(m_terminal, tr("Terminal"));
 
+    connect(m_terminal, SIGNAL(fontChanged(QString)),        this,       SLOT(saveTermFont(QString)));
     connect(m_terminal, SIGNAL(keyPressed(QString)),         m_shupito,  SLOT(sendTunnelData(QString)));
     connect(m_shupito,  SIGNAL(tunnelData(QByteArray)),      m_terminal, SLOT(appendText(QByteArray)));
 
@@ -1277,4 +1279,9 @@ void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
     m_connectButton->setConn(sc);
     if (m_con)
         connect(m_con.data(), SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
+}
+
+void LorrisShupito::saveTermFont(const QString &fontData)
+{
+    sConfig.set(CFG_STRING_SHUPITO_TERM_FONT, fontData);
 }

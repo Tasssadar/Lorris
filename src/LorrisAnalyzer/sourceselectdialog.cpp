@@ -33,6 +33,8 @@ SourceSelectDialog::SourceSelectDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->fileEdit->setText(sConfig.get(CFG_STRING_ANALYZER_FOLDER));
+
     connect(ui->contButton, SIGNAL(clicked()), this, SLOT(contButton()));
     connect(ui->browseButton, SIGNAL(clicked()), this, SLOT(browse()));
     connect(ui->loadRadio, SIGNAL(toggled(bool)), this, SLOT(loadRadioToggled(bool)));

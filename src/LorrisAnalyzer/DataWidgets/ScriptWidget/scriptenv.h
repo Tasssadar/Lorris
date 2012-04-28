@@ -42,6 +42,7 @@ class ScriptEnv : public QScriptEngine
 Q_SIGNALS:
     void clearTerm();
     void appendTerm(const QString& text);
+    void appendTermRaw(const QByteArray& text);
     void SendData(const QByteArray& data);
 
     void stopUsingJoy(QObject *object);
@@ -76,6 +77,7 @@ public:
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
     void callEventHandler(const QString& eventId);
+    void onSave();
 
     ScriptStorage *getStorage() const
     {
@@ -121,6 +123,7 @@ private:
     QScriptValue  m_on_widget_add;
     QScriptValue  m_on_widget_remove;
     QScriptValue  m_on_script_exit;
+    QScriptValue  m_on_save;
 
     qint32 m_widget_id;
     int m_x;

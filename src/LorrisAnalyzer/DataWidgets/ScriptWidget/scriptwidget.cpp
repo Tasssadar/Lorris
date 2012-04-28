@@ -62,6 +62,7 @@ void ScriptWidget::setUp(AnalyzerDataStorage *storage)
     connect(m_terminal, SIGNAL(keyPressed(QString)),         m_env,      SLOT(keyPressed(QString)));
     connect(m_env,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
     connect(m_env,      SIGNAL(appendTerm(QString)),         m_terminal, SLOT(appendText(QString)));
+    connect(m_env,      SIGNAL(appendTermRaw(QByteArray)),   m_terminal, SLOT(appendText(QByteArray)));
     connect(m_env,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
 }
 
@@ -97,10 +98,11 @@ void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
         quint32 len = data.length();
 
         file->write((char*)&len, sizeof(quint32));
-        file->write(data.data());
+        file->write(data.data(), len);
     }
 
     // storage data
+    m_env->onSave();
     m_env->getStorage()->saveToFile(file);
 }
 

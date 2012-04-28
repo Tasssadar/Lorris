@@ -21,6 +21,17 @@
 **
 ****************************************************************************/
 
+/*
+ * This terminal supports UTF8 encoding, it can output data
+ * as text or hex dump and pause output. It also allows font selection,
+ * but if user selects non-monospace font, cursor position and maybe something
+ * else will get ugly. I do not want to add support for non-monospace fonts
+ * because it is completely useless - it is expected that user will want to
+ * change only font size.
+ *
+ * This QWidget should be usable outside Lorris without problems.
+ */
+
 #define QT_USE_FAST_CONCATENATION
 
 #include <QApplication>
@@ -35,6 +46,7 @@
 #include <QMenu>
 #include <QSignalMapper>
 #include <QStringBuilder>
+#include <QFontDialog>
 
 #include "../common.h"
 #include "terminal.h"
@@ -57,17 +69,10 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     setFont(Utils::getMonospaceFont());
     viewport()->setCursor(Qt::IBeamCursor);
 
-    m_char_width = fontMetrics().width(QLatin1Char('9'));
-    m_char_height = fontMetrics().height();
-
     m_paused = false;
     m_fmt = FMT_MAX+1;
     m_input = INPUT_SEND_KEYPRESS;
     m_hex_pos = 0;
-
-    m_cursor.setSize(QSize(m_char_width, m_char_height));
-    m_changed = true;
-    updateScrollBars();
 
     m_context_menu = new QMenu(this);
     QAction *copy = m_context_menu->addAction(tr("Copy"));
@@ -90,11 +95,17 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
         connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
     }
 
+    QAction *fnt = m_context_menu->addAction(tr("Change font..."));
+    QAction *pause = m_context_menu->addAction(tr("Pause"));
     QAction *clear = m_context_menu->addAction(tr("Clear"));
+
+    pause->setCheckable(true);
 
     connect(copy,  SIGNAL(triggered()), SLOT(copyToClipboard()));
     connect(paste, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
     connect(clear, SIGNAL(triggered()), SLOT(clear()));
+    connect(pause, SIGNAL(toggled(bool)), SLOT(pause(bool)));
+    connect(fnt,   SIGNAL(triggered()), SLOT(showFontDialog()));
     connect(fmtMap,SIGNAL(mapped(int)), SLOT(setFmt(int)));
     connect(&m_updateTimer, SIGNAL(timeout()), SLOT(updateScrollBars()));
 
@@ -684,4 +695,74 @@ void Terminal::setInput(quint8 input)
 
     m_input = input;
     m_command.clear();
+}
+
+void Terminal::loadFont(const QString& str)
+{
+    QStringList vals = str.split(';', QString::SkipEmptyParts);
+    if(vals.size() != 4)
+        return;
+
+    QFont fnt;
+
+    for(quint8 i = 0; i < 4; ++i)
+    {
+        if(i == 0)
+        {
+            fnt.setFamily(vals[i]);
+            continue;
+        }
+
+        bool ok = false;
+        int val = vals[i].toInt(&ok);
+        if(!ok)
+            return;
+
+        switch(i)
+        {
+            case 1: // point size
+                fnt.setPointSize(val);
+                break;
+            case 2: // style hint
+                fnt.setStyleHint(QFont::StyleHint(val));
+                break;
+            case 3: // weight
+                fnt.setWeight(val);
+                break;
+        }
+    }
+    setFont(fnt);
+}
+
+QString Terminal::getFontData()
+{
+    QStringList vals;
+    vals << font().family() << QString::number(font().pointSize())
+         << QString::number((int)font().styleHint()) << QString::number(font().weight());
+
+    return vals.join(";");
+}
+
+void Terminal::setFont(const QFont &f)
+{
+    QAbstractScrollArea::setFont(f);
+
+    m_char_width = fontMetrics().width(QLatin1Char('m'));
+    m_char_height = fontMetrics().height();
+
+    m_cursor.setSize(QSize(m_char_width, m_char_height));
+
+    m_changed = true;
+    updateScrollBars();
+}
+
+void Terminal::showFontDialog()
+{
+    bool ok = false;
+    QFont fnt = QFontDialog::getFont(&ok, font(), this, tr("Font selection"));
+    if(!ok)
+        return;
+
+    setFont(fnt);
+    emit fontChanged(getFontData());
 }

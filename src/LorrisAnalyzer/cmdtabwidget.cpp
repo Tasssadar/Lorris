@@ -30,15 +30,24 @@
 #include "../common.h"
 #include "DataWidgets/datawidget.h"
 #include "analyzerdatafile.h"
+#include "../ui/plustabbar.h"
 
 CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent) :
     QTabWidget(parent)
 {
+    PlusTabBar *bar = new PlusTabBar(this);
+    setTabBar(bar);
+    connect(bar,  SIGNAL(plusPressed()),            SLOT(newCommand()));
+    connect(this, SIGNAL(disableCmdAdd(bool)), bar, SLOT(setDisablePlus(bool)));
+
     setTabPosition(QTabWidget::South);
 
     new_cmd_act = new QAction(tr("Add command"), this);
     if(!header || !(header->data_mask & DATA_OPCODE))
+    {
         new_cmd_act->setEnabled(false);
+        emit disableCmdAdd(true);
+    }
     connect(new_cmd_act, SIGNAL(triggered()), this, SLOT(newCommand()));
     addAction(new_cmd_act);
 
@@ -141,6 +150,9 @@ void CmdTabWidget::newCommand()
     QString text = QInputDialog::getText(this, tr("New command"),
                                          tr("Command (hex or normal number):"), QLineEdit::Normal,
                                          "", &ok);
+    if(!ok)
+        return;
+
     int id = 0;
     quint8 res = 0;
     if(ok && !text.isEmpty())
@@ -193,19 +205,19 @@ void CmdTabWidget::tabClose(int index)
         delete m_all_cmds;
         m_all_cmds = NULL;
         m_add_all_act->setEnabled(true);
-        return;
     }
-
-    for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
+    else
     {
-        if(itr->second->a == w)
+        for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
         {
-            delete itr->second;
-            m_cmds.erase(itr);
-            break;
+            if(itr->second->a == w)
+            {
+                delete itr->second;
+                m_cmds.erase(itr);
+                break;
+            }
         }
     }
-
     if(count() < 2)
     {
         setTabsClosable(false);
@@ -295,6 +307,7 @@ void CmdTabWidget::setHeader(analyzer_header *header)
 {
     m_header = header;
     new_cmd_act->setEnabled(header->data_mask & DATA_OPCODE);
+    emit disableCmdAdd(!(header->data_mask & DATA_OPCODE));
 
     if(m_all_cmds && m_all_cmds->l)
         m_all_cmds->l->setHeader(header);

@@ -212,6 +212,7 @@ void ScriptEnv::setSource(const QString &source)
     m_on_widget_add = m_global.property("onWidgetAdd");
     m_on_widget_remove = m_global.property("onWidgetRemove");
     m_on_script_exit = m_global.property("onScriptExit");
+    m_on_save = m_global.property("onSave");
 
     setAgent(new ScriptAgent(this));
 }
@@ -372,6 +373,12 @@ void ScriptEnv::callEventHandler(const QString& eventId)
     handler.call();
 }
 
+void ScriptEnv::onSave()
+{
+    if(m_on_save.isFunction())
+        m_on_save.call();
+}
+
 QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
 {
     emit ((ScriptEnv*)engine)->clearTerm();
@@ -380,7 +387,25 @@ QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *
 
 QScriptValue ScriptEnv::__appendTerm(QScriptContext *context, QScriptEngine *engine)
 {
-    emit ((ScriptEnv*)engine)->appendTerm(context->argument(0).toString());
+    ScriptEnv *eng = (ScriptEnv*)engine;
+    QScriptValue arg = context->argument(0);
+
+    if(!arg.isArray())
+        emit eng->appendTerm(arg.toString());
+    else
+    {
+        QByteArray data;
+
+        QScriptValueIterator itr(arg);
+        while(itr.hasNext())
+        {
+            itr.next();
+            if(itr.value().isNumber() && itr.name() != "length")
+                data.push_back(itr.value().toUInt16());
+        }
+        emit eng->appendTermRaw(data);
+    }
+
     return QScriptValue();
 }
 
@@ -399,12 +424,9 @@ QScriptValue ScriptEnv::__sendData(QScriptContext *context, QScriptEngine *engin
     while(itr.hasNext())
     {
         itr.next();
-        if(itr.value().isNumber())
+        if(itr.value().isNumber() && itr.name() != "length")
             sendData.push_back(itr.value().toUInt16());
     }
-
-    if(sendData.size() > 1)
-        sendData.chop(1); // last num is array len, wtf
 
     emit ((ScriptEnv*)engine)->SendData(sendData);
     return QScriptValue();

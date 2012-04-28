@@ -42,13 +42,28 @@ public:
         return QTabBar::sizeHint() + QSize(20, 0);
     }
 
+public slots:
+    void setDisablePlus(bool disable);
+
 protected:
-    void mousePressEvent(QMouseEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void leaveEvent(QEvent *event);
+    virtual void tabLayoutChange();
 
 private:
     void updateRect();
 
+    QPixmap& getMap()
+    {
+        return m_hover ? m_hover_pixmap : m_pixmap;
+    }
+
     QRect m_plusRect;
+    QPixmap m_pixmap;
+    QPixmap m_hover_pixmap;
+    bool m_disabled;
+    bool m_hover;
 };
 
 #endif // PLUSTABBAR_H

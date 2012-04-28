@@ -94,6 +94,7 @@ private slots:
     void readData(const QByteArray& data);
     void sendKeyEvent(const QString& key);
     void connectedStatus(bool connected);
+    void saveTermFont(const QString& fontData);
 
     //Timers
     void stopTimerSig();

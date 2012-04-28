@@ -57,6 +57,7 @@ class CmdTabWidget : public QTabWidget
 
 Q_SIGNALS:
     void updateData();
+    void disableCmdAdd(bool disable);
 
 public:
     typedef std::map<quint8,CmdTabInfo*> cmd_map;

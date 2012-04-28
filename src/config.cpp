@@ -58,6 +58,8 @@ static const QString keys_string[CFG_STRING_NUM] =
     "proxy/address",              // CFG_STRING_PROXY_ADDR
     "analyzer/js_source",         // CFG_STRING_ANALYZER_JS
     "terminal/textfile",          // CFG_STRING_TERMINAL_TEXTFILE
+    "terminal/font",              // CFG_STRING_TERMINAL_FONT
+    "shupito/terminal_font",      // CFG_STRING_SHUPITO_TERM_FONT
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -101,6 +103,8 @@ Config::Config()
     m_def_string[CFG_STRING_PROXY_ADDR]            = "0";
     m_def_string[CFG_STRING_ANALYZER_JS]           = "";
     m_def_string[CFG_STRING_TERMINAL_TEXTFILE]     = "";
+    m_def_string[CFG_STRING_TERMINAL_FONT]         = "";
+    m_def_string[CFG_STRING_SHUPITO_TERM_FONT]     = "";
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = false;
