@@ -123,17 +123,34 @@ bool QextSerialPortPrivate::open_sys(QIODevice::OpenMode mode)
 bool QextSerialPortPrivate::close_sys()
 {
     flush_sys();
-    CancelIo(Win_Handle);
-    if (CloseHandle(Win_Handle))
-        Win_Handle = INVALID_HANDLE_VALUE;
-    if (winEventNotifier){
+    if (winEventNotifier) {
         winEventNotifier->setEnabled(false);
-        winEventNotifier->deleteLater();
+        delete winEventNotifier;
         winEventNotifier = 0;
     }
+
+    // There's no reason to call CancelIo right before CloseHandle,
+    // especially since WaitCommEvent might have been called from
+    // a different thread. Closing the last handle to a file object
+    // will cancel all pending I/O automatically.
+    CloseHandle(Win_Handle);
+    Win_Handle = INVALID_HANDLE_VALUE;
     _bytesToWrite = 0;
 
+    // It is important to wait for all I/O to complete;
+    // only then can we be sure that all the OVERLAPPED
+    // structures can be freed.
+    //
+    // Note that I'm using an undocumented test
+    // to detect whether the operation is running. The alternative
+    // is pretty much to rewrite the whole thing, which I'm not going
+    // to waste my time on. The test is NT-specific.
+    if (overlap.Internal == STATUS_PENDING)
+        WaitForSingleObject(overlap.hEvent, INFINITE);
+
     foreach(OVERLAPPED* o, pendingWrites) {
+        if (o->Internal == STATUS_PENDING)
+            WaitForSingleObject(o->hEvent, INFINITE);
         CloseHandle(o->hEvent);
         delete o;
     }
@@ -203,12 +220,18 @@ qint64 QextSerialPortPrivate::readData_sys(char *data, qint64 maxSize)
     if (_queryMode == QextSerialPort::EventDriven) {
         OVERLAPPED overlapRead;
         ZeroMemory(&overlapRead, sizeof(OVERLAPPED));
+
+        // You *must* use an event when multiple operations are running simultaneously.
+        overlapRead.hEvent = CreateEvent(0, TRUE, FALSE, 0);
+
         if (!ReadFile(Win_Handle, (void*)data, (DWORD)maxSize, & bytesRead, & overlapRead)) {
             if (GetLastError() == ERROR_IO_PENDING)
                 GetOverlappedResult(Win_Handle, & overlapRead, & bytesRead, true);
             else
                 failed = true;
         }
+
+        CloseHandle(overlapRead.hEvent);
     } else if (!ReadFile(Win_Handle, (void*)data, (DWORD)maxSize, & bytesRead, NULL)) {
         failed = true;
     }
