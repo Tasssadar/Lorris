@@ -73,10 +73,13 @@ public:
 protected:
     void run();
 private:
+    void backNotify();
+
     HANDLE hStopEvent; //stop thread when this event signaled.
     HANDLE hUpdateEvent; //make sure eventlist updated.
     QMutex mutex;
     QList<QextWinEventNotifier *> winEventNotifierList;
+    QList<HANDLE> backNotifyEvents;
 };
 
 Q_GLOBAL_STATIC(QextWinEventNotifierThread, notifierThread)
@@ -126,17 +129,29 @@ bool QextWinEventNotifierThread::registerEventNotifier(QextWinEventNotifier *not
 
 void QextWinEventNotifierThread::unregisterEventNotifier(QextWinEventNotifier *notifier)
 {
-    QMutexLocker locker(&mutex);
-    if (!notifier) {
-        QESP_WARNING("QextWinEventNotifier: Internal error");
-        return;
+    // TODO: create the event in the constructor or register. Unregister shouldn't fail.
+    HANDLE hBackNotify = CreateEvent(0, FALSE, FALSE, 0);
+
+    {
+        QMutexLocker locker(&mutex);
+        if (!notifier) {
+            QESP_WARNING("QextWinEventNotifier: Internal error");
+            return;
+        }
+
+        int idx = winEventNotifierList.indexOf(notifier);
+        if (idx != -1) {
+            winEventNotifierList.takeAt(idx);
+            SetEvent(hUpdateEvent);
+            backNotifyEvents.push_back(hBackNotify);
+        } else {
+            SetEvent(hBackNotify);
+        }
     }
 
-    int idx = winEventNotifierList.indexOf(notifier);
-    if (idx != -1) {
-        winEventNotifierList.takeAt(idx);
-        SetEvent(hUpdateEvent);
-    }
+    // Wait until the update is in effect.
+    WaitForSingleObject(hBackNotify, INFINITE);
+    CloseHandle(hBackNotify);
 }
 
 void QextWinEventNotifierThread::run()
@@ -154,14 +169,37 @@ void QextWinEventNotifierThread::run()
         }
         DWORD ret = WaitForMultipleObjects(nCount+2, pHandles, FALSE, INFINITE);
         if (ret >= WAIT_OBJECT_0 && ret < WAIT_OBJECT_0 + nCount) {
-            QEvent *evt = new QEvent(QEvent::User);
+            QScopedPointer<QEvent> evt(new QEvent(QEvent::User));
             QMutexLocker locker(&mutex);
-            ResetEvent(pHandles[ret-WAIT_OBJECT_0]);
-            QObject * notifier = winEventNotifierList[ret - WAIT_OBJECT_0];
-            QCoreApplication::postEvent(notifier, evt);
+            if (WaitForSingleObject(hUpdateEvent, 0) != WAIT_OBJECT_0)
+            {
+                ResetEvent(pHandles[ret-WAIT_OBJECT_0]);
+                QObject * notifier = winEventNotifierList[ret - WAIT_OBJECT_0];
+                QCoreApplication::postEvent(notifier, evt.take());
+            }
+            else
+            {
+                // This is the slow path that is executed if the `winEventNotifierList`
+                // was modified. Note that the handle that satisfied the wait might
+                // no longer be in the list or could be at a different index.
+
+                HANDLE hWaitObject = pHandles[ret-WAIT_OBJECT_0];
+                for (int i = 0; i < winEventNotifierList.size(); ++i)
+                {
+                    if (hWaitObject == winEventNotifierList[i]->handle())
+                    {
+                        ResetEvent(winEventNotifierList[i]);
+                        QCoreApplication::postEvent(winEventNotifierList[i], evt.take());
+                        break;
+                    }
+                }
+
+                this->backNotify();
+            }
         }
         else if (ret == WAIT_OBJECT_0 + nCount) {
-            //ResetEvent(hUpdateEvent);
+            QMutexLocker locker(&mutex);
+            this->backNotify();
         }
         else if (ret == WAIT_OBJECT_0 + nCount + 1) {
             //qDebug()<<"quit...";
@@ -169,6 +207,20 @@ void QextWinEventNotifierThread::run()
         }
     }
 }
+
+void QextWinEventNotifierThread::backNotify()
+{
+    // The mutex must be locked.
+
+    // Notify the threads that caused the update that it is now in effect
+    // and that they can exit from `unregisterEventNotifier`.
+
+    foreach (HANDLE hEvent, backNotifyEvents)
+        SetEvent(hEvent);
+    backNotifyEvents.clear();
+    //ResetEvent(hUpdateEvent);
+}
+
 
 /*!
     \internal
