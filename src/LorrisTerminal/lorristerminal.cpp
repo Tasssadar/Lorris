@@ -780,6 +780,7 @@ void LorrisTerminal::setConnection(PortConnection *con)
 {
     this->PortConnWorkTab::setConnection(con);
     m_connectButton->setConn(con);
+    connectedStatus(con && con->isOpen());
 }
 
 void LorrisTerminal::saveTermFont(const QString &fontData)
