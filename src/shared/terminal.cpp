@@ -96,11 +96,15 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     }
 
     QAction *fnt = m_context_menu->addAction(tr("Change font..."));
+    QAction *pause = m_context_menu->addAction(tr("Pause"));
     QAction *clear = m_context_menu->addAction(tr("Clear"));
+
+    pause->setCheckable(true);
 
     connect(copy,  SIGNAL(triggered()), SLOT(copyToClipboard()));
     connect(paste, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
     connect(clear, SIGNAL(triggered()), SLOT(clear()));
+    connect(pause, SIGNAL(toggled(bool)), SLOT(pause(bool)));
     connect(fnt,   SIGNAL(triggered()), SLOT(showFontDialog()));
     connect(fmtMap,SIGNAL(mapped(int)), SLOT(setFmt(int)));
     connect(&m_updateTimer, SIGNAL(timeout()), SLOT(updateScrollBars()));

@@ -1369,9 +1369,9 @@
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="47"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="373"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="470"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="508"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="369"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="466"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="504"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
@@ -1387,7 +1387,7 @@
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="106"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="178"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="175"/>
         <source>Pause</source>
         <translation>Zmrazit</translation>
     </message>
@@ -1408,7 +1408,7 @@
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="155"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="733"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="729"/>
         <source>Open File</source>
         <translation>Otevřít soubor</translation>
     </message>
@@ -1423,9 +1423,9 @@
         <translation>Odmrazit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="226"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="300"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="555"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="222"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="296"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="551"/>
         <source>Unsupported chip: </source>
         <translation>Nepodporovaný čip: </translation>
     </message>
@@ -1490,78 +1490,78 @@
         <translation>Změnit písmo...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="392"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="388"/>
         <source>Can&apos;t open serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="424"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="420"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="480"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="476"/>
         <source>Stopping..</source>
         <translation>Zastavuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="511"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="507"/>
         <source>Timeout on stopping chip!</source>
         <translation>Timeout při zastavování čipu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="525"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="521"/>
         <source>Error loading hex file: </source>
         <translation>Chyba při načítání hex souboru: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="571"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="567"/>
         <source>Error making pages: </source>
         <translation>Chyba při vytváření stránek: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="585"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="581"/>
         <source>Flashing into </source>
         <translation>Čip: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="650"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="646"/>
         <source>Timeout during reading EEPROM!</source>
         <translation>Timeout při čtení EEPROM!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="659"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="655"/>
         <source>Timeout during writing EEPROM!</source>
         <translation>Timeout při zapisování EEPROM!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="670"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="666"/>
         <source>Timeout during flashing!</source>
         <translation>Timeout při nahrávání programu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="680"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="676"/>
         <source>Can&apos;t get device id!</source>
         <translation>Nemůžu identifikovat čip!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="732"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="754"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="728"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="750"/>
         <source>Text file (*.txt);;Any file (*.*)</source>
         <translation>Textový soubor (*.txt);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="742"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="738"/>
         <source>Can&apos;t open file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="755"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="751"/>
         <source>Save data</source>
         <translation>Uložit data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="764"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="760"/>
         <source>Can&apos;t open/create file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít/vytvořit soubor &quot;%1&quot;!</translation>
     </message>
@@ -1819,7 +1819,7 @@
         <translation>Export dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="63"/>
+        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="65"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="75"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="125"/>
         <source>Error!</source>
@@ -1840,13 +1840,13 @@
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="221"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="532"/>
-        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="104"/>
+        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="106"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="222"/>
-        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="105"/>
+        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="107"/>
         <source>Import Data</source>
         <translation>Import dat</translation>
     </message>
@@ -1903,7 +1903,7 @@
         <translation>Analyzér může zpracovat jakákoliv data které mu dáte a zobrazit je několika různými způsoby. Můžete označit packet který se má v proudu dat vyhledávat, označit jeho hlavičku a konec, určit bloky data, jejich typ a způsob jakým budou zobrazeny.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="64"/>
+        <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="66"/>
         <source>You have to select at least one thing to load.</source>
         <translation>Musíte vybrat alespoň jednu věc k načtení.</translation>
     </message>
@@ -2336,7 +2336,7 @@ function onKeyPress(key) {
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="201"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="203"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -2539,27 +2539,27 @@ ke změně uspořádání</translation>
 <context>
     <name>TabBar</name>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="206"/>
+        <location filename="../src/ui/tabwidget.cpp" line="208"/>
         <source>Split view top/bottom</source>
         <translation>Rozdělit na vrch a spodek</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="207"/>
+        <location filename="../src/ui/tabwidget.cpp" line="209"/>
         <source>Split view left/right</source>
         <translation>Rozdělit napravo a nalevo</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="215"/>
+        <location filename="../src/ui/tabwidget.cpp" line="217"/>
         <source>Rename...</source>
         <translation>Přejmenovat...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="262"/>
+        <location filename="../src/ui/tabwidget.cpp" line="264"/>
         <source>Rename tab</source>
         <translation>Přejmenovat panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="262"/>
+        <location filename="../src/ui/tabwidget.cpp" line="264"/>
         <source>New name:</source>
         <translation>Nové jméno:</translation>
     </message>
@@ -2567,42 +2567,47 @@ ke změně uspořádání</translation>
 <context>
     <name>Terminal</name>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="67"/>
+        <location filename="../src/shared/terminal.cpp" line="78"/>
         <source>Copy</source>
         <translation>Kopírovat</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="70"/>
+        <location filename="../src/shared/terminal.cpp" line="81"/>
         <source>Paste</source>
         <translation>Vložit</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="75"/>
+        <location filename="../src/shared/terminal.cpp" line="86"/>
         <source>Format</source>
         <translation>Formát</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="79"/>
+        <location filename="../src/shared/terminal.cpp" line="90"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="79"/>
+        <location filename="../src/shared/terminal.cpp" line="90"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="87"/>
+        <location filename="../src/shared/terminal.cpp" line="98"/>
         <source>Change font...</source>
         <translation>Změnit písmo...</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="88"/>
+        <location filename="../src/shared/terminal.cpp" line="99"/>
+        <source>Pause</source>
+        <translation>Zmrazit</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminal.cpp" line="100"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="744"/>
+        <location filename="../src/shared/terminal.cpp" line="762"/>
         <source>Font selection</source>
         <translation>Volba písma</translation>
     </message>
@@ -2618,7 +2623,7 @@ ke změně uspořádání</translation>
 <context>
     <name>TerminalWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/terminalwidget.cpp" line="57"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/terminalwidget.cpp" line="55"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
