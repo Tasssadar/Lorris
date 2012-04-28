@@ -31,6 +31,7 @@
 #include <QGridLayout>
 #include <QVector>
 #include <QMetaType>
+#include <QPointer>
 
 class WorkTab;
 class WorkTabInfo;
@@ -51,12 +52,20 @@ enum ConnectionType
     MAX_CON_TYPE           = 4
 };
 
+enum PrimaryConnectionType {
+    pct_port = (1<<0),
+    pct_shupito = (1<<1)
+};
+
+Q_DECLARE_FLAGS(PrimaryConnectionTypes, PrimaryConnectionType)
+Q_DECLARE_OPERATORS_FOR_FLAGS(PrimaryConnectionTypes)
+
 class Connection : public QObject
 {
     Q_OBJECT
 
 public:
-    Connection();
+    explicit Connection(ConnectionType type);
     ~Connection();
 
     bool removable() const { return m_removable; }
@@ -70,9 +79,13 @@ public:
     QString const & name() const { return m_idString; }
     void setName(const QString& str) { this->setIDString(str); }
 
-    virtual QString details() const { return QString(); }
+    virtual QString details() const
+    {
+        // XXX
+        return QString::number(m_refcount);
+    }
 
-    virtual bool Open() = 0;
+    virtual bool Open() { return false; }
     virtual void OpenConcurrent() = 0;
     virtual void Close() {}
 
@@ -101,14 +114,13 @@ protected:
     void SetState(ConnectionState state);
     void SetOpen(bool open);
 
-    quint8 m_type;
-
 private:
     ConnectionState m_state;
     QString m_idString;
     int m_refcount;
     int m_tabcount;
     bool m_removable;
+    quint8 m_type;
 };
 
 Q_DECLARE_METATYPE(Connection *)
@@ -120,8 +132,114 @@ class PortConnection : public Connection
 Q_SIGNALS:
     void dataRead(const QByteArray& data);
 
+public:
+    explicit PortConnection(ConnectionType type) : Connection(type) {}
+
 public slots:
     virtual void SendData(const QByteArray & /*data*/) {}
+};
+
+template <typename T>
+class ConnectionPointer
+{
+public:
+    explicit ConnectionPointer(T * conn = 0)
+        : m_conn(conn)
+    {
+    }
+
+    ConnectionPointer(ConnectionPointer const & other)
+        : m_conn(other.m_conn)
+    {
+        if (m_conn)
+            m_conn->addRef();
+    }
+
+    template <typename U>
+    ConnectionPointer(ConnectionPointer<U> const & other)
+        : m_conn(other.data())
+    {
+        if (m_conn)
+            m_conn->addRef();
+    }
+
+    static ConnectionPointer fromPtr(T * conn)
+    {
+        ConnectionPointer res(conn);
+        if (res)
+            res->addRef();
+        return res;
+    }
+
+    ~ConnectionPointer()
+    {
+        this->reset();
+    }
+
+    ConnectionPointer & operator=(ConnectionPointer const & other)
+    {
+        if (other.m_conn)
+            other.m_conn->addRef();
+        if (m_conn)
+            m_conn->release();
+        m_conn = other.m_conn;
+        return *this;
+    }
+
+    template <typename U>
+    ConnectionPointer & operator=(ConnectionPointer<U> const & other)
+    {
+        if (other)
+            other->addRef();
+        if (m_conn)
+            m_conn->release();
+        m_conn = other.data();
+        return *this;
+    }
+
+    void reset(T * conn = 0)
+    {
+        if (m_conn)
+            m_conn->release();
+        m_conn = conn;
+    }
+
+    T * data() const { return m_conn; }
+    T * operator->() const { return m_conn; }
+
+    template <typename U>
+    ConnectionPointer<U> staticCast() const
+    {
+        ConnectionPointer<U> res(static_cast<U *>(m_conn.data()));
+        if (res)
+            res->addRef();
+        return res;
+    }
+
+    template <typename U>
+    ConnectionPointer<U> dynamicCast() const
+    {
+        ConnectionPointer<U> res(dynamic_cast<U *>(m_conn.data()));
+        if (res)
+            res->addRef();
+        return res;
+    }
+
+    typedef T* (ConnectionPointer::* UnspecifiedBoolType)() const;
+    operator UnspecifiedBoolType() const { return m_conn? &ConnectionPointer::data: 0; }
+
+    friend bool operator==(ConnectionPointer const & lhs, ConnectionPointer const & rhs)
+    {
+        return lhs.m_conn == rhs.m_conn;
+    }
+
+    friend bool operator!=(ConnectionPointer const & lhs, ConnectionPointer const & rhs)
+    {
+        return lhs.m_conn != rhs.m_conn;
+    }
+
+private:
+    QPointer<T> m_conn;
 };
 
 #endif // CONNECTION_H

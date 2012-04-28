@@ -25,7 +25,7 @@
 #include "chooseconnectiondlg.h"
 
 ConnectButton::ConnectButton(QToolButton * btn)
-    : QObject(btn), m_btn(btn), m_conn(0)
+    : QObject(btn), m_btn(btn), m_conn(0), m_connType(pct_port)
 {
     m_connectAction = m_menu.addAction(tr("Connect"));
     m_menu.setDefaultAction(m_connectAction);
@@ -56,48 +56,52 @@ void ConnectButton::connectTriggered()
     }
 }
 
-Connection * ConnectButton::choose()
+ConnectionPointer<Connection> ConnectButton::choose()
 {
-    ChooseConnectionDlg dialog(m_conn, m_btn);
-    if (!dialog.exec())
-        return 0;
+    ChooseConnectionDlg dialog(m_btn);
 
-    this->setConn(dialog.current());
-    return dialog.current();
+    ConnectionPointer<Connection> port;
+    switch (m_connType)
+    {
+    case pct_port:
+         port = dialog.choosePort(m_conn);
+         break;
+    case pct_shupito:
+         port = dialog.chooseShupito(m_conn);
+         break;
+    }
+
+    if (port)
+        this->setConn(port);
+    return port;
 }
 
-void ConnectButton::setConn(Connection *conn)
+void ConnectButton::setConnectionType(PrimaryConnectionType type)
 {
-    Connection * oldConn = m_conn;
-    Connection * newConn = conn;
-    m_conn = newConn;
+    m_connType = type;
+}
 
-    if (oldConn != newConn)
+void ConnectButton::setConn(ConnectionPointer<Connection> const & conn)
+{
+    if (m_conn != conn)
     {
-        if (oldConn)
-        {
-            disconnect(oldConn, 0, this, 0);
-        }
+        if (m_conn)
+            disconnect(m_conn.data(), 0, this, 0);
 
-        if (newConn)
+        m_conn = conn;
+
+        if (m_conn)
         {
-            connect(newConn, SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
-            connect(newConn, SIGNAL(stateChanged(ConnectionState)), this, SLOT(connectionStateChanged(ConnectionState)));
-            this->connectionStateChanged(newConn->state());
+            connect(m_conn.data(), SIGNAL(stateChanged(ConnectionState)), this, SLOT(connectionStateChanged(ConnectionState)));
+            this->connectionStateChanged(m_conn->state());
         }
         else
         {
             this->connectionStateChanged(st_disconnected);
         }
 
-        if (PortConnection * c = dynamic_cast<PortConnection *>(newConn))
-            emit connectionChosen(c);
+        emit connectionChosen(m_conn);
     }
-}
-
-void ConnectButton::connectionDestroyed()
-{
-    this->setConn(0);
 }
 
 void ConnectButton::connectionStateChanged(ConnectionState state)

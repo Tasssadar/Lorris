@@ -125,7 +125,7 @@ void LorrisTerminal::initUI()
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
-    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 }
 
 LorrisTerminal::~LorrisTerminal()
@@ -375,16 +375,6 @@ void LorrisTerminal::connectedStatus(bool connected)
         m_state &= ~(STATE_STOPPING1 | STATE_STOPPING2 | STATE_STOPPED);
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
-    }
-}
-
-void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
-{
-    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-
-    if(!result)
-    {
-        Utils::ThrowException(tr("Can't open serial port!"));
     }
 }
 
@@ -775,8 +765,8 @@ void LorrisTerminal::inputAct(int act)
     ui->terminal->setInput(act);
 }
 
-void LorrisTerminal::setConnection(PortConnection *con)
+void LorrisTerminal::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
-    this->PortConnWorkTab::setConnection(con);
+    this->PortConnWorkTab::setPortConnection(con);
     m_connectButton->setConn(con);
 }

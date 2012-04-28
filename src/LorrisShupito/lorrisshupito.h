@@ -77,7 +77,7 @@ class chip_definition;
 class FuseWidget;
 class ProgressDialog;
 
-class LorrisShupito : public PortConnWorkTab
+class LorrisShupito : public WorkTab
 {
     Q_OBJECT
 Q_SIGNALS:
@@ -87,16 +87,20 @@ public:
     LorrisShupito();
     ~LorrisShupito();
 
-    void setConnection(PortConnection *con);
     void stopAll(bool wait);
+
+public slots:
+    void setConnection(ConnectionPointer<Connection> const & con);
+
+protected:
+    ConnectionPointer<ShupitoConnection> m_con;
 
 private slots:
     void onTabShow();
     void connDisconnecting();
 
-    void connectionResult(Connection*,bool);
     void connectedStatus(bool connected);
-    void readData(const QByteArray& data);
+    void readPacket(const ShupitoPacket & data);
     void descRead(bool correct);
 
     void vccValueChanged(quint8 id, double value);

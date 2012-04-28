@@ -100,7 +100,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/connection/connectionmgr2.cpp \
     src/LorrisAnalyzer/packetparser.cpp \
     src/ui/plustabbar.cpp \
-    src/ui/homedialog.cpp
+    src/ui/homedialog.cpp \
+    src/connection/shupitoconn.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -186,7 +187,8 @@ HEADERS += src/ui/mainwindow.h \
     src/connection/connectionmgr2.h \
     src/LorrisAnalyzer/packetparser.h \
     src/ui/plustabbar.h \
-    src/ui/homedialog.h
+    src/ui/homedialog.h \
+    src/connection/shupitoconn.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include

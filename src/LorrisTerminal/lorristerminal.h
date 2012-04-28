@@ -75,7 +75,7 @@ public:
     virtual ~LorrisTerminal();
 
     void onTabShow();
-    virtual void setConnection(PortConnection *con);
+    virtual void setPortConnection(ConnectionPointer<PortConnection> const & con);
 
 private slots:
     //Buttons
@@ -93,7 +93,6 @@ private slots:
 
     void readData(const QByteArray& data);
     void sendKeyEvent(const QString& key);
-    void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);
 
     //Timers

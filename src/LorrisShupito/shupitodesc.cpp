@@ -141,13 +141,10 @@ void ShupitoDesc::parseConfig(quint8 *& first, quint8 *& last, quint8& base_cmd,
 
 ShupitoPacket ShupitoDesc::config::getStateChangeCmd(bool activate)
 {
-    ShupitoPacket packet = ShupitoPacket();
-    QByteArray data;
-    data[0] = 0x80;
-    data[1] = actseq.size() + 1;
-    data[2] = activate ? 0x01 : 0x02;
+    ShupitoPacket pkt;
+    pkt.push_back(0);
+    pkt.push_back(activate ? 0x01 : 0x02);
     for(quint8 i = 0; i < actseq.size(); ++i)
-        data[i+3] = actseq[i];
-    packet.addData(data.data(), data.data()+data.size());
-    return packet;
+        pkt.push_back(actseq[i]);
+    return pkt;
 }

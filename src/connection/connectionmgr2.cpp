@@ -26,6 +26,7 @@
 #include "../connection/tcpsocket.h"
 #include <qextserialenumerator.h>
 #include "../config.h"
+#include <QStringBuilder>
 
 ConnectionManager2 * psConMgr2 = 0;
 
@@ -257,8 +258,46 @@ void ConnectionManager2::addUserOwnedConn(Connection * conn)
 
 void ConnectionManager2::connectionDestroyed()
 {
+    // FIXME: this is very wrong (the dynamic type of the sender is QObject).
     Connection * conn = static_cast<Connection *>(this->sender());
     m_userOwnedConns.remove(conn);
     if (m_conns.removeOne(conn))
         emit connRemoved(conn);
+}
+
+ConnectionPointer<ShupitoConnection> ConnectionManager2::createAutoShupito(PortConnection * parentConn)
+{
+    Q_ASSERT(parentConn);
+
+    if (m_autoShupitos.contains(parentConn))
+    {
+        ShupitoConnection * res = m_autoShupitos[parentConn];
+        res->addRef();
+        return ConnectionPointer<ShupitoConnection>(res);
+    }
+
+    ConnectionPointer<ShupitoConnection> res(new ShupitoConnection());
+    res->setName("Shupito at " % parentConn->name());
+    res->setPort(ConnectionPointer<PortConnection>::fromPtr(parentConn));
+    this->addConnection(res.data());
+    connect(res.data(), SIGNAL(destroyed()), this, SLOT(autoShupitoDestroyed()));
+
+    // TODO: exception safety
+    m_autoShupitos[parentConn] = res.data();
+    m_autoShupitosRev[res.data()] = parentConn;
+    parentConn->addRef();
+
+    return res;
+}
+
+void ConnectionManager2::autoShupitoDestroyed()
+{
+    // Remember that the sender's dynamic type has been demoted to QObject by now.
+    QObject * conn = this->sender();
+    Q_ASSERT(m_autoShupitosRev.contains(conn));
+
+    PortConnection * port = m_autoShupitosRev[conn];
+    m_autoShupitos.remove(port);
+    m_autoShupitosRev.remove(conn);
+    port->release();
 }

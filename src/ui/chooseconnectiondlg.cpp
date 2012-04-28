@@ -128,20 +128,7 @@ public:
 ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ChooseConnectionDlg),
-    m_current(0)
-{
-    this->init(0);
-}
-
-ChooseConnectionDlg::ChooseConnectionDlg(Connection * preselectedConn, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ChooseConnectionDlg),
-    m_current(0)
-{
-    this->init(preselectedConn);
-}
-
-void ChooseConnectionDlg::init(Connection * preselectedConn)
+    m_allowedConns(0)
 {
     ui->setupUi(this);
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -161,15 +148,43 @@ void ChooseConnectionDlg::init(Connection * preselectedConn)
 
     ui->connectionsList->setItemDelegate(new ConnectionListItemDelegate(this));
 
-    // Note that the preselected connection may be handled by a different manager
-    // and as such may be missing in the map.
-    if (m_connectionItemMap.contains(preselectedConn))
-        m_connectionItemMap[preselectedConn]->setSelected(true);
-
     connect(&sConMgr2, SIGNAL(connAdded(Connection *)), this, SLOT(connAdded(Connection *)));
     connect(&sConMgr2, SIGNAL(connRemoved(Connection *)), this, SLOT(connRemoved(Connection *)));
 
     this->on_connectionsList_itemSelectionChanged();
+}
+
+ConnectionPointer<PortConnection> ChooseConnectionDlg::choosePort(ConnectionPointer<Connection> const & preselectedConn)
+{
+    this->selectConn(preselectedConn.data());
+    m_allowedConns = pct_port;
+    if (this->exec() != QDialog::Accepted)
+        return ConnectionPointer<PortConnection>();
+    return m_current.dynamicCast<PortConnection>();
+}
+
+ConnectionPointer<ShupitoConnection> ChooseConnectionDlg::chooseShupito(ConnectionPointer<Connection> const & preselectedConn)
+{
+    this->selectConn(preselectedConn.data());
+    m_allowedConns = pct_port | pct_shupito;
+    if (this->exec() != QDialog::Accepted)
+        return ConnectionPointer<ShupitoConnection>();
+
+    if (PortConnection * pc = dynamic_cast<PortConnection *>(m_current.data()))
+    {
+        ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
+        m_current = sc;
+    }
+
+    return m_current.dynamicCast<ShupitoConnection>();
+}
+
+void ChooseConnectionDlg::selectConn(Connection * conn)
+{
+    // Note that the preselected connection may be handled by a different manager
+    // and as such may be missing in the map.
+    if (m_connectionItemMap.contains(conn))
+        m_connectionItemMap[conn]->setSelected(true);
 }
 
 void ChooseConnectionDlg::connAdded(Connection * conn)
@@ -197,7 +212,7 @@ void ChooseConnectionDlg::connChanged()
     QListWidgetItem * item = m_connectionItemMap[conn];
     item->setText(conn->name());
     item->setData(Qt::UserRole+1, conn->details());
-    if (conn == m_current)
+    if (conn == m_current.data())
         this->updateDetailsUi(conn);
 }
 
@@ -276,9 +291,8 @@ void ChooseConnectionDlg::on_actionRemoveConnection_triggered()
 
 void ChooseConnectionDlg::on_connectionNameEdit_textChanged(const QString &arg1)
 {
-    if (!m_current)
-        return;
-    m_current->setName(arg1);
+    if (m_current)
+        m_current->setName(arg1);
 }
 
 void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
@@ -286,7 +300,7 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
     QList<QListWidgetItem *> selected = ui->connectionsList->selectedItems();
     Q_ASSERT(selected.size() <= 1);
 
-    m_current = 0;
+    m_current.reset();
 
     if (selected.empty())
     {
@@ -300,13 +314,18 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
 
     QListWidgetItem * item = selected[0];
     Connection * conn = item->data(Qt::UserRole).value<Connection *>();
+    Q_ASSERT(conn);
 
+    bool enabled = ((m_allowedConns & pct_port) && dynamic_cast<PortConnection *>(conn))
+            || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn));
     ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(true);
-    ui->connectionNameEdit->setEnabled(true);
+
+    ui->connectionNameEdit->setEnabled(enabled);
 
     this->updateDetailsUi(conn);
 
-    m_current = conn;
+    m_current.reset(conn);
+    m_current->addRef();
 }
 
 void ChooseConnectionDlg::on_spDeviceNameEdit_textChanged(const QString &arg1)
@@ -314,7 +333,7 @@ void ChooseConnectionDlg::on_spDeviceNameEdit_textChanged(const QString &arg1)
     if (!m_current)
         return;
     Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT);
-    static_cast<SerialPort *>(m_current)->setDeviceName(arg1);
+    static_cast<SerialPort *>(m_current.data())->setDeviceName(arg1);
 }
 
 void ChooseConnectionDlg::on_connectionsList_doubleClicked(const QModelIndex &index)
@@ -334,7 +353,7 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
     if (!ok)
         return;
 
-    static_cast<SerialPort *>(m_current)->setBaudRate(BaudRateType(editValue));
+    static_cast<SerialPort *>(m_current.data())->setBaudRate(BaudRateType(editValue));
 }
 
 void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)
@@ -342,7 +361,7 @@ void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)
     if (!m_current)
         return;
     Q_ASSERT(m_current->getType() == CONNECTION_TCP_SOCKET);
-    static_cast<TcpSocket *>(m_current)->setHost(arg1);
+    static_cast<TcpSocket *>(m_current.data())->setHost(arg1);
 }
 
 void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
@@ -350,5 +369,5 @@ void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
     if (!m_current)
         return;
     Q_ASSERT(m_current->getType() == CONNECTION_TCP_SOCKET);
-    static_cast<TcpSocket *>(m_current)->setPort(arg1);
+    static_cast<TcpSocket *>(m_current.data())->setPort(arg1);
 }

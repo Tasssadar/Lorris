@@ -25,6 +25,7 @@
 #define CONNECTIONMGR2_H
 
 #include "../connection/connection.h"
+#include "../connection/shupitoconn.h"
 #include <QTimer>
 #include <QHash>
 #include <QSet>
@@ -69,6 +70,7 @@ public:
 
     SerialPort * createSerialPort();
     TcpSocket * createTcpSocket();
+    ConnectionPointer<ShupitoConnection> createAutoShupito(PortConnection * parentConn);
 
     QVariant config() const;
     bool applyConfig(QVariant const & config);
@@ -79,6 +81,7 @@ Q_SIGNALS:
 
 private slots:
     void connectionDestroyed();
+    void autoShupitoDestroyed();
 
 private:
     void addUserOwnedConn(Connection * conn);
@@ -87,6 +90,9 @@ private:
 
     QList<Connection *> m_conns;
     QScopedPointer<SerialPortEnumerator> m_serialPortEnumerator;
+
+    QHash<PortConnection *, ShupitoConnection *> m_autoShupitos;
+    QHash<QObject *, PortConnection *> m_autoShupitosRev;
 };
 
 extern ConnectionManager2 * psConMgr2;

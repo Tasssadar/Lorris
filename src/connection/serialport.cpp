@@ -30,6 +30,7 @@
 #include <QPushButton>
 #include <QStyle>
 #include <qextserialenumerator.h>
+#include <QStringBuilder>
 
 #include "serialport.h"
 #include "../config.h"
@@ -38,10 +39,10 @@
 #include "../WorkTab/WorkTabInfo.h"
 
 SerialPort::SerialPort()
-    : m_rate(BAUD38400),
+    : PortConnection(CONNECTION_SERIAL_PORT),
+      m_rate(BAUD38400),
       m_devNameEditable(true)
 {
-    m_type = CONNECTION_SERIAL_PORT;
     m_port = NULL;
 
     connect(&m_watcher, SIGNAL(finished()), SLOT(openResult()));
@@ -54,7 +55,8 @@ SerialPort::~SerialPort()
 
 QString SerialPort::details() const
 {
-    return m_friendlyName.isEmpty()? m_deviceName: m_friendlyName;
+    // XXX
+    return Connection::details() % " " % (m_friendlyName.isEmpty()? m_deviceName: m_friendlyName);
 }
 
 bool SerialPort::Open()

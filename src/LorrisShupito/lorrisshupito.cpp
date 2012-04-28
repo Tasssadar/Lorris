@@ -42,6 +42,7 @@
 #include "../shared/hexfile.h"
 #include "../shared/chipdefs.h"
 #include "flashbuttonmenu.h"
+#include "../connection/shupitoconn.h"
 
 #include "ui_lorrisshupito.h"
 
@@ -144,11 +145,15 @@ LorrisShupito::LorrisShupito()
     m_state = 0;
 
     m_connectButton = new ConnectButton(ui->connectButton);
-    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+    m_connectButton->setConnectionType(pct_shupito);
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 }
 
 LorrisShupito::~LorrisShupito()
 {
+    if (m_con)
+        m_con->releaseTab();
+
     sConfig.set(CFG_QUITN32_SHUPITO_TERM_FMT, m_terminal->getFmt());
 
     stopAll(false);
@@ -263,16 +268,6 @@ void LorrisShupito::connDisconnecting()
     stopAll(false);
 }
 
-void LorrisShupito::connectionResult(Connection */*con*/,bool result)
-{
-    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-
-    if(!result)
-    {
-        Utils::ThrowException(tr("Can't open connection!"));
-    }
-}
-
 void LorrisShupito::connectedStatus(bool connected)
 {
     if(connected)
@@ -283,7 +278,7 @@ void LorrisShupito::connectedStatus(bool connected)
         delete m_desc;
         m_desc = new ShupitoDesc();
 
-        m_shupito->init(m_con, m_desc);
+        m_shupito->init(m_con.data(), m_desc);
     }
     else
     {
@@ -302,9 +297,9 @@ void LorrisShupito::connectedStatus(bool connected)
         m_vdd_radios[i]->setEnabled(connected);
 }
 
-void LorrisShupito::readData(const QByteArray &data)
+void LorrisShupito::readPacket(const ShupitoPacket & packet)
 {
-    m_shupito->readData(data);
+    m_shupito->readPacket(packet);
 }
 
 void LorrisShupito::stopAll(bool wait)
@@ -323,7 +318,7 @@ void LorrisShupito::stopAll(bool wait)
             if(wait)
                 m_shupito->waitForPacket(pkt, MSG_INFO);
             else
-                m_shupito->sendPacket(pkt);
+                m_con->sendPacket(pkt);
         }
     }
 
@@ -333,7 +328,7 @@ void LorrisShupito::stopAll(bool wait)
         if(wait)
             m_shupito->waitForPacket(pkt, MSG_INFO);
         else
-            m_shupito->sendPacket(pkt);
+            m_con->sendPacket(pkt);
     }
 }
 
@@ -375,13 +370,13 @@ void LorrisShupito::descRead(bool correct)
             ShupitoPacket pkt = m_vdd_config->getStateChangeCmd(true);
             pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
 
-            if(pkt.getLen() == 1 && pkt[0] == 0)
+            if(pkt.size() == 2 && pkt[1] == 0)
                 log("VDD started!");
             else
                 log("Could not start VDD!");
         }
-        ShupitoPacket packet(m_vdd_config->cmd, 2, 0, 0);
-        m_con->SendData(packet.getData(false));
+        ShupitoPacket packet = makeShupitoPacket(m_vdd_config->cmd, 2, 0, 0);
+        m_con->sendPacket(packet);
     }
 
     m_tunnel_config = m_desc->getConfig("356e9bf7-8718-4965-94a4-0be370c8797c");
@@ -393,7 +388,7 @@ void LorrisShupito::descRead(bool correct)
             ShupitoPacket pkt = m_tunnel_config->getStateChangeCmd(true);
             pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
 
-            if(pkt.getLen() == 1 && pkt[0] == 0)
+            if(pkt.size() == 2 && pkt[1] == 0)
                 log("Tunnel started!");
             else
                 log("Could not start tunnel!");
@@ -496,8 +491,8 @@ void LorrisShupito::vddIndexChanged(int index)
 
     lastVccIndex = index;
 
-    ShupitoPacket p(MSG_VCC, 3, 1, 2, quint8(index));
-    m_con->SendData(p.getData(false));
+    ShupitoPacket p = makeShupitoPacket(MSG_VCC, 3, 1, 2, quint8(index));
+    m_con->sendPacket(p);
 }
 
 void LorrisShupito::tunnelSpeedChanged(const QString &text)
@@ -1263,12 +1258,23 @@ int LorrisShupito::getMemIndex()
     return res;
 }
 
-void LorrisShupito::setConnection(PortConnection *con)
+void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
 {
+    ConnectionPointer<ShupitoConnection> sc = con.dynamicCast<ShupitoConnection>();
+
     if (m_con)
-        disconnect(m_con, 0, this, 0);
-    this->PortConnWorkTab::setConnection(con);
-    m_connectButton->setConn(con);
+        m_con->releaseTab();
+
+    m_con = sc;
+
+    if(!sc)
+        return;
+
+    connect(m_con.data(), SIGNAL(packetRead(ShupitoPacket)), this, SLOT(readPacket(ShupitoPacket)));
+    connect(m_con.data(), SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
+    m_con->addTabRef();
+
+    m_connectButton->setConn(sc);
     if (m_con)
-        connect(m_con, SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
+        connect(m_con.data(), SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
 }

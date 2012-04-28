@@ -47,7 +47,7 @@ LorrisProxy::LorrisProxy()
     ui->portBox->setValue(sConfig.get(CFG_QUINT32_PROXY_PORT));
 
     m_connectButton = new ConnectButton(ui->connectButton);
-    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 }
 
 LorrisProxy::~LorrisProxy()
@@ -56,22 +56,12 @@ LorrisProxy::~LorrisProxy()
     delete ui;
 }
 
-void LorrisProxy::connectionResult(Connection */*con*/,bool result)
+void LorrisProxy::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
-    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-
-    if(!result)
-    {
-        Utils::ThrowException(tr("Can't open connection!"));
-    }
-}
-
-void LorrisProxy::setConnection(PortConnection *con)
-{
-    this->PortConnWorkTab::setConnection(con);
+    this->PortConnWorkTab::setPortConnection(con);
     m_connectButton->setConn(con);
-    connect(m_con,    SIGNAL(dataRead(QByteArray)), m_server, SLOT(SendData(QByteArray)));
-    connect(m_server, SIGNAL(newData(QByteArray)),  m_con,    SLOT(SendData(QByteArray)));
+    connect(m_con.data(),    SIGNAL(dataRead(QByteArray)), m_server, SLOT(SendData(QByteArray)));
+    connect(m_server, SIGNAL(newData(QByteArray)),  m_con.data(),    SLOT(SendData(QByteArray)));
 }
 
 void LorrisProxy::updateAddressText()

@@ -29,9 +29,8 @@
 #include <QMutex>
 #include <QTimer>
 
-#include "shupitopacket.h"
-#include "shupitodesc.h"
 #include "../shared/chipdefs.h"
+#include "shupitodesc.h"
 
 enum Opcodes
 {
@@ -64,7 +63,7 @@ enum VerifyMode
     VERIFY_MAX
 };
 
-class PortConnection;
+class ShupitoConnection;
 class ShupitoTunnel;
 
 // device.hpp, 122
@@ -93,22 +92,12 @@ Q_SIGNALS:
 public:
     explicit Shupito(QObject *parent);
     ~Shupito();
-    void init(PortConnection *con, ShupitoDesc *desc);
+    void init(ShupitoConnection *con, ShupitoDesc *desc);
 
-    void readData(const QByteArray& data);
-    void sendPacket(ShupitoPacket packet);
-    void sendPacket(const QByteArray& packet);
-    ShupitoPacket waitForPacket(const QByteArray &data, quint8 cmd);
-    ShupitoPacket waitForPacket(ShupitoPacket& pkt, quint8 cmd)
-    {
-        return waitForPacket(pkt.getData(false), cmd);
-    }
-
-    QByteArray waitForStream(const QByteArray& data, quint8 cmd, quint16 max_packets = 1024);
-    QByteArray waitForStream(ShupitoPacket& pkt, quint8 cmd, quint16 max_packets = 1024)
-    {
-        return waitForStream(pkt.getData(false), cmd, max_packets);
-    }
+    void readPacket(const ShupitoPacket& data);
+    void sendPacket(const ShupitoPacket& data);
+    ShupitoPacket waitForPacket(ShupitoPacket const & pkt, quint8 cmd);
+    QByteArray waitForStream(ShupitoPacket const & pkt, quint8 cmd, quint16 max_packets = 1024);
 
     void setVddConfig(ShupitoDesc::config *cfg) { m_vdd_config = cfg; }
     void setTunnelConfig(ShupitoDesc::config *cfg) { m_tunnel_config = cfg; }
@@ -136,16 +125,14 @@ private slots:
     void tunnelDataSend();
 
 private:
-    void handlePacket(ShupitoPacket& p);
-    void handleVccPacket(ShupitoPacket& p);
-    void handleTunnelPacket(ShupitoPacket& p);
+    void handleVccPacket(ShupitoPacket const & p);
+    void handleTunnelPacket(ShupitoPacket const & p);
 
     void SendSetComSpeed();
 
-    PortConnection *m_con;
+    ShupitoConnection *m_con;
     QScopedPointer<ShupitoTunnel> m_tunnel_conn;
 
-    ShupitoPacket *m_packet;
     ShupitoDesc *m_desc;
     QMutex mutex;
     vdd_setup m_vdd_setup;

@@ -163,7 +163,7 @@ QString MainWindow::getVersionString()
 
 void MainWindow::OpenConnectionManager()
 {
-    ChooseConnectionDlg dialog(0, this);
+    ChooseConnectionDlg dialog(this);
     dialog.exec();
 }
 

@@ -42,7 +42,7 @@ public:
     explicit LorrisProxy();
     ~LorrisProxy();
 
-    void setConnection(PortConnection *con);
+    void setPortConnection(ConnectionPointer<PortConnection> const & con);
     void onTabShow();
 
 private slots:
@@ -50,7 +50,6 @@ private slots:
     void listenChanged();
     void addConnection(QTcpSocket *connection, quint32 id);
     void removeConnection(quint32 id);
-    void connectionResult(Connection *con,bool result);
 
 private:
     Ui::LorrisProxy *ui;

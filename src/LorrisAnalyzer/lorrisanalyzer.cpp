@@ -163,7 +163,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     m_data_changed = false;
 
     m_connectButton = new ConnectButton(ui->connectButton);
-    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -177,15 +177,6 @@ LorrisAnalyzer::~LorrisAnalyzer()
     }
     delete ui->devTabs;
     delete ui;
-}
-
-void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
-{
-    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-    if(!result)
-    {
-        Utils::ThrowException(tr("Can't open connection!"));
-    }
 }
 
 void LorrisAnalyzer::connectedStatus(bool)
@@ -254,7 +245,7 @@ void LorrisAnalyzer::doNewSource()
         {
             SourceDialog *d = new SourceDialog(NULL, this);
             if (m_con)
-                connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
+                connect(this->m_con.data(), SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
 
             analyzer_packet *packet = d->getStructure();
             delete d;
@@ -547,7 +538,7 @@ void LorrisAnalyzer::editStruture()
     SourceDialog *d = new SourceDialog(m_packet, this);
     m_parser->setPaused(true);
     if (m_con)
-        connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
+        connect(this->m_con.data(), SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
 
     analyzer_packet *packet = d->getStructure();
     delete d;
@@ -589,11 +580,11 @@ void LorrisAnalyzer::showTitleTriggered(bool checked)
     emit setTitleVisibility(checked);
 }
 
-void LorrisAnalyzer::setConnection(PortConnection *con)
+void LorrisAnalyzer::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
-    this->PortConnWorkTab::setConnection(con);
+    this->PortConnWorkTab::setPortConnection(con);
     m_connectButton->setConn(con);
 
     if(con)
-        connect(this, SIGNAL(SendData(QByteArray)), con, SLOT(SendData(QByteArray)));
+        connect(this, SIGNAL(SendData(QByteArray)), con.data(), SLOT(SendData(QByteArray)));
 }

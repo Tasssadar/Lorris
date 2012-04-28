@@ -37,9 +37,8 @@
 static const int CONNECT_TIMEOUT = 10000 / 50; // 10s
 
 TcpSocket::TcpSocket()
+    : PortConnection(CONNECTION_TCP_SOCKET)
 {
-    m_type = CONNECTION_TCP_SOCKET;
-
     m_socket = new QTcpSocket(this);
 
     connect(m_socket,   SIGNAL(readyRead()),                                SLOT(readyRead()));
