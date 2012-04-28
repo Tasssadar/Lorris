@@ -102,6 +102,7 @@ void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
     }
 
     // storage data
+    m_env->onSave();
     m_env->getStorage()->saveToFile(file);
 }
 

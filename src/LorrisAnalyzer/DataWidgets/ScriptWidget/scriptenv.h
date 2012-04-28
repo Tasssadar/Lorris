@@ -77,6 +77,7 @@ public:
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
     void callEventHandler(const QString& eventId);
+    void onSave();
 
     ScriptStorage *getStorage() const
     {
@@ -122,6 +123,7 @@ private:
     QScriptValue  m_on_widget_add;
     QScriptValue  m_on_widget_remove;
     QScriptValue  m_on_script_exit;
+    QScriptValue  m_on_save;
 
     qint32 m_widget_id;
     int m_x;

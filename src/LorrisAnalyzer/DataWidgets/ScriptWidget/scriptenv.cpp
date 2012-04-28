@@ -212,6 +212,7 @@ void ScriptEnv::setSource(const QString &source)
     m_on_widget_add = m_global.property("onWidgetAdd");
     m_on_widget_remove = m_global.property("onWidgetRemove");
     m_on_script_exit = m_global.property("onScriptExit");
+    m_on_save = m_global.property("onSave");
 
     setAgent(new ScriptAgent(this));
 }
@@ -370,6 +371,12 @@ void ScriptEnv::callEventHandler(const QString& eventId)
         return;
 
     handler.call();
+}
+
+void ScriptEnv::onSave()
+{
+    if(m_on_save.isFunction())
+        m_on_save.call();
 }
 
 QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
