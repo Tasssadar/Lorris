@@ -27,6 +27,8 @@
 #include <qextserialenumerator.h>
 #include "../config.h"
 #include <QStringBuilder>
+#include "usbshupitoconn.h"
+#include "libusb/lusb0_usb_dyn.h"
 
 ConnectionManager2 * psConMgr2 = 0;
 
@@ -106,10 +108,88 @@ void SerialPortEnumerator::connectionDestroyed()
     m_portMap.remove(port->deviceName());
 }
 
+UsbShupitoEnumerator::UsbShupitoEnumerator()
+    : m_um(0)
+{
+    m_um = libusb0_dyn_init();
+    if (m_um)
+    {
+        m_um->usb_init();
+
+        connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
+        m_refreshTimer.start(1000);
+    }
+}
+
+UsbShupitoEnumerator::~UsbShupitoEnumerator()
+{
+    while (!m_devmap.isEmpty())
+        (*m_devmap.begin())->releaseAll();
+
+    if (m_um)
+        libusb0_dyn_destroy(m_um);
+}
+
+void UsbShupitoEnumerator::refresh()
+{
+    if (!m_um)
+        return;
+
+    int res = m_um->usb_find_busses();
+    if (res < 0)
+        return;
+
+    bool change = res > 0;
+    res = m_um->usb_find_devices();
+    if (!change && res <= 0)
+        return;
+
+    // The list of devices has changed, list them now.
+
+    QList<UsbShupitoConnection *> portsToDisown = m_devmap.values();
+
+    usb_bus * bus = m_um->usb_get_busses();
+    while (bus)
+    {
+        struct usb_device * dev = bus->devices;
+        for (; dev; dev = dev->next)
+        {
+            if (!UsbShupitoConnection::isDeviceSupported(dev))
+                continue;
+
+            if (m_devmap.contains(dev))
+            {
+                portsToDisown.removeOne(m_devmap[dev]);
+            }
+            else
+            {
+                ConnectionPointer<UsbShupitoConnection> conn(new UsbShupitoConnection(m_um));
+                conn->setRemovable(false);
+                conn->setUsbDevice(dev);
+                conn->setName(conn->product());
+                m_devmap[dev] = conn.data();
+                connect(conn.data(), SIGNAL(destroying()), this, SLOT(connectionDestroyed()));
+                sConMgr2.addConnection(conn.take());
+            }
+        }
+        bus = bus->next;
+    }
+
+    for (int i = 0; i < portsToDisown.size(); ++i)
+        portsToDisown[i]->releaseAll();
+}
+
+void UsbShupitoEnumerator::connectionDestroyed()
+{
+    UsbShupitoConnection * conn = static_cast<UsbShupitoConnection *>(this->sender());
+    m_devmap.remove(conn->usbDevice());
+}
+
 ConnectionManager2::ConnectionManager2(QObject * parent)
     : QObject(parent)
 {
     m_serialPortEnumerator.reset(new SerialPortEnumerator());
+    m_usbShupitoEnumerator.reset(new UsbShupitoEnumerator());
 
     QVariant config = sConfig.get(CFG_VARIANT_CONNECTIONS);
     if (config.isValid())
@@ -123,6 +203,7 @@ ConnectionManager2::~ConnectionManager2()
     sConfig.set(CFG_VARIANT_CONNECTIONS, this->config());
 
     m_serialPortEnumerator.reset();
+    m_usbShupitoEnumerator.reset();
 
     // All of the remaining connections should be owned by the manager and should
     // therefore be removable.
@@ -275,7 +356,7 @@ ConnectionPointer<ShupitoConnection> ConnectionManager2::createAutoShupito(PortC
         return ConnectionPointer<ShupitoConnection>(res);
     }
 
-    ConnectionPointer<ShupitoConnection> res(new ShupitoConnection());
+    ConnectionPointer<PortShupitoConnection> res(new PortShupitoConnection());
     res->setName("Shupito at " % parentConn->name());
     res->setPort(ConnectionPointer<PortConnection>::fromPtr(parentConn));
     this->addConnection(res.data());

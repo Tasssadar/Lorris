@@ -1,18 +1,18 @@
 #include "shupitoconn.h"
 
-ShupitoConnection::ShupitoConnection()
-    : Connection(CONNECTION_SHUPITO),
+PortShupitoConnection::PortShupitoConnection()
+    : ShupitoConnection(CONNECTION_PORT_SHUPITO),
       m_port(0),
       m_parserState(pst_discard)
 {
 }
 
-ShupitoConnection::~ShupitoConnection()
+PortShupitoConnection::~PortShupitoConnection()
 {
     this->Close();
 }
 
-void ShupitoConnection::setPort(ConnectionPointer<PortConnection> const & port)
+void PortShupitoConnection::setPort(ConnectionPointer<PortConnection> const & port)
 {
     Q_ASSERT(this->state() == st_disconnected);
 
@@ -34,7 +34,7 @@ void ShupitoConnection::setPort(ConnectionPointer<PortConnection> const & port)
     }
 }
 
-void ShupitoConnection::OpenConcurrent()
+void PortShupitoConnection::OpenConcurrent()
 {
     if (this->state() != st_disconnected)
         return;
@@ -47,7 +47,7 @@ void ShupitoConnection::OpenConcurrent()
         m_port->OpenConcurrent();
 }
 
-void ShupitoConnection::Close()
+void PortShupitoConnection::Close()
 {
     if (this->state() == st_connected)
     {
@@ -57,7 +57,7 @@ void ShupitoConnection::Close()
     }
 }
 
-void ShupitoConnection::portStateChanged(ConnectionState state)
+void PortShupitoConnection::portStateChanged(ConnectionState state)
 {
     if (this->state() == st_disconnected && state != st_disconnected)
         this->SetState(st_connecting);
@@ -71,17 +71,17 @@ void ShupitoConnection::portStateChanged(ConnectionState state)
     }
 }
 
-void ShupitoConnection::portDisconnecting()
+void PortShupitoConnection::portDisconnecting()
 {
     this->Close();
 }
 
-void ShupitoConnection::portDestroyed()
+void PortShupitoConnection::portDestroyed()
 {
     this->portStateChanged(st_disconnected);
 }
 
-void ShupitoConnection::portDataRead(QByteArray const & data)
+void PortShupitoConnection::portDataRead(QByteArray const & data)
 {
     for (int i = 0; i < data.size(); ++i)
     {
@@ -123,7 +123,7 @@ void ShupitoConnection::portDataRead(QByteArray const & data)
     }
 }
 
-void ShupitoConnection::sendPacket(ShupitoPacket const & packet)
+void PortShupitoConnection::sendPacket(ShupitoPacket const & packet)
 {
     Q_ASSERT(packet.size() >= 1 && packet.size() <= 16);
     Q_ASSERT(packet[0] < 16);

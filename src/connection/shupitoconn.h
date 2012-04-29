@@ -9,7 +9,21 @@ class ShupitoConnection : public Connection
     Q_OBJECT
 
 public:
-    ShupitoConnection();
+    ShupitoConnection(ConnectionType type) : Connection(type) {}
+
+public slots:
+    virtual void sendPacket(ShupitoPacket const & packet) = 0;
+
+signals:
+    void packetRead(ShupitoPacket const & packet);
+};
+
+class PortShupitoConnection : public ShupitoConnection
+{
+    Q_OBJECT
+
+public:
+    PortShupitoConnection();
 
     void OpenConcurrent();
     void Close();
@@ -17,14 +31,11 @@ public:
     ConnectionPointer<PortConnection> const & port() const { return m_port; }
     void setPort(ConnectionPointer<PortConnection> const & port);
 
-Q_SIGNALS:
-    void packetRead(ShupitoPacket const & packet);
-
 public slots:
     void sendPacket(ShupitoPacket const & packet);
 
 protected:
-    ~ShupitoConnection();
+    ~PortShupitoConnection();
 
 private slots:
     void portStateChanged(ConnectionState state);

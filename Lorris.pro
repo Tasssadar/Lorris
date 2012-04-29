@@ -101,7 +101,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/packetparser.cpp \
     src/ui/plustabbar.cpp \
     src/ui/homedialog.cpp \
-    src/connection/shupitoconn.cpp
+    src/connection/shupitoconn.cpp \
+    src/connection/usbshupitoconn.cpp \
+    dep/libusb/lusb0_usb_dyn.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -188,7 +190,10 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/packetparser.h \
     src/ui/plustabbar.h \
     src/ui/homedialog.h \
-    src/connection/shupitoconn.h
+    src/connection/shupitoconn.h \
+    src/connection/usbshupitoconn.h \
+    dep/libusb/lusb0_usb_dyn.h \
+    dep/libusb/lusb0_usb.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include

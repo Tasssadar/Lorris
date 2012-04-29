@@ -55,6 +55,31 @@ private:
     QTimer m_refreshTimer;
 };
 
+struct libusb0_methods;
+struct usb_device;
+class UsbShupitoConnection;
+
+class UsbShupitoEnumerator : public QObject
+{
+    Q_OBJECT
+
+public:
+    UsbShupitoEnumerator();
+    ~UsbShupitoEnumerator();
+
+public slots:
+    void refresh();
+
+private slots:
+    void connectionDestroyed();
+
+private:
+    QHash<usb_device *, UsbShupitoConnection *> m_devmap;
+
+    QTimer m_refreshTimer;
+    libusb0_methods * m_um;
+};
+
 class ConnectionManager2 : public QObject
 {
     Q_OBJECT
@@ -91,6 +116,7 @@ private:
 
     QSet<Connection *> m_userOwnedConns;
     QScopedPointer<SerialPortEnumerator> m_serialPortEnumerator;
+    QScopedPointer<UsbShupitoEnumerator> m_usbShupitoEnumerator;
     QHash<PortConnection *, ShupitoConnection *> m_autoShupitos;
     QHash<QObject *, PortConnection *> m_autoShupitosRev;
 };
