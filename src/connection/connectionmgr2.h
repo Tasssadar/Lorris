@@ -86,11 +86,11 @@ private slots:
 private:
     void addUserOwnedConn(Connection * conn);
     void clearUserOwnedConns();
-    QSet<Connection *> m_userOwnedConns;
 
     QList<Connection *> m_conns;
-    QScopedPointer<SerialPortEnumerator> m_serialPortEnumerator;
 
+    QSet<Connection *> m_userOwnedConns;
+    QScopedPointer<SerialPortEnumerator> m_serialPortEnumerator;
     QHash<PortConnection *, ShupitoConnection *> m_autoShupitos;
     QHash<QObject *, PortConnection *> m_autoShupitosRev;
 };

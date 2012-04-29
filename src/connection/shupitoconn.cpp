@@ -27,7 +27,7 @@ void ShupitoConnection::setPort(ConnectionPointer<PortConnection> const & port)
     if (m_port)
     {
         connect(m_port.data(), SIGNAL(disconnecting()), this, SLOT(portDisconnecting()));
-        connect(m_port.data(), SIGNAL(destroyed()), this, SLOT(portDestroyed()));
+        connect(m_port.data(), SIGNAL(destroying()), this, SLOT(portDestroyed()));
         connect(m_port.data(), SIGNAL(stateChanged(ConnectionState)), this, SLOT(portStateChanged(ConnectionState)));
         connect(m_port.data(), SIGNAL(dataRead(QByteArray)), this, SLOT(portDataRead(QByteArray)));
         this->portStateChanged(m_port->state());

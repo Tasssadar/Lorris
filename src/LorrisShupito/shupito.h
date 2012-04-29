@@ -31,6 +31,7 @@
 
 #include "../shared/chipdefs.h"
 #include "shupitodesc.h"
+#include "../connection/connection.h"
 
 enum Opcodes
 {
@@ -131,7 +132,7 @@ private:
     void SendSetComSpeed();
 
     ShupitoConnection *m_con;
-    QScopedPointer<ShupitoTunnel> m_tunnel_conn;
+    ConnectionPointer<ShupitoTunnel> m_tunnel_conn;
 
     ShupitoDesc *m_desc;
     QMutex mutex;

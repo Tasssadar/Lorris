@@ -54,7 +54,10 @@ TcpSocket::~TcpSocket()
 
 QString TcpSocket::details() const
 {
-    return this->host() % ":" % QString::number(this->port());
+    QString res = Connection::details();
+    if (!res.isEmpty())
+        res += ", ";
+    return res % this->host() % ":" % QString::number(this->port());
 }
 
 bool TcpSocket::Open()

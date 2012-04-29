@@ -42,7 +42,7 @@ SerialPortEnumerator::~SerialPortEnumerator()
     portsToClear.swap(m_ownedPorts);
 
     for (std::set<SerialPort *>::iterator it = portsToClear.begin(); it != portsToClear.end(); ++it)
-        delete *it;
+        (*it)->releaseAll();
 }
 
 void SerialPortEnumerator::refresh()
@@ -57,7 +57,7 @@ void SerialPortEnumerator::refresh()
         QHash<QString, SerialPort *>::const_iterator it = m_portMap.find(ports[i].physName);
         if (it == m_portMap.end())
         {
-            QScopedPointer<SerialPort> portGuard(new SerialPort());
+            ConnectionPointer<SerialPort> portGuard(new SerialPort());
             portGuard->setName(info.portName);
             portGuard->setDeviceName(info.physName);
             portGuard->setFriendlyName(info.friendName);
@@ -170,7 +170,7 @@ bool ConnectionManager2::applyConfig(QVariant const & config)
     {
         QList<Connection *> & conns;
         cleanup(QList<Connection *> & conns) : conns(conns) {}
-        ~cleanup() { for (int i = 0; i < conns.size(); ++i) delete conns[i]; }
+        ~cleanup() { for (int i = 0; i < conns.size(); ++i) conns[i]->releaseAll(); }
     } cleanupGuard(newConns);
 
     QList<QVariant> const & connConfigs = config.toList();
@@ -187,7 +187,7 @@ bool ConnectionManager2::applyConfig(QVariant const & config)
 
         QString const & type = typev.toString();
 
-        QScopedPointer<Connection> conn;
+        ConnectionPointer<Connection> conn;
         if (type == "serial_port")
             conn.reset(new SerialPort());
         else if (type == "tcp_client")
@@ -220,7 +220,7 @@ void ConnectionManager2::clearUserOwnedConns()
     {
         Connection * conn = *m_userOwnedConns.begin();
         Q_ASSERT(conn->removable());
-        delete conn;
+        conn->releaseAll();
     }
 }
 
@@ -231,21 +231,21 @@ void ConnectionManager2::refresh()
 
 SerialPort * ConnectionManager2::createSerialPort()
 {
-    QScopedPointer<SerialPort> conn(new SerialPort());
+    ConnectionPointer<SerialPort> conn(new SerialPort());
     this->addUserOwnedConn(conn.data());
     return conn.take();
 }
 
 TcpSocket * ConnectionManager2::createTcpSocket()
 {
-    QScopedPointer<TcpSocket> conn(new TcpSocket());
+    ConnectionPointer<TcpSocket> conn(new TcpSocket());
     this->addUserOwnedConn(conn.data());
     return conn.take();
 }
 
 void ConnectionManager2::addConnection(Connection * conn)
 {
-    connect(conn, SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
+    connect(conn, SIGNAL(destroying()), this, SLOT(connectionDestroyed()));
     m_conns.append(conn);
     emit connAdded(conn);
 }
@@ -258,7 +258,6 @@ void ConnectionManager2::addUserOwnedConn(Connection * conn)
 
 void ConnectionManager2::connectionDestroyed()
 {
-    // FIXME: this is very wrong (the dynamic type of the sender is QObject).
     Connection * conn = static_cast<Connection *>(this->sender());
     m_userOwnedConns.remove(conn);
     if (m_conns.removeOne(conn))
@@ -280,7 +279,7 @@ ConnectionPointer<ShupitoConnection> ConnectionManager2::createAutoShupito(PortC
     res->setName("Shupito at " % parentConn->name());
     res->setPort(ConnectionPointer<PortConnection>::fromPtr(parentConn));
     this->addConnection(res.data());
-    connect(res.data(), SIGNAL(destroyed()), this, SLOT(autoShupitoDestroyed()));
+    connect(res.data(), SIGNAL(destroying()), this, SLOT(autoShupitoDestroyed()));
 
     // TODO: exception safety
     m_autoShupitos[parentConn] = res.data();

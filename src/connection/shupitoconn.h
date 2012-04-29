@@ -10,7 +10,6 @@ class ShupitoConnection : public Connection
 
 public:
     ShupitoConnection();
-    ~ShupitoConnection();
 
     void OpenConcurrent();
     void Close();
@@ -23,6 +22,9 @@ Q_SIGNALS:
 
 public slots:
     void sendPacket(ShupitoPacket const & packet);
+
+protected:
+    ~ShupitoConnection();
 
 private slots:
     void portStateChanged(ConnectionState state);

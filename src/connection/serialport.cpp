@@ -55,8 +55,10 @@ SerialPort::~SerialPort()
 
 QString SerialPort::details() const
 {
-    // XXX
-    return Connection::details() % " " % (m_friendlyName.isEmpty()? m_deviceName: m_friendlyName);
+    QString res = Connection::details();
+    if (!res.isEmpty())
+        res += ", ";
+    return res + (m_friendlyName.isEmpty()? m_deviceName: m_friendlyName);
 }
 
 bool SerialPort::Open()

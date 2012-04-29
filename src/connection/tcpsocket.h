@@ -38,7 +38,6 @@ class TcpSocket : public PortConnection
     Q_OBJECT
 public:
     explicit TcpSocket();
-    ~TcpSocket();
 
     virtual QString details() const;
 
@@ -66,6 +65,9 @@ public slots:
     void tcpConnectResult();
     void readyRead();
     void stateChanged();
+
+protected:
+    ~TcpSocket();
 
 private:
     bool connectToHost();

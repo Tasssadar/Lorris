@@ -31,10 +31,6 @@
 #include <QGridLayout>
 #include <QVector>
 #include <QMetaType>
-#include <QPointer>
-
-class WorkTab;
-class WorkTabInfo;
 
 enum ConnectionState {
     st_disconnected,
@@ -66,7 +62,6 @@ class Connection : public QObject
 
 public:
     explicit Connection(ConnectionType type);
-    ~Connection();
 
     bool removable() const { return m_removable; }
     void setRemovable(bool value) { m_removable = value; emit changed(); }
@@ -79,11 +74,7 @@ public:
     QString const & name() const { return m_idString; }
     void setName(const QString& str) { this->setIDString(str); }
 
-    virtual QString details() const
-    {
-        // XXX
-        return QString::number(m_refcount);
-    }
+    virtual QString details() const;
 
     virtual bool Open() { return false; }
     virtual void OpenConcurrent() = 0;
@@ -97,11 +88,17 @@ public:
     void addTabRef();
     void releaseTab();
 
+    // Emits the `destroying` singal to break all references,
+    // then deletes the object.
+    void releaseAll();
+
     virtual QHash<QString, QVariant> config() const;
     virtual bool applyConfig(QHash<QString, QVariant> const & config);
 
-Q_SIGNALS:
+signals:
+    // XXX: remove
     void connectResult(Connection *con, bool open);
+
     void connected(bool connected);
     void stateChanged(ConnectionState state);
     void changed();
@@ -110,7 +107,13 @@ Q_SIGNALS:
     // to allow clients to send shutdown chatter.
     void disconnecting();
 
+    // This is emitted right before delete is called, allowing clients
+    // to clean up while the connection is still fully constructed.
+    // Strong ref holders must abandon their refs without releasing them!
+    void destroying();
+
 protected:
+    ~Connection();
     void SetState(ConnectionState state);
     void SetOpen(bool open);
 
@@ -204,13 +207,20 @@ public:
         m_conn = conn;
     }
 
+    T * take()
+    {
+        T * res = m_conn;
+        m_conn = 0;
+        return res;
+    }
+
     T * data() const { return m_conn; }
     T * operator->() const { return m_conn; }
 
     template <typename U>
     ConnectionPointer<U> staticCast() const
     {
-        ConnectionPointer<U> res(static_cast<U *>(m_conn.data()));
+        ConnectionPointer<U> res(static_cast<U *>(m_conn));
         if (res)
             res->addRef();
         return res;
@@ -219,7 +229,7 @@ public:
     template <typename U>
     ConnectionPointer<U> dynamicCast() const
     {
-        ConnectionPointer<U> res(dynamic_cast<U *>(m_conn.data()));
+        ConnectionPointer<U> res(dynamic_cast<U *>(m_conn));
         if (res)
             res->addRef();
         return res;
@@ -239,7 +249,7 @@ public:
     }
 
 private:
-    QPointer<T> m_conn;
+    T * m_conn;
 };
 
 #endif // CONNECTION_H

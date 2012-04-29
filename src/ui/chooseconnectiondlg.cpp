@@ -286,7 +286,7 @@ void ChooseConnectionDlg::on_actionRemoveConnection_triggered()
     Q_ASSERT(selected.size() <= 1);
 
     for (int i = 0; i < selected.size(); ++i)
-        delete selected[i]->data(Qt::UserRole).value<Connection *>();
+        selected[i]->data(Qt::UserRole).value<Connection *>()->releaseAll();
 }
 
 void ChooseConnectionDlg::on_connectionNameEdit_textChanged(const QString &arg1)

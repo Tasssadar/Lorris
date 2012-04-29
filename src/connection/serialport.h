@@ -42,7 +42,6 @@ Q_SIGNALS:
 
 public:
     SerialPort();
-    virtual ~SerialPort();
 
     virtual QString details() const;
 
@@ -66,6 +65,9 @@ public:
 
     QHash<QString, QVariant> config() const;
     bool applyConfig(QHash<QString, QVariant> const & config);
+
+protected:
+    ~SerialPort();
 
 private slots:
     void connectResultSer(bool opened);
