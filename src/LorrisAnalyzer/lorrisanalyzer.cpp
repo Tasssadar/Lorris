@@ -246,7 +246,7 @@ void LorrisAnalyzer::doNewSource()
         {
             QString file = s->getFileName();
             quint8 mask = s->getDataMask();
-            load(&file, mask);
+            load(file, mask);
             m_data_changed = false;
             break;
         }
@@ -338,12 +338,12 @@ analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
     return m_storage->get(m_curIndex-1);
 }
 
-void LorrisAnalyzer::load(QString *name, quint8 mask)
+bool LorrisAnalyzer::load(QString &name, quint8 mask)
 {
     quint32 idx = 0;
-    analyzer_packet *packet = m_storage->loadFromFile(name, mask, ui->dataArea, ui->devTabs, idx);
+    analyzer_packet *packet = m_storage->loadFromFile(&name, mask, ui->dataArea, ui->devTabs, idx);
     if(!packet)
-        return;
+        return false;
 
     // old packet deleted in AnalyzerDataStorage::loadFromFile()
     m_packet = packet;
@@ -369,6 +369,7 @@ void LorrisAnalyzer::load(QString *name, quint8 mask)
 
     updateData();
     m_data_changed = false;
+    return true;
 }
 
 void LorrisAnalyzer::saveButton()
@@ -527,6 +528,12 @@ void LorrisAnalyzer::clearDataButton()
     updateData();
 }
 
+void LorrisAnalyzer::openFile(const QString& filename)
+{
+    if(load((QString&)filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS)))
+        sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
+}
+
 void LorrisAnalyzer::openFile()
 {
     static const QString filters = QObject::tr("Lorris data files (*.ldta *.cldta)");
@@ -539,7 +546,7 @@ void LorrisAnalyzer::openFile()
 
     sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
 
-    load(&filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS));
+    load(filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS));
 }
 
 void LorrisAnalyzer::editStruture()

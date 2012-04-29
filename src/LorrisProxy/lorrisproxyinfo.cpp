@@ -45,4 +45,3 @@ QString LorrisProxyInfo::GetDescription()
 {
     return QObject::tr("This module acts as proxy between a connection and TCP server socket.");
 }
-

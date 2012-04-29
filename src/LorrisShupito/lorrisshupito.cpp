@@ -892,6 +892,19 @@ void LorrisShupito::loadFromFile(int memId, const QString& filename)
     status(tr("File loaded"));
 }
 
+void LorrisShupito::openFile(const QString &filename)
+{
+    try
+    {
+        loadFromFile(MEM_FLASH, filename);
+        sConfig.set(CFG_STRING_SHUPITO_HEX_FOLDER, filename);
+    }
+    catch(QString ex)
+    {
+        Utils::ThrowException(ex);
+    }
+}
+
 void LorrisShupito::saveToFile(int memId)
 {
     try

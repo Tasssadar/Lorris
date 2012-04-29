@@ -49,6 +49,7 @@ public:
 
     virtual void onTabShow();
     virtual bool onTabClose();
+    virtual void openFile(const QString& filename);
     virtual std::vector<QMenu*>& getMenu() { return m_menus; }
 
     WorkTabInfo *getInfo() const { return m_info; }

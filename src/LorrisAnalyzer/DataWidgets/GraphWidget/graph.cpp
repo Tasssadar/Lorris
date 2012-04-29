@@ -117,18 +117,8 @@ void Graph::mousePressEvent(QMouseEvent *event)
 
 void Graph::mouseMoveEvent(QMouseEvent *event)
 {
-    int x = event->pos().x();
-    int y = event->pos().y();
-
-    if((x < RESIZE_BORDER) ||
-       (x > width() - RESIZE_BORDER) ||
-       (y > height() - RESIZE_BORDER))
-    {
-        return QWidget::mouseMoveEvent(event);
-    }
-
     QwtPlot::mouseMoveEvent(event);
-    event->accept();
+    QWidget::mouseMoveEvent(event);
 }
 
 void Graph::wheelEvent(QWheelEvent *event)

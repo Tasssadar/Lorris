@@ -110,9 +110,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
     connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
 
-    // Sort tab infos after they were added by static variables
-    sWorkTabMgr.SortTabInfos();
-
     QMenu * menuFileNew = menuFile->addMenu(tr("&New"));
 
     {
@@ -153,6 +150,14 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
 
+}
+
+void MainWindow::show(const QStringList& openFiles)
+{
+    QWidget::show();
+
+    for(QStringList::const_iterator itr = openFiles.begin(); itr != openFiles.end(); ++itr)
+        sWorkTabMgr.openTabWithFile(*itr);
 }
 
 QString MainWindow::getVersionString()

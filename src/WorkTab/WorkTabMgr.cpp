@@ -52,6 +52,11 @@ static bool compareTabInfos(WorkTabInfo * lhs, WorkTabInfo * rhs)
 void WorkTabMgr::SortTabInfos()
 {
     std::sort(m_workTabInfos.begin(), m_workTabInfos.end(), compareTabInfos);
+
+    // Must be done here, because RegisterTabInfo is called from
+    // WorkTabInfo's constructor so virtual methods do not work
+    for(InfoList::Iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
+        m_handledTypes += (*itr)->GetHandledFiles();
 }
 
 WorkTabMgr::InfoList const & WorkTabMgr::GetWorkTabInfos() const
@@ -149,4 +154,19 @@ bool WorkTabMgr::onTabsClose()
             return false;
     }
     return true;
+}
+
+void WorkTabMgr::openTabWithFile(const QString &filename)
+{
+    QString suffix = filename.split(".", QString::SkipEmptyParts).back();
+    for(InfoList::Iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
+    {
+        if(!(*itr)->GetHandledFiles().contains(suffix))
+            continue;
+
+        WorkTab *tab = AddWorkTab(*itr);
+        if(tab)
+           tab->openFile(filename);
+        return;
+    }
 }

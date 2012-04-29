@@ -47,3 +47,8 @@ QString LorrisAnalyzerInfo::GetDescription()
                        "You can mark packets in the data source, mark their headers or tails, mark individual data blocks, "
                        "select their data type and the way they will be shown to you.");
 }
+
+QStringList LorrisAnalyzerInfo::GetHandledFiles()
+{
+    return (QStringList() << "cldta" << "ldta");
+}

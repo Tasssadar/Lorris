@@ -40,6 +40,9 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void show(const QStringList &openFiles);
+
 protected:
     void closeEvent(QCloseEvent *event);
 

@@ -69,6 +69,11 @@ void WorkTab::addTopMenu(QMenu *menu)
     m_menus.push_back(menu);
 }
 
+void WorkTab::openFile(const QString &/*filename*/)
+{
+
+}
+
 //----------------------------------------------------------------------------
 PortConnWorkTab::PortConnWorkTab()
     : m_con(0)

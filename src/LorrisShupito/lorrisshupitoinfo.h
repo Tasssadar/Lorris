@@ -34,6 +34,7 @@ public:
     WorkTab *GetNewTab();
     QString GetName();
     QString GetDescription();
+    QStringList GetHandledFiles();
 };
 
 #endif // LORRISSHUPITOINFO_H

@@ -31,6 +31,7 @@
 #include "packet.h"
 #include "DataWidgets/datawidget.h"
 #include "../ui/connectbutton.h"
+#include "analyzerdatastorage.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -79,6 +80,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         bool showTitleBars() const { return m_title_action->isChecked(); }
 
         void setConnection(PortConnection *con);
+        void openFile(const QString& filename);
 
     public slots:
         void onTabShow();
@@ -108,7 +110,7 @@ class LorrisAnalyzer : public PortConnWorkTab
 
     private:
         void readData(const QByteArray& data);
-        void load(QString *name, quint8 mask);
+        bool load(QString& name, quint8 mask);
 
         bool highlightInfoNotNull;
         data_widget_info highlightInfo;

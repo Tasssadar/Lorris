@@ -83,6 +83,13 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
             return tabIdCounter++;
         }
 
+        bool isFileHandled(const QString& extension) const
+        {
+            return m_handledTypes.contains(extension, Qt::CaseInsensitive);
+        }
+
+        void openTabWithFile(const QString& filename);
+
         void OpenHomeTab();
         void CloseHomeTab();
 
@@ -94,6 +101,7 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
     private:
         InfoList m_workTabInfos;
         WorkTabMap m_workTabs;
+        QStringList m_handledTypes;
 
         quint32 tabWidgetCounter;
         quint32 tabIdCounter;
