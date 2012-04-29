@@ -1,4 +1,6 @@
-#ifdef Q_WIN
+#include <QtGlobal>
+
+#ifdef Q_OS_WIN
 #include "lusb0_usb_win.h"
 #else
 #include <usb.h>
