@@ -69,6 +69,10 @@ private slots:
 
     void on_tcPortEdit_valueChanged(int arg1);
 
+    void on_actionConnect_triggered();
+
+    void on_actionDisconnect_triggered();
+
 private:
     void selectConn(Connection * conn);
     void updateDetailsUi(Connection * conn);

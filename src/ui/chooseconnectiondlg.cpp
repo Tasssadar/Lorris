@@ -174,6 +174,9 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
         this->connAdded(conns[i]);
     ui->connectionsList->sortItems();
 
+    ui->connectionsList->insertAction(0, ui->actionConnect);
+    ui->connectionsList->insertAction(0, ui->actionDisconnect);
+
     ui->connectionsList->setItemDelegate(new ConnectionListItemDelegate(this));
 
     connect(&sConMgr2, SIGNAL(connAdded(Connection *)), this, SLOT(connAdded(Connection *)));
@@ -223,8 +226,12 @@ void ChooseConnectionDlg::connAdded(Connection * conn)
     item->setIcon(QIcon(":/icons/icons/network-wired.png"));
 
     item->setData(Qt::UserRole, QVariant::fromValue(conn));
+    item->setData(Qt::UserRole+1, conn->details());
+    item->setData(Qt::UserRole+2, (int)conn->state());
+
     m_connectionItemMap[conn] = item;
     connect(conn, SIGNAL(changed()), this, SLOT(connChanged()));
+    connect(conn, SIGNAL(stateChanged(ConnectionState)), this, SLOT(connChanged()));
 }
 
 void ChooseConnectionDlg::connRemoved(Connection * conn)
@@ -238,6 +245,8 @@ void ChooseConnectionDlg::connChanged()
     Connection * conn = static_cast<Connection *>(this->sender());
     QListWidgetItem * item = m_connectionItemMap[conn];
     item->setText(conn->name());
+    item->setData(Qt::UserRole+1, conn->details());
+    item->setData(Qt::UserRole+2, (int)conn->state());
     if (conn == m_current.data())
         this->updateDetailsUi(conn);
 }
@@ -252,6 +261,8 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
 {
     updateEditText(ui->connectionNameEdit, conn->name());
     ui->actionRemoveConnection->setEnabled(conn->removable());
+    ui->actionConnect->setEnabled(conn->state() == st_disconnected);
+    ui->actionDisconnect->setEnabled(conn->state() == st_connected);
 
     switch (conn->getType())
     {
@@ -330,6 +341,9 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
 
     if (selected.empty())
     {
+        ui->actionConnect->setEnabled(false);
+        ui->actionDisconnect->setEnabled(false);
+
         ui->settingsStack->setCurrentWidget(ui->homePage);
         ui->actionRemoveConnection->setEnabled(false);
         ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(false);
@@ -396,4 +410,18 @@ void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
         return;
     Q_ASSERT(m_current->getType() == CONNECTION_TCP_SOCKET);
     static_cast<TcpSocket *>(m_current.data())->setPort(arg1);
+}
+
+void ChooseConnectionDlg::on_actionConnect_triggered()
+{
+    if (!m_current)
+        return;
+    m_current->OpenConcurrent();
+}
+
+void ChooseConnectionDlg::on_actionDisconnect_triggered()
+{
+    if (!m_current)
+        return;
+    m_current->Close();
 }
