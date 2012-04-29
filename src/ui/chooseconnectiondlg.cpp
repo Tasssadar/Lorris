@@ -358,9 +358,9 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
 
     bool enabled = ((m_allowedConns & pct_port) && dynamic_cast<PortConnection *>(conn))
             || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn));
-    ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(true);
+    ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(enabled);
 
-    ui->connectionNameEdit->setEnabled(enabled);
+    ui->connectionNameEdit->setEnabled(true);
 
     this->updateDetailsUi(conn);
 
@@ -378,7 +378,7 @@ void ChooseConnectionDlg::on_spDeviceNameEdit_textChanged(const QString &arg1)
 
 void ChooseConnectionDlg::on_connectionsList_doubleClicked(const QModelIndex &index)
 {
-    if (index.isValid())
+    if (index.isValid() && ui->confirmBox->button(QDialogButtonBox::Ok)->isEnabled())
         this->accept();
 }
 
