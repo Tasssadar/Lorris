@@ -29,6 +29,7 @@
 #include "HomeTab.h"
 #include "mainwindow.h"
 #include "../WorkTab/WorkTabMgr.h"
+#include "chooseconnectiondlg.h"
 
 #include "../ui/ui_hometab.h"
 
@@ -71,4 +72,10 @@ void HomeTab::buttonClicked()
         emit tabOpened();
         sWorkTabMgr.AddWorkTab(info);
     }
+}
+
+void HomeTab::on_openConnManagerLink_linkActivated(const QString &link)
+{
+    ChooseConnectionDlg dialog(this);
+    dialog.exec();
 }
