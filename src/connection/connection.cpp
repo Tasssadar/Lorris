@@ -39,22 +39,8 @@ Connection::~Connection()
 
 QString Connection::details() const
 {
-    QString res;
-    switch (m_state)
-    {
-    case st_connecting:
-        res = tr("Connecting...");
-        break;
-    case st_connected:
-        res = tr("Connected");
-        break;
-    case st_disconnected:
-        res = tr("Disconnected");
-        break;
-    }
-
     // XXX
-    return QString::number(m_refcount) % " " % res;
+    return QString::number(m_refcount);
 }
 
 

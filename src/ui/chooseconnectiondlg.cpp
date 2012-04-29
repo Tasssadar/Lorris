@@ -35,6 +35,19 @@
 #include <QWindowsVistaStyle>
 #endif
 
+static QString connectionStateString(ConnectionState state)
+{
+    switch (state)
+    {
+    case st_connecting:
+        return QObject::tr("(Connecting...)");
+    case st_connected:
+        return QObject::tr("(Connected)");
+    default:
+        return QString();
+    }
+}
+
 namespace {
 
 class ConnectionListItemDelegate
@@ -48,6 +61,9 @@ public:
 
     QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index ) const
     {
+        Q_ASSERT(index.isValid());
+        Connection * conn = index.data(Qt::UserRole).value<Connection *>();
+
         QStyleOptionViewItemV4 const & opt = static_cast<QStyleOptionViewItemV4 const &>(option);
 
         QSize res;
@@ -56,10 +72,13 @@ public:
         int vmargin = style->pixelMetric(QStyle::PM_FocusFrameVMargin, &opt, opt.widget);
         res.setHeight(2 * opt.fontMetrics.lineSpacing()+2*vmargin);
 
-        int line1w = opt.fontMetrics.width(index.data(Qt::DisplayRole).toString());
-        int line2w = opt.fontMetrics.width(index.data(Qt::UserRole+1).toString());
+        int namew = opt.fontMetrics.width(index.data(Qt::DisplayRole).toString());
+        int statew = opt.fontMetrics.width(connectionStateString(conn->state()));
 
         int margin = style->pixelMetric(QStyle::PM_FocusFrameHMargin, &opt, opt.widget);
+        int line1w = namew + margin + statew;
+        int line2w = opt.fontMetrics.width(conn->details());
+
         res.setWidth(2*opt.fontMetrics.lineSpacing() + 3*margin + (std::max)(line1w, line2w));
 
         return res;
@@ -67,6 +86,9 @@ public:
 
     void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
     {
+        Q_ASSERT(index.isValid());
+        Connection * conn = index.data(Qt::UserRole).value<Connection *>();
+
         QStyleOptionViewItemV4 const & opt = static_cast<QStyleOptionViewItemV4 const &>(option);
         QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
 
@@ -113,13 +135,19 @@ public:
         QRect textRect = opt.rect;
         textRect.setLeft(iconRect.right() + 1 + margin);
         textRect.setTop(textRect.top() + vmargin);
-        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::DisplayRole).toString());
+
+        QRect nameBr;
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::DisplayRole).toString(), &nameBr);
 
         textColor.setAlpha(128);
         painter->setPen(textColor);
 
+        textRect.setLeft(nameBr.right() + 1 + margin);
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, connectionStateString(conn->state()));
+
+        textRect.setLeft(iconRect.right() + 1 + margin);
         textRect.setTop(textRect.top() + opt.fontMetrics.lineSpacing());
-        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::UserRole+1).toString());
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, conn->details());
     }
 };
 
@@ -195,7 +223,6 @@ void ChooseConnectionDlg::connAdded(Connection * conn)
     item->setIcon(QIcon(":/icons/icons/network-wired.png"));
 
     item->setData(Qt::UserRole, QVariant::fromValue(conn));
-    item->setData(Qt::UserRole+1, conn->details());
     m_connectionItemMap[conn] = item;
     connect(conn, SIGNAL(changed()), this, SLOT(connChanged()));
 }
@@ -211,7 +238,6 @@ void ChooseConnectionDlg::connChanged()
     Connection * conn = static_cast<Connection *>(this->sender());
     QListWidgetItem * item = m_connectionItemMap[conn];
     item->setText(conn->name());
-    item->setData(Qt::UserRole+1, conn->details());
     if (conn == m_current.data())
         this->updateDetailsUi(conn);
 }
