@@ -28,14 +28,14 @@ void UsbShupitoConnection::Close()
     this->SetState(st_disconnected);
 }
 
-void UsbShupitoConnection::setUsbDevice(struct usb_device * dev)
+bool UsbShupitoConnection::setUsbDevice(struct usb_device * dev)
 {
     if (this->state() == st_connected)
         this->Close();
 
     Q_ASSERT(this->state() == st_disconnected);
     m_dev = dev;
-    this->updateStrings();
+    return this->updateStrings();
 }
 
 void UsbShupitoConnection::sendPacket(ShupitoPacket const & packet)
@@ -58,46 +58,49 @@ QString UsbShupitoConnection::details() const
     return list.join(", ");
 }
 
-void UsbShupitoConnection::updateStrings()
+static QString getUsbString(libusb0_methods * um, struct usb_dev_handle * h, int index, int langid)
+{
+    char buf[1024];
+    int len = um->usb_get_string(h, index, langid, buf, sizeof buf - 2);
+    if (len > 2 && len % 2 == 0)
+    {
+        buf[len] = 0;
+        buf[len+1] = 0;
+        return QString::fromUtf16((ushort const *)buf + 1);
+    }
+
+    return QString();
+}
+
+bool UsbShupitoConnection::updateStrings()
 {
     if (!m_dev)
-        return;
+        return false;
 
     usb_dev_handle * h = m_um->usb_open(m_dev);
     if (!h)
-        return;
+        return false;
 
-    char buf[1024];
+    char buf[128];
     int len = m_um->usb_get_descriptor(h, USB_DT_STRING, 0, buf, sizeof buf);
-    if (len < 0 || len < 4)
+    if (len < 4)
     {
         m_um->usb_close(h);
-        return;
+        return false;
     }
 
     int langid = (buf[3] << 8) | buf[2];
     if (m_dev->descriptor.iManufacturer)
-    {
-        len = m_um->usb_get_string(h, m_dev->descriptor.iManufacturer, langid, buf, sizeof buf);
-        if (len > 2 && len % 2 == 0)
-            m_manufacturer = QString::fromUtf16((ushort const *)buf + 1, len / 2 - 1);
-    }
+        m_manufacturer = getUsbString(m_um, h, m_dev->descriptor.iManufacturer, langid);
 
     if (m_dev->descriptor.iProduct)
-    {
-        len = m_um->usb_get_string(h, m_dev->descriptor.iProduct, langid, buf, sizeof buf);
-        if (len > 0 && len % 2 == 0)
-            m_product = QString::fromUtf16((ushort const *)buf + 1, len / 2 - 1);
-    }
+        m_product = getUsbString(m_um, h, m_dev->descriptor.iProduct, langid);
 
     if (m_dev->descriptor.iSerialNumber)
-    {
-        len = m_um->usb_get_string(h, m_dev->descriptor.iSerialNumber, langid, buf, sizeof buf);
-        if (len > 0 && len % 2 == 0)
-            m_serialNumber = QString::fromUtf16((ushort const *)buf + 1, len / 2 - 1);
-    }
+        m_serialNumber = getUsbString(m_um, h, m_dev->descriptor.iSerialNumber, langid);
 
     m_um->usb_close(h);
+    return true;
 }
 
 bool UsbShupitoConnection::isDeviceSupported(struct usb_device * dev)

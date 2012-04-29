@@ -154,8 +154,8 @@ void UsbShupitoEnumerator::refresh()
         struct usb_device * dev = bus->devices;
         for (; dev; dev = dev->next)
         {
-            if (!UsbShupitoConnection::isDeviceSupported(dev))
-                continue;
+/*            if (!UsbShupitoConnection::isDeviceSupported(dev))
+                continue;*/
 
             if (m_devmap.contains(dev))
             {
@@ -164,8 +164,9 @@ void UsbShupitoEnumerator::refresh()
             else
             {
                 ConnectionPointer<UsbShupitoConnection> conn(new UsbShupitoConnection(m_um));
+                if (!conn->setUsbDevice(dev))
+                    continue;
                 conn->setRemovable(false);
-                conn->setUsbDevice(dev);
                 conn->setName(conn->product());
                 m_devmap[dev] = conn.data();
                 connect(conn.data(), SIGNAL(destroying()), this, SLOT(connectionDestroyed()));
@@ -308,6 +309,7 @@ void ConnectionManager2::clearUserOwnedConns()
 void ConnectionManager2::refresh()
 {
     m_serialPortEnumerator->refresh();
+    m_usbShupitoEnumerator->refresh();
 }
 
 SerialPort * ConnectionManager2::createSerialPort()

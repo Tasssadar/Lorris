@@ -20,7 +20,7 @@ public:
     QString serialNumber() const { return m_serialNumber; }
 
     usb_device * usbDevice() const { return m_dev; }
-    void setUsbDevice(usb_device * dev);
+    bool setUsbDevice(usb_device * dev);
 
     void OpenConcurrent();
     void Close();
@@ -31,7 +31,7 @@ public slots:
     virtual void sendPacket(ShupitoPacket const & packet);
 
 private:
-    void updateStrings();
+    bool updateStrings();
 
     libusb0_methods * m_um;
     usb_device * m_dev;
