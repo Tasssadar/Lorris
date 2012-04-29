@@ -1,0 +1,8 @@
+# Shupito 2.2 (ACM based)
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", SYSFS{idVendor}=="4a61", SYSFS{idProduct}=="679a", MODE="0666"
+
+# Shupito 2.3
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", SYSFS{idVendor}=="4a61", SYSFS{idProduct}=="679b", MODE="0666"
+
+# Atmel's DFU bootloaders
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", SYSFS{idVendor}=="03eb", SYSFS{idProduct}=="2f??", MODE="0666"
