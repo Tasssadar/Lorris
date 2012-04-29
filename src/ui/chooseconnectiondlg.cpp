@@ -79,8 +79,8 @@ public:
         QRect iconRect;
         iconRect.setLeft(opt.rect.left() + margin);
         iconRect.setTop(opt.rect.top() + vmargin);
-        iconRect.setHeight(opt.rect.height());
-        iconRect.setWidth(opt.rect.height());
+        iconRect.setHeight(opt.rect.height() - 2*vmargin);
+        iconRect.setWidth(opt.rect.height() - 2*vmargin);
 
         QIcon::Mode mode = QIcon::Normal;
         if (!(opt.state & QStyle::State_Enabled))
