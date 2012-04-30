@@ -60,15 +60,7 @@ void SourceSelectDialog::contButton()
     }
 
     if(!ui->structBox->isChecked() && !ui->dataBox->isChecked() && !ui->widgetBox->isChecked())
-    {
-        QMessageBox *box = new QMessageBox();
-        box->setWindowTitle(QObject::tr("Error!"));
-        box->setText(QObject::tr("You have to select at least one thing to load."));
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
-        return;
-    }
+        return Utils::ThrowException(tr("You have to select at least one thing to load."), this);
 
     accept();
 }
@@ -107,21 +99,15 @@ void SourceSelectDialog::browse()
     QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"),
                                                     sConfig.get(CFG_STRING_ANALYZER_FOLDER),
                                                     filters);
-
-    ui->contButton->setEnabled(filename.length() != 0);
-
     if(filename.isEmpty())
         return;
 
     ui->fileEdit->setText(filename);
+    ui->contButton->setEnabled(true);
     sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
 }
 
 void SourceSelectDialog::loadRadioToggled(bool toggle)
 {
-    bool enableCont = !toggle;
-    if(toggle && ui->fileEdit->text().length() != 0)
-        enableCont = true;
-
-    ui->contButton->setEnabled(enableCont);
+    ui->contButton->setEnabled(!toggle || !ui->fileEdit->text().isEmpty());
 }
