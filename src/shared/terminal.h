@@ -65,7 +65,7 @@ public:
 
     QByteArray getData()
     {
-        return QByteArray(m_data, m_data_size);
+        return QByteArray(m_data.data(), m_data.size());
     }
 
     int getFmt() { return m_fmt; }
@@ -118,10 +118,7 @@ private:
 
     std::vector<QString> m_lines;
     std::vector<QString> m_pause_lines;
-
-    char *m_data;
-    quint32 m_data_alloc;
-    quint32 m_data_size;
+    std::vector<char> m_data;
 
     QString m_command;
 

@@ -53,9 +53,7 @@
 
 Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 {
-    m_data_size = 0;
-    m_data_alloc = 512;
-    m_data = (char*)malloc(m_data_alloc);
+    m_data.reserve(512);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -116,21 +114,15 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
 Terminal::~Terminal()
 {
-    free(m_data);
 }
 
 void Terminal::appendText(const QByteArray& text)
 {
-    m_data_size += text.size();
-    if(m_data_size > m_data_alloc)
-    {
-        while(m_data_alloc < m_data_size)
-            m_data_alloc += 512;
+    if(m_data.size()+text.size() > m_data.capacity())
+        while(m_data.capacity() < m_data.size()+text.size())
+            m_data.reserve(m_data.capacity()+512);
 
-        m_data = (char*)realloc(m_data, m_data_alloc);
-    }
-
-    std::copy(text.data(), text.data()+text.size(), m_data+m_data_size-text.size());
+    m_data.insert(m_data.end(), text.data(), text.data()+text.size());
 
     switch(m_fmt)
     {
@@ -253,8 +245,7 @@ void Terminal::addHex()
         m_lines.pop_back();
     }
 
-    char *chunk = NULL;
-    char *end = m_data+m_data_size;
+    std::vector<char>::iterator chunk;
 
     int chunk_size;
     char *itr;
@@ -263,11 +254,11 @@ void Terminal::addHex()
     line[8] = line[57] = line[58] = line[59] = ' ';
     line[60] = line[77] = '|';
 
-    for(quint32 i = m_hex_pos; i < m_data_size; i += 16)
+    for(quint32 i = m_hex_pos; i < m_data.size(); i += 16)
     {
         itr = line;
-        chunk = m_data+m_hex_pos;
-        chunk_size = std::min(int(end - chunk), 16);
+        chunk = m_data.begin()+m_hex_pos;
+        chunk_size = std::min(int(m_data.end() - chunk), 16);
 
         static const char* hex = "0123456789ABCDEF";
         for(int x = 7; x >= 0; --x, ++itr)
@@ -301,7 +292,7 @@ void Terminal::keyPressEvent(QKeyEvent *event)
 {
     QString key = event->text();
 
-    if((event->modifiers() & Qt::ControlModifier))
+    if((event->modifiers() & Qt::ControlModifier) && (event->modifiers() & Qt::ShiftModifier))
     {
         switch(event->key())
         {
@@ -558,9 +549,8 @@ void Terminal::pause(bool pause)
 
 void Terminal::clear()
 {
-    m_data_alloc = 512;
-    m_data = (char*)realloc(m_data, m_data_alloc);
-    m_data_size = 0;
+    m_data.clear();
+    m_data.reserve(512);
 
     m_lines.clear();
     m_pause_lines.clear();
@@ -670,7 +660,7 @@ void Terminal::setFmt(int fmt)
 
     switch(fmt)
     {
-        case FMT_TEXT: addLines(QString::fromUtf8(m_data, m_data_size)); break;
+        case FMT_TEXT: addLines(QString::fromUtf8(m_data.data(), m_data.size())); break;
         case FMT_HEX:  addHex();         break;
     }
 
