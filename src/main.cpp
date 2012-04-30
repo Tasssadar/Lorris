@@ -76,17 +76,17 @@ static void installTranslator(QApplication& a)
 {
     QLocale newLang = QLocale(langs[sConfig.get(CFG_QUINT32_LANGUAGE)]);
 
-    QTranslator qtTranslator;
-    qtTranslator.load("qt_" + newLang.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    a.installTranslator(&qtTranslator);
+    QTranslator* qtTranslator = new QTranslator(&a);
+    qtTranslator->load("qt_" + newLang.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    a.installTranslator(qtTranslator);
 
-    QTranslator translator;
-    bool loaded = translator.load("Lorris." + newLang.name(), "translations");
+    QTranslator *translator = new QTranslator(&a);
+    bool loaded = translator->load("Lorris." + newLang.name(), "translations");
     if(!loaded)
-        loaded = translator.load("Lorris." + newLang.name(), "/usr/share/lorris");
+        loaded = translator->load("Lorris." + newLang.name(), "/usr/share/lorris");
 
     if(loaded)
-        a.installTranslator(&translator);
+        a.installTranslator(translator);
 }
 
 int main(int argc, char *argv[])
