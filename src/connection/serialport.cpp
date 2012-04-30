@@ -127,7 +127,8 @@ bool SerialPort::openPort()
     else
     {
         m_port->moveToThread(QApplication::instance()->thread());
-        connect(m_port, SIGNAL(readyRead()), SLOT(readyRead()));
+        connect(m_port, SIGNAL(readyRead()),              SLOT(readyRead()));
+        connect(m_port, SIGNAL(socketError(SocketError)), SLOT(socketError(SocketError)));
     }
 
     m_port_mutex.unlock();
@@ -150,6 +151,15 @@ void SerialPort::setDeviceName(QString const & value)
     {
         m_deviceName = value;
         emit changed();
+    }
+}
+
+void SerialPort::socketError(SocketError err)
+{
+    if(err == ERR_IOCTL_FAILED && isOpen())
+    {
+        Utils::printToStatusBar(tr("Connection to %1 lost!").arg(m_deviceName));
+        Close();
     }
 }
 

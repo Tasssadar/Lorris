@@ -123,7 +123,10 @@ void TcpSocket::readyRead()
 void TcpSocket::stateChanged()
 {
     if(this->isOpen() && m_socket->state() != QAbstractSocket::ConnectedState)
+    {
+        Utils::printToStatusBar(tr("Connection to %1:%2 lost!").arg(m_address).arg(m_port));
         Close();
+    }
 }
 
 void TcpSocket::setHost(QString const & value)

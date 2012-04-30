@@ -28,6 +28,8 @@
 #include <QThread>
 #include <QFont>
 
+class QStatusBar;
+
 class Utils : public QThread
 {
 public:
@@ -46,6 +48,11 @@ public:
     static QFont getMonospaceFont(quint8 size = 9);
 
     static void ThrowException(const QString& text, QWidget* parent = 0);
+    static void printToStatusBar(const QString& msg, int timeout = 5000);
+    static void setStatusBar(QStatusBar *bar);
+
+private:
+    static QStatusBar* m_status_bar;
 };
 
 template <typename T>

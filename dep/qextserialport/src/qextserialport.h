@@ -151,6 +151,11 @@ enum FlowType
     FLOW_XONXOFF
 };
 
+enum SocketError
+{
+    ERR_IOCTL_FAILED
+};
+
 /**
  * structure to contain port settings
  */
@@ -206,6 +211,11 @@ public:
     ulong lineStatus();
     QString errorString();
 
+    void emitSocketError(SocketError err)
+    {
+        emit socketError(err);
+    }
+
 public Q_SLOTS:
     void setPortName(const QString & name);
     void setQueryMode(QueryMode mode);
@@ -221,6 +231,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void dsrChanged(bool status);
+    void socketError(SocketError err);
 
 protected:
     qint64 readData(char * data, qint64 maxSize);

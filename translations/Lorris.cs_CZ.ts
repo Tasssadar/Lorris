@@ -805,8 +805,8 @@
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="208"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="366"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="504"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="525"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="505"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="526"/>
         <source> of </source>
         <translation> z </translation>
     </message>
@@ -821,18 +821,18 @@
         <translation>Chcete je uložit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="379"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="388"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="380"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="389"/>
         <source>File &quot;%1&quot; was saved</source>
         <translation>Soubor &quot;%1&quot; byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="479"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="480"/>
         <source>Clear everything?</source>
         <translation>Vymazat vše?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="480"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="481"/>
         <source>Do you really want to clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
@@ -867,12 +867,12 @@
         <translation>Ukázat titulek widgetů</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="481"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="482"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="482"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="483"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -1198,74 +1198,74 @@
         <translation> | h:mm:ss d.M.yyyy</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1068"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1099"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1081"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1112"/>
         <source>Data has been successfuly written</source>
         <translation>Data byla naprogramována</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1117"/>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1178"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1130"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1191"/>
         <source>Fuses had not been read yet</source>
         <translation>Pojistky ještě nebyly přečteny ze součástky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1123"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1136"/>
         <source>You have to &quot;Remember&quot; fuses prior to writing</source>
         <translation>Před zapsáním pojistek je musíte &quot;zapamatovat&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1127"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1140"/>
         <source>Write fuses?</source>
         <translation>Zapsat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1127"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1140"/>
         <source>Do you really wanna to write fuses to the chip?</source>
         <translation>Opravdu chcete zapsat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1142"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1155"/>
         <source>Fuses had been succesfully written</source>
         <translation>Pojistky byly úspěšně zapsány</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1157"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1170"/>
         <source>Unknown memory id</source>
         <translation>Neznámá paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1161"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1174"/>
         <source>Somethings wrong, data in tab: %1, chip size: %2</source>
         <translation>Něco je špatně, data v záložce: %1, velikost čipu: %2. moc velký program?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1164"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1177"/>
         <source>Writing memory</source>
         <translation>Programuji paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1190"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1203"/>
         <source>Erase chip?</source>
         <translation>Vymazat čip?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1190"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1203"/>
         <source>Do you really wanna to erase WHOLE chip?</source>
         <translation>Opravdu chcete vymazat celý čip?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1200"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1213"/>
         <source>Erasing chip...</source>
         <translation>Mažu čip...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1220"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1233"/>
         <source>Succes!</source>
         <translation>Hotovo!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1221"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1234"/>
         <source>Chip was succesfuly erased!</source>
         <translation>Čip byl úspěšně vymazán!</translation>
     </message>
@@ -1325,22 +1325,22 @@
         <translation>Soubor byl načten</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="920"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="933"/>
         <source>File saved</source>
         <translation>Data byla uložena</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="950"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="963"/>
         <source>Data has been successfuly read</source>
         <translation>Data byla úspěšně přečtena</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1006"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1019"/>
         <source>Fuses had been succesfully read</source>
         <translation>Pojistky byly úspěšně přečteny</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1018"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="1031"/>
         <source>Reading memory</source>
         <translation>Čtu paměť</translation>
     </message>
@@ -1605,27 +1605,27 @@
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="116"/>
+        <location filename="../src/ui/mainwindow.cpp" line="114"/>
         <source>&amp;New</source>
         <translation>&amp;Nový</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="172"/>
+        <location filename="../src/ui/mainwindow.cpp" line="178"/>
         <source>Lorris version </source>
         <translation>Verze Lorris </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="177"/>
+        <location filename="../src/ui/mainwindow.cpp" line="183"/>
         <source>About Lorris</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="210"/>
+        <location filename="../src/ui/mainwindow.cpp" line="216"/>
         <source>Restart</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="211"/>
+        <location filename="../src/ui/mainwindow.cpp" line="217"/>
         <source>You need to restart Lorris for this change to take effect</source>
         <translation>Musíte restartovat Lorris aby se tato změna projevila</translation>
     </message>
@@ -1839,7 +1839,7 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/analyzerdatastorage.cpp" line="221"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="532"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="539"/>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.cpp" line="106"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -1887,8 +1887,8 @@
         <translation>Terminál zobrazuje příchozí data, posílá stisky kláves a nahrává nové programy do zařízení s bootloaderem.</translation>
     </message>
     <message>
-        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="109"/>
-        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="117"/>
+        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="114"/>
+        <location filename="../src/WorkTab/WorkTabMgr.cpp" line="122"/>
         <source>Home</source>
         <translation></translation>
     </message>
@@ -2001,7 +2001,7 @@
         <translation>Importovat data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="902"/>
+        <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="915"/>
         <source>Export data</source>
         <translation>Exportovat data</translation>
     </message>
@@ -2114,7 +2114,7 @@
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="533"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="540"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
@@ -2342,6 +2342,14 @@ function onKeyPress(key) {
     </message>
 </context>
 <context>
+    <name>SerialPort</name>
+    <message>
+        <location filename="../src/connection/serialport.cpp" line="161"/>
+        <source>Connection to %1 lost!</source>
+        <translation>Připojení k %1 bylo ztraceno!</translation>
+    </message>
+</context>
+<context>
     <name>SourceDialog</name>
     <message>
         <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="32"/>
@@ -2565,49 +2573,57 @@ ke změně uspořádání</translation>
     </message>
 </context>
 <context>
+    <name>TcpSocket</name>
+    <message>
+        <location filename="../src/connection/tcpsocket.cpp" line="127"/>
+        <source>Connection to %1:%2 lost!</source>
+        <translation>Připojení k %1:%2 bylo ztraceno!</translation>
+    </message>
+</context>
+<context>
     <name>Terminal</name>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="78"/>
+        <location filename="../src/shared/terminal.cpp" line="76"/>
         <source>Copy</source>
         <translation>Kopírovat</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="81"/>
+        <location filename="../src/shared/terminal.cpp" line="79"/>
         <source>Paste</source>
         <translation>Vložit</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="86"/>
+        <location filename="../src/shared/terminal.cpp" line="84"/>
         <source>Format</source>
         <translation>Formát</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="90"/>
+        <location filename="../src/shared/terminal.cpp" line="88"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="90"/>
+        <location filename="../src/shared/terminal.cpp" line="88"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="98"/>
+        <location filename="../src/shared/terminal.cpp" line="96"/>
         <source>Change font...</source>
         <translation>Změnit písmo...</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="99"/>
+        <location filename="../src/shared/terminal.cpp" line="97"/>
         <source>Pause</source>
         <translation>Zmrazit</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="100"/>
+        <location filename="../src/shared/terminal.cpp" line="98"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="762"/>
+        <location filename="../src/shared/terminal.cpp" line="752"/>
         <source>Font selection</source>
         <translation>Volba písma</translation>
     </message>
@@ -2631,7 +2647,7 @@ ke změně uspořádání</translation>
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../src/utils.cpp" line="82"/>
+        <location filename="../src/utils.cpp" line="85"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>

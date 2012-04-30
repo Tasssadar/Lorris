@@ -121,6 +121,7 @@ qint64 QextSerialPortPrivate::bytesAvailable_sys() const
 {
     int bytesQueued;
     if (::ioctl(fd, FIONREAD, &bytesQueued) == -1) {
+        q_ptr->emitSocketError(ERR_IOCTL_FAILED);
         return (qint64)-1;
     }
     return bytesQueued;

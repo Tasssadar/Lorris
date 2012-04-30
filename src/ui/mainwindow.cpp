@@ -98,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     setStatusBar(new QStatusBar(this));
+    Utils::setStatusBar(statusBar());
 
     quint32 curLang = sConfig.get(CFG_QUINT32_LANGUAGE);
     if(curLang >= m_lang_menu.size())
@@ -154,7 +155,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::show(const QStringList& openFiles)
 {
-    QWidget::show();
+    QMainWindow::show();
 
     for(QStringList::const_iterator itr = openFiles.begin(); itr != openFiles.end(); ++itr)
         sWorkTabMgr.openTabWithFile(*itr);

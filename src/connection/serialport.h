@@ -66,6 +66,7 @@ private slots:
     void connectResultSer(bool opened);
     void openResult();
     void readyRead();
+    void socketError(SocketError err);
 
 private:
     bool openPort();
