@@ -221,7 +221,7 @@ void SourceDialog::idCheckToggled(bool checked)
 void SourceDialog::staticLenChanged(int value)
 {
     m_packet.header->static_len = value;
-    m_packet.static_data = (quint8*)realloc(m_packet.static_data, value);
+    m_packet.static_data.resize(value);
     scroll_layout->UpdateTypes();
 
     while(ui->staticList->count() != value)
@@ -237,9 +237,9 @@ void SourceDialog::staticLenChanged(int value)
             ui->staticList->addItem(item);
 
             if(text.contains("0x", Qt::CaseInsensitive))
-                m_packet.static_data[ui->staticList->count()] = text.toInt(NULL, 16);
+                m_packet.static_data[ui->staticList->count()-1] = text.toInt(NULL, 16);
             else
-                m_packet.static_data[ui->staticList->count()] = text.toInt();
+                m_packet.static_data[ui->staticList->count()-1] = text.toInt();
         }
         else
             ui->staticList->takeItem(ui->staticList->count() - 1);

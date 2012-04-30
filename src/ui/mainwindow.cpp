@@ -150,7 +150,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-
+    Utils::setStatusBar(NULL);
 }
 
 void MainWindow::show(const QStringList& openFiles)

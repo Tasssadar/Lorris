@@ -33,10 +33,7 @@ analyzer_data::analyzer_data(analyzer_packet *packet)
 void analyzer_data::clear()
 {
     m_data.clear();
-    if(m_packet->static_data)
-        m_static_data = QByteArray((char*)m_packet->static_data, m_packet->header->static_len);
-    else
-        m_static_data = QByteArray();
+    m_static_data = QByteArray((char*)m_packet->static_data.data(), m_packet->header->static_len);
     itr = 0;
     m_forceValid = false;
 }

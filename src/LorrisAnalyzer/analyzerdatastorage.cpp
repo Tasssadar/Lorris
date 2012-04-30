@@ -162,16 +162,8 @@ void AnalyzerDataStorage::SaveToFile(QString filename, AnalyzerDataArea *area, D
 
     //header static data
     buffer->writeBlockIdentifier(BLOCK_STATIC_DATA);
-    if(m_packet->static_data)
-    {
-        buffer->write((char*)&m_packet->header->static_len, sizeof(m_packet->header->static_len));
-        buffer->write((char*)m_packet->static_data, m_packet->header->static_len);
-    }
-    else
-    {
-        char i = 0;
-        buffer->write(&i, 1);
-    }
+    buffer->write((char*)&m_packet->header->static_len, sizeof(m_packet->header->static_len));
+    buffer->write((char*)m_packet->static_data.data(), m_packet->header->static_len);
 
     //Devices and commands
     buffer->writeBlockIdentifier(BLOCK_DEVICE_TABS);
@@ -288,7 +280,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     Clear();
 
     analyzer_header *header = new analyzer_header();
-    analyzer_packet *packet = new analyzer_packet(header, true, NULL);
+    analyzer_packet *packet = new analyzer_packet(header, true);
 
     //Header
     char *itr = NULL;
@@ -356,8 +348,8 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
         buffer->read((char*)&static_len, sizeof(quint8));
         if(static_len)
         {
-            m_packet->static_data = new quint8[static_len];
-            buffer->read((char*)m_packet->static_data, static_len);
+            m_packet->static_data.resize(static_len);
+            buffer->read((char*)m_packet->static_data.data(), static_len);
         }
     }
 

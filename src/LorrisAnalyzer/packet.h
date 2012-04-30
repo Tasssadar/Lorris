@@ -27,6 +27,7 @@
 #include <QTypeInfo>
 #include <QByteArray>
 #include <algorithm>
+#include <vector>
 
 #include "../common.h"
 
@@ -143,11 +144,10 @@ struct analyzer_packet
         Reset();
     }
 
-    analyzer_packet(analyzer_header *h, bool b_e, quint8 *s_d)
+    analyzer_packet(analyzer_header *h, bool b_e)
     {
         header = h;
         big_endian = b_e;
-        static_data = s_d;
     }
 
     analyzer_packet(analyzer_packet *p)
@@ -155,29 +155,23 @@ struct analyzer_packet
         copy(p);
     }
 
-    ~analyzer_packet()
-    {
-        delete[] static_data;
-    }
-
     void copy(analyzer_packet *p)
     {
         header = new analyzer_header(p->header);
         big_endian = p->big_endian;
-        static_data = new quint8[header->static_len];
-        std::copy(p->static_data, p->static_data+header->static_len, static_data);
+        static_data.assign(p->static_data.begin(), p->static_data.end());
     }
 
     void Reset()
     {
-        static_data = NULL;
+        static_data.clear();
         header = NULL;
         big_endian = true;
     }
 
     analyzer_header *header;
     bool big_endian;
-    quint8 *static_data;
+    std::vector<quint8> static_data;
 };
 
 // Real data

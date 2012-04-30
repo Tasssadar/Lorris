@@ -38,6 +38,7 @@ static const int CONNECT_TIMEOUT = 10000 / 50; // 10s
 TcpSocket::TcpSocket()
 {
     m_type = CONNECTION_TCP_SOCKET;
+    m_port = 0;
 
     m_socket = new QTcpSocket(this);
 

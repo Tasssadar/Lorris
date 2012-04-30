@@ -64,13 +64,13 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     palette.setColor(QPalette::Text, color_white);
     setPalette(palette);
 
-    setFont(Utils::getMonospaceFont());
-    viewport()->setCursor(Qt::IBeamCursor);
-
     m_paused = false;
     m_fmt = FMT_MAX+1;
     m_input = INPUT_SEND_KEYPRESS;
     m_hex_pos = 0;
+
+    viewport()->setCursor(Qt::IBeamCursor);
+    setFont(Utils::getMonospaceFont());
 
     m_context_menu = new QMenu(this);
     QAction *copy = m_context_menu->addAction(tr("Copy"));
