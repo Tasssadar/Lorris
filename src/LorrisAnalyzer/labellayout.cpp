@@ -403,8 +403,9 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 
 void DraggableLabel::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(!m_drop || event->mimeData()->text() == objectName())
-        return;
+    if(!m_drop || !event->source() || event->mimeData()->text() == objectName())
+        return QWidget::dragEnterEvent(event);
+
     event->acceptProposedAction();
     QString css = valueLabel->styleSheet();
     css.replace(QRegExp("orange"), "red");
