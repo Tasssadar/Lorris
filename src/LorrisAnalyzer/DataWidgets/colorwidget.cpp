@@ -78,10 +78,12 @@ void ColorWidget::setUp(AnalyzerDataStorage *storage)
 
 void ColorWidget::processData(analyzer_data *data)
 {
+    if(m_info.positions.size() < 3)
+        return;
     try
     {
         for(quint8 i = 0; i < 3; ++i)
-            m_color[i] = data->getUInt8(m_info.pos + i);
+            m_color[i] = data->getUInt8(m_info.positions[i]);
         updateColor();
     }
     catch(const char*) { }

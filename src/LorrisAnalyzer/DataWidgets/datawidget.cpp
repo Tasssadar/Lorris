@@ -234,9 +234,10 @@ void DataWidget::dropEvent(QDropEvent *event)
         return;
     event->acceptProposedAction();
 
-    QByteArray data = event->mimeData()->data("text/data");
-    data_widget_info *info = (data_widget_info*)data.data();
-    setInfo(info);
+
+    data_widget_info info;
+    info.fromMime(event->mimeData()->text());
+    setInfo(&info);
     m_assigned = true;
     emit updateData();
 }
@@ -305,7 +306,7 @@ void DataWidget::dragMove(QMouseEvent *e)
 
 void DataWidget::newData(analyzer_data *data, quint32 /*index*/)
 {
-    if(!m_updating || !m_assigned || m_info.pos >= (quint32)data->getData().length())
+    if(!m_updating || !m_assigned || !m_info.isLenghtOk(data->getData().length()))
         return;
 
     quint8 id;
@@ -356,8 +357,8 @@ void DataWidget::saveWidgetInfo(AnalyzerDataFile *file)
 
     // data info
     file->writeBlockIdentifier("widgetDataInfo");
-    p = (char*)&m_info.pos;
-    file->write(p, sizeof(m_info));
+    //p = (char*)&m_info.pos;
+    //file->write(p, sizeof(m_info));
 
     // locked
     file->writeBlockIdentifier("widgetLocked");
@@ -378,8 +379,8 @@ void DataWidget::loadWidgetInfo(AnalyzerDataFile *file)
     char *p = NULL;
     if(file->seekToNextBlock("widgetDataInfo", BLOCK_WIDGET))
     {
-        p = (char*)&m_info.pos;
-        file->read(p, sizeof(m_info));
+        //p = (char*)&m_info.pos;
+        //file->read(p, sizeof(m_info));
 
         m_assigned = true;
     }
@@ -526,27 +527,48 @@ QString CloseLabel::getTextByState()
     else                             return " X ";
 }
 
-QVariant DataWidget::getNumFromPacket(analyzer_data *data, quint32 pos, quint8 type)
+template <typename T>
+static T assemble(const std::vector<quint32>& pos, analyzer_data* data)
+{
+    T res = 0;
+
+    for(quint32 i = 0; i < sizeof(T) && i < pos.size(); ++i)
+        res |= (data->getUInt8(pos[i]) << i*8);
+
+    if(data->isBigEndian())
+        Utils::swapEndian<T>((char*)&res);
+    return res;
+}
+
+QVariant DataWidget::getNumFromPacket(analyzer_data *data, const data_widget_info &info, quint8 type)
 {
     QVariant res;
 
     try
     {
-        switch(type)
+        switch(info.positions.size())
         {
-            case NUM_INT8:  res.setValue((int)data->getInt8(pos));  break;
-            case NUM_INT16: res.setValue((int)data->getInt16(pos)); break;
-            case NUM_INT32: res.setValue(data->getInt32(pos)); break;
-            case NUM_INT64: res.setValue(data->getInt64(pos)); break;
-
-            case NUM_UINT8:  res.setValue(data->getUInt8(pos)); break;
-            case NUM_UINT16: res.setValue(data->getUInt16(pos)); break;
-            case NUM_UINT32: res.setValue(data->getUInt32(pos)); break;
-            case NUM_UINT64: res.setValue(data->getUInt64(pos)); break;
-
-            case NUM_FLOAT:  res.setValue(data->getFloat(pos));  break;
-            case NUM_DOUBLE: res.setValue(data->getDouble(pos)); break;
+            case 1:
+                res.setValue((quint32)data->getUInt8(info.positions.front()));
+                break;
+            case 2:
+            case 3:
+                res.setValue(assemble<quint16>(info.positions, data));
+                break;
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                res.setValue(assemble<quint32>(info.positions, data));
+                break;
+            default:
+                res.setValue(assemble<quint64>(info.positions, data));
+                break;
         }
+        if(type == NUM_SIGNED)
+            res.convert(QVariant::Int);
+        else if(type == NUM_FLOAT)
+            res.convert(QVariant::Double);
     }
     catch(const char*) { }
 

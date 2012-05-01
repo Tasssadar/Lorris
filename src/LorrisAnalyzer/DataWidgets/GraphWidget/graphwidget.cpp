@@ -283,7 +283,7 @@ void GraphWidget::loadWidgetInfo(AnalyzerDataFile *file)
         if(!file->seekToNextBlock("graphWCurveDataInfo", "graphWCurve"))
             continue;
         {
-            file->read((char*)&info.pos, sizeof(info));
+            //file->read((char*)&info.pos, sizeof(info));
         }
 
         // data type
@@ -336,11 +336,9 @@ void GraphWidget::addCurve()
 {
     if(!m_add_dialog->forceEdit())
     {
-        QStringList data = m_drop_data.split(" ");
-        qint32 pos = data[0].toInt();
-        qint16 device = data[1].toInt();
-        qint16 cmd = data[2].toInt();
-        setInfo(device, cmd, pos);
+        data_widget_info info;
+        info.fromMime(m_drop_data);
+        setInfo(&info);
     }
 
     if(!m_add_dialog->edit())

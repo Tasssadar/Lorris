@@ -145,7 +145,7 @@ void GraphData::dataPosChanged(quint32 pos)
         if(m_info.device != -1 && (!cur->getDeviceId(dev) || dev != m_info.device))
             continue;
 
-        v = DataWidget::getNumFromPacket(cur, m_info.pos, m_data_type);
+        v = DataWidget::getNumFromPacket(cur, m_info, m_data_type);
 
         if(!v.isValid())
             continue;

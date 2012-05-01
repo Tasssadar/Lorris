@@ -57,7 +57,7 @@ void BarWidget::setUp(AnalyzerDataStorage *storage)
 
     m_min = 0;
     m_max = 1000;
-    m_numberType = NUM_UINT8;
+    m_numberType = NUM_UNSIGNED;
     m_rotation = 0;
 
     QMenu *bitsMenu = contextMenu->addMenu(tr("Data type"));
@@ -65,28 +65,15 @@ void BarWidget::setUp(AnalyzerDataStorage *storage)
 
     static const QString dataTypes[] =
     {
-        tr("unsigned 8bit"),
-        tr("unsigned 16bit"),
-
-        tr("signed 8bit"),
-        tr("signed 16bit"),
-        tr("signed 32bit"),
+        tr("unsigned"),
+        tr("signed"),
     };
 
     QSignalMapper *signalMapBits = new QSignalMapper(this);
 
     quint8 y,i;
-    for(y = i = 0; i < NUM_COUNT; ++i)
+    for(y = i = 0; i < NUM_COUNT-1; ++i)
     {
-        if(i == 2)
-            bitsMenu->addSeparator();
-
-        if(i == NUM_UINT32 || i == NUM_UINT64 || i > NUM_INT32)
-        {
-            bitsAction[i] = NULL;
-            continue;
-        }
-
         bitsAction[i] = new QAction(dataTypes[y], this);
         bitsAction[i]->setCheckable(true);
         bitsMenu->addAction(bitsAction[i]);
@@ -123,16 +110,10 @@ void BarWidget::setUp(AnalyzerDataStorage *storage)
 void BarWidget::processData(analyzer_data *data)
 {
     int value = 0;
+
     try
     {
-        switch(m_numberType)
-        {
-            case NUM_UINT8:  value = data->getUInt8(m_info.pos);  break;
-            case NUM_UINT16: value = data->getUInt16(m_info.pos); break;
-            case NUM_INT8:   value = data->getInt8(m_info.pos);   break;
-            case NUM_INT16:  value = data->getInt16(m_info.pos);  break;
-            case NUM_INT32:  value = data->getInt32(m_info.pos);  break;
-        }
+        value = DataWidget::getNumFromPacket(data, m_info, m_numberType).toInt();
     }
     catch(char const* e)
     {
@@ -163,9 +144,9 @@ void BarWidget::setDataType(int i)
 
 void BarWidget::rangeSelected()
 {
-    int min = 0;
-    int max = 0;
-    switch(m_numberType)
+    int min = -2147483647;
+    int max = 2147483646;
+   /* switch(m_numberType)
     {
         case NUM_UINT8:  max = 0xFF; break;
         case NUM_UINT16: max = 0xFFFF; break;
@@ -181,7 +162,7 @@ void BarWidget::rangeSelected()
             min = -2147483647;
             max = 2147483646;
             break;
-    }
+    }*/
 
     RangeSelectDialog *dialog = new RangeSelectDialog(m_bar->minimum(), m_bar->maximum(), max, min, this);
     dialog->exec();

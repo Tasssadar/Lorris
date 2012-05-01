@@ -209,7 +209,9 @@ void LabelLayout::setHeader(analyzer_header *header)
 
 void LabelLayout::selected(quint32 pos, bool selected)
 {
-    Q_ASSERT(selected ^ !m_selectedPos.contains(pos));
+    if(selected && m_selectedPos.contains(pos))
+        return;
+
     if(selected)
         m_selectedPos.push_back(pos);
     else
@@ -420,10 +422,15 @@ void DraggableLabel::mouseReleaseEvent(QMouseEvent *event)
         return;
     }
 
-    if(!m_draggin && event->button() == Qt::LeftButton && (event->modifiers() & Qt::ControlModifier))
+    if(!m_draggin && event->button() == Qt::LeftButton)
     {
-        setSelected(!m_selected);
-        emit selected(m_pos, m_selected);
+        if(event->modifiers() & Qt::ControlModifier)
+        {
+            setSelected(!m_selected);
+            emit selected(m_pos, m_selected);
+        }
+        else
+            emit unselectAll();
     }
 }
 
@@ -439,13 +446,11 @@ void DraggableLabel::mouseMoveEvent(QMouseEvent *event)
     {
         m_draggin = true;
 
-        if(event->modifiers() & Qt::ControlModifier)
+        if(!m_selected && (event->modifiers() & Qt::ControlModifier))
         {
             setSelected(!m_selected);
             emit selected(m_pos, m_selected);
         }
-        else
-            emit unselectAll();
 
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
@@ -475,11 +480,11 @@ void DraggableLabel::mouseMoveEvent(QMouseEvent *event)
             QPixmap pixmap((width()+10)*((max - min)+1), height());
             pixmap.fill(Qt::transparent);
 
-            for(int i = 0; i < labels.size(); ++i)
+            for(quint32 i = 0; i < labels.size(); ++i)
                 labels[i]->render(&pixmap, QPoint((labels[i]->getPos()-min)*(width()+5), 0));
             drag->setPixmap(pixmap);
 
-            mimeData->setData("text/data", QByteArray((char*)&info, sizeof(info)));
+            mimeData->setText(info.toMime());
         }
         else
         {

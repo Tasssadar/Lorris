@@ -191,6 +191,9 @@ public:
         m_data = data;
         m_forceValid = true;
     }
+
+    bool isBigEndian() const { return m_packet && m_packet->big_endian; }
+
     quint32 addData(char *d_itr, char *d_end);
 
     const QByteArray& getData() { return m_data; }

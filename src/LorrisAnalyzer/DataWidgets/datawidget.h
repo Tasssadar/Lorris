@@ -52,18 +52,9 @@ enum WidgetTypes
 
 enum NumberTypes
 {
-    NUM_UINT8,
-    NUM_UINT16,
-    NUM_UINT32,
-    NUM_UINT64,
-
-    NUM_INT8,
-    NUM_INT16,
-    NUM_INT32,
-    NUM_INT64,
-
+    NUM_UNSIGNED,
+    NUM_SIGNED,
     NUM_FLOAT,
-    NUM_DOUBLE,
 
     NUM_COUNT
 };
@@ -142,14 +133,41 @@ struct data_widget_info
         return !equals(other);
     }
 
-    void updatePosToWidth()
+    bool isLenghtOk(quint32 len)
     {
-        if(positions.empty() || data_width < positions.size())
+        for(std::vector<quint32>::iterator itr = positions.begin(); itr != positions.end(); ++itr)
+            if(*itr >= len)
+                return false;
+        return true;
+    }
+
+    QString toMime()
+    {
+        QString str = QString("%1 %2 %3 ").arg(device).arg(command).arg(positions.size());
+        for(std::vector<quint32>::iterator itr = positions.begin(); itr != positions.end(); ++itr)
+            str += QString("%1 ").arg(*itr);
+        return str;
+    }
+
+    void fromMime(const QString& str)
+    {
+        QStringList split = str.split(" ", QString::SkipEmptyParts);
+        if(split.size() < 3)
             return;
 
-        quint32 pos = positions.back();
-        for(++pos; positions.size() != data_width; ++pos)
-            positions.push_back(pos);
+        positions.clear();
+        for(int i = 0; i < split.size(); ++i)
+        {
+            switch(i)
+            {
+                case 0: device = split[i].toInt(); break;
+                case 1: command = split[i].toInt(); break;
+                case 2: positions.reserve(split[i].toInt()); break;
+                default:
+                    positions.push_back(split[i].toUInt());
+                    break;
+            }
+        }
     }
 
     qint16 device;
@@ -198,7 +216,7 @@ public:
     virtual void saveWidgetInfo(AnalyzerDataFile *file);
     virtual void loadWidgetInfo(AnalyzerDataFile *file);
 
-    static QVariant getNumFromPacket(analyzer_data *data, quint32 pos, quint8 type);
+    static QVariant getNumFromPacket(analyzer_data *data, const data_widget_info& info, quint8 type);
 
     void setUpdating(bool update)
     {

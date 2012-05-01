@@ -111,8 +111,11 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
 
 void AnalyzerDataArea::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(event->source() && event->mimeData()->text().at(0) == 'w')
+    if(event->source() && event->mimeData()->hasText() &&
+            event->mimeData()->text().at(0) == 'w')
+    {
         event->acceptProposedAction();
+    }
     else
         QFrame::dragEnterEvent(event);
 }

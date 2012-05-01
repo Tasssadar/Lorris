@@ -61,7 +61,7 @@ void NumberWidget::setUp(AnalyzerDataStorage *storage)
 {
     DataWidget::setUp(storage);
 
-    numberType = NUM_UINT8;
+    numberType = NUM_UNSIGNED;
     format = FMT_DECIMAL;
     level = false;
 
@@ -70,18 +70,10 @@ void NumberWidget::setUp(AnalyzerDataStorage *storage)
 
     static const QString dataTypes[] =
     {
-        tr("unsigned 8bit"),
-        tr("unsigned 16bit"),
-        tr("unsigned 32bit"),
-        tr("unsigned 64bit"),
+        tr("unsigned int"),
+        tr("signed int"),
 
-        tr("signed 8bit"),
-        tr("signed 16bit"),
-        tr("signed 32bit"),
-        tr("signed 64bit"),
-
-        tr("float (4 bytes)"),
-        tr("double (8 bytes)")
+        tr("float")
     };
 
     QSignalMapper *signalMapBits = new QSignalMapper(this);
@@ -129,7 +121,7 @@ void NumberWidget::setUp(AnalyzerDataStorage *storage)
 
 void NumberWidget::processData(analyzer_data *data)
 {
-    QVariant var = DataWidget::getNumFromPacket(data, m_info.pos, numberType);
+    QVariant var = DataWidget::getNumFromPacket(data, m_info, numberType);
     setValue(var);
 }
 
@@ -141,8 +133,8 @@ void NumberWidget::setValue(const QVariant& var)
         return;
     }
 
-    QString n;
-
+    QString n = var.toString();
+/*
     static const char fmt[] = { 'f', 'e' };
     static const quint8 base[] = { 10, 10, 16, 2 };
 
@@ -186,7 +178,7 @@ void NumberWidget::setValue(const QVariant& var)
             n.prepend("0b");
             break;
         }
-    }
+    }*/
 
     num->setText(n);
 }
@@ -204,13 +196,13 @@ void NumberWidget::setDataType(int i)
     for(quint8 y = 0; y < NUM_COUNT; ++y)
         bitsAction[y]->setChecked(y == i);
 
-    if(i >= NUM_INT8 && numberType < NUM_FLOAT)
+    if(i == NUM_SIGNED)
         fmtSelected(FMT_DECIMAL);
 
     numberType = i;
 
-    fmtAction[FMT_HEX]->setEnabled(i < NUM_INT8);
-    fmtAction[FMT_BINARY]->setEnabled(i < NUM_INT8);
+    fmtAction[FMT_HEX]->setEnabled(i == NUM_UNSIGNED);
+    fmtAction[FMT_BINARY]->setEnabled(i == NUM_UNSIGNED);
     fmtAction[FMT_EXPONENT]->setEnabled(i >= NUM_FLOAT);
     emit updateData();
 }
