@@ -137,12 +137,12 @@ private:
 UsbShupitoEnumerator::UsbShupitoEnumerator()
     : m_usb_ctx(0)
 {
-    libusb_init(&m_usb_ctx);
+    int res = libusb_init(&m_usb_ctx);
     m_eventDispatcher.reset(new UsbEventDispatcher(m_usb_ctx));
     m_eventDispatcher->start();
 
-    connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
-    m_refreshTimer.start(1000);
+    /*connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
+    m_refreshTimer.start(1000);*/
 }
 
 UsbShupitoEnumerator::~UsbShupitoEnumerator()

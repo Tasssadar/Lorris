@@ -193,7 +193,7 @@ HEADERS += src/ui/mainwindow.h \
     src/connection/usbshupitoconn.h
 
 win32 {
-    INCLUDEPATH += dep/SDL/include
+    INCLUDEPATH += dep/SDL/include dep/libusb
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
@@ -203,7 +203,15 @@ win32 {
     SOURCES += \
         dep/qextserialport/src/qextserialenumerator_win.cpp \
         dep/qextserialport/src/qextwineventnotifier_p.cpp \
-        dep/qextserialport/src/qextserialport_win.cpp
+        dep/qextserialport/src/qextserialport_win.cpp \
+        dep/libusb/core.c \
+        dep/libusb/descriptor.c \
+        dep/libusb/io.c \
+        dep/libusb/sync.c \
+        dep/libusb/os/windows_usb.c \
+        dep/libusb/os/threads_windows.c \
+        dep/libusb/os/poll_windows.c
+
 
     LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lsetupapi
     CONFIG(debug, debug|release):LIBS += -lqwtd

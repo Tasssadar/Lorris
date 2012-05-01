@@ -6,11 +6,7 @@
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
-
-struct libusb_device_descriptor;
-struct libusb_device;
-struct libusb_device_handle;
-struct libusb_transfer;
+#include <libusb.h>
 
 class UsbAcmConnection : public PortConnection
 {
@@ -38,7 +34,7 @@ public slots:
 private:
     bool openImpl();
     bool updateStrings();
-    static void static_read_completed(libusb_transfer * t);
+    static void LIBUSB_CALL static_read_completed(libusb_transfer * t);
     void read_completed(libusb_transfer * t);
     void start_read_transfer();
 

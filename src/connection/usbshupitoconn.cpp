@@ -75,7 +75,7 @@ void UsbAcmConnection::read_completed(libusb_transfer * t)
 
 void UsbAcmConnection::start_read_transfer()
 {
-    libusb_fill_bulk_transfer(m_read_transfer, m_handle, m_read_ep, m_read_buffer, sizeof m_read_buffer, static_read_completed, this, 0);
+    libusb_fill_bulk_transfer(m_read_transfer, m_handle, m_read_ep, m_read_buffer, sizeof m_read_buffer, &static_read_completed, this, 0);
     libusb_submit_transfer(m_read_transfer);
 }
 
