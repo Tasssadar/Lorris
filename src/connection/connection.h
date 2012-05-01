@@ -46,7 +46,8 @@ enum ConnectionType
     CONNECTION_PORT_SHUPITO = 2,
     CONNECTION_TCP_SOCKET  = 3,
     CONNECTION_USB_SHUPITO = 4,
-    MAX_CON_TYPE           = 4
+    CONNECTION_USB_ACM     = 5,
+    MAX_CON_TYPE           = 6
 };
 
 enum PrimaryConnectionType {

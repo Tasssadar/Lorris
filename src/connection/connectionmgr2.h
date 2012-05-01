@@ -57,7 +57,7 @@ private:
 
 struct libusb0_methods;
 struct usb_device;
-class UsbShupitoConnection;
+class UsbAcmConnection;
 
 class UsbShupitoEnumerator : public QObject
 {
@@ -74,7 +74,7 @@ private slots:
     void connectionDestroyed();
 
 private:
-    QHash<usb_device *, UsbShupitoConnection *> m_devmap;
+    QHash<usb_device *, UsbAcmConnection *> m_devmap;
 
     QTimer m_refreshTimer;
     libusb0_methods * m_um;

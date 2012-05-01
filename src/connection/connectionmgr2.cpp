@@ -146,7 +146,7 @@ void UsbShupitoEnumerator::refresh()
 
     // The list of devices has changed, list them now.
 
-    QList<UsbShupitoConnection *> portsToDisown = m_devmap.values();
+    QList<UsbAcmConnection *> portsToDisown = m_devmap.values();
 
     usb_bus * bus = m_um->usb_get_busses();
     while (bus)
@@ -154,8 +154,8 @@ void UsbShupitoEnumerator::refresh()
         struct usb_device * dev = bus->devices;
         for (; dev; dev = dev->next)
         {
-/*            if (!UsbShupitoConnection::isDeviceSupported(dev))
-                continue;*/
+            if (!UsbAcmConnection::isDeviceSupported(dev))
+                continue;
 
             if (m_devmap.contains(dev))
             {
@@ -163,7 +163,7 @@ void UsbShupitoEnumerator::refresh()
             }
             else
             {
-                ConnectionPointer<UsbShupitoConnection> conn(new UsbShupitoConnection(m_um));
+                ConnectionPointer<UsbAcmConnection> conn(new UsbAcmConnection(m_um));
                 if (!conn->setUsbDevice(dev))
                     continue;
                 conn->setRemovable(false);
@@ -182,7 +182,7 @@ void UsbShupitoEnumerator::refresh()
 
 void UsbShupitoEnumerator::connectionDestroyed()
 {
-    UsbShupitoConnection * conn = static_cast<UsbShupitoConnection *>(this->sender());
+    UsbAcmConnection * conn = static_cast<UsbAcmConnection *>(this->sender());
     m_devmap.remove(conn->usbDevice());
 }
 

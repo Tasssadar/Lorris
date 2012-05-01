@@ -3,32 +3,88 @@
 #include <QStringBuilder>
 #include <QStringList>
 
-UsbShupitoConnection::UsbShupitoConnection(libusb0_methods * um)
-    : ShupitoConnection(CONNECTION_USB_SHUPITO), m_um(um), m_dev(0), m_handle(0)
+namespace {
+
+class ReadThread : public QThread
+{
+public:
+    void run()
+    {
+
+    }
+};
+
+}
+
+struct ScopedUsbHandle
+{
+    explicit ScopedUsbHandle(libusb0_methods * um, usb_dev_handle * h = 0)
+        : m_um(um), h(h)
+    {
+    }
+
+    ~ScopedUsbHandle()
+    {
+        if (h)
+            m_um->usb_close(h);
+    }
+
+    usb_dev_handle * take()
+    {
+        usb_dev_handle * res = h;
+        h = 0;
+        return res;
+    }
+
+    libusb0_methods * m_um;
+    usb_dev_handle * h;
+};
+
+UsbAcmConnection::UsbAcmConnection(libusb0_methods * um)
+    : PortConnection(CONNECTION_USB_ACM), m_um(um), m_dev(0), m_handle(0)
 {
     this->Close();
 }
 
-void UsbShupitoConnection::OpenConcurrent()
+void UsbAcmConnection::OpenConcurrent()
 {
-    if (!m_dev)
-        return;
-
-    m_handle = m_um->usb_open(m_dev);
-    if (m_handle)
-        this->SetState(st_connected);
+    this->SetState(st_connecting);
+    bool success = this->openImpl();
+    this->SetState(success? st_connected: st_disconnected);
 }
 
-void UsbShupitoConnection::Close()
+bool UsbAcmConnection::openImpl()
+{
+    if (!m_dev || !isDeviceSupported(m_dev))
+        return false;
+
+    ScopedUsbHandle h(m_um, m_um->usb_open(m_dev));
+    if (!h.h)
+        return false;
+
+    if (m_um->usb_claim_interface(h.h, 1) < 0)
+        return false;
+
+    m_readThread = new ReadThread();
+
+    m_write_ep = m_dev->config->interface[1].altsetting[0].endpoint[0].bEndpointAddress;
+    m_read_ep = m_dev->config->interface[1].altsetting[0].endpoint[1].bEndpointAddress;
+    m_handle = h.take();
+    return true;
+}
+
+void UsbAcmConnection::Close()
 {
     if (!m_handle)
         return;
     m_um->usb_close(m_handle);
     m_handle = 0;
+
+    m_readThread->wait();
     this->SetState(st_disconnected);
 }
 
-bool UsbShupitoConnection::setUsbDevice(struct usb_device * dev)
+bool UsbAcmConnection::setUsbDevice(struct usb_device * dev)
 {
     if (this->state() == st_connected)
         this->Close();
@@ -38,16 +94,19 @@ bool UsbShupitoConnection::setUsbDevice(struct usb_device * dev)
     return this->updateStrings();
 }
 
-void UsbShupitoConnection::sendPacket(ShupitoPacket const & packet)
+void UsbAcmConnection::SendData(const QByteArray & data)
 {
-    // XXX
+    if (!m_handle)
+        return;
+
+    int res = m_um->usb_bulk_write(m_handle, m_write_ep, data.data(), data.size(), 0);
 }
 
-QString UsbShupitoConnection::details() const
+QString UsbAcmConnection::details() const
 {
     QStringList list;
 
-    QString res = ShupitoConnection::details();
+    QString res = PortConnection::details();
     if (!res.isEmpty())
         list << res;
     if (!m_manufacturer.isEmpty())
@@ -72,7 +131,7 @@ static QString getUsbString(libusb0_methods * um, struct usb_dev_handle * h, int
     return QString();
 }
 
-bool UsbShupitoConnection::updateStrings()
+bool UsbAcmConnection::updateStrings()
 {
     if (!m_dev)
         return false;
@@ -103,8 +162,15 @@ bool UsbShupitoConnection::updateStrings()
     return true;
 }
 
-bool UsbShupitoConnection::isDeviceSupported(struct usb_device * dev)
+bool UsbAcmConnection::isDeviceSupported(struct usb_device * dev)
 {
     Q_ASSERT(dev);
-    return dev->descriptor.idVendor == 0x4a61 && dev->descriptor.idProduct == 0x679a;
+    if (dev->descriptor.idVendor == 0x4a61 && dev->descriptor.idProduct == 0x679a)
+    {
+        // FIXME: check that the descriptor is consistent
+        if (dev->config->bNumInterfaces == 2)
+            return true;
+    }
+
+    return false;
 }

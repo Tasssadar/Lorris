@@ -3,15 +3,16 @@
 
 #include "connection.h"
 #include "shupitoconn.h"
+#include <QThread>
 
 struct usb_device;
 struct libusb0_methods;
 struct usb_dev_handle;
 
-class UsbShupitoConnection : public ShupitoConnection
+class UsbAcmConnection : public PortConnection
 {
 public:
-    explicit UsbShupitoConnection(libusb0_methods * um);
+    explicit UsbAcmConnection(libusb0_methods * um);
 
     QString details() const;
 
@@ -28,18 +29,23 @@ public:
     static bool isDeviceSupported(usb_device * dev);
 
 public slots:
-    virtual void sendPacket(ShupitoPacket const & packet);
+    virtual void SendData(const QByteArray & data);
 
 private:
+    bool openImpl();
     bool updateStrings();
 
     libusb0_methods * m_um;
     usb_device * m_dev;
     usb_dev_handle * m_handle;
+    int m_write_ep;
+    int m_read_ep;
 
     QString m_manufacturer;
     QString m_product;
     QString m_serialNumber;
+
+    QThread * m_readThread;
 };
 
 #endif // USBSHUPITOCONN_H
