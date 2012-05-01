@@ -28,7 +28,7 @@
 #include "../config.h"
 #include <QStringBuilder>
 #include "usbshupitoconn.h"
-#include "libusb/lusb0_usb_dyn.h"
+#include <libusb.h>
 
 ConnectionManager2 * psConMgr2 = 0;
 
@@ -108,17 +108,41 @@ void SerialPortEnumerator::connectionDestroyed()
     m_portMap.remove(port->deviceName());
 }
 
-UsbShupitoEnumerator::UsbShupitoEnumerator()
-    : m_um(0)
+class UsbEventDispatcher : public QThread
 {
-    m_um = libusb0_dyn_init();
-    if (m_um)
+public:
+    UsbEventDispatcher(libusb_context * ctx)
+        : m_ctx(ctx), m_stopping(false)
     {
-        m_um->usb_init();
-
-        connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
-        m_refreshTimer.start(1000);
     }
+
+    void run()
+    {
+        timeval tv = {};
+        tv.tv_sec = 1;
+        while (!m_stopping)
+            libusb_handle_events_timeout(m_ctx, &tv);
+    }
+
+    void initiate_stop()
+    {
+        m_stopping = true;
+    }
+
+private:
+    libusb_context * m_ctx;
+    bool m_stopping;
+};
+
+UsbShupitoEnumerator::UsbShupitoEnumerator()
+    : m_usb_ctx(0)
+{
+    libusb_init(&m_usb_ctx);
+    m_eventDispatcher.reset(new UsbEventDispatcher(m_usb_ctx));
+    m_eventDispatcher->start();
+
+    connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
+    m_refreshTimer.start(1000);
 }
 
 UsbShupitoEnumerator::~UsbShupitoEnumerator()
@@ -126,55 +150,46 @@ UsbShupitoEnumerator::~UsbShupitoEnumerator()
     while (!m_devmap.isEmpty())
         (*m_devmap.begin())->releaseAll();
 
-    if (m_um)
-        libusb0_dyn_destroy(m_um);
+    static_cast<UsbEventDispatcher *>(m_eventDispatcher.data())->initiate_stop();
+    m_eventDispatcher->wait();
+    libusb_exit(m_usb_ctx);
 }
 
 void UsbShupitoEnumerator::refresh()
 {
-    if (!m_um)
+    if (!m_usb_ctx)
         return;
 
-    int res = m_um->usb_find_busses();
-    if (res < 0)
+    libusb_device ** dev_list = 0;
+    ssize_t dev_count = libusb_get_device_list(m_usb_ctx, &dev_list);
+    if (dev_count < 0)
         return;
-
-    bool change = res > 0;
-    res = m_um->usb_find_devices();
-    if (!change && res <= 0)
-        return;
-
-    // The list of devices has changed, list them now.
 
     QList<UsbAcmConnection *> portsToDisown = m_devmap.values();
-
-    usb_bus * bus = m_um->usb_get_busses();
-    while (bus)
+    for (int i = 0; i < dev_count; ++i)
     {
-        struct usb_device * dev = bus->devices;
-        for (; dev; dev = dev->next)
-        {
-            if (!UsbAcmConnection::isDeviceSupported(dev))
-                continue;
+        libusb_device * dev = dev_list[i];
+        if (!UsbAcmConnection::isDeviceSupported(dev))
+            continue;
 
-            if (m_devmap.contains(dev))
-            {
-                portsToDisown.removeOne(m_devmap[dev]);
-            }
-            else
-            {
-                ConnectionPointer<UsbAcmConnection> conn(new UsbAcmConnection(m_um));
-                if (!conn->setUsbDevice(dev))
-                    continue;
-                conn->setRemovable(false);
-                conn->setName(conn->product());
-                m_devmap[dev] = conn.data();
-                connect(conn.data(), SIGNAL(destroying()), this, SLOT(connectionDestroyed()));
-                sConMgr2.addConnection(conn.take());
-            }
+        if (m_devmap.contains(dev))
+        {
+            portsToDisown.removeOne(m_devmap[dev]);
         }
-        bus = bus->next;
+        else
+        {
+            ConnectionPointer<UsbAcmConnection> conn(new UsbAcmConnection());
+            if (!conn->setUsbDevice(dev))
+                continue;
+            conn->setRemovable(false);
+            conn->setName(conn->product());
+            m_devmap[dev] = conn.data();
+            connect(conn.data(), SIGNAL(destroying()), this, SLOT(connectionDestroyed()));
+            sConMgr2.addConnection(conn.take());
+        }
     }
+
+    libusb_free_device_list(dev_list, 1);
 
     for (int i = 0; i < portsToDisown.size(); ++i)
         portsToDisown[i]->releaseAll();

@@ -190,8 +190,7 @@ HEADERS += src/ui/mainwindow.h \
     src/ui/plustabbar.h \
     src/ui/homedialog.h \
     src/connection/shupitoconn.h \
-    src/connection/usbshupitoconn.h \
-    dep/libusb/lusb0_usb_dyn.h
+    src/connection/usbshupitoconn.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
@@ -200,23 +199,22 @@ win32 {
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
     HEADERS += \
-        dep/qextserialport/src/qextwineventnotifier_p.h \
-        dep/libusb/lusb0_usb_win.h
+        dep/qextserialport/src/qextwineventnotifier_p.h
     SOURCES += \
         dep/qextserialport/src/qextserialenumerator_win.cpp \
         dep/qextserialport/src/qextwineventnotifier_p.cpp \
-        dep/qextserialport/src/qextserialport_win.cpp \
-        dep/libusb/lusb0_usb_dyn_win.cpp
+        dep/qextserialport/src/qextserialport_win.cpp
 
     LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lsetupapi
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 }
 unix:!macx:!symbian {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += libusb-1.0
     SOURCES += \
         dep/qextserialport/src/qextserialport_unix.cpp \
-        dep/qextserialport/src/qextserialenumerator_unix.cpp \
-        dep/libusb/lusb0_usb_dyn_unix.cpp
+        dep/qextserialport/src/qextserialenumerator_unix.cpp
 
     LIBS += -lqwt -ludev -lSDL -lusb
     QMAKE_POST_LINK = mkdir \
