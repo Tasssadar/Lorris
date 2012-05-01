@@ -122,7 +122,7 @@ void GraphData::dataPosChanged(quint32 pos)
     if(pos == m_data_pos)
         return;
 
-    qint32 absPos = abs(m_data_pos - pos);
+    qint32 absPos = abs((long)(m_data_pos - pos));
 
     eraseSpareData(absPos, pos);
 

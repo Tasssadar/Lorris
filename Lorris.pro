@@ -11,7 +11,12 @@ MOC_DIR = $$PWD/moc
 UI_DIR = $$PWD/ui
 RCC_DIR = $$PWD/qrc
 CONFIG += qwt
-LIBS += -L"$$PWD/dep/qwt/lib"
+
+win32-msvc* {
+    LIBS += -L"$$PWD/dep/qwt/lib/msvc"
+} else {
+    LIBS += -L"$$PWD/dep/qwt/lib"
+}
 LIBS += -L"$$PWD/dep/qextserialport/lib"
 TRANSLATIONS = translations/Lorris.cs_CZ.ts
 TEMPLATE = app
@@ -193,10 +198,11 @@ HEADERS += src/ui/mainwindow.h \
     src/connection/usbshupitoconn.h
 
 win32 {
+    CONFIG -= flat
+
     INCLUDEPATH += dep/SDL/include dep/libusb
 
-    DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
-    QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
+    DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE _SCL_SECURE_NO_WARNINGS _CRT_SECURE_NO_WARNINGS
 
     HEADERS += \
         dep/qextserialport/src/qextwineventnotifier_p.h
@@ -212,8 +218,15 @@ win32 {
         dep/libusb/os/threads_windows.c \
         dep/libusb/os/poll_windows.c
 
+    win32-msvc* {
+        LIBS += -L"$$PWD/dep/SDL/lib/msvc"
+        QMAKE_CXXFLAGS += /wd4138
+    } else {
+        LIBS += -L"$$PWD/dep/SDL/lib"
+        QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
+    }
 
-    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lsetupapi
+    LIBS += -lsdl -lsetupapi
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 }
