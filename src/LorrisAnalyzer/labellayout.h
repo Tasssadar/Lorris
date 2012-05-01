@@ -27,11 +27,13 @@
 #include <QHBoxLayout>
 #include <QWidget>
 #include <vector>
+#include <QVector>
 
 class CmdTabWidget;
 class DeviceTabWidget;
 
 struct analyzer_header;
+struct data_widget_info;
 class QLabel;
 class QString;
 class QByteArray;
@@ -83,17 +85,22 @@ public:
 
     QString getLabelText(quint32 index);
 
-    bool setHightlightLabel(quint32 pos, bool highlight);
+    bool setHightlightLabel(const data_widget_info& info, bool highlight);
 
     CmdTabWidget *getCmdTab() { return cmd_w; }
     DeviceTabWidget *getDeviceTab() { return dev_w; }
 
     void setHeader(analyzer_header *header);
 
+    const QVector<quint32>& getSelected() const { return m_selectedPos; }
+    DraggableLabel* getLabel(quint32 pos) { return pos >= m_labels.size() ? NULL : m_labels[pos]; }
+
 public slots:
     void lenChanged(int len);
     void changePos(int this_label, int dragged_label);
     void UpdateTypes();
+    void selected(quint32 pos, bool selected);
+    void unselectAll();
 
 protected:
     void SetLabelType(DraggableLabel *label, quint8 type);
@@ -115,6 +122,8 @@ private:
     QSpacerItem *m_spacer_l;
     bool m_enableReorder;
     bool m_enableDrag;
+
+    QVector<quint32> m_selectedPos;
 
     CmdTabWidget *cmd_w;
     DeviceTabWidget *dev_w;
@@ -146,6 +155,8 @@ class DraggableLabel : public QWidget
     Q_OBJECT
 Q_SIGNALS:
     void changePos(int this_label, int dragged_label);
+    void selected(quint32 pos, bool selected);
+    void unselectAll();
 
 public:
     DraggableLabel(const QString & text, quint32 pos, bool drop = false,
@@ -153,16 +164,32 @@ public:
     ~DraggableLabel();
 
     bool isHighligted() { return m_highlighted; }
-    void setHighlighted(bool highlight);
+    void setHighlighted(bool highlight)
+    {
+        m_highlighted = highlight;
+        updateColor();
+    }
+
+    bool isSelected() const { return m_selected; }
+    void setSelected(bool selected)
+    {
+        m_selected = selected;
+        updateColor();
+    }
+
+    void updateColor();
 
     void setLabelStyleSheet(const QString &css);
     void setLabelText(const QString& text);
     void setPos(quint32 pos);
+    quint32 getPos() const { return m_pos; }
 
     QString GetText();
 
 protected:
     void mousePressEvent ( QMouseEvent * event );
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
     void dragEnterEvent( QDragEnterEvent *event );
     void dragLeaveEvent( QDragLeaveEvent *event );
     void dropEvent( QDropEvent *event );
@@ -171,10 +198,13 @@ private:
     bool m_drag;
     bool m_drop;
     bool m_highlighted;
+    bool m_selected;
+    bool m_draggin;
     LabelLayout *labelLayout;
 
     QLabel *valueLabel;
     QLabel *posLabel;
+    quint32 m_pos;
 };
 
 #endif // LABELLAYOUT_H

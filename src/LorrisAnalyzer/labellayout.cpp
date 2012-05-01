@@ -31,6 +31,7 @@
 #include "packet.h"
 #include "devicetabwidget.h"
 #include "cmdtabwidget.h"
+#include "DataWidgets/datawidget.h"
 
 LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, CmdTabWidget *cmd, DeviceTabWidget *dev, QWidget *parent) : QHBoxLayout(parent)
 {
@@ -185,11 +186,14 @@ void LabelLayout::lenChanged(int len)
     }
 }
 
-bool LabelLayout::setHightlightLabel(quint32 pos, bool highlight)
+bool LabelLayout::setHightlightLabel(const data_widget_info &info, bool highlight)
 {
-    if(m_labels.size() <= pos)
-        return false;
-    m_labels[pos]->setHighlighted(highlight);
+    for(std::vector<quint32>::const_iterator itr = info.positions.begin(); itr != info.positions.end(); ++itr)
+    {
+        if(m_labels.size() <= *itr)
+            continue;
+        m_labels[*itr]->setHighlighted(highlight);
+    }
     return true;
 }
 
@@ -201,6 +205,30 @@ void LabelLayout::setHeader(analyzer_header *header)
     lenChanged(len);
 
     UpdateTypes();
+}
+
+void LabelLayout::selected(quint32 pos, bool selected)
+{
+    Q_ASSERT(selected ^ !m_selectedPos.contains(pos));
+    if(selected)
+        m_selectedPos.push_back(pos);
+    else
+    {
+        int idx = m_selectedPos.indexOf(pos);
+        if(idx >= 0)
+            m_selectedPos.remove(idx);
+    }
+}
+
+void LabelLayout::unselectAll()
+{
+    for(QVector<quint32>::iterator itr = m_selectedPos.begin(); itr != m_selectedPos.end(); ++itr)
+    {
+        DraggableLabel *l = getLabel(*itr);
+        if(l)
+            l->setSelected(false);
+    }
+    m_selectedPos.clear();
 }
 
 ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
@@ -339,13 +367,17 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
     }else posLabel = NULL;
 
     m_highlighted = false;
+    m_selected = false;
     labelLayout = l;
     m_drop = drop;
     m_drag = drag;
+    m_pos = pos;
 
     setAcceptDrops(true);
+    setAutoFillBackground(true);
 
-    this->setAutoFillBackground(true);
+    connect(this, SIGNAL(selected(quint32,bool)), l, SLOT(selected(quint32,bool)));
+    connect(this, SIGNAL(unselectAll()),          l, SLOT(unselectAll()));
 }
 
 DraggableLabel::~DraggableLabel()
@@ -365,6 +397,7 @@ void DraggableLabel::setLabelText(const QString& text)
 
 void DraggableLabel::setPos(quint32 pos)
 {
+    m_pos = pos;
     if(posLabel)
         posLabel->setText(QString::number(pos));
 }
@@ -376,26 +409,86 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
         QWidget::mousePressEvent(event);
         return;
     }
+    m_draggin = false;
+}
 
-    if (event->button() == Qt::LeftButton)
+void DraggableLabel::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(!m_drag)
     {
+        QWidget::mouseReleaseEvent(event);
+        return;
+    }
+
+    if(!m_draggin && event->button() == Qt::LeftButton && (event->modifiers() & Qt::ControlModifier))
+    {
+        setSelected(!m_selected);
+        emit selected(m_pos, m_selected);
+    }
+}
+
+void DraggableLabel::mouseMoveEvent(QMouseEvent *event)
+{
+    if(!m_drag)
+    {
+        QWidget::mouseMoveEvent(event);
+        return;
+    }
+
+    if (event->buttons() & Qt::LeftButton)
+    {
+        m_draggin = true;
+
+        if(event->modifiers() & Qt::ControlModifier)
+        {
+            setSelected(!m_selected);
+            emit selected(m_pos, m_selected);
+        }
+        else
+            emit unselectAll();
+
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
         if(m_drag && !m_drop && labelLayout)
         {
-            mimeData->setText(objectName() + " " +
-                              QString::number(labelLayout->getDeviceTab()->getCurrentDevice()) + " " +
-                              QString::number(labelLayout->getCmdTab()->getCurrentCmd()));
+            QVector<quint32> sel(labelLayout->getSelected());
+            if(sel.empty())
+                sel.push_back(m_pos);
+
+            data_widget_info info(labelLayout->getDeviceTab()->getCurrentDevice(),
+                                  labelLayout->getCmdTab()->getCurrentCmd());
+
+            std::vector<DraggableLabel*> labels;
+            quint32 min = -1;
+            quint32 max = 0;
+
+            for(QVector<quint32>::iterator itr = sel.begin(); itr != sel.end(); ++itr)
+            {
+                if(DraggableLabel *l = labelLayout->getLabel(*itr))
+                {
+                    min = std::min(*itr, min);
+                    max = std::max(*itr, max);
+                    labels.push_back(l);
+                    info.positions.push_back(l->getPos());
+                }
+            }
+            QPixmap pixmap((width()+10)*((max - min)+1), height());
+            pixmap.fill(Qt::transparent);
+
+            for(int i = 0; i < labels.size(); ++i)
+                labels[i]->render(&pixmap, QPoint((labels[i]->getPos()-min)*(width()+5), 0));
+            drag->setPixmap(pixmap);
+
+            mimeData->setData("text/data", QByteArray((char*)&info, sizeof(info)));
         }
         else
+        {
             mimeData->setText(objectName());
+            QPixmap pixmap(size());
+            this->render(&pixmap);
+            drag->setPixmap(pixmap);
+        }
         drag->setMimeData(mimeData);
-
-        QPixmap pixmap(size());
-        this->render(&pixmap);
-
-        drag->setPixmap(pixmap);
-
         drag->exec();
         event->accept();
     }
@@ -433,11 +526,12 @@ void DraggableLabel::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
 }
 
-void DraggableLabel::setHighlighted(bool highlight)
+void DraggableLabel::updateColor()
 {
-    m_highlighted = highlight;
-    if(highlight)
+    if(m_highlighted)
         setStyleSheet("background-color: red");
+    else if(m_selected)
+        setStyleSheet("background-color: blue");
     else
         setStyleSheet("");
 }

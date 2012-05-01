@@ -289,7 +289,7 @@ bool CmdTabWidget::setHighlightPos(const data_widget_info& info, bool highlight)
     if(m_all_cmds && info.command == -1)
     {
         setCurrentIndex(0);
-        return m_all_cmds->l->setHightlightLabel(info.pos, highlight);
+        return m_all_cmds->l->setHightlightLabel(info, highlight);
     }
 
     for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
@@ -297,7 +297,7 @@ bool CmdTabWidget::setHighlightPos(const data_widget_info& info, bool highlight)
         if(itr->first == info.command)
         {
             setCurrentIndex(indexOf(itr->second->a));
-            return itr->second->l->setHightlightLabel(info.pos, highlight);
+            return itr->second->l->setHightlightLabel(info, highlight);
         }
     }
     return false;

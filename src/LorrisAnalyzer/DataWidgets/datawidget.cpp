@@ -234,11 +234,9 @@ void DataWidget::dropEvent(QDropEvent *event)
         return;
     event->acceptProposedAction();
 
-    QStringList data = event->mimeData()->text().split(" ");
-    qint32 pos = data[0].toInt();
-    qint16 device = data[1].toInt();
-    qint16 cmd = data[2].toInt();
-    setInfo(device, cmd, pos);
+    QByteArray data = event->mimeData()->data("text/data");
+    data_widget_info *info = (data_widget_info*)data.data();
+    setInfo(info);
     m_assigned = true;
     emit updateData();
 }

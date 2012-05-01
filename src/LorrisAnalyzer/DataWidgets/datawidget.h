@@ -79,21 +79,83 @@ enum DragActions
 
 #define RESIZE_BORDER 15 // number of pixels from every side which counts as resize drag
 
-struct data_widget_info
+
+struct data_widget_info_v1
 {
     quint32 pos;
     qint16 device;
     qint16 command;
 
-    bool operator==(const data_widget_info& other)
+    bool operator==(const data_widget_info_v1& other)
     {
         return (other.pos == pos && other.device == device && other.command == command);
     }
 
-    bool operator!=(const data_widget_info& other)
+    bool operator!=(const data_widget_info_v1& other)
     {
         return (other.pos != pos || other.device != device || other.command != command);
     }
+};
+
+struct data_widget_info
+{
+    data_widget_info()
+    {
+        device = -1;
+        command = -1;
+        data_width = 1;
+    }
+
+    data_widget_info(qint16 dev, qint16 cmd)
+    {
+        device = dev;
+        command = cmd;
+        data_width = 1;
+    }
+
+    void copy(data_widget_info* info)
+    {
+        device = info->device;
+        command = info->command;
+        data_width = info->data_width;
+        positions.assign(info->positions.begin(), info->positions.end());
+    }
+
+    bool equals(const data_widget_info& other)
+    {
+        if(other.device != device || other.command != command || other.positions.size() != positions.size())
+            return false;
+
+        for(quint32 i = 0; i < positions.size(); ++i)
+            if(positions[i] != other.positions[i])
+                return false;
+        return true;
+    }
+
+    bool operator==(const data_widget_info& other)
+    {
+        return equals(other);
+    }
+
+    bool operator!=(const data_widget_info& other)
+    {
+        return !equals(other);
+    }
+
+    void updatePosToWidth()
+    {
+        if(positions.empty() || data_width < positions.size())
+            return;
+
+        quint32 pos = positions.back();
+        for(++pos; positions.size() != data_width; ++pos)
+            positions.push_back(pos);
+    }
+
+    qint16 device;
+    qint16 command;
+    quint16 data_width;
+    std::vector<quint32> positions;
 };
 
 class CloseLabel;
@@ -127,11 +189,9 @@ public:
 
     bool isMouseIn() { return m_mouseIn; }
 
-    void setInfo(qint16 device, qint16 command, quint32 pos)
+    void setInfo(data_widget_info* info)
     {
-        m_info.device = device;
-        m_info.command = command;
-        m_info.pos = pos;
+        m_info.copy(info);
     }
     const data_widget_info& getInfo() { return m_info; }
 
