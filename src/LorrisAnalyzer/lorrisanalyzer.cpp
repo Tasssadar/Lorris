@@ -44,9 +44,9 @@
 #include "sourcedialog.h"
 #include "ui_lorrisanalyzer.h"
 #include "packet.h"
-#include "analyzerdatastorage.h"
+#include "storage.h"
 #include "devicetabwidget.h"
-#include "analyzerdataarea.h"
+#include "widgetarea.h"
 #include "DataWidgets/datawidget.h"
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
@@ -131,7 +131,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     ui->timeBox->setAttribute(Qt::WA_PaintOnScreen, true);
 #endif
 
-    m_storage = new AnalyzerDataStorage(this);
+    m_storage = new Storage(this);
     ui->dataArea->setAnalyzerAndStorage(this, m_storage);
 
     m_parser = new PacketParser(m_storage, this);
@@ -345,7 +345,7 @@ bool LorrisAnalyzer::load(QString &name, quint8 mask)
     if(!packet)
         return false;
 
-    // old packet deleted in AnalyzerDataStorage::loadFromFile()
+    // old packet deleted in Storage::loadFromFile()
     m_packet = packet;
     m_parser->setPacket(packet);
 

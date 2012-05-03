@@ -21,8 +21,8 @@
 **
 ****************************************************************************/
 
-#ifndef ANALYZERDATASTORAGE_H
-#define ANALYZERDATASTORAGE_H
+#ifndef STORAGE_H
+#define STORAGE_H
 
 #include <QTypeInfo>
 #include <vector>
@@ -38,19 +38,19 @@ enum StorageDataType
     STORAGE_WIDGETS   = 0x04
 };
 
-class AnalyzerDataArea;
+class WidgetArea;
 class DeviceTabWidget;
 class QFile;
 class LorrisAnalyzer;
-class AnalyzerDataFile;
+class DataFileParser;
 
-class AnalyzerDataStorage : public QObject
+class Storage : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit AnalyzerDataStorage(LorrisAnalyzer *analyzer);
-    ~AnalyzerDataStorage();
+    explicit Storage(LorrisAnalyzer *analyzer);
+    ~Storage();
 
     void setPacket(analyzer_packet *packet);
 
@@ -59,16 +59,16 @@ public:
     void addData(analyzer_data *data);
     quint32 getSize() { return m_size; }
     analyzer_data *get(quint32 index) { return m_data[index]; }
-    analyzer_packet *loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices, quint32 &data_idx);
+    analyzer_packet *loadFromFile(QString *name, quint8 load, WidgetArea *area, DeviceTabWidget *devices, quint32 &data_idx);
 
     const QString& getFilename() { return m_filename; }
 
 public slots:
-    void SaveToFile(QString filename, AnalyzerDataArea *area, DeviceTabWidget *devices);
-    void SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *devices);
+    void SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *devices);
+    void SaveToFile(WidgetArea *area, DeviceTabWidget *devices);
 
 private:
-    bool checkMagic(AnalyzerDataFile *file);
+    bool checkMagic(DataFileParser *file);
 
     std::vector<analyzer_data*> m_data;
     analyzer_packet *m_packet;
@@ -79,4 +79,4 @@ private:
     QByteArray m_file_md5;
 };
 
-#endif // ANALYZERDATASTORAGE_H
+#endif // STORAGE_H

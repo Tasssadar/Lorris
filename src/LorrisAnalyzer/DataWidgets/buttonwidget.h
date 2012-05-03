@@ -31,9 +31,9 @@ class ButtonWidget : public DataWidget
     Q_OBJECT
 public:
     ButtonWidget(QWidget *parent);
-    void setUp(AnalyzerDataStorage *storage);
-    void saveWidgetInfo(AnalyzerDataFile *file);
-    void loadWidgetInfo(AnalyzerDataFile *file);
+    void setUp(Storage *storage);
+    void saveWidgetInfo(DataFileParser *file);
+    void loadWidgetInfo(DataFileParser *file);
 
 public slots:
     void setButtonName(const QString& name);

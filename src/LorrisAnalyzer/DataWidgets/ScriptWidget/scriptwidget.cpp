@@ -50,14 +50,14 @@ ScriptWidget::~ScriptWidget()
     delete m_editor;
 }
 
-void ScriptWidget::setUp(AnalyzerDataStorage *storage)
+void ScriptWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
     QAction *src_act = contextMenu->addAction(tr("Set source..."));
     connect(src_act,    SIGNAL(triggered()),                 this,       SLOT(setSourceTriggered()));
 
-    m_env = new ScriptEnv((AnalyzerDataArea*)parent(), getId(),  this);
+    m_env = new ScriptEnv((WidgetArea*)parent(), getId(),  this);
 
     connect(m_terminal, SIGNAL(keyPressed(QString)),         m_env,      SLOT(keyPressed(QString)));
     connect(m_env,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
@@ -77,7 +77,7 @@ void ScriptWidget::newData(analyzer_data *data, quint32 index)
         m_terminal->appendText(res);
 }
 
-void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void ScriptWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -106,7 +106,7 @@ void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
     m_env->getStorage()->saveToFile(file);
 }
 
-void ScriptWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void ScriptWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 

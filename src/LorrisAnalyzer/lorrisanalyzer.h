@@ -31,15 +31,15 @@
 #include "packet.h"
 #include "DataWidgets/datawidget.h"
 #include "../ui/connectbutton.h"
-#include "analyzerdatastorage.h"
+#include "storage.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
 class QMdiArea;
-class AnalyzerDataStorage;
+class Storage;
 class QSlider;
 class DeviceTabWidget;
-class AnalyzerDataArea;
+class WidgetArea;
 class QSpinBox;
 class QScrollArea;
 class PacketParser;
@@ -115,7 +115,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         bool highlightInfoNotNull;
         data_widget_info highlightInfo;
         Ui::LorrisAnalyzer *ui;
-        AnalyzerDataStorage *m_storage;
+        Storage *m_storage;
         analyzer_packet *m_packet;
         PacketParser *m_parser;
 

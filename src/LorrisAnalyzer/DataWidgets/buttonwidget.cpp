@@ -41,7 +41,7 @@ ButtonWidget::ButtonWidget(QWidget *parent) : DataWidget(parent)
     adjustSize();
 }
 
-void ButtonWidget::setUp(AnalyzerDataStorage *storage)
+void ButtonWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -69,7 +69,7 @@ void ButtonWidget::setButtonName(const QString &name)
     m_button->setText(name);
 }
 
-void ButtonWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void ButtonWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -83,7 +83,7 @@ void ButtonWidget::saveWidgetInfo(AnalyzerDataFile *file)
     }
 }
 
-void ButtonWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void ButtonWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 

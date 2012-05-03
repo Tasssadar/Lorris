@@ -32,7 +32,7 @@
 #include "graphdialogs.h"
 #include "graphdata.h"
 #include "graphcurve.h"
-#include "../../analyzerdatastorage.h"
+#include "../../storage.h"
 
 static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
@@ -60,7 +60,7 @@ GraphWidget::~GraphWidget()
         delete m_curves[i];
 }
 
-void GraphWidget::setUp(AnalyzerDataStorage *storage)
+void GraphWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -142,7 +142,7 @@ void GraphWidget::processData(analyzer_data */*data*/)
 
 }
 
-void GraphWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void GraphWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -209,7 +209,7 @@ void GraphWidget::saveWidgetInfo(AnalyzerDataFile *file)
     }
 }
 
-void GraphWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void GraphWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 

@@ -25,7 +25,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-#include "analyzerdataarea.h"
+#include "widgetarea.h"
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
 #include "DataWidgets/colorwidget.h"
@@ -35,10 +35,10 @@
 #include "DataWidgets/terminalwidget.h"
 #include "DataWidgets/buttonwidget.h"
 #include "lorrisanalyzer.h"
-#include "analyzerdatafile.h"
-#include "analyzerdatastorage.h"
+#include "datafileparser.h"
+#include "storage.h"
 
-AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
+WidgetArea::WidgetArea(QWidget *parent) :
     QFrame(parent)
 {
     m_widgetIdCounter = 0;
@@ -46,12 +46,12 @@ AnalyzerDataArea::AnalyzerDataArea(QWidget *parent) :
     m_skipNextMove = false;
 }
 
-AnalyzerDataArea::~AnalyzerDataArea()
+WidgetArea::~WidgetArea()
 {
     clear();
 }
 
-void AnalyzerDataArea::clear()
+void WidgetArea::clear()
 {
     w_map::iterator itr = m_widgets.begin();
     while(itr != m_widgets.end())
@@ -62,7 +62,7 @@ void AnalyzerDataArea::clear()
     m_marks.clear();
 }
 
-void AnalyzerDataArea::dropEvent(QDropEvent *event)
+void WidgetArea::dropEvent(QDropEvent *event)
 {
     QString data = event->mimeData()->text().remove(0, 1);
     quint8 type = data.toInt();
@@ -72,7 +72,7 @@ void AnalyzerDataArea::dropEvent(QDropEvent *event)
     addWidget(event->pos(), type);
 }
 
-DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
+DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
 {
     DataWidget *w = newWidget(type, this);
     if(!w)
@@ -109,7 +109,7 @@ DataWidget *AnalyzerDataArea::addWidget(QPoint pos, quint8 type, bool show)
     return w;
 }
 
-void AnalyzerDataArea::dragEnterEvent(QDragEnterEvent *event)
+void WidgetArea::dragEnterEvent(QDragEnterEvent *event)
 {
     if(event->source() && event->mimeData()->text().at(0) == 'w')
         event->acceptProposedAction();
@@ -117,7 +117,7 @@ void AnalyzerDataArea::dragEnterEvent(QDragEnterEvent *event)
         QFrame::dragEnterEvent(event);
 }
 
-DataWidget *AnalyzerDataArea::newWidget(quint8 type, QWidget *parent)
+DataWidget *WidgetArea::newWidget(quint8 type, QWidget *parent)
 {
     switch(type)
     {
@@ -133,7 +133,7 @@ DataWidget *AnalyzerDataArea::newWidget(quint8 type, QWidget *parent)
     return NULL;
 }
 
-void AnalyzerDataArea::removeWidget(quint32 id)
+void WidgetArea::removeWidget(quint32 id)
 {
     w_map::iterator itr = m_widgets.find(id);
     if(itr == m_widgets.end())
@@ -148,7 +148,7 @@ void AnalyzerDataArea::removeWidget(quint32 id)
     update();
 }
 
-DataWidget *AnalyzerDataArea::getWidget(quint32 id)
+DataWidget *WidgetArea::getWidget(quint32 id)
 {
     w_map::iterator itr = m_widgets.find(id);
     if(itr == m_widgets.end())
@@ -156,7 +156,7 @@ DataWidget *AnalyzerDataArea::getWidget(quint32 id)
     return *itr;
 }
 
-void AnalyzerDataArea::SaveWidgets(AnalyzerDataFile *file)
+void WidgetArea::SaveWidgets(DataFileParser *file)
 {
     // We want widgets saved in same order as they were created. It does not have to be super-fast,
     // so I am using std::map to sort them.
@@ -176,7 +176,7 @@ void AnalyzerDataArea::SaveWidgets(AnalyzerDataFile *file)
     }
 }
 
-void AnalyzerDataArea::LoadWidgets(AnalyzerDataFile *file, bool skip)
+void WidgetArea::LoadWidgets(DataFileParser *file, bool skip)
 {
     clear();
 
@@ -217,7 +217,7 @@ void AnalyzerDataArea::LoadWidgets(AnalyzerDataFile *file, bool skip)
     update();
 }
 
-void AnalyzerDataArea::mousePressEvent(QMouseEvent *event)
+void WidgetArea::mousePressEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
     {
@@ -226,13 +226,13 @@ void AnalyzerDataArea::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void AnalyzerDataArea::mouseReleaseEvent(QMouseEvent *event)
+void WidgetArea::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
         setCursor(Qt::ArrowCursor);
 }
 
-void AnalyzerDataArea::paintEvent(QPaintEvent *event)
+void WidgetArea::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
 
@@ -250,7 +250,7 @@ void AnalyzerDataArea::paintEvent(QPaintEvent *event)
         painter.drawRect(*itr);
 }
 
-void AnalyzerDataArea::mouseMoveEvent(QMouseEvent *event)
+void WidgetArea::mouseMoveEvent(QMouseEvent *event)
 {
     if(event->buttons() != Qt::LeftButton)
         return;
@@ -262,7 +262,7 @@ void AnalyzerDataArea::mouseMoveEvent(QMouseEvent *event)
     m_mouse_orig = event->globalPos();
 }
 
-void AnalyzerDataArea::moveWidgets(QPoint diff)
+void WidgetArea::moveWidgets(QPoint diff)
 {
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
     {
@@ -274,7 +274,7 @@ void AnalyzerDataArea::moveWidgets(QPoint diff)
     update();
 }
 
-void AnalyzerDataArea::getMarkPos(int &x, int &y, QSize &size)
+void WidgetArea::getMarkPos(int &x, int &y, QSize &size)
 {
     size = (y < 0 || y > height()) ? QSize(20, 5) : QSize(5, 20);
 
@@ -285,7 +285,7 @@ void AnalyzerDataArea::getMarkPos(int &x, int &y, QSize &size)
     else if(y > height()) y = height() - 5;
 }
 
-void AnalyzerDataArea::updateMarker(DataWidget *w)
+void WidgetArea::updateMarker(DataWidget *w)
 {
     bool do_update = false;
 
@@ -322,7 +322,7 @@ void AnalyzerDataArea::updateMarker(DataWidget *w)
         update();
 }
 
-void AnalyzerDataArea::moveEvent(QMoveEvent *event)
+void WidgetArea::moveEvent(QMoveEvent *event)
 {
     if(m_skipNextMove)
         m_skipNextMove = false;
@@ -330,7 +330,7 @@ void AnalyzerDataArea::moveEvent(QMoveEvent *event)
         moveWidgets(event->oldPos() - pos());
 }
 
-void AnalyzerDataArea::resizeEvent(QResizeEvent *)
+void WidgetArea::resizeEvent(QResizeEvent *)
 {
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         updateMarker(*itr);

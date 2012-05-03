@@ -29,7 +29,7 @@
 #include "graphdata.h"
 #include "../datawidget.h"
 
-class AnalyzerDataStorage;
+class Storage;
 
 class GraphCurve : public QObject, public QwtPlotCurve
 {

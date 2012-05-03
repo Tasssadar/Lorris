@@ -32,7 +32,7 @@
 #include "../../packet.h"
 #include "scriptstorage.h"
 
-class AnalyzerDataArea;
+class WidgetArea;
 class DataWidget;
 
 class ScriptEnv : public QScriptEngine
@@ -48,7 +48,7 @@ Q_SIGNALS:
     void stopUsingJoy(QObject *object);
 
 public:
-    explicit ScriptEnv(AnalyzerDataArea *area , quint32 w_id, QObject *parent = 0);
+    explicit ScriptEnv(WidgetArea *area , quint32 w_id, QObject *parent = 0);
     ~ScriptEnv();
 
     void setSource(const QString& source);
@@ -115,7 +115,7 @@ private:
     static QScriptValue __newWidget(QScriptContext *context, QScriptEngine *engine);
 
     QString m_source;
-    AnalyzerDataArea *m_area;
+    WidgetArea *m_area;
     QScriptEngine m_engine;
     QScriptValue  m_global;
     QScriptValue  m_on_data;

@@ -29,7 +29,7 @@
 
 class analyzer_data;
 class analyzer_packet;
-class AnalyzerDataStorage;
+class Storage;
 
 class PacketParser : public QObject
 {
@@ -38,7 +38,7 @@ Q_SIGNALS:
     void packetReceived(analyzer_data *data, quint32 index);
 
 public:
-    explicit PacketParser(AnalyzerDataStorage *storage, QObject *parent = 0);
+    explicit PacketParser(Storage *storage, QObject *parent = 0);
     ~PacketParser();
 
     void setPaused(bool pause)
@@ -56,7 +56,7 @@ private:
     bool m_paused;
     analyzer_data *m_curData;
     analyzer_packet *m_packet;
-    AnalyzerDataStorage *m_storage;
+    Storage *m_storage;
 };
 
 #endif // PACKETPARSER_H

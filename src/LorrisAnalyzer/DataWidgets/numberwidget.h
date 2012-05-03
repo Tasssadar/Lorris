@@ -44,9 +44,9 @@ public:
     NumberWidget(QWidget *parent = 0);
     ~NumberWidget();
 
-    void setUp(AnalyzerDataStorage *storage);
-    void saveWidgetInfo(AnalyzerDataFile *file);
-    void loadWidgetInfo(AnalyzerDataFile *file);
+    void setUp(Storage *storage);
+    void saveWidgetInfo(DataFileParser *file);
+    void loadWidgetInfo(DataFileParser *file);
 
 public slots:
     void setValue(const QVariant &var);

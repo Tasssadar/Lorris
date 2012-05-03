@@ -32,7 +32,7 @@
 #include <QMenu>
 
 #include "../packet.h"
-#include "../analyzerdatafile.h"
+#include "../datafileparser.h"
 
 enum WidgetTypes
 {
@@ -97,8 +97,8 @@ struct data_widget_info
 };
 
 class CloseLabel;
-class AnalyzerDataFile;
-class AnalyzerDataStorage;
+class DataFileParser;
+class Storage;
 
 class DataWidget : public QFrame
 {
@@ -120,7 +120,7 @@ public:
     explicit DataWidget(QWidget *parent = 0);
     ~DataWidget();
 
-    virtual void setUp(AnalyzerDataStorage *);
+    virtual void setUp(Storage *);
 
     void setId(quint32 id);
     quint32 getId() { return m_id; }
@@ -135,8 +135,8 @@ public:
     }
     const data_widget_info& getInfo() { return m_info; }
 
-    virtual void saveWidgetInfo(AnalyzerDataFile *file);
-    virtual void loadWidgetInfo(AnalyzerDataFile *file);
+    virtual void saveWidgetInfo(DataFileParser *file);
+    virtual void loadWidgetInfo(DataFileParser *file);
 
     static QVariant getNumFromPacket(analyzer_data *data, quint32 pos, quint8 type);
 

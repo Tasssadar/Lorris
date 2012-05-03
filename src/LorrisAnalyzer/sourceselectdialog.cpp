@@ -26,7 +26,7 @@
 
 #include "sourceselectdialog.h"
 #include "ui_sourceselectdialog.h"
-#include "analyzerdatastorage.h"
+#include "storage.h"
 
 SourceSelectDialog::SourceSelectDialog(QWidget *parent) :
     QDialog(parent),ui(new Ui::SourceSelectDialog)

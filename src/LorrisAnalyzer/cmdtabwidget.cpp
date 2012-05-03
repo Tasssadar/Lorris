@@ -29,7 +29,7 @@
 #include "cmdtabwidget.h"
 #include "../common.h"
 #include "DataWidgets/datawidget.h"
-#include "analyzerdatafile.h"
+#include "datafileparser.h"
 #include "../ui/plustabbar.h"
 
 CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent) :
@@ -240,7 +240,7 @@ qint16 CmdTabWidget::getCurrentCmd()
     return -1;
 }
 
-void CmdTabWidget::Save(AnalyzerDataFile *file)
+void CmdTabWidget::Save(DataFileParser *file)
 {
     quint32 size = m_cmds.size();
     if(m_all_cmds)
@@ -263,7 +263,7 @@ void CmdTabWidget::Save(AnalyzerDataFile *file)
     }
 }
 
-void CmdTabWidget::Load(AnalyzerDataFile *file, bool /*skip*/)
+void CmdTabWidget::Load(DataFileParser *file, bool /*skip*/)
 {
     quint32 count = 0;
     file->read((char*)&count, sizeof(quint32));

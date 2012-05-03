@@ -37,10 +37,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/utils.cpp \
     src/LorrisAnalyzer/labellayout.cpp \
     src/LorrisAnalyzer/packet.cpp \
-    src/LorrisAnalyzer/analyzerdatastorage.cpp \
     src/LorrisAnalyzer/devicetabwidget.cpp \
     src/LorrisAnalyzer/cmdtabwidget.cpp \
-    src/LorrisAnalyzer/analyzerdataarea.cpp \
     src/LorrisAnalyzer/DataWidgets/datawidget.cpp \
     src/LorrisAnalyzer/DataWidgets/numberwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/barwidget.cpp \
@@ -49,7 +47,7 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/lorrisshupitoinfo.cpp \
     src/LorrisShupito/shupito.cpp \
     src/LorrisShupito/shupitodesc.cpp \
-    src/LorrisAnalyzer/analyzerdatafile.cpp \
+    src/LorrisAnalyzer/datafileparser.cpp \
     src/LorrisAnalyzer/DataWidgets/colorwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp \
@@ -100,7 +98,9 @@ SOURCES += src/ui/mainwindow.cpp \
     src/connection/connectionmgr2.cpp \
     src/LorrisAnalyzer/packetparser.cpp \
     src/ui/plustabbar.cpp \
-    src/ui/homedialog.cpp
+    src/ui/homedialog.cpp \
+    src/LorrisAnalyzer/widgetarea.cpp \
+    src/LorrisAnalyzer/storage.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -120,10 +120,8 @@ HEADERS += src/ui/mainwindow.h \
     src/utils.h \
     src/LorrisAnalyzer/labellayout.h \
     src/LorrisAnalyzer/packet.h \
-    src/LorrisAnalyzer/analyzerdatastorage.h \
     src/LorrisAnalyzer/devicetabwidget.h \
     src/LorrisAnalyzer/cmdtabwidget.h \
-    src/LorrisAnalyzer/analyzerdataarea.h \
     src/LorrisAnalyzer/DataWidgets/datawidget.h \
     src/LorrisAnalyzer/DataWidgets/numberwidget.h \
     src/LorrisAnalyzer/DataWidgets/barwidget.h \
@@ -132,7 +130,7 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/lorrisshupitoinfo.h \
     src/LorrisShupito/shupito.h \
     src/LorrisShupito/shupitodesc.h \
-    src/LorrisAnalyzer/analyzerdatafile.h \
+    src/LorrisAnalyzer/datafileparser.h \
     src/LorrisAnalyzer/DataWidgets/colorwidget.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
@@ -186,7 +184,10 @@ HEADERS += src/ui/mainwindow.h \
     src/connection/connectionmgr2.h \
     src/LorrisAnalyzer/packetparser.h \
     src/ui/plustabbar.h \
-    src/ui/homedialog.h
+    src/ui/homedialog.h \
+    src/LorrisAnalyzer/datafileparser.h \
+    src/LorrisAnalyzer/widgetarea.h \
+    src/LorrisAnalyzer/storage.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include

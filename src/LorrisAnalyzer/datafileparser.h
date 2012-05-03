@@ -21,8 +21,8 @@
 **
 ****************************************************************************/
 
-#ifndef ANALYZERDATAFILE_H
-#define ANALYZERDATAFILE_H
+#ifndef DATAFILEPARSER_H
+#define DATAFILEPARSER_H
 
 #include <QFile>
 #include <QBuffer>
@@ -42,12 +42,12 @@ enum DataBlocks
     BLOCK_DATA_INDEX
 };
 
-class AnalyzerDataFile : public QBuffer
+class DataFileParser : public QBuffer
 {
     Q_OBJECT
 public:
-    explicit AnalyzerDataFile(QByteArray *data, QObject *parent = 0);
-    ~AnalyzerDataFile();
+    explicit DataFileParser(QByteArray *data, QObject *parent = 0);
+    ~DataFileParser();
 
     bool seekToNextBlock(DataBlocks block, qint32 maxDist);
     bool seekToNextBlock(const char *block, qint32 maxDist);
@@ -67,4 +67,4 @@ private:
     int m_last_block;
 };
 
-#endif // ANALYZERDATAFILE_H
+#endif // DATAFILEPARSER_H

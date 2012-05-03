@@ -21,20 +21,20 @@
 **
 ****************************************************************************/
 
-#include "analyzerdatafile.h"
+#include "datafileparser.h"
 
-AnalyzerDataFile::AnalyzerDataFile(QByteArray *data, QObject *parent) :
+DataFileParser::DataFileParser(QByteArray *data, QObject *parent) :
     QBuffer(data, parent)
 {
     m_last_block = 0;
 }
 
-AnalyzerDataFile::~AnalyzerDataFile()
+DataFileParser::~DataFileParser()
 {
 
 }
 
-bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, qint32 maxDist)
+bool DataFileParser::seekToNextBlock(DataBlocks block, qint32 maxDist)
 {
     char* block_name = getBlockName(block);
     if(!block_name)
@@ -44,7 +44,7 @@ bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, qint32 maxDist)
     return res;
 }
 
-bool AnalyzerDataFile::seekToNextBlock(const char *block, qint32 maxDist)
+bool DataFileParser::seekToNextBlock(const char *block, qint32 maxDist)
 {
     quint8 lenght = 0;
     char* name = getBlockWithFormat(block, lenght);
@@ -59,7 +59,7 @@ bool AnalyzerDataFile::seekToNextBlock(const char *block, qint32 maxDist)
     return true;
 }
 
-bool AnalyzerDataFile::seekToNextBlock(const char *block, const char *toMax)
+bool DataFileParser::seekToNextBlock(const char *block, const char *toMax)
 {
     quint8 lenght = 0;
     char* name = getBlockWithFormat(toMax, lenght);
@@ -75,7 +75,7 @@ bool AnalyzerDataFile::seekToNextBlock(const char *block, const char *toMax)
     return seekToNextBlock(block, dist);
 }
 
-bool AnalyzerDataFile::seekToNextBlock(const char *block, DataBlocks toMax)
+bool DataFileParser::seekToNextBlock(const char *block, DataBlocks toMax)
 {
     char* block_name = getBlockName(toMax);
     if(!block_name)
@@ -96,7 +96,7 @@ bool AnalyzerDataFile::seekToNextBlock(const char *block, DataBlocks toMax)
     return seekToNextBlock(block, dist);
 }
 
-bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, const char *toMax)
+bool DataFileParser::seekToNextBlock(DataBlocks block, const char *toMax)
 {
     quint8 lenght = 0;
     char* name = getBlockWithFormat(toMax, lenght);
@@ -112,7 +112,7 @@ bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, const char *toMax)
     return seekToNextBlock(block, dist);
 }
 
-bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, DataBlocks toMax)
+bool DataFileParser::seekToNextBlock(DataBlocks block, DataBlocks toMax)
 {
     char* block_name = getBlockName(toMax);
     if(!block_name)
@@ -133,7 +133,7 @@ bool AnalyzerDataFile::seekToNextBlock(DataBlocks block, DataBlocks toMax)
     return seekToNextBlock(block, dist);
 }
 
-char* AnalyzerDataFile::getBlockName(DataBlocks block)
+char* DataFileParser::getBlockName(DataBlocks block)
 {
     char* res = new char[100];
 
@@ -155,7 +155,7 @@ char* AnalyzerDataFile::getBlockName(DataBlocks block)
     return res;
 }
 
-void AnalyzerDataFile::writeBlockIdentifier(DataBlocks block)
+void DataFileParser::writeBlockIdentifier(DataBlocks block)
 {
     char* block_name = getBlockName(block);
     if(block_name)
@@ -163,7 +163,7 @@ void AnalyzerDataFile::writeBlockIdentifier(DataBlocks block)
     delete[] block_name;
 }
 
-void AnalyzerDataFile::writeBlockIdentifier(const char *block)
+void DataFileParser::writeBlockIdentifier(const char *block)
 {
     quint8 lenght = 0;
 
@@ -172,7 +172,7 @@ void AnalyzerDataFile::writeBlockIdentifier(const char *block)
     delete[] name;
 }
 
-char *AnalyzerDataFile::getBlockWithFormat(const char *block, quint8& lenght)
+char *DataFileParser::getBlockWithFormat(const char *block, quint8& lenght)
 {
     char* name = new char[100];
     name[0] = 0x80;
