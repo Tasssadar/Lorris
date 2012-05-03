@@ -102,6 +102,7 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
 
     QScrollArea *area = new QScrollArea(this);
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     ScrollDataLayout *layout = NULL;
     QWidget *w = new QWidget();
