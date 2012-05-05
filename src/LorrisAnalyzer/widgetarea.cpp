@@ -42,7 +42,6 @@ WidgetArea::WidgetArea(QWidget *parent) :
     QFrame(parent)
 {
     m_widgetIdCounter = 0;
-
     m_skipNextMove = false;
 }
 

@@ -70,6 +70,10 @@ DataWidget::DataWidget(QWidget *parent) :
     setMidLineWidth(2);
     setAutoFillBackground(true);
 
+    QPalette p;
+    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    setPalette(p);
+
     contextMenu = NULL;
     m_mouseIn = false;
     m_updating = true;

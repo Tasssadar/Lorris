@@ -106,6 +106,12 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
 
     ScrollDataLayout *layout = NULL;
     QWidget *w = new QWidget();
+
+    QPalette p = area->palette();
+    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    area->setPalette(p);
+    area->setAutoFillBackground(true);
+
     if(m_header)
     {
         layout = new ScrollDataLayout(m_header, false, true, this, m_devTab, w);

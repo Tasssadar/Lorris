@@ -436,10 +436,10 @@ void DraggableLabel::dropEvent(QDropEvent *event)
 void DraggableLabel::setHighlighted(bool highlight)
 {
     m_highlighted = highlight;
+    QPalette p;
     if(highlight)
-        setStyleSheet("background-color: red");
-    else
-        setStyleSheet("");
+        p.setColor(QPalette::Window, Qt::red);
+    setPalette(p);
 }
 
 QString DraggableLabel::GetText()
