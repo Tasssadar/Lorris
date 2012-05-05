@@ -54,9 +54,9 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     connect(this,      SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
     connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
     connect(m_tab_bar, SIGNAL(tabMoved(int,int)),      SLOT(tabMoved(int,int)));
-    connect(newTabBtn, SIGNAL(clicked()),              SIGNAL(newTab()));
+    connect(newTabBtn, SIGNAL(clicked()),              SLOT(newTabBtn()));
+    connect(m_tab_bar, SIGNAL(plusPressed()),          SLOT(newTabBtn()));
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
-    connect(m_tab_bar, SIGNAL(plusPressed()),          SIGNAL(newTab()));
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
