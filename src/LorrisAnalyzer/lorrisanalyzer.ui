@@ -207,7 +207,7 @@
       </widget>
      </item>
      <item>
-      <widget class="AnalyzerDataArea" name="dataArea">
+      <widget class="WidgetArea" name="dataArea">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -285,15 +285,15 @@
    <header>../src/shared/rotatebutton.h</header>
   </customwidget>
   <customwidget>
-   <class>AnalyzerDataArea</class>
-   <extends>QFrame</extends>
-   <header>../src/LorrisAnalyzer/analyzerdataarea.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>DeviceTabWidget</class>
    <extends>QTabWidget</extends>
    <header>../src/LorrisAnalyzer/devicetabwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetArea</class>
+   <extends>QFrame</extends>
+   <header>../src/LorrisAnalyzer/widgetarea.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
