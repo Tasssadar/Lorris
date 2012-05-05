@@ -38,19 +38,20 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     QTabWidget(parent)
 {
     m_id = id;
+    m_menu = new QMenu(this);
 
     m_tab_bar = new TabBar(this);
     setTabBar(m_tab_bar);
     setMovable(true);
 
-    QWidget *cornerWidget = new QWidget(this);
-    m_cornerLayout = new QHBoxLayout(cornerWidget);
-    m_cornerLayout->setContentsMargins(0, 0, 0, 0);
+    m_menuBtn = new QPushButton(tr("Menu"), this);
+    m_menuBtn->setMenu(m_menu);
+    m_menuBtn->setFlat(true);
 
     QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", this);
-    m_cornerLayout->addWidget(newTabBtn);
 
-    setCornerWidget(cornerWidget);
+    setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
+    setCornerWidget(newTabBtn, Qt::TopRightCorner);
 
     connect(this,      SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
     connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
@@ -199,39 +200,19 @@ void TabWidget::changeMenu(int idx)
         return clearMenu();
 
     WorkTab *tab = sWorkTabMgr.getWorkTab(m_tab_ids[idx]);
-    if(!tab)
+    if(!tab || tab->getMenu().empty())
         return clearMenu();
 
-    while(m_menuBtns.size() != tab->getMenu().size())
-    {
-        if(m_menuBtns.size() < tab->getMenu().size())
-        {
-            QPushButton *btn = new QPushButton(this);
-            btn->setFlat(true);
-            btn->setStyleSheet("padding: 0px 5px 0px 15px");
-
-            m_menuBtns.push_back(btn);
-            m_cornerLayout->insertWidget(m_cornerLayout->count()-1, btn);
-        }
-        else
-        {
-            delete m_menuBtns.back();
-            m_menuBtns.pop_back();
-        }
-    }
-
+    m_menu->clear();
     for(quint32 i = 0; i < tab->getMenu().size(); ++i)
-    {
-        m_menuBtns[i]->setText(tab->getMenu()[i]->title());
-        m_menuBtns[i]->setMenu(tab->getMenu()[i]);
-    }
+        m_menu->addMenu(tab->getMenu()[i]);
+    m_menuBtn->setEnabled(true);
 }
 
 void TabWidget::clearMenu()
 {
-    for(std::vector<QPushButton*>::iterator itr = m_menuBtns.begin(); itr != m_menuBtns.end(); ++itr)
-        delete *itr;
-    m_menuBtns.clear();
+    m_menu->clear();
+    m_menuBtn->setEnabled(false);
 }
 
 TabBar::TabBar(QWidget *parent) :

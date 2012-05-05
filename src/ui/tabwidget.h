@@ -92,8 +92,8 @@ private:
     std::vector<quint32> m_tab_ids;
     TabBar *m_tab_bar;
 
-    std::vector<QPushButton*> m_menuBtns;
-    QHBoxLayout *m_cornerLayout;
+    QPushButton *m_menuBtn;
+    QMenu *m_menu;
 };
 
 class TabBar : public PlusTabBar
