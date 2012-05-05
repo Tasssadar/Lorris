@@ -45,6 +45,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
 
     QWidget *cornerWidget = new QWidget(this);
     m_cornerLayout = new QHBoxLayout(cornerWidget);
+    m_cornerLayout->setContentsMargins(0, 0, 0, 0);
 
     QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", this);
     m_cornerLayout->addWidget(newTabBtn);
@@ -210,7 +211,7 @@ void TabWidget::changeMenu(int idx)
             btn->setStyleSheet("padding: 0px 5px 0px 15px");
 
             m_menuBtns.push_back(btn);
-            m_cornerLayout->insertWidget(0, btn);
+            m_cornerLayout->insertWidget(m_cornerLayout->count()-1, btn);
         }
         else
         {
