@@ -29,6 +29,8 @@
 #include <QHash>
 #include "plustabbar.h"
 
+class QPushButton;
+class QHBoxLayout;
 class QMenu;
 class TabBar;
 class WorkTab;
@@ -43,7 +45,6 @@ Q_SIGNALS:
     void removeWidget(quint32 id);
     void split(bool horizontal, int index);
     void changeActiveWidget(TabWidget *widget);
-    void changeMenu(quint32 id);
     void statusBarMsg(const QString& message, int timeout = 0);
 
 public:
@@ -70,6 +71,9 @@ public:
         return QSize(0, 0);
     }
 
+    void changeMenu(int idx);
+    void clearMenu();
+
 protected:
     void mousePressEvent(QMouseEvent *ev);
     void mouseDoubleClickEvent(QMouseEvent *event);
@@ -79,7 +83,6 @@ private slots:
     void tabMoved(int from, int to);
     void newTabBtn();
     void currentIndexChanged(int idx);
-    void barChangeMenu(int idx);
 
 private:
     bool checkEvent(QMouseEvent *event);
@@ -88,6 +91,9 @@ private:
     quint32 m_id;
     std::vector<quint32> m_tab_ids;
     TabBar *m_tab_bar;
+
+    std::vector<QPushButton*> m_menuBtns;
+    QHBoxLayout *m_cornerLayout;
 };
 
 class TabBar : public PlusTabBar
@@ -96,7 +102,6 @@ class TabBar : public PlusTabBar
 
 Q_SIGNALS:
     void split(bool horizontal, int index);
-    void changeMenu(int idx);
 
 public:
     explicit TabBar(QWidget * parent = 0);

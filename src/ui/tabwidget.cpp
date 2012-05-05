@@ -28,6 +28,8 @@
 #include <QPushButton>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QMenuBar>
+#include <QHBoxLayout>
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
@@ -41,13 +43,17 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     setTabBar(m_tab_bar);
     setMovable(true);
 
+    QWidget *cornerWidget = new QWidget(this);
+    m_cornerLayout = new QHBoxLayout(cornerWidget);
+
     QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", this);
-    setCornerWidget(newTabBtn);
+    m_cornerLayout->addWidget(newTabBtn);
+
+    setCornerWidget(cornerWidget);
 
     connect(this,      SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
     connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
     connect(m_tab_bar, SIGNAL(tabMoved(int,int)),      SLOT(tabMoved(int,int)));
-    connect(m_tab_bar, SIGNAL(changeMenu(int)),        SLOT(barChangeMenu(int)));
     connect(newTabBtn, SIGNAL(clicked()),              SIGNAL(newTab()));
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
     connect(m_tab_bar, SIGNAL(plusPressed()),          SIGNAL(newTab()));
@@ -62,10 +68,8 @@ int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
     m_tab_ids.insert(itr, tabId);
 
-    if(idx == 0)
-        emit changeMenu(tabId);
-
     setCurrentIndex(idx);
+    changeMenu(idx);
 
     if(count() >= 2)
         m_tab_bar->enableSplit(true);
@@ -157,11 +161,7 @@ QWidget *TabWidget::unregisterTab(int index)
 
 void TabWidget::currentIndexChanged(int idx)
 {
-    if(idx == -1 || (uint)idx >= m_tab_ids.size())
-        return;
-
-    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
-    emit changeMenu(*itr);
+    changeMenu(idx);
 }
 
 void TabWidget::mousePressEvent(QMouseEvent *event)
@@ -192,12 +192,45 @@ void TabWidget::newTabBtn()
     emit newTab();
 }
 
-void TabWidget::barChangeMenu(int idx)
+void TabWidget::changeMenu(int idx)
 {
-    if(m_tab_ids.size() <= (uint)idx)
-        return;
+    if(idx == -1 || (uint)idx >= m_tab_ids.size())
+        return clearMenu();
 
-    emit changeMenu(m_tab_ids[idx]);
+    WorkTab *tab = sWorkTabMgr.getWorkTab(m_tab_ids[idx]);
+    if(!tab)
+        return clearMenu();
+
+    while(m_menuBtns.size() != tab->getMenu().size())
+    {
+        if(m_menuBtns.size() < tab->getMenu().size())
+        {
+            QPushButton *btn = new QPushButton(this);
+            btn->setFlat(true);
+            btn->setStyleSheet("padding: 0px 5px 0px 15px");
+
+            m_menuBtns.push_back(btn);
+            m_cornerLayout->insertWidget(0, btn);
+        }
+        else
+        {
+            delete m_menuBtns.back();
+            m_menuBtns.pop_back();
+        }
+    }
+
+    for(quint32 i = 0; i < tab->getMenu().size(); ++i)
+    {
+        m_menuBtns[i]->setText(tab->getMenu()[i]->title());
+        m_menuBtns[i]->setMenu(tab->getMenu()[i]);
+    }
+}
+
+void TabWidget::clearMenu()
+{
+    for(std::vector<QPushButton*>::iterator itr = m_menuBtns.begin(); itr != m_menuBtns.end(); ++itr)
+        delete *itr;
+    m_menuBtns.clear();
 }
 
 TabBar::TabBar(QWidget *parent) :
@@ -225,15 +258,6 @@ void TabBar::mousePressEvent(QMouseEvent *event)
 {
     switch(event->button())
     {
-        case Qt::LeftButton:
-        {
-            int tab = tabAt(event->pos());
-            if(tab != -1 && tab == currentIndex())
-                emit changeMenu(tab);
-
-            PlusTabBar::mousePressEvent(event);
-            break;
-        }
         case Qt::MidButton:
         {
             int tab = tabAt(event->pos());
