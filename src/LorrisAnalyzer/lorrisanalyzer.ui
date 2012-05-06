@@ -30,7 +30,7 @@
   </property>
   <layout class="QVBoxLayout" name="leftVLayout" stretch="0,0,0,0,4">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="topLayout">
      <item>
       <widget class="QToolButton" name="connectButton">
        <property name="sizePolicy">
@@ -73,13 +73,6 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="structureBtn">
-       <property name="text">
-        <string>Change packet structure</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -91,13 +84,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="clearButton">
-       <property name="text">
-        <string>Clear data</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

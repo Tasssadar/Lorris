@@ -250,7 +250,8 @@ FORMS += \
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \
     src/LorrisShupito/shupitoicons.qrc \
-    src/icons.qrc
+    src/icons.qrc \
+    src/LorrisAnalyzer/icons.qrc
 
 RC_FILE = src/winicon.rc
 

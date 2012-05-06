@@ -35,7 +35,7 @@
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle("NumberWidget");
+    setTitle(tr("Number"));
     setIcon(":/dataWidgetIcons/num.png");
 
     m_widgetType = WIDGET_NUMBERS;

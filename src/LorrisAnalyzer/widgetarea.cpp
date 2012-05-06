@@ -26,6 +26,10 @@
 #include <QPainter>
 
 #include "widgetarea.h"
+#include "lorrisanalyzer.h"
+#include "datafileparser.h"
+#include "storage.h"
+
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
 #include "DataWidgets/colorwidget.h"
@@ -34,9 +38,6 @@
 #include "DataWidgets/inputwidget.h"
 #include "DataWidgets/terminalwidget.h"
 #include "DataWidgets/buttonwidget.h"
-#include "lorrisanalyzer.h"
-#include "datafileparser.h"
-#include "storage.h"
 
 WidgetArea::WidgetArea(QWidget *parent) :
     QFrame(parent)
