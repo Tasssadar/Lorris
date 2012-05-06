@@ -33,6 +33,7 @@
 #include <QSignalMapper>
 #include <QRadioButton>
 #include <QFileInfo>
+#include <QToolBar>
 
 #include "progressdialog.h"
 #include "shupito.h"
@@ -86,8 +87,6 @@ LorrisShupito::LorrisShupito()
     connect(ui->hideLogBtn,      SIGNAL(clicked()),                SLOT(hideLogBtn()));
     connect(ui->eraseButton,     SIGNAL(clicked()),                SLOT(eraseDevice()));
     connect(ui->hideFusesBtn,    SIGNAL(clicked()),                SLOT(hideFusesBtn()));
-    connect(ui->startstopButton, SIGNAL(clicked()),                SLOT(startstopChip()));
-    connect(ui->loadBtn,         SIGNAL(clicked()),                SLOT(loadFromFile()));
     connect(m_fuse_widget,       SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
@@ -177,9 +176,9 @@ void LorrisShupito::initMenus()
     QMenu *chipBar = new QMenu(tr("Chip"), this);
     addTopMenu(chipBar);
 
-    m_start_act = chipBar->addAction(tr("Start chip"));
-    m_stop_act = chipBar->addAction(tr("Stop chip"));
-    m_restart_act = chipBar->addAction(tr("Restart chip"));
+    m_start_act = chipBar->addAction(QIcon(":/actions/start"), tr("Start chip"));
+    m_stop_act = chipBar->addAction(QIcon(":/actions/stop"), tr("Stop chip"));
+    m_restart_act = chipBar->addAction(QIcon(":/actions/refresh"), tr("Restart chip"));
 
     m_start_act->setEnabled(false);
     m_restart_act->setShortcut(QKeySequence("R"));
@@ -236,12 +235,12 @@ void LorrisShupito::initMenus()
     QMenu *dataBar = new QMenu(tr("Data"), this);
     addTopMenu(dataBar);
 
-    m_load_flash = dataBar->addAction(tr("Load data into flash"));
+    m_load_flash = dataBar->addAction(QIcon(":/actions/open"), tr("Load data into flash"));
     m_load_flash->setShortcut(QKeySequence("Ctrl+O"));
     m_load_eeprom = dataBar->addAction(tr("Load data into EEPROM"));
     dataBar->addSeparator();
 
-    m_save_flash = dataBar->addAction(tr("Save flash memory"));
+    m_save_flash = dataBar->addAction(QIcon(":/actions/save"), tr("Save flash memory"));
     m_save_flash->setShortcut(QKeySequence("Ctrl+S"));
     m_save_eeprom = dataBar->addAction(tr("Save EERPOM"));
 
@@ -258,6 +257,23 @@ void LorrisShupito::initMenus()
     connect(signalMapSave, SIGNAL(mapped(int)), this,          SLOT(saveToFile(int)));
     connect(m_save_flash,  SIGNAL(triggered()), signalMapSave, SLOT(map()));
     connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
+
+    QToolBar *bar = new QToolBar(this);
+    ui->topLayout->insertWidget(1, bar);
+    bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    bar->addAction(m_load_flash);
+    bar->addAction(m_save_flash);
+    bar->addSeparator();
+    bar->addAction(m_start_act);
+    bar->addAction(m_stop_act);
+    bar->addAction(m_restart_act);
+    bar->addSeparator();
+
+    QPushButton *btn = new QPushButton(QIcon(":/actions/wire"), tr("Mode"), this);
+    btn->setFlat(true);
+    btn->setMenu(modeBar);
+    bar->addWidget(btn);
 }
 
 void LorrisShupito::connDisconnecting()
@@ -292,7 +308,6 @@ void LorrisShupito::connectedStatus(bool connected)
         m_state |= STATE_DISCONNECTED;
         updateStartStopUi(false);
     }
-    ui->startstopButton->setEnabled(connected);
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
     ui->progSpeedBox->setEnabled(connected);
@@ -812,13 +827,11 @@ void LorrisShupito::updateStartStopUi(bool stopped)
     {
         m_start_act->setEnabled(true);
         m_stop_act->setEnabled(false);
-        ui->startstopButton->setText(tr("Start"));
     }
     else
     {
         m_start_act->setEnabled(false);
         m_stop_act->setEnabled(true);
-        ui->startstopButton->setText(tr("Stop"));
     }
 
     m_chipStopped = stopped;

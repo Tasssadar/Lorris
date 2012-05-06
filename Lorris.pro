@@ -251,7 +251,7 @@ RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \
     src/LorrisShupito/shupitoicons.qrc \
     src/icons.qrc \
-    src/LorrisAnalyzer/analyzer.qrc
+    src/actions.qrc
 
 RC_FILE = src/winicon.rc
 

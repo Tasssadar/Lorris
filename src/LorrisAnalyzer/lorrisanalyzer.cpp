@@ -93,13 +93,13 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     QMenu* menuData = new QMenu(tr("&Data"), this);
 
-    QAction* newSource = menuData->addAction(QIcon(":/analyzer/new.png"), tr("New source..."));
+    QAction* newSource = menuData->addAction(QIcon(":/actions/new"), tr("New source..."));
     menuData->addSeparator();
-    QAction* openAct = menuData->addAction(QIcon(":/analyzer/open.png"), tr("Open..."));
-    QAction* saveAct = menuData->addAction(QIcon(":/analyzer/save.png"), tr("Save"));
-    QAction* saveAsAct = menuData->addAction(QIcon(":/analyzer/save-as.png"), tr("Save as..."));
+    QAction* openAct = menuData->addAction(QIcon(":/actions/open"), tr("Open..."));
+    QAction* saveAct = menuData->addAction(QIcon(":/actions/save"), tr("Save"));
+    QAction* saveAsAct = menuData->addAction(QIcon(":/actions/save-as"), tr("Save as..."));
     menuData->addSeparator();
-    QAction* clearAct = menuData->addAction(QIcon(":/analyzer/clear.png"), tr("Clear received data"));
+    QAction* clearAct = menuData->addAction(QIcon(":/actions/clear"), tr("Clear received data"));
     QAction* clearAllAct = menuData->addAction(tr("Clear everything"));
 
     openAct->setShortcut(QKeySequence("Ctrl+O"));
@@ -114,7 +114,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     addTopMenu(menuData);
     addTopMenu(menuWidgets);
 
-    QAction *structAct = new QAction(QIcon(":/analyzer/struct.png"), tr("Change packet structure"), this);
+    QAction *structAct = new QAction(QIcon(":/actions/system"), tr("Change packet structure"), this);
 
     QToolBar *bar = new QToolBar(this);
     bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
