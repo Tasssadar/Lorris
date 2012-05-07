@@ -39,14 +39,18 @@
 #include <QPainter>
 #include <QFileDialog>
 #include <QStringBuilder>
+#include <QToolBar>
 
 #include "lorrisanalyzer.h"
 #include "sourcedialog.h"
 #include "ui_lorrisanalyzer.h"
 #include "packet.h"
-#include "analyzerdatastorage.h"
+#include "storage.h"
 #include "devicetabwidget.h"
-#include "analyzerdataarea.h"
+#include "widgetarea.h"
+#include "sourceselectdialog.h"
+#include "packetparser.h"
+
 #include "DataWidgets/datawidget.h"
 #include "DataWidgets/numberwidget.h"
 #include "DataWidgets/barwidget.h"
@@ -55,8 +59,6 @@
 #include "DataWidgets/ScriptWidget/scriptwidget.h"
 #include "DataWidgets/terminalwidget.h"
 #include "DataWidgets/buttonwidget.h"
-#include "sourceselectdialog.h"
-#include "packetparser.h"
 
 LorrisAnalyzer::LorrisAnalyzer()
     : ui(new Ui::LorrisAnalyzer),
@@ -64,11 +66,9 @@ LorrisAnalyzer::LorrisAnalyzer()
 {
     ui->setupUi(this);
 
-    connect(ui->structureBtn,    SIGNAL(clicked()),         SLOT(editStruture()));
     connect(ui->collapseTop,     SIGNAL(clicked()),         SLOT(collapseTopButton()));
     connect(ui->collapseRight,   SIGNAL(clicked()),         SLOT(collapseRightButton()));
     connect(ui->collapseLeft,    SIGNAL(clicked()),         SLOT(collapseLeftButton()));
-    connect(ui->clearButton,     SIGNAL(clicked()),         SLOT(clearDataButton()));
     connect(ui->timeSlider,      SIGNAL(valueChanged(int)), SLOT(indexChanged(int)));
     connect(ui->timeBox,         SIGNAL(valueChanged(int)), SLOT(indexChanged(int)));
     connect(ui->playFrame,       SIGNAL(setPos(int)),           ui->timeBox,    SLOT(setValue(int)));
@@ -93,36 +93,50 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     QMenu* menuData = new QMenu(tr("&Data"), this);
 
-    QAction* newSource = menuData->addAction(tr("New source..."));
+    QAction* newSource = menuData->addAction(QIcon(":/actions/new"), tr("New source..."));
     menuData->addSeparator();
-    QAction* openAct = menuData->addAction(tr("Open..."));
-    QAction* saveAsAct = menuData->addAction(tr("Save as..."));
-    QAction* saveAct = menuData->addAction(tr("Save"));
+    QAction* openAct = menuData->addAction(QIcon(":/actions/open"), tr("Open..."));
+    QAction* saveAct = menuData->addAction(QIcon(":/actions/save"), tr("Save"));
+    QAction* saveAsAct = menuData->addAction(QIcon(":/actions/save-as"), tr("Save as..."));
     menuData->addSeparator();
-    QAction* clearAct = menuData->addAction(tr("Clear received data"));
+    QAction* clearAct = menuData->addAction(QIcon(":/actions/clear"), tr("Clear received data"));
     QAction* clearAllAct = menuData->addAction(tr("Clear everything"));
 
     openAct->setShortcut(QKeySequence("Ctrl+O"));
     saveAsAct->setShortcut(QKeySequence("Ctrl+Shift+S"));
     saveAct->setShortcut(QKeySequence("Ctrl+S"));
 
-    connect(newSource, SIGNAL(triggered()), SLOT(doNewSource()));
-    connect(openAct,   SIGNAL(triggered()), SLOT(openFile()));
-    connect(saveAsAct, SIGNAL(triggered()), SLOT(saveAsButton()));
-    connect(saveAct,   SIGNAL(triggered()), SLOT(saveButton()));
-    connect(clearAct,  SIGNAL(triggered()), SLOT(clearDataButton()));
-    connect(clearAllAct,  SIGNAL(triggered()), SLOT(clearAllButton()));
-
-    addTopMenu(menuData);
-
     QMenu *menuWidgets = new QMenu(tr("Widgets"), this);
-
     m_title_action = menuWidgets->addAction(tr("Show widget's title bar"));
     m_title_action->setCheckable(true);
     m_title_action->setChecked(true);
-    connect(m_title_action, SIGNAL(triggered(bool)), SLOT(showTitleTriggered(bool)));
 
+    addTopMenu(menuData);
     addTopMenu(menuWidgets);
+
+    QAction *structAct = new QAction(QIcon(":/actions/system"), tr("Change packet structure"), this);
+
+    QToolBar *bar = new QToolBar(this);
+    bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->topLayout->insertWidget(1, bar);
+
+    bar->addAction(newSource);
+    bar->addAction(openAct);
+    bar->addAction(saveAct);
+    bar->addAction(saveAsAct);
+    bar->addSeparator();
+    bar->addAction(structAct);
+    bar->addSeparator();
+    bar->addAction(clearAct);
+
+    connect(newSource,      SIGNAL(triggered()),     SLOT(doNewSource()));
+    connect(openAct,        SIGNAL(triggered()),     SLOT(openFile()));
+    connect(saveAsAct,      SIGNAL(triggered()),     SLOT(saveAsButton()));
+    connect(saveAct,        SIGNAL(triggered()),     SLOT(saveButton()));
+    connect(clearAct,       SIGNAL(triggered()),     SLOT(clearDataButton()));
+    connect(clearAllAct,    SIGNAL(triggered()),     SLOT(clearAllButton()));
+    connect(m_title_action, SIGNAL(triggered(bool)), SLOT(showTitleTriggered(bool)));
+    connect(structAct,      SIGNAL(triggered()),     SLOT(editStruture()));
 
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better
@@ -131,7 +145,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     ui->timeBox->setAttribute(Qt::WA_PaintOnScreen, true);
 #endif
 
-    m_storage = new AnalyzerDataStorage(this);
+    m_storage = new Storage(this);
     ui->dataArea->setAnalyzerAndStorage(this, m_storage);
 
     m_parser = new PacketParser(m_storage, this);
@@ -345,7 +359,7 @@ bool LorrisAnalyzer::load(QString &name, quint8 mask)
     if(!packet)
         return false;
 
-    // old packet deleted in AnalyzerDataStorage::loadFromFile()
+    // old packet deleted in Storage::loadFromFile()
     m_packet = packet;
     m_parser->setPacket(packet);
 
@@ -376,6 +390,9 @@ void LorrisAnalyzer::saveButton()
 {
     m_storage->SaveToFile(ui->dataArea, ui->devTabs);
 
+    if(m_storage->getFilename().isEmpty())
+        return;
+
     QStringList name = m_storage->getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
     emit statusBarMsg(tr("File \"%1\" was saved").arg(name.last()), 5000);
     m_data_changed = false;
@@ -384,6 +401,8 @@ void LorrisAnalyzer::saveButton()
 void LorrisAnalyzer::saveAsButton()
 {
     m_storage->SaveToFile("", ui->dataArea, ui->devTabs);
+    if(m_storage->getFilename().isEmpty())
+        return;
 
     QStringList name = m_storage->getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
     emit statusBarMsg(tr("File \"%1\" was saved").arg(name.last()), 5000);

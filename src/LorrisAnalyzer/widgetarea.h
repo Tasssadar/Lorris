@@ -21,19 +21,19 @@
 **
 ****************************************************************************/
 
-#ifndef ANALYZERDATAAREA_H
-#define ANALYZERDATAAREA_H
+#ifndef WIDGETAREA_H
+#define WIDGETAREA_H
 
 #include <QFrame>
 #include <QHash>
 
 #include "DataWidgets/datawidget.h"
 
-class AnalyzerDataFile;
-class AnalyzerDataStorage;
+class DataFileParser;
+class Storage;
 class LorrisAnalyzer;
 
-class AnalyzerDataArea : public QFrame
+class WidgetArea : public QFrame
 {
     Q_OBJECT
 
@@ -49,10 +49,10 @@ public:
     typedef QHash<quint32, DataWidget*> w_map;
     typedef QHash<quint32, QRect> mark_map;
 
-    explicit AnalyzerDataArea(QWidget *parent = 0);
-    ~AnalyzerDataArea();
+    explicit WidgetArea(QWidget *parent = 0);
+    ~WidgetArea();
 
-    void setAnalyzerAndStorage(LorrisAnalyzer* analyzer, AnalyzerDataStorage* storage)
+    void setAnalyzerAndStorage(LorrisAnalyzer* analyzer, Storage* storage)
     {
         m_analyzer = analyzer;
         m_storage = storage;
@@ -60,8 +60,8 @@ public:
 
     void clear();
 
-    void SaveWidgets(AnalyzerDataFile *file);
-    void LoadWidgets(AnalyzerDataFile *file, bool skip);
+    void SaveWidgets(DataFileParser *file);
+    void LoadWidgets(DataFileParser *file, bool skip);
     static DataWidget *newWidget(quint8 type, QWidget *parent);
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void moveWidgets(QPoint diff);
@@ -96,7 +96,7 @@ private:
     w_map m_widgets;
     mark_map m_marks;
     quint32 m_widgetIdCounter;
-    AnalyzerDataStorage *m_storage;
+    Storage *m_storage;
     LorrisAnalyzer* m_analyzer;
 
     QPoint m_mouse_orig;
@@ -104,4 +104,4 @@ private:
     bool m_skipNextMove;
 };
 
-#endif // ANALYZERDATAAREA_H
+#endif // WIDGETAREA_H

@@ -29,7 +29,7 @@
 #include <QTimer>
 #include <QComboBox>
 
-#include "../../analyzerdataarea.h"
+#include "../../widgetarea.h"
 #include "../GraphWidget/graphcurve.h"
 #include "../datawidget.h"
 #include "../inputwidget.h"
@@ -56,7 +56,7 @@ QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &i
 void GraphCurveFromScriptValue(const QScriptValue &object, GraphCurve* &out)
 { out = qobject_cast<GraphCurve*>(object.toQObject()); }
 
-ScriptEnv::ScriptEnv(AnalyzerDataArea* area, quint32 w_id, QObject *parent) :
+ScriptEnv::ScriptEnv(WidgetArea* area, quint32 w_id, QObject *parent) :
     QScriptEngine(parent)
 {
     pushContext();
@@ -164,8 +164,8 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("area", newQObject(m_area));
     m_global.setProperty("storage", newQObject(m_storage));
 
-    const AnalyzerDataArea::w_map& widgets = m_area->getWidgets();
-    for(AnalyzerDataArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
+    const WidgetArea::w_map& widgets = m_area->getWidgets();
+    for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
     {
         QString name = sanitizeWidgetName((*itr)->getTitle());
         if(!name.isEmpty())

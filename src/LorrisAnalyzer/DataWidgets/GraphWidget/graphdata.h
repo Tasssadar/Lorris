@@ -29,7 +29,7 @@
 
 #include "../datawidget.h"
 
-class AnalyzerDataStorage;
+class Storage;
 struct data_widget_info;
 
 struct graph_data_st
@@ -80,7 +80,7 @@ protected:
 class GraphData : public GraphDataSimple
 {
 public:
-    GraphData(AnalyzerDataStorage *storage, data_widget_info& info, qint32 sample_size, quint8 data_type);
+    GraphData(Storage *storage, data_widget_info& info, qint32 sample_size, quint8 data_type);
 
     void setSampleSize(qint32 size);
     void dataPosChanged(quint32 pos);
@@ -92,7 +92,7 @@ private:
     void eraseSpareData(qint32 absPos, quint32 pos);
     quint32 getStorageBegin(qint32 absPos);
 
-    AnalyzerDataStorage *m_storage;
+    Storage *m_storage;
     data_widget_info m_info;
 
     qint32 m_sample_size;

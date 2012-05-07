@@ -29,7 +29,7 @@
 #include <QScriptValue>
 #include <QVariantList>
 
-class AnalyzerDataFile;
+class DataFileParser;
 
 struct ScriptData
 {
@@ -52,8 +52,8 @@ public:
     explicit ScriptStorage(QObject *parent = 0);
     ~ScriptStorage();
 
-    void saveToFile(AnalyzerDataFile *file);
-    void loadFromFile(AnalyzerDataFile *file);
+    void saveToFile(DataFileParser *file);
+    void loadFromFile(DataFileParser *file);
 
 public slots:
     void clear();

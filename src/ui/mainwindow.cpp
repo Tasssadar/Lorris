@@ -131,16 +131,10 @@ MainWindow::MainWindow(QWidget *parent) :
     menuHelp->addMenu(menuLang);
     menuBar->addMenu(menuFile);
     menuBar->addMenu(menuHelp);
-
-    // FIXME: replace by addSeparator() when supported
-    QAction *sep = menuBar->addAction("|");
-    sep->setEnabled(false);
-
     setMenuBar(menuBar);
 
     //Tabs
     TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
-    connect(tabWidget, SIGNAL(changeMenu(quint32)),                    SLOT(changeMenu(quint32)));
     connect(tabWidget, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
     connect(tabWidget, SIGNAL(newTab()),                               SLOT(newTab()));
 
@@ -185,25 +179,6 @@ void MainWindow::About()
     box->setIcon(QMessageBox::Information);
     box->exec();
     delete box;
-}
-
-void MainWindow::changeMenu(quint32 id)
-{
-    WorkTab *tab = sWorkTabMgr.getWorkTab(id);
-    if(!tab)
-        return;
-
-    menuBar->clear();
-    menuBar->addMenu(menuFile);
-    menuBar->addMenu(menuHelp);
-
-    // FIXME: replace by addSeparator() when supported
-    QAction *sep = menuBar->addAction("|");
-    sep->setEnabled(false);
-
-    m_tab_menu = tab->getMenu();
-    for(quint8 i = 0; i < m_tab_menu.size(); ++i)
-        menuBar->addMenu(m_tab_menu[i]);
 }
 
 void MainWindow::langChanged(int idx)

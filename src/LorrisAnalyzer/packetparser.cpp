@@ -21,11 +21,11 @@
 **
 ****************************************************************************/
 
-#include "analyzerdatastorage.h"
+#include "storage.h"
 #include "packetparser.h"
 #include "packet.h"
 
-PacketParser::PacketParser(AnalyzerDataStorage *storage, QObject *parent) :
+PacketParser::PacketParser(Storage *storage, QObject *parent) :
     QObject(parent)
 {
     m_storage = storage;

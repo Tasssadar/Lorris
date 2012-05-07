@@ -32,7 +32,7 @@
 #include "cmdtabwidget.h"
 
 class QAction;
-class AnalyzerDataFile;
+class DataFileParser;
 
 struct data_widget_info;
 
@@ -55,8 +55,8 @@ public:
     void setEnableIds(bool enable) { m_id_enabled = enable; }
     qint16 getCurrentDevice();
     void removeAll();
-    void Save(AnalyzerDataFile *file);
-    void Load(AnalyzerDataFile *file, bool skip);
+    void Save(DataFileParser *file);
+    void Load(DataFileParser *file, bool skip);
 
     bool setHighlightPos(const data_widget_info& info, bool highlight);
 

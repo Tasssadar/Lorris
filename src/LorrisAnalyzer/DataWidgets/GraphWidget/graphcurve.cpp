@@ -24,7 +24,7 @@
 #include <qwt_plot.h>
 
 #include "graphcurve.h"
-#include "../../analyzerdatastorage.h"
+#include "../../storage.h"
 
 GraphCurve::GraphCurve(const QString &name, GraphDataSimple *data) :
     QObject(NULL),QwtPlotCurve(name)

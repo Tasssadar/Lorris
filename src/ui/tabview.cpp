@@ -50,7 +50,6 @@ TabWidget *TabView::newTabWidget(QBoxLayout *l)
 
     connect(tabW, SIGNAL(newTab()),                       SIGNAL(newTab()));
     connect(tabW, SIGNAL(openHomeTab(quint32)),           SIGNAL(openHomeTab(quint32)));
-    connect(tabW, SIGNAL(changeMenu(quint32)),            SIGNAL(changeMenu(quint32)));
     connect(tabW, SIGNAL(statusBarMsg(QString,int)),      SIGNAL(statusBarMsg(QString,int)));
     connect(tabW, SIGNAL(split(bool,int)),                SLOT(split(bool,int)));
     connect(tabW, SIGNAL(removeWidget(quint32)),          SLOT(removeWidget(quint32)));

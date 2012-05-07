@@ -34,7 +34,7 @@
 #include "../common.h"
 #include "DataWidgets/datawidget.h"
 #include "lorrisanalyzer.h"
-#include "analyzerdatafile.h"
+#include "datafileparser.h"
 #include "../ui/plustabbar.h"
 
 DeviceTabWidget::DeviceTabWidget(QWidget *parent) :
@@ -245,7 +245,7 @@ qint16 DeviceTabWidget::getCurrentDevice()
     return -1;
 }
 
-void DeviceTabWidget::Save(AnalyzerDataFile *file)
+void DeviceTabWidget::Save(DataFileParser *file)
 {
     quint32 count = m_devices.size();
     if(m_all_devices)
@@ -272,7 +272,7 @@ void DeviceTabWidget::Save(AnalyzerDataFile *file)
     }
 }
 
-void DeviceTabWidget::Load(AnalyzerDataFile *file, bool skip)
+void DeviceTabWidget::Load(DataFileParser *file, bool skip)
 {
     removeAll();
 

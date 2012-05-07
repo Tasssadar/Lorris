@@ -58,7 +58,7 @@ ColorWidget::~ColorWidget()
     delete m_widget;
 }
 
-void ColorWidget::setUp(AnalyzerDataStorage *storage)
+void ColorWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -132,7 +132,7 @@ void ColorWidget::setValue(QString hex)
     updateColor();
 }
 
-void ColorWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void ColorWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -152,7 +152,7 @@ void ColorWidget::saveWidgetInfo(AnalyzerDataFile *file)
 
 }
 
-void ColorWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void ColorWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 

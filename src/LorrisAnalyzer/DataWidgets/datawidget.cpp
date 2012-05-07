@@ -32,8 +32,8 @@
 
 #include "datawidget.h"
 #include "../../WorkTab/WorkTab.h"
-#include "../analyzerdataarea.h"
-#include "../analyzerdatafile.h"
+#include "../widgetarea.h"
+#include "../datafileparser.h"
 
 DataWidget::DataWidget(QWidget *parent) :
     QFrame(parent)
@@ -70,6 +70,10 @@ DataWidget::DataWidget(QWidget *parent) :
     setMidLineWidth(2);
     setAutoFillBackground(true);
 
+    QPalette p;
+    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    setPalette(p);
+
     contextMenu = NULL;
     m_mouseIn = false;
     m_updating = true;
@@ -93,7 +97,7 @@ void DataWidget::setId(quint32 id)
     m_closeLabel->setId(id);
 }
 
-void DataWidget::setUp(AnalyzerDataStorage */*storage*/)
+void DataWidget::setUp(Storage */*storage*/)
 {
     setAcceptDrops(true);
     m_assigned = false;
@@ -341,7 +345,7 @@ void DataWidget::setTitleTriggered()
     setTitle(title);
 }
 
-void DataWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void DataWidget::saveWidgetInfo(DataFileParser *file)
 {
     char *p = NULL;
 
@@ -373,7 +377,7 @@ void DataWidget::saveWidgetInfo(AnalyzerDataFile *file)
     file->write(title.data());
 }
 
-void DataWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void DataWidget::loadWidgetInfo(DataFileParser *file)
 {
     // data info
     char *p = NULL;
@@ -467,7 +471,7 @@ const QPixmap& DataWidgetAddBtn::getRender()
 {
     if(!m_pixmap)
     {
-        DataWidget *w = AnalyzerDataArea::newWidget(m_widgetType, this);
+        DataWidget *w = WidgetArea::newWidget(m_widgetType, this);
         if(w)
         {
             m_pixmap = new QPixmap(w->size());

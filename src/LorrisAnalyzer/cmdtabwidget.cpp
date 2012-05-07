@@ -29,7 +29,7 @@
 #include "cmdtabwidget.h"
 #include "../common.h"
 #include "DataWidgets/datawidget.h"
-#include "analyzerdatafile.h"
+#include "datafileparser.h"
 #include "../ui/plustabbar.h"
 
 CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent) :
@@ -102,9 +102,16 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
 
     QScrollArea *area = new QScrollArea(this);
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     ScrollDataLayout *layout = NULL;
     QWidget *w = new QWidget();
+
+    QPalette p = area->palette();
+    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    area->setPalette(p);
+    area->setAutoFillBackground(true);
+
     if(m_header)
     {
         layout = new ScrollDataLayout(m_header, false, true, this, m_devTab, w);
@@ -239,7 +246,7 @@ qint16 CmdTabWidget::getCurrentCmd()
     return -1;
 }
 
-void CmdTabWidget::Save(AnalyzerDataFile *file)
+void CmdTabWidget::Save(DataFileParser *file)
 {
     quint32 size = m_cmds.size();
     if(m_all_cmds)
@@ -262,7 +269,7 @@ void CmdTabWidget::Save(AnalyzerDataFile *file)
     }
 }
 
-void CmdTabWidget::Load(AnalyzerDataFile *file, bool /*skip*/)
+void CmdTabWidget::Load(DataFileParser *file, bool /*skip*/)
 {
     quint32 count = 0;
     file->read((char*)&count, sizeof(quint32));

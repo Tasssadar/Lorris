@@ -26,10 +26,10 @@
 #include <QCryptographicHash>
 #include <QCoreApplication>
 
-#include "analyzerdatastorage.h"
-#include "analyzerdataarea.h"
+#include "storage.h"
+#include "widgetarea.h"
 #include "devicetabwidget.h"
-#include "analyzerdatafile.h"
+#include "datafileparser.h"
 #include "lorrisanalyzer.h"
 
 static const char *ANALYZER_DATA_FORMAT = "v7";
@@ -37,19 +37,19 @@ static const char ANALYZER_DATA_MAGIC[] = { 0xFF, 0x80, 0x68 };
 
 #define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
 
-AnalyzerDataStorage::AnalyzerDataStorage(LorrisAnalyzer *analyzer)
+Storage::Storage(LorrisAnalyzer *analyzer)
 {
     m_packet = NULL;
     m_size = 0;
     m_analyzer = analyzer;
 }
 
-AnalyzerDataStorage::~AnalyzerDataStorage()
+Storage::~Storage()
 {
     Clear();
 }
 
-void AnalyzerDataStorage::setPacket(analyzer_packet *packet)
+void Storage::setPacket(analyzer_packet *packet)
 {
     m_packet = packet;
 
@@ -60,7 +60,7 @@ void AnalyzerDataStorage::setPacket(analyzer_packet *packet)
         (*itr)->setPacket(packet);
 }
 
-void AnalyzerDataStorage::Clear()
+void Storage::Clear()
 {
     m_size = 0;
     for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
@@ -68,7 +68,7 @@ void AnalyzerDataStorage::Clear()
     m_data.clear();
 }
 
-void AnalyzerDataStorage::addData(analyzer_data *data)
+void Storage::addData(analyzer_data *data)
 {
     if(!m_packet)
         return;
@@ -76,7 +76,7 @@ void AnalyzerDataStorage::addData(analyzer_data *data)
     ++m_size;
 }
 
-void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *devices)
+void Storage::SaveToFile(WidgetArea *area, DeviceTabWidget *devices)
 {
     if(m_filename.isEmpty())
         return SaveToFile(m_filename, area, devices);
@@ -108,7 +108,7 @@ void AnalyzerDataStorage::SaveToFile(AnalyzerDataArea *area, DeviceTabWidget *de
     SaveToFile(m_filename, area, devices);
 }
 
-void AnalyzerDataStorage::SaveToFile(QString filename, AnalyzerDataArea *area, DeviceTabWidget *devices)
+void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *devices)
 {
     if(!m_packet)
         return;
@@ -134,7 +134,7 @@ void AnalyzerDataStorage::SaveToFile(QString filename, AnalyzerDataArea *area, D
     sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
 
     QByteArray data;
-    AnalyzerDataFile *buffer = new AnalyzerDataFile(&data);
+    DataFileParser *buffer = new DataFileParser(&data);
     buffer->open(QIODevice::WriteOnly);
 
     //Magic
@@ -203,7 +203,7 @@ void AnalyzerDataStorage::SaveToFile(QString filename, AnalyzerDataArea *area, D
     m_file_md5 = MD5(data);
 }
 
-analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, AnalyzerDataArea *area, DeviceTabWidget *devices, quint32 &data_idx)
+analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *area, DeviceTabWidget *devices, quint32 &data_idx)
 {
     QString filename;
     if(name)
@@ -248,7 +248,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     if(filename.endsWith(".cldta"))
         data = qUncompress(data);
 
-    AnalyzerDataFile *buffer = new AnalyzerDataFile(&data);
+    DataFileParser *buffer = new DataFileParser(&data);
     buffer->open(QIODevice::ReadOnly);
 
     //Magic
@@ -402,7 +402,7 @@ analyzer_packet *AnalyzerDataStorage::loadFromFile(QString *name, quint8 load, A
     return m_packet;
 }
 
-bool AnalyzerDataStorage::checkMagic(AnalyzerDataFile *file)
+bool Storage::checkMagic(DataFileParser *file)
 {
     char *itr = new char[3];
     file->read(itr, 3);

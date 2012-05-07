@@ -32,7 +32,7 @@ TerminalWidget::TerminalWidget(QWidget *parent) : ScriptWidget(parent)
     m_widgetType = WIDGET_TERMINAL;
 }
 
-void TerminalWidget::setUp(AnalyzerDataStorage *storage)
+void TerminalWidget::setUp(Storage *storage)
 {
     ScriptWidget::setUp(storage);
 
