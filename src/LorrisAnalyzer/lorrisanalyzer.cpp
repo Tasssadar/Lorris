@@ -50,6 +50,7 @@
 #include "widgetarea.h"
 #include "sourceselectdialog.h"
 #include "packetparser.h"
+#include "../ui/mainwindow.h"
 
 #include "DataWidgets/datawidget.h"
 #include "DataWidgets/numberwidget.h"

@@ -24,9 +24,8 @@
 #include <QMessageBox>
 #include <QStatusBar>
 
+#include "ui/mainwindow.h"
 #include "utils.h"
-
-QStatusBar *Utils::m_status_bar = NULL;
 
 QString Utils::hexToString(quint8 data, bool withZeroEx)
 {
@@ -87,13 +86,8 @@ void Utils::ThrowException(const QString& text, QWidget* parent)
     box.exec();
 }
 
-void Utils::setStatusBar(QStatusBar *bar)
-{
-    m_status_bar = bar;
-}
-
 void Utils::printToStatusBar(const QString& msg, int timeout)
 {
-    if(m_status_bar)
-        m_status_bar->showMessage(msg, timeout);
+    if(MainWindow *w = MainWindow::getInstance())
+        w->statusBar()->showMessage(msg, timeout);
 }

@@ -50,9 +50,6 @@ public:
     static void ThrowException(const QString& text, QWidget* parent = 0);
     static void printToStatusBar(const QString& msg, int timeout = 5000);
     static void setStatusBar(QStatusBar *bar);
-
-private:
-    static QStatusBar* m_status_bar;
 };
 
 template <typename T>

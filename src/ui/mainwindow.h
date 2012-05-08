@@ -29,16 +29,23 @@
 #include <vector>
 #include <QLocale>
 #include <QHash>
+#include <QPointer>
 
 extern QLocale::Language langs[];
 
 class WorkTabInfo;
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    static MainWindow *getInstance()
+    {
+        return m_instance.data();
+    }
 
 public slots:
     void show(const QStringList &openFiles);
@@ -64,6 +71,8 @@ private:
 
     std::vector<QAction*> m_lang_menu;
     QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
+
+    static QPointer<MainWindow> m_instance;
 };
 
 #endif // MAINWINDOW_H

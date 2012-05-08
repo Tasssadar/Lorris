@@ -56,10 +56,13 @@
 #include "../ui/chooseconnectiondlg.h"
 
 QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
+QPointer<MainWindow> MainWindow::m_instance = NULL;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
+    m_instance = this;
+
     setWindowTitle(getVersionString());
     setMinimumSize(600, 500);
     setWindowState(Qt::WindowMaximized);
@@ -98,7 +101,6 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     setStatusBar(new QStatusBar(this));
-    Utils::setStatusBar(statusBar());
 
     quint32 curLang = sConfig.get(CFG_QUINT32_LANGUAGE);
     if(curLang >= m_lang_menu.size())
@@ -144,7 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    Utils::setStatusBar(NULL);
+
 }
 
 void MainWindow::show(const QStringList& openFiles)
