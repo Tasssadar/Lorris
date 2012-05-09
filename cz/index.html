@@ -203,17 +203,31 @@ Podporovaná programovací rozhraní:
 <!-- build.html -->
 <hr>
 <h3 id="build">Jak kompilovat</h3>
-Budete potřebovat QtFramework 4.7 (4.6 by taky mohl fungovat, ale není to vyzkoušené).<br>
-Zkompilované binárky by měly být ve složce bin/debug nebo bin/release.
+<p>
+    Budete potřebovat QtFramework >= 4.7 (4.6 by taky mohl fungovat, ale není to vyzkoušené).<br>
+    Zkompilované binárky by měly být ve složce bin/debug nebo bin/release.
+</p>
 <h4>Windows</h4>
 <p style="margin-left: 30px">
-    Stáhněte Lorris, otevřete Lorris.pro v QtCreatoru a stiskněte "Sestavit".
+    Stáhněte si <a href="http://qt.nokia.com/downloads">Qt SDK</a> s Qt >= 4.7 a gcc kompilátorem, stáhněte Lorris, otevřete Lorris.pro v QtCreatoru a stiskněte "Sestavit".
 </p>
 <h4>Linux</h4>
+<b style="margin-left: 30px">Potřebné balíčky:</b>
+<p style="margin-left: 60px">
+  <b>
+  - Qt SDK >= 4.7.0<br>
+  - make, g++<br>
+  - libqwt-dev >= 6.0.0<br>
+  - libudev-dev<br>
+  - libsdl-dev</b> (verze asi >= 1.2?)
+</p>
 <p style="margin-left: 30px">
-    Lorris vyžaduje libqwt-dev alespoň ve verzi 6. Pokud ve vaší distribuci je, prostě ho nainstalujte.
-    Pokud není, ve složce dep/qwt/lib jsou předkompilované libqwt.so* a libqwtmathml.so* pro 64bit, můžete je zkusit
-    dát do lib složky vaší distribuce, eg. /usr/lib.
+    apt-get pro Debian Testing by vypadalo takto:
+</p>
+<pre style="margin-left: 30px">
+    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libqwt-dev libsdl1.2-dev libudev-dev</pre>
+<p style="margin-left: 30px">
+    Pokud vaše distro nemá libqwt-dev >= 6.0.0 v repozitářích, ve složce dep/qwt/lib jsou soubory libqwt.so* a libqwtmathml.so* zkompilované pro 64bit. Nakopírujte je do lib složky vaší distribuce, např. /usr/lib.
 </p>
 <p style="margin-left: 60px">
     <b>Pokud máte 32bit</b> jděte do složky dep/qextserialport a zkompiluje QExtSerialPort knihovnu:
@@ -230,6 +244,7 @@ Zkompilované binárky by měly být ve složce bin/debug nebo bin/release.
     qmake Lorris.pro
     make
 </pre>
+
 <!-- license.html -->
 <hr>
 <h3 id="license">Licence &amp; knihovny</h3>

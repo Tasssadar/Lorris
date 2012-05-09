@@ -199,16 +199,31 @@ Supported programming interfaces
 <!-- build.html -->
 <hr>
 <h3 id="build">Build instructions</h3>
-You will need QtFramework 4.7 to build Lorris (4.6 _should_ be also ok, but it is not tested).<br>
-Built binaries should be in bin/debug or bin/release.
+<p>
+  You will need QtFramework >= 4.7 to build Lorris (4.6 _should_ be also ok, but it is not tested).<br>
+  Built binaries should be in bin/debug or bin/release.
+</p>
 <h4>Building on Windows</h4>
 <p style="margin-left: 30px">
-    Download Lorris, open Lorris.pro in QtCreator and hit "Build" button. 
+    Download <a href="http://qt.nokia.com/downloads">Qt SDK</a> with Qt version >= 4.7 and gcc compiler, download Lorris, open Lorris.pro in QtCreator and hit "Build" button. 
 </p>
 <h4>Building on Linux</h4>
-<p style="margin-left: 30px">
-    You need libqwt-dev to build Lorris on Linux, at least version 6.0.0. If it is in your distribution's repository, just install it.
-    If it is not, there are libqwt.so* and libqwtmathml.so* in dep/qwt/lib. Copy these files to your distro's lib directory, eg. /usr/lib.
+    <b style="margin-left: 30px">Required packages:</b>
+    <p style="margin-left: 60px">
+    <b>
+      - Qt SDK >= 4.7.0<br>
+      - make, g++<br>
+      - libqwt-dev >= 6.0.0<br>
+      - libudev-dev<br>
+      - libsdl-dev</b> (not sure about version, probably >= 1.2)
+    </p>
+    <p style="margin-left: 30px">
+    So, apt-get line for Debian Testing would look like this:
+    </p>
+    <pre style="margin-left: 30px">
+    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libqwt-dev libsdl1.2-dev libudev-dev</pre>
+    <p style="margin-left: 30px">
+    If libqwt >= 6.0.0 is not in your distro's repository, there is libqwt.so* and libqwtmathml.so* in dep/qwt/lib. Copy these files to your distro's lib directory, eg. /usr/lib.
     These are for 64bit only however.
 </p>
 <p style="margin-left: 60px">
