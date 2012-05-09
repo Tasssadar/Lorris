@@ -24,6 +24,7 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QDrag>
+#include <QPainter>
 
 #include "labellayout.h"
 #include "sourcedialog.h"
@@ -207,18 +208,22 @@ void LabelLayout::setHeader(analyzer_header *header)
     UpdateTypes();
 }
 
-void LabelLayout::selected(quint32 pos, bool selected)
+quint32 LabelLayout::selected(quint32 pos, bool selected)
 {
     if(selected && m_selectedPos.contains(pos))
-        return;
+        return m_selectedPos.indexOf(pos);
 
     if(selected)
+    {
         m_selectedPos.push_back(pos);
+        return m_selectedPos.size();
+    }
     else
     {
         int idx = m_selectedPos.indexOf(pos);
         if(idx >= 0)
             m_selectedPos.remove(idx);
+        return idx;
     }
 }
 
@@ -362,9 +367,7 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
     {
         posLabel = new QLabel(QString::number(pos), this);
         posLabel->setAlignment(Qt::AlignCenter);
-        QFont font = posLabel->font();
-        font.setPointSize(6);
-        posLabel->setFont(font);
+        posLabel->setFont(Utils::getMonospaceFont(8));
         layout->addWidget(posLabel);
     }else posLabel = NULL;
 
@@ -378,7 +381,6 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
     setAcceptDrops(true);
     setAutoFillBackground(true);
 
-    connect(this, SIGNAL(selected(quint32,bool)), l, SLOT(selected(quint32,bool)));
     connect(this, SIGNAL(unselectAll()),          l, SLOT(unselectAll()));
 }
 
@@ -427,7 +429,7 @@ void DraggableLabel::mouseReleaseEvent(QMouseEvent *event)
         if(event->modifiers() & Qt::ControlModifier)
         {
             setSelected(!m_selected);
-            emit selected(m_pos, m_selected);
+            setOrder(labelLayout->selected(m_pos, m_selected));
         }
         else
             emit unselectAll();
@@ -449,7 +451,7 @@ void DraggableLabel::mouseMoveEvent(QMouseEvent *event)
         if(!m_selected && (event->modifiers() & Qt::ControlModifier))
         {
             setSelected(!m_selected);
-            emit selected(m_pos, m_selected);
+            setOrder(labelLayout->selected(m_pos, m_selected));
         }
 
         QDrag *drag = new QDrag(this);
@@ -527,7 +529,6 @@ void DraggableLabel::dropEvent(QDropEvent *event)
     QString css = valueLabel->styleSheet();
     css.replace(QRegExp("red"), "orange");
     valueLabel->setStyleSheet(css);
-
     event->acceptProposedAction();
 }
 
@@ -537,7 +538,10 @@ void DraggableLabel::updateColor()
     if(m_highlighted)
         p.setColor(QPalette::Window, Qt::red);
     else if(m_selected)
+    {
+        p.setColor(QPalette::WindowText, Qt::white);
         p.setColor(QPalette::Window, Qt::blue);
+    }
     setPalette(p);
 }
 
@@ -546,3 +550,8 @@ QString DraggableLabel::GetText()
     return valueLabel->text();
 }
 
+void DraggableLabel::setOrder(quint32 order)
+{
+    m_order = QString::number(order);
+    update();
+}

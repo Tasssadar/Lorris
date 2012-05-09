@@ -94,12 +94,12 @@ public:
 
     const QVector<quint32>& getSelected() const { return m_selectedPos; }
     DraggableLabel* getLabel(quint32 pos) { return pos >= m_labels.size() ? NULL : m_labels[pos]; }
+    quint32 selected(quint32 pos, bool selected);
 
 public slots:
     void lenChanged(int len);
     void changePos(int this_label, int dragged_label);
     void UpdateTypes();
-    void selected(quint32 pos, bool selected);
     void unselectAll();
 
 protected:
@@ -155,7 +155,6 @@ class DraggableLabel : public QWidget
     Q_OBJECT
 Q_SIGNALS:
     void changePos(int this_label, int dragged_label);
-    void selected(quint32 pos, bool selected);
     void unselectAll();
 
 public:
@@ -195,6 +194,8 @@ protected:
     void dropEvent( QDropEvent *event );
 
 private:
+    void setOrder(quint32 order);
+
     bool m_drag;
     bool m_drop;
     bool m_highlighted;
@@ -205,6 +206,7 @@ private:
     QLabel *valueLabel;
     QLabel *posLabel;
     quint32 m_pos;
+    QString m_order;
 };
 
 #endif // LABELLAYOUT_H
