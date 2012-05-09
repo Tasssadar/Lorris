@@ -23,7 +23,7 @@
 
 #include "graphdata.h"
 #include "../datawidget.h"
-#include "../../analyzerdatastorage.h"
+#include "../../storage.h"
 
 GraphDataSimple::GraphDataSimple() : QwtSeriesData<QPointF>()
 {
@@ -96,7 +96,7 @@ void GraphDataSimple::clear()
     m_indexes.clear();
 }
 
-GraphData::GraphData(AnalyzerDataStorage *storage, data_widget_info &info, qint32 sample_size, quint8 data_type) :
+GraphData::GraphData(Storage *storage, data_widget_info &info, qint32 sample_size, quint8 data_type) :
     GraphDataSimple()
 {
     m_storage = storage;
@@ -166,6 +166,9 @@ void GraphData::eraseSpareData(qint32 absPos, quint32 pos)
             for(; i != -1; --i)
                 if(m_data[i]->itr < pos)
                     break;
+
+            if(i == -1)
+                i = 0;
 
             for(storage::iterator itr = m_data.begin()+i; itr != m_data.end(); ++itr)
                 delete *itr;

@@ -31,6 +31,8 @@ class Graph;
 class GraphCurveAddDialog;
 class GraphCurve;
 
+#define SAMPLE_ACT_COUNT 9
+
 struct GraphCurveInfo
 {
     GraphCurveInfo(GraphCurve* curve, data_widget_info& info)
@@ -50,9 +52,9 @@ public:
     GraphWidget(QWidget *parent = 0);
     ~GraphWidget();
 
-    void setUp(AnalyzerDataStorage *storage);
-    void saveWidgetInfo(AnalyzerDataFile *file);
-    void loadWidgetInfo(AnalyzerDataFile *file);
+    void setUp(Storage *storage);
+    void saveWidgetInfo(DataFileParser *file);
+    void loadWidgetInfo(DataFileParser *file);
 
 public slots:
     GraphCurve *addCurve(QString name, QString color);
@@ -79,9 +81,9 @@ private:
      Graph *m_graph;
      GraphCurveAddDialog *m_add_dialog;
      QString m_drop_data;
-     AnalyzerDataStorage *m_storage;
+     Storage *m_storage;
 
-     QAction *m_sample_act[8];
+     QAction *m_sample_act[SAMPLE_ACT_COUNT];
      QAction *m_editCurve;
      QAction *m_showLegend;
      QAction *m_autoScroll;

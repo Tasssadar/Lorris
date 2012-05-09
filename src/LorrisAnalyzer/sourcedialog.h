@@ -38,10 +38,16 @@ class LabelLayout;
 class QSpacerItem;
 class QLabel;
 class QAbstractButton;
+class PacketParser;
+class QListWidgetItem;
 
 class SourceDialog : public QDialog
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void readData(const QByteArray& data);
+
 public:
     explicit SourceDialog(analyzer_packet *pkt, QWidget *parent = 0);
     ~SourceDialog();
@@ -49,7 +55,6 @@ public:
     analyzer_packet *getStructure();
 
 public slots:
-    void readData(const QByteArray& data);
     void headerLenToggled(bool checked);
     void headerLenChanged(int values);
     void staticLenChanged(int values);
@@ -59,6 +64,10 @@ public slots:
     void lenFmtChanged(int index);
     void butonnBoxClicked(QAbstractButton *b);
     void offsetChanged(int val);
+    void staticDataChanged(QListWidgetItem*);
+    void endianChanged(int idx);
+    void packetLenChanged(int val);
+    void packetReceived(analyzer_data *data, quint32);
 
 private:
     void AddOrRmHeaderType(bool add, quint8 type);
@@ -67,9 +76,9 @@ private:
     ScrollDataLayout *scroll_layout;
     LabelLayout *scroll_header;
     Ui::SourceDialog *ui;
-    analyzer_header m_header;
+    analyzer_packet m_packet;
+    PacketParser *m_parser;
     bool setted;
-    bool setFirst;
 };
 
 

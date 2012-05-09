@@ -35,7 +35,7 @@
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle("NumberWidget");
+    setTitle(tr("Number"));
     setIcon(":/dataWidgetIcons/num.png");
 
     m_widgetType = WIDGET_NUMBERS;
@@ -57,7 +57,7 @@ NumberWidget::~NumberWidget()
 
 }
 
-void NumberWidget::setUp(AnalyzerDataStorage *storage)
+void NumberWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -232,7 +232,7 @@ void NumberWidget::resizeEvent(QResizeEvent *event)
     DataWidget::resizeEvent(event);
 }
 
-void NumberWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void NumberWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -249,7 +249,7 @@ void NumberWidget::saveWidgetInfo(AnalyzerDataFile *file)
     file->write((char*)&level, sizeof(level));
 }
 
-void NumberWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void NumberWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 

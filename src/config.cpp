@@ -26,15 +26,14 @@
 #include <QDesktopServices>
 #include <qextserialport.h>
 
+#include "connection/connection.h"
 #include "config.h"
-#include "connection/connectionmgr.h"
 
 static const QString keys_quint32[CFG_QUINT32_NUM] =
 {
     "general/connection_type",   // CFG_QUINT32_CONNECTION_TYPE
     "general/tab_type",          // CFG_QUINT32_TAB_TYPE
     "serial_port/baud_rate",     // CFG_QUINT32_SERIAL_BAUD
-    "analyzer/update_time",      // CFG_QUINT32_ANALYZER_UPDATE_TIME
     "shupito/flash_mode",        // CFG_QUINT32_SHUPITO_MODE
     "shupito/prog_speed",        // CFG_QUINT32_SHUPITO_PRG_SPEED
     "general/language",          // CFG_QUINT32_LANGUAGE
@@ -58,6 +57,9 @@ static const QString keys_string[CFG_STRING_NUM] =
     "tcpsocket/address",          // CFG_STRING_TCP_ADDR
     "proxy/address",              // CFG_STRING_PROXY_ADDR
     "analyzer/js_source",         // CFG_STRING_ANALYZER_JS
+    "terminal/textfile",          // CFG_STRING_TERMINAL_TEXTFILE
+    "terminal/font",              // CFG_STRING_TERMINAL_FONT
+    "shupito/terminal_font",      // CFG_STRING_SHUPITO_TERM_FONT
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -65,6 +67,11 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
     "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
     "shupito/show_fuses",         // CFG_BOOL_SHUPITO_SHOW_FUSES
+};
+
+static const QString keys_variant[CFG_VARIANT_NUM] =
+{
+    "general/connections",        // CFG_VARIANT_CONNECTIONS
 };
 
 Config::Config()
@@ -75,7 +82,6 @@ Config::Config()
     m_def_quint32[CFG_QUINT32_CONNECTION_TYPE]     = MAX_CON_TYPE;
     m_def_quint32[CFG_QUINT32_TAB_TYPE]            = 0;
     m_def_quint32[CFG_QUINT32_SERIAL_BAUD]         = BAUD38400;
-    m_def_quint32[CFG_QUINT32_ANALYZER_UPDATE_TIME]= 100;
     m_def_quint32[CFG_QUINT32_SHUPITO_MODE]        = 0;
     m_def_quint32[CFG_QUINT32_SHUPITO_PRG_SPEED]   = 0;
     m_def_quint32[CFG_QUINT32_LANGUAGE]            = 0;
@@ -96,6 +102,9 @@ Config::Config()
     m_def_string[CFG_STRING_TCP_ADDR]              = "127.0.0.1";
     m_def_string[CFG_STRING_PROXY_ADDR]            = "0";
     m_def_string[CFG_STRING_ANALYZER_JS]           = "";
+    m_def_string[CFG_STRING_TERMINAL_TEXTFILE]     = "";
+    m_def_string[CFG_STRING_TERMINAL_FONT]         = "";
+    m_def_string[CFG_STRING_SHUPITO_TERM_FONT]     = "";
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = false;
@@ -162,4 +171,14 @@ bool Config::get(cfg_bool item)
 void Config::set(cfg_bool item, bool val)
 {
     m_settings->setValue(keys_bool[item], val);
+}
+
+QVariant Config::get(cfg_variant item)
+{
+    return m_settings->value(keys_variant[item]);
+}
+
+void Config::set(cfg_variant item, QVariant const & val)
+{
+    m_settings->setValue(keys_variant[item], val);
 }

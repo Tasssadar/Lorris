@@ -31,7 +31,7 @@
    <property name="title">
     <string>Header</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -209,6 +209,9 @@
          </item>
          <item>
           <widget class="QScrollArea" name="header_scroll">
+           <property name="verticalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
            <property name="horizontalScrollBarPolicy">
             <enum>Qt::ScrollBarAlwaysOff</enum>
            </property>
@@ -221,7 +224,7 @@
               <x>0</x>
               <y>0</y>
               <width>326</width>
-              <height>58</height>
+              <height>70</height>
              </rect>
             </property>
            </widget>
@@ -310,7 +313,7 @@ to change order</string>
    <property name="title">
     <string>Packet Data</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget2">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -330,6 +333,9 @@ to change order</string>
        </property>
        <property name="styleSheet">
         <string notr="true">margin-bottom: 5px</string>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
        <property name="horizontalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOn</enum>

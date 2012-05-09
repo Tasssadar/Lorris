@@ -27,6 +27,7 @@
 #include <QObject>
 #include <QMutex>
 #include <set>
+#include <vector>
 
 #ifdef Q_OS_WIN
     #include <SDL.h>
@@ -123,8 +124,8 @@ private:
     int m_num_hats;
     int m_num_buttons;
 
-    int *m_axes;
-    quint8 *m_buttons;
+    std::vector<int> m_axes;
+    std::vector<quint8> m_buttons;
 
     std::set<QObject*> m_used;
 

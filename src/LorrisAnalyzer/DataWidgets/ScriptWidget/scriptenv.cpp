@@ -29,13 +29,13 @@
 #include <QTimer>
 #include <QComboBox>
 
-#include <analyzerdataarea.h>
-#include "DataWidgets/GraphWidget/graphcurve.h"
-#include "DataWidgets/datawidget.h"
-#include "DataWidgets/inputwidget.h"
+#include "../../widgetarea.h"
+#include "../GraphWidget/graphcurve.h"
+#include "../datawidget.h"
+#include "../inputwidget.h"
 #include "scriptenv.h"
 #include "scriptagent.h"
-#include "joystick/joymgr.h"
+#include "../../../joystick/joymgr.h"
 
 /* Simple JavaScript Inheritance
  * By John Resig http://ejohn.org/
@@ -56,7 +56,7 @@ QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &i
 void GraphCurveFromScriptValue(const QScriptValue &object, GraphCurve* &out)
 { out = qobject_cast<GraphCurve*>(object.toQObject()); }
 
-ScriptEnv::ScriptEnv(AnalyzerDataArea* area, quint32 w_id, QObject *parent) :
+ScriptEnv::ScriptEnv(WidgetArea* area, quint32 w_id, QObject *parent) :
     QScriptEngine(parent)
 {
     pushContext();
@@ -171,8 +171,8 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("area", newQObject(m_area));
     m_global.setProperty("storage", newQObject(m_storage));
 
-    const AnalyzerDataArea::w_map& widgets = m_area->getWidgets();
-    for(AnalyzerDataArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
+    const WidgetArea::w_map& widgets = m_area->getWidgets();
+    for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
     {
         QString name = sanitizeWidgetName((*itr)->getTitle());
         if(!name.isEmpty())
@@ -212,6 +212,7 @@ void ScriptEnv::setSource(const QString &source)
     m_on_widget_add = m_global.property("onWidgetAdd");
     m_on_widget_remove = m_global.property("onWidgetRemove");
     m_on_script_exit = m_global.property("onScriptExit");
+    m_on_save = m_global.property("onSave");
 
     setAgent(new ScriptAgent(this));
 }
@@ -372,6 +373,12 @@ void ScriptEnv::callEventHandler(const QString& eventId)
     handler.call();
 }
 
+void ScriptEnv::onSave()
+{
+    if(m_on_save.isFunction())
+        m_on_save.call();
+}
+
 QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
 {
     emit ((ScriptEnv*)engine)->clearTerm();
@@ -380,7 +387,25 @@ QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *
 
 QScriptValue ScriptEnv::__appendTerm(QScriptContext *context, QScriptEngine *engine)
 {
-    emit ((ScriptEnv*)engine)->appendTerm(context->argument(0).toString());
+    ScriptEnv *eng = (ScriptEnv*)engine;
+    QScriptValue arg = context->argument(0);
+
+    if(!arg.isArray())
+        emit eng->appendTerm(arg.toString());
+    else
+    {
+        QByteArray data;
+
+        QScriptValueIterator itr(arg);
+        while(itr.hasNext())
+        {
+            itr.next();
+            if(itr.value().isNumber() && itr.name() != "length")
+                data.push_back(itr.value().toUInt16());
+        }
+        emit eng->appendTermRaw(data);
+    }
+
     return QScriptValue();
 }
 
@@ -399,12 +424,9 @@ QScriptValue ScriptEnv::__sendData(QScriptContext *context, QScriptEngine *engin
     while(itr.hasNext())
     {
         itr.next();
-        if(itr.value().isNumber())
+        if(itr.value().isNumber() && itr.name() != "length")
             sendData.push_back(itr.value().toUInt16());
     }
-
-    if(sendData.size() > 1)
-        sendData.chop(1); // last num is array len, wtf
 
     emit ((ScriptEnv*)engine)->SendData(sendData);
     return QScriptValue();

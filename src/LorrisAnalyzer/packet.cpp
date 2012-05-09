@@ -22,15 +22,18 @@
 ****************************************************************************/
 
 #include "packet.h"
-#include "common.h"
+#include "../common.h"
 
 analyzer_data::analyzer_data(analyzer_packet *packet)
 {
     m_packet = packet;
-    if(m_packet->static_data)
-        m_static_data = QByteArray((char*)m_packet->static_data, m_packet->header->static_len);
-    else
-        m_static_data = QByteArray();
+    clear();
+}
+
+void analyzer_data::clear()
+{
+    m_data.clear();
+    m_static_data = QByteArray((char*)m_packet->static_data.data(), m_packet->header->static_len);
     itr = 0;
     m_forceValid = false;
 }
@@ -41,7 +44,7 @@ quint32 analyzer_data::addData(char *d_itr, char *d_end)
     for(; itr < (quint32)m_static_data.length() && d_itr+read != d_end;)
     {
         if(*(d_itr+read) != m_static_data[itr])
-            return 0;
+            return read;
         m_data[itr++] = *(d_itr+read++);
     }
 
@@ -138,6 +141,7 @@ bool analyzer_data::getLenFromHeader(quint32& len)
             case 2: len = getUInt32(pos); break;
             default: return false;
         }
+        len += m_packet->header->len_offset;
     }
     catch(const char*)
     {

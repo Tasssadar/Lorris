@@ -24,17 +24,38 @@
 #include <QPushButton>
 #include <QTabWidget>
 #include <QHBoxLayout>
+#include <QCommandLinkButton>
 
 #include "HomeTab.h"
 #include "mainwindow.h"
-#include "WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTabMgr.h"
 
-#include "ui_hometab.h"
+#include "../ui/ui_hometab.h"
 
 HomeTab::HomeTab(QWidget *parent) : QWidget(parent), ui(new Ui::HomeTab)
 {
     ui->setupUi(this);
-    connect(ui->newTabBtn, SIGNAL(clicked()), this, SLOT(NewTab()));
+
+    QLayoutItem * vertStretch = ui->tabButtonsWidget->layout()->takeAt(0);
+
+    WorkTabMgr::InfoList const & infoList = sWorkTabMgr.GetWorkTabInfos();
+    for (int i = 0; i < infoList.size(); ++i)
+    {
+        WorkTabInfo * info = infoList[i];
+
+        QCommandLinkButton * btn = new QCommandLinkButton(ui->tabButtonsWidget);
+        m_buttonInfoMap[btn] = info;
+
+        btn->setText(info->GetName());
+        btn->setDescription(info->GetDescription());
+        btn->setMaximumHeight(100);
+        btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        ui->tabButtonsWidget->layout()->addWidget(btn);
+
+        connect(btn, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    }
+
+    ui->tabButtonsWidget->layout()->addItem(vertStretch);
 }
 
 HomeTab::~HomeTab()
@@ -42,12 +63,12 @@ HomeTab::~HomeTab()
     delete ui;
 }
 
-void HomeTab::NewTab()
+void HomeTab::buttonClicked()
 {
-   sWorkTabMgr.NewTabDialog();
-}
-
-void HomeTab::showEvent(QShowEvent *)
-{
-    ui->newTabBtn->setFocus();
+    WorkTabInfo * info = m_buttonInfoMap.value(this->sender());
+    if (info)
+    {
+        emit tabOpened();
+        sWorkTabMgr.AddWorkTab(info);
+    }
 }

@@ -43,6 +43,10 @@ QString LorrisShupitoInfo::GetName()
 
 QString LorrisShupitoInfo::GetDescription()
 {
-    return QObject::tr("Control program for shupito programmer.");
+    return QObject::tr("Control program for the Shupito programmer.");
 }
 
+QStringList LorrisShupitoInfo::GetHandledFiles()
+{
+    return QStringList("hex");
+}

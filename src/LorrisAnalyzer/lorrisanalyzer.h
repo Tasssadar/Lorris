@@ -27,26 +27,23 @@
 #include <QMutex>
 #include <QTime>
 
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 #include "packet.h"
 #include "DataWidgets/datawidget.h"
+#include "../ui/connectbutton.h"
+#include "storage.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
 class QMdiArea;
-class AnalyzerDataStorage;
+class Storage;
 class QSlider;
 class DeviceTabWidget;
-class AnalyzerDataArea;
+class WidgetArea;
 class QSpinBox;
 class QScrollArea;
+class PacketParser;
 struct analyzer_packet;
-
-enum states_
-{
-    STATE_DISCONNECTED    = 0x01,
-    STATE_DIALOG          = 0x02
-};
 
 enum hideable_areas
 {
@@ -59,13 +56,14 @@ namespace Ui {
   class LorrisAnalyzer;
 }
 
-class LorrisAnalyzer : public WorkTab
+class LorrisAnalyzer : public PortConnWorkTab
 {
     Q_OBJECT
 
     Q_SIGNALS:
         void newData(analyzer_data *data, quint32 index);
         void setTitleVisibility(bool visible);
+        void SendData(const QByteArray& data);
 
     public:
         explicit LorrisAnalyzer();
@@ -81,15 +79,19 @@ class LorrisAnalyzer : public WorkTab
 
         bool showTitleBars() const { return m_title_action->isChecked(); }
 
+        void setConnection(PortConnection *con);
+        void openFile(const QString& filename);
+
     public slots:
         void onTabShow();
         bool onTabClose();
-        void updateData(bool ignoreTime = false);
+        void updateData();
         void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);
         void setDataChanged(bool changed = true) { m_data_changed = changed; }
 
     private slots:
-        void connectButton();
+        void doNewSource();
+
         void saveButton();
         void saveAsButton();
         void clearAllButton();
@@ -103,35 +105,26 @@ class LorrisAnalyzer : public WorkTab
 
         void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
-        void timeSliderMoved(int value);
-        void timeBoxChanged(int value);
+        void indexChanged(int value);
         void showTitleTriggered(bool checked);
-
-        void updateTimeChanged(int value);
 
     private:
         void readData(const QByteArray& data);
-        void load(QString *name, quint8 mask);
+        bool load(QString& name, quint8 mask);
 
-        inline bool canUpdateUi(bool ignore = false)
-        {
-            return ignore || updateTime.elapsed() > minUpdateDelay;
-        }
-
-        quint16 m_state;
         bool highlightInfoNotNull;
         data_widget_info highlightInfo;
         Ui::LorrisAnalyzer *ui;
-        AnalyzerDataStorage *m_storage;
+        Storage *m_storage;
         analyzer_packet *m_packet;
-        analyzer_data *m_curData;
-
-        QTime updateTime;
-        int minUpdateDelay;
+        PacketParser *m_parser;
 
         QAction *m_title_action;
 
         bool m_data_changed;
+        qint32 m_curIndex;
+
+        ConnectButton * m_connectButton;
 };
 
 #endif // LORRISANALYZER_H

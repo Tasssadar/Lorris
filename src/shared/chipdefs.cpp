@@ -28,7 +28,7 @@
 #include <QDesktopServices>
 #include <vector>
 
-#include "common.h"
+#include "../common.h"
 #include "chipdefs.h"
 
 

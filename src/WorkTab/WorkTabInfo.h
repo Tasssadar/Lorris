@@ -25,20 +25,20 @@
 #define WORKTABINFO_H
 
 #include <QString>
-#include "connection/connectionmgr.h"
+#include <QStringList>
 
 class WorkTab;
 
 class WorkTabInfo
 {
-    public:
-        virtual WorkTab *GetNewTab() = 0;
-        virtual QString GetName() = 0;
-        virtual QString GetDescription() = 0;
-        virtual quint8 GetConType() = 0;
+public:
+    virtual WorkTab *GetNewTab() = 0;
+    virtual QString GetName() = 0;
+    virtual QString GetDescription() = 0;
+    virtual QStringList GetHandledFiles();
 
-    protected:
-        explicit WorkTabInfo();
+protected:
+    explicit WorkTabInfo();
 };
 
 #endif // WORKTABINFO_H

@@ -24,7 +24,7 @@
 #ifndef LORRISANALYZERINFO_H
 #define LORRISANALYZERINFO_H
 
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 class LorrisAnalyzerInfo : public WorkTabInfo
 {
@@ -34,7 +34,7 @@ public:
     WorkTab *GetNewTab();
     QString GetName();
     QString GetDescription();
-    quint8 GetConType() { return (CON_MSK(CONNECTION_FILE) | CON_MSK(CONNECTION_SERIAL_PORT) | CON_MSK(CONNECTION_TCP_SOCKET)); }
+    QStringList GetHandledFiles();
 };
 
 #endif // LORRISANALYZERINFO_H

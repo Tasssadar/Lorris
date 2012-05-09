@@ -38,11 +38,10 @@ WorkTab *LorrisProxyInfo::GetNewTab()
 
 QString LorrisProxyInfo::GetName()
 {
-    return QObject::tr("Serial port proxy");
+    return QObject::tr("Proxy");
 }
 
 QString LorrisProxyInfo::GetDescription()
 {
-    return QObject::tr("This module acts as proxy between serial port and TCP socket");
+    return QObject::tr("This module acts as proxy between a connection and TCP server socket.");
 }
-

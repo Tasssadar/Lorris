@@ -32,9 +32,8 @@ Joystick::Joystick(int id, QObject *parent) :
 
 Joystick::~Joystick()
 {
-    delete[] m_axes;
-    delete[] m_buttons;
-    SDL_JoystickClose(m_joy);
+    if(m_joy)
+        SDL_JoystickClose(m_joy);
 }
 
 bool Joystick::open()
@@ -49,13 +48,7 @@ bool Joystick::open()
     m_num_balls = SDL_JoystickNumBalls(m_joy);
     m_num_buttons = SDL_JoystickNumButtons(m_joy);
 
-    m_axes = new int[m_num_axes];
-    for(int i = 0; i < m_num_axes; ++i)
-        m_axes[i] = 0;
-
-    m_buttons = new quint8[m_num_buttons];
-    for(int i = 0; i < m_num_buttons; ++i)
-        m_buttons[i] = 0;
-
+    m_axes.resize(m_num_axes, 0);
+    m_buttons.resize(m_num_buttons, 0);
     return true;
 }

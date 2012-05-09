@@ -29,7 +29,7 @@
 #include <QObject>
 
 #include "../shupitodesc.h"
-#include "shared/chipdefs.h"
+#include "../../shared/chipdefs.h"
 
 class Shupito;
 class HexFile;

@@ -30,13 +30,13 @@
 
 #include "ui_lorrisproxy.h"
 
-LorrisProxy::LorrisProxy() : WorkTab(), ui(new Ui::LorrisProxy)
+LorrisProxy::LorrisProxy()
+    : ui(new Ui::LorrisProxy)
 {
     m_server = new TcpServer();
 
     ui->setupUi(this);
 
-    connect(ui->connectButton, SIGNAL(clicked()),            SLOT(connectButton()));
     connect(ui->addressEdit,   SIGNAL(textChanged(QString)), SLOT(updateAddressText()));
     connect(ui->portBox,       SIGNAL(valueChanged(int)),    SLOT(updateAddressText()));
     connect(ui->listenButon,   SIGNAL(clicked()),            SLOT(listenChanged()));
@@ -45,6 +45,9 @@ LorrisProxy::LorrisProxy() : WorkTab(), ui(new Ui::LorrisProxy)
 
     ui->addressEdit->setText(sConfig.get(CFG_STRING_PROXY_ADDR));
     ui->portBox->setValue(sConfig.get(CFG_QUINT32_PROXY_PORT));
+
+    m_connectButton = new ConnectButton(ui->connectButton);
+    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
 }
 
 LorrisProxy::~LorrisProxy()
@@ -53,54 +56,22 @@ LorrisProxy::~LorrisProxy()
     delete ui;
 }
 
-void LorrisProxy::connectButton()
-{
-    if(!m_con->isOpen())
-    {
-        ui->connectButton->setText(tr("Connecting..."));
-        ui->connectButton->setEnabled(false);
-        connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
-        m_con->OpenConcurrent();
-    }
-    else
-    {
-        m_con->Close();
-        ui->connectButton->setText(tr("Connect to serial port"));
-    }
-}
-
 void LorrisProxy::connectionResult(Connection */*con*/,bool result)
 {
     disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
 
-    ui->connectButton->setEnabled(true);
     if(!result)
     {
-        ui->connectButton->setText(tr("Connect to serial port"));
         Utils::ThrowException(tr("Can't open connection!"));
     }
 }
 
-void LorrisProxy::connectedStatus(bool connected)
+void LorrisProxy::setConnection(PortConnection *con)
 {
-    if(connected)
-        ui->connectButton->setText(tr("Disconnect from serial port"));
-    else
-        ui->connectButton->setText(tr("Connect to serial port"));
-}
-
-void LorrisProxy::setConnection(Connection *con)
-{
-    m_con = con;
-
-    if(!con)
-        return;
-
+    this->PortConnWorkTab::setConnection(con);
+    m_connectButton->setConn(con);
     connect(m_con,    SIGNAL(dataRead(QByteArray)), m_server, SLOT(SendData(QByteArray)));
     connect(m_server, SIGNAL(newData(QByteArray)),  m_con,    SLOT(SendData(QByteArray)));
-    connect(m_con,    SIGNAL(connected(bool)),      this,     SLOT(connectedStatus(bool)));
-
-    m_con->AddUsingTab(m_id);
 }
 
 void LorrisProxy::updateAddressText()
@@ -168,4 +139,14 @@ void LorrisProxy::removeConnection(quint32 id)
     if(items.empty())
         return;
     delete items[0];
+}
+
+void LorrisProxy::onTabShow()
+{
+    if (!m_con)
+    {
+        m_connectButton->choose();
+        if (m_con && !m_con->isOpen())
+            m_con->OpenConcurrent();
+    }
 }

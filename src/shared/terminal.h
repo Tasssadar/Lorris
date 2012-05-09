@@ -55,6 +55,7 @@ class Terminal : public QAbstractScrollArea
 
 Q_SIGNALS:
     void keyPressed(QString key);
+    void fontChanged(const QString& fontData);
 
 public:
     Terminal(QWidget *parent);
@@ -64,10 +65,13 @@ public:
 
     QByteArray getData()
     {
-        return QByteArray(m_data, m_data_size);
+        return QByteArray(m_data.data(), m_data.size());
     }
 
     int getFmt() { return m_fmt; }
+    void setFont(const QFont &f);
+    void loadFont(const QString& str);
+    QString getFontData();
 
 public slots:
     void clear();
@@ -80,6 +84,7 @@ public slots:
     void appendText(const QByteArray& text);
     void setFmt(int fmt);
     void setInput(quint8 input);
+    void showFontDialog();
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -113,10 +118,7 @@ private:
 
     std::vector<QString> m_lines;
     std::vector<QString> m_pause_lines;
-
-    char *m_data;
-    quint32 m_data_alloc;
-    quint32 m_data_size;
+    std::vector<char> m_data;
 
     QString m_command;
 

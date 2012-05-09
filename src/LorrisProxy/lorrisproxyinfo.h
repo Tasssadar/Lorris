@@ -24,7 +24,7 @@
 #ifndef LORRISPROXYINFO_H
 #define LORRISPROXYINFO_H
 
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 class LorrisProxyInfo : public WorkTabInfo
 {
@@ -34,7 +34,6 @@ public:
     WorkTab *GetNewTab();
     QString GetName();
     QString GetDescription();
-    quint8 GetConType() { return CON_MSK(CONNECTION_SERIAL_PORT); }
 };
 
 #endif // LORRISPROXYINFO_H

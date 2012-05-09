@@ -38,9 +38,9 @@ public:
     ScriptWidget(QWidget *parent = 0);
     ~ScriptWidget();
 
-    void setUp(AnalyzerDataStorage *);
-    void saveWidgetInfo(AnalyzerDataFile *file);
-    void loadWidgetInfo(AnalyzerDataFile *file);
+    void setUp(Storage *);
+    void saveWidgetInfo(DataFileParser *file);
+    void loadWidgetInfo(DataFileParser *file);
 
 public slots:
     void onWidgetAdd(DataWidget *w);

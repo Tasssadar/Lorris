@@ -24,8 +24,8 @@
 
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
-#include "ui/HomeTab.h"
-#include "ui/tabdialog.h"
+#include "../ui/HomeTab.h"
+#include <algorithm>
 
 WorkTabMgr::WorkTabMgr() : QObject()
 {
@@ -44,27 +44,32 @@ void WorkTabMgr::RegisterTabInfo(WorkTabInfo *info)
     m_workTabInfos.push_back(info);
 }
 
-void WorkTabMgr::SortTabInfos()
+static bool compareTabInfos(WorkTabInfo * lhs, WorkTabInfo * rhs)
 {
-    QMap<QString, WorkTabInfo*> map;
-
-    for(InfoList::iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
-        map.insert((*itr)->GetName(), *itr);
-
-    m_workTabInfos = map.values();
+    return lhs->GetName() < rhs->GetName();
 }
 
-WorkTabMgr::InfoList *WorkTabMgr::GetWorkTabInfos()
+void WorkTabMgr::SortTabInfos()
 {
-    return &m_workTabInfos;
+    std::sort(m_workTabInfos.begin(), m_workTabInfos.end(), compareTabInfos);
+
+    // Must be done here, because RegisterTabInfo is called from
+    // WorkTabInfo's constructor so virtual methods do not work
+    for(InfoList::Iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
+        m_handledTypes += (*itr)->GetHandledFiles();
+}
+
+WorkTabMgr::InfoList const & WorkTabMgr::GetWorkTabInfos() const
+{
+    return m_workTabInfos;
 }
 
 WorkTab *WorkTabMgr::GetNewTab(WorkTabInfo *info)
 {
-    WorkTab *tab = info->GetNewTab();
+    QScopedPointer<WorkTab> tab(info->GetNewTab());
     tab->setInfo(info);
     tab->setId(generateNewTabId());
-    return tab;
+    return tab.take();
 }
 
 void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
@@ -79,6 +84,16 @@ void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
     activeWidget->addTab(tab, label, tab->getId());
     activeWidget->setTabsClosable(true);
     return;
+}
+
+WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info)
+{
+    QScopedPointer<WorkTab> tab(this->GetNewTab(info));
+    this->AddWorkTab(tab.data(), info->GetName());
+
+    WorkTab * tabp = tab.take();
+    tabp->onTabShow();
+    return tabp;
 }
 
 void WorkTabMgr::removeTab(WorkTab *tab)
@@ -123,18 +138,10 @@ void WorkTabMgr::CloseHomeTab()
     hometab = NULL;
 }
 
-void WorkTabMgr::NewTabDialog()
-{
-    TabDialog *dialog = new TabDialog;
-    dialog->exec();
-    delete dialog;
-}
-
 TabView *WorkTabMgr::CreateWidget(QWidget *parent)
 {
     tabView = new TabView(parent);
 
-    connect(tabView, SIGNAL(newTab()), SLOT(NewTabDialog()));
     connect(tabView, SIGNAL(openHomeTab(quint32)), SLOT(OpenHomeTab(quint32)));
     return tabView;
 }
@@ -147,4 +154,19 @@ bool WorkTabMgr::onTabsClose()
             return false;
     }
     return true;
+}
+
+void WorkTabMgr::openTabWithFile(const QString &filename)
+{
+    QString suffix = filename.split(".", QString::SkipEmptyParts).back();
+    for(InfoList::Iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
+    {
+        if(!(*itr)->GetHandledFiles().contains(suffix))
+            continue;
+
+        WorkTab *tab = AddWorkTab(*itr);
+        if(tab)
+           tab->openFile(filename);
+        return;
+    }
 }

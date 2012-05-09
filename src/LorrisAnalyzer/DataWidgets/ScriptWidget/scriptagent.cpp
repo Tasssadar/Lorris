@@ -24,7 +24,7 @@
 #include <QScriptValue>
 
 #include "scriptagent.h"
-#include "common.h"
+#include "../../../common.h"
 
 ScriptAgent::ScriptAgent(QScriptEngine *engine) :
     QScriptEngineAgent(engine)

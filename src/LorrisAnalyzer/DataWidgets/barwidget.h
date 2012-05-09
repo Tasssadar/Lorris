@@ -37,10 +37,10 @@ class BarWidget : public DataWidget
 public:
     BarWidget(QWidget *parent);
 
-    void setUp(AnalyzerDataStorage *);
+    void setUp(Storage *);
     void processData(analyzer_data *data);
-    void saveWidgetInfo(AnalyzerDataFile *file);
-    void loadWidgetInfo(AnalyzerDataFile *file);
+    void saveWidgetInfo(DataFileParser *file);
+    void loadWidgetInfo(DataFileParser *file);
 
 public slots:
     void setValue(const QVariant &var);

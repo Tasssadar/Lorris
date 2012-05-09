@@ -27,8 +27,9 @@
 #include <QTypeInfo>
 #include <QByteArray>
 #include <algorithm>
+#include <vector>
 
-#include "common.h"
+#include "../common.h"
 
 enum DataType
 {
@@ -143,28 +144,34 @@ struct analyzer_packet
         Reset();
     }
 
-    analyzer_packet(analyzer_header *h, bool b_e, quint8 *s_d)
+    analyzer_packet(analyzer_header *h, bool b_e)
     {
         header = h;
         big_endian = b_e;
-        static_data = s_d;
     }
 
-    ~analyzer_packet()
+    analyzer_packet(analyzer_packet *p)
     {
-        delete[] static_data;
+        copy(p);
+    }
+
+    void copy(analyzer_packet *p)
+    {
+        header = new analyzer_header(p->header);
+        big_endian = p->big_endian;
+        static_data.assign(p->static_data.begin(), p->static_data.end());
     }
 
     void Reset()
     {
-        static_data = NULL;
+        static_data.clear();
         header = NULL;
         big_endian = true;
     }
 
     analyzer_header *header;
     bool big_endian;
-    quint8 *static_data;
+    std::vector<quint8> static_data;
 };
 
 // Real data
@@ -172,6 +179,7 @@ class analyzer_data
 {
 public:
     analyzer_data(analyzer_packet *packet);
+    void clear();
 
     void setPacket(analyzer_packet *packet)
     {
@@ -189,6 +197,7 @@ public:
     const QByteArray& getStaticData() { return m_static_data; }
 
     bool isValid();
+    bool isFresh() const { return itr == 0; }
 
     bool getDeviceId(quint8& id);
     bool getCmd(quint8& cmd);

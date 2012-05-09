@@ -18,7 +18,7 @@ TEMPLATE = app
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += dep/qhexedit2/src
-INCLUDEPATH += src ui src/shared dep src/LorrisAnalyzer
+INCLUDEPATH += dep
 INCLUDEPATH += dep/qextserialport/src
 SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
@@ -26,8 +26,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/WorkTab/WorkTab.cpp \
     src/WorkTab/WorkTabMgr.cpp \
     src/WorkTab/WorkTabInfo.cpp \
-    src/connection/connectionmgr.cpp \
-    src/ui/tabdialog.cpp \
     src/LorrisTerminal/lorristerminal.cpp \
     src/LorrisTerminal/lorristerminalinfo.cpp \
     src/connection/connection.cpp \
@@ -39,11 +37,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/utils.cpp \
     src/LorrisAnalyzer/labellayout.cpp \
     src/LorrisAnalyzer/packet.cpp \
-    src/LorrisAnalyzer/analyzerdatastorage.cpp \
     src/LorrisAnalyzer/devicetabwidget.cpp \
     src/LorrisAnalyzer/cmdtabwidget.cpp \
-    src/connection/fileconnection.cpp \
-    src/LorrisAnalyzer/analyzerdataarea.cpp \
     src/LorrisAnalyzer/DataWidgets/datawidget.cpp \
     src/LorrisAnalyzer/DataWidgets/numberwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/barwidget.cpp \
@@ -52,7 +47,7 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisShupito/lorrisshupitoinfo.cpp \
     src/LorrisShupito/shupito.cpp \
     src/LorrisShupito/shupitodesc.cpp \
-    src/LorrisAnalyzer/analyzerdatafile.cpp \
+    src/LorrisAnalyzer/datafileparser.cpp \
     src/LorrisAnalyzer/DataWidgets/colorwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp \
@@ -68,7 +63,6 @@ SOURCES += src/ui/mainwindow.cpp \
     src/shared/chipdefs.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp \
-    src/connection/serialportthread.cpp \
     src/LorrisShupito/flashbuttonmenu.cpp \
     src/LorrisShupito/modes/shupitospi.cpp \
     src/LorrisShupito/modes/shupitopdi.cpp \
@@ -96,15 +90,23 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp \
     src/ui/tabview.cpp \
     src/ui/tabwidget.cpp \
-    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.cpp
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.cpp \
+    src/ui/chooseconnectiondlg.cpp \
+    src/ui/connectbutton.cpp \
+    dep/qextserialport/src/qextserialport.cpp \
+    dep/qextserialport/src/qextserialenumerator.cpp \
+    src/connection/connectionmgr2.cpp \
+    src/LorrisAnalyzer/packetparser.cpp \
+    src/ui/plustabbar.cpp \
+    src/ui/homedialog.cpp \
+    src/LorrisAnalyzer/widgetarea.cpp \
+    src/LorrisAnalyzer/storage.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
     src/WorkTab/WorkTab.h \
     src/WorkTab/WorkTabMgr.h \
     src/WorkTab/WorkTabInfo.h \
-    src/connection/connectionmgr.h \
-    src/ui/tabdialog.h \
     src/singleton.h \
     src/LorrisTerminal/lorristerminal.h \
     src/LorrisTerminal/lorristerminalinfo.h \
@@ -113,17 +115,13 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisTerminal/eeprom.h \
     src/LorrisAnalyzer/lorrisanalyzer.h \
     src/LorrisAnalyzer/lorrisanalyzerinfo.h \
-    src/LorrisAnalyzer/lorrisanalyzer.h \
     src/common.h \
     src/LorrisAnalyzer/sourcedialog.h \
     src/utils.h \
     src/LorrisAnalyzer/labellayout.h \
     src/LorrisAnalyzer/packet.h \
-    src/LorrisAnalyzer/analyzerdatastorage.h \
     src/LorrisAnalyzer/devicetabwidget.h \
     src/LorrisAnalyzer/cmdtabwidget.h \
-    src/connection/fileconnection.h \
-    src/LorrisAnalyzer/analyzerdataarea.h \
     src/LorrisAnalyzer/DataWidgets/datawidget.h \
     src/LorrisAnalyzer/DataWidgets/numberwidget.h \
     src/LorrisAnalyzer/DataWidgets/barwidget.h \
@@ -132,7 +130,7 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisShupito/lorrisshupitoinfo.h \
     src/LorrisShupito/shupito.h \
     src/LorrisShupito/shupitodesc.h \
-    src/LorrisAnalyzer/analyzerdatafile.h \
+    src/LorrisAnalyzer/datafileparser.h \
     src/LorrisAnalyzer/DataWidgets/colorwidget.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
@@ -148,7 +146,6 @@ HEADERS += src/ui/mainwindow.h \
     src/shared/chipdefs.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
     src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h \
-    src/connection/serialportthread.h \
     src/LorrisShupito/flashbuttonmenu.h \
     src/LorrisShupito/modes/shupitospi.h \
     src/LorrisShupito/modes/shupitopdi.h \
@@ -176,20 +173,45 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/DataWidgets/buttonwidget.h \
     src/ui/tabview.h \
     src/ui/tabwidget.h \
-    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.h
+    src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.h \
+    src/ui/chooseconnectiondlg.h \
+    src/ui/connectbutton.h \
+    dep/qextserialport/src/qextserialport_p.h \
+    dep/qextserialport/src/qextserialport_global.h \
+    dep/qextserialport/src/qextserialport.h \
+    dep/qextserialport/src/qextserialenumerator_p.h \
+    dep/qextserialport/src/qextserialenumerator.h \
+    src/connection/connectionmgr2.h \
+    src/LorrisAnalyzer/packetparser.h \
+    src/ui/plustabbar.h \
+    src/ui/homedialog.h \
+    src/LorrisAnalyzer/datafileparser.h \
+    src/LorrisAnalyzer/widgetarea.h \
+    src/LorrisAnalyzer/storage.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
 
-    DEFINES += QT_DLL QWT_DLL
+    DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
-    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl
-    CONFIG(debug, debug|release):LIBS += -lqwtd -lqextserialportd1
-    else:LIBS += -lqwt -lqextserialport1
+    HEADERS += \
+        dep/qextserialport/src/qextwineventnotifier_p.h
+    SOURCES += \
+        dep/qextserialport/src/qextserialenumerator_win.cpp \
+        dep/qextserialport/src/qextwineventnotifier_p.cpp \
+        dep/qextserialport/src/qextserialport_win.cpp
+
+    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lsetupapi
+    CONFIG(debug, debug|release):LIBS += -lqwtd
+    else:LIBS += -lqwt
 }
 unix:!macx:!symbian {
-    LIBS += -lqwt -ludev -lqextserialport -lSDL
+    SOURCES += \
+        dep/qextserialport/src/qextserialport_unix.cpp \
+        dep/qextserialport/src/qextserialenumerator_unix.cpp
+
+    LIBS += -lqwt -ludev -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -198,7 +220,10 @@ unix:!macx:!symbian {
         "$$DESTDIR/translations/"
 }
 macx {
-    LIBS += -lqwt -lqextserialport1 -lSDL
+    SOURCES += \
+        dep/qextserialport/src/qextserialenumerator_osx.cpp
+
+    LIBS += -lqwt -lqextserialport -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -218,13 +243,17 @@ FORMS += \
     src/LorrisTerminal/lorristerminal.ui \
     src/ui/hometab.ui \
     src/LorrisProxy/lorrisproxy.ui \
-    src/ui/tabdialog.ui \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
-    src/LorrisAnalyzer/playback.ui
+    src/LorrisAnalyzer/playback.ui \
+    src/ui/chooseconnectiondlg.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \
     src/LorrisShupito/shupitoicons.qrc \
-    src/icons.qrc
+    src/icons.qrc \
+    src/actions.qrc
 
 RC_FILE = src/winicon.rc
+
+OTHER_FILES += \
+    dep/qextserialport/src/qextserialport.pri

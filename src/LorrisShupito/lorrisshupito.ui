@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1205</width>
-    <height>372</height>
+    <height>576</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,34 +15,31 @@
   </property>
   <layout class="QHBoxLayout" name="mainLayout">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,4,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,4,0,0">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="topLayout">
        <item>
-        <widget class="QPushButton" name="connectButton">
-         <property name="text">
-          <string>Disconnect</string>
+        <widget class="QToolButton" name="connectButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="startstopButton">
-         <property name="text">
-          <string>Stop</string>
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>23</height>
+          </size>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Chip ID:</string>
+          <string>Connect</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="chipIdLabel">
-         <property name="text">
-          <string notr="true"/>
+         <property name="popupMode">
+          <enum>QToolButton::MenuButtonPopup</enum>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextOnly</enum>
          </property>
         </widget>
        </item>
@@ -416,6 +413,56 @@
       </layout>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="toolLayout" stretch="0,0,0,0">
+       <item>
+        <widget class="QLabel" name="filename">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>&lt;No file loaded&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="filedate">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Chip ID:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="chipIdLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <widget class="QTabWidget" name="memTabs">
        <property name="currentIndex">
         <number>-1</number>
@@ -428,10 +475,10 @@
         <string notr="true">padding:0px</string>
        </property>
        <property name="text">
-        <string notr="true">v</string>
+        <string>Log</string>
        </property>
        <property name="flat">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -445,7 +492,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="hideFusesBtn">
+    <widget class="RotateButton" name="hideFusesBtn">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -456,15 +503,22 @@
       <string notr="true">padding: 0px</string>
      </property>
      <property name="text">
-      <string notr="true">&gt;</string>
+      <string>Fuses</string>
      </property>
      <property name="flat">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RotateButton</class>
+   <extends>QPushButton</extends>
+   <header>../src/shared/rotatebutton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="shupitoicons.qrc"/>
  </resources>

@@ -27,7 +27,7 @@
 
 #include "labellayout.h"
 #include "sourcedialog.h"
-#include "common.h"
+#include "../common.h"
 #include "packet.h"
 #include "devicetabwidget.h"
 #include "cmdtabwidget.h"
@@ -403,8 +403,9 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 
 void DraggableLabel::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(!m_drop || event->mimeData()->text() == objectName())
-        return;
+    if(!m_drop || !event->source() || event->mimeData()->text() == objectName())
+        return QWidget::dragEnterEvent(event);
+
     event->acceptProposedAction();
     QString css = valueLabel->styleSheet();
     css.replace(QRegExp("orange"), "red");
@@ -435,10 +436,10 @@ void DraggableLabel::dropEvent(QDropEvent *event)
 void DraggableLabel::setHighlighted(bool highlight)
 {
     m_highlighted = highlight;
+    QPalette p;
     if(highlight)
-        setStyleSheet("background-color: red");
-    else
-        setStyleSheet("");
+        p.setColor(QPalette::Window, Qt::red);
+    setPalette(p);
 }
 
 QString DraggableLabel::GetText()

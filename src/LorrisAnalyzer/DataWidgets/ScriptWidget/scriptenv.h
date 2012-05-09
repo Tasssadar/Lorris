@@ -32,7 +32,7 @@
 #include "../../packet.h"
 #include "scriptstorage.h"
 
-class AnalyzerDataArea;
+class WidgetArea;
 class DataWidget;
 
 class ScriptEnv : public QScriptEngine
@@ -42,12 +42,13 @@ class ScriptEnv : public QScriptEngine
 Q_SIGNALS:
     void clearTerm();
     void appendTerm(const QString& text);
+    void appendTermRaw(const QByteArray& text);
     void SendData(const QByteArray& data);
 
     void stopUsingJoy(QObject *object);
 
 public:
-    explicit ScriptEnv(AnalyzerDataArea *area , quint32 w_id, QObject *parent = 0);
+    explicit ScriptEnv(WidgetArea *area , quint32 w_id, QObject *parent = 0);
     ~ScriptEnv();
 
     void setSource(const QString& source);
@@ -76,6 +77,7 @@ public:
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
     void callEventHandler(const QString& eventId);
+    void onSave();
 
     ScriptStorage *getStorage() const
     {
@@ -113,7 +115,7 @@ private:
     static QScriptValue __newWidget(QScriptContext *context, QScriptEngine *engine);
 
     QString m_source;
-    AnalyzerDataArea *m_area;
+    WidgetArea *m_area;
     QScriptEngine m_engine;
     QScriptValue  m_global;
     QScriptValue  m_on_data;
@@ -121,6 +123,7 @@ private:
     QScriptValue  m_on_widget_add;
     QScriptValue  m_on_widget_remove;
     QScriptValue  m_on_script_exit;
+    QScriptValue  m_on_save;
 
     qint32 m_widget_id;
     int m_x;

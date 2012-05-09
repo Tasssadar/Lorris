@@ -34,13 +34,15 @@
 #include <QSignalMapper>
 
 #include "lorristerminal.h"
-#include "terminal.h"
+#include "../shared/terminal.h"
 #include "eeprom.h"
-#include "shared/hexfile.h"
-#include "shared/chipdefs.h"
-#include "ui_lorristerminal.h"
+#include "../shared/hexfile.h"
+#include "../shared/chipdefs.h"
+#include "../ui/ui_lorristerminal.h"
+#include "../ui/chooseconnectiondlg.h"
 
-LorrisTerminal::LorrisTerminal() : WorkTab(), ui(new Ui::LorrisTerminal)
+LorrisTerminal::LorrisTerminal()
+    : ui(new Ui::LorrisTerminal)
 {
     stopCmd.resize(4);
     stopCmd[0] = 0x74;
@@ -51,7 +53,6 @@ LorrisTerminal::LorrisTerminal() : WorkTab(), ui(new Ui::LorrisTerminal)
     m_state = 0;
     stopTimer = NULL;
     hex = NULL;
-    terminal = NULL;
     m_eeprom = NULL;
 
     chip_definition::parse_default_chipsets(m_chip_defs);
@@ -62,9 +63,6 @@ LorrisTerminal::LorrisTerminal() : WorkTab(), ui(new Ui::LorrisTerminal)
 void LorrisTerminal::initUI()
 {
     ui->setupUi(this);
-
-    terminal = new Terminal(this);
-    ui->mainLayout->addWidget(terminal, 4);
 
     QMenu *eepromBar = new QMenu(tr("EEPROM"), this);
     addTopMenu(eepromBar);
@@ -109,27 +107,47 @@ void LorrisTerminal::initUI()
         connect(m_input[i], SIGNAL(triggered()), inputMap, SLOT(map()));
     }
 
+    QAction *chgFont = dataMenu->addAction(tr("Change font..."));
+
     inputAct(sConfig.get(CFG_QUINT32_TERMINAL_INPUT));
+
+    ui->hexFile->setText(sConfig.get(CFG_STRING_HEX_FOLDER));
+    ui->terminal->loadFont(sConfig.get(CFG_STRING_TERMINAL_FONT));
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
-    connect(terminal,          SIGNAL(keyPressed(QString)),         SLOT(sendKeyEvent(QString)));
+    connect(ui->terminal,      SIGNAL(keyPressed(QString)),         SLOT(sendKeyEvent(QString)));
     connect(ui->browseBtn,     SIGNAL(clicked()),                   SLOT(browseForHex()));
-    connect(ui->connectButton, SIGNAL(clicked()),                   SLOT(connectButton()));
     connect(ui->stopButton,    SIGNAL(clicked()),                   SLOT(stopButton()));
     connect(ui->flashButton,   SIGNAL(clicked()),                   SLOT(flashButton()));
     connect(ui->pauseButton,   SIGNAL(clicked()),                   SLOT(pauseButton()));
     connect(ui->clearButton,   SIGNAL(clicked()),                   SLOT(clearButton()));
+    connect(ui->terminal,      SIGNAL(fontChanged(QString)),        SLOT(saveTermFont(QString)));
     connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromButton()));
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
+    connect(chgFont,           SIGNAL(triggered()),   ui->terminal, SLOT(showFontDialog()));
+
+    m_connectButton = new ConnectButton(ui->connectButton2);
+    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
 }
 
 LorrisTerminal::~LorrisTerminal()
 {
-    delete terminal;
     delete ui;
+}
+
+void LorrisTerminal::onTabShow()
+{
+    this->connectedStatus(m_con && m_con->isOpen());
+
+    if (!m_con)
+    {
+        m_connectButton->choose();
+        if (m_con && !m_con->isOpen())
+            m_con->OpenConcurrent();
+    }
 }
 
 void LorrisTerminal::browseForHex()
@@ -144,23 +162,19 @@ void LorrisTerminal::browseForHex()
 
 void LorrisTerminal::clearButton()
 {
-    terminal->clear();
+    ui->terminal->clear();
 }
 
 void LorrisTerminal::pauseButton()
 {
-    if(!(m_state & STATE_PAUSED))
-    {
-        m_state |= STATE_PAUSED;
-        ui->pauseButton->setText(tr("Unpause"));
-    }
-    else
-    {
-        m_state &= ~(STATE_PAUSED);
-        ui->pauseButton->setText(tr("Pause"));
-    }
+    m_state ^= STATE_PAUSED;
 
-    terminal->pause(m_state & STATE_PAUSED);
+    if(m_state & STATE_PAUSED)
+        ui->pauseButton->setText(tr("Unpause"));
+    else
+        ui->pauseButton->setText(tr("Pause"));
+
+    ui->terminal->pause(m_state & STATE_PAUSED);
 }
 
 void LorrisTerminal::eepromButton()
@@ -345,38 +359,21 @@ void LorrisTerminal::eeprom_read_block(QByteArray data)
     }
 }
 
-void LorrisTerminal::connectButton()
-{
-    if(!(m_state & STATE_DISCONNECTED))
-        m_con->Close();
-    else
-    {
-        ui->connectButton->setText(tr("Connecting..."));
-        ui->connectButton->setEnabled(false);
-
-        connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
-        m_con->OpenConcurrent();
-    }
-}
-
 void LorrisTerminal::connectedStatus(bool connected)
 {
     if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
-        ui->connectButton->setText(tr("Disconnect"));
 
         ui->stopButton->setEnabled(true);
         ui->stopButton->setText(tr("Stop"));
 
-        terminal->setFocus();
+        ui->terminal->setFocus();
     }
     else
     {
         m_state |= STATE_DISCONNECTED;
         m_state &= ~(STATE_STOPPING1 | STATE_STOPPING2 | STATE_STOPPED);
-
-        ui->connectButton->setText(tr("Connect"));
 
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
     }
@@ -386,12 +383,8 @@ void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
 {
     disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
 
-    ui->connectButton->setEnabled(true);
-
     if(!result)
     {
-        ui->connectButton->setText(tr("Connect"));
-
         Utils::ThrowException(tr("Can't open serial port!"));
     }
 }
@@ -456,10 +449,10 @@ void LorrisTerminal::readData(const QByteArray& data)
         return;
     }
 
-    if(!terminal)
+    if(!ui->terminal)
         return;
 
-    terminal->appendText(data);
+    ui->terminal->appendText(data);
 }
 
 void LorrisTerminal::stopButton()
@@ -475,7 +468,7 @@ void LorrisTerminal::stopButton()
 
         EnableButtons((BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
-        terminal->setFocus();
+        ui->terminal->setFocus();
     }
     else
     {
@@ -702,15 +695,12 @@ void LorrisTerminal::deviceIdTimeout()
 
 void LorrisTerminal::sendKeyEvent(const QString &key)
 {
-    if(!(m_state & STATE_DISCONNECTED))
+    if(m_con && m_con->isOpen())
         m_con->SendData(key.toUtf8());
 }
 
 void LorrisTerminal::EnableButtons(quint16 buttons, bool enable)
 {
-    if(buttons & BUTTON_DISCONNECT)
-        ui->connectButton->setEnabled(enable);
-
     if(buttons & BUTTON_STOP)
         ui->stopButton->setEnabled(enable);
 
@@ -730,14 +720,14 @@ void LorrisTerminal::fmtAction(int act)
         m_fmt_act[i]->setChecked(i == act);
 
     sConfig.set(CFG_QUINT32_TERMINAL_FMT, act);
-    terminal->setFmt(act);
+    ui->terminal->setFmt(act);
 }
 
 void LorrisTerminal::loadText()
 {
     static const QString filters = tr("Text file (*.txt);;Any file (*.*)");
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                    sConfig.get(CFG_STRING_HEX_FOLDER),
+                                                    sConfig.get(CFG_STRING_TERMINAL_TEXTFILE),
                                                     filters);
     if(filename.isEmpty())
         return;
@@ -749,16 +739,17 @@ void LorrisTerminal::loadText()
         return;
     }
 
-    terminal->appendText(file.readAll());
+    ui->terminal->appendText(file.readAll());
     file.close();
 
-    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
+    sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);
 }
 
 void LorrisTerminal::saveText()
 {
     static const QString filters = tr("Text file (*.txt);;Any file (*.*)");
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save data"), sConfig.get(CFG_STRING_HEX_FOLDER), filters);
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save data"),
+                                                    sConfig.get(CFG_STRING_TERMINAL_TEXTFILE), filters);
 
     if(filename.isEmpty())
         return;
@@ -770,10 +761,10 @@ void LorrisTerminal::saveText()
         return;
     }
 
-    terminal->writeToFile(&file);
+    ui->terminal->writeToFile(&file);
     file.close();
 
-    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
+    sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);
 }
 
 void LorrisTerminal::inputAct(int act)
@@ -782,5 +773,17 @@ void LorrisTerminal::inputAct(int act)
         m_input[i]->setChecked(i == act);
 
     sConfig.set(CFG_QUINT32_TERMINAL_INPUT, act);
-    terminal->setInput(act);
+    ui->terminal->setInput(act);
+}
+
+void LorrisTerminal::setConnection(PortConnection *con)
+{
+    this->PortConnWorkTab::setConnection(con);
+    m_connectButton->setConn(con);
+    connectedStatus(con && con->isOpen());
+}
+
+void LorrisTerminal::saveTermFont(const QString &fontData)
+{
+    sConfig.set(CFG_STRING_TERMINAL_FONT, fontData);
 }

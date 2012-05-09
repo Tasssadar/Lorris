@@ -32,16 +32,17 @@
 #include <QProgressDialog>
 #include <QSignalMapper>
 #include <QRadioButton>
+#include <QFileInfo>
+#include <QToolBar>
 
 #include "progressdialog.h"
 #include "shupito.h"
 #include "lorrisshupito.h"
 #include "modes/shupitomode.h"
 #include "fusewidget.h"
-#include "shared/hexfile.h"
-#include "shared/chipdefs.h"
+#include "../shared/hexfile.h"
+#include "../shared/chipdefs.h"
 #include "flashbuttonmenu.h"
-#include "connection/connectionmgr.h"
 
 #include "ui_lorrisshupito.h"
 
@@ -52,7 +53,8 @@ static const QString memNames[] = { "", "flash", "eeprom" };
 
 static const QString filters = QObject::tr("Intel HEX file (*.hex)");
 
-LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
+LorrisShupito::LorrisShupito()
+    : ui(new Ui::LorrisShupito)
 {
     ui->setupUi(this);
 
@@ -72,20 +74,13 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     ui->progSpeedBox->setEditText(QString::number(m_prog_speed_hz));
 
     if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_LOG))
-    {
         ui->logText->hide();
-        ui->hideLogBtn->setText("^");
-    }
 
     if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_FUSES))
-    {
         m_fuse_widget->hide();
-        ui->hideFusesBtn->setText("<");
-    }
 
     ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
 
-    connect(ui->connectButton,   SIGNAL(clicked()),                SLOT(connectButton()));
     connect(ui->tunnelSpeedBox,  SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
     connect(ui->tunnelCheck,     SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
     connect(ui->progSpeedBox,    SIGNAL(editTextChanged(QString)), SLOT(progSpeedChanged(QString)));
@@ -95,8 +90,12 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     connect(m_fuse_widget,       SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
-    connect(ui->startstopButton, SIGNAL(clicked()),                SLOT(startstopChip()));
     connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
+
+    int w = ui->hideFusesBtn->fontMetrics().height()+10;
+    ui->hideLogBtn->setFixedHeight(w);
+    ui->hideFusesBtn->setFixedWidth(w);
+    ui->hideFusesBtn->setRotation(ROTATE_90);
 
     initMenus();
 
@@ -123,8 +122,10 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
 
     m_terminal = new Terminal(this);
     m_terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
+    m_terminal->loadFont(sConfig.get(CFG_STRING_SHUPITO_TERM_FONT));
     ui->memTabs->addTab(m_terminal, tr("Terminal"));
 
+    connect(m_terminal, SIGNAL(fontChanged(QString)),        this,       SLOT(saveTermFont(QString)));
     connect(m_terminal, SIGNAL(keyPressed(QString)),         m_shupito,  SLOT(sendTunnelData(QString)));
     connect(m_shupito,  SIGNAL(tunnelData(QByteArray)),      m_terminal, SLOT(appendText(QByteArray)));
 
@@ -142,6 +143,9 @@ LorrisShupito::LorrisShupito() : WorkTab(),ui(new Ui::LorrisShupito)
     m_vdd_signals = NULL;
 
     m_state = 0;
+
+    m_connectButton = new ConnectButton(ui->connectButton);
+    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
 }
 
 LorrisShupito::~LorrisShupito()
@@ -172,9 +176,9 @@ void LorrisShupito::initMenus()
     QMenu *chipBar = new QMenu(tr("Chip"), this);
     addTopMenu(chipBar);
 
-    m_start_act = chipBar->addAction(tr("Start chip"));
-    m_stop_act = chipBar->addAction(tr("Stop chip"));
-    m_restart_act = chipBar->addAction(tr("Restart chip"));
+    m_start_act = chipBar->addAction(QIcon(":/actions/start"), tr("Start chip"));
+    m_stop_act = chipBar->addAction(QIcon(":/actions/stop"), tr("Stop chip"));
+    m_restart_act = chipBar->addAction(QIcon(":/actions/refresh"), tr("Restart chip"));
 
     m_start_act->setEnabled(false);
     m_restart_act->setShortcut(QKeySequence("R"));
@@ -231,12 +235,12 @@ void LorrisShupito::initMenus()
     QMenu *dataBar = new QMenu(tr("Data"), this);
     addTopMenu(dataBar);
 
-    m_load_flash = dataBar->addAction(tr("Load data into flash"));
+    m_load_flash = dataBar->addAction(QIcon(":/actions/open"), tr("Load data into flash"));
     m_load_flash->setShortcut(QKeySequence("Ctrl+O"));
     m_load_eeprom = dataBar->addAction(tr("Load data into EEPROM"));
     dataBar->addSeparator();
 
-    m_save_flash = dataBar->addAction(tr("Save flash memory"));
+    m_save_flash = dataBar->addAction(QIcon(":/actions/save"), tr("Save flash memory"));
     m_save_flash->setShortcut(QKeySequence("Ctrl+S"));
     m_save_eeprom = dataBar->addAction(tr("Save EERPOM"));
 
@@ -253,35 +257,36 @@ void LorrisShupito::initMenus()
     connect(signalMapSave, SIGNAL(mapped(int)), this,          SLOT(saveToFile(int)));
     connect(m_save_flash,  SIGNAL(triggered()), signalMapSave, SLOT(map()));
     connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
+
+    QToolBar *bar = new QToolBar(this);
+    ui->topLayout->insertWidget(1, bar);
+    bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    bar->addAction(m_load_flash);
+    bar->addAction(m_save_flash);
+    bar->addSeparator();
+    bar->addAction(m_start_act);
+    bar->addAction(m_stop_act);
+    bar->addAction(m_restart_act);
+    bar->addSeparator();
+
+    QPushButton *btn = new QPushButton(QIcon(":/actions/wire"), tr("Mode"), this);
+    btn->setFlat(true);
+    btn->setMenu(modeBar);
+    bar->addWidget(btn);
 }
 
-void LorrisShupito::connectButton()
+void LorrisShupito::connDisconnecting()
 {
-    if(m_state & STATE_DISCONNECTED)
-    {
-        ui->connectButton->setText(tr("Connecting..."));
-        ui->connectButton->setEnabled(false);
-        connect(m_con, SIGNAL(connectResult(Connection*,bool)), this, SLOT(connectionResult(Connection*,bool)));
-        m_con->OpenConcurrent();
-    }
-    else
-    {
-        stopAll(false);
-        m_con->Close();
-        m_state |= STATE_DISCONNECTED;
-
-        ui->connectButton->setText(tr("Connect"));
-    }
+    stopAll(false);
 }
 
 void LorrisShupito::connectionResult(Connection */*con*/,bool result)
 {
     disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
 
-    ui->connectButton->setEnabled(true);
     if(!result)
     {
-        ui->connectButton->setText(tr("Connect"));
         Utils::ThrowException(tr("Can't open connection!"));
     }
 }
@@ -291,7 +296,6 @@ void LorrisShupito::connectedStatus(bool connected)
     if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
-        ui->connectButton->setText(tr("Disconnect"));
         stopAll(true);
 
         delete m_desc;
@@ -302,10 +306,8 @@ void LorrisShupito::connectedStatus(bool connected)
     else
     {
         m_state |= STATE_DISCONNECTED;
-        ui->connectButton->setText(tr("Connect"));  
         updateStartStopUi(false);
     }
-    ui->startstopButton->setEnabled(connected);
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
     ui->progSpeedBox->setEnabled(connected);
@@ -354,7 +356,14 @@ void LorrisShupito::stopAll(bool wait)
 
 void LorrisShupito::onTabShow()
 {
-    if(m_con->getType() == CONNECTION_SERIAL_PORT)
+    if (!m_con)
+    {
+        m_connectButton->choose();
+        if (m_con && !m_con->isOpen())
+            m_con->OpenConcurrent();
+    }
+
+    if(m_con && m_con->getType() == CONNECTION_SERIAL_PORT)
         sConfig.set(CFG_STRING_SHUPITO_PORT, m_con->GetIDString());
 }
 
@@ -704,11 +713,6 @@ void LorrisShupito::hideLogBtn()
 {
    ui->logText->setVisible(!ui->logText->isVisible());
    sConfig.set(CFG_BOOL_SHUPITO_SHOW_LOG, ui->logText->isVisible());
-
-   if(ui->logText->isVisible())
-       ui->hideLogBtn->setText("v");
-   else
-       ui->hideLogBtn->setText("^");
 }
 
 void LorrisShupito::hideFusesBtn()
@@ -720,11 +724,6 @@ void LorrisShupito::hideFuses(bool hide)
 {
     m_fuse_widget->setVisible(!hide);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_FUSES, !hide);
-
-    if(m_fuse_widget->isVisible())
-        ui->hideFusesBtn->setText(">");
-    else
-        ui->hideFusesBtn->setText("<");
 }
 
 chip_definition LorrisShupito::switchToFlashAndGetId()
@@ -828,13 +827,11 @@ void LorrisShupito::updateStartStopUi(bool stopped)
     {
         m_start_act->setEnabled(true);
         m_stop_act->setEnabled(false);
-        ui->startstopButton->setText(tr("Start"));
     }
     else
     {
         m_start_act->setEnabled(false);
         m_stop_act->setEnabled(true);
-        ui->startstopButton->setText(tr("Stop"));
     }
 
     m_chipStopped = stopped;
@@ -894,7 +891,31 @@ void LorrisShupito::loadFromFile(int memId, const QString& filename)
     m_hexFilenames[memId] = filename;
     m_hexWriteTimes[memId] = loadTimestamp;
 
+    if(memId == MEM_FLASH)
+    {
+        ui->filename->setText(filename);
+        ui->filename->setToolTip(filename);
+
+        QDateTime lastMod = QFileInfo(filename).lastModified();
+        QString time = lastMod.toString(tr(" | h:mm:ss d.M.yyyy"));
+        ui->filedate->setText(time);
+        ui->filedate->setToolTip(time);
+    }
+
     status(tr("File loaded"));
+}
+
+void LorrisShupito::openFile(const QString &filename)
+{
+    try
+    {
+        loadFromFile(MEM_FLASH, filename);
+        sConfig.set(CFG_STRING_SHUPITO_HEX_FOLDER, filename);
+    }
+    catch(QString ex)
+    {
+        Utils::ThrowException(ex);
+    }
 }
 
 void LorrisShupito::saveToFile(int memId)
@@ -1268,4 +1289,19 @@ int LorrisShupito::getMemIndex()
     if(res == TAB_TERMINAL)
         res = TAB_FLASH;
     return res;
+}
+
+void LorrisShupito::setConnection(PortConnection *con)
+{
+    if (m_con)
+        disconnect(m_con, 0, this, 0);
+    this->PortConnWorkTab::setConnection(con);
+    m_connectButton->setConn(con);
+    if (m_con)
+        connect(m_con, SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
+}
+
+void LorrisShupito::saveTermFont(const QString &fontData)
+{
+    sConfig.set(CFG_STRING_SHUPITO_TERM_FONT, fontData);
 }

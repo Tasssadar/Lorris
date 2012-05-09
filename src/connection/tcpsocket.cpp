@@ -28,17 +28,17 @@
 #include <QLineEdit>
 #include <QSpinBox>
 
-#include "common.h"
-#include "connectionmgr.h"
+#include "../common.h"
 #include "tcpsocket.h"
-#include "WorkTab/WorkTabInfo.h"
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTab.h"
 
 static const int CONNECT_TIMEOUT = 10000 / 50; // 10s
 
-TcpSocket::TcpSocket() : Connection()
+TcpSocket::TcpSocket()
 {
     m_type = CONNECTION_TCP_SOCKET;
+    m_port = 0;
 
     m_socket = new QTcpSocket(this);
 
@@ -68,24 +68,21 @@ void TcpSocket::Close()
 
     m_socket->close();
 
-    emit connected(false);
-    opened = false;
+    this->SetOpen(false);
 }
 
 void TcpSocket::connectResultSer(bool opened)
 {
-    this->opened = opened;
+    this->SetOpen(opened);
     emit connectResult(this, opened);
-
-    if(opened)
-        emit connected(true);
 }
 
 void TcpSocket::OpenConcurrent()
 {
-    if(opened)
+    if(this->isOpen())
         return;
 
+    this->SetState(st_connecting);
     m_socket->connectToHost(m_address, m_port);
 
     m_future = QtConcurrent::run(this, &TcpSocket::connectToHost);
@@ -126,75 +123,42 @@ void TcpSocket::readyRead()
 
 void TcpSocket::stateChanged()
 {
-    if(opened && m_socket->state() != QAbstractSocket::ConnectedState)
+    if(this->isOpen() && m_socket->state() != QAbstractSocket::ConnectedState)
+    {
+        Utils::printToStatusBar(tr("Connection to %1:%2 lost!").arg(m_address).arg(m_port));
         Close();
-}
-
-void TcpSocketBuilder::addOptToTabDialog(QGridLayout *layout)
-{
-    QLabel    *addressLabel = new QLabel(tr("Address:"), m_parent);
-    m_address               = new QLineEdit(m_parent);
-    QLabel    *portLabel    = new QLabel(tr("Port:"), m_parent);
-    m_port                  = new QSpinBox(m_parent);
-
-    m_port->setMaximum(0xFFFF);
-    m_port->setValue(sConfig.get(CFG_QUINT32_TCP_PORT));
-
-    m_address->setText(sConfig.get(CFG_STRING_TCP_ADDR));
-
-    layout->addWidget(addressLabel, 1, 0);
-    layout->addWidget(m_address, 1, 1);
-    layout->addWidget(portLabel, 1, 2);
-    layout->addWidget(m_port, 1, 3);
-}
-
-void TcpSocketBuilder::CreateConnection(WorkTab *tab)
-{
-    QString address = m_address->text();
-    quint16 port = m_port->value();
-
-    sConfig.set(CFG_QUINT32_TCP_PORT, port);
-    sConfig.set(CFG_STRING_TCP_ADDR, address);
-
-    TcpSocket *socket =
-            (TcpSocket*)sConMgr.FindConnection(CONNECTION_TCP_SOCKET, address + ":" + QString::number(port));
-    if(!socket || !socket->isOpen())
-    {
-        emit setCreateBtnStatus(true);
-
-        m_tab = tab;
-
-        if(!socket)
-        {
-            socket = new TcpSocket();
-            socket->setAddress(address, port);
-        }
-        m_tab->setConnection(socket);
-
-        connect(socket, SIGNAL(connectResult(Connection*,bool)), SLOT(conResult(Connection*,bool)));
-        socket->OpenConcurrent();
-    }
-    else
-    {
-        tab->setConnection(socket);
-        emit connectionSucces(socket, tab->getInfo()->GetName() + " - " + socket->GetIDString(), tab);
     }
 }
 
-void TcpSocketBuilder::conResult(Connection *con, bool open)
+void TcpSocket::setHost(QString const & value)
 {
-    if(open)
+    if (value != m_address)
     {
-        emit connectionSucces(con, m_tab->getInfo()->GetName() + " - " + con->GetIDString(), m_tab);
-        m_tab = NULL;
+        m_address = value;
+        emit changed();
     }
-    else
-    {
-        // Connection is deleted in WorkTab::~WorkTab()
-        delete m_tab;
-        m_tab = NULL;
+}
 
-        emit setCreateBtnStatus(false);
-        emit connectionFailed(tr("Error opening TCP socket!"));
+void TcpSocket::setPort(quint16 value)
+{
+    if (value != m_port)
+    {
+        m_port = value;
+        emit changed();
     }
+}
+
+QHash<QString, QVariant> TcpSocket::config() const
+{
+    QHash<QString, QVariant> res = this->Connection::config();
+    res["host"] = this->host();
+    res["port"] = this->port();
+    return res;
+}
+
+bool TcpSocket::applyConfig(QHash<QString, QVariant> const & config)
+{
+    this->setHost(config.value("host").toString());
+    this->setPort(config.value("port", 80).toInt());
+    return this->Connection::applyConfig(config);
 }

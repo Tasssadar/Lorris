@@ -33,7 +33,7 @@ public:
     TerminalWidget(QWidget *parent = 0);
     ~TerminalWidget();
 
-    void setUp(AnalyzerDataStorage *storage);
+    void setUp(Storage *storage);
 };
 
 class TerminalWidgetAddBtn : public DataWidgetAddBtn

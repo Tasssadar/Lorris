@@ -28,45 +28,12 @@
 
 WorkTab::WorkTab() : QWidget(NULL)
 {
-    m_con = NULL;
     m_id = 0;
     m_info = NULL;
 }
 
 WorkTab::~WorkTab()
 {
-    if(m_con)
-    {
-        m_con->RemoveUsingTab(m_id);
-        if(!m_con->IsUsedByTab())
-        {
-            m_con->removeFromMgr();
-            m_con->Close();
-            delete m_con;
-        }
-    }
-}
-
-void WorkTab::setConnection(Connection *con)
-{
-    m_con = con;
-
-    if(!con)
-        return;
-
-    connect(m_con, SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
-    connect(m_con, SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
-    m_con->AddUsingTab(m_id);
-}
-
-void WorkTab::readData(const QByteArray& /*data*/)
-{
-
-}
-
-void WorkTab::connectedStatus(bool /*connected*/)
-{
-
 }
 
 void WorkTab::DeleteAllMembers(QLayout *layout)
@@ -100,4 +67,55 @@ bool WorkTab::onTabClose()
 void WorkTab::addTopMenu(QMenu *menu)
 {
     m_menus.push_back(menu);
+}
+
+void WorkTab::openFile(const QString &/*filename*/)
+{
+
+}
+
+//----------------------------------------------------------------------------
+PortConnWorkTab::PortConnWorkTab()
+    : m_con(0)
+{
+}
+
+PortConnWorkTab::~PortConnWorkTab()
+{
+    if (m_con)
+        m_con->releaseTab();
+}
+
+void PortConnWorkTab::setConnection(PortConnection *con)
+{
+    if (m_con)
+    {
+        disconnect(m_con, 0, this, 0);
+        m_con->releaseTab();
+    }
+
+    m_con = con;
+
+    if(!con)
+        return;
+
+    connect(m_con, SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
+    connect(m_con, SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
+    connect(m_con, SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
+    m_con->addTabRef();
+}
+
+void PortConnWorkTab::connectionDestroyed()
+{
+    m_con = 0;
+}
+
+void PortConnWorkTab::readData(const QByteArray& /*data*/)
+{
+
+}
+
+void PortConnWorkTab::connectedStatus(bool /*connected*/)
+{
+
 }

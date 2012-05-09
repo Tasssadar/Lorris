@@ -22,7 +22,7 @@
 ****************************************************************************/
 
 #include "scriptstorage.h"
-#include "analyzerdatafile.h"
+#include "../../datafileparser.h"
 
 ScriptStorage::ScriptStorage(QObject *parent) :
     QObject(parent)
@@ -70,7 +70,7 @@ ScriptData *ScriptStorage::getKeyForSet(const QString &key)
     return data;
 }
 
-void ScriptStorage::saveToFile(AnalyzerDataFile *file)
+void ScriptStorage::saveToFile(DataFileParser *file)
 {
     file->writeBlockIdentifier("scriptWDataStorage");
 
@@ -92,7 +92,7 @@ void ScriptStorage::saveToFile(AnalyzerDataFile *file)
     }
 }
 
-void ScriptStorage::loadFromFile(AnalyzerDataFile *file)
+void ScriptStorage::loadFromFile(DataFileParser *file)
 {
     if(!file->seekToNextBlock("scriptWDataStorage", BLOCK_WIDGET))
         return;

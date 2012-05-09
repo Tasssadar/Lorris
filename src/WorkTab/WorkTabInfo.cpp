@@ -21,10 +21,17 @@
 **
 ****************************************************************************/
 
+#include <QStringList>
+
 #include "WorkTabInfo.h"
 #include "WorkTabMgr.h"
 
 WorkTabInfo::WorkTabInfo()
 {
     sWorkTabMgr.RegisterTabInfo(this);
+}
+
+QStringList WorkTabInfo::GetHandledFiles()
+{
+    return QStringList();
 }

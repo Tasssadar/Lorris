@@ -31,7 +31,7 @@
 
 #include "barwidget.h"
 #include "ui_rangeselectdialog.h"
-#include "../analyzerdatafile.h"
+#include "../datafileparser.h"
 
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -51,7 +51,7 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     adjustSize();
 }
 
-void BarWidget::setUp(AnalyzerDataStorage *storage)
+void BarWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -233,7 +233,7 @@ void BarWidget::rotate(int i)
     m_bar->setOrientation(horizontal ? Qt::Horizontal : Qt::Vertical);
 }
 
-void BarWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void BarWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -253,7 +253,7 @@ void BarWidget::saveWidgetInfo(AnalyzerDataFile *file)
     file->write((char*)&m_rotation, sizeof(m_rotation));
 }
 
-void BarWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void BarWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 

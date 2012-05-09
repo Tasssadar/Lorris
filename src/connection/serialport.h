@@ -33,7 +33,7 @@
 class QComboBox;
 class SerialPortThread;
 
-class SerialPort : public Connection
+class SerialPort : public PortConnection
 {
     Q_OBJECT
 
@@ -41,54 +41,46 @@ Q_SIGNALS:
     void stopThread();
 
 public:
-    explicit SerialPort();
+    SerialPort();
     virtual ~SerialPort();
 
     bool Open();
     void Close();
-    void SendData(const QByteArray &data);
-    void SetNameAndRate(QString name, BaudRateType rate)
-    {
-        m_idString = name;
-        m_rate = rate;
-    }
     void OpenConcurrent();
+
+    void SendData(const QByteArray &data);
+
+    BaudRateType baudRate() const { return m_rate; }
+    void setBaudRate(BaudRateType value) { m_rate = value; emit changed(); }
+
+    QString deviceName() const { return m_deviceName; } // FIXME: id and devname should be separate
+    void setDeviceName(QString const & value);
+
+    bool devNameEditable() const { return m_devNameEditable; }
+    void setDevNameEditable(bool value) { m_devNameEditable = value; }
+
+    QHash<QString, QVariant> config() const;
+    bool applyConfig(QHash<QString, QVariant> const & config);
 
 private slots:
     void connectResultSer(bool opened);
     void openResult();
+    void readyRead();
+    void socketError(SocketError err);
 
 private:
     bool openPort();
 
+    QString m_deviceName;
+
     QextSerialPort *m_port;
-    SerialPortThread *m_thread;
     BaudRateType m_rate;
 
     QFuture<bool> m_future;
     QFutureWatcher<bool> m_watcher;
 
     QMutex m_port_mutex;
+    bool m_devNameEditable;
 };
-
-class SerialPortBuilder : public ConnectionBuilder
-{
-    Q_OBJECT
-public:
-    SerialPortBuilder(QWidget *parent,  int moduleIdx) : ConnectionBuilder(parent, moduleIdx)
-    {
-    }
-
-    void addOptToTabDialog(QGridLayout *layout);
-    void CreateConnection(WorkTab *tab);
-
-private slots:
-    void conResult(Connection *con, bool open);
-
-private:
-    QComboBox *m_rateBox;
-    QComboBox *m_portBox;
-};
-
 
 #endif // SERIALPORT_H

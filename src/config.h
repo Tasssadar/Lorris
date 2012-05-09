@@ -26,6 +26,7 @@
 
 #include <QSettings>
 #include <QHash>
+#include <QVariant>
 
 #include "singleton.h"
 
@@ -34,7 +35,6 @@ enum cfg_quint32
     CFG_QUINT32_CONNECTION_TYPE = 0,
     CFG_QUINT32_TAB_TYPE,
     CFG_QUINT32_SERIAL_BAUD,
-    CFG_QUINT32_ANALYZER_UPDATE_TIME,
     CFG_QUINT32_SHUPITO_MODE,
     CFG_QUINT32_SHUPITO_PRG_SPEED,
     CFG_QUINT32_LANGUAGE,
@@ -60,6 +60,9 @@ enum cfg_string
     CFG_STRING_TCP_ADDR,
     CFG_STRING_PROXY_ADDR,
     CFG_STRING_ANALYZER_JS,
+    CFG_STRING_TERMINAL_TEXTFILE,
+    CFG_STRING_TERMINAL_FONT,
+    CFG_STRING_SHUPITO_TERM_FONT,
 
     CFG_STRING_NUM
 };
@@ -71,6 +74,12 @@ enum cfg_bool
     CFG_BOOL_SHUPITO_SHOW_FUSES,
 
     CFG_BOOL_NUM
+};
+
+enum cfg_variant
+{
+    CFG_VARIANT_CONNECTIONS,
+    CFG_VARIANT_NUM
 };
 
 class Config : public Singleton<Config>
@@ -86,10 +95,12 @@ public:
     quint32 get(cfg_quint32 item);
     QString get(cfg_string item);
     bool    get(cfg_bool item);
+    QVariant get(cfg_variant item);
 
     void set(cfg_quint32 item, quint32        val);
     void set(cfg_string  item, const QString& val);
     void set(cfg_bool    item, bool           val);
+    void set(cfg_variant item, QVariant const & val);
 
 private:
     void openSettings();

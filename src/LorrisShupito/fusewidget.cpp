@@ -30,7 +30,7 @@
 #include <QMenu>
 #include <QContextMenuEvent>
 
-#include "common.h"
+#include "../common.h"
 #include "fusewidget.h"
 
 FuseWidget::FuseWidget(QWidget *parent) :

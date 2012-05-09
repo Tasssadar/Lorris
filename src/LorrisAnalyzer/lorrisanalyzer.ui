@@ -30,11 +30,29 @@
   </property>
   <layout class="QVBoxLayout" name="leftVLayout" stretch="0,0,0,0,4">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="topLayout">
      <item>
-      <widget class="QPushButton" name="connectButton">
+      <widget class="QToolButton" name="connectButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>23</height>
+        </size>
+       </property>
        <property name="text">
-        <string>Disconnect</string>
+        <string>Connect</string>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::MenuButtonPopup</enum>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextOnly</enum>
        </property>
       </widget>
      </item>
@@ -55,13 +73,6 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="structureBtn">
-       <property name="text">
-        <string>Change packet structure</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -73,33 +84,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Max UI update frequency</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="updateTimeBox">
-       <property name="suffix">
-        <string> ms</string>
-       </property>
-       <property name="minimum">
-        <number>10</number>
-       </property>
-       <property name="maximum">
-        <number>100000</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="clearButton">
-       <property name="text">
-        <string>Clear data</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
@@ -209,7 +193,7 @@
       </widget>
      </item>
      <item>
-      <widget class="AnalyzerDataArea" name="dataArea">
+      <widget class="WidgetArea" name="dataArea">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -218,6 +202,9 @@
        </property>
        <property name="acceptDrops">
         <bool>true</bool>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
        </property>
        <property name="frameShape">
         <enum>QFrame::Panel</enum>
@@ -261,8 +248,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>69</width>
-            <height>251</height>
+            <width>70</width>
+            <height>263</height>
            </rect>
           </property>
          </widget>
@@ -278,24 +265,24 @@
   <customwidget>
    <class>Playback</class>
    <extends>QFrame</extends>
-   <header location="global">playback.h</header>
+   <header>../src/LorrisAnalyzer/playback.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RotateButton</class>
    <extends>QPushButton</extends>
-   <header location="global">rotatebutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AnalyzerDataArea</class>
-   <extends>QFrame</extends>
-   <header location="global">analyzerdataarea.h</header>
-   <container>1</container>
+   <header>../src/shared/rotatebutton.h</header>
   </customwidget>
   <customwidget>
    <class>DeviceTabWidget</class>
    <extends>QTabWidget</extends>
-   <header location="global">devicetabwidget.h</header>
+   <header>../src/LorrisAnalyzer/devicetabwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetArea</class>
+   <extends>QFrame</extends>
+   <header>../src/LorrisAnalyzer/widgetarea.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

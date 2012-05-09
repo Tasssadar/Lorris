@@ -5,6 +5,46 @@ Copyright (C) 2012 Vojtěch Boček
 Contact: <vbocek@gmail.com>
          https://github.com/Tasssadar
 
+Version 0.4.0 - git revision [347] - 7e229ab0fe389eb9093313ca2d95e0b841e8cde4
+================================================================
+ * Fix crash on joystick close
+ * New connection manager, lot of fixes and improvements
+   for connections - thanks to Avakar
+ * QExtSerialPort lib updated to 1.2
+ * Add little "+" icon to open new tab
+ * Support for opening files via arguments - you can now
+   set Lorris as "Open with..." for .cldta, .ldta and .hex files
+ * Linux: fix 100% cpu usage when serial port device is removed
+   while Lorris is still connected
+ * Windows: fix several bugs in serial port code - thanks to Avakar
+ * Tab menus has moved from top menu to "Menu" button on the left side of tabs  
+
+ LorrisAnalyzer:
+ * Improvements to packet parsing logic
+ * Remove update limitation, every packet is now
+   parsed and displayed by widgets
+ * Fix sample size in GraphWidget
+ * Fix GraphWidget's context menu
+ * Data in SourceDialog are now parsed in same way as in Analyzer itself
+ * Add little "+" icon to add new cmd/device id filter
+ * Improve TerminalWidget
+   * Properly show received data
+   * Fix key press sending
+ * ScriptWidget: add onSave event, to be implemented in script
+ * Add toolbar with nice shiny icons
+ * Change colors of widgets and byte area a little
+ 
+ LorrisShupito:
+ * Show full path and time of last modification of loaded hex file
+ * Add toolbar with icons
+
+ LorrisTerminal:
+ * Automacitally put hexfile name from config to textbox
+ * Split config entries for hexfile name and text file name
+ * Make page up/down and arrows work in terminal
+ * Implement font selection. Do not select non-monospace fonts, though
+ * Terminal now properly sends ctrl+_something_ keys
+
 Version 0.3.1 - git revision [291] - 8d32216a3dd901af2ce685aa2bd7c806f444f377
 ================================================================
  * Fix several bugs in split view feature

@@ -28,8 +28,11 @@
 #include <map>
 #include <vector>
 #include <QLocale>
+#include <QHash>
 
 extern QLocale::Language langs[];
+
+class WorkTabInfo;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -37,13 +40,17 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void show(const QStringList &openFiles);
+
 protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void NewTab();
+    void NewSpecificTab();
+    void newTab();
     void About();
-    void changeMenu(quint32 id);
+    void OpenConnectionManager();
 
     void langChanged(int idx);
 
@@ -56,6 +63,7 @@ private:
     QMenu* menuHelp;
 
     std::vector<QAction*> m_lang_menu;
+    QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };
 
 #endif // MAINWINDOW_H

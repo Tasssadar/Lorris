@@ -28,7 +28,8 @@
 #include "shupito.h"
 #include "lorrisshupito.h"
 #include "shupitodesc.h"
-#include "connection/connectionmgr.h"
+#include "../connection/shupitotunnel.h"
+#include "../connection/connectionmgr2.h"
 
 Shupito::Shupito(QObject *parent) :
     QObject(parent)
@@ -51,10 +52,9 @@ Shupito::Shupito(QObject *parent) :
 Shupito::~Shupito()
 {
     delete m_packet;
-    sConMgr.RemoveShupito(this);
 }
 
-void Shupito::init(Connection *con, ShupitoDesc *desc)
+void Shupito::init(PortConnection *con, ShupitoDesc *desc)
 {
     m_con = con;
     m_desc = desc;
@@ -76,8 +76,6 @@ void Shupito::readData(const QByteArray &data)
 {
     mutex.lock();
 
-    static bool first = true;
-
     std::vector<ShupitoPacket*> packets;
     ShupitoPacket *packet = m_packet;
 
@@ -88,16 +86,18 @@ void Shupito::readData(const QByteArray &data)
     quint8 curRead = 1;
     while(d_itr != d_end)
     {
-        if(first || curRead == 0)
+        if(packet->isFresh() || curRead == 0)
         {
             int index = data.indexOf(char(0x80), d_itr - d_start);
             if(index == -1)
                 break;
             d_itr = d_start+index;
-            first = false;
+            packet->Clear();
         }
+
         curRead = packet->addData(d_itr, d_end);
         d_itr += curRead;
+
         if(packet->isValid())
         {
             packets.push_back(packet);
@@ -377,7 +377,13 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
 
                     SendSetComSpeed();
 
-                    sConMgr.AddShupito(m_con->GetIDString(), this);
+                    m_tunnel_conn.reset(new ShupitoTunnel());
+                    m_tunnel_conn->setName("Shupito at " + m_con->GetIDString());
+                    m_tunnel_conn->setRemovable(false);
+                    m_tunnel_conn->setShupito(this);
+                    m_tunnel_conn->Open();
+                    sConMgr2.addConnection(m_tunnel_conn.data());
+
                     emit tunnelStatus(true);
 
                     m_tunnel_data.clear();
@@ -394,7 +400,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
                 {
                     m_tunnel_pipe = 0;
 
-                    sConMgr.RemoveShupito(this);
+                    m_tunnel_conn.reset();
                     emit tunnelStatus(false);
 
                     disconnect(&m_tunnel_timer, SIGNAL(timeout()), this, SLOT(tunnelDataSend()));

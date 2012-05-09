@@ -28,8 +28,8 @@
 #include <vector>
 #include <QMenu>
 
-#include "common.h"
-#include "connection/connection.h"
+#include "../common.h"
+#include "../connection/connection.h"
 #include "WorkTabInfo.h"
 
 class WorkTab : public QWidget
@@ -45,32 +45,46 @@ public:
     void setId(quint32 id) { m_id = id; }
     quint32 getId() { return m_id; }
 
-    virtual void setConnection(Connection *con);
-
     static void DeleteAllMembers(QLayout *layout);
 
     virtual void onTabShow();
     virtual bool onTabClose();
+    virtual void openFile(const QString& filename);
     virtual std::vector<QMenu*>& getMenu() { return m_menus; }
 
     WorkTabInfo *getInfo() const { return m_info; }
     void setInfo(WorkTabInfo *info) { m_info = info; }
-
-protected slots:
-    virtual void readData(const QByteArray &data);
-    virtual void connectedStatus(bool connected);
 
 protected:
     WorkTab();
 
     void addTopMenu(QMenu *menu);
 
-    Connection *m_con;
     quint32 m_id;
 
 private:
     std::vector<QMenu*> m_menus;
     WorkTabInfo *m_info;
+};
+
+class PortConnWorkTab : public WorkTab
+{
+    Q_OBJECT
+
+public:
+    PortConnWorkTab();
+    ~PortConnWorkTab();
+
+public slots:
+    virtual void setConnection(PortConnection *con);
+
+protected:
+    PortConnection *m_con;
+
+protected slots:
+    virtual void readData(const QByteArray &data);
+    virtual void connectedStatus(bool connected);
+    virtual void connectionDestroyed();
 };
 
 #endif // WORKTAB_H
