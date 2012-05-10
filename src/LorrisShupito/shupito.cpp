@@ -74,6 +74,9 @@ void Shupito::init(PortConnection *con, ShupitoDesc *desc)
 
 void Shupito::readData(const QByteArray &data)
 {
+    if(!m_packet)
+        return;
+
     mutex.lock();
 
     std::vector<ShupitoPacket*> packets;

@@ -67,11 +67,18 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
     "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
     "shupito/show_fuses",         // CFG_BOOL_SHUPITO_SHOW_FUSES
+    "shupito/overvoltage_warn",   // CFG_BOOL_SHUPITO_OVERVOLTAGE
+    "shupito/turnoff_vcc",        // CFG_BOOL_SHUPITO_TURNOFF_VCC
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =
 {
     "general/connections",        // CFG_VARIANT_CONNECTIONS
+};
+
+static const QString keys_float[CFG_FLOAT_NUM] =
+{
+    "shupito/overvoltage_val",    // CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL
 };
 
 Config::Config()
@@ -109,6 +116,10 @@ Config::Config()
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = false;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_FUSES]        = true;
+    m_def_bool[CFG_BOOL_SHUPITO_OVERVOLTAGE]       = false;
+    m_def_bool[CFG_BOOL_SHUPITO_TURNOFF_VCC]       = false;
+
+    m_def_float[CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL] = 5.5f;
 }
 
 Config::~Config()
@@ -181,4 +192,14 @@ QVariant Config::get(cfg_variant item)
 void Config::set(cfg_variant item, QVariant const & val)
 {
     m_settings->setValue(keys_variant[item], val);
+}
+
+float Config::get(cfg_float item)
+{
+    return m_settings->value(keys_float[item], m_def_float[item]).toFloat();
+}
+
+void Config::set(cfg_float item, float val)
+{
+    m_settings->setValue(keys_float[item], val);
 }

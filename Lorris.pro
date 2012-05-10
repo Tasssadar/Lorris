@@ -100,7 +100,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/ui/plustabbar.cpp \
     src/ui/homedialog.cpp \
     src/LorrisAnalyzer/widgetarea.cpp \
-    src/LorrisAnalyzer/storage.cpp
+    src/LorrisAnalyzer/storage.cpp \
+    src/LorrisShupito/overvccdialog.cpp
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -187,7 +188,8 @@ HEADERS += src/ui/mainwindow.h \
     src/ui/homedialog.h \
     src/LorrisAnalyzer/datafileparser.h \
     src/LorrisAnalyzer/widgetarea.h \
-    src/LorrisAnalyzer/storage.h
+    src/LorrisAnalyzer/storage.h \
+    src/LorrisShupito/overvccdialog.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
@@ -202,7 +204,7 @@ win32 {
         dep/qextserialport/src/qextwineventnotifier_p.cpp \
         dep/qextserialport/src/qextserialport_win.cpp
 
-    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lsetupapi
+    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lsetupapi -lwinmm
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 }
@@ -245,7 +247,8 @@ FORMS += \
     src/LorrisProxy/lorrisproxy.ui \
     src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
     src/LorrisAnalyzer/playback.ui \
-    src/ui/chooseconnectiondlg.ui
+    src/ui/chooseconnectiondlg.ui \
+    src/LorrisShupito/overvccdialog.ui
 
 RESOURCES += \
     src/LorrisAnalyzer/DataWidgetIcons.qrc \

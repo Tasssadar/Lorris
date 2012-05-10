@@ -23,6 +23,7 @@
 
 #include <QMessageBox>
 #include <QStatusBar>
+#include <QApplication>
 
 #include "utils.h"
 
@@ -97,3 +98,17 @@ void Utils::printToStatusBar(const QString& msg, int timeout)
     if(m_status_bar)
         m_status_bar->showMessage(msg, timeout);
 }
+
+// FIXME: some better implementation?
+#ifdef Q_OS_WIN
+#include <windows.h>
+void Utils::playErrorSound()
+{
+    PlaySound(TEXT("SystemHand"), NULL, (SND_ASYNC | SND_ALIAS | SND_NOWAIT));
+}
+#else
+void Utils::playErrorSound()
+{
+    qApp->beep();
+}
+#endif

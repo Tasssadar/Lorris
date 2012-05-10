@@ -32,6 +32,7 @@ class QStatusBar;
 
 class Utils : public QThread
 {
+    Q_OBJECT
 public:
     static QString hexToString(quint8 data, bool withZeroEx = false);
     static QString parseChar(char c);
@@ -50,6 +51,8 @@ public:
     static void ThrowException(const QString& text, QWidget* parent = 0);
     static void printToStatusBar(const QString& msg, int timeout = 5000);
     static void setStatusBar(QStatusBar *bar);
+
+    static void playErrorSound();
 
 private:
     static QStatusBar* m_status_bar;

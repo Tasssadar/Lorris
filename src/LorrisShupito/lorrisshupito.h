@@ -32,6 +32,7 @@
 #include "../ui/connectbutton.h"
 
 #include <QDateTime>
+#include <QPointer>
 
 enum state
 {
@@ -76,6 +77,7 @@ class ShupitoMode;
 class chip_definition;
 class FuseWidget;
 class ProgressDialog;
+class OverVccDialog;
 
 class LorrisShupito : public PortConnWorkTab
 {
@@ -160,6 +162,10 @@ private slots:
     void focusChanged(QWidget *prev, QWidget *curr);
     void saveTermFont(const QString& fontData);
 
+    void overvoltageSwitched(bool enabled);
+    void overvoltageChanged(double val);
+    void overvoltageTurnOffVcc(bool enabled);
+
 private:
     void log(const QString& text);
     bool checkVoltage(bool active);
@@ -178,6 +184,8 @@ private:
     void initMenus();
 
     void changeVddColor(float val);
+    void checkOvervoltage();
+    void shutdownVcc();
     void tryFileReload(quint8 memId);
     inline int getMemIndex();
 
@@ -211,6 +219,9 @@ private:
     double m_vcc;
     int lastVccIndex;
     VddColor m_color;
+    double m_overvcc;
+    bool m_enable_overvcc;
+    QPointer<OverVccDialog> m_overvcc_dialog;
 
     std::vector<QRadioButton*> m_vdd_radios;
     QSignalMapper *m_vdd_signals;

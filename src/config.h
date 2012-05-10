@@ -72,6 +72,8 @@ enum cfg_bool
     CFG_BOOL_SHUPITO_TUNNEL = 0,
     CFG_BOOL_SHUPITO_SHOW_LOG,
     CFG_BOOL_SHUPITO_SHOW_FUSES,
+    CFG_BOOL_SHUPITO_OVERVOLTAGE,
+    CFG_BOOL_SHUPITO_TURNOFF_VCC,
 
     CFG_BOOL_NUM
 };
@@ -82,11 +84,19 @@ enum cfg_variant
     CFG_VARIANT_NUM
 };
 
+enum cfg_float
+{
+    CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL = 0,
+
+    CFG_FLOAT_NUM
+};
+
 class Config : public Singleton<Config>
 {
     typedef QHash<cfg_quint32, quint32> def_map_quint32;
     typedef QHash<cfg_string, QString> def_map_string;
     typedef QHash<cfg_bool, bool> def_map_bool;
+    typedef QHash<cfg_float, float> def_map_float;
 
 public:
     Config();
@@ -96,11 +106,13 @@ public:
     QString get(cfg_string item);
     bool    get(cfg_bool item);
     QVariant get(cfg_variant item);
+    float   get(cfg_float item);
 
     void set(cfg_quint32 item, quint32        val);
     void set(cfg_string  item, const QString& val);
     void set(cfg_bool    item, bool           val);
     void set(cfg_variant item, QVariant const & val);
+    void set(cfg_float   item, float          val);
 
 private:
     void openSettings();
@@ -109,6 +121,7 @@ private:
     def_map_quint32 m_def_quint32;
     def_map_string m_def_string;
     def_map_bool m_def_bool;
+    def_map_float m_def_float;
 };
 
 #define sConfig Config::GetSingleton()

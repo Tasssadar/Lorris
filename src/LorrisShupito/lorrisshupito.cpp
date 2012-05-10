@@ -43,6 +43,7 @@
 #include "../shared/hexfile.h"
 #include "../shared/chipdefs.h"
 #include "flashbuttonmenu.h"
+#include "overvccdialog.h"
 
 #include "ui_lorrisshupito.h"
 
@@ -59,6 +60,9 @@ LorrisShupito::LorrisShupito()
     ui->setupUi(this);
 
     m_chipStopped = false;
+    m_overvcc_dialog = NULL;
+    m_overvcc = 0.0;
+    m_enable_overvcc = false;
 
     m_fuse_widget = new FuseWidget(this);
     ui->mainLayout->addWidget(m_fuse_widget);
@@ -87,6 +91,9 @@ LorrisShupito::LorrisShupito()
     connect(ui->hideLogBtn,      SIGNAL(clicked()),                SLOT(hideLogBtn()));
     connect(ui->eraseButton,     SIGNAL(clicked()),                SLOT(eraseDevice()));
     connect(ui->hideFusesBtn,    SIGNAL(clicked()),                SLOT(hideFusesBtn()));
+    connect(ui->over_enable,     SIGNAL(toggled(bool)),            SLOT(overvoltageSwitched(bool)));
+    connect(ui->over_val,        SIGNAL(valueChanged(double)),     SLOT(overvoltageChanged(double)));
+    connect(ui->over_turnoff,    SIGNAL(clicked(bool)),            SLOT(overvoltageTurnOffVcc(bool)));
     connect(m_fuse_widget,       SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
@@ -143,6 +150,10 @@ LorrisShupito::LorrisShupito()
     m_vdd_signals = NULL;
 
     m_state = 0;
+
+    ui->over_enable->setChecked(sConfig.get(CFG_BOOL_SHUPITO_OVERVOLTAGE));
+    ui->over_val->setValue(sConfig.get(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL));
+    ui->over_turnoff->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TURNOFF_VCC));
 
     m_connectButton = new ConnectButton(ui->connectButton);
     connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
@@ -432,6 +443,8 @@ void LorrisShupito::vccValueChanged(quint8 id, double value)
 
         changeVddColor(value);
         m_vcc = value;
+
+        checkOvervoltage();
     }
 }
 
@@ -1304,4 +1317,61 @@ void LorrisShupito::setConnection(PortConnection *con)
 void LorrisShupito::saveTermFont(const QString &fontData)
 {
     sConfig.set(CFG_STRING_SHUPITO_TERM_FONT, fontData);
+}
+
+void LorrisShupito::overvoltageSwitched(bool enabled)
+{
+    sConfig.set(CFG_BOOL_SHUPITO_OVERVOLTAGE, enabled);
+    m_enable_overvcc = enabled;
+
+    if(!enabled && m_overvcc_dialog)
+        delete m_overvcc_dialog;
+}
+
+void LorrisShupito::overvoltageChanged(double val)
+{
+    sConfig.set(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL, val);
+    m_overvcc = val;
+}
+
+void LorrisShupito::checkOvervoltage()
+{
+    if(!m_enable_overvcc)
+        return;
+
+    if(m_vcc >= m_overvcc && !m_overvcc_dialog)
+    {
+        if(ui->over_turnoff->isChecked())
+            shutdownVcc();
+
+        m_overvcc_dialog = new OverVccDialog(ui->over_turnoff->isChecked(), this);
+        m_overvcc_dialog->show();
+    }
+    else if(m_overvcc_dialog && m_vcc < m_overvcc)
+    {
+        if(!ui->over_turnoff->isChecked())
+            delete m_overvcc_dialog;
+        m_overvcc_dialog = NULL;
+    }
+}
+
+void LorrisShupito::shutdownVcc()
+{
+    if(m_vdd_setup.empty())
+        return;
+
+    for(size_t i = 0; i < m_vdd_setup[0].drives.size() && i < m_vdd_radios.size(); ++i)
+    {
+        if(m_vdd_setup[0].drives[i] == "<hiz>")
+        {
+            vddIndexChanged(i);
+            Utils::printToStatusBar(tr("VCC was turned off due to overvoltage!"));
+            return;
+        }
+    }
+}
+
+void LorrisShupito::overvoltageTurnOffVcc(bool enabled)
+{
+    sConfig.set(CFG_BOOL_SHUPITO_TURNOFF_VCC, enabled);
 }
