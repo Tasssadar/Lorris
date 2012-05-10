@@ -1,10 +1,17 @@
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
+**
+**    See README and COPYING
+***********************************************/
+
 #ifndef OVERVCCDIALOG_H
 #define OVERVCCDIALOG_H
 
 #include <QDialog>
 
 namespace Ui {
-class OverVccDialog;
+    class OverVccDialog;
 }
 
 class OverVccDialog : public QDialog
