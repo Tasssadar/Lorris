@@ -170,6 +170,7 @@ private:
     void changeVddColor(float val);
     void checkOvervoltage();
     void shutdownVcc();
+    void disableOvervoltVDDs();
     void tryFileReload(quint8 memId);
     inline int getMemIndex();
 

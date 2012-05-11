@@ -493,6 +493,8 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
 
     ui->engineLabel->setText(vs[0].name);
 
+    disableOvervoltVDDs();
+
     connect(m_vdd_signals, SIGNAL(mapped(int)), this, SLOT(vddIndexChanged(int)));
 }
 
@@ -1317,6 +1319,11 @@ void LorrisShupito::overvoltageChanged(double val)
     sConfig.set(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL, val);
     m_overvcc = val;
 
+    disableOvervoltVDDs();
+}
+
+void LorrisShupito::disableOvervoltVDDs()
+{
     bool ok = false;
     for(std::vector<QRadioButton*>::iterator itr = m_vdd_radios.begin(); itr != m_vdd_radios.end(); ++itr)
     {
