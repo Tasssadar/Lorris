@@ -1316,6 +1316,22 @@ void LorrisShupito::overvoltageChanged(double val)
 {
     sConfig.set(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL, val);
     m_overvcc = val;
+
+    bool ok = false;
+    for(std::vector<QRadioButton*>::iterator itr = m_vdd_radios.begin(); itr != m_vdd_radios.end(); ++itr)
+    {
+        if((*itr)->text() == "<hiz>")
+            continue;
+
+        QStringList split = (*itr)->text().split("V,", QString::SkipEmptyParts);
+        if(split.size() != 2)
+            return;
+
+        double val = split[0].toDouble(&ok);
+        if(!ok)
+            continue;
+        (*itr)->setEnabled(val < m_overvcc);
+    }
 }
 
 void LorrisShupito::checkOvervoltage()
