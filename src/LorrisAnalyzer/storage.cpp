@@ -330,6 +330,11 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
     {
         quint8 static_len = 0;
         buffer->read((char*)&static_len, sizeof(quint8));
+
+        // FIXME: header data and this lenght must be same,
+        // corrupted file?
+        m_packet->header->static_len = static_len;
+
         if(static_len)
         {
             m_packet->static_data.resize(static_len);
