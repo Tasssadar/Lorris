@@ -94,7 +94,10 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
         staticLenChanged(pkt->header->static_len);
 
         for(quint8 i = 0; i < pkt->header->static_len; ++i)
+        {
             ui->staticList->item(i)->setText(Utils::hexToString(pkt->static_data[i], true));
+            m_packet.static_data[i] = pkt->static_data[i];
+        }
     }
 }
 
