@@ -90,7 +90,7 @@ T ScriptStorage::getBaseType(const QString &key)
 {
     ScriptData *sc_data = findKey(key);
 
-    T val;
+    T val = T();
 
     if(!sc_data)
         return val;

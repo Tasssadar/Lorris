@@ -11,8 +11,8 @@
 #include <QObject>
 #include <QByteArray>
 
+struct analyzer_packet;
 class analyzer_data;
-class analyzer_packet;
 class Storage;
 
 class PacketParser : public QObject
