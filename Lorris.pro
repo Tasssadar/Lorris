@@ -221,6 +221,11 @@ unix:!macx:!symbian {
         cp \
         translations/*.qm \
         "$$DESTDIR/translations/"
+
+    translations.path = /usr/share/lorris/
+    translations.files = translations/Lorris.*.qm
+    target.path = /usr/bin/
+    INSTALLS += target translations
 }
 macx {
     SOURCES += \
