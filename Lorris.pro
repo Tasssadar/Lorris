@@ -3,7 +3,7 @@
 # -------------------------------------------------
 QT += gui core network script
 TARGET = Lorris
-CONFIG += uitools
+CONFIG += uitools precompile_header
 CONFIG(debug, debug|release):DESTDIR = $$PWD/bin/debug
 else:DESTDIR = $$PWD/bin/release
 OBJECTS_DIR = $$PWD/obj
@@ -189,7 +189,8 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/datafileparser.h \
     src/LorrisAnalyzer/widgetarea.h \
     src/LorrisAnalyzer/storage.h \
-    src/LorrisShupito/overvccdialog.h
+    src/LorrisShupito/overvccdialog.h \
+    src/pch.h
 
 win32 {
     INCLUDEPATH += dep/SDL/include
@@ -260,3 +261,5 @@ RC_FILE = src/winicon.rc
 
 OTHER_FILES += \
     dep/qextserialport/src/qextserialport.pri
+
+PRECOMPILED_HEADER  = src/pch.h
