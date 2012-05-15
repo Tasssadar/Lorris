@@ -100,32 +100,27 @@ void HexFile::LoadFromFile(const QString &path)
         if (length != (int)rec_nums.size() - 5)
             throw QString(QObject::tr("Invalid record lenght specified (line %1)")).arg(lineno);
 
-        if (rectype == 4)
+        switch(rectype)
         {
-            if (length != 2)
-                throw QString(QObject::tr("Invalid type 4 record (line %1)")).arg(lineno);
-            base = (rec_nums[4] * 0x100 + rec_nums[5]) << 16;
-            continue;
+            case 0: // Data record -- fallthrough to continue
+                addRegion(base + address, rec_nums.data() + 4, rec_nums.data() + rec_nums.size() - 1, lineno);
+                break;
+            case 1: // EOF
+                return;
+            case 2: // Extended Segment Address Record
+            case 4: // Extended Linear Address Record
+            {
+                if (length != 2)
+                    throw QString(QObject::tr("Invalid type %1 record (line %2)")).arg(rectype).arg(lineno);
+                base = (rec_nums[4] * 0x100 + rec_nums[5]);
+                base = (rectype == 2) ? (base * 16) : (base << 16);
+                continue;
+            }
+            case 3: // Start Segment Address Record - unused
+                continue;
+            default:
+                throw QString(QObject::tr("Invalid record type %1 (line %2)")).arg(rectype).arg(lineno);
         }
-
-        if (rectype == 3)
-            continue;
-
-        if (rectype == 2)
-        {
-            if (length != 2)
-                throw QString(QObject::tr("Invalid type 2 record (line %1)")).arg(lineno);
-            base = (rec_nums[4] * 0x100 + rec_nums[5]) * 16;
-            continue;
-        }
-
-        if (rectype == 1)
-            break;
-
-        if (rectype != 0)
-            throw QString(QObject::tr("Invalid record type (line %1)")).arg(lineno);
-
-        addRegion(base + address, rec_nums.data() + 4, rec_nums.data() + rec_nums.size() - 1, lineno);
     }
 }
 
