@@ -263,3 +263,6 @@ OTHER_FILES += \
     dep/qextserialport/src/qextserialport.pri
 
 PRECOMPILED_HEADER  = src/pch.h
+precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+    DEFINES += USING_PCH
+}
