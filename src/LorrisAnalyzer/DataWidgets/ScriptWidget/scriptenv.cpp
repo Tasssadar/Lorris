@@ -101,6 +101,7 @@ void ScriptEnv::prepareNewContext()
     QScriptValue getH = newFunction(&__getHeight);
     QScriptValue throwEx = newFunction(&__throwException);
     QScriptValue getJoy = newFunction(&__getJoystick);
+    QScriptValue closeJoy = newFunction(&__closeJoystick);
     QScriptValue getJoyName = newFunction(&__getJoystickNames);
     QScriptValue newTimer = newFunction(&__newTimer);
     QScriptValue addComboItems = newFunction(&__addComboBoxItems);
@@ -120,6 +121,7 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("getHeight", getH);
     m_global.setProperty("throwException", throwEx);
     m_global.setProperty("getJoystick", getJoy);
+    m_global.setProperty("closeJoystick", closeJoy);
     m_global.setProperty("getJoystickNames", getJoyName);
     m_global.setProperty("newTimer", newTimer);
     m_global.setProperty("addComboBoxItems", addComboItems);
@@ -495,6 +497,17 @@ QScriptValue ScriptEnv::__getJoystick(QScriptContext *context, QScriptEngine *en
 
     connect((ScriptEnv*)engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
     return engine->newQObject(joy);
+}
+
+QScriptValue ScriptEnv::__closeJoystick(QScriptContext *context, QScriptEngine *engine)
+{
+    if(context->argumentCount() != 1 || context->argument(0).isNull())
+        return QScriptValue();
+
+    Joystick *joy = (Joystick*)context->argument(0).toQObject();
+    disconnect((ScriptEnv*)engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
+    joy->stopUsing(engine);
+    return QScriptValue();
 }
 
 QScriptValue ScriptEnv::__newTimer(QScriptContext */*context*/, QScriptEngine *engine)

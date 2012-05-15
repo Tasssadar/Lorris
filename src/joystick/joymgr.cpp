@@ -10,10 +10,8 @@
 
 JoyMgr::JoyMgr() : QObject()
 {
-    // SDL needs video to be enabled
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
-
-    SDL_JoystickEventState(SDL_ENABLE);
+    // SDL needs video initialized
+    SDL_Init(SDL_INIT_VIDEO);
 
     updateJoystickNames();
 
@@ -29,14 +27,23 @@ JoyMgr::~JoyMgr()
     for(QHash<int, Joystick*>::iterator itr = m_joysticks.begin(); itr != m_joysticks.end(); ++itr)
         delete *itr;
 
-    SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+    SDL_Quit();
 }
 
 void JoyMgr::updateJoystickNames()
 {
-    int cnt = SDL_NumJoysticks();
+    // Reinit joystick system to load newly connected joysticks
+    if(m_joysticks.empty())
+    {
+        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+        SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+        SDL_JoystickEventState(SDL_ENABLE);
+    }
 
+    int cnt = SDL_NumJoysticks();
     qDebug() << "Joystick count: " << cnt;
+
+    m_names.clear();
     for(int i = 0; i < cnt; ++i)
     {
         m_names.insert(i, SDL_JoystickName(i));
@@ -56,14 +63,11 @@ Joystick *JoyMgr::getJoystick(int id, bool create)
     else if(!create)
         return NULL;
 
-    Joystick *joy = new Joystick(id);
-
-    if(!joy->open())
-    {
-        delete joy;
+    SDL_Joystick *sdl_joy = SDL_JoystickOpen(id);
+    if(!sdl_joy)
         return NULL;
-    }
 
+    Joystick *joy = new Joystick(id, sdl_joy);
     connect(joy, SIGNAL(removeJoystick(Joystick*)), SLOT(removeJoystick(Joystick*)));
 
     m_joysticks[id] = joy;
