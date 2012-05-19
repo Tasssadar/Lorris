@@ -27,12 +27,12 @@ win32 {
     # might need a debug version. 
     # Enable debug_and_release + build_all if you want to build both.
 
-    CONFIG           += release
+    CONFIG           += debug_and_release
     CONFIG           += build_all
 }
 else {
 
-    CONFIG           += release
+    CONFIG           += debug
 
     VER_MAJ           = $${QWT_VER_MAJ}
     VER_MIN           = $${QWT_VER_MIN}
