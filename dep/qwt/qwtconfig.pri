@@ -34,7 +34,6 @@ QWT_INSTALL_LIBS      = $${QWT_INSTALL_PREFIX}/lib
 # Designer plugin
 ######################################################################
 
-QWT_INSTALL_PLUGINS   = $${QWT_INSTALL_PREFIX}/plugins/designer
 # QWT_INSTALL_PLUGINS   = $${QT_INSTALL_PREFIX}/plugins/designer
 
 ######################################################################
@@ -98,7 +97,7 @@ QWT_CONFIG     += QwtMathML
 # Otherwise you have to build it from the designer directory.
 ######################################################################
 
-QWT_CONFIG     += QwtDesigner
+#QWT_CONFIG     += QwtDesigner
 
 ######################################################################
 # If you want to auto build the examples, enable the line below
