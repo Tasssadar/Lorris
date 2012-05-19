@@ -75,15 +75,17 @@ void Joystick::buttonEvent(int id, quint8 state)
 {
     QMutexLocker l(&m_lock);
     m_buttons[id] = state;
-    m_changed_btns.push_back( {id, state} );
+
+    btn_event ev = { id, state };
+    m_changed_btns.push_back(ev);
 }
 
-void Joystick::ballEvent(int id, qint16 x, qint16 y)
+void Joystick::ballEvent(int /*id*/, qint16 /*x*/, qint16 /*y*/)
 {
     // NYI
 }
 
-void Joystick::hatEvent(int id, quint8 val)
+void Joystick::hatEvent(int /*id*/, quint8 /*val*/)
 {
     // NYI
 }
