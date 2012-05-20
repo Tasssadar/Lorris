@@ -212,11 +212,11 @@ win32 {
 unix:!macx:!symbian {
     LIBS += -lqwt_lorris -ludev -lSDL -lqextserialport
     QMAKE_POST_LINK = mkdir \
-        "$$DESTDIR/translations" \
-        & \
+        "$$DESTDIR/translations" 2> /dev/null \
+        ; \
         cp \
         ../translations/*.qm \
-        "$$DESTDIR/translations/"
+        "$$DESTDIR/translations/ 2> /dev/null"
 
     translations.path = /usr/share/lorris/
     translations.files = ../translations/Lorris.*.qm
@@ -226,11 +226,11 @@ unix:!macx:!symbian {
 macx {
     LIBS += -lqwt_lorris -lqextserialport -lSDL -lqextserialport
     QMAKE_POST_LINK = mkdir \
-        "$$DESTDIR/translations" \
-        & \
+        "$$DESTDIR/translations" 2> /dev/null \
+        ; \
         cp \
         translations/*.qm \
-        "$$DESTDIR/translations/"
+        "$$DESTDIR/translations/ 2> /dev/null"
 }
 
 FORMS += \
