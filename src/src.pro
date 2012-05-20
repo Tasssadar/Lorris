@@ -93,8 +93,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.cpp \
     ui/chooseconnectiondlg.cpp \
     ui/connectbutton.cpp \
-    ../dep/qextserialport/src/qextserialport.cpp \
-    ../dep/qextserialport/src/qextserialenumerator.cpp \
     connection/connectionmgr2.cpp \
     LorrisAnalyzer/packetparser.cpp \
     ui/plustabbar.cpp \
@@ -177,11 +175,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptstorage.h \
     ui/chooseconnectiondlg.h \
     ui/connectbutton.h \
-    ../dep/qextserialport/src/qextserialport_p.h \
-    ../dep/qextserialport/src/qextserialport_global.h \
-    ../dep/qextserialport/src/qextserialport.h \
-    ../dep/qextserialport/src/qextserialenumerator_p.h \
-    ../dep/qextserialport/src/qextserialenumerator.h \
     connection/connectionmgr2.h \
     LorrisAnalyzer/packetparser.h \
     ui/plustabbar.h \
@@ -199,22 +192,25 @@ win32 {
     QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
     HEADERS += \
-        ../dep/qextserialport/src/qextwineventnotifier_p.h
+        ../dep/qextserialport/src/qextwineventnotifier_p.h \
+        ../dep/qextserialport/src/qextserialport_p.h \
+        ../dep/qextserialport/src/qextserialport_global.h \
+        ../dep/qextserialport/src/qextserialport.h \
+        ../dep/qextserialport/src/qextserialenumerator_p.h \
+        ../dep/qextserialport/src/qextserialenumerator.h
     SOURCES += \
         ../dep/qextserialport/src/qextserialenumerator_win.cpp \
         ../dep/qextserialport/src/qextwineventnotifier_p.cpp \
-        ../dep/qextserialport/src/qextserialport_win.cpp
+        ../dep/qextserialport/src/qextserialport_win.cpp \
+        ../dep/qextserialport/src/qextserialport.cpp \
+        ../dep/qextserialport/src/qextserialenumerator.cpp \
 
-    LIBS += -L"$$PWD/dep/SDL/lib" -lsdl -lsetupapi -lwinmm
+    LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 }
 unix:!macx:!symbian {
-    SOURCES += \
-        ../dep/qextserialport/src/qextserialport_unix.cpp \
-        ../dep/qextserialport/src/qextserialenumerator_unix.cpp
-
-    LIBS += -lqwt -ludev -lSDL
+    LIBS += -lqwt -ludev -lSDL -lqextserialport
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -228,10 +224,7 @@ unix:!macx:!symbian {
     INSTALLS += target translations
 }
 macx {
-    SOURCES += \
-        ../dep/qextserialport/src/qextserialenumerator_osx.cpp
-
-    LIBS += -lqwt -lqextserialport -lSDL
+    LIBS += -lqwt -lqextserialport -lSDL -lqextserialport
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
