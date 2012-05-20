@@ -14,7 +14,6 @@
     <b>
       - Qt SDK >= 4.7.0<br>
       - make, g++<br>
-      - libqwt-dev >= 6.0.0<br>
       - libudev-dev<br>
       - libsdl-dev</b> (not sure about version, probably >= 1.2)
     </p>
@@ -22,19 +21,11 @@
     So, apt-get line for Debian Testing would look like this:
     </p>
     <pre style="margin-left: 30px">
-    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libqwt-dev libsdl1.2-dev libudev-dev</pre>
+    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libsdl1.2-dev libudev-dev</pre>
     <p style="margin-left: 30px">
-    If libqwt >= 6.0.0 is not in your distro's repository, there is libqwt.so* and libqwtmathml.so* in dep/qwt/lib. Copy these files to your distro's lib directory, eg. /usr/lib.
-    These are for 64bit only however.
+    Lorris also needs libqwt >= 6.0.0, but it will build it by itself since
+    <a href="https://github.com/Tasssadar/Lorris/commit/664209866876d439e4e9b02bf156e42c62b04c76">664209866876d439e4e9b02bf156e42c62b04c76</a>.
 </p>
-<p style="margin-left: 60px">
-    <b>For 32bit users:</b> go to dep/qextserialport folder and execute these commands to rebuild QExtSerialPort for 32bit:
-</p>
-<pre style="margin-left: 60px">
-    qmake qextserialport.pro
-    make clean
-    make
-</pre>
 <p style="margin-left: 30px">
     Now you can build Lorris with QtCreator or go to Lorris folder and execute these commands:
 </p>
