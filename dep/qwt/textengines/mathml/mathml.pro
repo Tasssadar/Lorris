@@ -12,7 +12,7 @@ message(Beside the Qwt license you also have to take care of its license. )
 
 include( $${PWD}/../textengines.pri )
 
-TARGET    = $$qtLibraryTarget(qwtmathml)
+TARGET    = $$qtLibraryTarget(qwtmathml_lorris)
 QT       += xml
 
 HEADERS = \

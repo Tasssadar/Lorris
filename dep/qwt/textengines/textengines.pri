@@ -37,7 +37,7 @@ else {
 }
 
 IPATH       = $${INCLUDEPATH}
-qtAddLibrary(qwt)
+qtAddLibrary(qwt_lorris)
 INCLUDEPATH = $${IPATH}
 
 # Install directives

@@ -10,7 +10,7 @@ QWT_ROOT = $${PWD}/..
 include( $${QWT_ROOT}/qwtconfig.pri )
 include( $${QWT_ROOT}/qwtbuild.pri )
 TEMPLATE = lib
-TARGET = $$qtLibraryTarget(qwt)
+TARGET = $$qtLibraryTarget(qwt_lorris)
 DESTDIR = $${QWT_ROOT}/lib
 contains(QWT_CONFIG, QwtDll) { 
     CONFIG += dll

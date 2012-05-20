@@ -210,7 +210,7 @@ win32 {
     else:LIBS += -lqwt
 }
 unix:!macx:!symbian {
-    LIBS += -lqwt -ludev -lSDL -lqextserialport
+    LIBS += -lqwt_lorris -ludev -lSDL -lqextserialport
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
@@ -224,7 +224,7 @@ unix:!macx:!symbian {
     INSTALLS += target translations
 }
 macx {
-    LIBS += -lqwt -lqextserialport -lSDL -lqextserialport
+    LIBS += -lqwt_lorris -lqextserialport -lSDL -lqextserialport
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
