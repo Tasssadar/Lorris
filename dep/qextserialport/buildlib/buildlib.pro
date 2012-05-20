@@ -14,4 +14,4 @@ win32:!qextserialport-static{
     QMAKE_DISTCLEAN += $$[QT_INSTALL_BINS]\\$${QEXTSERIALPORT_LIBNAME}.dll
 }
 target.path = $$DESTDIR
-INSTALLS += target
+#INSTALLS += target
