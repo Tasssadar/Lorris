@@ -61,6 +61,8 @@ FuseWidget::FuseWidget(QWidget *parent) :
     connect(readFusesBtn, SIGNAL(clicked()),   this, SIGNAL(readFuses()));
 
     m_changed = false;
+
+    fuse_desc::parse_default_fuses(m_fusedesc);
 }
 
 FuseWidget::~FuseWidget()
@@ -119,6 +121,9 @@ void FuseWidget::setFuses(chip_definition &chip)
         line->fuse = f;
         line->label = new QLabel(f.name, this);
         line->box = new QComboBox(this);
+        line->box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+        translateFuseName(line);
 
         int fuse_value = chip_definition::get_fuse_value(m_fuse_data.begin(), m_fuse_data.end(), f);
         int fuse_value_index = -1;
@@ -128,11 +133,11 @@ void FuseWidget::setFuses(chip_definition &chip)
             {
                 if(fuse_value == f.values[j])
                     fuse_value_index = j;
-                line->box->addItem(Utils::toBinary(f.bits.size(), f.values[j]));
+                addFuseOpt(line, Utils::toBinary(f.bits.size(), f.values[j]));
             }
             if(fuse_value_index == -1)
             {
-                line->box->addItem(Utils::toBinary(f.bits.size(), fuse_value));
+                addFuseOpt(line, Utils::toBinary(f.bits.size(), fuse_value));
                 fuse_value_index = f.values.size();
             }
         }
@@ -142,7 +147,8 @@ void FuseWidget::setFuses(chip_definition &chip)
             {
                 if (fuse_value == (int)j)
                     fuse_value_index = j;
-                line->box->addItem(Utils::toBinary(f.bits.size(), j));
+
+                addFuseOpt(line, Utils::toBinary(f.bits.size(), j));
             }
         }
         line->box->setCurrentIndex(fuse_value_index);
@@ -161,7 +167,8 @@ void FuseWidget::rememberFuses()
 {
     for(quint8 i = 0; i < m_fuses.size(); ++i)
     {
-        QString s = m_fuses[i]->box->currentText();
+        int idx = m_fuses[i]->box->currentIndex();
+        QString s = m_fuses[i]->box->itemData(idx).toString();
         Q_ASSERT(s.left(2) == "0b");
 
         int value = 0;
@@ -177,4 +184,22 @@ void FuseWidget::rememberFuses()
 void FuseWidget::changed(int /*index*/)
 {
     m_changed = true;
+}
+
+void FuseWidget::translateFuseName(fuse_line *line)
+{
+    fuse_desc *desc = fuse_desc::findDesc(line->fuse.name, m_chip.getSign(), m_fusedesc);
+    if(desc)
+    {
+        line->label->setToolTip(desc->getDesc());
+        line->box->setToolTip(desc->getDesc());
+    }
+}
+
+void FuseWidget::addFuseOpt(fuse_line *line, const QString &bin)
+{
+    fuse_desc *desc = fuse_desc::findDesc(line->fuse.name, m_chip.getSign(), m_fusedesc);
+    QString text = desc ? desc->getOptDesc(bin) : "";
+
+    line->box->addItem(text.isEmpty() ? bin : text, QVariant(bin));
 }

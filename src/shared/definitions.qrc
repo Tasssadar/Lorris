@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/definitions">
         <file alias="chipdefs">chipdefs.txt</file>
+        <file alias="fusedesc">fusedesc.txt</file>
     </qresource>
 </RCC>

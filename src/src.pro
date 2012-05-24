@@ -99,7 +99,8 @@ SOURCES += ui/mainwindow.cpp \
     ui/homedialog.cpp \
     LorrisAnalyzer/widgetarea.cpp \
     LorrisAnalyzer/storage.cpp \
-    LorrisShupito/overvccdialog.cpp
+    LorrisShupito/overvccdialog.cpp \
+    shared/fuse_desc.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -183,7 +184,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/widgetarea.h \
     LorrisAnalyzer/storage.h \
     LorrisShupito/overvccdialog.h \
-    pch.h
+    pch.h \
+    shared/fuse_desc.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include

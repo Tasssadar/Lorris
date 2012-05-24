@@ -11,6 +11,7 @@
 #include <QFrame>
 #include <vector>
 #include "../shared/chipdefs.h"
+#include "../shared/fuse_desc.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -57,6 +58,9 @@ private:
         chip_definition::fuse fuse;
     };
 
+    void translateFuseName(fuse_line *line);
+    void addFuseOpt(fuse_line *line, const QString& bin);
+
     QVBoxLayout *m_layout;
     QFormLayout *m_fuse_layout;
     QPushButton *readFusesBtn;
@@ -65,6 +69,7 @@ private:
 
     std::vector<fuse_line*> m_fuses;
     std::vector<quint8> m_fuse_data;
+    std::vector<fuse_desc> m_fusedesc;
 
     QMenu *contextMenu;
     QAction *rememberAct;
