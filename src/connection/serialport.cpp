@@ -68,15 +68,7 @@ void SerialPort::Close()
 void SerialPort::SendData(const QByteArray& data)
 {
     if(this->isOpen())
-    {
-        qint64 len = m_port->write(data);
-        // FIXME: Some serial ports needs this
-        if(len == -1)
-        {
-            Utils::msleep(1);
-            m_port->write(data);
-        }
-    }
+        m_port->write(data);
 }
 
 void SerialPort::OpenConcurrent()
@@ -100,7 +92,7 @@ bool SerialPort::openPort()
     m_port->setDataBits(DATA_8);
     m_port->setStopBits(STOP_1);
     m_port->setFlowControl(FLOW_OFF);
-    m_port->setTimeout(-1);
+    m_port->setTimeout(500);
 
     bool res = m_port->open(QIODevice::ReadWrite | QIODevice::Unbuffered);
     if(!res)

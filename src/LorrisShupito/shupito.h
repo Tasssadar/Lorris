@@ -71,7 +71,7 @@ Q_SIGNALS:
     void vccValueChanged(quint8 id, double value);
     void vddDesc(const vdd_setup& vs);
     void tunnelData(const QByteArray& data);
-    void packetReveived();
+    void packetReceived();
     void tunnelStatus(bool);
 
 public:

@@ -105,14 +105,14 @@ ShupitoPacket Shupito::waitForPacket(const QByteArray& data, quint8 cmd)
 
     responseTimer = new QTimer;
     responseTimer->start(1000);
-    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReceived()));
 
     m_wait_cmd = cmd;
     m_wait_packet = ShupitoPacket();
     m_wait_type = WAIT_PACKET;
 
     QEventLoop loop;
-    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+    loop.connect(this, SIGNAL(packetReceived()), SLOT(quit()));
 
     m_con->SendData(data);
 
@@ -132,7 +132,7 @@ QByteArray Shupito::waitForStream(const QByteArray& data, quint8 cmd, quint16 ma
 
     responseTimer = new QTimer;
     responseTimer->start(1000);
-    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReceived()));
 
     m_wait_cmd = cmd;
     m_wait_data.clear();
@@ -140,7 +140,7 @@ QByteArray Shupito::waitForStream(const QByteArray& data, quint8 cmd, quint16 ma
     m_wait_max_packets = max_packets;
 
     QEventLoop loop;
-    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+    loop.connect(this, SIGNAL(packetReceived()), SLOT(quit()));
 
     m_con->SendData(data);
 
@@ -203,7 +203,7 @@ void Shupito::handlePacket(ShupitoPacket& p)
             {
                 m_wait_packet = p;
                 m_wait_type = WAIT_NONE;
-                emit packetReveived();
+                emit packetReceived();
             }
             break;
         }
@@ -212,7 +212,7 @@ void Shupito::handlePacket(ShupitoPacket& p)
             if(p.getOpcode() != m_wait_cmd)
             {
                 if(--m_wait_max_packets == 0)
-                    emit packetReveived();
+                    emit packetReceived();
             }
             else
             {
@@ -222,7 +222,7 @@ void Shupito::handlePacket(ShupitoPacket& p)
                 {
                     m_wait_max_packets = 0;
                     m_wait_type = WAIT_NONE;
-                    emit packetReveived();
+                    emit packetReceived();
                 }
             }
             break;
