@@ -120,7 +120,7 @@ void FuseWidget::setFuses(chip_definition &chip)
         line->fuse = f;
         line->label = new QLabel(f.name, this);
         line->box = new QComboBox(this);
-        line->box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        line->box->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
         translateFuseName(line);
 
