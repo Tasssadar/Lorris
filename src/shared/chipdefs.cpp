@@ -15,77 +15,6 @@
 #include "../common.h"
 #include "chipdefs.h"
 
-
-// const std::string embedded_chipdefs, chipdefs.cpp
-// fuse registers:
-// 0 1 2 3 4 5 6 7 | 8 9 10 11 12 13 14 15 | 16 17 18 19 20 21 22 23 | 24 25 26 27 28 29 30 31
-//   Lock bits     |     fuse low byte     |     fuse high byte      |    extended fuse byte
-static const QString embedded_chipdefs =
-    // lock bits, low fuses, high fuses, extended fuses
-    "atmega48 avr:1e9205 flash=4096:64,eeprom=256:4 lb:0,1 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19"
-        " wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 selfprgen:24\n"
-    "atmega88 avr:1e930a flash=8192:64,eeprom=512:4"
-        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19"
-        " wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bootrst:24 bootsz:25,26\n"
-    "atmega168 avr:1e9406 flash=16384:128,eeprom=512:4"
-        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19"
-        " wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bootrst:24 bootsz:25,26\n"
-
-    "atmega328 avr:1e9514 flash=32768:128,eeprom=1024:4"
-        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15"
-        " bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1"
-        " bodlevel:24,25,26\n"
-    "atmega328p avr:1e950f flash=32768:128,eeprom=1024:4"
-        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15"
-        " bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1"
-        " bodlevel:24,25,26\n"
-
-    "atmega16 avr:1e9403 flash=16384:128,eeprom=512:4"
-        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 boden:14 bodlevel:15"
-        " bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23\n"
-
-    "atmega128 avr:1e9702 flash=131072:256,eeprom=4096:8"
-        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 boden:14 bodlevel:15"
-        " bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23 wdton:24 m103c:25\n"
-
-    "atmega1284p avr:1e9705 flash=131072:256,eeprom=4096:8"
-        " lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15"
-        " bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 jtagen:22 ocden:23"
-        " bodlevel:24,25,26\n"
-
-    // the datasheet rev D is wrong, the page size is 64w/128b
-    "atmega8u2 avr:1e9389 flash=8192:128,eeprom=256:4"
-        " lb:0,1 blb0:2,3 blb1:4,5"
-        " cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15"
-        " bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 rstdsbl:22:1 dwen:23:1"
-        " bodlevel:24,25,26 hwbe:27\n"
-
-    "atxmega128a avr:1e9746 flash=139264:512,eeprom=2048:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1"
-        " bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63\n"
-    "atxmega64a avr:1e9646 flash=69632:256,eeprom=2048:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1"
-        " bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63\n"
-    "atxmega32a avr:1e9541 flash=36864:256,eeprom=1024:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1"
-        " bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63\n"
-    "atxmega16a avr:1e9441 flash=20480:256,eeprom=1024:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1"
-        " bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63\n"
-
-    "atmega48 avr232boot:m48 flash=3840:64,eeprom=256:2 !avr232boot_patch=3838\n"
-    "atmega88 avr232boot:m88 flash=7936:64,eeprom=512:2\n"
-    "atmega168 avr232boot:m168 flash=16128:128,eeprom=512:2\n"
-    "atmega16 avr232boot:m16 flash=16128:128,eeprom=512:2\n"
-    "atmega32 avr232boot:m32 flash=32256:128,eeprom=1024:2\n"
-    "atmega128 avr232boot:m128 flash=65536:256,eeprom=4096:2\n" /* FIXME: only 16-bit addresses are available */
-    "atmega162 avr232boot:m162 flash=16128:128,eeprom=512:2\n"
-    "atmega328p avr232boot:m328 flash=32256:128,eeprom=1024:2\n"
-    "atmega8u2 avr232boot:m8u2 flash=7680:128,eeprom=512:2\n"
-    "atmega1284p avr232boot:p128 flash=65536:256,eeprom=4096:2\n" /* FIXME: only 16-bit addresses are available */
-
-    "cc2530 cc25xx:a5\n"
-    "cc2531 cc25xx:b5\n"
-    "cc2533 cc25xx:99\n"
-    "cc2540 cc25xx:8d\n"
-    ;
-
 void chip_definition::update_chipdef(std::vector<chip_definition> & templates, chip_definition & cd)
 {
     for(quint32 i = 0; i < templates.size(); ++i)
@@ -128,6 +57,9 @@ void chip_definition::parse_chipdefs(const QString &strdefs, std::vector<chip_de
 
     for(line = ss.readLine(); !line.isNull(); line = ss.readLine())
     {
+        if(line.isEmpty() || line.startsWith("#"))
+            continue;
+
         QStringList tokens = line.split(' ', QString::SkipEmptyParts);
 
         if(tokens.size() < 2)
@@ -193,16 +125,22 @@ void chip_definition::parse_chipdefs(const QString &strdefs, std::vector<chip_de
             }
         }
 
-        res.push_back(def);
+        // If chip with this signature is already loaded, rewrite it
+        quint32 i = 0;
+        for(; i < res.size() && res[i].getSign() != def.getSign(); ++i);
+
+        if(i == res.size())
+            res.push_back(def);
+        else
+            res[i] = def;
     }
 }
 
 void chip_definition::parse_default_chipsets(std::vector<chip_definition> & res)
 {
-    chip_definition::parse_chipdefs(embedded_chipdefs, res);
-
     static const QString defFileLocations[] =
     {
+        ":/definitions/chipdefs",
         "./shupito_chipdefs.txt",
         QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/shupito_chipdefs.txt",
     };
@@ -211,24 +149,19 @@ void chip_definition::parse_default_chipsets(std::vector<chip_definition> & res)
     for(quint8 i = 0; i < sizeof(defFileLocations)/sizeof(QString); ++i)
     {
         file.setFileName(defFileLocations[i]);
-        if(file.open(QIODevice::ReadOnly))
-            break;
+        if(!file.open(QIODevice::ReadOnly))
+            continue;
+
+        QTextStream stream(&file);
+        QString defs;
+
+        for(QString line = stream.readLine().trimmed(); !line.isNull(); line = stream.readLine().trimmed())
+            if(line.length() != 0)
+                defs += line + "\n";
+
+        file.close();
+        chip_definition::parse_chipdefs(defs, res);
     }
-
-    if(!file.isOpen())
-        return;
-
-    QTextStream stream(&file);
-    QString defs("");
-    QString line("");
-
-    for(line = stream.readLine(); !line.isNull(); line = stream.readLine())
-        if(line.length() != 0)
-            defs += line + "\n";
-
-    file.close();
-
-    chip_definition::parse_chipdefs(defs, res);
 }
 
 chip_definition::chip_definition()

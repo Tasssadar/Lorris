@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/definitions">
+        <file alias="chipdefs">chipdefs.txt</file>
+    </qresource>
+</RCC>

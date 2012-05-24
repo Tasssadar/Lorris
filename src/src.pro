@@ -253,7 +253,8 @@ RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
     LorrisShupito/shupitoicons.qrc \
     icons.qrc \
-    actions.qrc
+    actions.qrc \
+    shared/definitions.qrc
 
 RC_FILE = winicon.rc
 
