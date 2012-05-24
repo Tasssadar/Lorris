@@ -11,7 +11,6 @@
 #include <QFrame>
 #include <vector>
 #include "../shared/chipdefs.h"
-#include "../shared/fuse_desc.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -69,7 +68,6 @@ private:
 
     std::vector<fuse_line*> m_fuses;
     std::vector<quint8> m_fuse_data;
-    std::vector<fuse_desc> m_fusedesc;
 
     QMenu *contextMenu;
     QAction *rememberAct;

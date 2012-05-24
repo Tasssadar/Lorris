@@ -17,10 +17,6 @@
 class fuse_desc
 {
 public:
-    static void parse_fusedesc(QString const & desc, std::vector<fuse_desc>& res);
-    static void parse_default_fuses(std::vector<fuse_desc>& res);
-    static fuse_desc *findDesc(const QString& name, const QString& chipSign, std::vector<fuse_desc>& templates);
-
     explicit fuse_desc(const QString &name);
 
     void setDesc(const QString& desc) { m_desc = desc; }

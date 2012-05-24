@@ -43,8 +43,6 @@ void Shupito::init(PortConnection *con, ShupitoDesc *desc)
     m_con = con;
     m_desc = desc;
 
-    chip_definition::parse_default_chipsets(m_chip_defs);
-
     delete m_packet;
     m_packet = new ShupitoPacket();
 

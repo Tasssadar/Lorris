@@ -30,10 +30,6 @@ public:
         std::vector<int> values;
     };
 
-    static void parse_chipdefs(QString const & strdefs, std::vector<chip_definition> & res);
-    static void update_chipdef(std::vector<chip_definition> &templates, chip_definition & cd);
-    static void parse_default_chipsets(std::vector<chip_definition> & res);
-
     template <typename Iter>
     static int get_fuse_value(Iter first, Iter last, fuse const & f);
 

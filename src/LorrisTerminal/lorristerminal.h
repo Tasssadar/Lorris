@@ -110,7 +110,6 @@ private:
     quint16 m_eepromItr;
     EEPROM *m_eeprom;
 
-    std::vector<chip_definition> m_chip_defs;
     std::vector<page> m_pages;
     quint32 m_cur_page;
 

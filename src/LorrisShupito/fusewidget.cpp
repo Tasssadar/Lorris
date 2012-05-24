@@ -16,6 +16,7 @@
 
 #include "../common.h"
 #include "fusewidget.h"
+#include "../shared/defmgr.h"
 
 FuseWidget::FuseWidget(QWidget *parent) :
     QFrame(parent)
@@ -61,8 +62,6 @@ FuseWidget::FuseWidget(QWidget *parent) :
     connect(readFusesBtn, SIGNAL(clicked()),   this, SIGNAL(readFuses()));
 
     m_changed = false;
-
-    fuse_desc::parse_default_fuses(m_fusedesc);
 }
 
 FuseWidget::~FuseWidget()
@@ -188,7 +187,7 @@ void FuseWidget::changed(int /*index*/)
 
 void FuseWidget::translateFuseName(fuse_line *line)
 {
-    fuse_desc *desc = fuse_desc::findDesc(line->fuse.name, m_chip.getSign(), m_fusedesc);
+    fuse_desc *desc = sDefMgr.findFuse_desc(line->fuse.name, m_chip.getSign());
     if(desc)
     {
         line->label->setToolTip(desc->getDesc());
@@ -198,7 +197,7 @@ void FuseWidget::translateFuseName(fuse_line *line)
 
 void FuseWidget::addFuseOpt(fuse_line *line, const QString &bin)
 {
-    fuse_desc *desc = fuse_desc::findDesc(line->fuse.name, m_chip.getSign(), m_fusedesc);
+    fuse_desc *desc = sDefMgr.findFuse_desc(line->fuse.name, m_chip.getSign());
     QString text = desc ? desc->getOptDesc(bin) : "";
 
     line->box->addItem(text.isEmpty() ? bin : text, QVariant(bin));

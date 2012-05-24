@@ -21,7 +21,7 @@
 #include "../shared/terminal.h"
 #include "eeprom.h"
 #include "../shared/hexfile.h"
-#include "../shared/chipdefs.h"
+#include "../shared/defmgr.h"
 #include "../ui/ui_lorristerminal.h"
 #include "../ui/chooseconnectiondlg.h"
 
@@ -38,8 +38,6 @@ LorrisTerminal::LorrisTerminal()
     stopTimer = NULL;
     hex = NULL;
     m_eeprom = NULL;
-
-    chip_definition::parse_default_chipsets(m_chip_defs);
 
     initUI();
 }
@@ -197,7 +195,7 @@ void LorrisTerminal::eeprom_write(QString id)
 
     chip_definition cd;
     cd.setSign("avr232boot:" + id);
-    chip_definition::update_chipdef(m_chip_defs, cd);
+    sDefMgr.updateChipdef(cd);
 
     if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
@@ -271,7 +269,7 @@ void LorrisTerminal::eeprom_read(QString id)
 
     chip_definition cd;
     cd.setSign("avr232boot:" + id);
-    chip_definition::update_chipdef(m_chip_defs, cd);
+    sDefMgr.updateChipdef(cd);
 
     if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
@@ -528,7 +526,7 @@ void LorrisTerminal::flash_prepare(QString deviceId)
 
     chip_definition cd;
     cd.setSign("avr232boot:" + deviceId);
-    chip_definition::update_chipdef(m_chip_defs, cd);
+    sDefMgr.updateChipdef(cd);
 
     if(cd.getName().isEmpty())
     {

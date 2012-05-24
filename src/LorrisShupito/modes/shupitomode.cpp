@@ -14,7 +14,7 @@
 #include "shupitospi.h"
 #include "shupitopdi.h"
 #include "shupitocc25xx.h"
-#include "../../shared/chipdefs.h"
+#include "../../shared/defmgr.h"
 #include "../../shared/hexfile.h"
 
 ShupitoMode::ShupitoMode(Shupito *shupito) : QObject()
@@ -147,7 +147,7 @@ chip_definition ShupitoMode::readDeviceId()
 
     chip_definition cd;
     cd.setSign(id);
-    chip_definition::update_chipdef(m_shupito->getDefs(), cd);
+    sDefMgr.updateChipdef(cd);
 
     return cd;
 }

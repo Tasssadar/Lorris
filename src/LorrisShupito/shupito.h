@@ -106,7 +106,6 @@ public:
     ShupitoDesc *getDesc() { return m_desc; }
     void setChipId(chip_definition cd) { m_chip_def = cd; }
     const chip_definition& getChipId() { return m_chip_def; }
-    std::vector<chip_definition> &getDefs() { return m_chip_defs; }
 
 public slots:
     void sendTunnelData(const QString& data)
@@ -150,8 +149,6 @@ private:
     quint16 m_wait_max_packets;
 
     chip_definition m_chip_def;
-
-    std::vector<chip_definition> m_chip_defs;
 };
 
 #endif // SHUPITO_H
