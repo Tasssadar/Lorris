@@ -18,6 +18,8 @@
 #include "fusewidget.h"
 #include "../shared/defmgr.h"
 
+//#define DEBUG_FUSES "avr:1e9403"
+
 FuseWidget::FuseWidget(QWidget *parent) :
     QFrame(parent)
 {
@@ -62,6 +64,13 @@ FuseWidget::FuseWidget(QWidget *parent) :
     connect(readFusesBtn, SIGNAL(clicked()),   this, SIGNAL(readFuses()));
 
     m_changed = false;
+
+#ifdef DEBUG_FUSES
+    chip_definition cd;
+    cd.setSign(DEBUG_FUSES);
+    sDefMgr.updateChipdef(cd);
+    setFuses(cd);
+#endif
 }
 
 FuseWidget::~FuseWidget()

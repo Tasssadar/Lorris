@@ -12,7 +12,7 @@ bootrst | avr:1e9389,avr:1e9403,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:
 
 # ATmega 1284p, 128
 bootsz | avr:1e9705,avr:1e9702 | "Bootloader section size (default: 4096 words)" | 0b11="512 words" | 0b10="1024 words" | 0b01="2048 words" | 0b00="4096 words"
-# ATmega 88, 168
-bootsz | avr:1e930a,avr:1e9406 | "Bootloader section size (default: 1024 words)" | 0b11="128 words" | 0b10="256 words" | 0b01="512 words" | 0b00="1024 words"
+# ATmega 16, 88, 168
+bootsz | avr:1e9403,avr:1e930a,avr:1e9406 | "Bootloader section size (default: 1024 words)" | 0b11="128 words" | 0b10="256 words" | 0b01="512 words" | 0b00="1024 words"
 # ATmega 328,328p
 bootsz | avr:1e9514,avr:1e950f | "Bootloader section size (default: 2048 words)" | 0b11="256 words" | 0b10="512 words" | 0b01="1024 words" | 0b00="2048 words"
