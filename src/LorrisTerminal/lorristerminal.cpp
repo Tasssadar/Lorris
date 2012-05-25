@@ -193,10 +193,7 @@ void LorrisTerminal::eeprom_write(QString id)
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    chip_definition cd;
-    cd.setSign("avr232boot:" + id);
-    sDefMgr.updateChipdef(cd);
-
+    chip_definition cd = sDefMgr.findChipdef("avr232boot:" + id);
     if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
         m_state &= ~(STATE_EEPROM_WRITE);
@@ -267,10 +264,7 @@ void LorrisTerminal::eeprom_read(QString id)
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    chip_definition cd;
-    cd.setSign("avr232boot:" + id);
-    sDefMgr.updateChipdef(cd);
-
+    chip_definition cd = sDefMgr.findChipdef("avr232boot:" + id);
     if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
         m_state &= ~(STATE_EEPROM_READ);
@@ -524,10 +518,7 @@ void LorrisTerminal::flash_prepare(QString deviceId)
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    chip_definition cd;
-    cd.setSign("avr232boot:" + deviceId);
-    sDefMgr.updateChipdef(cd);
-
+    chip_definition cd = sDefMgr.findChipdef("avr232boot:" + deviceId);
     if(cd.getName().isEmpty())
     {
         Utils::ThrowException(tr("Unsupported chip: ") + deviceId);

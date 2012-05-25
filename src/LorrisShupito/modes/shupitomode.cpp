@@ -145,11 +145,7 @@ chip_definition ShupitoMode::readDeviceId()
 
     m_prepared = true;
 
-    chip_definition cd;
-    cd.setSign(id);
-    sDefMgr.updateChipdef(cd);
-
-    return cd;
+    return sDefMgr.findChipdef(id);
 }
 
 void ShupitoMode::editIdArgs(QString &id, quint8 &/*id_lenght*/)

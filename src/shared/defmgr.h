@@ -23,7 +23,7 @@ class DefMgr : public QObject, public Singleton<DefMgr>
 public:
     explicit DefMgr(QObject *parent = 0);
 
-    void updateChipdef(chip_definition & cd);
+    chip_definition findChipdef(const QString& sign);
     fuse_desc *findFuse_desc(const QString& name, const QString& chipSign);
     
 private:
@@ -33,7 +33,7 @@ private:
     void parseChipdefs(QTextStream &ss);
     void parseFusedesc(QTextStream& ss);
 
-    std::vector<chip_definition> m_chipdefs;
+    QHash<QString, chip_definition> m_chipdefs;
     QMultiHash<QString, fuse_desc> m_fusedesc;
 };
 

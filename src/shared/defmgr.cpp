@@ -138,13 +138,7 @@ void DefMgr::parseChipdefs(QTextStream &ss)
         }
 
         // If chip with this signature is already loaded, rewrite it
-        quint32 i = 0;
-        for(; i < m_chipdefs.size() && m_chipdefs[i].getSign() != def.getSign(); ++i);
-
-        if(i == m_chipdefs.size())
-            m_chipdefs.push_back(def);
-        else
-            m_chipdefs[i] = def;
+        m_chipdefs[def.getSign()] = def;
     }
 }
 
@@ -185,30 +179,14 @@ void DefMgr::parseFusedesc(QTextStream &ss)
     }
 }
 
-void DefMgr::updateChipdef(chip_definition & cd)
+chip_definition DefMgr::findChipdef(const QString& sign)
 {
-    for(quint32 i = 0; i < m_chipdefs.size(); ++i)
-    {
-        chip_definition &templ = m_chipdefs[i];
-        if(cd.getSign() == templ.getSign())
-        {
-            cd.setName(templ.getName());
-            cd.getMems() = templ.getMems();
+    chip_definition cd(sign);
 
-            for(quint32 x = 0; x < templ.getFuses().size(); ++x)
-            {
-                quint32 k;
-                for(k = 0; k < cd.getFuses().size(); ++k)
-                {
-                    if(cd.getFuses()[k].name == templ.getFuses()[x].name)
-                        break;
-                }
+    if(!m_chipdefs.contains(sign))
+        return cd;
 
-                if(k == cd.getFuses().size())
-                    cd.getFuses().push_back(templ.getFuses()[x]);
-            }
-        }
-    }
+    cd.copy(m_chipdefs[sign]);
 
     if(cd.getMems().find("fuses") == cd.getMems().end() && cd.getSign().left(4) == "avr:")
     {
@@ -218,6 +196,7 @@ void DefMgr::updateChipdef(chip_definition & cd)
         mem.pagesize = 0;
         cd.getMems()["fuses"] = mem;
     }
+    return cd;
 }
 
 fuse_desc *DefMgr::findFuse_desc(const QString &name, const QString &chipSign)

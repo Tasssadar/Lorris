@@ -39,6 +39,8 @@ public:
     chip_definition();
     chip_definition(const QString& sign);
 
+    void copy(chip_definition& cd);
+
     const QString& getName() { return m_name; }
     const QString& getSign() { return m_signature; }
     void setName(const QString& name) { m_name = name; }
