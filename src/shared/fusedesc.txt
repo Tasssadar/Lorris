@@ -1,18 +1,33 @@
-# fuse name | supported chip signs | description | values | ...
+# Format:
+#
+# {=chip ids
+#     fuse name | description | values....
+#     ...more fuses...
+# }
 
 # ATmega 8u2, 16, 48, 88, 168, 328, 328p, 1284p, 128
-eesave | avr:1e9389,avr:1e9403,avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702 | "EEPROM memory is preserved through the Chip Erase. Default: Erase" | 0b1="Erase" | 0b0="Preserve"
-lb | avr:1e9389,avr:1e9403,avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702 | "Memory lock bit (Default: No lock)" | 0b11="No lock" | 0b10="Disable write" | 0b00="Disable read and write" | 0b01="Unused"
-blb0 | avr:1e9389,avr:1e9403,avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702 | "Boot lock bit (Default: No restrictions)" | 0b11="No restrictions"
-blb1 | avr:1e9389,avr:1e9403,avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702 | "Boot lock bit (Default: No restrictions)" | 0b11="No restrictions"
-wdton | avr:1e9389,avr:1e9403,avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702 | "Watchdog Timer always on (Default: Yes)" | 0b1="Yes" | 0b0="No"
+{=avr:1e9389,avr:1e9403,avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702
+    eesave | EEPROM memory is preserved through the Chip Erase. Default: Erase | 0b1=Erase | 0b0=Preserve
+    lb | Memory lock bit (Default: No lock) | 0b11=No lock | 0b10=Disable write | 0b00=Disable read and write | 0b01=Unused
+    blb0 | Boot lock bit (Default: No restrictions) | 0b11=No restrictions
+    blb1 | Boot lock bit (Default: No restrictions) | 0b11=No restrictions
+    wdton | Watchdog Timer always on (Default: Yes) | 0b1=Yes | 0b0=No
+}
 
 # ATmega 8u2, 16, 88, 168, 328, 328p, 1284p, 128
-bootrst | avr:1e9389,avr:1e9403,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702 | "Reset address (Default: Normal)" | 0b1="Normal" | 0b0="Bootloader"
+{=avr:1e9389,avr:1e9403,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702 
+    bootrst | Reset address (Default: Normal) | 0b1=Normal | 0b0=Bootloader
+}
 
 # ATmega 1284p, 128
-bootsz | avr:1e9705,avr:1e9702 | "Bootloader section size (default: 4096 words)" | 0b11="512 words" | 0b10="1024 words" | 0b01="2048 words" | 0b00="4096 words"
+{=avr:1e9705,avr:1e9702
+    bootsz | Bootloader section size (default: 4096 words) | 0b11=512 words | 0b10=1024 words | 0b01=2048 words | 0b00=4096 words
+}
 # ATmega 16, 88, 168
-bootsz | avr:1e9403,avr:1e930a,avr:1e9406 | "Bootloader section size (default: 1024 words)" | 0b11="128 words" | 0b10="256 words" | 0b01="512 words" | 0b00="1024 words"
+{=avr:1e9403,avr:1e930a,avr:1e9406
+    bootsz | Bootloader section size (default: 1024 words) | 0b11=128 words | 0b10=256 words | 0b01=512 words | 0b00=1024 words
+}
 # ATmega 328,328p
-bootsz | avr:1e9514,avr:1e950f | "Bootloader section size (default: 2048 words)" | 0b11="256 words" | 0b10="512 words" | 0b01="1024 words" | 0b00="2048 words"
+{=avr:1e9514,avr:1e950f
+    bootsz | Bootloader section size (default: 2048 words) | 0b11=256 words | 0b10=512 words | 0b01=1024 words | 0b00=2048 words
+}

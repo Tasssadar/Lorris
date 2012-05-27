@@ -144,36 +144,39 @@ void DefMgr::parseChipdefs(QTextStream &ss)
 
 void DefMgr::parseFusedesc(QTextStream &ss)
 {
+    QStringList chipSign;
     for(QString line = ss.readLine().trimmed(); !line.isNull(); line = ss.readLine().trimmed())
     {
         if(line.isEmpty() || line.startsWith('#'))
             continue;
 
+        if(line.startsWith("{="))
+        {
+            chipSign = line.mid(2).split(',', QString::SkipEmptyParts);
+            continue;
+        }
+
+        if(line.startsWith('}'))
+        {
+            chipSign.clear();
+            continue;
+        }
+
+        if(chipSign.isEmpty())
+            continue;
+
         QStringList tokens = line.split(" | ", QString::SkipEmptyParts);
-
-        if(tokens.size() < 3)
+        if(tokens.size() < 2)
             continue;
 
-        fuse_desc desc(tokens[0]);
-
-        QStringList chips = tokens[1].split(',', QString::SkipEmptyParts);
-        if(chips.isEmpty())
-            continue;
-
-        desc.setChips(chips);
-
-        if(tokens[2].count('"') != 2)
-            continue;
-
-        desc.setDesc(tokens[2].remove('"'));
-
-        for(int i = 3; i < tokens.size(); ++i)
+        fuse_desc desc(tokens[0], chipSign, tokens[1]);
+        for(int i = 2; i < tokens.size(); ++i)
         {
             QStringList parts = tokens[i].split('=', QString::SkipEmptyParts);
-            if(parts.size() != 2 || !parts[0].startsWith("0b") || parts[1].count('"') != 2)
+            if(parts.size() != 2 || !parts[0].startsWith("0b"))
                 continue;
 
-            desc.addOption(parts[0], parts[1].remove('"'));
+            desc.addOption(parts[0], parts[1]);
         }
         m_fusedesc.insert(desc.getName(), desc);
     }

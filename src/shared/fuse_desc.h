@@ -17,7 +17,7 @@
 class fuse_desc
 {
 public:
-    explicit fuse_desc(const QString &name);
+    explicit fuse_desc(const QString &name, const QStringList &chipSigns, const QString &desc);
 
     void setDesc(const QString& desc) { m_desc = desc; }
     void setName(const QString& name) { m_name = name; }
