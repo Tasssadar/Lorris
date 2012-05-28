@@ -101,6 +101,7 @@ void TabWidget::closeTab(int index)
     sWorkTabMgr.removeTab(tab);
     m_tab_ids.erase(itr);
 
+    changeMenu(currentIndex());
     checkEmpty();
 }
 
@@ -140,8 +141,8 @@ QWidget *TabWidget::unregisterTab(int index)
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
     m_tab_ids.erase(itr);
 
+    changeMenu(currentIndex());
     checkEmpty();
-
     return tab;
 }
 
