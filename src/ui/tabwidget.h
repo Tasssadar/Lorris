@@ -59,7 +59,8 @@ public:
     void checkEmpty();
 
 public slots:
-    void pullTab(int index, TabWidget *origin);
+    int pullTab(int index, TabWidget *origin);
+    void pullTab(int index, TabWidget *origin, int to);
 
 protected:
     void mousePressEvent(QMouseEvent *ev);
@@ -88,7 +89,7 @@ class TabBar : public PlusTabBar
 
 Q_SIGNALS:
     void split(bool horizontal, int index);
-    void pullTab(int idx, TabWidget *origin);
+    void pullTab(int idx, TabWidget *origin, int to);
 
 public:
     explicit TabBar(quint32 id, QWidget * parent = 0);
@@ -99,8 +100,10 @@ protected:
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
+    void paintEvent(QPaintEvent *event);
 
 private slots:
     void renameTab();
@@ -108,7 +111,11 @@ private slots:
     void splitLeft();
 
 private:
+    void updateDropMarker(const QPoint& pos);
+
     int m_cur_menu_tab;
+    QRect m_drag_insert;
+    int m_drag_idx;
 
     quint32 m_id;
     QMenu *m_menu;

@@ -43,7 +43,8 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     connect(newTabBtn, SIGNAL(clicked()),              SLOT(newTabBtn()));
     connect(m_tab_bar, SIGNAL(plusPressed()),          SLOT(newTabBtn()));
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
-    connect(m_tab_bar, SIGNAL(pullTab(int,TabWidget*)), SLOT(pullTab(int,TabWidget*)), Qt::QueuedConnection);
+    connect(m_tab_bar, SIGNAL(pullTab(int,TabWidget*,int)),
+                       SLOT(pullTab(int,TabWidget*,int)), Qt::QueuedConnection);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
@@ -128,13 +129,20 @@ void TabWidget::tabMoved(int from, int to)
     m_tab_ids.insert(itr, id);
 }
 
-void TabWidget::pullTab(int index, TabWidget *origin)
+int TabWidget::pullTab(int index, TabWidget *origin)
 {
     QString name = origin->tabText(index);
 
     WorkTab *tab = (WorkTab*)origin->unregisterTab(index);
-    addTab(tab, name, tab->getId());
+    int idx = addTab(tab, name, tab->getId());
     origin->checkEmpty();
+    return idx;
+}
+
+void TabWidget::pullTab(int index, TabWidget *origin, int to)
+{
+    int id = pullTab(index, origin);
+    tabBar()->moveTab(id, to);
 }
 
 QWidget *TabWidget::unregisterTab(int index)
@@ -212,6 +220,7 @@ TabBar::TabBar(quint32 id, QWidget *parent) :
 {
     m_id = id;
     m_menu = new QMenu(this);
+    m_drag_idx = -1;
 
     m_newTopBottom = m_menu->addAction(tr("Split view top/bottom"));
     m_newLeftRight = m_menu->addAction(tr("Split view left/right"));
@@ -263,11 +272,11 @@ void TabBar::mousePressEvent(QMouseEvent *event)
 void TabBar::mouseMoveEvent(QMouseEvent *event)
 {
     if(!(event->buttons() & Qt::LeftButton) || !tabsClosable())
-        return QTabBar::mouseMoveEvent(event);
+        return PlusTabBar::mouseMoveEvent(event);
 
     int idx = tabAt(event->pos());
     if(idx == -1)
-        return QTabBar::mouseMoveEvent(event);
+        return PlusTabBar::mouseMoveEvent(event);
 
     event->accept();
 
@@ -304,15 +313,17 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
 
 void TabBar::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(!event->mimeData()->hasFormat("data/tabinfo") || event->source() == this)
-        return QTabBar::dragEnterEvent(event);
+    if(!event->mimeData()->hasFormat("data/tabinfo"))
+        return PlusTabBar::dragEnterEvent(event);
 
     event->acceptProposedAction();
+    updateDropMarker(event->pos());
 }
 
 void TabBar::dragMoveEvent(QDragMoveEvent *event)
 {
-    QTabBar::dragMoveEvent(event);
+    PlusTabBar::dragMoveEvent(event);
+    updateDropMarker(event->pos());
 }
 
 void TabBar::dropEvent(QDropEvent *event)
@@ -320,9 +331,66 @@ void TabBar::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
 
     QStringList lst = event->mimeData()->text().split(' ');
+    int tabId = lst[1].toInt();
 
-    TabWidget *source = sWorkTabMgr.getWi()->getWidget(lst[0].toUInt());
-    emit pullTab(lst[1].toInt(), source);
+    if(event->source() != this)
+    {
+        TabWidget *source = sWorkTabMgr.getWi()->getWidget(lst[0].toUInt());
+        emit pullTab(tabId, source, m_drag_idx);
+    }
+    else
+        moveTab(tabId, tabId < m_drag_idx ? m_drag_idx -1 : m_drag_idx);
+
+    m_drag_insert.setRect(0, 0, 0, 0);
+    update();
+}
+
+void TabBar::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    PlusTabBar::dragLeaveEvent(event);
+    m_drag_insert.setRect(0, 0, 0, 0);
+    update();
+}
+
+void TabBar::updateDropMarker(const QPoint& pos)
+{
+    int idx = tabAt(pos);
+    if(idx == -1)
+    {
+        m_drag_idx = -1;
+        m_drag_insert.setRect(0, 0, 0, 0);
+        return;
+    }
+
+    QRect rect = tabRect(idx);
+    m_drag_insert.setTop(rect.top());
+    m_drag_insert.setBottom(rect.bottom()-3);
+    if(pos.x() - rect.left() >= rect.width()/2)
+    {
+        m_drag_idx = idx+1;
+        m_drag_insert.setRight(rect.right()+2);
+        m_drag_insert.setLeft(rect.right()-3);
+    }
+    else
+    {
+        m_drag_idx = idx;
+        m_drag_insert.setRight(rect.left()+3);
+        m_drag_insert.setLeft(rect.left()-2);
+    }
+    update();
+}
+
+void TabBar::paintEvent(QPaintEvent *event)
+{
+    PlusTabBar::paintEvent(event);
+
+    if(m_drag_insert.isEmpty())
+        return;
+
+    QPainter p(this);
+    p.setPen(Qt::red);
+    p.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+    p.drawRect(m_drag_insert);
 }
 
 void TabBar::renameTab()
