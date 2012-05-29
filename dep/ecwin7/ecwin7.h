@@ -103,6 +103,9 @@ DECLARE_INTERFACE_(ITaskbarList3,IUnknown)
 typedef ITaskbarList3 *LPITaskbarList3;
 
 // Windows only data definitions - END
+#else
+// Dummy definition to make it compilable
+class MSG;
 #endif
 
 // ********************************************************************
