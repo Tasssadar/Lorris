@@ -13,6 +13,7 @@
 #include <QFont>
 
 class QStatusBar;
+class EcWin7;
 
 class Utils : public QThread
 {
@@ -38,8 +39,12 @@ public:
 
     static void playErrorSound();
 
+    static void setWin7(EcWin7 *win7);
+    static void setProgress(int val);
+
 private:
     static QStatusBar* m_status_bar;
+    static EcWin7* m_win7;
 };
 
 template <typename T>

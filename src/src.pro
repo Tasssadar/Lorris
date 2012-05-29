@@ -101,7 +101,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/storage.cpp \
     LorrisShupito/overvccdialog.cpp \
     shared/fuse_desc.cpp \
-    shared/defmgr.cpp
+    shared/defmgr.cpp \
+    ../dep/ecwin7/ecwin7.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -187,7 +188,8 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/overvccdialog.h \
     pch.h \
     shared/fuse_desc.h \
-    shared/defmgr.h
+    shared/defmgr.h \
+    ../dep/ecwin7/ecwin7.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -209,7 +211,7 @@ win32 {
         ../dep/qextserialport/src/qextserialport.cpp \
         ../dep/qextserialport/src/qextserialenumerator.cpp \
 
-    LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm
+    LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm -lole32
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 }

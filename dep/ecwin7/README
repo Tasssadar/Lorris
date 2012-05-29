@@ -1,0 +1,39 @@
+----------------------------------------
+-- EcWin7 library release 1.0.0 for Qt
+
+This library and the example application are released 
+under GPL license.
+
+If you use this library into your project please make me
+aware of it sending an e-mail to dukto@msec.it
+
+-- FEATURES
+
+This library wraps some Windows 7 API to make the usage
+of the new taskbar very simple. Currently EcWin7 doesn't
+supports all the features of Windows 7 taskbar, but only
+progress indicator and overlay icon.
+
+-- USAGE
+
+The usage of this library is very simple:
+
+ - Copy ecwin7.cpp and ecwin7.h into you project sources folder
+ - Add these files to your project
+ - Add the variable "LIBS += libole32" into your PRO file
+ - Add some code to your main window class as shown 
+   into the example application
+ 
+This library has been tested with Qt SDK 4.6.3, Qt Creator 
+project and MinGW compiler.
+
+-- SUPPORT
+
+This library is provided as is. Anyway, you can try
+contacting me at dukto@msec.it
+
+-- ICONS
+
+The icons provided with the example application have been
+downloaded from http://www.iconarchive.com and you can founde
+the respective usage license there.

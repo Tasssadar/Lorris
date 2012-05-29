@@ -18,6 +18,10 @@ public:
 
 public slots:
     void cancel();
+    void setValue(int progress);
+
+protected:
+    void hideEvent(QHideEvent *event);
 
 private:
     QPushButton *m_cancel_btn;

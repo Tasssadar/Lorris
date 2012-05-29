@@ -14,6 +14,8 @@
 #include <QLocale>
 #include <QHash>
 
+#include "../dep/ecwin7/ecwin7.h"
+
 extern QLocale::Language langs[];
 
 class WorkTabInfo;
@@ -29,6 +31,7 @@ public slots:
 
 protected:
     void closeEvent(QCloseEvent *event);
+    bool winEvent(MSG *message, long *result);
 
 private slots:
     void NewSpecificTab();
@@ -45,6 +48,8 @@ private:
     QMenuBar* menuBar;
     QMenu* menuFile;
     QMenu* menuHelp;
+
+    EcWin7 m_win7;
 
     std::vector<QAction*> m_lang_menu;
     QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;

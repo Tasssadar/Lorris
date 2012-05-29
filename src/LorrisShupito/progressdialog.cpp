@@ -9,6 +9,7 @@
 #include <QStyle>
 
 #include "progressdialog.h"
+#include "../utils.h"
 
 ProgressDialog::ProgressDialog(const QString &text, QWidget *parent) :
     QProgressDialog(parent, Qt::CustomizeWindowHint)
@@ -29,6 +30,19 @@ ProgressDialog::ProgressDialog(const QString &text, QWidget *parent) :
 
 void ProgressDialog::cancel()
 {
+    Utils::setProgress(-1);
     m_cancel_btn->setEnabled(false);
     setLabelText(tr("Waiting for pending operation to finish..."));
+}
+
+void ProgressDialog::hideEvent(QHideEvent *event)
+{
+    QProgressDialog::hideEvent(event);
+    Utils::setProgress(-1);
+}
+
+void ProgressDialog::setValue(int progress)
+{
+    QProgressDialog::setValue(progress);
+    Utils::setProgress(progress);
 }

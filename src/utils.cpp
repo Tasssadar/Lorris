@@ -10,8 +10,10 @@
 #include <QApplication>
 
 #include "utils.h"
+#include "../dep/ecwin7/ecwin7.h"
 
 QStatusBar *Utils::m_status_bar = NULL;
+EcWin7 *Utils::m_win7 = NULL;
 
 QString Utils::hexToString(quint8 data, bool withZeroEx)
 {
@@ -81,6 +83,25 @@ void Utils::printToStatusBar(const QString& msg, int timeout)
 {
     if(m_status_bar)
         m_status_bar->showMessage(msg, timeout);
+}
+
+void Utils::setWin7(EcWin7 *win7)
+{
+    m_win7 = win7;
+}
+
+void Utils::setProgress(int val)
+{
+    if(!m_win7)
+        return;
+
+    if(val == -1 || val == 100)
+        m_win7->setProgressState(EcWin7::NoProgress);
+    else
+    {
+        m_win7->setProgressState(EcWin7::Normal);
+        m_win7->setProgressValue(val, 100);
+    }
 }
 
 // FIXME: some better implementation?

@@ -49,6 +49,9 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowState(Qt::WindowMaximized);
     setWindowIcon(QIcon(":/icons/icon.png"));
 
+    m_win7.init(winId());
+    Utils::setWin7(&m_win7);
+
     // menu bar
     menuBar = new QMenuBar(this);
     menuFile = new QMenu(tr("&File"), this);
@@ -128,6 +131,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    Utils::setWin7(NULL);
     Utils::setStatusBar(NULL);
 }
 
@@ -137,6 +141,11 @@ void MainWindow::show(const QStringList& openFiles)
 
     for(QStringList::const_iterator itr = openFiles.begin(); itr != openFiles.end(); ++itr)
         sWorkTabMgr.openTabWithFile(*itr);
+}
+
+bool MainWindow::winEvent(MSG *message, long *result)
+{
+    return m_win7.winEvent(message, result);
 }
 
 QString MainWindow::getVersionString()
