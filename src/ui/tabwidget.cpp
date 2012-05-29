@@ -291,19 +291,25 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
     QStyleOptionTabV3 tab;
     initStyleOption(&tab, idx);
 
-    QSize size = tabRect(idx).size();
     QWidget *tabWidget = ((QTabWidget*)parent())->widget(idx);
-    size.rwidth() = std::max(tabWidget->width(), size.width());
-    size.rheight() += tabWidget->height();
+    QPixmap wMap(tabWidget->size());
+    tabWidget->render(&wMap);
+
+    if(wMap.width() > 400 && wMap.height() > 400)
+        wMap = wMap.scaled(400, 400, Qt::KeepAspectRatio);
+
+    QSize size = tabRect(idx).size();
+    size.rwidth() = std::max(wMap.width(), size.width());
+    size.rheight() += wMap.height();
 
     QPixmap map(size);
     map.fill(Qt::transparent);
 
-    tabWidget->render(&map, QPoint(0, tab.rect.height()-5));
-
     QStylePainter p(&map, this);
     p.initFrom(this);
-    tab.rect.moveTopLeft(tabRect(idx).topLeft());
+    p.drawItemPixmap(QRect(0, tab.rect.height()-5, wMap.width(), wMap.height()), 0, wMap);
+
+    tab.rect.moveTopLeft(QPoint(0, 0));
     p.drawControl(QStyle::CE_TabBarTab, tab);
     p.end();
 
@@ -313,7 +319,6 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
 
     drag->setPixmap(map);
     drag->setMimeData(mime);
-    drag->setHotSpot(tabRect(idx).topLeft());
     drag->exec();
 }
 
