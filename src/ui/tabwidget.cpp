@@ -33,6 +33,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     m_menuBtn->setFlat(true);
 
     QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", this);
+    newTabBtn->setShortcut(QKeySequence("Ctrl+T"));
 
     setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
     setCornerWidget(newTabBtn, Qt::TopRightCorner);
@@ -295,7 +296,7 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
     QPixmap wMap(tabWidget->size());
     tabWidget->render(&wMap);
 
-    if(wMap.width() > 400 && wMap.height() > 400)
+    if(wMap.width() > 400 || wMap.height() > 400)
         wMap = wMap.scaled(400, 400, Qt::KeepAspectRatio);
 
     QSize size = tabRect(idx).size();
