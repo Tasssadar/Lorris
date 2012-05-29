@@ -127,6 +127,12 @@ void TabWidget::tabMoved(int from, int to)
 
     itr = m_tab_ids.begin() + to;
     m_tab_ids.insert(itr, id);
+
+    // FIXME: tab content is not properly updated (Qt bug?)
+    // Two tabs, moveTab(1, 0); results in currentIndex = 0,
+    // but tab 1's content is displayed
+    setCurrentIndex(from);
+    setCurrentIndex(to);
 }
 
 int TabWidget::pullTab(int index, TabWidget *origin)
