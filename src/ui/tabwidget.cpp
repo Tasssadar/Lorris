@@ -370,6 +370,7 @@ void TabBar::updateDropMarker(const QPoint& pos)
     {
         m_drag_idx = -1;
         m_drag_insert.setRect(0, 0, 0, 0);
+        update();
         return;
     }
 
