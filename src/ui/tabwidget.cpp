@@ -319,7 +319,7 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
 
 void TabBar::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(!event->mimeData()->hasFormat("data/tabinfo"))
+    if(!event->source() || !event->mimeData()->hasFormat("data/tabinfo"))
         return PlusTabBar::dragEnterEvent(event);
 
     event->acceptProposedAction();
