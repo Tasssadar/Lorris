@@ -42,7 +42,6 @@ public:
     }
 
     int addTab(WorkTab *widget, const QString& name, quint32 tabId);
-    void pullTab(int index, TabWidget *origin);
     QWidget* unregisterTab(int index);
 
     virtual QSize sizeHint() const
@@ -57,6 +56,10 @@ public:
 
     void changeMenu(int idx);
     void clearMenu();
+    void checkEmpty();
+
+public slots:
+    void pullTab(int index, TabWidget *origin);
 
 protected:
     void mousePressEvent(QMouseEvent *ev);
@@ -70,7 +73,6 @@ private slots:
 
 private:
     bool checkEvent(QMouseEvent *event);
-    void checkEmpty();
 
     quint32 m_id;
     std::vector<quint32> m_tab_ids;
@@ -86,14 +88,19 @@ class TabBar : public PlusTabBar
 
 Q_SIGNALS:
     void split(bool horizontal, int index);
+    void pullTab(int idx, TabWidget *origin);
 
 public:
-    explicit TabBar(QWidget * parent = 0);
+    explicit TabBar(quint32 id, QWidget * parent = 0);
 
     void enableSplit(bool enable);
 
 protected:
     void mousePressEvent(QMouseEvent * event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dropEvent(QDropEvent *event);
 
 private slots:
     void renameTab();
@@ -103,6 +110,7 @@ private slots:
 private:
     int m_cur_menu_tab;
 
+    quint32 m_id;
     QMenu *m_menu;
     QAction *m_newTopBottom;
     QAction *m_newLeftRight;

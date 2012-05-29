@@ -57,22 +57,31 @@ void TabView::removeWidget(quint32 id)
     if(m_active_widget == *itr)
         m_active_widget = m_tab_widgets[0];
 
-    delete *itr;
+    for(std::set<QBoxLayout*>::iterator i = m_layouts.begin(); i != m_layouts.end(); ++i)
+    {
+        if((*i)->indexOf(*itr) != -1)
+        {
+            (*i)->removeWidget(*itr);
+            break;
+        }
+    }
+
+    (*itr)->deleteLater();
     m_tab_widgets.erase(itr);
 
     updateResizeLines((QBoxLayout*)layout());
 
-    for(std::set<QBoxLayout*>::iterator itr = m_layouts.begin(); itr != m_layouts.end();)
+    for(std::set<QBoxLayout*>::iterator i = m_layouts.begin(); i != m_layouts.end();)
     {
-        QBoxLayout *l = *itr;
+        QBoxLayout *l = *i;
         if(l->count() == 0)
         {
-            m_layouts.erase(itr);
-            delete l;
-            itr = m_layouts.begin();
+            m_layouts.erase(i);
+            l->deleteLater();
+            i = m_layouts.begin();
         }
         else
-            ++itr;
+            ++i;
     }
 }
 
@@ -164,7 +173,7 @@ void TabView::updateResizeLines(QBoxLayout *l)
             ResizeLine *line = (ResizeLine*)curItem->widget();
             l->removeWidget(line);
             m_resize_lines.remove(line);
-            delete line;
+            line->deleteLater();
             goto restart_loop;
         }
 

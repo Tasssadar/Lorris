@@ -14,6 +14,8 @@
 #include <QPainter>
 #include <QMenuBar>
 #include <QHBoxLayout>
+#include <QStyleOption>
+#include <QStylePainter>
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
@@ -24,10 +26,8 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     m_id = id;
     m_menu = new QMenu(this);
 
-    m_tab_bar = new TabBar(this);
+    m_tab_bar = new TabBar(m_id, this);
     setTabBar(m_tab_bar);
-    setMovable(true);
-
     m_menuBtn = new QPushButton(tr("Menu"), this);
     m_menuBtn->setMenu(m_menu);
     m_menuBtn->setFlat(true);
@@ -43,12 +43,16 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     connect(newTabBtn, SIGNAL(clicked()),              SLOT(newTabBtn()));
     connect(m_tab_bar, SIGNAL(plusPressed()),          SLOT(newTabBtn()));
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
+    connect(m_tab_bar, SIGNAL(pullTab(int,TabWidget*)), SLOT(pullTab(int,TabWidget*)), Qt::QueuedConnection);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
 {
+    if(m_id == 0)
+        sWorkTabMgr.CloseHomeTab();
+
     int idx = QTabWidget::addTab(widget, name);
 
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
@@ -98,6 +102,8 @@ void TabWidget::closeTab(int index)
         return;
 
     removeTab(index);
+    disconnect(tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
+
     sWorkTabMgr.removeTab(tab);
     m_tab_ids.erase(itr);
 
@@ -128,6 +134,7 @@ void TabWidget::pullTab(int index, TabWidget *origin)
 
     WorkTab *tab = (WorkTab*)origin->unregisterTab(index);
     addTab(tab, name, tab->getId());
+    origin->checkEmpty();
 }
 
 QWidget *TabWidget::unregisterTab(int index)
@@ -137,12 +144,12 @@ QWidget *TabWidget::unregisterTab(int index)
     Q_ASSERT(tab);
 
     removeTab(index);
+    disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
 
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
     m_tab_ids.erase(itr);
 
     changeMenu(currentIndex());
-    checkEmpty();
     return tab;
 }
 
@@ -200,9 +207,10 @@ void TabWidget::clearMenu()
     m_menuBtn->setEnabled(false);
 }
 
-TabBar::TabBar(QWidget *parent) :
+TabBar::TabBar(quint32 id, QWidget *parent) :
     PlusTabBar(parent)
 {
+    m_id = id;
     m_menu = new QMenu(this);
 
     m_newTopBottom = m_menu->addAction(tr("Split view top/bottom"));
@@ -215,6 +223,8 @@ TabBar::TabBar(QWidget *parent) :
     m_menu->addSeparator();
 
     QAction *rename = m_menu->addAction(tr("Rename..."));
+
+    setAcceptDrops(true);
 
     connect(rename,         SIGNAL(triggered()), SLOT(renameTab()));
     connect(m_newTopBottom, SIGNAL(triggered()), SLOT(splitTop()));
@@ -248,6 +258,71 @@ void TabBar::mousePressEvent(QMouseEvent *event)
             PlusTabBar::mousePressEvent(event);
             break;
     }
+}
+
+void TabBar::mouseMoveEvent(QMouseEvent *event)
+{
+    if(!(event->buttons() & Qt::LeftButton) || !tabsClosable())
+        return QTabBar::mouseMoveEvent(event);
+
+    int idx = tabAt(event->pos());
+    if(idx == -1)
+        return QTabBar::mouseMoveEvent(event);
+
+    event->accept();
+
+    QDrag *drag = new QDrag(this);
+
+    QStyleOptionTabV3 tab;
+    initStyleOption(&tab, idx);
+
+    QSize size = tabRect(idx).size();
+    QWidget *tabWidget = ((QTabWidget*)parent())->widget(idx);
+    size.rwidth() = std::max(tabWidget->width(), size.width());
+    size.rheight() += tabWidget->height();
+
+    QPixmap map(size);
+    map.fill(Qt::transparent);
+
+    tabWidget->render(&map, QPoint(0, tab.rect.height()-5));
+
+    QStylePainter p(&map, this);
+    p.initFrom(this);
+    tab.rect.moveTopLeft(tabRect(idx).topLeft());
+    p.drawControl(QStyle::CE_TabBarTab, tab);
+    p.end();
+
+    QMimeData *mime = new QMimeData();
+    mime->setText(QString("%1 %2").arg(m_id).arg(idx));
+    mime->setData("data/tabinfo", QByteArray(1, ' '));
+
+    drag->setPixmap(map);
+    drag->setMimeData(mime);
+    drag->setHotSpot(tabRect(idx).topLeft());
+    drag->exec();
+}
+
+void TabBar::dragEnterEvent(QDragEnterEvent *event)
+{
+    if(!event->mimeData()->hasFormat("data/tabinfo") || event->source() == this)
+        return QTabBar::dragEnterEvent(event);
+
+    event->acceptProposedAction();
+}
+
+void TabBar::dragMoveEvent(QDragMoveEvent *event)
+{
+    QTabBar::dragMoveEvent(event);
+}
+
+void TabBar::dropEvent(QDropEvent *event)
+{
+    event->acceptProposedAction();
+
+    QStringList lst = event->mimeData()->text().split(' ');
+
+    TabWidget *source = sWorkTabMgr.getWi()->getWidget(lst[0].toUInt());
+    emit pullTab(lst[1].toInt(), source);
 }
 
 void TabBar::renameTab()
