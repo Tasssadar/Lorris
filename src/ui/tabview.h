@@ -60,8 +60,13 @@ private:
     void updateResizeLines(QBoxLayout *l);
     inline void newResizeLine(QBoxLayout *l, int idx);
 
+    inline QBoxLayout *getLayoutForWidget(QWidget *widget);
+    inline void removeEmptyLayouts();
+    inline QBoxLayout *newLayout(bool hor);
+
     QHash<quint32, TabWidget*> m_tab_widgets;
     QHash<ResizeLine*, QBoxLayout*> m_resize_lines;
+
     std::set<QBoxLayout*> m_layouts;
 
     TabWidget *m_active_widget;

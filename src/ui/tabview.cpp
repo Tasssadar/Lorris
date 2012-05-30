@@ -51,39 +51,21 @@ void TabView::changeActiveWidget(TabWidget *widget)
 
 void TabView::removeWidget(quint32 id)
 {
-    QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.find(id);
-    if(itr == m_tab_widgets.end())
+    QHash<quint32, TabWidget*>::iterator wid = m_tab_widgets.find(id);
+    if(wid == m_tab_widgets.end())
         return;
 
-    if(m_active_widget == *itr)
+    if(m_active_widget == *wid)
         m_active_widget = m_tab_widgets[0];
 
-    for(std::set<QBoxLayout*>::iterator i = m_layouts.begin(); i != m_layouts.end(); ++i)
-    {
-        if((*i)->indexOf(*itr) != -1)
-        {
-            (*i)->removeWidget(*itr);
-            break;
-        }
-    }
+    if(QBoxLayout *l = getLayoutForWidget(*wid))
+        l->removeWidget(*wid);
 
-    (*itr)->deleteLater();
-    m_tab_widgets.erase(itr);
+    (*wid)->deleteLater();
+    m_tab_widgets.erase(wid);
 
+    removeEmptyLayouts();
     updateResizeLines((QBoxLayout*)layout());
-
-    for(std::set<QBoxLayout*>::iterator i = m_layouts.begin(); i != m_layouts.end();)
-    {
-        QBoxLayout *l = *i;
-        if(l->count() == 0)
-        {
-            m_layouts.erase(i);
-            l->deleteLater();
-            i = m_layouts.begin();
-        }
-        else
-            ++i;
-    }
 }
 
 void TabView::split(bool horizontal, int index)
@@ -91,45 +73,30 @@ void TabView::split(bool horizontal, int index)
     Q_ASSERT(sender());
 
     TabWidget *widget = (TabWidget*)sender();
-
-    QBoxLayout *l = NULL;
-
-    for(std::set<QBoxLayout*>::iterator itr = m_layouts.begin(); !l && itr != m_layouts.end(); ++itr)
-        if((*itr)->indexOf(widget) != -1)
-            l = *itr;
-
+    QBoxLayout *l = getLayoutForWidget(widget);
     if(!l)
         return;
 
-    if((horizontal && !l->inherits("QVBoxLayout")) || (!horizontal && !l->inherits("QHBoxLayout")))
+    if(horizontal ^ l->inherits("QVBoxLayout"))
     {
         if(l->count() == 1)
         {
             bool setAsMain = (layout() == l);
-            QBoxLayout *parentLayout = (QBoxLayout*)l->parent();
-            int idx = -1;
-            if(!setAsMain)
-            {
-                for(int i = 0; idx == -1 && i < parentLayout->count(); ++i)
-                    if(parentLayout->itemAt(i)->layout() == l)
-                        idx = i;
-            }
+            QBoxLayout *parentL = (QBoxLayout*)l->parent();
 
-            l->removeWidget(widget);
+            int idx = -1;
+            for(int i = 0; !setAsMain && idx == -1 && i < parentL->count(); ++i)
+                if(parentL->itemAt(i)->layout() == l)
+                    idx = i;
+
             m_layouts.erase(l);
             delete l;
 
-            if(horizontal) l = new QVBoxLayout();
-            else           l = new QHBoxLayout();
+            l = newLayout(horizontal);
+            if(setAsMain) setLayout(l);
+            else          parentL->insertLayout(idx, l, 50);
 
-            if(setAsMain)
-                setLayout(l);
-            else
-                parentLayout->insertLayout(idx, l, 50);
-
-            m_layouts.insert(l);
             l->setMargin(setAsMain ? LAYOUT_MARGIN : 0);
-
             l->addWidget(widget, 50);
         }
         else
@@ -137,16 +104,12 @@ void TabView::split(bool horizontal, int index)
             int pos = l->indexOf(widget);
             l->removeWidget(widget);
 
-            QBoxLayout *newLayout = NULL;
-            if(horizontal) newLayout = new QVBoxLayout();
-            else           newLayout = new QHBoxLayout();
+            QBoxLayout *newL = newLayout(horizontal);
+            newL->setMargin(0);
+            newL->addWidget(widget, 50);
+            l->insertLayout(pos, newL, 50);
 
-            newLayout->addWidget(widget, 50);
-            l->insertLayout(pos, newLayout, 50);
-
-            m_layouts.insert(newLayout);
-            l = newLayout;
-            l->setMargin(0);
+            l = newL;
         }
     }
 
@@ -171,10 +134,16 @@ void TabView::updateResizeLines(QBoxLayout *l)
         // Remove ResizeLine if there are two in a row or if it is the first or last item
         if(isResizeLine(curItem) && (!prevItem || i+1 >= count || isResizeLine(prevItem)))
         {
-            ResizeLine *line = (ResizeLine*)curItem->widget();
-            l->removeWidget(line);
-            m_resize_lines.remove(line);
-            line->deleteLater();
+            m_resize_lines.remove((ResizeLine*)curItem->widget());
+            delete curItem->widget();
+
+            if(l->isEmpty())
+            {
+                m_layouts.erase(l);
+                delete l;
+                return;
+            }
+
             goto restart_loop;
         }
 
@@ -245,6 +214,36 @@ void TabView::createSplitOverlay(quint32 id, QDrag *drag)
     overlay->show();
 }
 
+QBoxLayout *TabView::getLayoutForWidget(QWidget *widget)
+{
+    for(std::set<QBoxLayout*>::iterator i = m_layouts.begin(); i != m_layouts.end(); ++i)
+        if((*i)->indexOf(widget) != -1)
+            return *i;
+    return NULL;
+}
+
+void TabView::removeEmptyLayouts()
+{
+    for(std::set<QBoxLayout*>::iterator i = m_layouts.begin(); i != m_layouts.end();)
+    {
+        if((*i)->isEmpty())
+        {
+            m_layouts.erase(i);
+            delete *i;
+            i = m_layouts.begin();
+        }
+        else
+            ++i;
+    }
+}
+
+QBoxLayout *TabView::newLayout(bool hor)
+{
+    QBoxLayout *l = hor ? (QBoxLayout*)new QVBoxLayout : (QBoxLayout*)new QHBoxLayout;
+    m_layouts.insert(l);
+    return l;
+}
+
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)
 {
     m_vertical = vertical;
@@ -308,6 +307,9 @@ void ResizeLine::mousePressEvent(QMouseEvent *event)
         else               m_resize_pos[0] = item->layout()->geometry().topLeft();
 
         item = m_resize_layout->itemAt(index+1);
+        if(!item)
+            return;
+
         if(item->widget())
         {
             m_resize_pos[1] = item->widget()->pos();
