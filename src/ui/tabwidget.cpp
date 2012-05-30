@@ -289,6 +289,9 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
 
     QDrag *drag = new QDrag(this);
 
+    if(count() > 1)
+        sWorkTabMgr.getWi()->createSplitOverlay(m_id, drag);
+
     QStyleOptionTabV3 tab;
     initStyleOption(&tab, idx);
 

@@ -10,6 +10,7 @@
 #include <QApplication>
 #include <QFrame>
 #include <QMouseEvent>
+#include <QPainter>
 
 #include "tabview.h"
 #include "../WorkTab/WorkTabMgr.h"
@@ -214,6 +215,36 @@ QBoxLayout *TabView::getLayoutForLine(ResizeLine *line)
     return NULL;
 }
 
+void TabView::createSplitOverlay(quint32 id, QDrag *drag)
+{
+    QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.find(id);
+    if(itr == m_tab_widgets.end())
+        return;
+
+    TabWidget *tab = *itr;
+
+    SplitOverlay *overlay = new SplitOverlay(SplitOverlay::POS_RIGHT, this);
+    connect(overlay, SIGNAL(split(bool,int)), tab, SIGNAL(split(bool,int)));
+    connect(drag,    SIGNAL(destroyed()), overlay, SLOT(deleteLater()));
+
+    QPoint pos;
+    pos.rx() = (tab->x() + tab->width()) - overlay->width() - 15;
+    pos.ry() = tab->y() + (tab->height() - overlay->height())/2;
+
+    overlay->move(pos);
+    overlay->show();
+
+    overlay = new SplitOverlay(SplitOverlay::POS_BOTTOM, this);
+    connect(overlay, SIGNAL(split(bool,int)), tab, SIGNAL(split(bool,int)));
+    connect(drag,    SIGNAL(destroyed()), overlay, SLOT(deleteLater()));
+
+    pos.rx() = tab->x() + (tab->width() - overlay->width())/2;
+    pos.ry() = tab->y() + tab->height() - overlay->height() - 15;
+
+    overlay->move(pos);
+    overlay->show();
+}
+
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)
 {
     m_vertical = vertical;
@@ -328,4 +359,82 @@ void ResizeLine::mouseMoveEvent(QMouseEvent *event)
     m_resize_layout->setStretch(m_resize_index+1, 100 - (int)m_cur_stretch);
 
     m_mouse_pos = event->globalPos();
+}
+
+#define OVERLAY_1 40
+#define OVERLAY_2 150
+
+SplitOverlay::SplitOverlay(position pos, QWidget *parent) : QWidget(parent)
+{
+    m_pos = pos;
+    m_hover = false;
+
+    setPalette(Qt::transparent);
+    setAcceptDrops(true);
+
+    QFont fnt = font();
+    fnt.setPointSize(10);
+    fnt.setBold(true);
+    setFont(fnt);
+
+    if(pos == POS_RIGHT)
+        resize(OVERLAY_1, OVERLAY_2);
+    else
+        resize(OVERLAY_2, OVERLAY_1);
+}
+
+void SplitOverlay::paintEvent(QPaintEvent *)
+{
+    static const QPoint poly[POS_MAX][5] =
+    {
+        {
+            QPoint(0, 0), QPoint(OVERLAY_1/2, 0), QPoint(OVERLAY_1, OVERLAY_2/2),
+            QPoint(OVERLAY_1/2, OVERLAY_2), QPoint(0, OVERLAY_2)
+        },
+        {
+            QPoint(0, 0), QPoint(OVERLAY_2, 0), QPoint(OVERLAY_2, OVERLAY_1/2),
+            QPoint(OVERLAY_2/2, OVERLAY_1), QPoint(0, OVERLAY_1/2)
+        }
+    };
+
+    QPainter p(this);
+    p.setPen(m_hover ? Qt::yellow : Qt::red);
+    p.setBrush(QBrush(m_hover ? Qt::yellow : Qt::red, Qt::SolidPattern));
+    p.drawPolygon(poly[m_pos], 5);
+
+    p.setPen(Qt::black);
+    if(m_pos == POS_RIGHT)
+    {
+        p.rotate(-90);
+        p.translate(-height(), 0);
+        p.drawText(0, 0, height(), width(), Qt::AlignCenter, tr("Split"));
+    }
+    else
+        p.drawText(0, 0, width(), height(), Qt::AlignCenter, tr("Split"));
+}
+
+void SplitOverlay::dragEnterEvent(QDragEnterEvent *event)
+{
+    if(!event->source() || !event->mimeData()->hasFormat("data/tabinfo"))
+        return QWidget::dragEnterEvent(event);
+
+    event->acceptProposedAction();
+    m_hover = true;
+    update();
+}
+
+void SplitOverlay::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    event->accept();
+
+    m_hover = false;
+    update();
+}
+
+void SplitOverlay::dropEvent(QDropEvent *event)
+{
+    event->accept();
+
+    QStringList lst = event->mimeData()->text().split(' ');
+    emit split(m_pos == POS_BOTTOM, lst[1].toInt());
 }

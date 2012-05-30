@@ -17,6 +17,8 @@
 class QLayoutItem;
 class QBoxLayout;
 class ResizeLine;
+class SplitOverlay;
+class QDrag;
 
 class TabView : public QWidget
 {
@@ -44,6 +46,7 @@ public:
     }
 
     QBoxLayout *getLayoutForLine(ResizeLine *line);
+    void createSplitOverlay(quint32 id, QDrag *drag);
 
 private slots:
     void split(bool horizontal, int index);
@@ -85,6 +88,35 @@ private:
     QPoint m_resize_pos[2];
     QPoint m_mouse_pos;
     int m_resize_index;
+};
+
+class SplitOverlay : public QWidget
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void split(bool horizontal, int index);
+
+public:
+    enum position
+    {
+        POS_RIGHT = 0,
+        POS_BOTTOM,
+
+        POS_MAX
+    };
+
+    SplitOverlay(position pos, QWidget *parent = 0);
+
+protected:
+    void paintEvent(QPaintEvent *);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dropEvent(QDropEvent *event);
+
+private:
+    position m_pos;
+    bool m_hover;
 };
 
 #endif // TABVIEW_H
