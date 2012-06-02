@@ -66,9 +66,7 @@ FuseWidget::FuseWidget(QWidget *parent) :
     m_changed = false;
 
 #ifdef DEBUG_FUSES
-    chip_definition cd;
-    cd.setSign(DEBUG_FUSES);
-    sDefMgr.updateChipdef(cd);
+    chip_definition cd = sDefMgr.findChipdef(DEBUG_FUSES);
     setFuses(cd);
 #endif
 }
