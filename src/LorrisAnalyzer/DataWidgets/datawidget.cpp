@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QLabel>
 #include <QMouseEvent>
@@ -31,9 +15,9 @@
 #include <QInputDialog>
 
 #include "datawidget.h"
-#include "WorkTab/WorkTab.h"
-#include "../analyzerdataarea.h"
-#include "../analyzerdatafile.h"
+#include "../../WorkTab/WorkTab.h"
+#include "../widgetarea.h"
+#include "../datafileparser.h"
 
 DataWidget::DataWidget(QWidget *parent) :
     QFrame(parent)
@@ -70,6 +54,10 @@ DataWidget::DataWidget(QWidget *parent) :
     setMidLineWidth(2);
     setAutoFillBackground(true);
 
+    QPalette p;
+    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    setPalette(p);
+
     contextMenu = NULL;
     m_mouseIn = false;
     m_updating = true;
@@ -93,7 +81,7 @@ void DataWidget::setId(quint32 id)
     m_closeLabel->setId(id);
 }
 
-void DataWidget::setUp(AnalyzerDataStorage */*storage*/)
+void DataWidget::setUp(Storage */*storage*/)
 {
     setAcceptDrops(true);
     m_assigned = false;
@@ -220,7 +208,7 @@ void DataWidget::leaveEvent(QEvent *)
 
 void DataWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(m_locked || event->mimeData()->text().at(0) == 'w')
+    if(m_locked || !event->source() || event->mimeData()->text().at(0) == 'w')
     {
         QFrame::dragEnterEvent(event);
         return;
@@ -342,7 +330,7 @@ void DataWidget::setTitleTriggered()
     setTitle(title);
 }
 
-void DataWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void DataWidget::saveWidgetInfo(DataFileParser *file)
 {
     char *p = NULL;
 
@@ -374,7 +362,7 @@ void DataWidget::saveWidgetInfo(AnalyzerDataFile *file)
     file->write(title.data());
 }
 
-void DataWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void DataWidget::loadWidgetInfo(DataFileParser *file)
 {
     // data info
     char *p = NULL;
@@ -468,7 +456,7 @@ const QPixmap& DataWidgetAddBtn::getRender()
 {
     if(!m_pixmap)
     {
-        DataWidget *w = AnalyzerDataArea::newWidget(m_widgetType, this);
+        DataWidget *w = WidgetArea::newWidget(m_widgetType, this);
         if(w)
         {
             m_pixmap = new QPixmap(w->size());

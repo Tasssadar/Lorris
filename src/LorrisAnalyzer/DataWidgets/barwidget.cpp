@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QProgressBar>
 #include <QHBoxLayout>
@@ -31,7 +15,7 @@
 
 #include "barwidget.h"
 #include "ui_rangeselectdialog.h"
-#include "../analyzerdatafile.h"
+#include "../datafileparser.h"
 
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -51,7 +35,7 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     adjustSize();
 }
 
-void BarWidget::setUp(AnalyzerDataStorage *storage)
+void BarWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -233,7 +217,7 @@ void BarWidget::rotate(int i)
     m_bar->setOrientation(horizontal ? Qt::Horizontal : Qt::Vertical);
 }
 
-void BarWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void BarWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -253,7 +237,7 @@ void BarWidget::saveWidgetInfo(AnalyzerDataFile *file)
     file->write((char*)&m_rotation, sizeof(m_rotation));
 }
 
-void BarWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void BarWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 

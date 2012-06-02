@@ -1,25 +1,20 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
+
+/*
+ * This terminal supports UTF8 encoding, it can output data
+ * as text or hex dump and pause output. It also allows font selection,
+ * but if user selects non-monospace font, cursor position and maybe something
+ * else will get ugly. I do not want to add support for non-monospace fonts
+ * because it is completely useless - it is expected that user will want to
+ * change only font size.
+ *
+ * This QWidget should be usable outside Lorris without problems.
+ */
 
 #define QT_USE_FAST_CONCATENATION
 
@@ -35,15 +30,14 @@
 #include <QMenu>
 #include <QSignalMapper>
 #include <QStringBuilder>
+#include <QFontDialog>
 
-#include "common.h"
+#include "../common.h"
 #include "terminal.h"
 
 Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 {
-    m_data_size = 0;
-    m_data_alloc = 512;
-    m_data = (char*)malloc(m_data_alloc);
+    m_data.reserve(512);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -54,20 +48,13 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     palette.setColor(QPalette::Text, color_white);
     setPalette(palette);
 
-    setFont(Utils::getMonospaceFont());
-    viewport()->setCursor(Qt::IBeamCursor);
-
-    m_char_width = fontMetrics().width(QLatin1Char('9'));
-    m_char_height = fontMetrics().height();
-
     m_paused = false;
     m_fmt = FMT_MAX+1;
     m_input = INPUT_SEND_KEYPRESS;
     m_hex_pos = 0;
 
-    m_cursor.setSize(QSize(m_char_width, m_char_height));
-    m_changed = true;
-    updateScrollBars();
+    viewport()->setCursor(Qt::IBeamCursor);
+    setFont(Utils::getMonospaceFont());
 
     m_context_menu = new QMenu(this);
     QAction *copy = m_context_menu->addAction(tr("Copy"));
@@ -90,11 +77,17 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
         connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
     }
 
+    QAction *fnt = m_context_menu->addAction(tr("Change font..."));
+    QAction *pause = m_context_menu->addAction(tr("Pause"));
     QAction *clear = m_context_menu->addAction(tr("Clear"));
+
+    pause->setCheckable(true);
 
     connect(copy,  SIGNAL(triggered()), SLOT(copyToClipboard()));
     connect(paste, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
     connect(clear, SIGNAL(triggered()), SLOT(clear()));
+    connect(pause, SIGNAL(toggled(bool)), SLOT(pause(bool)));
+    connect(fnt,   SIGNAL(triggered()), SLOT(showFontDialog()));
     connect(fmtMap,SIGNAL(mapped(int)), SLOT(setFmt(int)));
     connect(&m_updateTimer, SIGNAL(timeout()), SLOT(updateScrollBars()));
 
@@ -105,21 +98,15 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
 Terminal::~Terminal()
 {
-    free(m_data);
 }
 
 void Terminal::appendText(const QByteArray& text)
 {
-    m_data_size += text.size();
-    if(m_data_size > m_data_alloc)
-    {
-        while(m_data_alloc < m_data_size)
-            m_data_alloc += 512;
+    if(m_data.size()+text.size() > m_data.capacity())
+        while(m_data.capacity() < m_data.size()+text.size())
+            m_data.reserve(m_data.capacity()+512);
 
-        m_data = (char*)realloc(m_data, m_data_alloc);
-    }
-
-    std::copy(text.data(), text.data()+text.size(), m_data+m_data_size-text.size());
+    m_data.insert(m_data.end(), text.data(), text.data()+text.size());
 
     switch(m_fmt)
     {
@@ -242,8 +229,7 @@ void Terminal::addHex()
         m_lines.pop_back();
     }
 
-    char *chunk = NULL;
-    char *end = m_data+m_data_size;
+    std::vector<char>::iterator chunk;
 
     int chunk_size;
     char *itr;
@@ -252,11 +238,11 @@ void Terminal::addHex()
     line[8] = line[57] = line[58] = line[59] = ' ';
     line[60] = line[77] = '|';
 
-    for(quint32 i = m_hex_pos; i < m_data_size; i += 16)
+    for(quint32 i = m_hex_pos; i < m_data.size(); i += 16)
     {
         itr = line;
-        chunk = m_data+m_hex_pos;
-        chunk_size = std::min(int(end - chunk), 16);
+        chunk = m_data.begin()+m_hex_pos;
+        chunk_size = std::min(int(m_data.end() - chunk), 16);
 
         static const char* hex = "0123456789ABCDEF";
         for(int x = 7; x >= 0; --x, ++itr)
@@ -290,7 +276,7 @@ void Terminal::keyPressEvent(QKeyEvent *event)
 {
     QString key = event->text();
 
-    if((event->modifiers() & Qt::ControlModifier))
+    if((event->modifiers() & Qt::ControlModifier) && (event->modifiers() & Qt::ShiftModifier))
     {
         switch(event->key())
         {
@@ -328,9 +314,9 @@ void Terminal::keyPressEvent(QKeyEvent *event)
     }
 
     if(key.isEmpty())
-        return;
-
-    handleInput(key, event->key());
+        QAbstractScrollArea::keyPressEvent(event);
+    else
+        handleInput(key, event->key());
 }
 
 void Terminal::handleInput(const QString &data, int key)
@@ -547,9 +533,8 @@ void Terminal::pause(bool pause)
 
 void Terminal::clear()
 {
-    m_data_alloc = 512;
-    m_data = (char*)realloc(m_data, m_data_alloc);
-    m_data_size = 0;
+    m_data.clear();
+    m_data.reserve(512);
 
     m_lines.clear();
     m_pause_lines.clear();
@@ -659,7 +644,7 @@ void Terminal::setFmt(int fmt)
 
     switch(fmt)
     {
-        case FMT_TEXT: addLines(QString::fromUtf8(m_data, m_data_size)); break;
+        case FMT_TEXT: addLines(QString::fromUtf8(m_data.data(), m_data.size())); break;
         case FMT_HEX:  addHex();         break;
     }
 
@@ -684,4 +669,74 @@ void Terminal::setInput(quint8 input)
 
     m_input = input;
     m_command.clear();
+}
+
+void Terminal::loadFont(const QString& str)
+{
+    QStringList vals = str.split(';', QString::SkipEmptyParts);
+    if(vals.size() != 4)
+        return;
+
+    QFont fnt;
+
+    for(quint8 i = 0; i < 4; ++i)
+    {
+        if(i == 0)
+        {
+            fnt.setFamily(vals[i]);
+            continue;
+        }
+
+        bool ok = false;
+        int val = vals[i].toInt(&ok);
+        if(!ok)
+            return;
+
+        switch(i)
+        {
+            case 1: // point size
+                fnt.setPointSize(val);
+                break;
+            case 2: // style hint
+                fnt.setStyleHint(QFont::StyleHint(val));
+                break;
+            case 3: // weight
+                fnt.setWeight(val);
+                break;
+        }
+    }
+    setFont(fnt);
+}
+
+QString Terminal::getFontData()
+{
+    QStringList vals;
+    vals << font().family() << QString::number(font().pointSize())
+         << QString::number((int)font().styleHint()) << QString::number(font().weight());
+
+    return vals.join(";");
+}
+
+void Terminal::setFont(const QFont &f)
+{
+    QAbstractScrollArea::setFont(f);
+
+    m_char_width = fontMetrics().width(QLatin1Char('m'));
+    m_char_height = fontMetrics().height();
+
+    m_cursor.setSize(QSize(m_char_width, m_char_height));
+
+    m_changed = true;
+    updateScrollBars();
+}
+
+void Terminal::showFontDialog()
+{
+    bool ok = false;
+    QFont fnt = QFontDialog::getFont(&ok, font(), this, tr("Font selection"));
+    if(!ok)
+        return;
+
+    setFont(fnt);
+    emit fontChanged(getFontData());
 }

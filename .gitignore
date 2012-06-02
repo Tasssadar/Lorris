@@ -48,3 +48,6 @@ obj/*
 #
 # Special exceptions
 #
+moc_*.cpp
+ui_*.h
+qrc_*.cpp

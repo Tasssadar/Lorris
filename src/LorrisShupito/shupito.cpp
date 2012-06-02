@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -28,7 +12,8 @@
 #include "shupito.h"
 #include "lorrisshupito.h"
 #include "shupitodesc.h"
-#include "connection/connectionmgr.h"
+#include "../connection/shupitotunnel.h"
+#include "../connection/connectionmgr2.h"
 
 Shupito::Shupito(QObject *parent) :
     QObject(parent)
@@ -51,15 +36,12 @@ Shupito::Shupito(QObject *parent) :
 Shupito::~Shupito()
 {
     delete m_packet;
-    sConMgr.RemoveShupito(this);
 }
 
-void Shupito::init(Connection *con, ShupitoDesc *desc)
+void Shupito::init(PortConnection *con, ShupitoDesc *desc)
 {
     m_con = con;
     m_desc = desc;
-
-    chip_definition::parse_default_chipsets(m_chip_defs);
 
     delete m_packet;
     m_packet = new ShupitoPacket();
@@ -74,9 +56,10 @@ void Shupito::init(Connection *con, ShupitoDesc *desc)
 
 void Shupito::readData(const QByteArray &data)
 {
-    mutex.lock();
+    if(!m_packet)
+        return;
 
-    static bool first = true;
+    mutex.lock();
 
     std::vector<ShupitoPacket*> packets;
     ShupitoPacket *packet = m_packet;
@@ -88,16 +71,18 @@ void Shupito::readData(const QByteArray &data)
     quint8 curRead = 1;
     while(d_itr != d_end)
     {
-        if(first || curRead == 0)
+        if(packet->isFresh() || curRead == 0)
         {
             int index = data.indexOf(char(0x80), d_itr - d_start);
             if(index == -1)
                 break;
             d_itr = d_start+index;
-            first = false;
+            packet->Clear();
         }
+
         curRead = packet->addData(d_itr, d_end);
         d_itr += curRead;
+
         if(packet->isValid())
         {
             packets.push_back(packet);
@@ -120,14 +105,14 @@ ShupitoPacket Shupito::waitForPacket(const QByteArray& data, quint8 cmd)
 
     responseTimer = new QTimer;
     responseTimer->start(1000);
-    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReceived()));
 
     m_wait_cmd = cmd;
     m_wait_packet = ShupitoPacket();
     m_wait_type = WAIT_PACKET;
 
     QEventLoop loop;
-    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+    loop.connect(this, SIGNAL(packetReceived()), SLOT(quit()));
 
     m_con->SendData(data);
 
@@ -147,7 +132,7 @@ QByteArray Shupito::waitForStream(const QByteArray& data, quint8 cmd, quint16 ma
 
     responseTimer = new QTimer;
     responseTimer->start(1000);
-    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReceived()));
 
     m_wait_cmd = cmd;
     m_wait_data.clear();
@@ -155,7 +140,7 @@ QByteArray Shupito::waitForStream(const QByteArray& data, quint8 cmd, quint16 ma
     m_wait_max_packets = max_packets;
 
     QEventLoop loop;
-    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+    loop.connect(this, SIGNAL(packetReceived()), SLOT(quit()));
 
     m_con->SendData(data);
 
@@ -218,7 +203,7 @@ void Shupito::handlePacket(ShupitoPacket& p)
             {
                 m_wait_packet = p;
                 m_wait_type = WAIT_NONE;
-                emit packetReveived();
+                emit packetReceived();
             }
             break;
         }
@@ -227,7 +212,7 @@ void Shupito::handlePacket(ShupitoPacket& p)
             if(p.getOpcode() != m_wait_cmd)
             {
                 if(--m_wait_max_packets == 0)
-                    emit packetReveived();
+                    emit packetReceived();
             }
             else
             {
@@ -237,7 +222,7 @@ void Shupito::handlePacket(ShupitoPacket& p)
                 {
                     m_wait_max_packets = 0;
                     m_wait_type = WAIT_NONE;
-                    emit packetReveived();
+                    emit packetReceived();
                 }
             }
             break;
@@ -377,7 +362,13 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
 
                     SendSetComSpeed();
 
-                    sConMgr.AddShupito(m_con->GetIDString(), this);
+                    m_tunnel_conn.reset(new ShupitoTunnel());
+                    m_tunnel_conn->setName("Shupito at " + m_con->GetIDString());
+                    m_tunnel_conn->setRemovable(false);
+                    m_tunnel_conn->setShupito(this);
+                    m_tunnel_conn->Open();
+                    sConMgr2.addConnection(m_tunnel_conn.data());
+
                     emit tunnelStatus(true);
 
                     m_tunnel_data.clear();
@@ -394,7 +385,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
                 {
                     m_tunnel_pipe = 0;
 
-                    sConMgr.RemoveShupito(this);
+                    m_tunnel_conn.reset();
                     emit tunnelStatus(false);
 
                     disconnect(&m_tunnel_timer, SIGNAL(timeout()), this, SLOT(tunnelDataSend()));

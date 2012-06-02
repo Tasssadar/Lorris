@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef DATAWIDGET_H
 #define DATAWIDGET_H
@@ -32,7 +16,7 @@
 #include <QMenu>
 
 #include "../packet.h"
-#include "../analyzerdatafile.h"
+#include "../datafileparser.h"
 
 enum WidgetTypes
 {
@@ -97,8 +81,8 @@ struct data_widget_info
 };
 
 class CloseLabel;
-class AnalyzerDataFile;
-class AnalyzerDataStorage;
+class DataFileParser;
+class Storage;
 
 class DataWidget : public QFrame
 {
@@ -107,7 +91,7 @@ class DataWidget : public QFrame
     Q_PROPERTY(quint8 widgetType READ getWidgetType)
 
 Q_SIGNALS:
-    void updateData(bool ignoreTime = false);
+    void updateData();
     void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
@@ -120,7 +104,7 @@ public:
     explicit DataWidget(QWidget *parent = 0);
     ~DataWidget();
 
-    virtual void setUp(AnalyzerDataStorage *);
+    virtual void setUp(Storage *);
 
     void setId(quint32 id);
     quint32 getId() { return m_id; }
@@ -135,8 +119,8 @@ public:
     }
     const data_widget_info& getInfo() { return m_info; }
 
-    virtual void saveWidgetInfo(AnalyzerDataFile *file);
-    virtual void loadWidgetInfo(AnalyzerDataFile *file);
+    virtual void saveWidgetInfo(DataFileParser *file);
+    virtual void loadWidgetInfo(DataFileParser *file);
 
     static QVariant getNumFromPacket(analyzer_data *data, quint32 pos, quint8 type);
 

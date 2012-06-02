@@ -1,0 +1,33 @@
+# 0 1 2 3 4 5 6 7 | 8 9 10 11 12 13 14 15 | 16 17 18 19 20 21 22 23 | 24 25 26 27 28 29 30 31
+#   Lock bits     |     fuse low byte     |     fuse high byte      |    extended fuse byte
+
+atmega48 avr:1e9205 flash=4096:64,eeprom=256:4 lb:0,1 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 selfprgen:24
+atmega88 avr:1e930a flash=8192:64,eeprom=512:4 lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bootrst:24 bootsz:25,26
+atmega168 avr:1e9406 flash=16384:128,eeprom=512:4 lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bootrst:24 bootsz:25,26
+atmega328 avr:1e9514 flash=32768:128,eeprom=1024:4 lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bodlevel:24,25,26
+atmega328p avr:1e950f flash=32768:128,eeprom=1024:4 lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bodlevel:24,25,26
+atmega16 avr:1e9403 flash=16384:128,eeprom=512:4 lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 boden:14 bodlevel:15 bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23
+atmega128 avr:1e9702 flash=131072:256,eeprom=4096:8 lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 boden:14 bodlevel:15 bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23 wdton:24 m103c:25
+atmega1284p avr:1e9705 flash=131072:256,eeprom=4096:8 lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 jtagen:22 ocden:23 bodlevel:24,25,26
+atmega8u2 avr:1e9389 flash=8192:128,eeprom=256:4 lb:0,1 blb0:2,3 blb1:4,5 cksel:8,9,10,11 sut:12,13 ckout:14 ckdiv8:15 bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 rstdsbl:22:1 dwen:23:1 bodlevel:24,25,26 hwbe:27
+
+atxmega128a avr:1e9746 flash=139264:512,eeprom=2048:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
+atxmega64a avr:1e9646 flash=69632:256,eeprom=2048:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
+atxmega32a avr:1e9541 flash=36864:256,eeprom=1024:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
+atxmega16a avr:1e9441 flash=20480:256,eeprom=1024:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
+
+atmega48 avr232boot:m48 flash=3840:64,eeprom=256:2 !avr232boot_patch=3838
+atmega88 avr232boot:m88 flash=7936:64,eeprom=512:2
+atmega168 avr232boot:m168 flash=16128:128,eeprom=512:2
+atmega16 avr232boot:m16 flash=16128:128,eeprom=512:2
+atmega32 avr232boot:m32 flash=32256:128,eeprom=1024:2
+atmega128 avr232boot:m128 flash=65536:256,eeprom=4096:2
+atmega162 avr232boot:m162 flash=16128:128,eeprom=512:2
+atmega328p avr232boot:m328 flash=32256:128,eeprom=1024:2
+atmega8u2 avr232boot:m8u2 flash=7680:128,eeprom=512:2
+atmega1284p avr232boot:p128 flash=65536:256,eeprom=4096:2
+
+cc2530 cc25xx:a5
+cc2531 cc25xx:b5
+cc2533 cc25xx:99
+cc2540 cc25xx:8d

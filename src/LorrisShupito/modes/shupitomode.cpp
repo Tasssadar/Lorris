@@ -1,37 +1,21 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QObject>
 #include <set>
 
-#include "common.h"
+#include "../../common.h"
 #include "../shupito.h"
 #include "shupitomode.h"
 #include "shupitospi.h"
 #include "shupitopdi.h"
 #include "shupitocc25xx.h"
-#include "shared/chipdefs.h"
-#include "shared/hexfile.h"
+#include "../../shared/defmgr.h"
+#include "../../shared/hexfile.h"
 
 ShupitoMode::ShupitoMode(Shupito *shupito) : QObject()
 {
@@ -161,11 +145,7 @@ chip_definition ShupitoMode::readDeviceId()
 
     m_prepared = true;
 
-    chip_definition cd;
-    cd.setSign(id);
-    chip_definition::update_chipdef(m_shupito->getDefs(), cd);
-
-    return cd;
+    return sDefMgr.findChipdef(id);
 }
 
 void ShupitoMode::editIdArgs(QString &id, quint8 &/*id_lenght*/)

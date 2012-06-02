@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef GRAPHWIDGET_H
 #define GRAPHWIDGET_H
@@ -30,6 +14,8 @@ class QSignalMapper;
 class Graph;
 class GraphCurveAddDialog;
 class GraphCurve;
+
+#define SAMPLE_ACT_COUNT 9
 
 struct GraphCurveInfo
 {
@@ -50,9 +36,9 @@ public:
     GraphWidget(QWidget *parent = 0);
     ~GraphWidget();
 
-    void setUp(AnalyzerDataStorage *storage);
-    void saveWidgetInfo(AnalyzerDataFile *file);
-    void loadWidgetInfo(AnalyzerDataFile *file);
+    void setUp(Storage *storage);
+    void saveWidgetInfo(DataFileParser *file);
+    void loadWidgetInfo(DataFileParser *file);
 
 public slots:
     GraphCurve *addCurve(QString name, QString color);
@@ -79,9 +65,9 @@ private:
      Graph *m_graph;
      GraphCurveAddDialog *m_add_dialog;
      QString m_drop_data;
-     AnalyzerDataStorage *m_storage;
+     Storage *m_storage;
 
-     QAction *m_sample_act[8];
+     QAction *m_sample_act[SAMPLE_ACT_COUNT];
      QAction *m_editCurve;
      QAction *m_showLegend;
      QAction *m_autoScroll;

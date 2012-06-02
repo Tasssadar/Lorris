@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef CHIPDEFS_H
 #define CHIPDEFS_H
@@ -46,10 +30,6 @@ public:
         std::vector<int> values;
     };
 
-    static void parse_chipdefs(QString const & strdefs, std::vector<chip_definition> & res);
-    static void update_chipdef(std::vector<chip_definition> &templates, chip_definition & cd);
-    static void parse_default_chipsets(std::vector<chip_definition> & res);
-
     template <typename Iter>
     static int get_fuse_value(Iter first, Iter last, fuse const & f);
 
@@ -58,6 +38,8 @@ public:
 
     chip_definition();
     chip_definition(const QString& sign);
+
+    void copy(chip_definition& cd);
 
     const QString& getName() { return m_name; }
     const QString& getSign() { return m_signature; }

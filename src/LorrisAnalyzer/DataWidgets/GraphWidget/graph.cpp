@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <qapplication.h>
 #include <qlayout.h>
@@ -117,18 +101,8 @@ void Graph::mousePressEvent(QMouseEvent *event)
 
 void Graph::mouseMoveEvent(QMouseEvent *event)
 {
-    int x = event->pos().x();
-    int y = event->pos().y();
-
-    if((x < RESIZE_BORDER) ||
-       (x > width() - RESIZE_BORDER) ||
-       (y > height() - RESIZE_BORDER))
-    {
-        return QWidget::mouseMoveEvent(event);
-    }
-
     QwtPlot::mouseMoveEvent(event);
-    event->accept();
+    QWidget::mouseMoveEvent(event);
 }
 
 void Graph::wheelEvent(QWheelEvent *event)

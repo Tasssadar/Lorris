@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QAction>
 #include <QInputDialog>
@@ -27,18 +11,27 @@
 #include <QFile>
 
 #include "cmdtabwidget.h"
-#include "common.h"
+#include "../common.h"
 #include "DataWidgets/datawidget.h"
-#include "analyzerdatafile.h"
+#include "datafileparser.h"
+#include "../ui/plustabbar.h"
 
 CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent) :
     QTabWidget(parent)
 {
+    PlusTabBar *bar = new PlusTabBar(this);
+    setTabBar(bar);
+    connect(bar,  SIGNAL(plusPressed()),            SLOT(newCommand()));
+    connect(this, SIGNAL(disableCmdAdd(bool)), bar, SLOT(setDisablePlus(bool)));
+
     setTabPosition(QTabWidget::South);
 
     new_cmd_act = new QAction(tr("Add command"), this);
     if(!header || !(header->data_mask & DATA_OPCODE))
+    {
         new_cmd_act->setEnabled(false);
+        emit disableCmdAdd(true);
+    }
     connect(new_cmd_act, SIGNAL(triggered()), this, SLOT(newCommand()));
     addAction(new_cmd_act);
 
@@ -93,9 +86,16 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
 
     QScrollArea *area = new QScrollArea(this);
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     ScrollDataLayout *layout = NULL;
     QWidget *w = new QWidget();
+
+    QPalette p = area->palette();
+    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    area->setPalette(p);
+    area->setAutoFillBackground(true);
+
     if(m_header)
     {
         layout = new ScrollDataLayout(m_header, false, true, this, m_devTab, w);
@@ -141,6 +141,9 @@ void CmdTabWidget::newCommand()
     QString text = QInputDialog::getText(this, tr("New command"),
                                          tr("Command (hex or normal number):"), QLineEdit::Normal,
                                          "", &ok);
+    if(!ok)
+        return;
+
     int id = 0;
     quint8 res = 0;
     if(ok && !text.isEmpty())
@@ -193,19 +196,19 @@ void CmdTabWidget::tabClose(int index)
         delete m_all_cmds;
         m_all_cmds = NULL;
         m_add_all_act->setEnabled(true);
-        return;
     }
-
-    for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
+    else
     {
-        if(itr->second->a == w)
+        for(cmd_map::iterator itr = m_cmds.begin(); itr != m_cmds.end(); ++itr)
         {
-            delete itr->second;
-            m_cmds.erase(itr);
-            break;
+            if(itr->second->a == w)
+            {
+                delete itr->second;
+                m_cmds.erase(itr);
+                break;
+            }
         }
     }
-
     if(count() < 2)
     {
         setTabsClosable(false);
@@ -227,7 +230,7 @@ qint16 CmdTabWidget::getCurrentCmd()
     return -1;
 }
 
-void CmdTabWidget::Save(AnalyzerDataFile *file)
+void CmdTabWidget::Save(DataFileParser *file)
 {
     quint32 size = m_cmds.size();
     if(m_all_cmds)
@@ -250,7 +253,7 @@ void CmdTabWidget::Save(AnalyzerDataFile *file)
     }
 }
 
-void CmdTabWidget::Load(AnalyzerDataFile *file, bool /*skip*/)
+void CmdTabWidget::Load(DataFileParser *file, bool /*skip*/)
 {
     quint32 count = 0;
     file->read((char*)&count, sizeof(quint32));
@@ -294,7 +297,8 @@ bool CmdTabWidget::setHighlightPos(const data_widget_info& info, bool highlight)
 void CmdTabWidget::setHeader(analyzer_header *header)
 {
     m_header = header;
-    new_cmd_act->setEnabled(!(header->data_mask & DATA_OPCODE));
+    new_cmd_act->setEnabled(header->data_mask & DATA_OPCODE);
+    emit disableCmdAdd(!(header->data_mask & DATA_OPCODE));
 
     if(m_all_cmds && m_all_cmds->l)
         m_all_cmds->l->setHeader(header);

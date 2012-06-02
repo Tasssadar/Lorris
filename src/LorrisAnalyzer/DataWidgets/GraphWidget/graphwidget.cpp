@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QDropEvent>
 #include <qwt_plot_curve.h>
@@ -32,9 +16,9 @@
 #include "graphdialogs.h"
 #include "graphdata.h"
 #include "graphcurve.h"
-#include "../../analyzerdatastorage.h"
+#include "../../storage.h"
 
-static const int sampleValues[] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
+static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
 GraphWidget::GraphWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -60,7 +44,7 @@ GraphWidget::~GraphWidget()
         delete m_curves[i];
 }
 
-void GraphWidget::setUp(AnalyzerDataStorage *storage)
+void GraphWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -76,12 +60,12 @@ void GraphWidget::setUp(AnalyzerDataStorage *storage)
     QMenu *sampleSize = contextMenu->addMenu(tr("Sample size"));
 
     QSignalMapper *sampleMap = new QSignalMapper(this);
-    static const QString sampleNames[] =
+    static const QString sampleNames[SAMPLE_ACT_COUNT] =
     {
         tr("Show all data"), tr("Set custom..."), tr("According to X axis"), "10", "50", "100", "200", "500", "1000"
     };
 
-    for(quint8 i = 0; i < sizeof(sampleValues)/sizeof(int); ++i)
+    for(quint8 i = 0; i < SAMPLE_ACT_COUNT; ++i)
     {
         if(i == 3)
             sampleSize->addSeparator();
@@ -101,7 +85,6 @@ void GraphWidget::setUp(AnalyzerDataStorage *storage)
     m_showLegend = contextMenu->addAction(tr("Show legend"));
     m_showLegend->setCheckable(true);
     m_showLegend->setChecked(true);
-    m_showLegend->setEnabled(false);
 
     m_autoScroll = contextMenu->addAction(tr("Automaticaly scroll graph"));
     m_autoScroll->setCheckable(true);
@@ -143,7 +126,7 @@ void GraphWidget::processData(analyzer_data */*data*/)
 
 }
 
-void GraphWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void GraphWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -210,7 +193,7 @@ void GraphWidget::saveWidgetInfo(AnalyzerDataFile *file)
     }
 }
 
-void GraphWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void GraphWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 
@@ -536,7 +519,7 @@ void GraphWidget::updateSampleSize()
     if(m_sample_size != -3)
         return;
 
-    qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound());
+    qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound())*2;
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
         m_curves[i]->curve->setSampleSize(size);

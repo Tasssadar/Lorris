@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QScrollArea>
 #include <QList>
@@ -31,19 +15,26 @@
 
 #include "devicetabwidget.h"
 #include "labellayout.h"
-#include "common.h"
+#include "../common.h"
 #include "DataWidgets/datawidget.h"
 #include "lorrisanalyzer.h"
-#include "analyzerdatafile.h"
+#include "datafileparser.h"
+#include "../ui/plustabbar.h"
 
 DeviceTabWidget::DeviceTabWidget(QWidget *parent) :
     QTabWidget(parent)
 {
-    m_id_enabled = false;
+    PlusTabBar *bar = new PlusTabBar(this);
+    setTabBar(bar);
+    connect(bar,  SIGNAL(plusPressed()),               SLOT(newDevice()));
+    connect(this, SIGNAL(disableDeviceAdd(bool)), bar, SLOT(setDisablePlus(bool)));
 
     QAction *new_device_act = new QAction(tr("Add device"), this);
     connect(new_device_act, SIGNAL(triggered()), this, SLOT(newDevice()));
     addAction(new_device_act);
+
+    emit disableDeviceAdd(true);
+    new_device_act->setEnabled(false);
 
     m_add_all_act = new QAction(tr("Add \"All devices\" tab"), this);
     m_add_all_act->setEnabled(false);
@@ -56,6 +47,7 @@ DeviceTabWidget::DeviceTabWidget(QWidget *parent) :
     m_all_devices = NULL;
 
     m_header = NULL;
+    m_id_enabled = false;
 }
 
 DeviceTabWidget::~DeviceTabWidget()
@@ -74,6 +66,7 @@ void DeviceTabWidget::setHeader(analyzer_header *h)
     m_header = h;
     bool enable = h ? m_header->data_mask & DATA_DEVICE_ID : false;
     (*actions().begin())->setEnabled(enable);
+    emit disableDeviceAdd(!enable);
 
     for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
         itr->second->setHeader(h);
@@ -146,6 +139,9 @@ void DeviceTabWidget::newDevice()
     QString text = QInputDialog::getText(this, tr("New device"),
                                          tr("Device ID (hex or normal number):"), QLineEdit::Normal,
                                          "", &ok);
+    if(!ok)
+        return;
+
     int id = 0;
     quint8 res = 0;
     if(ok && !text.isEmpty())
@@ -189,18 +185,19 @@ void DeviceTabWidget::tabClose(int index)
         delete m_all_devices;
         m_all_devices = NULL;
         m_add_all_act->setEnabled(true);
-        return;
     }
-
-    for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
+    else
     {
-        if(itr->second == w)
+        for(dev_map::iterator itr = m_devices.begin(); itr != m_devices.end(); ++itr)
         {
-            m_devices.erase(itr);
-            break;
+            if(itr->second == w)
+            {
+                m_devices.erase(itr);
+                break;
+            }
         }
+        delete w;
     }
-    delete w;
 
     if(count() < 2)
     {
@@ -232,7 +229,7 @@ qint16 DeviceTabWidget::getCurrentDevice()
     return -1;
 }
 
-void DeviceTabWidget::Save(AnalyzerDataFile *file)
+void DeviceTabWidget::Save(DataFileParser *file)
 {
     quint32 count = m_devices.size();
     if(m_all_devices)
@@ -259,7 +256,7 @@ void DeviceTabWidget::Save(AnalyzerDataFile *file)
     }
 }
 
-void DeviceTabWidget::Load(AnalyzerDataFile *file, bool skip)
+void DeviceTabWidget::Load(DataFileParser *file, bool skip)
 {
     removeAll();
 

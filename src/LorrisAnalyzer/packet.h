@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef PACKET_H
 #define PACKET_H
@@ -27,8 +11,9 @@
 #include <QTypeInfo>
 #include <QByteArray>
 #include <algorithm>
+#include <vector>
 
-#include "common.h"
+#include "../common.h"
 
 enum DataType
 {
@@ -143,28 +128,34 @@ struct analyzer_packet
         Reset();
     }
 
-    analyzer_packet(analyzer_header *h, bool b_e, quint8 *s_d)
+    analyzer_packet(analyzer_header *h, bool b_e)
     {
         header = h;
         big_endian = b_e;
-        static_data = s_d;
     }
 
-    ~analyzer_packet()
+    analyzer_packet(analyzer_packet *p)
     {
-        delete[] static_data;
+        copy(p);
+    }
+
+    void copy(analyzer_packet *p)
+    {
+        header = new analyzer_header(p->header);
+        big_endian = p->big_endian;
+        static_data.assign(p->static_data.begin(), p->static_data.end());
     }
 
     void Reset()
     {
-        static_data = NULL;
+        static_data.clear();
         header = NULL;
         big_endian = true;
     }
 
     analyzer_header *header;
     bool big_endian;
-    quint8 *static_data;
+    std::vector<quint8> static_data;
 };
 
 // Real data
@@ -172,6 +163,7 @@ class analyzer_data
 {
 public:
     analyzer_data(analyzer_packet *packet);
+    void clear();
 
     void setPacket(analyzer_packet *packet)
     {
@@ -189,6 +181,7 @@ public:
     const QByteArray& getStaticData() { return m_static_data; }
 
     bool isValid();
+    bool isFresh() const { return itr == 0; }
 
     bool getDeviceId(quint8& id);
     bool getCmd(quint8& cmd);

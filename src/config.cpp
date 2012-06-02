@@ -1,40 +1,23 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QSettings>
 #include <QFile>
 #include <QDesktopServices>
 #include <qextserialport.h>
 
+#include "connection/connection.h"
 #include "config.h"
-#include "connection/connectionmgr.h"
 
 static const QString keys_quint32[CFG_QUINT32_NUM] =
 {
     "general/connection_type",   // CFG_QUINT32_CONNECTION_TYPE
     "general/tab_type",          // CFG_QUINT32_TAB_TYPE
     "serial_port/baud_rate",     // CFG_QUINT32_SERIAL_BAUD
-    "analyzer/update_time",      // CFG_QUINT32_ANALYZER_UPDATE_TIME
     "shupito/flash_mode",        // CFG_QUINT32_SHUPITO_MODE
     "shupito/prog_speed",        // CFG_QUINT32_SHUPITO_PRG_SPEED
     "general/language",          // CFG_QUINT32_LANGUAGE
@@ -58,6 +41,9 @@ static const QString keys_string[CFG_STRING_NUM] =
     "tcpsocket/address",          // CFG_STRING_TCP_ADDR
     "proxy/address",              // CFG_STRING_PROXY_ADDR
     "analyzer/js_source",         // CFG_STRING_ANALYZER_JS
+    "terminal/textfile",          // CFG_STRING_TERMINAL_TEXTFILE
+    "terminal/font",              // CFG_STRING_TERMINAL_FONT
+    "shupito/terminal_font",      // CFG_STRING_SHUPITO_TERM_FONT
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -65,6 +51,18 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
     "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
     "shupito/show_fuses",         // CFG_BOOL_SHUPITO_SHOW_FUSES
+    "shupito/overvoltage_warn",   // CFG_BOOL_SHUPITO_OVERVOLTAGE
+    "shupito/turnoff_vcc",        // CFG_BOOL_SHUPITO_TURNOFF_VCC
+};
+
+static const QString keys_variant[CFG_VARIANT_NUM] =
+{
+    "general/connections",        // CFG_VARIANT_CONNECTIONS
+};
+
+static const QString keys_float[CFG_FLOAT_NUM] =
+{
+    "shupito/overvoltage_val",    // CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL
 };
 
 Config::Config()
@@ -75,7 +73,6 @@ Config::Config()
     m_def_quint32[CFG_QUINT32_CONNECTION_TYPE]     = MAX_CON_TYPE;
     m_def_quint32[CFG_QUINT32_TAB_TYPE]            = 0;
     m_def_quint32[CFG_QUINT32_SERIAL_BAUD]         = BAUD38400;
-    m_def_quint32[CFG_QUINT32_ANALYZER_UPDATE_TIME]= 100;
     m_def_quint32[CFG_QUINT32_SHUPITO_MODE]        = 0;
     m_def_quint32[CFG_QUINT32_SHUPITO_PRG_SPEED]   = 0;
     m_def_quint32[CFG_QUINT32_LANGUAGE]            = 0;
@@ -96,10 +93,17 @@ Config::Config()
     m_def_string[CFG_STRING_TCP_ADDR]              = "127.0.0.1";
     m_def_string[CFG_STRING_PROXY_ADDR]            = "0";
     m_def_string[CFG_STRING_ANALYZER_JS]           = "";
+    m_def_string[CFG_STRING_TERMINAL_TEXTFILE]     = "";
+    m_def_string[CFG_STRING_TERMINAL_FONT]         = "";
+    m_def_string[CFG_STRING_SHUPITO_TERM_FONT]     = "";
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = false;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_FUSES]        = true;
+    m_def_bool[CFG_BOOL_SHUPITO_OVERVOLTAGE]       = false;
+    m_def_bool[CFG_BOOL_SHUPITO_TURNOFF_VCC]       = false;
+
+    m_def_float[CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL] = 5.5f;
 }
 
 Config::~Config()
@@ -162,4 +166,24 @@ bool Config::get(cfg_bool item)
 void Config::set(cfg_bool item, bool val)
 {
     m_settings->setValue(keys_bool[item], val);
+}
+
+QVariant Config::get(cfg_variant item)
+{
+    return m_settings->value(keys_variant[item]);
+}
+
+void Config::set(cfg_variant item, QVariant const & val)
+{
+    m_settings->setValue(keys_variant[item], val);
+}
+
+float Config::get(cfg_float item)
+{
+    return m_settings->value(keys_float[item], m_def_float[item]).toFloat();
+}
+
+void Config::set(cfg_float item, float val)
+{
+    m_settings->setValue(keys_float[item], val);
 }

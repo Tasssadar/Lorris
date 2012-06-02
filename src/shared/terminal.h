@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef TERMINAL_H
 #define TERMINAL_H
@@ -55,6 +39,7 @@ class Terminal : public QAbstractScrollArea
 
 Q_SIGNALS:
     void keyPressed(QString key);
+    void fontChanged(const QString& fontData);
 
 public:
     Terminal(QWidget *parent);
@@ -64,10 +49,13 @@ public:
 
     QByteArray getData()
     {
-        return QByteArray(m_data, m_data_size);
+        return QByteArray(m_data.data(), m_data.size());
     }
 
     int getFmt() { return m_fmt; }
+    void setFont(const QFont &f);
+    void loadFont(const QString& str);
+    QString getFontData();
 
 public slots:
     void clear();
@@ -80,6 +68,7 @@ public slots:
     void appendText(const QByteArray& text);
     void setFmt(int fmt);
     void setInput(quint8 input);
+    void showFontDialog();
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -113,10 +102,7 @@ private:
 
     std::vector<QString> m_lines;
     std::vector<QString> m_pause_lines;
-
-    char *m_data;
-    quint32 m_data_alloc;
-    quint32 m_data_size;
+    std::vector<char> m_data;
 
     QString m_command;
 

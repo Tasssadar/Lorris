@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include "shupitopacket.h"
 
@@ -71,22 +55,24 @@ bool ShupitoPacket::isValid()
     return true;
 }
 
-quint8 ShupitoPacket::addData(char *d_itr, char *d_end)
+quint8 ShupitoPacket::addData(char *d_first, char *d_end)
 {
-    quint8 read = 0;
+    char * d_cur = d_first;
 
     if(itr == 0)
     {
-        if(quint8(*(d_itr+read++)) == 0x80)
+        if(d_cur != d_end && quint8(*d_cur++) == 0x80)
             m_data[itr++] = 0x80;
         else
             return 0;
     }
-    if(itr == 1 && d_end - d_itr > 1)
-        m_data[itr++] = *(d_itr+read++);
 
-    quint8 size = getLen();
-    for(quint8 i = itr - 2; i < size && d_itr+read != d_end; ++i)
-        m_data[itr++] = *(d_itr+read++);
-    return read;
+    Q_ASSERT(itr >= 1);
+    while (d_cur != d_end
+        && (itr == 1 || itr < getLen() + 2))
+    {
+        m_data[itr++] = *d_cur++;
+    }
+
+    return d_cur - d_first;
 }

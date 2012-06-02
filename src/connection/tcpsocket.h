@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef TCPSOCKET_H
 #define TCPSOCKET_H
@@ -33,7 +17,7 @@ class QSpinBox;
 class QLineEdit;
 class QTcpSocket;
 
-class TcpSocket : public Connection
+class TcpSocket : public PortConnection
 {
     Q_OBJECT
 public:
@@ -48,9 +32,17 @@ public:
     {
         m_address = address;
         m_port = port;
-        m_idString = address + ":" + QString::number(port);
     }
-    
+
+    QString host() const { return m_address; }
+    void setHost(QString const & value);
+
+    quint16 port() const { return m_port; }
+    void setPort(quint16 value);
+
+    QHash<QString, QVariant> config() const;
+    bool applyConfig(QHash<QString, QVariant> const & config);
+
 public slots:
     void connectResultSer(bool opened);
     void tcpConnectResult();
@@ -67,25 +59,5 @@ private:
     QFuture<bool> m_future;
     QFutureWatcher<bool> m_watcher;
 };
-
-class TcpSocketBuilder : public ConnectionBuilder
-{
-    Q_OBJECT
-public:
-    TcpSocketBuilder(QWidget *parent, int moduleIdx) : ConnectionBuilder(parent, moduleIdx)
-    {
-    }
-
-    void addOptToTabDialog(QGridLayout *layout);
-    void CreateConnection(WorkTab *tab);
-
-private slots:
-    void conResult(Connection *con, bool open);
-
-private:
-    QLineEdit *m_address;
-    QSpinBox *m_port;
-};
-
 
 #endif // TCPSOCKET_H

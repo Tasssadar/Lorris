@@ -1,32 +1,16 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QFile>
 #include <QObject>
 #include <QDebug>
 
 #include "hexfile.h"
-#include "common.h"
+#include "../common.h"
 #include "chipdefs.h"
 
 // Most of this file is ported from avr232client, file program.hpp
@@ -117,32 +101,27 @@ void HexFile::LoadFromFile(const QString &path)
         if (length != (int)rec_nums.size() - 5)
             throw QString(QObject::tr("Invalid record lenght specified (line %1)")).arg(lineno);
 
-        if (rectype == 4)
+        switch(rectype)
         {
-            if (length != 2)
-                throw QString(QObject::tr("Invalid type 4 record (line %1)")).arg(lineno);
-            base = (rec_nums[4] * 0x100 + rec_nums[5]) << 16;
-            continue;
+            case 0: // Data record -- fallthrough to continue
+                addRegion(base + address, rec_nums.data() + 4, rec_nums.data() + rec_nums.size() - 1, lineno);
+                break;
+            case 1: // EOF
+                return;
+            case 2: // Extended Segment Address Record
+            case 4: // Extended Linear Address Record
+            {
+                if (length != 2)
+                    throw QString(QObject::tr("Invalid type %1 record (line %2)")).arg(rectype).arg(lineno);
+                base = (rec_nums[4] * 0x100 + rec_nums[5]);
+                base = (rectype == 2) ? (base * 16) : (base << 16);
+                continue;
+            }
+            case 3: // Start Segment Address Record - unused
+                continue;
+            default:
+                throw QString(QObject::tr("Invalid record type %1 (line %2)")).arg(rectype).arg(lineno);
         }
-
-        if (rectype == 3)
-            continue;
-
-        if (rectype == 2)
-        {
-            if (length != 2)
-                throw QString(QObject::tr("Invalid type 2 record (line %1)")).arg(lineno);
-            base = (rec_nums[4] * 0x100 + rec_nums[5]) * 16;
-            continue;
-        }
-
-        if (rectype == 1)
-            break;
-
-        if (rectype != 0)
-            throw QString(QObject::tr("Invalid record type (line %1)")).arg(lineno);
-
-        addRegion(base + address, rec_nums.data() + 4, rec_nums.data() + rec_nums.size() - 1, lineno);
     }
 
     for(regionMap::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)

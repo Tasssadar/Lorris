@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QLabel>
 #include <QMouseEvent>
@@ -27,7 +11,7 @@
 
 #include "labellayout.h"
 #include "sourcedialog.h"
-#include "common.h"
+#include "../common.h"
 #include "packet.h"
 #include "devicetabwidget.h"
 #include "cmdtabwidget.h"
@@ -403,8 +387,9 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 
 void DraggableLabel::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(!m_drop || event->mimeData()->text() == objectName())
-        return;
+    if(!m_drop || !event->source() || event->mimeData()->text() == objectName())
+        return QWidget::dragEnterEvent(event);
+
     event->acceptProposedAction();
     QString css = valueLabel->styleSheet();
     css.replace(QRegExp("orange"), "red");
@@ -435,10 +420,10 @@ void DraggableLabel::dropEvent(QDropEvent *event)
 void DraggableLabel::setHighlighted(bool highlight)
 {
     m_highlighted = highlight;
+    QPalette p;
     if(highlight)
-        setStyleSheet("background-color: red");
-    else
-        setStyleSheet("");
+        p.setColor(QPalette::Window, Qt::red);
+    setPalette(p);
 }
 
 QString DraggableLabel::GetText()

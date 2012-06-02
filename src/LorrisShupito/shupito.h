@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef SHUPITO_H
 #define SHUPITO_H
@@ -31,7 +15,7 @@
 
 #include "shupitopacket.h"
 #include "shupitodesc.h"
-#include "shared/chipdefs.h"
+#include "../shared/chipdefs.h"
 
 enum Opcodes
 {
@@ -64,7 +48,8 @@ enum VerifyMode
     VERIFY_MAX
 };
 
-class Connection;
+class PortConnection;
+class ShupitoTunnel;
 
 // device.hpp, 122
 struct vdd_point
@@ -86,13 +71,13 @@ Q_SIGNALS:
     void vccValueChanged(quint8 id, double value);
     void vddDesc(const vdd_setup& vs);
     void tunnelData(const QByteArray& data);
-    void packetReveived();
+    void packetReceived();
     void tunnelStatus(bool);
 
 public:
     explicit Shupito(QObject *parent);
     ~Shupito();
-    void init(Connection *con, ShupitoDesc *desc);
+    void init(PortConnection *con, ShupitoDesc *desc);
 
     void readData(const QByteArray& data);
     void sendPacket(ShupitoPacket packet);
@@ -121,7 +106,6 @@ public:
     ShupitoDesc *getDesc() { return m_desc; }
     void setChipId(chip_definition cd) { m_chip_def = cd; }
     const chip_definition& getChipId() { return m_chip_def; }
-    std::vector<chip_definition> &getDefs() { return m_chip_defs; }
 
 public slots:
     void sendTunnelData(const QString& data)
@@ -141,7 +125,9 @@ private:
 
     void SendSetComSpeed();
 
-    Connection *m_con;
+    PortConnection *m_con;
+    QScopedPointer<ShupitoTunnel> m_tunnel_conn;
+
     ShupitoPacket *m_packet;
     ShupitoDesc *m_desc;
     QMutex mutex;
@@ -163,8 +149,6 @@ private:
     quint16 m_wait_max_packets;
 
     chip_definition m_chip_def;
-
-    std::vector<chip_definition> m_chip_defs;
 };
 
 #endif // SHUPITO_H

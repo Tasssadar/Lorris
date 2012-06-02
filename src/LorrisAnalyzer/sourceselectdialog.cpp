@@ -1,37 +1,23 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QFileDialog>
 #include <QMessageBox>
 
 #include "sourceselectdialog.h"
 #include "ui_sourceselectdialog.h"
-#include "analyzerdatastorage.h"
+#include "storage.h"
 
 SourceSelectDialog::SourceSelectDialog(QWidget *parent) :
     QDialog(parent),ui(new Ui::SourceSelectDialog)
 {
     ui->setupUi(this);
+
+    ui->fileEdit->setText(sConfig.get(CFG_STRING_ANALYZER_FOLDER));
 
     connect(ui->contButton, SIGNAL(clicked()), this, SLOT(contButton()));
     connect(ui->browseButton, SIGNAL(clicked()), this, SLOT(browse()));
@@ -58,15 +44,7 @@ void SourceSelectDialog::contButton()
     }
 
     if(!ui->structBox->isChecked() && !ui->dataBox->isChecked() && !ui->widgetBox->isChecked())
-    {
-        QMessageBox *box = new QMessageBox();
-        box->setWindowTitle(QObject::tr("Error!"));
-        box->setText(QObject::tr("You have to select at least one thing to load."));
-        box->setIcon(QMessageBox::Critical);
-        box->exec();
-        delete box;
-        return;
-    }
+        return Utils::ThrowException(tr("You have to select at least one thing to load."), this);
 
     accept();
 }
@@ -105,21 +83,15 @@ void SourceSelectDialog::browse()
     QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"),
                                                     sConfig.get(CFG_STRING_ANALYZER_FOLDER),
                                                     filters);
-
-    ui->contButton->setEnabled(filename.length() != 0);
-
     if(filename.isEmpty())
         return;
 
     ui->fileEdit->setText(filename);
+    ui->contButton->setEnabled(true);
     sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
 }
 
 void SourceSelectDialog::loadRadioToggled(bool toggle)
 {
-    bool enableCont = !toggle;
-    if(toggle && ui->fileEdit->text().length() != 0)
-        enableCont = true;
-
-    ui->contButton->setEnabled(enableCont);
+    ui->contButton->setEnabled(!toggle || !ui->fileEdit->text().isEmpty());
 }

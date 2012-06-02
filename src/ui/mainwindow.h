@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
@@ -28,8 +12,13 @@
 #include <map>
 #include <vector>
 #include <QLocale>
+#include <QHash>
+
+#include "../dep/ecwin7/ecwin7.h"
 
 extern QLocale::Language langs[];
+
+class WorkTabInfo;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -37,13 +26,18 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void show(const QStringList &openFiles);
+
 protected:
     void closeEvent(QCloseEvent *event);
+    bool winEvent(MSG *message, long *result);
 
 private slots:
-    void NewTab();
+    void NewSpecificTab();
+    void newTab();
     void About();
-    void changeMenu(quint32 id);
+    void OpenConnectionManager();
 
     void langChanged(int idx);
 
@@ -55,7 +49,10 @@ private:
     QMenu* menuFile;
     QMenu* menuHelp;
 
+    EcWin7 m_win7;
+
     std::vector<QAction*> m_lang_menu;
+    QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };
 
 #endif // MAINWINDOW_H

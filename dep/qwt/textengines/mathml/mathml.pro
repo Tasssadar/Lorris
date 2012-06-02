@@ -12,7 +12,7 @@ message(Beside the Qwt license you also have to take care of its license. )
 
 include( $${PWD}/../textengines.pri )
 
-TARGET    = $$qtLibraryTarget(qwtmathml)
+TARGET    = $$qtLibraryTarget(qwtmathml_lorris)
 QT       += xml
 
 HEADERS = \
@@ -30,7 +30,7 @@ SOURCES += qwt_mml_document.cpp
 qwtmathmlspec.files  = qwtmathml.prf
 qwtmathmlspec.path  = $${QWT_INSTALL_FEATURES}
 
-INSTALLS += qwtmathmlspec
+#INSTALLS += qwtmathmlspec
 
 CONFIG(lib_bundle) {
 
@@ -43,6 +43,6 @@ else {
 
     headers.files  = qwt_mathml_text_engine.h
     headers.path   = $${QWT_INSTALL_HEADERS}
-    INSTALLS       += headers
+#    INSTALLS       += headers
 }
 

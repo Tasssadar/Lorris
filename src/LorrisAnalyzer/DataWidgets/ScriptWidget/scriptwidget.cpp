@@ -1,32 +1,16 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QLabel>
 
 #include "scriptwidget.h"
 #include "scripteditor.h"
 #include "scriptenv.h"
-#include "terminal.h"
+#include "../../../shared/terminal.h"
 
 ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -50,18 +34,19 @@ ScriptWidget::~ScriptWidget()
     delete m_editor;
 }
 
-void ScriptWidget::setUp(AnalyzerDataStorage *storage)
+void ScriptWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
     QAction *src_act = contextMenu->addAction(tr("Set source..."));
     connect(src_act,    SIGNAL(triggered()),                 this,       SLOT(setSourceTriggered()));
 
-    m_env = new ScriptEnv((AnalyzerDataArea*)parent(), getId(),  this);
+    m_env = new ScriptEnv((WidgetArea*)parent(), getId(),  this);
 
     connect(m_terminal, SIGNAL(keyPressed(QString)),         m_env,      SLOT(keyPressed(QString)));
     connect(m_env,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
     connect(m_env,      SIGNAL(appendTerm(QString)),         m_terminal, SLOT(appendText(QString)));
+    connect(m_env,      SIGNAL(appendTermRaw(QByteArray)),   m_terminal, SLOT(appendText(QByteArray)));
     connect(m_env,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
 }
 
@@ -76,7 +61,7 @@ void ScriptWidget::newData(analyzer_data *data, quint32 index)
         m_terminal->appendText(res);
 }
 
-void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void ScriptWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -97,14 +82,15 @@ void ScriptWidget::saveWidgetInfo(AnalyzerDataFile *file)
         quint32 len = data.length();
 
         file->write((char*)&len, sizeof(quint32));
-        file->write(data.data());
+        file->write(data.data(), len);
     }
 
     // storage data
+    m_env->onSave();
     m_env->getStorage()->saveToFile(file);
 }
 
-void ScriptWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void ScriptWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 
@@ -158,7 +144,7 @@ void ScriptWidget::sourceSet(bool close)
             m_editor->deleteLater();
             m_editor = NULL;
         }
-        emit updateData(true);
+        emit updateData();
     }
     catch(const QString& text)
     {

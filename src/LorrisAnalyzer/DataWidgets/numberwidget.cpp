@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #define QT_USE_FAST_CONCATENATION
 
@@ -35,7 +19,7 @@
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle("NumberWidget");
+    setTitle(tr("Number"));
     setIcon(":/dataWidgetIcons/num.png");
 
     m_widgetType = WIDGET_NUMBERS;
@@ -57,7 +41,7 @@ NumberWidget::~NumberWidget()
 
 }
 
-void NumberWidget::setUp(AnalyzerDataStorage *storage)
+void NumberWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -232,7 +216,7 @@ void NumberWidget::resizeEvent(QResizeEvent *event)
     DataWidget::resizeEvent(event);
 }
 
-void NumberWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void NumberWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -249,7 +233,7 @@ void NumberWidget::saveWidgetInfo(AnalyzerDataFile *file)
     file->write((char*)&level, sizeof(level));
 }
 
-void NumberWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void NumberWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 

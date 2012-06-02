@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QPushButton>
 #include <QString>
@@ -47,12 +31,13 @@
 
 #include "mainwindow.h"
 #include "HomeTab.h"
-#include "WorkTab/WorkTab.h"
-#include "WorkTab/WorkTabMgr.h"
-#include "WorkTab/WorkTabInfo.h"
-#include "tabdialog.h"
-#include "revision.h"
-#include "config.h"
+#include "homedialog.h"
+#include "../WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabMgr.h"
+#include "../WorkTab/WorkTabInfo.h"
+#include "../revision.h"
+#include "../config.h"
+#include "../ui/chooseconnectiondlg.h"
 
 QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
 
@@ -64,14 +49,17 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowState(Qt::WindowMaximized);
     setWindowIcon(QIcon(":/icons/icon.png"));
 
+    m_win7.init(winId());
+    Utils::setWin7(&m_win7);
+
     // menu bar
     menuBar = new QMenuBar(this);
     menuFile = new QMenu(tr("&File"), this);
     menuHelp = new QMenu(tr("&Help"), this);
 
-    QAction* actionNewTab = new QAction(tr("&New tab.."), this);
     QAction* actionQuit = new QAction(tr("&Quit"), this);
     QAction* actionAbout = new QAction(tr("About Lorris..."), this);
+    QAction* actionConnectionManager = new QAction(tr("Connection &manager..."), this);
 
     QMenu* menuLang = new QMenu(tr("Language"), this);
 
@@ -97,39 +85,45 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     setStatusBar(new QStatusBar(this));
+    Utils::setStatusBar(statusBar());
 
     quint32 curLang = sConfig.get(CFG_QUINT32_LANGUAGE);
     if(curLang >= m_lang_menu.size())
         curLang = 0;
     m_lang_menu[curLang]->setChecked(true);
 
-    actionNewTab->setShortcut(QKeySequence("Ctrl+T"));
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
-    connect(actionNewTab,   SIGNAL(triggered()), this, SLOT(NewTab()));
     connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
+    connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
 
-    menuFile->addAction(actionNewTab);
+    QMenu * menuFileNew = menuFile->addMenu(tr("&New"));
+
+    {
+        WorkTabMgr::InfoList const & infos = sWorkTabMgr.GetWorkTabInfos();
+        for (int i = 0; i < infos.size(); ++i)
+        {
+            WorkTabInfo * info = infos[i];
+            QAction * action = new QAction(info->GetName(), this);
+            m_actionTabInfoMap[action] = info;
+            connect(action, SIGNAL(triggered()), this, SLOT(NewSpecificTab()));
+            menuFileNew->addAction(action);
+        }
+    }
+
+    menuFile->addAction(actionConnectionManager);
     menuFile->addAction(actionQuit);
     menuHelp->addAction(actionAbout);
     menuHelp->addMenu(menuLang);
     menuBar->addMenu(menuFile);
     menuBar->addMenu(menuHelp);
-
-    // FIXME: replace by addSeparator() when supported
-    QAction *sep = menuBar->addAction("|");
-    sep->setEnabled(false);
-
     setMenuBar(menuBar);
 
     //Tabs
     TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
-    connect(tabWidget, SIGNAL(changeMenu(quint32)),                    SLOT(changeMenu(quint32)));
     connect(tabWidget, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
-
-    // Sort tab infos after they were added by static variables
-    sWorkTabMgr.SortTabInfos();
+    connect(tabWidget, SIGNAL(newTab()),                               SLOT(newTab()));
 
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);
@@ -137,7 +131,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    Utils::setWin7(NULL);
+    Utils::setStatusBar(NULL);
+}
 
+void MainWindow::show(const QStringList& openFiles)
+{
+    QMainWindow::show();
+
+    for(QStringList::const_iterator itr = openFiles.begin(); itr != openFiles.end(); ++itr)
+        sWorkTabMgr.openTabWithFile(*itr);
+}
+
+bool MainWindow::winEvent(MSG *message, long *result)
+{
+    return m_win7.winEvent(message, result);
 }
 
 QString MainWindow::getVersionString()
@@ -146,9 +154,10 @@ QString MainWindow::getVersionString()
     return ver;
 }
 
-void MainWindow::NewTab()
+void MainWindow::OpenConnectionManager()
 {
-    sWorkTabMgr.NewTabDialog();
+    ChooseConnectionDlg dialog(0, this);
+    dialog.exec();
 }
 
 void MainWindow::About()
@@ -163,25 +172,6 @@ void MainWindow::About()
     box->setIcon(QMessageBox::Information);
     box->exec();
     delete box;
-}
-
-void MainWindow::changeMenu(quint32 id)
-{
-    WorkTab *tab = sWorkTabMgr.getWorkTab(id);
-    if(!tab)
-        return;
-
-    menuBar->clear();
-    menuBar->addMenu(menuFile);
-    menuBar->addMenu(menuHelp);
-
-    // FIXME: replace by addSeparator() when supported
-    QAction *sep = menuBar->addAction("|");
-    sep->setEnabled(false);
-
-    m_tab_menu = tab->getMenu();
-    for(quint8 i = 0; i < m_tab_menu.size(); ++i)
-        menuBar->addMenu(m_tab_menu[i]);
 }
 
 void MainWindow::langChanged(int idx)
@@ -203,4 +193,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
     else
         event->accept();
+}
+
+void MainWindow::NewSpecificTab()
+{
+    WorkTabInfo * info = m_actionTabInfoMap.value(this->sender());
+    if (info)
+        sWorkTabMgr.AddWorkTab(info);
+}
+
+void MainWindow::newTab()
+{
+    HomeDialog dialog(this);
+    dialog.exec();
 }

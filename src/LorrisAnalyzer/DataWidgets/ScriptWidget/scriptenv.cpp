@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QStringList>
 #include <QScriptValueIterator>
@@ -29,13 +13,13 @@
 #include <QTimer>
 #include <QComboBox>
 
-#include <analyzerdataarea.h>
-#include "DataWidgets/GraphWidget/graphcurve.h"
-#include "DataWidgets/datawidget.h"
-#include "DataWidgets/inputwidget.h"
+#include "../../widgetarea.h"
+#include "../GraphWidget/graphcurve.h"
+#include "../datawidget.h"
+#include "../inputwidget.h"
 #include "scriptenv.h"
 #include "scriptagent.h"
-#include "joystick/joymgr.h"
+#include "../../../joystick/joymgr.h"
 
 /* Simple JavaScript Inheritance
  * By John Resig http://ejohn.org/
@@ -56,7 +40,7 @@ QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &i
 void GraphCurveFromScriptValue(const QScriptValue &object, GraphCurve* &out)
 { out = qobject_cast<GraphCurve*>(object.toQObject()); }
 
-ScriptEnv::ScriptEnv(AnalyzerDataArea* area, quint32 w_id, QObject *parent) :
+ScriptEnv::ScriptEnv(WidgetArea* area, quint32 w_id, QObject *parent) :
     QScriptEngine(parent)
 {
     pushContext();
@@ -117,6 +101,7 @@ void ScriptEnv::prepareNewContext()
     QScriptValue getH = newFunction(&__getHeight);
     QScriptValue throwEx = newFunction(&__throwException);
     QScriptValue getJoy = newFunction(&__getJoystick);
+    QScriptValue closeJoy = newFunction(&__closeJoystick);
     QScriptValue getJoyName = newFunction(&__getJoystickNames);
     QScriptValue newTimer = newFunction(&__newTimer);
     QScriptValue addComboItems = newFunction(&__addComboBoxItems);
@@ -136,6 +121,7 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("getHeight", getH);
     m_global.setProperty("throwException", throwEx);
     m_global.setProperty("getJoystick", getJoy);
+    m_global.setProperty("closeJoystick", closeJoy);
     m_global.setProperty("getJoystickNames", getJoyName);
     m_global.setProperty("newTimer", newTimer);
     m_global.setProperty("addComboBoxItems", addComboItems);
@@ -171,8 +157,8 @@ void ScriptEnv::prepareNewContext()
     m_global.setProperty("area", newQObject(m_area));
     m_global.setProperty("storage", newQObject(m_storage));
 
-    const AnalyzerDataArea::w_map& widgets = m_area->getWidgets();
-    for(AnalyzerDataArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
+    const WidgetArea::w_map& widgets = m_area->getWidgets();
+    for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
     {
         QString name = sanitizeWidgetName((*itr)->getTitle());
         if(!name.isEmpty())
@@ -212,6 +198,7 @@ void ScriptEnv::setSource(const QString &source)
     m_on_widget_add = m_global.property("onWidgetAdd");
     m_on_widget_remove = m_global.property("onWidgetRemove");
     m_on_script_exit = m_global.property("onScriptExit");
+    m_on_save = m_global.property("onSave");
 
     setAgent(new ScriptAgent(this));
 }
@@ -372,6 +359,12 @@ void ScriptEnv::callEventHandler(const QString& eventId)
     handler.call();
 }
 
+void ScriptEnv::onSave()
+{
+    if(m_on_save.isFunction())
+        m_on_save.call();
+}
+
 QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
 {
     emit ((ScriptEnv*)engine)->clearTerm();
@@ -380,7 +373,25 @@ QScriptValue ScriptEnv::__clearTerm(QScriptContext */*context*/, QScriptEngine *
 
 QScriptValue ScriptEnv::__appendTerm(QScriptContext *context, QScriptEngine *engine)
 {
-    emit ((ScriptEnv*)engine)->appendTerm(context->argument(0).toString());
+    ScriptEnv *eng = (ScriptEnv*)engine;
+    QScriptValue arg = context->argument(0);
+
+    if(!arg.isArray())
+        emit eng->appendTerm(arg.toString());
+    else
+    {
+        QByteArray data;
+
+        QScriptValueIterator itr(arg);
+        while(itr.hasNext())
+        {
+            itr.next();
+            if(itr.value().isNumber() && itr.name() != "length")
+                data.push_back(itr.value().toUInt16());
+        }
+        emit eng->appendTermRaw(data);
+    }
+
     return QScriptValue();
 }
 
@@ -399,12 +410,9 @@ QScriptValue ScriptEnv::__sendData(QScriptContext *context, QScriptEngine *engin
     while(itr.hasNext())
     {
         itr.next();
-        if(itr.value().isNumber())
+        if(itr.value().isNumber() && itr.name() != "length")
             sendData.push_back(itr.value().toUInt16());
     }
-
-    if(sendData.size() > 1)
-        sendData.chop(1); // last num is array len, wtf
 
     emit ((ScriptEnv*)engine)->SendData(sendData);
     return QScriptValue();
@@ -489,6 +497,17 @@ QScriptValue ScriptEnv::__getJoystick(QScriptContext *context, QScriptEngine *en
 
     connect((ScriptEnv*)engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
     return engine->newQObject(joy);
+}
+
+QScriptValue ScriptEnv::__closeJoystick(QScriptContext *context, QScriptEngine *engine)
+{
+    if(context->argumentCount() != 1 || context->argument(0).isNull())
+        return QScriptValue();
+
+    Joystick *joy = (Joystick*)context->argument(0).toQObject();
+    disconnect((ScriptEnv*)engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
+    joy->stopUsing(engine);
+    return QScriptValue();
 }
 
 QScriptValue ScriptEnv::__newTimer(QScriptContext */*context*/, QScriptEngine *engine)

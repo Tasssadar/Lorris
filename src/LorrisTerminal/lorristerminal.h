@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef LORRISTERMINAL_H
 #define LORRISTERMINAL_H
@@ -28,9 +12,12 @@
 #include <QLineEdit>
 #include <QTimer>
 #include <QByteArray>
+#include <QToolButton>
 
-#include "WorkTab/WorkTab.h"
-#include "terminal.h"
+#include "../WorkTab/WorkTab.h"
+#include "../shared/terminal.h"
+#include "../ui/chooseconnectiondlg.h"
+#include "../ui/connectbutton.h"
 
 class QVBoxLayout;
 class QTextEdit;
@@ -54,7 +41,6 @@ enum states_
 
 enum buttons_
 {
-    BUTTON_DISCONNECT  = 0x01,
     BUTTON_STOP        = 0x02,
     BUTTON_FLASH       = 0x04,
     BUTTON_EEPROM_READ = 0x08,
@@ -65,12 +51,15 @@ namespace Ui {
     class LorrisTerminal;
 }
 
-class LorrisTerminal : public WorkTab
+class LorrisTerminal : public PortConnWorkTab
 {
     Q_OBJECT
 public:
     explicit LorrisTerminal();
     virtual ~LorrisTerminal();
+
+    void onTabShow();
+    virtual void setConnection(PortConnection *con);
 
 private slots:
     //Buttons
@@ -79,7 +68,6 @@ private slots:
     void stopButton();
     void flashButton();
     void pauseButton();
-    void connectButton();
     void eepromButton();
     void eepromImportButton();
     void fmtAction(int act);
@@ -91,6 +79,7 @@ private slots:
     void sendKeyEvent(const QString& key);
     void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);
+    void saveTermFont(const QString& fontData);
 
     //Timers
     void stopTimerSig();
@@ -111,7 +100,6 @@ private:
     QTimer *flashTimeoutTimer;
     QByteArray stopCmd;
     HexFile *hex;
-    Terminal *terminal;
 
     QAction *m_export_eeprom;
     QAction *m_import_eeprom;
@@ -122,10 +110,10 @@ private:
     quint16 m_eepromItr;
     EEPROM *m_eeprom;
 
-    std::vector<chip_definition> m_chip_defs;
     std::vector<page> m_pages;
     quint32 m_cur_page;
 
+    ConnectButton * m_connectButton;
     Ui::LorrisTerminal *ui;
 };
 
