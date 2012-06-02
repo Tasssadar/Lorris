@@ -23,7 +23,7 @@
 
 #include <QHBoxLayout>
 
-#include "terminal.h"
+#include "../shared/terminal.h"
 #include "lorrisavr.h"
 #include "mcu.h"
 

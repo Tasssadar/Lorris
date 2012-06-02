@@ -30,7 +30,7 @@
 #include <QMap>
 #include <QMutex>
 
-#include "hexfile.h"
+#include "../shared/hexfile.h"
 
 struct inst_prototype;
 struct mcu_prototype;

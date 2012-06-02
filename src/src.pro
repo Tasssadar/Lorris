@@ -103,11 +103,12 @@ SOURCES += ui/mainwindow.cpp \
     shared/fuse_desc.cpp \
     shared/defmgr.cpp \
     ../dep/ecwin7/ecwin7.cpp \
-    src/LorrisAVR/lorrisavr.cpp \
-    src/LorrisAVR/lorrisavrinfo.cpp \
-    src/LorrisAVR/emulator.cpp \
-    src/LorrisAVR/mcu.cpp \
-    src/LorrisAVR/devices/usart.cpp
+    LorrisAVR/lorrisavr.cpp \
+    LorrisAVR/lorrisavrinfo.cpp \
+    LorrisAVR/emulator.cpp \
+    LorrisAVR/mcu.cpp \
+    LorrisAVR/devices/usart.cpp
+
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -195,13 +196,13 @@ HEADERS += ui/mainwindow.h \
     shared/fuse_desc.h \
     shared/defmgr.h \
     ../dep/ecwin7/ecwin7.h \
-    src/LorrisAVR/lorrisavr.h \
-    src/LorrisAVR/lorrisavrinfo.h \
-    src/LorrisAVR/emulator.h \
-    src/LorrisAVR/mcu.h \
-    src/LorrisAVR/instructions.h \
-    src/LorrisAVR/mcu_prototype.h \
-    src/LorrisAVR/devices/usart.h
+    LorrisAVR/lorrisavr.h \
+    LorrisAVR/lorrisavrinfo.h \
+    LorrisAVR/emulator.h \
+    LorrisAVR/mcu.h \
+    LorrisAVR/instructions.h \
+    LorrisAVR/mcu_prototype.h \
+    LorrisAVR/devices/usart.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include

@@ -24,7 +24,7 @@
 #ifndef LORRISAVRINFO_H
 #define LORRISAVRINFO_H
 
-#include "WorkTab/WorkTabInfo.h"
+#include "../WorkTab/WorkTabInfo.h"
 
 class LorrisAVRInfo : public WorkTabInfo
 {
@@ -34,7 +34,6 @@ public:
     WorkTab *GetNewTab();
     QString GetName();
     QString GetDescription();
-    quint8 GetConType() { return CON_MSK(CONNECTION_FILE); }
 };
 
 #endif // LORRISAVRINFO_H
