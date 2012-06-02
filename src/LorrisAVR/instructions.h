@@ -137,16 +137,13 @@ namespace ArgResolvers
         return ((code1 & 0x2000) >> 8) | ((code1 & 0x0C00) >> 7) | (code1 & 0b0111);
     }
 
-    static int addr_shift12(quint16 code1, quint16 /*code2*/, quint32 address)
+    static int addr_shift12(quint16 code1, quint16 /*code2*/, quint32 /*address*/)
     {
         int ret = 0;
         if(code1 & 0x0800)
             ret = (code1 | (-1^0xFFF))*2;
         else
             ret = (code1 & 0x0FFF);
-#if DEBUG
-        qDebug("%04x", ret+address+2);
-#endif
         return ret;
     }
 
@@ -394,5 +391,6 @@ static inst_prototype instructions[] =
     {141,"xch",   0x9204, 0xFE0F, 1, REG_D5, NONE},
     {255, NULL,   0,      0,      0, NONE, NONE}
 };
+#define INST_COUNT 142
 
 #endif // INSTRUCTIONS_H

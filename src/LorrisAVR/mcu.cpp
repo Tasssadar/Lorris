@@ -23,8 +23,9 @@
 
 #include <QDebug>
 #include <stdio.h>
+#include <QElapsedTimer>
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #include "mcu.h"
 #include "instructions.h"
@@ -32,10 +33,9 @@
 
 MCU::MCU() : QThread()
 {
-    m_freq = 20000000 / 2; // 20MHz
+    m_freq = 200000 / 1000; // 200 Khz
     m_protype = &atmega328p;
 
-    m_data_mem = m_prog_mem = m_eeprom = NULL;
     m_data_section = m_bss_section = NULL;
 
     m_run = true;
@@ -45,137 +45,106 @@ MCU::~MCU()
 {
     m_run = false;
     wait();
-
-    for(quint32 i = 0; i < m_protype->prog_mem_size; ++i)
-        delete m_instructions[i];
-    delete[] m_instructions;
-
-    delete[] m_data_mem;
-    delete[] m_prog_mem;
-    delete[] m_eeprom;
 }
 
 void MCU::init(HexFile *hex)
 {
     // Allocate memory
-    m_data_mem = new quint8[m_protype->sram_size + 0xFF];
-    m_prog_mem = new quint8[m_protype->prog_mem_size];
-    m_eeprom = new quint8[m_protype->eeprom_size];
+    m_data_mem = vec(m_protype->sram_size + 0xFF, 0);
+    m_prog_mem = vec(m_protype->prog_mem_size, 0);
+    m_eeprom = vec(m_protype->eeprom_size, 0);
 
-    m_data_section = m_data_mem + 0x100;
+    m_data_section = m_data_mem.data() + 0x100;
 
     // set stack pointer to byte behind sram end
     // program should do this by itself
-    m_stack_pointer = wrapper_16(m_data_mem + m_protype->SPL);
-    m_stack_pointer.set(m_protype->sram_size + 0xFF);
+    m_stack_pointer = wrapper_16(m_data_mem.data() + m_protype->SPL);
+    m_stack_pointer.set(m_protype->sram_size + 0x100);
 
-    x_register = wrapper_16(m_data_mem + 0x1A);
-    y_register = wrapper_16(m_data_mem + 0x1C);
-    z_register = wrapper_16(m_data_mem + 0x1E);
+    x_register = wrapper_16(m_data_mem.data() + 0x1A);
+    y_register = wrapper_16(m_data_mem.data() + 0x1C);
+    z_register = wrapper_16(m_data_mem.data() + 0x1E);
 
-    m_sreg = m_data_mem + 0x5F;
+    m_sreg = m_data_mem.data() + 0x5F;
     *m_sreg = 0;
 
     m_program_counter = 0x00;
 
-    m_instructions = new instruction*[m_protype->prog_mem_size]();
-
     addInstHandlers();
 
     HexFile::regionMap& data = hex->getData();
-    bool load_data = false;
     for(HexFile::regionMap::iterator itr = data.begin(); itr != data.end(); ++itr)
     {
         quint32 offset = itr->first;
 
         std::vector<quint8>& sec_data = itr->second;
+        if(offset+sec_data.size() > m_prog_mem.size())
+            throw tr("Program is too big!");
 
-        // load instructions
-        quint32 i = 0;
-        while(!load_data && i+1 < sec_data.size())
-        {
-            quint8 first = sec_data[i];
-            quint8 second = sec_data[i+1];
-
-            m_prog_mem[offset + i] = first;
-            m_prog_mem[offset + i+1] = second;
-
-            quint16 inst_num = (second << 8) | first;
-            inst_prototype *prot = getInstPrototype(inst_num);
-
-            quint16 next_inst = 0;
-            if(prot->words == 2)
-            {
-                Q_ASSERT(sec_data.size() > i+3);
-                next_inst = (sec_data[i+3] << 8) | sec_data[i+2];
-                m_prog_mem[offset + i+2] = sec_data[i+2];
-                m_prog_mem[offset + i+3] = sec_data[i+3];
-            }
-
-            if(!prot)
-            {
-                //Q_ASSERT?
-                qDebug() << "Unhandled instruction " << inst_num << second << first;
-                i += 2;
-                continue;
-            }
-            int arg1 = arg_resolvers[prot->arg1](inst_num, next_inst, offset+i);
-            int arg2 = arg_resolvers[prot->arg2](inst_num, next_inst, offset+i);
-
-            instruction *inst = new instruction;
-            inst->arg1 = arg1;
-            inst->arg2 = arg2;
-            inst->handler = getInstHandler(prot->id);
-            inst->prototype = prot;
-
-            m_instructions[offset+i] = inst;
-            i += prot->words*2;
-
-            // FIXME: I really dont know how .data and .text are
-            // splited, buw I think .text section always ends with rjmp .-2
-            if(prot->id == 101 && inst->arg1 == -2) // rjmp   .-2
-                load_data = true;
-        }
-
-        // load data
-        // FIXME: is it 16bit aligned?
-        while(load_data && i+1 < sec_data.size())
-        {
-            m_data_section[offset + i] = sec_data[i];
-            m_data_section[offset + i+1] = sec_data[i+1];
-            i += 2;
-        }
+        for(quint32 i = 0; i < sec_data.size(); ++i)
+            m_prog_mem[offset+i] = sec_data[i];
     }
+
 #if DEBUG
-    for(quint32 i = 0; i < m_protype->prog_mem_size; ++i)
+    for(quint32 i = 0; i+1 < m_prog_mem.size();)
     {
-        if(!m_instructions[i])
-            continue;
-
-        instruction *inst = m_instructions[i];
-        int argType[] = { inst->prototype->arg1, inst->prototype->arg2 };
-        int arg[] = { inst->arg1, inst->arg2 };
-
-        QString str = QString("0x%1: %2").arg(i, 4, 16, QChar('0')).arg(QString(inst->prototype->name), -5, QChar(' '));
-
-        for(int i = 0; i < 2; ++i)
+        instruction inst = getInstAt(i);
+        if(!inst.valid())
         {
-            if(argType[i] == NONE)
+            i += 2;
+            continue;
+        }
+
+        int argType[] = { inst.prototype->arg1, inst.prototype->arg2 };
+        int arg[] = { inst.arg1, inst.arg2 };
+
+        QString str = QString("0x%1: %2").arg(i, 4, 16, QChar('0')).arg(QString(inst.prototype->name), -5, QChar(' '));
+
+        for(int y = 0; y < 2; ++y)
+        {
+            if(argType[y] == NONE)
                 continue;
-            switch(argType[i])
+            switch(argType[y])
             {
                 case ADDR_SHIFT:
                 case ADDR_SHIFT12:
-                    str += QString(".%1 ").arg(arg[i]);
+                    str += QString(".%1 ").arg(arg[y]);
                     break;
                 default:
-                    str += QString("0x%1 ").arg(arg[i], 0, 16);
+                    str += QString("0x%1 ").arg(arg[y], 0, 16);
                     break;
             }
         }
         qDebug() << str;
+        i += inst.prototype->words*2;
     }
 #endif
+}
+
+instruction MCU::getInstAt(quint32 idx)
+{
+    instruction inst;
+    if(idx+1 >= m_prog_mem.size())
+        return inst;
+
+    quint16 opcode = (m_prog_mem[idx+1] << 8) | m_prog_mem[idx];
+    inst_prototype *prot = getInstPrototype(opcode);
+    if(!prot)
+        return inst;
+
+    quint16 next_inst = 0;
+    if(prot->words == 2)
+    {
+        if(idx+3 >= m_prog_mem.size())
+            return inst;
+        next_inst = (m_prog_mem[idx+3] << 8) | m_prog_mem[idx+2];
+    }
+
+    idx += prot->words*2;
+    inst.arg1 = arg_resolvers[prot->arg1](opcode, next_inst, idx);
+    inst.arg2 = arg_resolvers[prot->arg2](opcode, next_inst, idx);
+    inst.prototype = prot;
+    return inst;
 }
 
 inst_prototype *MCU::getInstPrototype(quint16 val)
@@ -193,36 +162,49 @@ void MCU::startMCU()
     m_cycles_debug = 0;
     m_cycles_debug_counter = 0;
     connect(&m_cycles_timer, SIGNAL(timeout()), SLOT(checkCycles()));
-    m_cycles_timer.start(5000);
+    m_cycles_timer.start(1000);
 }
 
 void MCU::run()
 {
     m_cycle_counter = 0;
-    instruction *inst = NULL;
+    instruction inst;
+    instHandler handler = NULL;
+
+    QElapsedTimer workT;
+    workT.start();
+    msleep(50);
 
     while(m_run)
     {
-        inst = m_instructions[m_program_counter];
-
-        Q_ASSERT(inst);
-
-        m_program_counter += (inst->prototype->words*2);
-
-        if(inst->handler == NULL)
-            qDebug("No handler for ints %s", inst->prototype->name);
-        else
-            (this->*inst->handler)(inst->arg1, inst->arg2);
-
-        m_counter_mutex.lock();
-        //for(;cycle_sleep != 0; --cycle_sleep)
+        quint32 toDo = m_freq * workT.elapsed();
+        workT.restart();
+        for(quint32 i = 0; i < toDo;)
         {
-            usleep(1);
-            //for(quint32 i = 0; i < 500; ++i)
-            //    __asm__ volatile ("nop");
-            ++m_cycle_counter;
+            inst = getInstAt(m_program_counter);
+            Q_ASSERT(inst.valid());
+
+            m_program_counter += (inst.prototype->words*2);
+
+            handler = m_handlers[inst.prototype->id];
+            if(!handler)
+            {
+                qDebug("No handler for inst %s", inst.prototype->name);
+                ++i;
+                continue;
+            }
+
+            int ticks = (this->*handler)(inst.arg1, inst.arg2);
+            i += ticks;
+
+            m_counter_mutex.lock();
+            m_cycle_counter += ticks;
+            m_counter_mutex.unlock();
         }
-        m_counter_mutex.unlock();
+        //m_counter_mutex.lock();
+        //m_cycle_counter += toDo;
+        //m_counter_mutex.unlock();
+        msleep(std::max(int(50 - workT.elapsed()), 0));
     }
 }
 
@@ -230,32 +212,26 @@ void MCU::checkCycles()
 {
     QMutexLocker l(&m_counter_mutex);
 
-    qDebug("Freq: %u %u", m_cycle_counter/5, ((m_data_mem[y_register.get()+1] << 8) | m_data_mem[y_register.get()]));
+    qDebug("Freq: %u %u", (quint32)m_cycle_counter, ((m_data_mem[y_register.get()+1] << 8) | m_data_mem[y_register.get()]));
     m_cycle_counter = 0;
-}
-
-MCU::instHandler MCU::getInstHandler(quint8 id)
-{
-    if(m_handlers.contains(id))
-        return m_handlers[id];
-    return NULL;
 }
 
 void MCU::addInstHandlers()
 {
-    m_handlers.insert(2,   &MCU::in_adiw);
-    m_handlers.insert(6,   &MCU::in_bclr);
-    m_handlers.insert(31,  &MCU::in_call);
-    m_handlers.insert(55,  &MCU::in_eor);
-    m_handlers.insert(63,  &MCU::in_jmp);
-    m_handlers.insert(76,  &MCU::in_ldd_y_plus);
-    m_handlers.insert(78,  &MCU::in_ldi);
-    m_handlers.insert(61,  &MCU::in_in);
-    m_handlers.insert(95,  &MCU::in_out);
-    m_handlers.insert(97,  &MCU::in_push);
-    m_handlers.insert(98,  &MCU::in_rcall);
-    m_handlers.insert(101, &MCU::in_rjmp);
-    m_handlers.insert(130, &MCU::in_std_y_plus);
+    m_handlers = std::vector<instHandler>(INST_COUNT, NULL);
+    m_handlers[2] = &MCU::in_adiw;
+    m_handlers[6] = &MCU::in_bclr;
+    m_handlers[31] = &MCU::in_call;
+    m_handlers[55] = &MCU::in_eor;
+    m_handlers[63] = &MCU::in_jmp;
+    m_handlers[76] = &MCU::in_ldd_y_plus;
+    m_handlers[78] = &MCU::in_ldi;
+    m_handlers[61] = &MCU::in_in;
+    m_handlers[95] = &MCU::in_out;
+    m_handlers[97] = &MCU::in_push;
+    m_handlers[98] = &MCU::in_rcall;
+    m_handlers[101] = &MCU::in_rjmp;
+    m_handlers[130] = &MCU::in_std_y_plus;
 }
 
 void MCU::setDataMem16(int idx, quint16 val)
@@ -287,7 +263,7 @@ void MCU::check_ZNS(quint8 res)
 
 quint8 MCU::in_adiw(int arg1, int arg2)
 {
-    wrapper_16 wrap(m_data_mem + arg1);
+    wrapper_16 wrap(m_data_mem.data() + arg1);
     wrap += arg2;
     return 2;
 }
@@ -302,17 +278,17 @@ quint8 MCU::in_call(int arg1, int /*arg2*/)
 {
     if(m_protype->bit16)
     {
-        m_stack_pointer -= 2;
         setDataMem16(m_stack_pointer.get(), m_program_counter);
         m_program_counter = arg1;
+        m_stack_pointer -= 2;
         return 4;
     }
     else
     {
-        m_stack_pointer -= 3;
         m_data_mem[m_stack_pointer.get()] = (m_program_counter >> 16);
         m_data_mem[m_stack_pointer.get()+1] = (m_program_counter >> 8);
         m_data_mem[m_stack_pointer.get()+2] = (m_program_counter & 0xF);
+        m_stack_pointer -= 3;
         m_program_counter = arg1;
         return 5;
     }
@@ -359,8 +335,8 @@ quint8 MCU::in_out(int arg1, int arg2)
 
 quint8 MCU::in_push(int arg1, int /*arg2*/)
 {
-    --m_stack_pointer;
     m_data_mem[m_stack_pointer.get()] = m_data_mem[arg1];
+    --m_stack_pointer;
     return 2;
 }
 
@@ -368,17 +344,17 @@ quint8 MCU::in_rcall(int arg1, int /*arg2*/)
 {
     if(m_protype->bit16)
     {
-        m_stack_pointer -= 2;
         setDataMem16(m_stack_pointer.get(), m_program_counter);
         m_program_counter += arg1;
+        m_stack_pointer -= 2;
         return 3;
     }
     else
     {
-        m_stack_pointer -= 3;
         m_data_mem[m_stack_pointer.get()] = (m_program_counter >> 16);
         m_data_mem[m_stack_pointer.get()+1] = (m_program_counter >> 8);
         m_data_mem[m_stack_pointer.get()+2] = (m_program_counter & 0xF);
+        m_stack_pointer -= 3;
         m_program_counter += arg1;
         return 4;
     }

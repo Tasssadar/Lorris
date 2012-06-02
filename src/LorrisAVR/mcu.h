@@ -29,6 +29,7 @@
 #include <QTimer>
 #include <QMap>
 #include <QMutex>
+#include <vector>
 
 #include "../shared/hexfile.h"
 
@@ -39,10 +40,18 @@ class MCU;
 
 struct instruction
 {
+    instruction()
+    {
+        arg1 = 0;
+        arg2 = 0;
+        prototype = NULL;
+    }
+
+    bool valid() const { return prototype != NULL; }
+
     int arg1;
     int arg2;
     inst_prototype *prototype;
-    quint8 (MCU::*handler)(int, int);
 };
 
 struct wrapper_16
@@ -107,6 +116,7 @@ class MCU : public QThread
 public:
     typedef QHash<quint32, instruction> InstMap;
     typedef quint8 (MCU::*instHandler)(int, int);
+    typedef std::vector<quint8> vec;
     MCU();
     ~MCU();
 
@@ -124,6 +134,7 @@ private:
     void addInstHandlers();
     instHandler getInstHandler(quint8 id);
     void setDataMem16(int idx, quint16 val);
+    instruction getInstAt(quint32 idx);
 
     mcu_prototype *m_protype;
     quint32 m_freq;
@@ -137,14 +148,14 @@ private:
      * 0x0060 - 0x00FF - 160 extended I/O registers
      * 0x0100 - xxxxxx - SRAM
      */
-    quint8 *m_data_mem;
+    vec m_data_mem;
 
     /*
      * - App flash section
      * - Bootloader - NYI?
      */
-    quint8 *m_prog_mem;
-    quint8 *m_eeprom;
+    vec m_prog_mem;
+    vec m_eeprom;
 
     quint32 m_program_counter;
     wrapper_16 m_stack_pointer;
@@ -155,8 +166,7 @@ private:
     quint8 *m_data_section;
     quint8 *m_bss_section;
 
-    instruction **m_instructions;
-    QHash<quint8, instHandler> m_handlers;
+    std::vector<instHandler> m_handlers;
 
     // loop controls
     QTimer m_cycles_timer;
