@@ -33,7 +33,7 @@
 
 MCU::MCU() : QThread()
 {
-    m_freq = 200000 / 1000; // 200 Khz
+    m_freq = 20000000 / 1000; // 200 Khz
     m_protype = &atmega328p;
 
     m_data_section = m_bss_section = NULL;
@@ -70,6 +70,7 @@ void MCU::init(HexFile *hex)
 
     m_program_counter = 0x00;
 
+    m_instructions = std::vector<instruction>(m_protype->prog_mem_size/2);
     addInstHandlers();
 
     HexFile::regionMap& data = hex->getData();
@@ -121,9 +122,16 @@ void MCU::init(HexFile *hex)
 #endif
 }
 
-instruction MCU::getInstAt(quint32 idx)
+instruction& MCU::getInstAt(quint32 idx)
 {
-    instruction inst;
+    quint32 instIdx = idx/2;
+    if(!m_instructions[instIdx].isNull())
+        return m_instructions[instIdx];
+
+    instruction& inst = m_instructions[instIdx];
+    inst.arg1 = 0;
+    inst.arg2 = 0;
+
     if(idx+1 >= m_prog_mem.size())
         return inst;
 
@@ -140,9 +148,8 @@ instruction MCU::getInstAt(quint32 idx)
         next_inst = (m_prog_mem[idx+3] << 8) | m_prog_mem[idx+2];
     }
 
-    idx += prot->words*2;
-    inst.arg1 = arg_resolvers[prot->arg1](opcode, next_inst, idx);
-    inst.arg2 = arg_resolvers[prot->arg2](opcode, next_inst, idx);
+    inst.arg1 = arg_resolvers[prot->arg1](opcode, next_inst, idx+prot->words*2);
+    inst.arg2 = arg_resolvers[prot->arg2](opcode, next_inst, idx+prot->words*2);
     inst.prototype = prot;
     return inst;
 }
@@ -168,7 +175,6 @@ void MCU::startMCU()
 void MCU::run()
 {
     m_cycle_counter = 0;
-    instruction inst;
     instHandler handler = NULL;
 
     QElapsedTimer workT;
@@ -181,7 +187,7 @@ void MCU::run()
         workT.restart();
         for(quint32 i = 0; i < toDo;)
         {
-            inst = getInstAt(m_program_counter);
+            instruction& inst = getInstAt(m_program_counter);
             Q_ASSERT(inst.valid());
 
             m_program_counter += (inst.prototype->words*2);

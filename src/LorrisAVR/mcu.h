@@ -42,11 +42,12 @@ struct instruction
 {
     instruction()
     {
-        arg1 = 0;
-        arg2 = 0;
+        arg1 = -1;
+        arg2 = -1;
         prototype = NULL;
     }
 
+    bool isNull() const { return arg1 == -1 && arg2 == -1 && prototype == NULL; }
     bool valid() const { return prototype != NULL; }
 
     int arg1;
@@ -134,7 +135,7 @@ private:
     void addInstHandlers();
     instHandler getInstHandler(quint8 id);
     void setDataMem16(int idx, quint16 val);
-    instruction getInstAt(quint32 idx);
+    instruction& getInstAt(quint32 idx);
 
     mcu_prototype *m_protype;
     quint32 m_freq;
@@ -166,6 +167,7 @@ private:
     quint8 *m_data_section;
     quint8 *m_bss_section;
 
+    std::vector<instruction> m_instructions;
     std::vector<instHandler> m_handlers;
 
     // loop controls
