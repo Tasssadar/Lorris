@@ -35,14 +35,13 @@ LorrisAVR::LorrisAVR() :
     m_terminal = new Terminal(this);
     l->addWidget(m_terminal);
 
-    HexFile *hex = new HexFile();
-    hex->LoadFromFile("/home/tassadar/data/yunimin/programs/emulator_test/default/emulator_test.hex");
+    HexFile hex;
+    hex.LoadFromFile("/home/tassadar/data/yunimin/programs/emulator_test/default/emulator_test.hex");
 
     m_mcu = new MCU();
-    m_mcu->init(hex);
+    m_mcu->init(&hex);
 
     m_mcu->startMCU();
-    delete hex;
 }
 
 LorrisAVR::~LorrisAVR()

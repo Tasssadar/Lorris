@@ -33,7 +33,7 @@
 
 MCU::MCU() : QThread()
 {
-    m_freq = 20000000 / 1000; // 200 Khz
+    m_freq = 2000000 / 1000; // 2MHz
     m_protype = &atmega328p;
 
     m_data_section = m_bss_section = NULL;
