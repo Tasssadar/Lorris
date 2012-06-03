@@ -148,7 +148,6 @@ private slots:
 
 private:
     inst_prototype *getInstPrototype(quint16 val);
-    void addInstHandlers();
     instHandler getInstHandler(quint8 id);
     void setDataMem16(int idx, quint16 val);
     instruction& getInstAt(quint32 idx);
@@ -185,7 +184,6 @@ private:
     quint8 *m_bss_section;
 
     std::vector<instruction> m_instructions;
-    std::vector<instHandler> m_handlers;
 
     // loop controls
     QTimer m_cycles_timer;
@@ -213,6 +211,5 @@ public:
     quint8 in_rjmp(int arg1, int /*arg2*/);
     quint8 in_std_y_plus(int arg1, int arg2);
 };
-
 
 #endif // MCU_H

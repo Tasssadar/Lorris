@@ -25,11 +25,12 @@
 #include <stdio.h>
 #include <QElapsedTimer>
 
-//#define DEBUG 1
+#define DEBUG 1
 
 #include "mcu.h"
 #include "instructions.h"
 #include "mcu_prototype.h"
+#include "handlers.h"
 
 MCU::MCU() : QThread()
 {
@@ -76,9 +77,9 @@ void MCU::init(HexFile *hex, mcu_prototype *proto)
     m_program_counter = 0x00;
 
     m_instructions = std::vector<instruction>(m_protype->prog_mem_size/2);
-    addInstHandlers();
 
     HexFile::regionMap& data = hex->getData();
+    quint32 maxAddress = 0;
     for(HexFile::regionMap::iterator itr = data.begin(); itr != data.end(); ++itr)
     {
         quint32 offset = itr->first;
@@ -89,10 +90,11 @@ void MCU::init(HexFile *hex, mcu_prototype *proto)
 
         for(quint32 i = 0; i < sec_data.size(); ++i)
             m_prog_mem[offset+i] = sec_data[i];
+        maxAddress = std::max(maxAddress, (quint32)(offset+sec_data.size()));
     }
 
 #if DEBUG
-    for(quint32 i = 0; i+1 < m_prog_mem.size();)
+    for(quint32 i = 0; i+1 < m_prog_mem.size() && i < maxAddress;)
     {
         instruction inst = getInstAt(i);
         if(!inst.valid())
@@ -213,7 +215,7 @@ void MCU::run()
 
             m_program_counter += (inst.prototype->words*2);
 
-            handler = m_handlers[inst.prototype->id];
+            handler = instHandlers[inst.prototype->id];
             if(!handler)
             {
                 qDebug("No handler for inst %s", inst.prototype->name);
@@ -244,24 +246,6 @@ void MCU::checkCycles()
         m_cycle_counter = 0;
     }
     emit realFreq(cycles);
-}
-
-void MCU::addInstHandlers()
-{
-    m_handlers = std::vector<instHandler>(INST_COUNT, NULL);
-    m_handlers[2] = &MCU::in_adiw;
-    m_handlers[6] = &MCU::in_bclr;
-    m_handlers[31] = &MCU::in_call;
-    m_handlers[55] = &MCU::in_eor;
-    m_handlers[63] = &MCU::in_jmp;
-    m_handlers[76] = &MCU::in_ldd_y_plus;
-    m_handlers[78] = &MCU::in_ldi;
-    m_handlers[61] = &MCU::in_in;
-    m_handlers[95] = &MCU::in_out;
-    m_handlers[97] = &MCU::in_push;
-    m_handlers[98] = &MCU::in_rcall;
-    m_handlers[101] = &MCU::in_rjmp;
-    m_handlers[130] = &MCU::in_std_y_plus;
 }
 
 void MCU::setDataMem16(int idx, quint16 val)

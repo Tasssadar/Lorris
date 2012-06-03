@@ -202,7 +202,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAVR/mcu.h \
     LorrisAVR/instructions.h \
     LorrisAVR/mcu_prototype.h \
-    LorrisAVR/devices/usart.h
+    LorrisAVR/devices/usart.h \
+    LorrisAVR/handlers.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
