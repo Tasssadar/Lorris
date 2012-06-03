@@ -39,6 +39,7 @@ LorrisAVR::LorrisAVR() : WorkTab(),ui(new Ui::LorrisAVR)
     ui->freqBox->setValue(sConfig.get(CFG_QUINT32_AVR_FREQ));
 
     connect(&m_mcu, SIGNAL(realFreq(quint32)), SLOT(realFreq(quint32)));
+    connect(&m_mcu, SIGNAL(hackToEmulator(char)), SLOT(hackToTerm(char)));
 }
 
 LorrisAVR::~LorrisAVR()
@@ -120,4 +121,9 @@ void LorrisAVR::realFreq(quint32 freq)
 
     float res = freq/div[appIdx];
     ui->realFreq->setText(app[appIdx].arg(res, -3, 'f', 2, ' '));
+}
+
+void LorrisAVR::hackToTerm(char c)
+{
+    ui->terminal->appendText(QByteArray(1, c));
 }

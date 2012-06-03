@@ -35,7 +35,7 @@ enum sreg_flags
     SREG_V        = (1 << 3),
     SREG_NEG      = (1 << 2),
     SREG_ZERO     = (1 << 1),
-    SREG_CARRY    = (1 << 9)
+    SREG_CARRY    = (1 << 0)
 };
 
 struct mcu_prototype

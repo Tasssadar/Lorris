@@ -13,7 +13,7 @@ static quint8 (MCU::*instHandlers[INST_COUNT])(int, int) =
     NULL,            // 5
     &MCU::in_bclr,   // 6
     NULL,            // 7
-    NULL,            // 8
+    &MCU::in_brbc,   // 8
     NULL,            // 9
     NULL,            // 10
     NULL,            // 11
@@ -97,7 +97,7 @@ static quint8 (MCU::*instHandlers[INST_COUNT])(int, int) =
     NULL,            // 89
     NULL,            // 90
     NULL,            // 91
-    NULL,            // 92
+    &MCU::in_nop,    // 92
     NULL,            // 93
     NULL,            // 94
     &MCU::in_out,    // 95
@@ -105,12 +105,12 @@ static quint8 (MCU::*instHandlers[INST_COUNT])(int, int) =
     &MCU::in_push,   // 97
     &MCU::in_rcall,  // 98
     NULL,            // 99
-    NULL,            // 100
+    &MCU::in_reti,   // 100
     &MCU::in_rjmp,   // 101
     NULL,            // 102
     NULL,            // 103
     NULL,            // 104
-    NULL,            // 105
+    &MCU::in_sbci,   // 105
     NULL,            // 106
     NULL,            // 107
     NULL,            // 108
@@ -140,10 +140,10 @@ static quint8 (MCU::*instHandlers[INST_COUNT])(int, int) =
     NULL,            // 132
     NULL,            // 133
     NULL,            // 134
-    NULL,            // 135
+    &MCU::in_sts,    // 135
     NULL,            // 136
     NULL,            // 137
-    NULL,            // 138
+    &MCU::in_subi,   // 138
     NULL,            // 139
     NULL,            // 140
     NULL             // 141

@@ -65,7 +65,7 @@ void MCU::init(HexFile *hex, mcu_prototype *proto)
     // set stack pointer to byte behind sram end
     // program should do this by itself
     m_stack_pointer = wrapper_16(m_data_mem.data() + m_protype->SPL);
-    m_stack_pointer.set(m_protype->sram_size + 0x100);
+    m_stack_pointer.set(m_protype->sram_size + 0xFF);
 
     x_register = wrapper_16(m_data_mem.data() + 0x1A);
     y_register = wrapper_16(m_data_mem.data() + 0x1C);
@@ -208,7 +208,7 @@ void MCU::run()
 
         quint32 toDo = m_freq * workT.elapsed();
         workT.restart();
-        for(quint32 i = 0; i < toDo;)
+        for(quint32 i = 0; i < toDo && m_run;)
         {
             instruction& inst = getInstAt(m_program_counter);
             Q_ASSERT(inst.valid());
@@ -251,7 +251,19 @@ void MCU::checkCycles()
 void MCU::setDataMem16(int idx, quint16 val)
 {
     m_data_mem[idx++] = (val >> 8);
-    m_data_mem[idx] = (val & 0x0F);
+    m_data_mem[idx] = (val & 0xFF);
+}
+
+void MCU::AddToStack(quint8 byte)
+{
+    m_data_mem[m_stack_pointer.get()] = byte;
+    --m_stack_pointer;
+}
+
+quint8 MCU::GetFromStack()
+{
+    ++m_stack_pointer;
+    return m_data_mem[m_stack_pointer.get()];
 }
 
 void MCU::check_ZNS(quint8 res)
@@ -288,20 +300,30 @@ quint8 MCU::in_bclr(int arg1, int /*arg2*/)
     return 1;
 }
 
+quint8 MCU::in_brbc(int arg1, int arg2)
+{
+    if(!(*m_sreg & (1 << arg1)))
+    {
+        m_program_counter += arg2;
+        return 2;
+    }
+    return 1;
+}
+
 quint8 MCU::in_call(int arg1, int /*arg2*/)
 {
     if(m_protype->bit16)
     {
-        setDataMem16(m_stack_pointer.get(), m_program_counter);
+        AddToStack(m_program_counter >> 8);
+        AddToStack(m_program_counter & 0xFF);
         m_program_counter = arg1;
-        m_stack_pointer -= 2;
         return 4;
     }
     else
     {
-        m_data_mem[m_stack_pointer.get()] = (m_program_counter >> 16);
-        m_data_mem[m_stack_pointer.get()+1] = (m_program_counter >> 8);
-        m_data_mem[m_stack_pointer.get()+2] = (m_program_counter & 0xF);
+        AddToStack(m_program_counter >> 16);
+        AddToStack(m_program_counter >> 8);
+        AddToStack(m_program_counter & 0xFF);
         m_stack_pointer -= 3;
         m_program_counter = arg1;
         return 5;
@@ -341,6 +363,11 @@ quint8 MCU::in_in(int arg1, int arg2)
     return 1;
 }
 
+quint8 MCU::in_nop(int, int)
+{
+    return 1;
+}
+
 quint8 MCU::in_out(int arg1, int arg2)
 {
     m_data_mem[arg1] = m_data_mem[arg2];
@@ -349,8 +376,7 @@ quint8 MCU::in_out(int arg1, int arg2)
 
 quint8 MCU::in_push(int arg1, int /*arg2*/)
 {
-    m_data_mem[m_stack_pointer.get()] = m_data_mem[arg1];
-    --m_stack_pointer;
+    AddToStack(m_data_mem[arg1]);
     return 2;
 }
 
@@ -358,19 +384,36 @@ quint8 MCU::in_rcall(int arg1, int /*arg2*/)
 {
     if(m_protype->bit16)
     {
-        setDataMem16(m_stack_pointer.get(), m_program_counter);
+        AddToStack(m_program_counter >> 8);
+        AddToStack(m_program_counter & 0xFF);
         m_program_counter += arg1;
-        m_stack_pointer -= 2;
         return 3;
     }
     else
     {
-        m_data_mem[m_stack_pointer.get()] = (m_program_counter >> 16);
-        m_data_mem[m_stack_pointer.get()+1] = (m_program_counter >> 8);
-        m_data_mem[m_stack_pointer.get()+2] = (m_program_counter & 0xF);
-        m_stack_pointer -= 3;
+        AddToStack(m_program_counter >> 16);
+        AddToStack(m_program_counter >> 8);
+        AddToStack(m_program_counter & 0xFF);
         m_program_counter += arg1;
         return 4;
+    }
+}
+
+quint8 MCU::in_reti(int, int)
+{
+    *m_sreg |= SREG_IRQ;
+    if(m_protype->bit16)
+    {
+        m_program_counter = GetFromStack();
+        m_program_counter |= (GetFromStack() << 8);
+        return 4;
+    }
+    else
+    {
+        m_program_counter = GetFromStack();
+        m_program_counter |= (GetFromStack() << 8);
+        m_program_counter |= (GetFromStack() << 16);
+        return 5;
     }
 }
 
@@ -380,8 +423,76 @@ quint8 MCU::in_rjmp(int arg1, int /*arg2*/)
     return 2;
 }
 
+quint8 MCU::in_sbci(int arg1, int arg2)
+{
+    quint8 r = m_data_mem[arg1];
+    m_data_mem[arg1] = r - arg2 - bool(*m_sreg & SREG_CARRY);
+    quint8& res = m_data_mem[arg1];
+
+    quint8 val = *m_sreg;
+
+    if(abs(arg2 + bool(val & SREG_CARRY)) > abs(r))
+        val |= SREG_CARRY;
+    else
+        val &= ~(SREG_CARRY);
+
+    if(res) // Z is NOT set when res == 0 !!!!!!!!!!!!
+        val &= ~(SREG_ZERO);
+
+    if(res & 0x80)
+        val |= SREG_NEG;
+    else
+        val &= ~(SREG_NEG);
+
+    if(bool(val & SREG_NEG) ^ bool(val & SREG_V))
+        val |= SREG_SIGN;
+    else
+        val &= ~(SREG_SIGN);
+
+    *m_sreg = val;
+    return 1;
+}
+
 quint8 MCU::in_std_y_plus(int arg1, int arg2)
 {
     m_data_mem[y_register.get()+arg1] = m_data_mem[arg2];
     return 2;
+}
+
+quint8 MCU::in_sts(int arg1, int arg2)
+{
+    if(arg1 == m_protype->UDR0)
+        emit hackToEmulator(m_data_mem[arg2]);
+    m_data_mem[arg1] = m_data_mem[arg2];
+    return 2;
+}
+
+quint8 MCU::in_subi(int arg1, int arg2)
+{
+    quint8 r = m_data_mem[arg1];
+    m_data_mem[arg1] -= arg2;
+
+    if(abs(arg2) > abs(r))
+        *m_sreg |= SREG_CARRY;
+    else
+        *m_sreg &= ~(SREG_CARRY);
+
+    quint8 resb = m_data_mem[arg1] >> 3 & 0x1;
+    quint8 rdb = arg2 >> 3 & 0x1;
+    quint8 rrb = r >> 3 & 0x1;
+    if((~rdb & rrb) | (rrb & resb) | (resb & ~rdb))
+        *m_sreg |= SREG_HALFCARRY;
+    else
+        *m_sreg &= ~(SREG_HALFCARRY);
+
+    quint8 res7 = m_data_mem[arg1] >> 7 & 0x1;
+    quint8 rd7 = arg2 >> 7 & 0x1;
+    quint8 rr7 = r >> 7 & 0x1;
+    if((rd7 & ~rr7 & ~res7) | (~rd7 & rr7 & res7))
+        *m_sreg |= SREG_V;
+    else
+        *m_sreg &= ~(SREG_V);
+
+    check_ZNS(m_data_mem[arg1]);
+    return 1;
 }

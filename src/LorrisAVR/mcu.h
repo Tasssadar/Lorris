@@ -117,6 +117,7 @@ class MCU : public QThread
 
 Q_SIGNALS:
     void realFreq(quint32 freq);
+    void hackToEmulator(char c);
 
 public:
     typedef QHash<quint32, instruction> InstMap;
@@ -151,6 +152,9 @@ private:
     instHandler getInstHandler(quint8 id);
     void setDataMem16(int idx, quint16 val);
     instruction& getInstAt(quint32 idx);
+
+    void AddToStack(quint8 byte);
+    quint8 GetFromStack();
 
     mcu_prototype *m_protype;
     quint32 m_freq;
@@ -199,17 +203,23 @@ private:
 public:
     quint8 in_adiw(int arg1, int arg2);
     quint8 in_bclr(int arg1, int /*arg2*/);
+    quint8 in_brbc(int arg1, int arg2);
     quint8 in_call(int arg1, int /*arg2*/);
     quint8 in_eor(int arg1, int arg2);
     quint8 in_jmp(int arg1, int /*arg2*/);
     quint8 in_ldd_y_plus(int arg1, int arg2);
     quint8 in_ldi(int arg1, int arg2);
     quint8 in_in(int arg1, int arg2);
+    quint8 in_nop(int /*arg1*/, int /*arg2*/);
     quint8 in_out(int arg1, int arg2);
     quint8 in_push(int arg1, int /*arg2*/);
     quint8 in_rcall(int arg1, int /*arg2*/);
+    quint8 in_reti(int /*arg1*/, int /*arg2*/);
     quint8 in_rjmp(int arg1, int /*arg2*/);
+    quint8 in_sbci(int arg1, int arg2);
     quint8 in_std_y_plus(int arg1, int arg2);
+    quint8 in_sts(int arg1, int arg2);
+    quint8 in_subi(int arg1, int arg2);
 };
 
 #endif // MCU_H

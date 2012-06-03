@@ -44,6 +44,7 @@ private slots:
     void on_freqBox_valueChanged(int i);
 
     void realFreq(quint32 freq);
+    void hackToTerm(char c);
 
 private:
     MCU m_mcu;
