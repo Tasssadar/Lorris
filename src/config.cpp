@@ -28,6 +28,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "shupito/verify_mode",       // CFG_QUINT32_SHUPITO_VERIFY
     "analyzer/play_delay",       // CFG_QUINT32_ANALYZER_PLAY_DEL
     "shupito/terminal_format",   // CFG_QUITN32_SHUPITO_TERM_FMT
+    "avr/frequency",             // CFG_QUINT32_AVR_FREQ
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -44,6 +45,7 @@ static const QString keys_string[CFG_STRING_NUM] =
     "terminal/textfile",          // CFG_STRING_TERMINAL_TEXTFILE
     "terminal/font",              // CFG_STRING_TERMINAL_FONT
     "shupito/terminal_font",      // CFG_STRING_SHUPITO_TERM_FONT
+    "avr/hex_folder",             // CFG_STRING_AVR_HEX
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -83,6 +85,7 @@ Config::Config()
     m_def_quint32[CFG_QUINT32_SHUPITO_VERIFY]      = 1;
     m_def_quint32[CFG_QUINT32_ANALYZER_PLAY_DEL]   = 1000;
     m_def_quint32[CFG_QUITN32_SHUPITO_TERM_FMT]    = 0;
+    m_def_quint32[CFG_QUINT32_AVR_FREQ]            = 2000000;
 
     m_def_string[CFG_STRING_SERIAL_PORT]           = "";
     m_def_string[CFG_STRING_SHUPITO_PORT]          = "";
@@ -96,6 +99,7 @@ Config::Config()
     m_def_string[CFG_STRING_TERMINAL_TEXTFILE]     = "";
     m_def_string[CFG_STRING_TERMINAL_FONT]         = "";
     m_def_string[CFG_STRING_SHUPITO_TERM_FONT]     = "";
+    m_def_string[CFG_STRING_AVR_HEX]               = "";
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = false;

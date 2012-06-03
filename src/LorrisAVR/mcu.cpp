@@ -34,11 +34,14 @@
 MCU::MCU() : QThread()
 {
     m_freq = 2000000 / 1000; // 2MHz
-    m_protype = &atmega328p;
 
     m_data_section = m_bss_section = NULL;
+    m_protype = NULL;
 
     m_run = true;
+    m_paused = false;
+
+    connect(&m_cycles_timer, SIGNAL(timeout()), SLOT(checkCycles()));
 }
 
 MCU::~MCU()
@@ -47,8 +50,10 @@ MCU::~MCU()
     wait();
 }
 
-void MCU::init(HexFile *hex)
+void MCU::init(HexFile *hex, mcu_prototype *proto)
 {
+    m_protype = proto;
+
     // Allocate memory
     m_data_mem = vec(m_protype->sram_size + 0xFF, 0);
     m_prog_mem = vec(m_protype->prog_mem_size, 0);
@@ -164,12 +169,21 @@ inst_prototype *MCU::getInstPrototype(quint16 val)
 
 void MCU::startMCU()
 {
+    wait();
+
+    m_run = true;
     start();
 
     m_cycles_debug = 0;
     m_cycles_debug_counter = 0;
-    connect(&m_cycles_timer, SIGNAL(timeout()), SLOT(checkCycles()));
     m_cycles_timer.start(1000);
+}
+
+void MCU::stopMCU()
+{
+    m_cycles_timer.stop();
+    m_run = false;
+    wait(1000);
 }
 
 void MCU::run()
@@ -183,6 +197,13 @@ void MCU::run()
 
     while(m_run)
     {
+        if(m_paused)
+        {
+            workT.restart();
+            msleep(50);
+            continue;
+        }
+
         quint32 toDo = m_freq * workT.elapsed();
         workT.restart();
         for(quint32 i = 0; i < toDo;)
@@ -216,10 +237,13 @@ void MCU::run()
 
 void MCU::checkCycles()
 {
-    QMutexLocker l(&m_counter_mutex);
-
-    qDebug("Freq: %u %u", (quint32)m_cycle_counter, ((m_data_mem[y_register.get()+1] << 8) | m_data_mem[y_register.get()]));
-    m_cycle_counter = 0;
+    quint32 cycles;
+    {
+        QMutexLocker l(&m_counter_mutex);
+        cycles = m_cycle_counter;
+        m_cycle_counter = 0;
+    }
+    emit realFreq(cycles);
 }
 
 void MCU::addInstHandlers()

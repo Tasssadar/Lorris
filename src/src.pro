@@ -268,7 +268,8 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
     LorrisAnalyzer/playback.ui \
     ui/chooseconnectiondlg.ui \
-    LorrisShupito/overvccdialog.ui
+    LorrisShupito/overvccdialog.ui \
+    LorrisAVR/lorrisavr.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

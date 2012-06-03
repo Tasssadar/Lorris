@@ -114,6 +114,10 @@ struct wrapper_16
 class MCU : public QThread
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void realFreq(quint32 freq);
+
 public:
     typedef QHash<quint32, instruction> InstMap;
     typedef quint8 (MCU::*instHandler)(int, int);
@@ -121,8 +125,20 @@ public:
     MCU();
     ~MCU();
 
-    void init(HexFile *hex);
+    void init(HexFile *hex, mcu_prototype *proto);
     void startMCU();
+    void stopMCU();
+
+    void setFreq(quint32 freq)
+    {
+        m_freq = freq / 1000;
+    }
+
+    void setPaused(bool pause)
+    {
+        m_paused = pause;
+    }
+    bool isPaused() const { return m_paused; }
 
 protected:
     void run();
@@ -141,6 +157,7 @@ private:
     quint32 m_freq;
 
     volatile bool m_run;
+    volatile bool m_paused;
 
     // Memories
     /*

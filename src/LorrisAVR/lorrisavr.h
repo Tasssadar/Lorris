@@ -25,20 +25,30 @@
 #define LORRISAVR_H
 
 #include "WorkTab/WorkTab.h"
+#include "mcu.h"
+#include "ui_lorrisavr.h"
 
-class MCU;
-class Terminal;
+#include <vector>
 
-class LorrisAVR : public WorkTab
+class LorrisAVR : public WorkTab, private Ui::LorrisAVR
 {
     Q_OBJECT
 public:
     explicit LorrisAVR();
     ~LorrisAVR();
 
+private slots:
+    void on_browseBtn_clicked();
+    void on_startBtn_clicked();
+    void on_pauseBtn_clicked();
+    void on_freqBox_valueChanged(int i);
+
+    void realFreq(quint32 freq);
+
 private:
-    MCU *m_mcu;
-    Terminal *m_terminal;
+    MCU m_mcu;
+    Ui::LorrisAVR *ui;
+    std::vector<mcu_prototype*> m_prototypes;
 };
 
 #endif // LORRISAVR_H
