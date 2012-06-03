@@ -1,4 +1,3 @@
-<!-- head.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -27,7 +26,6 @@
   </head>
   <body>
     
-<!-- menu.html -->
     <a id="fork_me" href="https://github.com/Tasssadar/Lorris">
         <img style="position: absolute; top: 30; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
     </a>
@@ -60,7 +58,6 @@
         <p>
             GUI tool written in Qt which aims to be used when dealing with embedded devices, robots<br> and similar applications where you need to do something with data.
         </p>
-<!-- downloads.html -->
 <hr>
 <h3 id="downloads">Downloads</h3>
 <p>
@@ -94,7 +91,6 @@
     Thanks to github, you can also download source code in .zip or .tar.gz archive on <a href="https://github.com/Tasssadar/Lorris/downloads">downloads page</a>.
 </p>
 
-<!-- desc.html -->
 <hr>
 <h3 id="desc">Description</h3>
 <p>
@@ -196,7 +192,6 @@ Supported programming interfaces
 
 
 
-<!-- build.html -->
 <hr>
 <h3 id="build">Build instructions</h3>
 <p>
@@ -236,8 +231,39 @@ Supported programming interfaces
 <p style="margin-left: 30px">
     Lorris binary will be installed as /usr/bin/Lorris and translations as /usr/share/lorris/Lorris.*.qm.
 </p>
-
-<!-- license.html -->
+<h4>Building on Mac OS X</h4>
+<p style="margin-left: 30px">
+    Lorris can be built on OS X with a bit of effort (since <a href="https://github.com/Tasssadar/Lorris/commit/20b3dc2a75e7d959de9ac639638c2a5a38020ba9">20b3dc2a75e7</a>),
+    but it looks kinda horrible and there are some weird crashes. Qt on Mac requires OS X version >= 10.6.
+</p>
+    <b style="margin-left: 30px">1. XCode</b>
+    <p style="margin-left: 60px">
+        Download Xcode from that Apple store or whatsitsname. Can take a while.<br>
+        When it is done, open XCode, top menu XCode->Preferences->Downloads and install "Console tools" (GCC is in this package).
+    </p>
+    <b style="margin-left: 30px">2. SDL</b>
+    <p style="margin-left: 60px">
+        Download <a href="http://www.libsdl.org/download-1.2.php">libSDL <b>source</b></a>, extract it, open Terminal, go to the libSDL folder you've just created and run:
+        <pre style="margin-left: 60px">
+./configure
+make
+sudo make install</pre>
+    </p>
+    <b style="margin-left: 30px">3. Qt Framework</b>
+    <p style="margin-left: 60px">
+        Just <a href="http://qt.nokia.com/downloads">download Qt framework package</a> and install it.
+    </p>
+    <b style="margin-left: 30px">4. Lorris</b>
+    <p style="margin-left: 60px">
+        Download Lorris source, open Terminal and go to it's folder.
+    </p>
+        <pre style="margin-left: 60px">
+/Users/*username*/QtSDK/Desktop/*your qt version*/bin/qmake CONFIG+=release
+make
+sudo make install</pre>
+    <p style="margin-left: 30px">
+    Lorris will be installed among other applications (eg. /Applications).
+    </p>
 <hr>
 <h3 id="license">License &amp; third-party libraries</h3>
 <p>
@@ -266,14 +292,12 @@ Supported programming interfaces
     </ul>
 </p>
 
-<!-- bug.html -->
 <hr>
 <h3 id="bug">Bug report</h3>
 <p>
     If you find bug in Lorris or if you want some new feature in it, please create an 
     <a href="https://github.com/Tasssadar/Lorris/issues">issue on github</a>.
 </p>
-<!-- screenshots.html -->
 <hr>
 <h3 id="screenshots">Screenshots</h3>
 <table id="screenshot_big" width="100%" style="margin-bottom: 30px;" cellspacing="20px">
@@ -357,7 +381,6 @@ Supported programming interfaces
     </div>
 </div>
 
-<!-- bottom.html -->
         <div align="center">
             <small>This web page is using <a href="http://twitter.github.com/bootstrap/">Twitter's bootstrap</a></small>
         </div>

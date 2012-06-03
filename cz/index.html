@@ -1,4 +1,3 @@
-<!-- head.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -27,7 +26,6 @@
   </head>
   <body>
     
-<!-- menu.html -->
     <a id="fork_me" href="https://github.com/Tasssadar/Lorris">
         <img style="position: absolute; top: 30; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
     </a>
@@ -60,7 +58,6 @@
             Grafické rozhraní napsané v Qt určené pro práci s embedded zařízeními, roboty a podobnými aplikacemi.
         </p>
 
-<!-- downloads.html -->
 <hr>
 <h3 id="downloads">Ke stažení</h3>
 <p>
@@ -95,7 +92,6 @@
     na adrese <a href="https://github.com/Tasssadar/Lorris/downloads">https://github.com/Tasssadar/Lorris/downloads</a>.
 </p>
 
-<!-- desc.html -->
 <hr>
 <h3 id="desc">Popis</h3>
 <p>
@@ -200,7 +196,6 @@ Podporovaná programovací rozhraní:
 
 
 
-<!-- build.html -->
 <hr>
 <h3 id="build">Jak kompilovat</h3>
 <p>
@@ -241,8 +236,41 @@ Podporovaná programovací rozhraní:
 <p style="margin-left: 30px">
     Lorris binárka bude instalovaná jako /usr/bin/Lorris a překlady jako /usr/share/lorris/Lorris.*.qm.
 </p>
+<h4>Mac OS X</h4>
+<p style="margin-left: 30px">
+    Lorris lze pod OS X zkompilovat (od <a href="https://github.com/Tasssadar/Lorris/commit/20b3dc2a75e7d959de9ac639638c2a5a38020ba9">20b3dc2a75e7</a>),
+    ale vypadá tam docela divně a poměrně často divně padá. Qt na Macu potřebuje OS X verze >= 10.6.
+</p>
+    <b style="margin-left: 30px">1. XCode</b>
+    <p style="margin-left: 60px">
+        Nainstalujte XCode z Apple store, asi to bude chvíli trvat.<br>
+        Až to bude hotovo, otevřte XCode, v horním menu XCode->Preferences->Downloads a nainstaluje "Console tools".
+    </p>
+    <b style="margin-left: 30px">2. SDL</b>
+    <p style="margin-left: 60px">
+        Stáhněte <a href="http://www.libsdl.org/download-1.2.php">libSDL <b>source</b></a>, extrahujte ho, otevřte Terminál, bežte do složky kam
+        jste libSDL dali a zadejte následující příkazy:
+        <pre style="margin-left: 60px">
+./configure
+make
+sudo make install</pre>
+    </p>
+    <b style="margin-left: 30px">3. Qt Framework</b>
+    <p style="margin-left: 60px">
+        Prostě <a href="http://qt.nokia.com/downloads">stáhněte Qt balíček</a> a nainstalujte ho.
+    </p>
+    <b style="margin-left: 30px">4. Lorris</b>
+    <p style="margin-left: 60px">
+        Stáhněte zdroják Lorris, otevřte Terminál a běžte do složky s Lorris.
+    </p>
+        <pre style="margin-left: 60px">
+/Users/*username*/QtSDK/Desktop/*your qt version*/bin/qmake CONFIG+=release
+make
+sudo make install</pre>
+    <p style="margin-left: 30px">
+    Lorris bude nainstalován mezi ostatními aplikacem (tj. /Applications).
+    </p>
 
-<!-- license.html -->
 <hr>
 <h3 id="license">Licence &amp; knihovny</h3>
 <p>
@@ -271,14 +299,12 @@ Podporovaná programovací rozhraní:
     </ul>
 </p>
 
-<!-- bug.html -->
 <hr>
 <h3 id="bug">Bug report</h3>
 <p>
     Pokud najdete v Lorris nějáký bug nebo chcete přidat nějákou novou vymoženost, založte prosím
     <a href="https://github.com/Tasssadar/Lorris/issues">ticket na githubu</a>.
 </p>
-<!-- screenshots.html -->
 <hr>
 <h3 id="screenshots">Screenshots</h3>
 <table id="screenshot_big" width="100%" style="margin-bottom: 30px">
@@ -362,7 +388,6 @@ Podporovaná programovací rozhraní:
     </div>
 </div>
 
-<!-- bottom.html -->
         <div align="center">
             <small>Tahle stránka používá <a href="http://twitter.github.com/bootstrap/">Twitter bootstrap</a></small>
         </div>

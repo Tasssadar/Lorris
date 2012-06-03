@@ -37,3 +37,36 @@
 <p style="margin-left: 30px">
     Lorris binary will be installed as /usr/bin/Lorris and translations as /usr/share/lorris/Lorris.*.qm.
 </p>
+<h4>Building on Mac OS X</h4>
+<p style="margin-left: 30px">
+    Lorris can be built on OS X with a bit of effort (since <a href="https://github.com/Tasssadar/Lorris/commit/20b3dc2a75e7d959de9ac639638c2a5a38020ba9">20b3dc2a75e7</a>),
+    but it looks kinda horrible and there are some weird crashes. Qt on Mac requires OS X version >= 10.6.
+</p>
+    <b style="margin-left: 30px">1. XCode</b>
+    <p style="margin-left: 60px">
+        Download Xcode from that Apple store or whatsitsname. Can take a while.<br>
+        When it is done, open XCode, top menu XCode->Preferences->Downloads and install "Console tools" (GCC is in this package).
+    </p>
+    <b style="margin-left: 30px">2. SDL</b>
+    <p style="margin-left: 60px">
+        Download <a href="http://www.libsdl.org/download-1.2.php">libSDL <b>source</b></a>, extract it, open Terminal, go to the libSDL folder you've just created and run:
+        <pre style="margin-left: 60px">
+./configure
+make
+sudo make install</pre>
+    </p>
+    <b style="margin-left: 30px">3. Qt Framework</b>
+    <p style="margin-left: 60px">
+        Just <a href="http://qt.nokia.com/downloads">download Qt framework package</a> and install it.
+    </p>
+    <b style="margin-left: 30px">4. Lorris</b>
+    <p style="margin-left: 60px">
+        Download Lorris source, open Terminal and go to it's folder.
+    </p>
+        <pre style="margin-left: 60px">
+/Users/*username*/QtSDK/Desktop/*your qt version*/bin/qmake CONFIG+=release
+make
+sudo make install</pre>
+    <p style="margin-left: 30px">
+    Lorris will be installed among other applications (eg. /Applications).
+    </p>
