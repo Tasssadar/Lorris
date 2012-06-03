@@ -12,7 +12,7 @@
 #include <QMutex>
 #include <QStringList>
 
-#ifdef Q_OS_WIN
+#if defined Q_OS_WIN || defined Q_OS_MAC 
     #include <SDL.h>
 #else // use lib from OS on other systems
     #include <SDL/SDL.h>

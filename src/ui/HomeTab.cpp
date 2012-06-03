@@ -33,6 +33,11 @@ HomeTab::HomeTab(QWidget *parent) : QWidget(parent), ui(new Ui::HomeTab)
         btn->setText(info->GetName());
         btn->setDescription(info->GetDescription());
         btn->setMaximumHeight(100);
+#ifdef Q_OS_MAC
+        QFont fnt = btn->font();
+        fnt.setPointSize(11);
+        btn->setFont(fnt);
+#endif
         btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         ui->tabButtonsWidget->layout()->addWidget(btn);
 

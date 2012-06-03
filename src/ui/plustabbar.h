@@ -23,7 +23,11 @@ public:
     void paintEvent(QPaintEvent *event);
     QSize sizeHint() const
     {
+#ifdef Q_OS_MAC 
+        return QTabBar::sizeHint() + QSize(40, 0);
+#else
         return QTabBar::sizeHint() + QSize(20, 0);
+#endif 
     }
 
 public slots:

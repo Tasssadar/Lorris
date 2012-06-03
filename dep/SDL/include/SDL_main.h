@@ -51,7 +51,7 @@
  *	}
  *      @endcode
  */
-#ifndef USING_PCH
+#if !defined USING_PCH && !defined(Q_OS_MAC) 
 #define main	SDL_main
 #endif
 

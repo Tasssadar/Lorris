@@ -29,6 +29,9 @@
    <bool>false</bool>
   </property>
   <layout class="QVBoxLayout" name="leftVLayout" stretch="0,0,0,0,4">
+   <property name="spacing">
+    <number>6</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="topLayout">
      <item>
@@ -248,8 +251,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>70</width>
-            <height>263</height>
+            <width>76</width>
+            <height>236</height>
            </rect>
           </property>
          </widget>
