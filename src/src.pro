@@ -230,6 +230,7 @@ unix:!macx:!symbian {
     INSTALLS += target translations
 }
 macx {
+    INCLUDEPATH += ../dep/SDL/include
     LIBS += -lqwt_lorris -lqextserialport -lSDL -lqextserialport
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" 2> /dev/null \
@@ -237,6 +238,13 @@ macx {
         cp \
         translations/*.qm \
         "$$DESTDIR/translations/ 2> /dev/null"
+
+    translations.path = /usr/share/lorris/
+    translations.files = ../translations/Lorris.*.qm
+    qext.path = /usr/lib/
+    qext.files = ../dep/qextserialport/lib/libqextserialport.*
+    target.path = /Applications/
+    INSTALLS += target translations qext
 }
 
 FORMS += \
