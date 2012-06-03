@@ -256,6 +256,7 @@ void LorrisShupito::initMenus()
     QToolBar *bar = new QToolBar(this);
     ui->topLayout->insertWidget(1, bar);
     bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    bar->setIconSize(QSize(16, 16));
 
     bar->addAction(m_load_flash);
     bar->addAction(m_save_flash);
@@ -1042,7 +1043,6 @@ void LorrisShupito::readMem(quint8 memId, chip_definition &chip)
 
     showProgressDialog(tr("Reading memory"), m_modes[m_cur_mode]);
     QByteArray mem = m_modes[m_cur_mode]->readMemory(memNames[memId], chip);
-
     m_hexAreas[memId]->setData(mem);
     m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
     m_hexFilenames[memId].clear();

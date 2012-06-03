@@ -232,12 +232,6 @@ unix:!macx:!symbian {
 macx {
     INCLUDEPATH += ../dep/SDL/include
     LIBS += -lqwt_lorris -lqextserialport -lSDL -lqextserialport
-    QMAKE_POST_LINK = mkdir \
-        "$$DESTDIR/translations" 2> /dev/null \
-        ; \
-        cp \
-        translations/*.qm \
-        "$$DESTDIR/translations/ 2> /dev/null"
 
     translations.path = /usr/share/lorris/
     translations.files = ../translations/Lorris.*.qm

@@ -8,6 +8,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <QEventLoop>
+#include <QCoreApplication>
 
 #include "shupito.h"
 #include "lorrisshupito.h"

@@ -26,7 +26,11 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& widgetName) :
 
     new QScriptSyntaxHighlighter(ui->sourceEdit->document());
 
+#ifdef Q_OS_MAC
+    ui->sourceEdit->setFont(Utils::getMonospaceFont(12));
+#else
     ui->sourceEdit->setFont(Utils::getMonospaceFont());
+#endif
     setWindowTitle(windowTitle() + widgetName);
 
     QMenuBar *menu = new QMenuBar(this);
@@ -103,7 +107,11 @@ void ScriptEditor::loadFile()
 
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)
 {
+#ifdef Q_OS_MAC
+    setFont(Utils::getMonospaceFont(12));
+#else
     setFont(Utils::getMonospaceFont());
+#endif
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
     setMinimumSize(5, 5);
 
