@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QDebug>
 #include <stdio.h>
@@ -431,7 +415,7 @@ quint8 MCU::in_sbci(int arg1, int arg2)
 
     quint8 val = *m_sreg;
 
-    if(abs(arg2 + bool(val & SREG_CARRY)) > abs(r))
+    if(arg2 + bool(val & SREG_CARRY) > r)
         val |= SREG_CARRY;
     else
         val &= ~(SREG_CARRY);
@@ -472,26 +456,10 @@ quint8 MCU::in_subi(int arg1, int arg2)
     quint8 r = m_data_mem[arg1];
     m_data_mem[arg1] -= arg2;
 
-    if(abs(arg2) > abs(r))
+    if(arg2 > r)
         *m_sreg |= SREG_CARRY;
     else
         *m_sreg &= ~(SREG_CARRY);
-
-    quint8 resb = m_data_mem[arg1] >> 3 & 0x1;
-    quint8 rdb = arg2 >> 3 & 0x1;
-    quint8 rrb = r >> 3 & 0x1;
-    if((~rdb & rrb) | (rrb & resb) | (resb & ~rdb))
-        *m_sreg |= SREG_HALFCARRY;
-    else
-        *m_sreg &= ~(SREG_HALFCARRY);
-
-    quint8 res7 = m_data_mem[arg1] >> 7 & 0x1;
-    quint8 rd7 = arg2 >> 7 & 0x1;
-    quint8 rr7 = r >> 7 & 0x1;
-    if((rd7 & ~rr7 & ~res7) | (~rd7 & rr7 & res7))
-        *m_sreg |= SREG_V;
-    else
-        *m_sreg &= ~(SREG_V);
 
     check_ZNS(m_data_mem[arg1]);
     return 1;

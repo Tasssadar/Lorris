@@ -1,3 +1,10 @@
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
+**
+**    See README and COPYING
+***********************************************/
+
 #ifndef HANDLERS_H
 #define HANDLERS_H
 
