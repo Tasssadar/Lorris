@@ -188,6 +188,7 @@ public:
     quint8 in_adiw(int arg1, int arg2);
     quint8 in_bclr(int arg1, int /*arg2*/);
     quint8 in_brbc(int arg1, int arg2);
+    quint8 in_bset(int arg1, int /*arg2*/);
     quint8 in_call(int arg1, int /*arg2*/);
     quint8 in_eor(int arg1, int arg2);
     quint8 in_jmp(int arg1, int /*arg2*/);

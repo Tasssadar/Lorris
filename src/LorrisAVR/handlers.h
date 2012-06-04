@@ -41,7 +41,7 @@ static quint8 (MCU::*instHandlers[INST_COUNT])(int, int) =
     NULL,            // 26
     NULL,            // 27
     NULL,            // 28
-    NULL,            // 29
+    &MCU::in_bset,   // 29
     NULL,            // 30
     &MCU::in_call,   // 31
     NULL,            // 32

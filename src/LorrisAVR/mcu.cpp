@@ -294,6 +294,12 @@ quint8 MCU::in_brbc(int arg1, int arg2)
     return 1;
 }
 
+quint8 MCU::in_bset(int arg1, int)
+{
+    *m_sreg |= (1 << arg1);
+    return 1;
+}
+
 quint8 MCU::in_call(int arg1, int /*arg2*/)
 {
     if(m_protype->bit16)
