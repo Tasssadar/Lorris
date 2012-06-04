@@ -130,6 +130,7 @@ protected:
 
 private slots:
     void checkCycles();
+    void queueInterrupt(quint8 vector);
 
 private:
     inst_prototype *getInstPrototype(quint16 val);
@@ -145,6 +146,7 @@ private:
 
     volatile bool m_run;
     volatile bool m_paused;
+    volatile bool m_check_interrupt;
 
     // Memories
     /*
@@ -173,6 +175,10 @@ private:
 
     std::vector<instruction> m_instructions;
 
+    std::vector<quint8> m_interrupts;
+    QMutex m_mem_mutex;
+    QMutex m_vec_mutex;
+
     // loop controls
     QTimer m_cycles_timer;
     quint8 m_cycles_debug;
@@ -197,6 +203,7 @@ public:
     quint8 in_in(int arg1, int arg2);
     quint8 in_nop(int /*arg1*/, int /*arg2*/);
     quint8 in_out(int arg1, int arg2);
+    quint8 in_pop(int arg1, int /*arg2*/);
     quint8 in_push(int arg1, int /*arg2*/);
     quint8 in_rcall(int arg1, int /*arg2*/);
     quint8 in_reti(int /*arg1*/, int /*arg2*/);

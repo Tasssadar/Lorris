@@ -60,7 +60,10 @@ void MCU::init(HexFile *hex, mcu_prototype *proto)
 
     m_program_counter = 0x00;
 
+    m_interrupts.clear();
     m_instructions = std::vector<instruction>(m_protype->prog_mem_size/2);
+
+    m_check_interrupt = false;
 
     HexFile::regionMap& data = hex->getData();
     quint32 maxAddress = 0;
@@ -176,7 +179,7 @@ void MCU::run()
 {
     m_cycle_counter = 0;
     instHandler handler = NULL;
-
+    std::vector<quint8>::iterator vecItr;
     QElapsedTimer workT;
     workT.start();
     msleep(50);
@@ -208,8 +211,21 @@ void MCU::run()
             }
 
             int ticks = (this->*handler)(inst.arg1, inst.arg2);
-            i += ticks;
 
+            // Handle interrupts
+            if((*m_sreg & SREG_IRQ) && m_check_interrupt)
+            {
+                QMutexLocker l(&m_vec_mutex);
+                if(!m_interrupts.empty())
+                {
+                    *m_sreg &= ~(SREG_IRQ);
+                    ticks += in_call(m_interrupts.back()*4, 0);
+                    m_interrupts.pop_back();
+                }
+                m_check_interrupt = !m_interrupts.empty();
+            }
+
+            i += ticks;
             m_counter_mutex.lock();
             m_cycle_counter += ticks;
             m_counter_mutex.unlock();
@@ -229,7 +245,21 @@ void MCU::checkCycles()
         cycles = m_cycle_counter;
         m_cycle_counter = 0;
     }
+    static int count = 0;
+    if(++count == 5)
+    {
+        count = 0;
+        queueInterrupt(18);
+    }
     emit realFreq(cycles);
+}
+
+void MCU::queueInterrupt(quint8 id)
+{
+    QMutexLocker l(&m_vec_mutex);
+    m_interrupts.push_back(id);
+    std::sort(m_interrupts.rbegin(), m_interrupts.rend());
+    m_check_interrupt = true;
 }
 
 void MCU::setDataMem16(int idx, quint16 val)
@@ -362,6 +392,12 @@ quint8 MCU::in_out(int arg1, int arg2)
 {
     m_data_mem[arg1] = m_data_mem[arg2];
     return 1;
+}
+
+quint8 MCU::in_pop(int arg1, int)
+{
+    m_data_mem[arg1] = GetFromStack();
+    return 2;
 }
 
 quint8 MCU::in_push(int arg1, int /*arg2*/)

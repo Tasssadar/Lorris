@@ -108,7 +108,7 @@ static quint8 (MCU::*instHandlers[INST_COUNT])(int, int) =
     NULL,            // 93
     NULL,            // 94
     &MCU::in_out,    // 95
-    NULL,            // 96
+    &MCU::in_pop,    // 96
     &MCU::in_push,   // 97
     &MCU::in_rcall,  // 98
     NULL,            // 99
