@@ -251,7 +251,10 @@ void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, q
 {
     HexFile file;
     file.addRegion(0, &data[0], &data[0] + data.size(), 0);
-    flashRaw(file, MEM_FUSES, chip, verifyMode);
+    // FIXME: verifyMode - some chips (atmega16) has only 3 lock/fuse bytes,
+    // and the 4th byte changes during fuse programming and breaks verification.
+    // How to handle it?
+    flashRaw(file, MEM_FUSES, chip, VERIFY_NONE);
 }
 
 //void flash_raw(avrflash::memory const & mem, std::string const & memid, avrflash::chip_definition const & chip, bool verify)
@@ -289,6 +292,8 @@ void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, q
         m_cancel_requested = false;
         throw QString(QObject::tr("Flashing interruped!"));
     }
+
+    Utils::msleep(50);
 
     if(verifyMode != VERIFY_NONE && is_read_memory_supported(memdef))
     {

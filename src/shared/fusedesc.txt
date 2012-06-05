@@ -8,10 +8,11 @@
 # ATmega 8u2, 16, 48, 88, 168, 328, 328p, 1284p, 128
 {=avr:1e9389,avr:1e9403,avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702
     eesave | EEPROM memory is preserved through the Chip Erase. Default: Erase | 0b1=Erase | 0b0=Preserve
-    lb | Memory lock bit (Default: No lock) | 0b11=No lock | 0b10=Disable write | 0b00=Disable read and write | 0b01=Unused
+    lb | Memory lock bit (Default: No lock) | 0b11=No lock | 0b10=Disable write | 0b00=Disable read and write | 0b01=<reserved>
     blb0 | Boot lock bit (Default: No restrictions) | 0b11=No restrictions
     blb1 | Boot lock bit (Default: No restrictions) | 0b11=No restrictions
     wdton | Watchdog Timer always on (Default: Yes) | 0b1=Yes | 0b0=No
+    spien | Enable SPI Serial program and Data downloading (default: enabled) | 0b0=Enabled | 0b1=Disabled
 }
 
 # ATmega 8u2, 16, 88, 168, 328, 328p, 1284p, 128
@@ -30,4 +31,43 @@
 # ATmega 328,328p
 {=avr:1e9514,avr:1e950f
     bootsz | Bootloader section size (default: 2048 words) | 0b11=256 words | 0b10=512 words | 0b01=1024 words | 0b00=2048 words
+}
+
+# ATmega 16, 1284p, 128
+{=avr:1e9403,avr:1e9705,avr:1e9702
+    jtagen | Enable JTAG (default: enabled) | 0b1=Disabled | 0b0=Enabled
+    ocden | Enable OCD (default: disable) | 0b1=Disabled | 0b0=Enabled
+}
+
+# ATmega16, 128
+{=avr:1e9403,avr:1e9702
+    boden | Brown-out Detector enable (default: disabled) | 0b1=Disabled | 0b0=Enabled
+}
+
+# ATmega128
+{=avr:1e9702
+    bodlevel | Brown-out Detector trigger level. BODEN must be enabled! (default 2.6V) | 0b0=4.0V | 0b1=2.6V
+}
+
+# ATmega 16
+{=avr:1e9403
+    bodlevel | Brown-out Detector trigger level. BODEN must be enabled! (default 2.7V) | 0b0=4.0V | 0b1=2.7V
+    ckopt | Oscillator options, see datasheet (default: max 8Mhz, LP) | 0b0=max 16Mhz, r-to-r | 0b1=max 8Mhz, LP
+    sut+cksel | first 2b start-up time; next 4b clock source, see datasheet (default: IntRC 1Mhz 6ck+65ms) ||
+        0b100001=IntRC 1Mhz 6ck+65ms | 0b010001=IntRC 1Mhz 6ck+4.1ms | 0b000001=IntRC 1Mhz 6ck | 0b110001=<reserved> ||
+        0b100010=IntRC 2Mhz 6ck+65ms | 0b010010=IntRC 2Mhz 6ck+4.1ms | 0b000010=IntRC 2Mhz 6ck | 0b110010=<reserved> ||
+        0b100011=IntRC 4Mhz 6ck+65ms | 0b010011=IntRC 4Mhz 6ck+4.1ms | 0b000011=IntRC 4Mhz 6ck | 0b110011=<reserved> ||
+        0b100100=IntRC 8Mhz 6ck+65ms | 0b010100=IntRC 8Mhz 6ck+4.1ms | 0b000100=IntRC 8Mhz 6ck | 0b110100=<reserved> ||
+        0b100000=Ext clock 6ck+65ms | 0b010000=Ext clock 6ck+4.1ms | 0b000000=Ext clock 6ck | 0b110000=<reserved> ||
+        0b001010=XT 0.4-0.9Mhz 258ck+4.1ms | 0b011010=XT 0.4-0.9Mhz 258ck+65ms | 0b101010=XT 0.4-0.9Mhz 1Kck | 0b111010=XT 0.4-0.9Mhz 1Kck+4.1ms ||
+        0b001011=XT 0.4-0.9Mhz 1Kck+65ms | 0b011011=XT 0.4-0.9Mhz 16Kck | 0b101011=XT 0.4-0.9Mhz 16Kck+4.1ms | 0b111011=XT 0.4-0.9Mhz 16Kck+65ms ||
+        0b001100=XT 0.9-3.0Mhz 258ck+4.1ms | 0b011100=XT 0.9-3.0Mhz 258ck+65ms | 0b101100=XT 0.9-3.0Mhz 1Kck | 0b111100=XT 0.9-3.0Mhz 1Kck+4.1ms ||
+        0b001101=XT 0.9-3.0Mhz 1Kck+65ms | 0b011101=XT 0.9-3.0Mhz 16Kck | 0b101101=XT 0.9-3.0Mhz 16Kck+4.1ms | 0b111101=XT 0.9-3.0Mhz 16Kck+65ms ||
+        0b001110=XT 3.0-8.0Mhz 258ck+4.1ms | 0b011110=XT 3.0-8.0Mhz 258ck+65ms | 0b101110=XT 3.0-8.0Mhz 1Kck | 0b111110=XT 3.0-8.0Mhz 1Kck+4.1ms ||
+        0b001111=XT 3.0-8.0Mhz 1Kck+65ms | 0b011111=XT 3.0-8.0Mhz 16Kck | 0b101111=XT 3.0-8.0Mhz 16Kck+4.1ms | 0b111111=XT 3.0-8.0Mhz 16Kck+65ms ||
+        0b001001=LP XT 1Kck+4.1ms | 0b011001=LP XT 1Kck+65ms | 0b101001=LP XT 32Kck+65ms | 0b111001=<reserved> ||
+        0b000101=ExtRC 0.1-0.9Mhz 18ck | 0b010101=ExtRC 0.1-0.9Mhz 18ck+4.1ms | 0b100101=ExtRC 0.1-0.9Mhz 18ck+65ms | 0b110101=ExtRC 0.1-0.9Mhz 6ck+4.1ms ||
+        0b000110=ExtRC 0.9-3.0Mhz 18ck | 0b010110=ExtRC 0.9-3.0Mhz 18ck+4.1ms | 0b100110=ExtRC 0.9-3.0Mhz 18ck+65ms | 0b110110=ExtRC 0.9-3.0Mhz 6ck+4.1ms ||
+        0b000111=ExtRC 3.0-8.0Mhz 18ck | 0b010111=ExtRC 3.0-8.0Mhz 18ck+4.1ms | 0b100111=ExtRC 3.0-8.0Mhz 18ck+65ms | 0b110111=ExtRC 3.0-8.0Mhz 6ck+4.1ms ||
+        0b001000=ExtRC 8.0-12Mhz 18ck | 0b011000=ExtRC 8.0-12Mhz 18ck+4.1ms | 0b101000=ExtRC 8.0-12Mhz 18ck+65ms | 0b111000=ExtRC 8.0-12Mhz 6ck+4.1ms
 }

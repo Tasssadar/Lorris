@@ -165,6 +165,17 @@ void DefMgr::parseFusedesc(QTextStream &ss)
         if(chipSign.isEmpty())
             continue;
 
+        while(line.endsWith("||"))
+        {
+            line.data()[line.size()-1] = ' ';
+
+            QString nextLine = ss.readLine().trimmed();
+            if(nextLine.isNull())
+                return;
+
+            line += nextLine;
+        }
+
         QStringList tokens = line.split(" | ", QString::SkipEmptyParts);
         if(tokens.size() < 2)
             continue;

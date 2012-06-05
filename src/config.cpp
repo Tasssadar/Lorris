@@ -53,6 +53,8 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/show_fuses",         // CFG_BOOL_SHUPITO_SHOW_FUSES
     "shupito/overvoltage_warn",   // CFG_BOOL_SHUPITO_OVERVOLTAGE
     "shupito/turnoff_vcc",        // CFG_BOOL_SHUPITO_TURNOFF_VCC
+    "shupito/translate_fuses",    // CFG_BOOL_SHUPITO_TRANSLATE_FUSES
+    "shupito/hide_reserved",      // CFG_BOOL_SHUPITO_HIDE_RESERVED
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =
@@ -102,6 +104,8 @@ Config::Config()
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_FUSES]        = true;
     m_def_bool[CFG_BOOL_SHUPITO_OVERVOLTAGE]       = false;
     m_def_bool[CFG_BOOL_SHUPITO_TURNOFF_VCC]       = false;
+    m_def_bool[CFG_BOOL_SHUPITO_TRANSLATE_FUSES]   = true;
+    m_def_bool[CFG_BOOL_SHUPITO_HIDE_RESERVED]     = true;
 
     m_def_float[CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL] = 5.5f;
 }
