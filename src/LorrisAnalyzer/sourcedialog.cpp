@@ -50,6 +50,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
 
     connect(this,               SIGNAL(readData(QByteArray)),     m_parser,      SLOT(newData(QByteArray)));
     connect(ui->len_box,        SIGNAL(valueChanged(int)),        scroll_layout, SLOT(lenChanged(int)));
+    connect(ui->len_box,        SIGNAL(valueChanged(int)),                       SLOT(packetLenChanged(int)));
     connect(ui->fmt_combo,      SIGNAL(currentIndexChanged(int)), scroll_layout, SLOT(fmtChanged(int)));
     connect(ui->len_check,      SIGNAL(toggled(bool)),                           SLOT(headerLenToggled(bool)));
     connect(ui->header_len_box, SIGNAL(valueChanged(int)),                       SLOT(headerLenChanged(int)));
