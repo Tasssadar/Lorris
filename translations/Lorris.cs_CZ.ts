@@ -1361,9 +1361,9 @@
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="47"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="357"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="454"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="492"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="358"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="455"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="493"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
@@ -1379,7 +1379,7 @@
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="106"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="171"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="172"/>
         <source>Pause</source>
         <translation>Zmrazit</translation>
     </message>
@@ -1404,25 +1404,30 @@
         <translation>Pošle kód klávesy ihned po stisknutí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="147"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="717"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="101"/>
+        <source>Change settings...</source>
+        <translation>Změnit nastavení...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="148"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="718"/>
         <source>Open File</source>
         <translation>Otevřít soubor</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="149"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="150"/>
         <source>Intel hex file (*.hex)</source>
         <translation>Intel hex (*.hex)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="169"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="170"/>
         <source>Unpause</source>
         <translation>Odmrazit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="213"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="284"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="536"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="214"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="285"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="537"/>
         <source>Unsupported chip: </source>
         <translation>Nepodporovaný čip: </translation>
     </message>
@@ -1487,83 +1492,82 @@
         <translation>Zobrazí to co píšete v terminálu a odešle až po stisku klávesy enter</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="100"/>
         <source>Change font...</source>
-        <translation>Změnit písmo...</translation>
+        <translation type="obsolete">Změnit písmo...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="376"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="377"/>
         <source>Can&apos;t open serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="408"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="409"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="464"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="465"/>
         <source>Stopping..</source>
         <translation>Zastavuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="495"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="496"/>
         <source>Timeout on stopping chip!</source>
         <translation>Timeout při zastavování čipu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="509"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="510"/>
         <source>Error loading hex file: </source>
         <translation>Chyba při načítání hex souboru: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="552"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="553"/>
         <source>Error making pages: </source>
         <translation>Chyba při vytváření stránek: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="566"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="567"/>
         <source>Flashing into </source>
         <translation>Čip: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="631"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="632"/>
         <source>Timeout during reading EEPROM!</source>
         <translation>Timeout při čtení EEPROM!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="640"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="641"/>
         <source>Timeout during writing EEPROM!</source>
         <translation>Timeout při zapisování EEPROM!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="651"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="652"/>
         <source>Timeout during flashing!</source>
         <translation>Timeout při nahrávání programu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="661"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="662"/>
         <source>Can&apos;t get device id!</source>
         <translation>Nemůžu identifikovat čip!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="716"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="738"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="717"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="739"/>
         <source>Text file (*.txt);;Any file (*.*)</source>
         <translation>Textový soubor (*.txt);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="726"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="727"/>
         <source>Can&apos;t open file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="739"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="740"/>
         <source>Save data</source>
         <translation>Uložit data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="748"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="749"/>
         <source>Can&apos;t open/create file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít/vytvořit soubor &quot;%1&quot;!</translation>
     </message>
@@ -2649,49 +2653,246 @@ ke změně uspořádání</translation>
 <context>
     <name>Terminal</name>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="60"/>
+        <location filename="../src/shared/terminal.cpp" line="61"/>
         <source>Copy</source>
         <translation>Kopírovat</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="63"/>
+        <location filename="../src/shared/terminal.cpp" line="64"/>
         <source>Paste</source>
         <translation>Vložit</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="68"/>
+        <location filename="../src/shared/terminal.cpp" line="69"/>
         <source>Format</source>
         <translation>Formát</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="72"/>
+        <location filename="../src/shared/terminal.cpp" line="73"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="72"/>
+        <location filename="../src/shared/terminal.cpp" line="73"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="80"/>
-        <source>Change font...</source>
-        <translation>Změnit písmo...</translation>
+        <location filename="../src/shared/terminal.cpp" line="81"/>
+        <source>Terminal settings...</source>
+        <translation>Nastavení terminálu...</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="81"/>
+        <source>Change font...</source>
+        <translation type="obsolete">Změnit písmo...</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminal.cpp" line="82"/>
         <source>Pause</source>
         <translation>Zmrazit</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="82"/>
+        <location filename="../src/shared/terminal.cpp" line="83"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="741"/>
         <source>Font selection</source>
-        <translation>Volba písma</translation>
+        <translation type="obsolete">Volba písma</translation>
+    </message>
+</context>
+<context>
+    <name>TerminalSettings</name>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="14"/>
+        <source>Terminal settings</source>
+        <translation>Nastavení terminálu</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="20"/>
+        <source>Control characters</source>
+        <translation>Kontrolní znaky</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="26"/>
+        <source>Replace \t with...</source>
+        <translation>Nahradit \t...</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="36"/>
+        <source> spaces</source>
+        <translation>mezerami</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="49"/>
+        <source>Produce sound on \a character</source>
+        <translation>Vydat zvuk při znaku \a</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="59"/>
+        <source>New line on \n character</source>
+        <translation>Nový řádek při znaku \n</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="69"/>
+        <source>Return to the beginning of the line
+on \r character</source>
+        <translation>Vrátit se na začátek řádku při znaku \r</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="80"/>
+        <source>Delete last character on \b</source>
+        <translation>Smazat poslední znak při \b</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="90"/>
+        <source>Return pointer to the beginning on \f</source>
+        <translation>Vrátit ukazatel zpět na začátek při \f</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="103"/>
+        <source>Font</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="131"/>
+        <source>4</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="136"/>
+        <source>5</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="141"/>
+        <source>6</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="146"/>
+        <source>7</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="151"/>
+        <source>8</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="156"/>
+        <source>9</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="161"/>
+        <source>10</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="166"/>
+        <source>11</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="171"/>
+        <source>12</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="176"/>
+        <source>13</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="181"/>
+        <source>14</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="186"/>
+        <source>15</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="191"/>
+        <source>16</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="196"/>
+        <source>17</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="201"/>
+        <source>18</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="206"/>
+        <source>19</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="211"/>
+        <source>20</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="216"/>
+        <source>22</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="221"/>
+        <source>24</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="226"/>
+        <source>26</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="231"/>
+        <source>28</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="236"/>
+        <source>32</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="241"/>
+        <source>48</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="246"/>
+        <source>64</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="251"/>
+        <source>72</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="256"/>
+        <source>80</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="261"/>
+        <source>96</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="266"/>
+        <source>128</source>
+        <translation></translation>
     </message>
 </context>
 <context>

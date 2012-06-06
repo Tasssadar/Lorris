@@ -98,12 +98,12 @@ void LorrisTerminal::initUI()
         connect(m_input[i], SIGNAL(triggered()), inputMap, SLOT(map()));
     }
 
-    QAction *chgFont = dataMenu->addAction(tr("Change font..."));
+    QAction *chgSettings = dataMenu->addAction(tr("Change settings..."));
 
     inputAct(sConfig.get(CFG_QUINT32_TERMINAL_INPUT));
 
     ui->hexFile->setText(sConfig.get(CFG_STRING_HEX_FOLDER));
-    ui->terminal->loadFont(sConfig.get(CFG_STRING_TERMINAL_FONT));
+    ui->terminal->loadSettings(sConfig.get(CFG_STRING_TERMINAL_SETTINGS));
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
@@ -113,12 +113,12 @@ void LorrisTerminal::initUI()
     connect(ui->flashButton,   SIGNAL(clicked()),                   SLOT(flashButton()));
     connect(ui->pauseButton,   SIGNAL(clicked()),                   SLOT(pauseButton()));
     connect(ui->clearButton,   SIGNAL(clicked()),                   SLOT(clearButton()));
-    connect(ui->terminal,      SIGNAL(fontChanged(QString)),        SLOT(saveTermFont(QString)));
+    connect(ui->terminal,      SIGNAL(settingsChanged()),           SLOT(saveTermSettings()));
     connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromButton()));
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
-    connect(chgFont,           SIGNAL(triggered()),   ui->terminal, SLOT(showFontDialog()));
+    connect(chgSettings,       SIGNAL(triggered()),   ui->terminal, SLOT(showSettings()));
     connect(ui->terminal,      SIGNAL(fmtSelected(int)),            SLOT(checkFmtAct(int)));
     connect(ui->terminal,      SIGNAL(paused(bool)),                SLOT(setPauseBtnText(bool)));
 
@@ -772,7 +772,7 @@ void LorrisTerminal::setConnection(PortConnection *con)
     connectedStatus(con && con->isOpen());
 }
 
-void LorrisTerminal::saveTermFont(const QString &fontData)
+void LorrisTerminal::saveTermSettings()
 {
-    sConfig.set(CFG_STRING_TERMINAL_FONT, fontData);
+    sConfig.set(CFG_STRING_TERMINAL_SETTINGS, ui->terminal->getSettingsData());
 }

@@ -102,7 +102,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/overvccdialog.cpp \
     shared/fuse_desc.cpp \
     shared/defmgr.cpp \
-    ../dep/ecwin7/ecwin7.cpp
+    ../dep/ecwin7/ecwin7.cpp \
+    shared/terminalsettings.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -189,7 +190,8 @@ HEADERS += ui/mainwindow.h \
     pch.h \
     shared/fuse_desc.h \
     shared/defmgr.h \
-    ../dep/ecwin7/ecwin7.h
+    ../dep/ecwin7/ecwin7.h \
+    shared/terminalsettings.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -255,7 +257,8 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
     LorrisAnalyzer/playback.ui \
     ui/chooseconnectiondlg.ui \
-    LorrisShupito/overvccdialog.ui
+    LorrisShupito/overvccdialog.ui \
+    shared/terminalsettings.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

@@ -144,7 +144,7 @@ private slots:
     void loadFromFile(int memId, const QString& filename);
     void saveToFile(int memId);
     void focusChanged(QWidget *prev, QWidget *curr);
-    void saveTermFont(const QString& fontData);
+    void saveTermSettings();
 
     void overvoltageSwitched(bool enabled);
     void overvoltageChanged(double val);

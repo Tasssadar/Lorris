@@ -34,6 +34,7 @@
 
 #include "../common.h"
 #include "terminal.h"
+#include "terminalsettings.h"
 
 Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 {
@@ -77,7 +78,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
         connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
     }
 
-    QAction *fnt = m_context_menu->addAction(tr("Change font..."));
+    QAction *settings = m_context_menu->addAction(tr("Terminal settings..."));
     m_pauseAct = m_context_menu->addAction(tr("Pause"));
     QAction *clear = m_context_menu->addAction(tr("Clear"));
 
@@ -87,7 +88,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     connect(paste, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
     connect(clear, SIGNAL(triggered()), SLOT(clear()));
     connect(m_pauseAct, SIGNAL(toggled(bool)), SLOT(pause(bool)));
-    connect(fnt,   SIGNAL(triggered()), SLOT(showFontDialog()));
+    connect(settings,   SIGNAL(triggered()),   SLOT(showSettings()));
     connect(fmtMap,SIGNAL(mapped(int)), SLOT(setFmt(int)));
     connect(&m_updateTimer, SIGNAL(timeout()), SLOT(updateScrollBars()));
 
@@ -131,18 +132,32 @@ void Terminal::addLines(const QString &text)
             case '\f':
             {
                 addLine(pos, line_start, line_end);
+
+                if(!m_settings.chars[SET_FORMFEED])
+                    break;
+
                 m_cursor_pos.setX(0);
                 m_cursor_pos.setY(0);
                 pos = 0;
                 break;
             }
             case '\r':
+            {
                 addLine(pos, line_start, line_end);
+
+                if(!m_settings.chars[SET_RETURN])
+                    break;
+
                 m_cursor_pos.setX(0);
                 break;
+            }
             case '\n':
             {
                 addLine(pos, line_start, line_end);
+
+                if(!m_settings.chars[SET_NEWLINE])
+                    break;
+
                 ++pos;
                 m_cursor_pos.setX(0);
                 m_cursor_pos.setY(pos);
@@ -150,6 +165,12 @@ void Terminal::addLines(const QString &text)
             }
             case '\b':
             {
+                if(!m_settings.chars[SET_BACKSPACE])
+                {
+                    addLine(pos, line_start, line_end);
+                    break;
+                }
+
                 if(line_end != line_start)
                 {
                     --line_end;
@@ -178,6 +199,26 @@ void Terminal::addLines(const QString &text)
                         (*linePos).chop(1);
                 }
 
+                break;
+            }
+            case '\a':
+                if(m_settings.chars[SET_ALARM])
+                    Utils::playErrorSound();
+                break;
+            case '\t':
+            {
+                if(m_settings.chars[SET_REPLACE_TAB])
+                {
+                    addLine(pos, line_start, line_end);
+                    std::vector<QString>::iterator linePos = m_lines.begin() + pos;
+                    if(linePos != m_lines.end())
+                    {
+                        (*linePos).append(QByteArray(m_settings.tabReplace, ' '));
+                         m_cursor_pos.rx() += m_settings.tabReplace;
+                    }
+                }
+                else
+                    ++line_end;
                 break;
             }
             default:
@@ -233,7 +274,7 @@ void Terminal::addHex()
 
     int chunk_size;
     char *itr;
-    char *line = new char[78];
+    char line[78];
 
     line[8] = line[57] = line[58] = line[59] = ' ';
     line[60] = line[77] = '|';
@@ -267,7 +308,6 @@ void Terminal::addHex()
 
         m_lines.push_back(QString::fromAscii(line, 62+chunk_size));
     }
-    delete[] line;
     m_cursor_pos.setY(m_lines.size());
     m_cursor_pos.setX(0);
 }
@@ -498,7 +538,7 @@ void Terminal::paintEvent(QPaintEvent *)
         int len = std::min(l.length() - startX, maxLen);
         if(len <= 0)
             continue;
-        painter.drawText(0, y, viewport()->width(), m_char_height, Qt::AlignLeft,
+        painter.drawText(0, y, viewport()->width(), m_char_height, 0,
                          QString::fromRawData(l.data()+startX, len));
     }
 }
@@ -638,22 +678,7 @@ void Terminal::setFmt(int fmt)
         m_fmt_act[i]->setChecked(i == fmt);
 
     m_fmt = fmt;
-    m_lines.clear();
-    m_hex_pos = 0;
-    m_cursor_pos = m_cursor_pause_pos = QPoint(0, 0);
-
-    bool paused = m_paused;
-    pause(false);
-
-    switch(fmt)
-    {
-        case FMT_TEXT: addLines(QString::fromUtf8(m_data.data(), m_data.size())); break;
-        case FMT_HEX:  addHex();         break;
-    }
-
-    m_changed = true;
-    updateScrollBars();
-    pause(paused);
+    redrawAll();
 
     emit fmtSelected(fmt);
 }
@@ -722,6 +747,33 @@ QString Terminal::getFontData()
     return vals.join(";");
 }
 
+QString Terminal::getSettingsData()
+{
+    QString res;
+    for(int i = 0; i < SET_MAX; ++i)
+        res += QString("%1;").arg(m_settings.chars[i]);
+    res += QString("|%1|").arg(m_settings.tabReplace);
+    res += getFontData();
+    return res;
+}
+
+void Terminal::loadSettings(const QString& data)
+{
+    QStringList lst = data.split('|', QString::SkipEmptyParts);
+    if(lst.size() < 3)
+        return;
+
+    QStringList chars = lst[0].split(';', QString::SkipEmptyParts);
+    QStringList addVals = lst[1].split(';', QString::SkipEmptyParts);
+    for(int i = 0; i < chars.size() && i < SET_MAX; ++i)
+        m_settings.chars[i] = chars[i].toUInt();
+
+    if(addVals.size() > 0)
+        m_settings.tabReplace = addVals[0].toUInt();
+
+    loadFont(lst[2]);
+}
+
 void Terminal::setFont(const QFont &f)
 {
     QAbstractScrollArea::setFont(f);
@@ -735,13 +787,47 @@ void Terminal::setFont(const QFont &f)
     updateScrollBars();
 }
 
-void Terminal::showFontDialog()
+void Terminal::showSettings()
 {
-    bool ok = false;
-    QFont fnt = QFontDialog::getFont(&ok, font(), this, tr("Font selection"));
-    if(!ok)
-        return;
+    TerminalSettings s(terminal_settings(m_settings, font()), this);
+    connect(&s, SIGNAL(applySettings(terminal_settings)), SLOT(applySettings(terminal_settings)));
 
-    setFont(fnt);
-    emit fontChanged(getFontData());
+    if(s.exec() == QDialog::Accepted)
+        applySettings(s.getSettings());
+}
+
+void Terminal::applySettings(const terminal_settings& set)
+{
+    m_settings.copy(set);
+    setFont(set.font);
+    redrawAll();
+
+    emit settingsChanged();
+}
+
+void Terminal::redrawAll()
+{
+    m_lines.clear();
+    m_hex_pos = 0;
+    m_cursor_pos = m_cursor_pause_pos = QPoint(0, 0);
+
+    bool paused = m_paused;
+    pause(false);
+
+    switch(m_fmt)
+    {
+        case FMT_TEXT: addLines(QString::fromUtf8(m_data.data(), m_data.size())); break;
+        case FMT_HEX:  addHex();         break;
+    }
+
+    m_changed = true;
+    updateScrollBars();
+    pause(paused);
+}
+
+void Terminal::term_settings_priv::copy(const terminal_settings &set)
+{
+    for(int i = 0; i < SET_MAX; ++i)
+        chars[i] = set.chars[i];
+    tabReplace = set.tabReplace;
 }
