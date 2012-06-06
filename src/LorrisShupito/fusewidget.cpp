@@ -180,7 +180,7 @@ void FuseWidget::setFuses(chip_definition &chip)
         }
         else
         {
-            for (std::size_t j = 0; j < (1<<f.bits.size()); ++j)
+            for (std::size_t j = 0; j < std::size_t(1<<f.bits.size()); ++j)
             {
                 if(addFuseOpt(line, Utils::toBinary(f.bits.size(), j), list))
                     sortVals = true;

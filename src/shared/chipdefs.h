@@ -18,6 +18,13 @@ public:
 
     struct memorydef
     {
+        memorydef()
+        {
+            size = 0;
+            pagesize = 0;
+            memid = 0;
+        }
+
         quint32 size;
         quint16 pagesize;
         quint8 memid;
