@@ -74,8 +74,12 @@ void LorrisTerminal::initUI()
     QMenu *dataMenu = new QMenu(tr("Terminal"), this);
     addTopMenu(dataMenu);
     QAction *termLoad = dataMenu->addAction(tr("Load text file into terminal"));
+
+    dataMenu->addSeparator();
+
     QAction *termSave = dataMenu->addAction(tr("Save terminal content to text file"));
     termSave->setShortcut(QKeySequence("Ctrl+S"));
+    QAction *binSave = dataMenu->addAction(tr("Save received data to binary file"));
 
     dataMenu->addSeparator();
 
@@ -118,6 +122,7 @@ void LorrisTerminal::initUI()
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
+    connect(binSave,           SIGNAL(triggered()),                 SLOT(saveBin()));
     connect(chgSettings,       SIGNAL(triggered()),   ui->terminal, SLOT(showSettings()));
     connect(ui->terminal,      SIGNAL(fmtSelected(int)),            SLOT(checkFmtAct(int)));
     connect(ui->terminal,      SIGNAL(paused(bool)),                SLOT(setPauseBtnText(bool)));
@@ -737,7 +742,7 @@ void LorrisTerminal::loadText()
 void LorrisTerminal::saveText()
 {
     static const QString filters = tr("Text file (*.txt);;Any file (*.*)");
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save data"),
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save text data"),
                                                     sConfig.get(CFG_STRING_TERMINAL_TEXTFILE), filters);
 
     if(filename.isEmpty())
@@ -751,6 +756,27 @@ void LorrisTerminal::saveText()
     }
 
     ui->terminal->writeToFile(&file);
+    file.close();
+
+    sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);
+}
+
+void LorrisTerminal::saveBin()
+{
+    static const QString filters = tr("Any file (*.*)");
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save binary data"),
+                                                    sConfig.get(CFG_STRING_TERMINAL_TEXTFILE), filters);
+
+    if(filename.isEmpty())
+        return;
+
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        Utils::ThrowException(tr("Can't open/create file \"%1\"!").arg(filename), this);
+        return;
+    }
+    file.write(ui->terminal->getData());
     file.close();
 
     sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);

@@ -75,6 +75,7 @@ private slots:
     void checkFmtAct(int act);
     void loadText();
     void saveText();
+    void saveBin();
     void inputAct(int act);
 
     void readData(const QByteArray& data);
