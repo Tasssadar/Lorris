@@ -78,15 +78,15 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     }
 
     QAction *fnt = m_context_menu->addAction(tr("Change font..."));
-    QAction *pause = m_context_menu->addAction(tr("Pause"));
+    m_pauseAct = m_context_menu->addAction(tr("Pause"));
     QAction *clear = m_context_menu->addAction(tr("Clear"));
 
-    pause->setCheckable(true);
+    m_pauseAct->setCheckable(true);
 
     connect(copy,  SIGNAL(triggered()), SLOT(copyToClipboard()));
     connect(paste, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
     connect(clear, SIGNAL(triggered()), SLOT(clear()));
-    connect(pause, SIGNAL(toggled(bool)), SLOT(pause(bool)));
+    connect(m_pauseAct, SIGNAL(toggled(bool)), SLOT(pause(bool)));
     connect(fnt,   SIGNAL(triggered()), SLOT(showFontDialog()));
     connect(fmtMap,SIGNAL(mapped(int)), SLOT(setFmt(int)));
     connect(&m_updateTimer, SIGNAL(timeout()), SLOT(updateScrollBars()));
@@ -518,6 +518,7 @@ void Terminal::pause(bool pause)
         return;
 
     m_paused = pause;
+    m_pauseAct->setChecked(pause);
 
     if(pause)
     {
@@ -529,6 +530,8 @@ void Terminal::pause(bool pause)
 
     m_changed = true;
     updateScrollBars();
+
+    emit paused(pause);
 }
 
 void Terminal::clear()
@@ -651,6 +654,8 @@ void Terminal::setFmt(int fmt)
     m_changed = true;
     updateScrollBars();
     pause(paused);
+
+    emit fmtSelected(fmt);
 }
 
 void Terminal::writeToFile(QFile *file)

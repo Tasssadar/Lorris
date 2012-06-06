@@ -68,9 +68,11 @@ private slots:
     void stopButton();
     void flashButton();
     void pauseButton();
+    void setPauseBtnText(bool pause);
     void eepromButton();
     void eepromImportButton();
     void fmtAction(int act);
+    void checkFmtAct(int act);
     void loadText();
     void saveText();
     void inputAct(int act);

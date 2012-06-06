@@ -1361,9 +1361,9 @@
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="47"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="345"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="442"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="480"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="357"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="454"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="492"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
@@ -1379,7 +1379,7 @@
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="106"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="157"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="171"/>
         <source>Pause</source>
         <translation>Zmrazit</translation>
     </message>
@@ -1399,25 +1399,30 @@
         <translation>Importovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="137"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="702"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="90"/>
+        <source>Send key code immediately after press</source>
+        <translation>Pošle kód klávesy ihned po stisknutí</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="147"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="717"/>
         <source>Open File</source>
         <translation>Otevřít soubor</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="139"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="149"/>
         <source>Intel hex file (*.hex)</source>
         <translation>Intel hex (*.hex)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="155"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="169"/>
         <source>Unpause</source>
         <translation>Odmrazit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="201"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="272"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="524"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="213"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="284"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="536"/>
         <source>Unsupported chip: </source>
         <translation>Nepodporovaný čip: </translation>
     </message>
@@ -1437,123 +1442,128 @@
         <translation>Formát</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="62"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="63"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="62"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="63"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="72"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="74"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="74"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="76"/>
         <source>Load text file into terminal</source>
         <translation>Načíst soubor do terminálu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="75"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="77"/>
         <source>Save terminal content to text file</source>
         <translation>Uložit obsah terminálu do souboru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="80"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="82"/>
         <source>Input handling</source>
         <translation>Vstup</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="84"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="87"/>
         <source>Just send key presses</source>
         <translation>Posílat stisky kláves</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="84"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="87"/>
         <source>TCP-terminal-like</source>
         <translation>Jako TCP terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="92"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="91"/>
+        <source>Show pressed keys in terminal and send after pressing return</source>
+        <translation>Zobrazí to co píšete v terminálu a odešle až po stisku klávesy enter</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="100"/>
         <source>Change font...</source>
         <translation>Změnit písmo...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="364"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="376"/>
         <source>Can&apos;t open serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="396"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="408"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="452"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="464"/>
         <source>Stopping..</source>
         <translation>Zastavuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="483"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="495"/>
         <source>Timeout on stopping chip!</source>
         <translation>Timeout při zastavování čipu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="497"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="509"/>
         <source>Error loading hex file: </source>
         <translation>Chyba při načítání hex souboru: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="540"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="552"/>
         <source>Error making pages: </source>
         <translation>Chyba při vytváření stránek: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="554"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="566"/>
         <source>Flashing into </source>
         <translation>Čip: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="619"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="631"/>
         <source>Timeout during reading EEPROM!</source>
         <translation>Timeout při čtení EEPROM!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="628"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="640"/>
         <source>Timeout during writing EEPROM!</source>
         <translation>Timeout při zapisování EEPROM!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="639"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="651"/>
         <source>Timeout during flashing!</source>
         <translation>Timeout při nahrávání programu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="649"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="661"/>
         <source>Can&apos;t get device id!</source>
         <translation>Nemůžu identifikovat čip!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="701"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="723"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="716"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="738"/>
         <source>Text file (*.txt);;Any file (*.*)</source>
         <translation>Textový soubor (*.txt);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="711"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="726"/>
         <source>Can&apos;t open file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="724"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="739"/>
         <source>Save data</source>
         <translation>Uložit data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="733"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="748"/>
         <source>Can&apos;t open/create file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít/vytvořit soubor &quot;%1&quot;!</translation>
     </message>
@@ -2679,7 +2689,7 @@ ke změně uspořádání</translation>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminal.cpp" line="736"/>
+        <location filename="../src/shared/terminal.cpp" line="741"/>
         <source>Font selection</source>
         <translation>Volba písma</translation>
     </message>

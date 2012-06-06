@@ -40,6 +40,8 @@ class Terminal : public QAbstractScrollArea
 Q_SIGNALS:
     void keyPressed(QString key);
     void fontChanged(const QString& fontData);
+    void fmtSelected(int fmt);
+    void paused(bool pause);
 
 public:
     Terminal(QWidget *parent);
@@ -124,6 +126,7 @@ private:
 
     QMenu *m_context_menu;
     QAction *m_fmt_act[FMT_MAX];
+    QAction *m_pauseAct;
 
     QTimer m_updateTimer;
 

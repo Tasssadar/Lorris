@@ -57,17 +57,19 @@ void LorrisTerminal::initUI()
     addTopMenu(fmtBar);
 
     QSignalMapper *fmtMap = new QSignalMapper(this);
+    quint32 fmt = sConfig.get(CFG_QUINT32_TERMINAL_FMT);
     for(quint8 i = 0; i < FMT_MAX; ++i)
     {
         static const QString fmtText[] = { tr("Text"), tr("Hex dump") };
 
         m_fmt_act[i] = fmtBar->addAction(fmtText[i]);
         m_fmt_act[i]->setCheckable(true);
+        m_fmt_act[i]->setChecked(i == fmt);
         fmtMap->setMapping(m_fmt_act[i], i);
         connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
     }
 
-    fmtAction(sConfig.get(CFG_QUINT32_TERMINAL_FMT));
+    fmtAction(fmt);
 
     QMenu *dataMenu = new QMenu(tr("Terminal"), this);
     addTopMenu(dataMenu);
@@ -77,13 +79,20 @@ void LorrisTerminal::initUI()
 
     dataMenu->addSeparator();
 
-    QMenu *inputMenu = dataMenu->addMenu(tr("Input handling"));
+    QMenu *inputMenu = new QMenu(tr("Input handling"), this);
+    addTopMenu(inputMenu);
     QSignalMapper *inputMap = new QSignalMapper(this);
     for(quint8 i = 0; i < INPUT_MAX; ++i)
     {
         static const QString inputText[] = { tr("Just send key presses"), tr("TCP-terminal-like") };
+        static const QString inputTip[] =
+        {
+            tr("Send key code immediately after press"),
+            tr("Show pressed keys in terminal and send after pressing return")
+        };
 
         m_input[i] = inputMenu->addAction(inputText[i]);
+        m_input[i]->setStatusTip(inputTip[i]);
         m_input[i]->setCheckable(true);
         inputMap->setMapping(m_input[i], i);
         connect(m_input[i], SIGNAL(triggered()), inputMap, SLOT(map()));
@@ -110,6 +119,8 @@ void LorrisTerminal::initUI()
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
     connect(chgFont,           SIGNAL(triggered()),   ui->terminal, SLOT(showFontDialog()));
+    connect(ui->terminal,      SIGNAL(fmtSelected(int)),            SLOT(checkFmtAct(int)));
+    connect(ui->terminal,      SIGNAL(paused(bool)),                SLOT(setPauseBtnText(bool)));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
@@ -150,13 +161,15 @@ void LorrisTerminal::clearButton()
 void LorrisTerminal::pauseButton()
 {
     m_state ^= STATE_PAUSED;
+    ui->terminal->pause(m_state & STATE_PAUSED);
+}
 
-    if(m_state & STATE_PAUSED)
+void LorrisTerminal::setPauseBtnText(bool pause)
+{
+    if(pause)
         ui->pauseButton->setText(tr("Unpause"));
     else
         ui->pauseButton->setText(tr("Pause"));
-
-    ui->terminal->pause(m_state & STATE_PAUSED);
 }
 
 void LorrisTerminal::eepromButton()
@@ -689,11 +702,14 @@ void LorrisTerminal::EnableButtons(quint16 buttons, bool enable)
 
 void LorrisTerminal::fmtAction(int act)
 {
-    for(quint8 i = 0; i < FMT_MAX; ++i)
-        m_fmt_act[i]->setChecked(i == act);
-
     sConfig.set(CFG_QUINT32_TERMINAL_FMT, act);
     ui->terminal->setFmt(act);
+}
+
+void LorrisTerminal::checkFmtAct(int act)
+{
+    for(quint8 i = 0; i < FMT_MAX; ++i)
+        m_fmt_act[i]->setChecked(i == act);
 }
 
 void LorrisTerminal::loadText()
