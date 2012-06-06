@@ -42,16 +42,6 @@
 # ATmega16, 128
 {=avr:1e9403,avr:1e9702
     boden | Brown-out Detector enable (default: disabled) | 0b1=Disabled | 0b0=Enabled
-}
-
-# ATmega128
-{=avr:1e9702
-    bodlevel | Brown-out Detector trigger level. BODEN must be enabled! (default 2.6V) | 0b0=4.0V | 0b1=2.6V
-}
-
-# ATmega 16
-{=avr:1e9403
-    bodlevel | Brown-out Detector trigger level. BODEN must be enabled! (default 2.7V) | 0b0=4.0V | 0b1=2.7V
     ckopt | Oscillator options, see datasheet (default: max 8Mhz, LP) | 0b0=max 16Mhz, r-to-r | 0b1=max 8Mhz, LP
     sut+cksel | first 2b start-up time; next 4b clock source, see datasheet (default: IntRC 1Mhz 6ck+65ms) ||
         0b100001=IntRC 1Mhz 6ck+65ms | 0b010001=IntRC 1Mhz 6ck+4.1ms | 0b000001=IntRC 1Mhz 6ck | 0b110001=<reserved> ||
@@ -70,4 +60,14 @@
         0b000110=ExtRC 0.9-3.0Mhz 18ck | 0b010110=ExtRC 0.9-3.0Mhz 18ck+4.1ms | 0b100110=ExtRC 0.9-3.0Mhz 18ck+65ms | 0b110110=ExtRC 0.9-3.0Mhz 6ck+4.1ms ||
         0b000111=ExtRC 3.0-8.0Mhz 18ck | 0b010111=ExtRC 3.0-8.0Mhz 18ck+4.1ms | 0b100111=ExtRC 3.0-8.0Mhz 18ck+65ms | 0b110111=ExtRC 3.0-8.0Mhz 6ck+4.1ms ||
         0b001000=ExtRC 8.0-12Mhz 18ck | 0b011000=ExtRC 8.0-12Mhz 18ck+4.1ms | 0b101000=ExtRC 8.0-12Mhz 18ck+65ms | 0b111000=ExtRC 8.0-12Mhz 6ck+4.1ms
+}
+
+# ATmega128
+{=avr:1e9702
+    bodlevel | Brown-out Detector trigger level. BODEN must be enabled! (default 2.6V) | 0b0=4.0V | 0b1=2.6V
+}
+
+# ATmega 16
+{=avr:1e9403
+    bodlevel | Brown-out Detector trigger level. BODEN must be enabled! (default 2.7V) | 0b0=4.0V | 0b1=2.7V
 }
