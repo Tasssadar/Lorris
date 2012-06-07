@@ -522,6 +522,7 @@ void LorrisAnalyzer::clearAllButton()
 
 void LorrisAnalyzer::clearDataButton()
 {
+    m_parser->resetCurPacket();
     m_storage->Clear();
 
     m_curIndex = 0;
