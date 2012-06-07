@@ -1,0 +1,14 @@
+#!/bin/sh
+HG_FOLDER=""
+GIT_REPO="git://github.com/Tasssadar/Lorris.git"
+HG_REPO=""
+
+git commit -a
+git push master master
+if [ $HG_REPO ]
+then
+    cd $HG_FOLDER
+    hg pull $GIT_REPO
+    hg update
+    hg push $HG_REPO
+fi
