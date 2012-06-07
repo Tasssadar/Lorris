@@ -22,7 +22,7 @@
 #include "../WorkTab/WorkTabInfo.h"
 
 SerialPort::SerialPort()
-    : m_rate(BAUD38400),
+    : m_rate(38400),
       m_devNameEditable(true)
 {
     m_type = CONNECTION_SERIAL_PORT;
@@ -150,6 +150,6 @@ QHash<QString, QVariant> SerialPort::config() const
 bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
 {
     this->setDeviceName(config.value("device_name").toString());
-    this->setBaudRate((BaudRateType)config.value("baud_rate", 38400).toInt());
+    this->setBaudRate(config.value("baud_rate", 38400).toInt());
     return this->Connection::applyConfig(config);
 }

@@ -34,8 +34,8 @@ public:
 
     void SendData(const QByteArray &data);
 
-    BaudRateType baudRate() const { return m_rate; }
-    void setBaudRate(BaudRateType value) { m_rate = value; emit changed(); }
+    int baudRate() const { return m_rate; }
+    void setBaudRate(int value) { m_rate = value; emit changed(); }
 
     QString deviceName() const { return m_deviceName; } // FIXME: id and devname should be separate
     void setDeviceName(QString const & value);
@@ -58,7 +58,7 @@ private:
     QString m_deviceName;
 
     QextSerialPort *m_port;
-    BaudRateType m_rate;
+    int m_rate;
 
     QFuture<bool> m_future;
     QFutureWatcher<bool> m_watcher;

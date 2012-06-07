@@ -213,9 +213,7 @@ win32 {
         ../dep/qextserialport/src/qextserialport.cpp \
         ../dep/qextserialport/src/qextserialenumerator.cpp \
 
-    LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm -lole32
-    CONFIG(debug, debug|release):LIBS += -lqwtd
-    else:LIBS += -lqwt
+    LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm -lole32 -lqwt
 }
 unix:!macx:!symbian {
     LIBS += -lqwt_lorris -ludev -lSDL -lqextserialport

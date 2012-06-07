@@ -214,7 +214,7 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
     if (!ok)
         return;
 
-    static_cast<SerialPort *>(m_current)->setBaudRate(BaudRateType(editValue));
+    static_cast<SerialPort *>(m_current)->setBaudRate(editValue);
 }
 
 void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)

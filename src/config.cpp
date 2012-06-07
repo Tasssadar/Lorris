@@ -74,7 +74,7 @@ Config::Config()
     // Fill default values
     m_def_quint32[CFG_QUINT32_CONNECTION_TYPE]     = MAX_CON_TYPE;
     m_def_quint32[CFG_QUINT32_TAB_TYPE]            = 0;
-    m_def_quint32[CFG_QUINT32_SERIAL_BAUD]         = BAUD38400;
+    m_def_quint32[CFG_QUINT32_SERIAL_BAUD]         = 38400;
     m_def_quint32[CFG_QUINT32_SHUPITO_MODE]        = 0;
     m_def_quint32[CFG_QUINT32_SHUPITO_PRG_SPEED]   = 0;
     m_def_quint32[CFG_QUINT32_LANGUAGE]            = 0;
