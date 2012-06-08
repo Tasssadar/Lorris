@@ -18,6 +18,7 @@
 #include <QRadioButton>
 #include <QFileInfo>
 #include <QToolBar>
+#include <QIntValidator>
 
 #include "progressdialog.h"
 #include "shupito.h"
@@ -87,6 +88,9 @@ LorrisShupito::LorrisShupito()
     ui->hideLogBtn->setFixedHeight(w);
     ui->hideFusesBtn->setFixedWidth(w);
     ui->hideFusesBtn->setRotation(ROTATE_90);
+
+    ui->tunnelSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
+    ui->progSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
 
     initMenus();
 
@@ -521,17 +525,9 @@ void LorrisShupito::tunnelSpeedChanged(const QString &text)
 {
     bool ok = false;
     quint32 speed = 0;
-
-    if(text.length() != 0 && text.length() < 8)
-        speed = text.toInt(&ok);
-
+    speed = text.toInt(&ok);
     if(ok)
-    {
-        ui->tunnelSpeedBox->setStyleSheet("");
         m_shupito->setTunnelSpeed(speed);
-    }
-    else
-        ui->tunnelSpeedBox->setStyleSheet("background-color: #FF7777");
 }
 
 void LorrisShupito::tunnelToggled(bool enable)
@@ -602,12 +598,7 @@ void LorrisShupito::progSpeedChanged(QString text)
     bool ok;
     quint32 speed = text.toInt(&ok);
     if(!ok)
-    {
-        ui->progSpeedBox->setStyleSheet("background-color: red");
         return;
-    }
-    else
-        ui->progSpeedBox->setStyleSheet("");
 
     m_prog_speed_hz = speed;
     sConfig.set(CFG_QUINT32_SHUPITO_PRG_SPEED, m_prog_speed_hz);

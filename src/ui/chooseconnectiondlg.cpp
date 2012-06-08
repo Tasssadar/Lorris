@@ -35,6 +35,7 @@ void ChooseConnectionDlg::init(Connection * preselectedConn)
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     ui->removeConnectionBtn->setDefaultAction(ui->actionRemoveConnection);
+    ui->spBaudRateEdit->setValidator(new QIntValidator(1, INT_MAX, this));
 
     QMenu * menu = new QMenu(this);
     menu->addAction(ui->actionCreateSerialPort);
