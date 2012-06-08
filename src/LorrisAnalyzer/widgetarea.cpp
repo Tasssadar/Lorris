@@ -28,6 +28,8 @@ WidgetArea::WidgetArea(QWidget *parent) :
 {
     m_widgetIdCounter = 0;
     m_skipNextMove = false;
+
+    setCursor(Qt::OpenHandCursor);
 }
 
 WidgetArea::~WidgetArea()
@@ -206,14 +208,14 @@ void WidgetArea::mousePressEvent(QMouseEvent *event)
     if(event->button() == Qt::LeftButton)
     {
         m_mouse_orig = event->globalPos();
-        setCursor(Qt::SizeAllCursor);
+        setCursor(Qt::ClosedHandCursor);
     }
 }
 
 void WidgetArea::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
-        setCursor(Qt::ArrowCursor);
+        setCursor(Qt::OpenHandCursor);
 }
 
 void WidgetArea::paintEvent(QPaintEvent *event)
