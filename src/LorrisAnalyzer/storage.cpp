@@ -406,3 +406,15 @@ bool Storage::checkMagic(DataFileParser *file)
     delete[] itr;
     return true;
 }
+
+void Storage::ExportToBin(const QString &filename)
+{
+    QFile f(filename);
+    if(!f.open(QIODevice::Truncate | QIODevice::WriteOnly))
+        throw tr("Unable to open file %1 for writing!").arg(filename);
+
+    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+        f.write((*itr)->getData());
+
+    f.close();
+}

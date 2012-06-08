@@ -42,7 +42,9 @@ public:
     void Clear();
 
     void addData(analyzer_data *data);
-    quint32 getSize() { return m_size; }
+    quint32 getSize() const { return m_size; }
+    quint32 getMaxIdx() const { return m_size ? m_size -1 : 0; }
+    bool isEmpty() const { return m_size == 0; }
     analyzer_data *get(quint32 index) { return m_data[index]; }
     analyzer_packet *loadFromFile(QString *name, quint8 load, WidgetArea *area, DeviceTabWidget *devices, quint32 &data_idx);
 
@@ -51,6 +53,7 @@ public:
 public slots:
     void SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *devices);
     void SaveToFile(WidgetArea *area, DeviceTabWidget *devices);
+    void ExportToBin(const QString& filename);
 
 private:
     bool checkMagic(DataFileParser *file);

@@ -44,6 +44,7 @@ static const QString keys_string[CFG_STRING_NUM] =
     "terminal/textfile",          // CFG_STRING_TERMINAL_TEXTFILE
     "terminal/settings",          // CFG_STRING_TERMINAL_SETTINGS
     "shupito/term_settings",      // CFG_STRING_SHUPITO_TERM_SET
+    "analyzer/import_folder",     // CFG_STRING_ANALYZER_IMPORT
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -98,6 +99,7 @@ Config::Config()
     m_def_string[CFG_STRING_TERMINAL_TEXTFILE]     = "";
     m_def_string[CFG_STRING_TERMINAL_SETTINGS]     = "";
     m_def_string[CFG_STRING_SHUPITO_TERM_SET]      = "";
+    m_def_string[CFG_STRING_ANALYZER_IMPORT]       = "";
 
     m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = false;

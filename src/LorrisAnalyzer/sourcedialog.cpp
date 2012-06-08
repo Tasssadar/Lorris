@@ -21,7 +21,7 @@
 #include "packet.h"
 #include "packetparser.h"
 
-SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
+SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent, const QString& importFile) :
     QDialog(parent),ui(new Ui::SourceDialog)
 {
     ui->setupUi(this);
@@ -34,6 +34,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
 
     m_parser = new PacketParser(NULL, this);
     m_parser->setPacket(&m_packet);
+    m_parser->setImport(importFile);
 
     QWidget *w = new QWidget(this);
     scroll_layout = new ScrollDataLayout(m_packet.header, false, false, NULL, NULL, w);

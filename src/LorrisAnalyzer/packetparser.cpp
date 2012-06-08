@@ -20,6 +20,7 @@ PacketParser::PacketParser(Storage *storage, QObject *parent) :
 
 PacketParser::~PacketParser()
 {
+    m_import.close();
     delete m_curData;
 }
 
@@ -87,5 +88,38 @@ void PacketParser::resetCurPacket()
     {
         m_curData->setPacket(m_packet);
         m_curData->clear();
+        tryImport();
+    }
+    else
+    {
+        m_curData = new analyzer_data(m_packet);
+        tryImport();
+    }
+}
+
+void PacketParser::setImport(const QString& filename)
+{
+    m_import.close();
+    m_import.setFileName(filename);
+    m_import.open(QIODevice::ReadOnly);
+}
+
+void PacketParser::tryImport()
+{
+    if(!m_curData || !m_import.isOpen())
+        return;
+
+    m_import.seek(0);
+
+    bool fromheader = false;
+    int len = m_curData->getLenght(&fromheader);
+
+    newData(m_import.read(len));
+
+    if((m_packet->header->data_mask & DATA_LEN) && !fromheader && m_import.size() >= len)
+    {
+        int total = m_curData->getLenght(&fromheader);
+        if(fromheader)
+            newData(m_import.read(total - len));
     }
 }

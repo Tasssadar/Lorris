@@ -42,7 +42,7 @@ struct analyzer_header
     {
         length = 0;
         data_mask = 0;
-        static_len = 1;
+        static_len = 0;
         len_fmt = 0;
         packet_length = 0;
         len_offset = 0;

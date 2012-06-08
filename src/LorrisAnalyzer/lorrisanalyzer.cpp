@@ -83,6 +83,8 @@ LorrisAnalyzer::LorrisAnalyzer()
     QAction* saveAct = menuData->addAction(QIcon(":/actions/save"), tr("Save"));
     QAction* saveAsAct = menuData->addAction(QIcon(":/actions/save-as"), tr("Save as..."));
     menuData->addSeparator();
+    QAction* exportAct = menuData->addAction(tr("Export binary data"));
+    menuData->addSeparator();
     QAction* clearAct = menuData->addAction(QIcon(":/actions/clear"), tr("Clear received data"));
     QAction* clearAllAct = menuData->addAction(tr("Clear everything"));
 
@@ -98,7 +100,10 @@ LorrisAnalyzer::LorrisAnalyzer()
     addTopMenu(menuData);
     addTopMenu(menuWidgets);
 
-    QAction *structAct = new QAction(QIcon(":/actions/system"), tr("Change packet structure"), this);
+    QAction *structAct = new QAction(QIcon(":/actions/system"), tr("Change structure"), this);
+
+    exportAct->setStatusTip(tr("Export received bytes as binary file"));
+    structAct->setStatusTip(tr("Change structure of incoming data"));
 
     QToolBar *bar = new QToolBar(this);
     bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -122,6 +127,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(clearAllAct,    SIGNAL(triggered()),     SLOT(clearAllButton()));
     connect(m_title_action, SIGNAL(triggered(bool)), SLOT(showTitleTriggered(bool)));
     connect(structAct,      SIGNAL(triggered()),     SLOT(editStruture()));
+    connect(exportAct,      SIGNAL(triggered()),     SLOT(exportBin()));
 
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better
@@ -199,13 +205,13 @@ void LorrisAnalyzer::readData(const QByteArray& data)
         return;
 
     m_data_changed = true;
-    int size = m_storage->getSize();
+    int size = m_storage->getMaxIdx();
 
     ui->timeSlider->setMaximum(size);
     ui->timeBox->setMaximum(size);
 
     static const QString ofString = tr(" of ");
-    ui->timeBox->setSuffix(ofString % QString::number(size));
+    ui->timeBox->setSuffix(ofString % QString::number(size+1));
 
     if(update)
     {
@@ -224,32 +230,23 @@ void LorrisAnalyzer::onTabShow()
             m_con->OpenConcurrent();
     }
 
-    if (m_con)
-        this->doNewSource();
+    this->doNewSource();
 }
 
 void LorrisAnalyzer::doNewSource()
 {
     m_parser->setPaused(true);
-    SourceSelectDialog *s = new SourceSelectDialog(this);
+    SourceSelectDialog s(this);
 
     if(!m_con)
-        s->DisableNew();
+        s.DisableNew();
 
-    switch(s->get())
+    switch(s.get())
     {
         case -1:
             m_parser->setPaused(false);
             break;
         case 0:
-        {
-            QString file = s->getFileName();
-            quint8 mask = s->getDataMask();
-            load(file, mask);
-            m_data_changed = false;
-            break;
-        }
-        case 1:
         {
             SourceDialog *d = new SourceDialog(NULL, this);
             if (m_con)
@@ -279,8 +276,75 @@ void LorrisAnalyzer::doNewSource()
             m_data_changed = true;
             break;
         }
+        case 1:
+        {
+            QString file = s.getFileName();
+            quint8 mask = s.getDataMask();
+            load(file, mask);
+            m_data_changed = false;
+            break;
+        }
+        case 2:
+        {
+            importBinary(s.getFileName());
+            break;
+        }
     }
-    delete s;
+}
+
+void LorrisAnalyzer::importBinary(const QString& filename)
+{
+    analyzer_packet *packet = NULL;
+    {
+        SourceDialog d(NULL, this, filename);
+        packet = d.getStructure();
+    }
+
+    if(!packet)
+    {
+        m_parser->setPaused(false);
+        return;
+    }
+
+    if(m_packet)
+    {
+        delete m_packet->header;
+        delete m_packet;
+    }
+
+    ui->dataArea->clear();
+    m_storage->Clear();
+    ui->devTabs->removeAll();
+    ui->devTabs->setHeader(packet->header);
+    ui->devTabs->addDevice();
+
+    m_storage->setPacket(packet);
+    m_parser->setPacket(packet);
+    m_packet = packet;
+
+    m_parser->setPaused(false);
+
+    QFile f(filename);
+    if(!f.open(QIODevice::ReadOnly))
+        return Utils::ThrowException(tr("Could not open file %1 for reading!").arg(filename));
+
+    QMessageBox box(QMessageBox::Information, tr("Importing..."), tr("Importing your data..."));
+    box.setStandardButtons(QMessageBox::NoButton);
+    box.setWindowModality(Qt::ApplicationModal);
+    box.open();
+
+    QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 100);
+
+    m_parser->newData(f.readAll());
+    f.close();
+
+    quint32 max = m_storage->getMaxIdx();
+    ui->timeSlider->setMaximum(max);
+    ui->timeSlider->setValue(max);
+    ui->timeBox->setMaximum(max);
+    ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage->getSize()));
+    ui->timeBox->setValue(max);
+    updateData();
 }
 
 bool LorrisAnalyzer::onTabClose()
@@ -324,8 +388,8 @@ void LorrisAnalyzer::updateData()
     ui->timeBox->setValue(m_curIndex);
     ui->timeSlider->setValue(m_curIndex);
 
-    if(m_curIndex && (quint32)m_curIndex <= m_storage->getSize())
-        emit newData(m_storage->get(m_curIndex-1), m_curIndex-1);
+    if(m_curIndex && (quint32)m_curIndex < m_storage->getSize())
+        emit newData(m_storage->get(m_curIndex), m_curIndex);
 }
 
 analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
@@ -333,8 +397,8 @@ analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
     if(!m_storage->getSize())
         return NULL;
 
-    idx = m_curIndex-1;
-    return m_storage->get(m_curIndex-1);
+    idx = m_curIndex;
+    return m_storage->get(m_curIndex);
 }
 
 bool LorrisAnalyzer::load(QString &name, quint8 mask)
@@ -356,12 +420,12 @@ bool LorrisAnalyzer::load(QString &name, quint8 mask)
     }
 
     if(!idx)
-        idx = m_storage->getSize();
+        idx = m_storage->getMaxIdx();
 
     m_curIndex = idx;
-    ui->timeSlider->setMaximum(m_storage->getSize());
+    ui->timeSlider->setMaximum(m_storage->getMaxIdx());
     ui->timeSlider->setValue(idx);
-    ui->timeBox->setMaximum(m_storage->getSize());
+    ui->timeBox->setMaximum(m_storage->getMaxIdx());
     ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage->getSize()));
     ui->timeBox->setValue(idx);
     m_parser->setPaused(false);
@@ -392,6 +456,27 @@ void LorrisAnalyzer::saveAsButton()
     QStringList name = m_storage->getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
     emit statusBarMsg(tr("File \"%1\" was saved").arg(name.last()), 5000);
     m_data_changed = false;
+}
+
+void LorrisAnalyzer::exportBin()
+{
+    static const QString filters = QObject::tr("Any file (*.*)");
+    QString filename = QFileDialog::getSaveFileName(NULL, tr("Export binary data"),
+                                                sConfig.get(CFG_STRING_ANALYZER_FOLDER),
+                                                filters);
+    if(filename.isEmpty())
+        return;
+
+    try {
+        m_storage->ExportToBin(filename);
+    } catch(const QString& ex) {
+        return Utils::ThrowException(ex);
+    }
+
+    QString name = filename.split(QRegExp("[\\/]"), QString::SkipEmptyParts).last();
+    emit statusBarMsg(tr("Binary data were exported to file \"%1\"").arg(name), 5000);
+
+    sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
 }
 
 void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)

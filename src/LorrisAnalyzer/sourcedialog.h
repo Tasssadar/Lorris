@@ -33,7 +33,7 @@ Q_SIGNALS:
     void readData(const QByteArray& data);
 
 public:
-    explicit SourceDialog(analyzer_packet *pkt, QWidget *parent = 0);
+    explicit SourceDialog(analyzer_packet *pkt, QWidget *parent = 0,  const QString &importFile = QString());
     ~SourceDialog();
 
     analyzer_packet *getStructure();
