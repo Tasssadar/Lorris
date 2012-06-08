@@ -54,6 +54,7 @@ enum NumberTypes
 
 enum DragActions
 {
+    DRAG_NONE       = 0x00,
     DRAG_MOVE       = 0x01,
     DRAG_RES_LEFT   = 0x02,
     DRAG_RES_RIGHT  = 0x04,
@@ -152,6 +153,7 @@ public slots:
 protected:
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent *ev);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void contextMenuEvent ( QContextMenuEvent * event );

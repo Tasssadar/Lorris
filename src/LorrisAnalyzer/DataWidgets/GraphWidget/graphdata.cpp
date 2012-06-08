@@ -40,8 +40,8 @@ void GraphDataSimple::setMinMax(double val)
 
 void GraphDataSimple::resetMinMax()
 {
-    m_max = -999999999;
-    m_min = 99999999;
+    m_max = INT_MIN;
+    m_min = INT_MAX;
 }
 
 void GraphDataSimple::addPoint(quint32 index, qreal data)

@@ -32,11 +32,11 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
 {
     // zoom in/out with the wheel
     QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( canvas() );
-    magnifier->setMouseButton(Qt::LeftButton);
+    magnifier->setMouseButton(Qt::MiddleButton);
 
     // panning with the left mouse button
     QwtPlotPanner *panner =  new QwtPlotPanner( canvas() );
-    panner->setMouseButton(Qt::MiddleButton);
+    panner->setMouseButton(Qt::LeftButton);
 
 #if defined(Q_WS_X11)
     // Even if not recommended by TrollTech, Qt::WA_PaintOutsidePaintEvent
@@ -94,15 +94,8 @@ void Graph::mousePressEvent(QMouseEvent *event)
     {
         return QWidget::mousePressEvent(event);
     }
-
     QwtPlot::mousePressEvent(event);
     event->accept();
-}
-
-void Graph::mouseMoveEvent(QMouseEvent *event)
-{
-    QwtPlot::mouseMoveEvent(event);
-    QWidget::mouseMoveEvent(event);
 }
 
 void Graph::wheelEvent(QWheelEvent *event)

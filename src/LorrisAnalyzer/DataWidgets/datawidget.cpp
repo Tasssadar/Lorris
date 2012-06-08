@@ -61,6 +61,7 @@ DataWidget::DataWidget(QWidget *parent) :
     contextMenu = NULL;
     m_mouseIn = false;
     m_updating = true;
+    m_dragAction = DRAG_NONE;
 
     m_widgetControlled = -1;
 }
@@ -151,15 +152,11 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
     {
         case Qt::NoButton:
         {
-            quint8 act = getDragAction(e->pos());
-            if(!act)
+            switch(getDragAction(e->pos()))
             {
-                setCursor(Qt::ArrowCursor);
-                break;
-            }
-
-            switch(act)
-            {
+                case DRAG_NONE:
+                    setCursor(Qt::ArrowCursor);
+                    break;
                 case DRAG_MOVE:
                     setCursor(Qt::SizeAllCursor);
                     break;
@@ -181,15 +178,23 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
         }
         case Qt::LeftButton:
         {
-            if(m_dragAction == DRAG_MOVE)
-                dragMove(e);
-            else
-                dragResize(e);
+            switch(m_dragAction)
+            {
+                case DRAG_NONE: break;
+                case DRAG_MOVE: dragMove(e); break;
+                default: dragResize(e); break;
+            }
             break;
         }
         default:
             break;
     }
+}
+
+void DataWidget::mouseReleaseEvent(QMouseEvent *ev)
+{
+    m_dragAction = DRAG_NONE;
+    QWidget::mouseReleaseEvent(ev);
 }
 
 void DataWidget::enterEvent(QEvent *)
