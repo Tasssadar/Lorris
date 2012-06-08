@@ -772,7 +772,7 @@ void LorrisTerminal::saveBin()
         return;
 
     QFile file(filename);
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if(!file.open(QIODevice::WriteOnly))
     {
         Utils::ThrowException(tr("Can't open/create file \"%1\"!").arg(filename), this);
         return;
