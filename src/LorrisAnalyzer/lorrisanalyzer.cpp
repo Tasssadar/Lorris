@@ -462,7 +462,7 @@ void LorrisAnalyzer::exportBin()
 {
     static const QString filters = QObject::tr("Any file (*.*)");
     QString filename = QFileDialog::getSaveFileName(NULL, tr("Export binary data"),
-                                                sConfig.get(CFG_STRING_ANALYZER_FOLDER),
+                                                sConfig.get(CFG_STRING_ANALYZER_IMPORT),
                                                 filters);
     if(filename.isEmpty())
         return;
@@ -476,7 +476,7 @@ void LorrisAnalyzer::exportBin()
     QString name = filename.split(QRegExp("[\\/]"), QString::SkipEmptyParts).last();
     emit statusBarMsg(tr("Binary data were exported to file \"%1\"").arg(name), 5000);
 
-    sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
+    sConfig.set(CFG_STRING_ANALYZER_IMPORT, filename);
 }
 
 void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
