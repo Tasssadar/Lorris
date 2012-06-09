@@ -55,3 +55,20 @@ ScriptEngine *ScriptEngine::getEngine(int idx, WidgetArea *area, quint32 w_id, T
     }
     return NULL;
 }
+
+QString ScriptEngine::sanitizeWidgetName(QString const & name)
+{
+    if (name.isEmpty())
+        return QString();
+
+    if (!name[0].isLetter() && name[0] != '_')
+       return QString();
+
+    for (int i = 1; i < name.size(); ++i)
+    {
+        if (!name[i].isLetterOrNumber() && name[i] != '_')
+            return QString();
+    }
+
+    return name;
+}

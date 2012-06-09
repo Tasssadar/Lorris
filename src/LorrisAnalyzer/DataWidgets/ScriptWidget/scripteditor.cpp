@@ -15,6 +15,34 @@
 #include "../../../common.h"
 #include "engines/scriptengine.h"
 
+static const QString defaultCode[ENGINE_MAX] = {
+    ScriptEditor::tr("// You can use clearTerm() and appendTerm(string) to set term content\n"
+    "// You can use sendData(Array of ints) to send data to device. It expects array of uint8s\n\n"
+    "// This function gets called on data received\n"
+    "// it should return string, which is automatically appended to terminal\n"
+    "function onDataChanged(data, dev, cmd, index) {\n"
+    "\treturn \"\";\n"
+    "}\n\n"
+    "// This function is called on key press in terminal.\n"
+    "// Param is string\n"
+    "function onKeyPress(key) {\n"
+    "\n"
+    "}\n"),
+
+    ScriptEditor::tr("# You can use terminal.clear() and terminal.appendText(string) to set term content\n"
+    "# You can use lorris.sendData(QByteArray) to send data to device.\n"
+    "\n"
+    "# This function gets called on data received\n"
+    "# it should return string, which is automatically appended to terminal\n"
+    "def onDataChanged(data, dev, cmd, index):\n"
+    "\treturn \"\";\n"
+    "\n"
+    "# This function is called on key press in terminal.\n"
+    "# Param is string\n"
+    "def onKeyPress(key):\n"
+    "\treturn;\n")
+};
+
 ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widgetName) :
     QDialog(),
     ui(new Ui::ScriptEditor)
@@ -36,9 +64,13 @@ ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widge
     QScrollBar *bar = ui->sourceEdit->verticalScrollBar();
     connect(bar,            SIGNAL(rangeChanged(int,int)),     SLOT(rangeChanged(int,int)));
     connect(bar,            SIGNAL(valueChanged(int)),         SLOT(sliderMoved(int)));
+    connect(ui->sourceEdit->document(), SIGNAL(contentsChange(int,int,int)),
+                                        SLOT(contentsChange(int,int,int)));
 
-    ui->sourceEdit->setPlainText(source);
+    ui->sourceEdit->setPlainText(source.isNull() ? defaultCode[type] : source);
     ui->sourceEdit->setTabStopWidth(ui->sourceEdit->fontMetrics().width(' ') * 4);
+
+    m_changed = !source.isNull();
 
     ui->langBox->addItems(ScriptEngine::getEngineList());
     ui->langBox->setCurrentIndex(type);
@@ -72,6 +104,12 @@ void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
 void ScriptEditor::on_sourceEdit_textChanged()
 {
     m_line_num->setLineNum(ui->sourceEdit->document()->lineCount());
+}
+
+void ScriptEditor::contentsChange(int /*position*/, int charsRemoved, int charsAdded)
+{
+    if(charsRemoved != charsAdded)
+        m_changed = true;
 }
 
 void ScriptEditor::sliderMoved(int val)
@@ -111,6 +149,12 @@ void ScriptEditor::on_loadBtn_clicked()
 
 void ScriptEditor::on_langBox_currentIndexChanged(int idx)
 {
+    if(!m_changed)
+    {
+        ui->sourceEdit->setPlainText(defaultCode[idx]);
+        m_changed = false;
+    }
+
     delete m_highlighter;
     switch(idx)
     {

@@ -38,9 +38,12 @@ private slots:
     void on_loadBtn_clicked();
     void on_langBox_currentIndexChanged(int idx);
 
+    void contentsChange(int position, int charsRemoved, int charsAdded);
+
 private:
     Ui::ScriptEditor *ui;
     LineNumber *m_line_num;
+    bool m_changed;
 
     QSyntaxHighlighter *m_highlighter;
 };

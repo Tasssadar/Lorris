@@ -93,7 +93,6 @@ private slots:
     void onTitleChange(const QString& newTitle);
 
 private:
-    QString sanitizeWidgetName(QString const & name);
     void prepareNewContext();
 
     QScriptValue *m_global;

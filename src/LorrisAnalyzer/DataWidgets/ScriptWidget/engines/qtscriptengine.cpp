@@ -44,19 +44,6 @@ QtScriptEngine::QtScriptEngine(WidgetArea* area, quint32 w_id, Terminal *termina
     ScriptEngine(area, w_id, terminal, parent), m_engine(this, parent)
 {
     m_engine.pushContext();
-    m_source =
-            tr("// You can use clearTerm() and appendTerm(string) to set term content\n"
-            "// You can use sendData(Array of ints) to send data to device. It expects array of uint8s\n\n"
-            "// This function gets called on data received\n"
-            "// it should return string, which is automatically appended to terminal\n"
-            "function onDataChanged(data, dev, cmd, index) {\n"
-            "    return \"\";\n"
-            "}\n\n"
-            "// This function is called on key press in terminal.\n"
-            "// Param is string\n"
-            "function onKeyPress(key) {\n"
-            "    \n"
-            "}\n");
     m_global = &m_engine.m_global;
 }
 
@@ -277,23 +264,6 @@ QScriptValue QtScriptEngine::newTimer()
     QTimer *t = new QTimer(this);
     m_timers.push_back(t);
     return m_engine.newQObject(t);
-}
-
-QString QtScriptEngine::sanitizeWidgetName(QString const & name)
-{
-    if (name.isEmpty())
-        return QString();
-
-    if (!name[0].isLetter() && name[0] != '_')
-       return QString();
-
-    for (int i = 1; i < name.size(); ++i)
-    {
-        if (!name[i].isLetterOrNumber() && name[i] != '_')
-            return QString();
-    }
-
-    return name;
 }
 
 void QtScriptEngine::onWidgetAdd(DataWidget *w)

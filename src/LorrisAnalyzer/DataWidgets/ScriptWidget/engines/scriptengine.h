@@ -76,6 +76,8 @@ public slots:
     virtual void keyPressed(const QString &key) = 0;
 
 protected:
+    QString sanitizeWidgetName(QString const & name);
+
     int m_x;
     int m_y;
     int m_width;
