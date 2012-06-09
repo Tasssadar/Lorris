@@ -285,8 +285,6 @@ python:unix {
     INCLUDEPATH += ../dep/python2.7/linux/
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
-
-    QMAKE_PRE_LINK = cd ../dep/pythonqt/ && cmake . && make
 }
 
 python:win32 {

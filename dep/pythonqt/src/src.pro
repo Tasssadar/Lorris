@@ -8,9 +8,9 @@ TARGET   = PythonQt
 TEMPLATE = lib
 
 
-DESTDIR    = ../lib
+DESTDIR    = ../
 
-CONFIG += qt dll
+CONFIG += qt dll static
 CONFIG -= flat
 
 INCLUDEPATH += "../../python2.7/win/"
