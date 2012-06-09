@@ -37,7 +37,7 @@ ScriptEngine::~ScriptEngine()
 QStringList ScriptEngine::getEngineList()
 {
 #ifdef WITH_PYTHON
-    static const QStringList list = (QStringList() << "QtScript" << "Python");
+    static const QStringList list = (QStringList() << "QtScript" << "Python 2.7");
 #else
     static const QStringList list = (QStringList() << "QtScript");
 #endif
