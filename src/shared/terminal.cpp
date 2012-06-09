@@ -144,23 +144,13 @@ void Terminal::addLines(const QString &text)
             case '\r':
             {
                 addLine(pos, line_start, line_end);
-
-                if(!m_settings.chars[SET_RETURN])
-                    break;
-
-                m_cursor_pos.setX(0);
+                newlineChar(m_settings.chars[SET_RETURN], pos);
                 break;
             }
             case '\n':
             {
                 addLine(pos, line_start, line_end);
-
-                if(!m_settings.chars[SET_NEWLINE])
-                    break;
-
-                ++pos;
-                m_cursor_pos.setX(0);
-                m_cursor_pos.setY(pos);
+                newlineChar(m_settings.chars[SET_NEWLINE], pos);
                 break;
             }
             case '\b':
@@ -260,6 +250,38 @@ void Terminal::addLine(quint32 pos, QChar *&line_start, QChar *&line_end)
 
     ++line_end;
     line_start = line_end;
+}
+
+void Terminal::newlineChar(quint8 option, quint32& pos)
+{
+    switch(option)
+    {
+        case NL_NEWLINE_RETURN:
+            ++pos;
+            m_cursor_pos.setY(pos);
+            m_cursor_pos.setX(0);
+            break;
+        case NL_NEWLINE:
+        {
+            ++pos;
+            m_cursor_pos.setY(pos);
+
+            if(m_cursor_pos.x() == 0)
+                break;
+
+            std::vector<QString>::iterator linePos = m_lines.begin() + pos;
+            if(linePos != m_lines.end() && m_cursor_pos.x() > (*linePos).size())
+                (*linePos).append(QByteArray(m_cursor_pos.x() - (*linePos).size(), ' '));
+            else
+                m_lines.push_back(QString(m_cursor_pos.x(), ' '));
+            break;
+        }
+        case NL_RETURN:
+            m_cursor_pos.setX(0);
+            break;
+        case NL_NOTHING:
+            break;
+    }
 }
 
 void Terminal::addHex()

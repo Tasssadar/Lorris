@@ -32,6 +32,14 @@ enum settings
     SET_MAX
 };
 
+enum newlineBehavior
+{
+    NL_NEWLINE_RETURN = 0,
+    NL_NEWLINE,
+    NL_RETURN,
+    NL_NOTHING
+};
+
 enum term_fmt
 {
     FMT_TEXT,
@@ -109,19 +117,24 @@ private:
     {
         term_settings_priv()
         {
-            chars[SET_REPLACE_TAB] = false;
-            std::fill(chars+1, chars+SET_MAX, true);
+            chars[SET_REPLACE_TAB] = 0;
+            chars[SET_ALARM] = 1;
+            chars[SET_FORMFEED] = 1;
+            chars[SET_BACKSPACE] = 1;
+            chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
+            chars[SET_RETURN] = NL_RETURN;
             tabReplace = 4;
         }
 
         void copy(const terminal_settings& set);
 
-        bool chars[SET_MAX];
+        quint8 chars[SET_MAX];
         quint8 tabReplace;
     };
 
     void handleInput(const QString &data, int key = 0);
     void addLine(quint32 pos, QChar *&line_start, QChar *&line_end);
+    void newlineChar(quint8 option, quint32& pos);
     void addLines(const QString& text);
     void addHex();
     void redrawAll();
@@ -173,8 +186,12 @@ struct terminal_settings
 {
     terminal_settings()
     {
-        chars[SET_REPLACE_TAB] = false;
-        std::fill(chars+1, chars+SET_MAX, true);
+        chars[SET_REPLACE_TAB] = 0;
+        chars[SET_ALARM] = 1;
+        chars[SET_FORMFEED] = 1;
+        chars[SET_BACKSPACE] = 1;
+        chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
+        chars[SET_RETURN] = NL_RETURN;
         tabReplace = 4;
     }
 
@@ -186,7 +203,7 @@ struct terminal_settings
         font = fnt;
     }
 
-    bool chars[SET_MAX];
+    quint8 chars[SET_MAX];
     quint8 tabReplace;
     QFont font;
 };

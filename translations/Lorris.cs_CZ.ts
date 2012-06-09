@@ -2821,7 +2821,7 @@ ke změně uspořádání</translation>
     <message>
         <location filename="../src/shared/terminalsettings.ui" line="36"/>
         <source> spaces</source>
-        <translation>mezerami</translation>
+        <translation> mezerami</translation>
     </message>
     <message>
         <location filename="../src/shared/terminalsettings.ui" line="49"/>
@@ -2829,168 +2829,200 @@ ke změně uspořádání</translation>
         <translation>Vydat zvuk při znaku \a</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="59"/>
         <source>New line on \n character</source>
-        <translation>Nový řádek při znaku \n</translation>
+        <translation type="obsolete">Nový řádek při znaku \n</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="69"/>
         <source>Return to the beginning of the line
 on \r character</source>
-        <translation>Vrátit se na začátek řádku při znaku \r</translation>
+        <translation type="obsolete">Vrátit se na začátek řádku při znaku \r</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="80"/>
+        <location filename="../src/shared/terminalsettings.ui" line="59"/>
         <source>Delete last character on \b</source>
         <translation>Smazat poslední znak při \b</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="90"/>
+        <location filename="../src/shared/terminalsettings.ui" line="69"/>
         <source>Return pointer to the beginning on \f</source>
         <translation>Vrátit ukazatel zpět na začátek při \f</translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="103"/>
+        <location filename="../src/shared/terminalsettings.ui" line="79"/>
+        <source>\n behavior:</source>
+        <translation>Chování při \n:</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="87"/>
+        <location filename="../src/shared/terminalsettings.ui" line="121"/>
+        <source>newline and return</source>
+        <translation>nový a zpět</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="92"/>
+        <location filename="../src/shared/terminalsettings.ui" line="126"/>
+        <source>newline</source>
+        <translation>nový</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="97"/>
+        <location filename="../src/shared/terminalsettings.ui" line="131"/>
+        <source>return</source>
+        <translation>zpět</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="102"/>
+        <location filename="../src/shared/terminalsettings.ui" line="136"/>
+        <source>nothing</source>
+        <translation>nic</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="110"/>
+        <source>\r behavior:</source>
+        <translation>Chování při \r:</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="147"/>
         <source>Font</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="131"/>
+        <location filename="../src/shared/terminalsettings.ui" line="175"/>
         <source>4</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="136"/>
+        <location filename="../src/shared/terminalsettings.ui" line="180"/>
         <source>5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="141"/>
+        <location filename="../src/shared/terminalsettings.ui" line="185"/>
         <source>6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="146"/>
+        <location filename="../src/shared/terminalsettings.ui" line="190"/>
         <source>7</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="151"/>
+        <location filename="../src/shared/terminalsettings.ui" line="195"/>
         <source>8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="156"/>
+        <location filename="../src/shared/terminalsettings.ui" line="200"/>
         <source>9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="161"/>
+        <location filename="../src/shared/terminalsettings.ui" line="205"/>
         <source>10</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="166"/>
+        <location filename="../src/shared/terminalsettings.ui" line="210"/>
         <source>11</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="171"/>
+        <location filename="../src/shared/terminalsettings.ui" line="215"/>
         <source>12</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="176"/>
+        <location filename="../src/shared/terminalsettings.ui" line="220"/>
         <source>13</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="181"/>
+        <location filename="../src/shared/terminalsettings.ui" line="225"/>
         <source>14</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="186"/>
+        <location filename="../src/shared/terminalsettings.ui" line="230"/>
         <source>15</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="191"/>
+        <location filename="../src/shared/terminalsettings.ui" line="235"/>
         <source>16</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="196"/>
+        <location filename="../src/shared/terminalsettings.ui" line="240"/>
         <source>17</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="201"/>
+        <location filename="../src/shared/terminalsettings.ui" line="245"/>
         <source>18</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="206"/>
+        <location filename="../src/shared/terminalsettings.ui" line="250"/>
         <source>19</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="211"/>
+        <location filename="../src/shared/terminalsettings.ui" line="255"/>
         <source>20</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="216"/>
+        <location filename="../src/shared/terminalsettings.ui" line="260"/>
         <source>22</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="221"/>
+        <location filename="../src/shared/terminalsettings.ui" line="265"/>
         <source>24</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="226"/>
+        <location filename="../src/shared/terminalsettings.ui" line="270"/>
         <source>26</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="231"/>
+        <location filename="../src/shared/terminalsettings.ui" line="275"/>
         <source>28</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="236"/>
+        <location filename="../src/shared/terminalsettings.ui" line="280"/>
         <source>32</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="241"/>
+        <location filename="../src/shared/terminalsettings.ui" line="285"/>
         <source>48</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="246"/>
+        <location filename="../src/shared/terminalsettings.ui" line="290"/>
         <source>64</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="251"/>
+        <location filename="../src/shared/terminalsettings.ui" line="295"/>
         <source>72</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="256"/>
+        <location filename="../src/shared/terminalsettings.ui" line="300"/>
         <source>80</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="261"/>
+        <location filename="../src/shared/terminalsettings.ui" line="305"/>
         <source>96</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/shared/terminalsettings.ui" line="266"/>
+        <location filename="../src/shared/terminalsettings.ui" line="310"/>
         <source>128</source>
         <translation></translation>
     </message>

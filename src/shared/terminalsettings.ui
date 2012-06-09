@@ -19,7 +19,7 @@
      <property name="title">
       <string>Control characters</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout" columnstretch="1,0">
+     <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QCheckBox" name="tabBox">
         <property name="text">
@@ -54,27 +54,6 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QCheckBox" name="newBox">
-        <property name="text">
-         <string>New line on \n character</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="returnBox">
-        <property name="text">
-         <string>Return to the beginning of the line
-on \r character</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
        <widget class="QCheckBox" name="backBox">
         <property name="text">
          <string>Delete last character on \b</string>
@@ -84,7 +63,7 @@ on \r character</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="3" column="0">
        <widget class="QCheckBox" name="formBox">
         <property name="text">
          <string>Return pointer to the beginning on \f</string>
@@ -92,6 +71,71 @@ on \r character</string>
         <property name="checked">
          <bool>true</bool>
         </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>\n behavior:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="newBox">
+        <item>
+         <property name="text">
+          <string>newline and return</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>newline</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>return</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>nothing</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>\r behavior:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="returnBox">
+        <property name="currentIndex">
+         <number>2</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>newline and return</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>newline</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>return</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>nothing</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>

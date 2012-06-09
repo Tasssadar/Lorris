@@ -18,8 +18,8 @@ TerminalSettings::TerminalSettings(const terminal_settings &set, QWidget *parent
     // Load settings
     ui->tabBox->setChecked(set.chars[SET_REPLACE_TAB]);
     ui->alarmBox->setChecked(set.chars[SET_ALARM]);
-    ui->newBox->setChecked(set.chars[SET_NEWLINE]);
-    ui->returnBox->setChecked(set.chars[SET_RETURN]);
+    ui->newBox->setCurrentIndex(set.chars[SET_NEWLINE]);
+    ui->returnBox->setCurrentIndex(set.chars[SET_RETURN]);
 
     ui->widthBox->setValue(set.tabReplace);
     ui->fontBox->setCurrentFont(set.font);
@@ -36,8 +36,8 @@ terminal_settings TerminalSettings::getSettings()
     terminal_settings set;
     set.chars[SET_REPLACE_TAB] = ui->tabBox->isChecked();
     set.chars[SET_ALARM] = ui->alarmBox->isChecked();
-    set.chars[SET_NEWLINE] = ui->newBox->isChecked();
-    set.chars[SET_RETURN] = ui->returnBox->isChecked();
+    set.chars[SET_NEWLINE] = ui->newBox->currentIndex();
+    set.chars[SET_RETURN] = ui->returnBox->currentIndex();
 
     set.tabReplace = ui->widthBox->value();
     set.font = ui->fontBox->currentFont();
