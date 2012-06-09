@@ -12,10 +12,10 @@
 #include <QFileDialog>
 
 #include "scripteditor.h"
-#include "ui_scripteditor.h"
 #include "../../../common.h"
+#include "engines/scriptengine.h"
 
-ScriptEditor::ScriptEditor(const QString& source, const QString& widgetName) :
+ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widgetName) :
     QDialog(),
     ui(new Ui::ScriptEditor)
 {
@@ -24,7 +24,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& widgetName) :
     m_line_num = new LineNumber(this);
     ui->editLayout->insertWidget(0, m_line_num);
 
-    new QScriptSyntaxHighlighter(ui->sourceEdit->document());
+    m_highlighter = NULL;
 
 #ifdef Q_OS_MAC
     ui->sourceEdit->setFont(Utils::getMonospaceFont(12));
@@ -33,21 +33,15 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& widgetName) :
 #endif
     setWindowTitle(windowTitle() + widgetName);
 
-    QMenuBar *menu = new QMenuBar(this);
-    ui->verticalLayout->insertWidget(0, menu);
-
-    QAction *loadAct = menu->addAction(tr("Load file..."));
-    loadAct->setShortcut(QKeySequence("Ctrl+O"));
-
     QScrollBar *bar = ui->sourceEdit->verticalScrollBar();
     connect(bar,            SIGNAL(rangeChanged(int,int)),     SLOT(rangeChanged(int,int)));
     connect(bar,            SIGNAL(valueChanged(int)),         SLOT(sliderMoved(int)));
-    connect(ui->buttonBox,  SIGNAL(clicked(QAbstractButton*)), SLOT(buttonPressed(QAbstractButton*)));
-    connect(ui->sourceEdit, SIGNAL(textChanged()),             SLOT(textChanged()));
-    connect(loadAct,        SIGNAL(triggered()),               SLOT(loadFile()));
 
     ui->sourceEdit->setPlainText(source);
     ui->sourceEdit->setTabStopWidth(ui->sourceEdit->fontMetrics().width(' ') * 4);
+
+    ui->langBox->addItems(ScriptEngine::getEngineList());
+    ui->langBox->setCurrentIndex(type);
 }
 
 ScriptEditor::~ScriptEditor()
@@ -60,7 +54,12 @@ QString ScriptEditor::getSource()
     return ui->sourceEdit->toPlainText();
 }
 
-void ScriptEditor::buttonPressed(QAbstractButton *btn)
+int ScriptEditor::getEngine()
+{
+    return ui->langBox->currentIndex();
+}
+
+void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
 {
     switch(ui->buttonBox->buttonRole(btn))
     {
@@ -70,7 +69,7 @@ void ScriptEditor::buttonPressed(QAbstractButton *btn)
     }
 }
 
-void ScriptEditor::textChanged()
+void ScriptEditor::on_sourceEdit_textChanged()
 {
     m_line_num->setLineNum(ui->sourceEdit->document()->lineCount());
 }
@@ -85,12 +84,17 @@ void ScriptEditor::rangeChanged(int, int)
     m_line_num->setScroll(ui->sourceEdit->verticalScrollBar()->value());
 }
 
-void ScriptEditor::loadFile()
+void ScriptEditor::on_loadBtn_clicked()
 {
-    static const QString filters = tr("JavaScript file (*.js);;Any file (*.*)");
-    QString filename = QFileDialog::getOpenFileName(this, tr("Load file"),
-                                                    sConfig.get(CFG_STRING_ANALYZER_JS), filters);
+    static const QString filters[ENGINE_MAX] =
+    {
+        tr("JavaScript file (*.js);;Any file (*.*)"),
+        tr("Python file (*.py);;Any file (*.*)"),
+    };
 
+    QString filename = QFileDialog::getOpenFileName(this, tr("Load file"),
+                                                    sConfig.get(CFG_STRING_ANALYZER_JS),
+                                                    filters[ui->langBox->currentIndex()]);
     if(filename.isEmpty())
         return;
 
@@ -103,6 +107,23 @@ void ScriptEditor::loadFile()
     file.close();
 
     sConfig.set(CFG_STRING_ANALYZER_JS, filename);
+}
+
+void ScriptEditor::on_langBox_currentIndexChanged(int idx)
+{
+    delete m_highlighter;
+    switch(idx)
+    {
+        case ENGINE_QTSCRIPT:
+        {
+            m_highlighter = new QScriptSyntaxHighlighter(ui->sourceEdit->document());
+            break;
+        }
+        case ENGINE_PYTHON:
+        default:
+            m_highlighter = NULL;
+            break;
+    }
 }
 
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)

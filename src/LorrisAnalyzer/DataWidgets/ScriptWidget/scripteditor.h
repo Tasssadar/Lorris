@@ -9,15 +9,13 @@
 #define SCRIPTEDITOR_H
 
 #include <QDialog>
-
-namespace Ui {
-    class ScriptEditor;
-}
+#include "ui_scripteditor.h"
 
 class QAbstractButton;
 class LineNumber;
+class QSyntaxHighlighter;
 
-class ScriptEditor : public QDialog
+class ScriptEditor : public QDialog, private Ui::ScriptEditor
 {
     Q_OBJECT
 
@@ -25,21 +23,26 @@ Q_SIGNALS:
     void applySource(bool close);
     
 public:
-    explicit ScriptEditor(const QString& source, const QString &widgetName = 0);
+    explicit ScriptEditor(const QString& source, int type, const QString &widgetName = 0);
     ~ScriptEditor();
 
     QString getSource();
+    int getEngine();
     
 private slots:
-    void buttonPressed(QAbstractButton *btn);
-    void textChanged();
     void sliderMoved(int val = -1);
     void rangeChanged(int, int);
-    void loadFile();
+
+    void on_buttonBox_clicked(QAbstractButton *btn);
+    void on_sourceEdit_textChanged();
+    void on_loadBtn_clicked();
+    void on_langBox_currentIndexChanged(int idx);
 
 private:
     Ui::ScriptEditor *ui;
     LineNumber *m_line_num;
+
+    QSyntaxHighlighter *m_highlighter;
 };
 
 class LineNumber : public QWidget

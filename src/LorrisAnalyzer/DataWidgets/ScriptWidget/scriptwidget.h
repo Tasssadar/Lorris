@@ -12,7 +12,7 @@
 
 class QLabel;
 class ScriptEditor;
-class ScriptEnv;
+class ScriptEngine;
 class Terminal;
 
 class ScriptWidget : public DataWidget
@@ -31,18 +31,20 @@ public slots:
     void onWidgetRemove(DataWidget *w);
     void onScriptEvent(const QString& eventId);
 
-protected:
-    void newData(analyzer_data *data, quint32 index);
-    void moveEvent(QMoveEvent *);
-    void resizeEvent(QResizeEvent *);
-
 protected slots:
      void setSourceTriggered();
      void sourceSet(bool close);
 
 protected:
+     void newData(analyzer_data *data, quint32 index);
+     void moveEvent(QMoveEvent *);
+     void resizeEvent(QResizeEvent *);
+
+     void createEngine();
+
      ScriptEditor *m_editor;
-     ScriptEnv *m_env;
+     ScriptEngine *m_engine;
+     int m_engine_type;
      Terminal *m_terminal;
 };
 

@@ -1,6 +1,8 @@
 # -------------------------------------------------
 # Project created by QtCreator 2011-05-30T19:16:22
 # -------------------------------------------------
+include(../config.pri)
+
 QT += gui core network script
 TARGET = Lorris
 CONFIG += uitools precompile_header
@@ -75,13 +77,11 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProxy/tcpserver.cpp \
     LorrisShupito/progressdialog.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp \
     shared/terminal.cpp \
     ../dep/qscriptsyntaxhighlighter.cpp \
     LorrisAnalyzer/playback.cpp \
     LorrisAnalyzer/DataWidgets/inputwidget.cpp \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.cpp \
     shared/rotatebutton.cpp \
     joystick/joymgr.cpp \
     joystick/joystick.cpp \
@@ -103,7 +103,10 @@ SOURCES += ui/mainwindow.cpp \
     shared/fuse_desc.cpp \
     shared/defmgr.cpp \
     ../dep/ecwin7/ecwin7.cpp \
-    shared/terminalsettings.cpp
+    shared/terminalsettings.cpp \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -161,13 +164,11 @@ HEADERS += ui/mainwindow.h \
     LorrisProxy/tcpserver.h \
     LorrisShupito/progressdialog.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.h \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.h \
     shared/terminal.h \
     ../dep/qscriptsyntaxhighlighter_p.h \
     LorrisAnalyzer/playback.h \
     LorrisAnalyzer/DataWidgets/inputwidget.h \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.h \
     shared/rotatebutton.h \
     joystick/joymgr.h \
     joystick/joystick.h \
@@ -191,7 +192,10 @@ HEADERS += ui/mainwindow.h \
     shared/fuse_desc.h \
     shared/defmgr.h \
     ../dep/ecwin7/ecwin7.h \
-    shared/terminalsettings.h
+    shared/terminalsettings.h \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.h \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.h \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -273,4 +277,14 @@ OTHER_FILES += \
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {
     DEFINES += USING_PCH
+}
+
+python {
+    LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt -lpython2.7
+    DEFINES += WITH_PYTHON
+    INCLUDEPATH += ../dep/python2.7
+    SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
+    HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
+
+    QMAKE_PRE_LINK = cd ../dep/pythonqt/ && cmake . && make
 }
