@@ -13,6 +13,8 @@ DESTDIR    = ../lib
 CONFIG += qt dll
 CONFIG -= flat
 
+INCLUDEPATH += "../../python2.7/win/"
+
 include ( ../build/common.prf )  
 include ( ../build/python.prf )  
 

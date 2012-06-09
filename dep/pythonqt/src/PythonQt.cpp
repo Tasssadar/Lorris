@@ -39,6 +39,8 @@
 */
 //----------------------------------------------------------------------------------
 
+#define IAMNOTMOCDAMMIT
+
 #include "PythonQt.h"
 #include "PythonQtImporter.h"
 #include "PythonQtClassInfo.h"

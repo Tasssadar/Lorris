@@ -1,8 +1,8 @@
 # profile to include and link Python
 
 # Change this variable to your python version (2.5, 2.6)
-win32:PYTHON_VERSION=26
-unix:PYTHON_VERSION=2.6
+win32:PYTHON_VERSION=27
+unix:PYTHON_VERSION=2.7
 
 macx {
   # for macx you need to have the Python development kit installed as framework
@@ -31,7 +31,7 @@ macx {
   }
 
   win32:INCLUDEPATH += $(PYTHON_PATH)/PC $(PYTHON_PATH)/include
-  win32:LIBS += $(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib
+  win32:LIBS += c:/python27/libs/libpython27.a
 
 } else:unix {
   # on linux, python-config is used to autodetect Python.

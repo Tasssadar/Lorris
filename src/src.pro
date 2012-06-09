@@ -279,12 +279,23 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
     DEFINES += USING_PCH
 }
 
-python {
+python:unix {
     LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt -lpython2.7
     DEFINES += WITH_PYTHON
-    INCLUDEPATH += ../dep/python2.7
+    INCLUDEPATH += ../dep/python2.7/linux/
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 
     QMAKE_PRE_LINK = cd ../dep/pythonqt/ && cmake . && make
 }
+
+python:win32 {
+    LIBS += -L"../dep/pythonqt/win/" -lPythonQt
+    DEFINES += WITH_PYTHON
+    INCLUDEPATH += ../dep/python2.7/win/
+    SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
+    HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
+
+    QMAKE_POST_LINK = copy ..\dep\pythonqt\win\PythonQt.dll ..\bin\release\PythonQt.dll
+}
+

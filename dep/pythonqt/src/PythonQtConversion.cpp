@@ -673,7 +673,8 @@ QString PythonQtConv::PyObjGetString(PyObject* val, bool strict, bool& ok) {
   if (val->ob_type == &PyString_Type) {
     r = QString(PyString_AS_STRING(val));
   } else if (PyUnicode_Check(val)) {
-#ifdef WIN32
+//#ifdef WIN32
+#if 0
     r = QString::fromUtf16(PyUnicode_AS_UNICODE(val));
 #else
     PyObject *ptmp = PyUnicode_AsUTF8String(val);
@@ -1038,7 +1039,8 @@ PyObject* PythonQtConv::QStringToPyObject(const QString& str)
   if (str.isNull()) {
     return PyString_FromString("");
   } else {
-#ifdef WIN32
+//#ifdef WIN32
+#if 0
     //    return PyString_FromString(str.toLatin1().data());
     return PyUnicode_FromUnicode(str.utf16(), str.length());
 #else

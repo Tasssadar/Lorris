@@ -39,6 +39,8 @@
 */
 //----------------------------------------------------------------------------------
 
+#define IAMNOTMOCDAMMIT
+
 #include "PythonQtStdDecorators.h"
 #include "PythonQt.h"
 #include "PythonQtClassInfo.h"
