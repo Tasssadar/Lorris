@@ -97,6 +97,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         void readData(const QByteArray& data);
         bool load(QString& name, quint8 mask);
         void importBinary(const QString& filename);
+        void resetDevAndStorage(analyzer_packet *packet = NULL);
 
         bool highlightInfoNotNull;
         data_widget_info highlightInfo;

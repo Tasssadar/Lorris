@@ -248,12 +248,7 @@ void LorrisAnalyzer::doNewSource()
             break;
         case 0:
         {
-            SourceDialog *d = new SourceDialog(NULL, this);
-            if (m_con)
-                connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
-
-            analyzer_packet *packet = d->getStructure();
-            delete d;
+            analyzer_packet *packet = SourceDialog::getStructure(NULL, m_con);
 
             m_parser->setPaused(false);
             if(!packet)
@@ -264,14 +259,9 @@ void LorrisAnalyzer::doNewSource()
                 delete m_packet->header;
                 delete m_packet;
             }
-            ui->dataArea->clear();
-            m_storage->Clear();
-            ui->devTabs->removeAll();
-            ui->devTabs->setHeader(packet->header);
-            ui->devTabs->addDevice();
 
-            m_storage->setPacket(packet);
-            m_parser->setPacket(packet);
+            resetDevAndStorage(packet);
+
             m_packet = packet;
             m_data_changed = true;
             break;
@@ -294,12 +284,7 @@ void LorrisAnalyzer::doNewSource()
 
 void LorrisAnalyzer::importBinary(const QString& filename)
 {
-    analyzer_packet *packet = NULL;
-    {
-        SourceDialog d(NULL, this, filename);
-        packet = d.getStructure();
-    }
-
+    analyzer_packet *packet = SourceDialog::getStructure(NULL, NULL, filename);
     if(!packet)
     {
         m_parser->setPaused(false);
@@ -312,14 +297,7 @@ void LorrisAnalyzer::importBinary(const QString& filename)
         delete m_packet;
     }
 
-    ui->dataArea->clear();
-    m_storage->Clear();
-    ui->devTabs->removeAll();
-    ui->devTabs->setHeader(packet->header);
-    ui->devTabs->addDevice();
-
-    m_storage->setPacket(packet);
-    m_parser->setPacket(packet);
+    resetDevAndStorage(packet);
     m_packet = packet;
 
     m_parser->setPaused(false);
@@ -413,11 +391,7 @@ bool LorrisAnalyzer::load(QString &name, quint8 mask)
     m_parser->setPacket(packet);
 
     if(!ui->devTabs->count())
-    {
-        ui->devTabs->removeAll();
-        ui->devTabs->setHeader(packet->header);
-        ui->devTabs->addDevice();
-    }
+        ui->devTabs->reset(packet->header);
 
     if(!idx)
         idx = m_storage->getMaxIdx();
@@ -578,15 +552,7 @@ void LorrisAnalyzer::clearAllButton()
     analyzer_packet *packet = m_packet;
     m_packet = NULL;
 
-    ui->devTabs->removeAll();
-    ui->devTabs->setHeader(NULL);
-    ui->devTabs->addDevice();
-
-    ui->dataArea->clear();
-
-    m_parser->setPacket(NULL);
-    m_storage->Clear();
-    m_storage->setPacket(NULL);
+    resetDevAndStorage();
 
     m_curIndex = 0;
     ui->timeSlider->setMaximum(0);
@@ -618,6 +584,17 @@ void LorrisAnalyzer::clearDataButton()
     updateData();
 }
 
+void LorrisAnalyzer::resetDevAndStorage(analyzer_packet *packet)
+{
+    ui->devTabs->reset(packet ? packet->header : NULL);
+
+    ui->dataArea->clear();
+
+    m_parser->setPacket(packet);
+    m_storage->Clear();
+    m_storage->setPacket(packet);
+}
+
 void LorrisAnalyzer::openFile(const QString& filename)
 {
     if(load((QString&)filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS)))
@@ -641,13 +618,8 @@ void LorrisAnalyzer::openFile()
 
 void LorrisAnalyzer::editStruture()
 {
-    SourceDialog *d = new SourceDialog(m_packet, this);
     m_parser->setPaused(true);
-    if (m_con)
-        connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
-
-    analyzer_packet *packet = d->getStructure();
-    delete d;
+    analyzer_packet *packet = SourceDialog::getStructure(m_packet, m_con);
 
     if(packet)
     {

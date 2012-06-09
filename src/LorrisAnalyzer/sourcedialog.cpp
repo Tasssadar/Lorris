@@ -21,8 +21,8 @@
 #include "packet.h"
 #include "packetparser.h"
 
-SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent, const QString& importFile) :
-    QDialog(parent),ui(new Ui::SourceDialog)
+SourceDialog::SourceDialog(analyzer_packet *pkt, PortConnection *con, const QString &importFile) :
+    QDialog(),ui(new Ui::SourceDialog)
 {
     ui->setupUi(this);
     setFixedSize(width(), height());
@@ -35,6 +35,9 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent, const QString&
     m_parser = new PacketParser(NULL, this);
     m_parser->setPacket(&m_packet);
     m_parser->setImport(importFile);
+
+    if(con)
+        connect(con, SIGNAL(dataRead(QByteArray)), m_parser, SLOT(newData(QByteArray)));
 
     QWidget *w = new QWidget(this);
     scroll_layout = new ScrollDataLayout(m_packet.header, false, false, NULL, NULL, w);
@@ -49,7 +52,6 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent, const QString&
 
     ui->header_scroll->setWidget(w);
 
-    connect(this,               SIGNAL(readData(QByteArray)),     m_parser,      SLOT(newData(QByteArray)));
     connect(ui->len_box,        SIGNAL(valueChanged(int)),        scroll_layout, SLOT(lenChanged(int)));
     connect(ui->len_box,        SIGNAL(valueChanged(int)),                       SLOT(packetLenChanged(int)));
     connect(ui->fmt_combo,      SIGNAL(currentIndexChanged(int)), scroll_layout, SLOT(fmtChanged(int)));
@@ -277,10 +279,9 @@ void SourceDialog::staticDataChanged(QListWidgetItem *)
     m_parser->resetCurPacket();
 }
 
-analyzer_packet *SourceDialog::getStructure()
+analyzer_packet *SourceDialog::getStructure(analyzer_packet *pkt, PortConnection *con, const QString &importFile)
 {
-    exec();
-    if(!setted)
-        return NULL;
-    return new analyzer_packet(&m_packet);
+    SourceDialog d(pkt, con, importFile);
+    d.exec();
+    return d.setted ? new analyzer_packet(&d.m_packet) : NULL;
 }

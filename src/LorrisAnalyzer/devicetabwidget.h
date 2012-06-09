@@ -34,6 +34,13 @@ public:
     explicit DeviceTabWidget(QWidget *parent = 0);
     ~DeviceTabWidget();
 
+    void reset(analyzer_header *header)
+    {
+        removeAll();
+        setHeader(header);
+        addDevice();
+    }
+
     void setHeader(analyzer_header *h);
     CmdTabWidget *addDevice(bool all_devices = true, quint8 id = 0);
     void setEnableIds(bool enable) { m_id_enabled = enable; }
