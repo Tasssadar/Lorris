@@ -16,33 +16,6 @@
 #include "engines/scriptengine.h"
 #include "engines/pythonhighlighter.h"
 
-static const QString defaultCode[ENGINE_MAX] = {
-    ScriptEditor::tr("// You can use clearTerm() and appendTerm(string) to set term content\n"
-    "// You can use sendData(Array of ints) to send data to device. It expects array of uint8s\n\n"
-    "// This function gets called on data received\n"
-    "// it should return string, which is automatically appended to terminal\n"
-    "function onDataChanged(data, dev, cmd, index) {\n"
-    "\treturn \"\";\n"
-    "}\n\n"
-    "// This function is called on key press in terminal.\n"
-    "// Param is string\n"
-    "function onKeyPress(key) {\n"
-    "\n"
-    "}\n"),
-
-    ScriptEditor::tr("# You can use terminal.clear() and terminal.appendText(string) to set term content\n"
-    "# You can use lorris.sendData(QByteArray) to send data to device.\n"
-    "\n"
-    "# This function gets called on data received\n"
-    "# it should return string, which is automatically appended to terminal\n"
-    "def onDataChanged(data, dev, cmd, index):\n"
-    "\treturn \"\";\n"
-    "\n"
-    "# This function is called on key press in terminal.\n"
-    "# Param is string\n"
-    "def onKeyPress(key):\n"
-    "\treturn;\n")
-};
 
 ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widgetName) :
     QDialog(),
@@ -69,7 +42,7 @@ ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widge
     connect(ui->sourceEdit->document(), SIGNAL(contentsChange(int,int,int)),
                                         SLOT(contentsChange(int,int,int)));
 
-    ui->sourceEdit->setPlainText(source.isNull() ? defaultCode[type] : source);
+    ui->sourceEdit->setPlainText(source);
     ui->sourceEdit->setTabStopWidth(ui->sourceEdit->fontMetrics().width(' ') * 4);
 
     m_changed = !source.isNull();
@@ -154,6 +127,34 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
 {
     if(!m_changed)
     {
+        static const QString defaultCode[ENGINE_MAX] = {
+            tr("// You can use clearTerm() and appendTerm(string) to set term content\n"
+            "// You can use sendData(Array of ints) to send data to device. It expects array of uint8s\n\n"
+            "// This function gets called on data received\n"
+            "// it should return string, which is automatically appended to terminal\n"
+            "function onDataChanged(data, dev, cmd, index) {\n"
+            "\treturn \"\";\n"
+            "}\n\n"
+            "// This function is called on key press in terminal.\n"
+            "// Param is string\n"
+            "function onKeyPress(key) {\n"
+            "\n"
+            "}\n"),
+
+            tr("# You can use terminal.clear() and terminal.appendText(string) to set term content\n"
+            "# You can use lorris.sendData(QByteArray) to send data to device.\n"
+            "\n"
+            "# This function gets called on data received\n"
+            "# it should return string, which is automatically appended to terminal\n"
+            "def onDataChanged(data, dev, cmd, index):\n"
+            "\treturn \"\";\n"
+            "\n"
+            "# This function is called on key press in terminal.\n"
+            "# Param is string\n"
+            "def onKeyPress(key):\n"
+            "\treturn;\n")
+        };
+
         ui->sourceEdit->setPlainText(defaultCode[idx]);
         m_changed = false;
     }

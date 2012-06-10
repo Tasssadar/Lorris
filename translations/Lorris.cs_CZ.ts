@@ -739,10 +739,6 @@
         <translation></translation>
     </message>
     <message>
-        <source>Change packet structure</source>
-        <translation type="obsolete">Změnit strukturu packetu</translation>
-    </message>
-    <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="112"/>
         <source>Data</source>
         <translation>Data</translation>
@@ -785,36 +781,36 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="213"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="345"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="429"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="594"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="616"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="323"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="403"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="560"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="582"/>
         <source> of </source>
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="356"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="334"/>
         <source>Data has been modified.</source>
         <translation>Data byla změněna.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="357"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="335"/>
         <source>Do you want to save your changes?</source>
         <translation>Chcete je uložit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="446"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="457"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="420"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="431"/>
         <source>File &quot;%1&quot; was saved</source>
         <translation>Soubor &quot;%1&quot; byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="569"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="543"/>
         <source>Clear everything?</source>
         <translation>Vymazat vše?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="570"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="544"/>
         <source>Do you really want to clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
@@ -840,7 +836,7 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="86"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="464"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="438"/>
         <source>Export binary data</source>
         <translation>Exportovat binární data</translation>
     </message>
@@ -870,32 +866,32 @@
         <translation>Změnit strukturu přijmaných dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="329"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="307"/>
         <source>Could not open file %1 for reading!</source>
         <translation>Nemůžu otevřít soubor %1!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="331"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="309"/>
         <source>Importing...</source>
         <translation>Importuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="331"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="309"/>
         <source>Importing your data...</source>
         <translation>Importuji vaše data...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="477"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="451"/>
         <source>Binary data were exported to file &quot;%1&quot;</source>
         <translation>Binární data byla exportována do souboru &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="571"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="545"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="572"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="546"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -1538,10 +1534,6 @@
         <translation>Zobrazí to co píšete v terminálu a odešle až po stisku klávesy enter</translation>
     </message>
     <message>
-        <source>Change font...</source>
-        <translation type="obsolete">Změnit písmo...</translation>
-    </message>
-    <message>
         <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="383"/>
         <source>Can&apos;t open serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
@@ -1621,10 +1613,6 @@
         <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="768"/>
         <source>Save binary data</source>
         <translation>Uložit binární data</translation>
-    </message>
-    <message>
-        <source>Save data</source>
-        <translation type="obsolete">Uložit data</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="755"/>
@@ -1922,12 +1910,12 @@
         <translation>Komprimovaný datový soubor Lorris (*.cldta);;Datový soubor Lorris (*.ldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="463"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="437"/>
         <source>Any file (*.*)</source>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="629"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="606"/>
         <location filename="../src/LorrisAnalyzer/storage.cpp" line="197"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -2134,18 +2122,6 @@
         <translation>Chybný typ záznamu: %1 (lajna %2)</translation>
     </message>
     <message>
-        <source>Invalid type 4 record (line %1)</source>
-        <translation type="obsolete">Chybný záznam typu 4 (lajna %1)</translation>
-    </message>
-    <message>
-        <source>Invalid type 2 record (line %1)</source>
-        <translation type="obsolete">Chybný záznam typu 2 (lajna %1)</translation>
-    </message>
-    <message>
-        <source>Invalid record type (line %1)</source>
-        <translation type="obsolete">Chybný typ záznamu (lajna %1)</translation>
-    </message>
-    <message>
         <location filename="../src/shared/hexfile.cpp" line="144"/>
         <location filename="../src/shared/hexfile.cpp" line="148"/>
         <source>Memory location was defined twice (line %1)</source>
@@ -2203,12 +2179,12 @@
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="630"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="607"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptagent.cpp" line="30"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp" line="31"/>
         <source>Uncaught exception: </source>
         <translation>Neošetřená výjimka: </translation>
     </message>
@@ -2332,6 +2308,14 @@
     </message>
 </context>
 <context>
+    <name>QtScriptEngine</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="171"/>
+        <source>%1 on line %2</source>
+        <translation>%1 na řádku %2</translation>
+    </message>
+</context>
+<context>
     <name>RangeSelectDialog</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/rangeselectdialog.ui" line="17"/>
@@ -2357,66 +2341,112 @@
         <translation>Zdrojový kód - </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="39"/>
-        <source>Load file...</source>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="26"/>
+        <source>Language:</source>
+        <translation>Jazyk:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="49"/>
+        <source>Load from file...</source>
         <translation>Načíst ze souboru...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="90"/>
-        <source>JavaScript file (*.js);;Any file (*.*)</source>
-        <translation>JavaScript soubory (*.js);;Všechny soubory (*.*)</translation>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="52"/>
+        <source>Ctrl+O</source>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="91"/>
-        <source>Load file</source>
-        <translation>Načíst ze souboru</translation>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="214"/>
+        <source>Show errors (0)</source>
+        <translation>Zobrazit chyby (0)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="99"/>
-        <source>Failed to open &quot;%1!&quot;</source>
-        <translation>Nemůžu otevřit &quot;%1&quot;</translation>
-    </message>
-</context>
-<context>
-    <name>ScriptEnv</name>
-    <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="48"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="20"/>
         <source>// You can use clearTerm() and appendTerm(string) to set term content
 // You can use sendData(Array of ints) to send data to device. It expects array of uint8s
 
 // This function gets called on data received
 // it should return string, which is automatically appended to terminal
 function onDataChanged(data, dev, cmd, index) {
-    return &quot;&quot;;
+	return &quot;&quot;;
 }
 
 // This function is called on key press in terminal.
 // Param is string
 function onKeyPress(key) {
-    
+
 }
 </source>
-        <translation>// Vestavěné funkce:
-// clearTerm() - zahodí obsah terminálu
-// appendTerm(string) - přidá text do terminálu. Může obsahovat kontrolní znaky
-// sendData(array of ints) - pošle do zařizení data. Parametrem je pole bytů
+        <translation>// Pomocí metod clearTerm() a appendTerm(string) můžete měnit obsah terminálu,
+// a sendData(pole intů) pošle data do zařízení.
 
-// Tato fce je volaná při změně dat.
-// Může vracet string, který se pak přidá do terminálu
+// Tahle fce je volána když přijdou nějáká data
+// může vracet string, který se automaticky přidá do terminálu
 function onDataChanged(data, dev, cmd, index) {
-    return &quot;&quot;;
+	return &quot;&quot;;
 }
 
-// Tahle fce se volá při zmáčknutí klávesy v terminálu
-// Parametr je string
+// Tahle fce je volána při stisku kláves v terminálu
+// param is string
 function onKeyPress(key) {
 
-}</translation>
+}
+</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptenv.cpp" line="194"/>
-        <source>%1 on line %2</source>
-        <translation>%1 na řádku %2</translation>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="33"/>
+        <source># You can use terminal.clear() and terminal.appendText(string) to set term content
+# You can use lorris.sendData(QByteArray) to send data to device.
+
+# This function gets called on data received
+# it should return string, which is automatically appended to terminal
+def onDataChanged(data, dev, cmd, index):
+	return &quot;&quot;;
+
+# This function is called on key press in terminal.
+# Param is string
+def onKeyPress(key):
+	return;
+</source>
+        <translation># Pomocí terminal.clear(); a terminal.appendText(string) můžete měnit obsah terminálu
+# Data do zařízení pošlete metodou lorris.sendData(QByteArray)
+
+# Tahle fce je volána když přijdou nějáká data
+# může vracet string, který je automaticky přídán do terminálu
+def onDataChanged(data, dev, cmd, index):
+	return &quot;&quot;;
+
+# Tahle fce je volána když je stisknuta klávesa v terminálu
+# parametr je string
+def onKeyPress(key):
+	return;
+</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="132"/>
+        <source>JavaScript file (*.js);;Any file (*.*)</source>
+        <translation>JavaScript soubory (*.js);;Všechny soubory (*.*)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="133"/>
+        <source>Python file (*.py);;Any file (*.*)</source>
+        <translation>Python soubor (*.py);;Všechny soubory (*.*)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="136"/>
+        <source>Load file</source>
+        <translation>Načíst ze souboru</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="144"/>
+        <source>Failed to open &quot;%1!&quot;</source>
+        <translation>Nemůžu otevřit &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="185"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="192"/>
+        <source>Show errors (%1)</source>
+        <translation>Zobrazit chyby (%1)</translation>
     </message>
 </context>
 <context>
@@ -2427,15 +2457,20 @@ function onKeyPress(key) {
         <translation>Script</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="41"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="42"/>
         <source>Set source...</source>
         <translation>Zdrojový kód scriptu...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="54"/>
+        <source>Script engine %1 is not available, using QtScript!</source>
+        <translation>Script engine %1 není k dispozici, používám QtScript!</translation>
     </message>
 </context>
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="187"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="229"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -2456,7 +2491,7 @@ function onKeyPress(key) {
         <translation>Hlavička</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="156"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="158"/>
         <source>Length</source>
         <translation>Délka</translation>
     </message>
@@ -2535,7 +2570,7 @@ ke změně uspořádání</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="373"/>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="157"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="159"/>
         <source>Static</source>
         <translation>Static</translation>
     </message>
@@ -2585,17 +2620,17 @@ ke změně uspořádání</translation>
         <translation>Text</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="117"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="119"/>
         <source>You have to set something!</source>
         <translation>Musíte něco nastavit!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="158"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="160"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="159"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="161"/>
         <source>Cmd</source>
         <translation>Příkaz</translation>
     </message>
@@ -2783,10 +2818,6 @@ ke změně uspořádání</translation>
         <translation>Nastavení terminálu...</translation>
     </message>
     <message>
-        <source>Change font...</source>
-        <translation type="obsolete">Změnit písmo...</translation>
-    </message>
-    <message>
         <location filename="../src/shared/terminal.cpp" line="82"/>
         <source>Pause</source>
         <translation>Zmrazit</translation>
@@ -2795,10 +2826,6 @@ ke změně uspořádání</translation>
         <location filename="../src/shared/terminal.cpp" line="83"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
-    </message>
-    <message>
-        <source>Font selection</source>
-        <translation type="obsolete">Volba písma</translation>
     </message>
 </context>
 <context>
@@ -2827,15 +2854,6 @@ ke změně uspořádání</translation>
         <location filename="../src/shared/terminalsettings.ui" line="49"/>
         <source>Produce sound on \a character</source>
         <translation>Vydat zvuk při znaku \a</translation>
-    </message>
-    <message>
-        <source>New line on \n character</source>
-        <translation type="obsolete">Nový řádek při znaku \n</translation>
-    </message>
-    <message>
-        <source>Return to the beginning of the line
-on \r character</source>
-        <translation type="obsolete">Vrátit se na začátek řádku při znaku \r</translation>
     </message>
     <message>
         <location filename="../src/shared/terminalsettings.ui" line="59"/>
