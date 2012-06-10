@@ -67,7 +67,10 @@ void PortShupitoConnection::portStateChanged(ConnectionState state)
         if (state == st_disconnected)
             this->SetState(st_disconnected);
         if (state == st_connected)
+        {
+            m_parserState = pst_init0;
             this->SetState(st_connected);
+        }
     }
 }
 
@@ -89,6 +92,34 @@ void PortShupitoConnection::portDataRead(QByteArray const & data)
 
         switch (m_parserState)
         {
+        case pst_init0:
+            if (ch == 0x80)
+                m_parserState = pst_init1;
+            break;
+        case pst_init1:
+            if (ch == 0x0f)
+                m_parserState = pst_init2;
+            else if (ch != 0x80)
+                m_parserState = pst_init0;
+            break;
+        case pst_init2:
+            if (ch == 0x01)
+            {
+                m_parserState = pst_data;
+                m_parserLen = 0xf;
+                m_partialPacket.clear();
+                m_partialPacket.push_back(0x00);
+                m_partialPacket.push_back(0x01);
+            }
+            else if (ch == 0x80)
+            {
+                m_parserState = pst_init1;
+            }
+            else
+            {
+                m_parserState = pst_init0;
+            }
+            break;
         case pst_discard:
             if (ch == 0x80)
             {

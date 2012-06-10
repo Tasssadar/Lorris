@@ -46,7 +46,7 @@ private slots:
 private:
     ConnectionPointer<PortConnection> m_port;
 
-    enum { pst_discard, pst_cmd, pst_data } m_parserState;
+    enum { pst_init0, pst_init1, pst_init2, pst_discard, pst_cmd, pst_data } m_parserState;
     size_t m_parserLen;
 
     ShupitoPacket m_partialPacket;
