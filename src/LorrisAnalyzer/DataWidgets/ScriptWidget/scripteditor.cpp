@@ -18,7 +18,7 @@
 
 
 ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widgetName) :
-    QDialog(),
+    QDialog(NULL, Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint),
     ui(new Ui::ScriptEditor)
 {
     ui->setupUi(this);
