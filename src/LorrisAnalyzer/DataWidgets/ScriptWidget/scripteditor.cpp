@@ -54,6 +54,7 @@ ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widge
     ui->editLayout->insertWidget(0, m_line_num);
 
     m_highlighter = NULL;
+    m_errors = 0;
 
 #ifdef Q_OS_MAC
     ui->sourceEdit->setFont(Utils::getMonospaceFont(12));
@@ -75,6 +76,7 @@ ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widge
 
     ui->langBox->addItems(ScriptEngine::getEngineList());
     ui->langBox->setCurrentIndex(type);
+    ui->errorEdit->hide();
 }
 
 ScriptEditor::~ScriptEditor()
@@ -169,6 +171,25 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
             m_highlighter = NULL;
             break;
     }
+}
+
+void ScriptEditor::on_errorBtn_toggled(bool checked)
+{
+    ui->errorEdit->setShown(checked);
+}
+
+void ScriptEditor::addError(const QString& error)
+{
+    ui->errorEdit->insertPlainText(error);
+    ++m_errors;
+    ui->errorBtn->setText(tr("Show errors (%1)").arg(m_errors));
+}
+
+void ScriptEditor::clearErrors()
+{
+    ui->errorEdit->clear();
+    m_errors = 0;
+    ui->errorBtn->setText(tr("Show errors (%1)").arg(m_errors));
 }
 
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)

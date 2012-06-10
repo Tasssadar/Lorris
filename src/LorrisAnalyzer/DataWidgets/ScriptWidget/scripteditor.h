@@ -23,12 +23,16 @@ Q_SIGNALS:
     void applySource(bool close);
     
 public:
-    explicit ScriptEditor(const QString& source, int type, const QString &widgetName = 0);
+    ScriptEditor(const QString& source, int type, const QString &widgetName = 0);
     ~ScriptEditor();
 
     QString getSource();
     int getEngine();
-    
+
+public slots:
+    void addError(const QString& error);
+    void clearErrors();
+
 private slots:
     void sliderMoved(int val = -1);
     void rangeChanged(int, int);
@@ -37,6 +41,7 @@ private slots:
     void on_sourceEdit_textChanged();
     void on_loadBtn_clicked();
     void on_langBox_currentIndexChanged(int idx);
+    void on_errorBtn_toggled(bool checked);
 
     void contentsChange(int position, int charsRemoved, int charsAdded);
 
@@ -44,6 +49,7 @@ private:
     Ui::ScriptEditor *ui;
     LineNumber *m_line_num;
     bool m_changed;
+    quint32 m_errors;
 
     QSyntaxHighlighter *m_highlighter;
 };

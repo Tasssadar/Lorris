@@ -36,6 +36,7 @@ Q_SIGNALS:
     void SendData(const QByteArray& data);
 
     void stopUsingJoy(QObject *object);
+    void error(const QString& text);
 
 public:
     ScriptEngine(WidgetArea *area , quint32 w_id, Terminal *terminal, QObject *parent = 0);

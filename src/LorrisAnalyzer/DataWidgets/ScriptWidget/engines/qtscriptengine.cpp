@@ -168,7 +168,7 @@ void QtScriptEngine::setSource(const QString &source)
     m_engine.evaluate(classImplement + source);
 
     if(m_engine.hasUncaughtException())
-        throw tr("%1 on line %2").arg(m_engine.uncaughtException().toString()).arg(m_engine.uncaughtExceptionLineNumber());
+        emit error(tr("%1 on line %2").arg(m_engine.uncaughtException().toString()).arg(m_engine.uncaughtExceptionLineNumber()));
 
     m_on_data = m_global->property("onDataChanged");
     m_on_key = m_global->property("onKeyPress");
@@ -177,7 +177,7 @@ void QtScriptEngine::setSource(const QString &source)
     m_on_script_exit = m_global->property("onScriptExit");
     m_on_save = m_global->property("onSave");
 
-    m_engine.setAgent(new ScriptAgent(&m_engine));
+    m_engine.setAgent(new ScriptAgent(this, &m_engine));
 }
 
 QString QtScriptEngine::dataChanged(analyzer_data *data, quint32 index)

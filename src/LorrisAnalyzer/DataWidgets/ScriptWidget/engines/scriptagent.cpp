@@ -8,13 +8,15 @@
 #include <QScriptValue>
 
 #include "scriptagent.h"
+#include "qtscriptengine.h"
 #include "../../../../common.h"
 
-ScriptAgent::ScriptAgent(QScriptEngine *engine) :
+ScriptAgent::ScriptAgent(QtScriptEngine *qtengine, QScriptEngine *engine) :
     QScriptEngineAgent(engine)
 {
     m_timer.invalidate();
     m_errors = 0;
+    m_engine = qtengine;
 }
 
 void ScriptAgent::exceptionThrow(qint64 /*scriptid*/, const QScriptValue &exception, bool hasHandler)
@@ -26,9 +28,7 @@ void ScriptAgent::exceptionThrow(qint64 /*scriptid*/, const QScriptValue &except
     {
         ++m_errors;
         m_timer.invalidate();
-
-        Utils::ThrowException(QObject::tr("Uncaught exception: ") + exception.toString());
-
+        m_engine->handleException(QObject::tr("Uncaught exception: ") + exception.toString());
         m_timer.restart();
     }
 }

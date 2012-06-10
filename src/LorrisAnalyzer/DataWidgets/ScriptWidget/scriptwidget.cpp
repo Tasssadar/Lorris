@@ -161,6 +161,7 @@ void ScriptWidget::setSourceTriggered()
     m_editor->show();
 
     connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
+    connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
 }
 
 void ScriptWidget::sourceSet(bool close)
@@ -174,7 +175,9 @@ void ScriptWidget::sourceSet(bool close)
             m_engine_type = type;
             delete m_engine;
             createEngine();
+            connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
         }
+        m_editor->clearErrors();
 
         m_engine->setSource(m_editor->getSource());
 

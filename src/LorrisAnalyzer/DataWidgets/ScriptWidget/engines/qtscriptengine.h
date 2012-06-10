@@ -85,6 +85,11 @@ public:
     void callEventHandler(const QString& eventId);
     void onSave();
 
+    void handleException(const QString& text)
+    {
+        emit error(text);
+    }
+
 public slots:
     void keyPressed(const QString &key);
 

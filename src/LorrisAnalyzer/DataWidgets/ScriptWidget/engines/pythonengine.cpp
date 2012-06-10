@@ -32,11 +32,12 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, Q
     {
         qRegisterMetaType<GraphCurve>("GraphCurve");
 
-        PythonQt::init(PythonQt::IgnoreSiteModule);
+        PythonQt::init();
         PythonQt::self()->registerClass(&QTimer::staticMetaObject);
         PythonQt::self()->registerClass(&GraphCurve::staticMetaObject);
         initialized = true;
     }
+    connect(PythonQt::self(), SIGNAL(pythonStdErr(QString)), SIGNAL(error(QString)));
     m_evaluating = false;
 }
 
