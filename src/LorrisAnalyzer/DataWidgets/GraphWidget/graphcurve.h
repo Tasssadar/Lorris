@@ -20,7 +20,15 @@ class GraphCurve : public QObject, public QwtPlotCurve
     Q_OBJECT
 public:
     GraphCurve(const QString& name, GraphDataSimple *data);
+    GraphCurve(const GraphCurve &curve);
+    GraphCurve()
+    {
+        GraphCurve("", NULL);
+    }
+
     ~GraphCurve();
+
+    void init();
 
     void setSampleSize(qint32 size);
     void dataPosChanged(quint32 pos);

@@ -58,6 +58,9 @@ void ScriptWidget::createEngine()
 
     Q_ASSERT(m_engine);
 
+    m_engine->setPos(pos().x(), pos().y());
+    m_engine->setSize(size());
+
     connect(m_terminal, SIGNAL(keyPressed(QString)),         m_engine,      SLOT(keyPressed(QString)));
     connect(m_engine,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
     connect(m_engine,      SIGNAL(appendTerm(QString)),         m_terminal, SLOT(appendText(QString)));

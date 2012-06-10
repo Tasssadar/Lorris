@@ -13,18 +13,27 @@
 GraphCurve::GraphCurve(const QString &name, GraphDataSimple *data) :
     QObject(NULL),QwtPlotCurve(name)
 {
-
-    //setRenderHint(QwtPlotItem::RenderAntialiased);
-    setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
-    setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
-
     m_data = data;
-    setData(m_data);
+    init();
+}
+
+GraphCurve::GraphCurve(const GraphCurve &curve) : QObject(NULL), QwtPlotCurve(curve.title())
+{
+    m_data = curve.m_data;
+    init();
 }
 
 GraphCurve::~GraphCurve()
 {
     detach();
+}
+
+void GraphCurve::init()
+{
+    //setRenderHint(QwtPlotItem::RenderAntialiased);
+    setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
+    setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
+    setData(m_data);
 }
 
 void GraphCurve::setSampleSize(qint32 size)

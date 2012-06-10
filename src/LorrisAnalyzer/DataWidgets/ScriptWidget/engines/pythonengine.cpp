@@ -15,6 +15,7 @@
 #include "../scriptstorage.h"
 #include "../../../widgetarea.h"
 #include "../../../../joystick/joymgr.h"
+#include "../../GraphWidget/graphcurve.h"
 
 QString PythonEngine::getNewModuleName()
 {
@@ -22,14 +23,18 @@ QString PythonEngine::getNewModuleName()
     return QString(5, i++);
 }
 
+
 PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent) :
     ScriptEngine(area, w_id, terminal, parent), m_functions(this, parent)
 {
     static bool initialized = false;
     if(!initialized)
     {
+        qRegisterMetaType<GraphCurve>("GraphCurve");
+
         PythonQt::init(PythonQt::IgnoreSiteModule);
         PythonQt::self()->registerClass(&QTimer::staticMetaObject);
+        PythonQt::self()->registerClass(&GraphCurve::staticMetaObject);
         initialized = true;
     }
     m_evaluating = false;
