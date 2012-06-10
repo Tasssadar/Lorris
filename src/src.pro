@@ -290,12 +290,12 @@ python:unix {
 }
 
 python:win32 {
-    LIBS += -L"../dep/pythonqt/win/" -lPythonQt
+    LIBS += -L"$$PWD/../dep/pythonqt/win/" -lPythonQt
     DEFINES += WITH_PYTHON
     INCLUDEPATH += ../dep/python2.7/win/
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 
-    QMAKE_POST_LINK = copy ..\dep\pythonqt\win\PythonQt.dll ..\bin\release\PythonQt.dll
+    QMAKE_POST_LINK = copy \""$$PWD\\..\\dep\\pythonqt\\win\\PythonQt.dll\"" \""$$PWD\\..\\bin\\release\\PythonQt.dll\""
 }
 
