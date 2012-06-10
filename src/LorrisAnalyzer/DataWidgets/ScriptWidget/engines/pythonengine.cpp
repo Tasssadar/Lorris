@@ -18,8 +18,8 @@
 
 QString PythonEngine::getNewModuleName()
 {
-    static int i = 0;
-    return QString::number(i++);
+    static char i = 'a';
+    return QString(5, i++);
 }
 
 PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent) :
@@ -37,22 +37,34 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, Q
 
 PythonEngine::~PythonEngine()
 {
-     m_module.call("onScriptExit");
+    if(!m_module.isNull())
+        m_module.call("onScriptExit");
 
-     while(!m_widgets.empty())
-         m_area->removeWidget((*m_widgets.begin())->getId());
+    while(!m_widgets.empty())
+        m_area->removeWidget((*m_widgets.begin())->getId());
 
-     emit stopUsingJoy(this);
+    emit stopUsingJoy(this);
 }
 
 void PythonEngine::setSource(const QString &source)
 {
-    m_module.call("onScriptExit");
+    if(!m_module.isNull())
+        m_module.call("onScriptExit");
 
     m_evaluating = true;
     m_source = source;
 
-    m_module = PythonQt::self()->createModuleFromScript(getNewModuleName());
+    QString name = getNewModuleName();
+    static const QString predefSource = "from PythonQt.Qt import *\n"
+                                        "from PythonQt.QtGui import *\n"
+                                        "from PythonQt import *\n";
+
+    m_module = PythonQt::self()->createModuleFromScript(name, predefSource);
+    qDebug("%p", m_module.object());
+
+    // remove script created widgets and timer from previous script
+    while(!m_widgets.empty())
+        m_area->removeWidget((*m_widgets.begin())->getId());
 
     m_module.addObject("terminal", m_terminal);
     m_module.addObject("script", parent());
@@ -60,15 +72,14 @@ void PythonEngine::setSource(const QString &source)
     m_module.addObject("storage", m_storage);
     m_module.addObject("lorris", &m_functions);
 
+    QVariant var = m_module.getVariable("lorris");
+    //qDebug("%s", var.typeName());
+
     m_module.addVariable("WIDGET_NUMBER", WIDGET_NUMBERS);
     m_module.addVariable("WIDGET_BAR",    WIDGET_BAR);
     m_module.addVariable("WIDGET_COLOR",  WIDGET_COLOR);
     m_module.addVariable("WIDGET_GRAPH",  WIDGET_GRAPH);
     m_module.addVariable("WIDGET_INPUT",  WIDGET_INPUT);
-
-    // remove script created widgets and timer from previous script
-    while(!m_widgets.empty())
-        m_area->removeWidget((*m_widgets.begin())->getId());
 
     for(std::list<QTimer*>::iterator itr = m_timers.begin(); itr != m_timers.end(); ++itr)
         delete *itr;
@@ -76,10 +87,7 @@ void PythonEngine::setSource(const QString &source)
 
     emit stopUsingJoy(this);
 
-    static const QString predefSource = "from PythonQt.Qt import *\n"
-                                        "from PythonQt.QtGui import *\n"
-                                        "from PythonQt import *\n";
-    m_module.evalScript(predefSource + source);
+    m_module.evalScript(source);
     m_evaluating = false;
 }
 
@@ -234,7 +242,7 @@ void PythonFunctions::moveWidget(QWidget *w, int x, int y)
     w->move(x, y);
 }
 
-DataWidget *PythonFunctions::newWidget(int type, const QString& title, int width, int height, int x, int y)
+DataWidget *PythonFunctions::newWidget(int type, QString title, int width, int height, int x, int y)
 {
     DataWidget *w = m_engine->m_area->addWidget(QPoint(0,0), type);
     if(!w)
@@ -256,4 +264,3 @@ DataWidget *PythonFunctions::newWidget(int type, const QString& title, int width
 
     return w;
 }
-

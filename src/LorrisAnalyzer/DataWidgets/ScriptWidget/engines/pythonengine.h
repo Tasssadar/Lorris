@@ -33,7 +33,7 @@ public slots:
     QTimer *newTimer();
     void AddComboBoxItems(QComboBox *box, QStringList items);
     void moveWidget(QWidget *w, int x, int y);
-    DataWidget *newWidget(int type, const QString& title, int width = -1, int height = -1, int x = -1, int y = -1);
+    DataWidget *newWidget(int type, QString title, int width = -1, int height = -1, int x = -1, int y = -1);
 
 private:
     PythonEngine *m_engine;
