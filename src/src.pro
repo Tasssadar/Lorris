@@ -106,7 +106,8 @@ SOURCES += ui/mainwindow.cpp \
     shared/terminalsettings.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.cpp
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.cpp \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -195,7 +196,8 @@ HEADERS += ui/mainwindow.h \
     shared/terminalsettings.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.h \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.h
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.h \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include

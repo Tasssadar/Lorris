@@ -14,6 +14,7 @@
 #include "scripteditor.h"
 #include "../../../common.h"
 #include "engines/scriptengine.h"
+#include "engines/pythonhighlighter.h"
 
 static const QString defaultCode[ENGINE_MAX] = {
     ScriptEditor::tr("// You can use clearTerm() and appendTerm(string) to set term content\n"
@@ -159,11 +160,11 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
     switch(idx)
     {
         case ENGINE_QTSCRIPT:
-        {
             m_highlighter = new QScriptSyntaxHighlighter(ui->sourceEdit->document());
             break;
-        }
         case ENGINE_PYTHON:
+            m_highlighter = new PythonHighlighter(ui->sourceEdit->document());
+            break;
         default:
             m_highlighter = NULL;
             break;

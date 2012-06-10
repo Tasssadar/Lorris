@@ -39,7 +39,6 @@ private:
     PythonEngine *m_engine;
 };
 
-
 class PythonEngine : public ScriptEngine
 {
     Q_OBJECT

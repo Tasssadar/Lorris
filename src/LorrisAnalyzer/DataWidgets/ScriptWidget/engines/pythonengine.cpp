@@ -60,7 +60,6 @@ void PythonEngine::setSource(const QString &source)
                                         "from PythonQt import *\n";
 
     m_module = PythonQt::self()->createModuleFromScript(name, predefSource);
-    qDebug("%p", m_module.object());
 
     // remove script created widgets and timer from previous script
     while(!m_widgets.empty())
@@ -72,8 +71,9 @@ void PythonEngine::setSource(const QString &source)
     m_module.addObject("storage", m_storage);
     m_module.addObject("lorris", &m_functions);
 
-    QVariant var = m_module.getVariable("lorris");
-    //qDebug("%s", var.typeName());
+    // FIXMEWTF: lorris.newWidget fails on every second setSource
+    // with "AttributeError: *widgetTitle*" if this is not. What?
+    m_module.getVariable("lorris");
 
     m_module.addVariable("WIDGET_NUMBER", WIDGET_NUMBERS);
     m_module.addVariable("WIDGET_BAR",    WIDGET_BAR);
