@@ -55,9 +55,11 @@ private:
     QTimer m_refreshTimer;
 };
 
+#ifdef HAVE_LIBUSBY
+
+#include <libusby.h>
+
 class UsbAcmConnection;
-struct libusb_context;
-struct libusb_device;
 
 class UsbShupitoEnumerator : public QObject
 {
@@ -74,13 +76,15 @@ private slots:
     void connectionDestroyed();
 
 private:
-    libusb_context * m_usb_ctx;
+    libusby_context * m_usb_ctx;
     QScopedPointer<QThread> m_eventDispatcher;
 
-    QHash<libusb_device *, UsbAcmConnection *> m_devmap;
+    QHash<libusby_device *, UsbAcmConnection *> m_devmap;
 
     QTimer m_refreshTimer;
 };
+
+#endif // HAVE_LIBUSBY
 
 class ConnectionManager2 : public QObject
 {
@@ -118,7 +122,9 @@ private:
 
     QSet<Connection *> m_userOwnedConns;
     QScopedPointer<SerialPortEnumerator> m_serialPortEnumerator;
+#ifdef HAVE_LIBUSBY
     QScopedPointer<UsbShupitoEnumerator> m_usbShupitoEnumerator;
+#endif // HAVE_LIBUSBY
     QHash<PortConnection *, ShupitoConnection *> m_autoShupitos;
     QHash<QObject *, PortConnection *> m_autoShupitosRev;
 };

@@ -518,7 +518,7 @@
   <customwidget>
    <class>RotateButton</class>
    <extends>QPushButton</extends>
-   <header>../src/shared/rotatebutton.h</header>
+   <header location="global">src/shared/rotatebutton.h</header>
   </customwidget>
  </customwidgets>
  <resources>

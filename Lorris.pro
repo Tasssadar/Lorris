@@ -20,11 +20,15 @@ win32-msvc* {
 LIBS += -L"$$PWD/dep/qextserialport/lib"
 TRANSLATIONS = translations/Lorris.cs_CZ.ts
 TEMPLATE = app
+
+INCLUDEPATH += $$PWD
 INCLUDEPATH += dep/qwt/src
 INCLUDEPATH += dep/qserialdevice/src
 INCLUDEPATH += dep/qhexedit2/src
 INCLUDEPATH += dep
 INCLUDEPATH += dep/qextserialport/src
+INCLUDEPATH += dep/SDL/include
+
 SOURCES += src/ui/mainwindow.cpp \
     src/main.cpp \
     src/ui/HomeTab.cpp \
@@ -106,8 +110,8 @@ SOURCES += src/ui/mainwindow.cpp \
     src/LorrisAnalyzer/packetparser.cpp \
     src/ui/plustabbar.cpp \
     src/ui/homedialog.cpp \
-    src/connection/shupitoconn.cpp \
-    src/connection/usbshupitoconn.cpp
+    src/connection/shupitoconn.cpp
+
 HEADERS += src/ui/mainwindow.h \
     src/revision.h \
     src/ui/HomeTab.h \
@@ -194,33 +198,27 @@ HEADERS += src/ui/mainwindow.h \
     src/LorrisAnalyzer/packetparser.h \
     src/ui/plustabbar.h \
     src/ui/homedialog.h \
-    src/connection/shupitoconn.h \
-    src/connection/usbshupitoconn.h
+    src/connection/shupitoconn.h
 
 win32 {
     CONFIG -= flat
+    CONFIG += libusby
 
-    INCLUDEPATH += dep/SDL/include dep/libusb
-
-    DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE _SCL_SECURE_NO_WARNINGS _CRT_SECURE_NO_WARNINGS
+    DEFINES += \
+        QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE _SCL_SECURE_NO_WARNINGS \
+        _CRT_SECURE_NO_WARNINGS
 
     HEADERS += \
         dep/qextserialport/src/qextwineventnotifier_p.h
     SOURCES += \
         dep/qextserialport/src/qextserialenumerator_win.cpp \
         dep/qextserialport/src/qextwineventnotifier_p.cpp \
-        dep/qextserialport/src/qextserialport_win.cpp \
-        dep/libusb/core.c \
-        dep/libusb/descriptor.c \
-        dep/libusb/io.c \
-        dep/libusb/sync.c \
-        dep/libusb/os/windows_usb.c \
-        dep/libusb/os/threads_windows.c \
-        dep/libusb/os/poll_windows.c
+        dep/qextserialport/src/qextserialport_win.cpp
 
     win32-msvc* {
         LIBS += -L"$$PWD/dep/SDL/lib/msvc"
         QMAKE_CXXFLAGS += /wd4138
+        QMAKE_CXXFLAGS_DEBUG += /Od
     } else {
         LIBS += -L"$$PWD/dep/SDL/lib"
         QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
@@ -232,7 +230,6 @@ win32 {
 }
 unix:!macx:!symbian {
     CONFIG += link_pkgconfig
-    PKGCONFIG += libusb-1.0
     SOURCES += \
         dep/qextserialport/src/qextserialport_unix.cpp \
         dep/qextserialport/src/qextserialenumerator_unix.cpp
@@ -282,3 +279,12 @@ RC_FILE = src/winicon.rc
 
 OTHER_FILES += \
     dep/qextserialport/src/qextserialport.pri
+
+libusby {
+    include(dep/libusby/libusby.pri)
+    DEFINES += HAVE_LIBUSBY
+    SOURCES += \
+        src/connection/usbshupitoconn.cpp
+    HEADERS += \
+        src/connection/usbshupitoconn.h
+}

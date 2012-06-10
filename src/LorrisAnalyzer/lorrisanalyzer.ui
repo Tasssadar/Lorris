@@ -276,24 +276,24 @@
   <customwidget>
    <class>Playback</class>
    <extends>QFrame</extends>
-   <header>../src/LorrisAnalyzer/playback.h</header>
+   <header location="global">src/LorrisAnalyzer/playback.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RotateButton</class>
    <extends>QPushButton</extends>
-   <header>../src/shared/rotatebutton.h</header>
+   <header location="global">src/shared/rotatebutton.h</header>
   </customwidget>
   <customwidget>
    <class>AnalyzerDataArea</class>
    <extends>QFrame</extends>
-   <header>../src/LorrisAnalyzer/analyzerdataarea.h</header>
+   <header location="global">src/LorrisAnalyzer/analyzerdataarea.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>DeviceTabWidget</class>
    <extends>QTabWidget</extends>
-   <header>../src/LorrisAnalyzer/devicetabwidget.h</header>
+   <header location="global">src/LorrisAnalyzer/devicetabwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

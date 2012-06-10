@@ -27,8 +27,10 @@
 #include <qextserialenumerator.h>
 #include "../config.h"
 #include <QStringBuilder>
+
+#ifdef HAVE_LIBUSBY
 #include "usbshupitoconn.h"
-#include <libusb.h>
+#endif // HAVE_LIBUSBY
 
 ConnectionManager2 * psConMgr2 = 0;
 
@@ -108,36 +110,29 @@ void SerialPortEnumerator::connectionDestroyed()
     m_portMap.remove(port->deviceName());
 }
 
+#ifdef HAVE_LIBUSBY
+
 class UsbEventDispatcher : public QThread
 {
 public:
-    UsbEventDispatcher(libusb_context * ctx)
-        : m_ctx(ctx), m_stopping(false)
+    UsbEventDispatcher(libusby_context * ctx)
+        : m_ctx(ctx)
     {
     }
 
     void run()
     {
-        timeval tv = {};
-        tv.tv_sec = 1;
-        while (!m_stopping)
-            libusb_handle_events_timeout(m_ctx, &tv);
-    }
-
-    void initiate_stop()
-    {
-        m_stopping = true;
+        libusby_run_event_loop(m_ctx);
     }
 
 private:
-    libusb_context * m_ctx;
-    bool m_stopping;
+    libusby_context * m_ctx;
 };
 
 UsbShupitoEnumerator::UsbShupitoEnumerator()
     : m_usb_ctx(0)
 {
-    int res = libusb_init(&m_usb_ctx);
+    int res = libusby_init(&m_usb_ctx);
     m_eventDispatcher.reset(new UsbEventDispatcher(m_usb_ctx));
     m_eventDispatcher->start();
 
@@ -150,9 +145,9 @@ UsbShupitoEnumerator::~UsbShupitoEnumerator()
     while (!m_devmap.isEmpty())
         (*m_devmap.begin())->releaseAll();
 
-    static_cast<UsbEventDispatcher *>(m_eventDispatcher.data())->initiate_stop();
+	libusby_stop_event_loop(m_usb_ctx);
     m_eventDispatcher->wait();
-    libusb_exit(m_usb_ctx);
+    libusby_exit(m_usb_ctx);
 }
 
 void UsbShupitoEnumerator::refresh()
@@ -160,15 +155,15 @@ void UsbShupitoEnumerator::refresh()
     if (!m_usb_ctx)
         return;
 
-    libusb_device ** dev_list = 0;
-    ssize_t dev_count = libusb_get_device_list(m_usb_ctx, &dev_list);
+    libusby_device ** dev_list = 0;
+    int dev_count = libusby_get_device_list(m_usb_ctx, &dev_list);
     if (dev_count < 0)
         return;
 
     QList<UsbAcmConnection *> portsToDisown = m_devmap.values();
     for (int i = 0; i < dev_count; ++i)
     {
-        libusb_device * dev = dev_list[i];
+        libusby_device * dev = dev_list[i];
         if (!UsbAcmConnection::isDeviceSupported(dev))
             continue;
 
@@ -178,7 +173,7 @@ void UsbShupitoEnumerator::refresh()
         }
         else
         {
-            ConnectionPointer<UsbAcmConnection> conn(new UsbAcmConnection());
+            ConnectionPointer<UsbAcmConnection> conn(new UsbAcmConnection(m_usb_ctx));
             if (!conn->setUsbDevice(dev))
                 continue;
             conn->setRemovable(false);
@@ -189,7 +184,7 @@ void UsbShupitoEnumerator::refresh()
         }
     }
 
-    libusb_free_device_list(dev_list, 1);
+    libusby_free_device_list(dev_list, 1);
 
     for (int i = 0; i < portsToDisown.size(); ++i)
         portsToDisown[i]->releaseAll();
@@ -201,11 +196,15 @@ void UsbShupitoEnumerator::connectionDestroyed()
     m_devmap.remove(conn->usbDevice());
 }
 
+#endif // HAVE_LIBUSBY
+
 ConnectionManager2::ConnectionManager2(QObject * parent)
     : QObject(parent)
 {
     m_serialPortEnumerator.reset(new SerialPortEnumerator());
+#ifdef HAVE_LIBUSBY
     m_usbShupitoEnumerator.reset(new UsbShupitoEnumerator());
+#endif // HAVE_LIBUSBY
 
     QVariant config = sConfig.get(CFG_VARIANT_CONNECTIONS);
     if (config.isValid())
@@ -219,7 +218,9 @@ ConnectionManager2::~ConnectionManager2()
     sConfig.set(CFG_VARIANT_CONNECTIONS, this->config());
 
     m_serialPortEnumerator.reset();
+#ifdef HAVE_LIBUSBY
     m_usbShupitoEnumerator.reset();
+#endif // HAVE_LIBUSBY
 
     // All of the remaining connections should be owned by the manager and should
     // therefore be removable.
@@ -324,7 +325,10 @@ void ConnectionManager2::clearUserOwnedConns()
 void ConnectionManager2::refresh()
 {
     m_serialPortEnumerator->refresh();
+
+#ifdef HAVE_LIBUSBY
     m_usbShupitoEnumerator->refresh();
+#endif // HAVE_LIBUSBY
 }
 
 SerialPort * ConnectionManager2::createSerialPort()

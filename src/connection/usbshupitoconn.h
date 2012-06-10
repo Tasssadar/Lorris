@@ -6,12 +6,12 @@
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
-#include <libusb.h>
+#include <libusby.h>
 
 class UsbAcmConnection : public PortConnection
 {
 public:
-    UsbAcmConnection();
+    explicit UsbAcmConnection(libusby_context * ctx);
     ~UsbAcmConnection();
 
     QString details() const;
@@ -20,36 +20,41 @@ public:
     QString product() const { return m_product; }
     QString serialNumber() const { return m_serialNumber; }
 
-    libusb_device * usbDevice() const { return m_dev; }
-    bool setUsbDevice(libusb_device * dev);
+    libusby_device * usbDevice() const { return m_dev; }
+    bool setUsbDevice(libusby_device * dev);
 
     void OpenConcurrent();
     void Close();
 
-    static bool isDeviceSupported(libusb_device * dev);
+    static bool isDeviceSupported(libusby_device * dev);
+
+protected:
+    bool event(QEvent * ev);
 
 public slots:
     virtual void SendData(const QByteArray & data);
 
 private:
     bool openImpl();
+    bool readConfig(libusby_device_handle * handle);
     bool updateStrings();
-    static void LIBUSB_CALL static_read_completed(libusb_transfer * t);
-    void read_completed(libusb_transfer * t);
-    void start_read_transfer();
+    static void static_read_completed(libusby_transfer * t);
+    static void static_write_completed(libusby_transfer * t);
 
-    libusb_device * m_dev;
-    libusb_device_handle * m_handle;
-    libusb_transfer * m_read_transfer;
+    libusby_device * m_dev;
+    libusby_device_handle * m_handle;
+    libusby_transfer * m_read_transfer;
+    libusby_transfer * m_write_transfer;
+
+    QMutex m_write_mutex;
+    QByteArray m_send_data;
+    QByteArray m_write_buffer;
+    int m_write_buffer_pos;
 
     int m_write_ep;
     int m_read_ep;
 
     unsigned char m_read_buffer[1024];
-    bool m_stop_read;
-    bool m_read_stopped;
-    QMutex m_read_stopped_mutex;
-    QWaitCondition m_read_stopped_cond;
 
     QString m_manufacturer;
     QString m_product;
