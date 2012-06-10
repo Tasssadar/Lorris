@@ -275,7 +275,8 @@ void LorrisShupito::connectedStatus(bool connected)
     if(connected)
     {
         m_state &= ~(STATE_DISCONNECTED);
-        stopAll(true);
+        m_tunnel_config = 0;
+        m_vdd_config = 0;
 
         delete m_desc;
         m_desc = new ShupitoDesc();
