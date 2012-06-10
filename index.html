@@ -70,7 +70,11 @@
     <b>Stable release</b> - <a href="https://github.com/downloads/Tasssadar/Lorris/Lorris_0.4.0.zip">version 0.4.0</a><br>
     <b>Testing release</b> - Testing releases are available at <a href="https://github.com/Tasssadar/Lorris/downloads">GitHub downloads page</a>
 </p>
-
+<!--<p style="margin-left: 30px">
+    <b>Python support:</b> all files needed to run Lorris are in the ZIP archive, but you need to
+    <a href="http://www.python.org/download/releases/2.7.3/#download">install Python 2.7.x</a> if you want all its features.
+    Without it, you will not be able to use extra modules, which means that for example "import random" will result in exception.
+</p>-->
 <h4>Changelog</h4>
 <p style="margin-left: 30px">
     Changelog is placed in repository: <a href="https://github.com/Tasssadar/Lorris/blob/master/CHANGELOG">https://github.com/Tasssadar/Lorris/blob/master/CHANGELOG</a>.
@@ -200,7 +204,11 @@ Supported programming interfaces
 </p>
 <h4>Building on Windows</h4>
 <p style="margin-left: 30px">
-    Download <a href="http://qt.nokia.com/downloads">Qt SDK</a> with Qt version >= 4.7 and gcc compiler, download Lorris, open Lorris.pro in QtCreator and hit "Build" button. 
+    Download <a href="http://qt.nokia.com/downloads">Qt SDK</a> with Qt version >= 4.7 and gcc compiler and install it.<br>
+    If you want python support, you also need to 
+    <a href="http://www.python.org/download/releases/2.7.3/#download">install python 2.7.x</a>.
+    If not, comment out line "DEFINES += WITH_PYTHON" in config.pri.<br>
+    Now download Lorris, open Lorris.pro in QtCreator and hit "Build" button.
 </p>
 <h4>Building on Linux</h4>
     <b style="margin-left: 30px">Required packages:</b>
@@ -209,17 +217,21 @@ Supported programming interfaces
       - Qt SDK >= 4.7.0<br>
       - make, g++<br>
       - libudev-dev<br>
-      - libsdl-dev</b> (not sure about version, probably >= 1.2)
+      - libsdl-dev</b> (not sure about version, probably >= 1.2)<b><br>
+      - python-dev == 2.7.x</b> (Only if you want python support in LorrisAnalyzer)
     </p>
     <p style="margin-left: 30px">
     So, apt-get line for Debian Testing would look like this:
     </p>
     <pre style="margin-left: 30px">
-    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libsdl1.2-dev libudev-dev</pre>
+    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libsdl1.2-dev libudev-dev python2.7-dev</pre>
     <p style="margin-left: 30px">
     Lorris also needs libqwt >= 6.0.0, but it will build it by itself since
     <a href="https://github.com/Tasssadar/Lorris/commit/664209866876d439e4e9b02bf156e42c62b04c76">664209866876d439e4e9b02bf156e42c62b04c76</a>.
-</p>
+    </p>
+    <p style="margin-left: 30px">
+    If you do not want python support or if it is causing you any problems, comment out line "DEFINES += WITH_PYTHON" in config.pri
+    </p>
 <p style="margin-left: 30px">
     Now you can build Lorris with QtCreator or go to Lorris folder and execute these commands:
 </p>
@@ -234,7 +246,8 @@ Supported programming interfaces
 <h4>Building on Mac OS X</h4>
 <p style="margin-left: 30px">
     Lorris can be built on OS X with a bit of effort (since <a href="https://github.com/Tasssadar/Lorris/commit/20b3dc2a75e7d959de9ac639638c2a5a38020ba9">20b3dc2a75e7</a>),
-    but it looks kinda horrible and there are some weird crashes. Qt on Mac requires OS X version >= 10.6.
+    but it looks kinda horrible and there are some weird crashes. Qt on Mac requires OS X version >= 10.6.<br>
+    <b>Build with python was not tested on OS X, comment out "DEFINES += WITH_PYTHON" line in config.pri</b>
 </p>
     <b style="margin-left: 30px">1. XCode</b>
     <p style="margin-left: 60px">

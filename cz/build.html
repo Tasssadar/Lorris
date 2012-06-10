@@ -6,7 +6,10 @@
 </p>
 <h4>Windows</h4>
 <p style="margin-left: 30px">
-    Stáhněte si <a href="http://qt.nokia.com/downloads">Qt SDK</a> s Qt >= 4.7 a gcc kompilátorem, stáhněte Lorris, otevřete Lorris.pro v QtCreatoru a stiskněte "Sestavit".
+    Stáhněte si <a href="http://qt.nokia.com/downloads">Qt SDK</a> s Qt >= 4.7 a gcc kompilátorem a nainstalujte ho.<br>
+    Pokud chcete podporu pythonu v analyzéru, musíte si nainstalovat také <a href="http://www.python.org/download/releases/2.7.3/#download">python 2.7.x</a>.
+    Pokud ne, zakomentujte řádek "DEFINES += WITH_PYTHON" v config.pri</br>
+    Nakonec stáhněte Lorris, otevřete Lorris.pro v QtCreatoru a stiskněte "Sestavit".
 </p>
 <h4>Linux</h4>
 <b style="margin-left: 30px">Potřebné balíčky:</b>
@@ -15,18 +18,22 @@
   - Qt SDK >= 4.7.0<br>
   - make, g++<br>
   - libudev-dev<br>
-  - libsdl-dev</b> (verze asi >= 1.2?)
+  - libsdl-dev</b> (verze asi >= 1.2?)<b><br>
+  - python-dev == 2.7.x</b> (Jen pokud chcete podporu Pythonu v Analyzéru)
 </p>
 <p style="margin-left: 30px">
     apt-get pro Debian Testing by vypadalo takto:
 </p>
 <pre style="margin-left: 30px">
-    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libsdl1.2-dev libudev-dev</pre>
+    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libsdl1.2-dev libudev-dev python2.7-dev</pre>
 <p style="margin-left: 30px">
     Lorris také potřebuje libqwt-dev >= 6.0.0, ale od
     <a href="https://github.com/Tasssadar/Lorris/commit/664209866876d439e4e9b02bf156e42c62b04c76">664209866876d439e4e9b02bf156e42c62b04c76</a>
     si ji dokáže zkompilovat sám.
 </p>
+<p style="margin-left: 30px">
+    Pokud podporu pythonu v Analyzéru nechcete, nebo pokud tato způsobuje nějaké problémy při kompilaci, můžete ji vypnout - zakomentujte řádek "DEFINES += WITH_PYTHON" v config.pri
+    </p>
 <p style="margin-left: 30px">
     Teď můžete zkompilovat Lorris v QtCreatoru nebo následujícími příkazy:
 </p>
@@ -41,7 +48,8 @@
 <h4>Mac OS X</h4>
 <p style="margin-left: 30px">
     Lorris lze pod OS X zkompilovat (od <a href="https://github.com/Tasssadar/Lorris/commit/20b3dc2a75e7d959de9ac639638c2a5a38020ba9">20b3dc2a75e7</a>),
-    ale vypadá tam docela divně a poměrně často divně padá. Qt na Macu potřebuje OS X verze >= 10.6.
+    ale vypadá tam docela divně a poměrně často divně padá. Qt na Macu potřebuje OS X verze >= 10.6.<br>
+    <b>Podpora pythonu není pod 0S X otestovaná, zakomentuje řádek "DEFINES += WITH_PYTHON" v config.pri</b>
 </p>
     <b style="margin-left: 30px">1. XCode</b>
     <p style="margin-left: 60px">
