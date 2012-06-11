@@ -43,6 +43,7 @@
 #include "DataWidgets/ScriptWidget/scriptwidget.h"
 #include "DataWidgets/terminalwidget.h"
 #include "DataWidgets/buttonwidget.h"
+#include "DataWidgets/circlewidget.h"
 
 LorrisAnalyzer::LorrisAnalyzer()
     : ui(new Ui::LorrisAnalyzer),
@@ -153,6 +154,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     widgetBtnL->addWidget(new ScriptWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new TerminalWidgetAddBtn(tmp));
     widgetBtnL->addWidget(new ButtonWidgetAddBtn(tmp));
+    widgetBtnL->addWidget(new CircleWidgetAddBtn(tmp));
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);

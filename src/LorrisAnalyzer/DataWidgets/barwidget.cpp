@@ -14,7 +14,7 @@
 #include <QDialogButtonBox>
 
 #include "barwidget.h"
-#include "ui_rangeselectdialog.h"
+#include "../../ui/rangeselectdialog.h"
 #include "../datafileparser.h"
 
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
@@ -167,12 +167,11 @@ void BarWidget::rangeSelected()
             break;
     }
 
-    RangeSelectDialog *dialog = new RangeSelectDialog(m_bar->minimum(), m_bar->maximum(), max, min, this);
-    dialog->exec();
-    if(dialog->getRes())
-        m_bar->setRange(dialog->getMin(), dialog->getMax());
+    RangeSelectDialog dialog(m_bar->minimum(), m_bar->maximum(), max, min, this);
+    dialog.exec();
+    if(dialog.getRes())
+        m_bar->setRange(dialog.getMin(), dialog.getMax());
 
-    delete dialog;
     emit updateData();
 }
 
@@ -273,48 +272,4 @@ BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
     setIcon(QIcon(":/dataWidgetIcons/bar.png"));
 
     m_widgetType = WIDGET_BAR;
-}
-
-RangeSelectDialog::RangeSelectDialog(int val_min, int val_max, int max, int min, QWidget *parent) : QDialog(parent), ui(new Ui::RangeSelectDialog)
-{
-    ui->setupUi(this);
-
-    ui->maxBox->setRange(val_min, max);
-    ui->minBox->setRange(min, val_max);
-    ui->maxBox->setValue(val_max);
-    ui->minBox->setValue(val_min);
-
-    connect(ui->maxBox, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
-    connect(ui->minBox, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
-    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(boxClicked(QAbstractButton*)));
-
-    m_minRes = val_min;
-    m_maxRes = val_max;
-    m_res = false;
-
-    setFixedSize(size());
-}
-
-RangeSelectDialog::~RangeSelectDialog()
-{
-    delete ui;
-}
-
-void RangeSelectDialog::maxChanged(int value)
-{
-    m_maxRes = value;
-    ui->minBox->setMaximum(value);
-}
-
-void RangeSelectDialog::minChanged(int value)
-{
-    m_minRes = value;
-    ui->maxBox->setMinimum(value);
-}
-
-void RangeSelectDialog::boxClicked(QAbstractButton *b)
-{
-    if(ui->buttonBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
-        m_res = true;
-    close();
 }

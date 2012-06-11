@@ -107,7 +107,9 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.cpp \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.cpp
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.cpp \
+    LorrisAnalyzer/DataWidgets/circlewidget.cpp \
+    ui/rangeselectdialog.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -197,7 +199,9 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.h \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.h
+    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.h \
+    LorrisAnalyzer/DataWidgets/circlewidget.h \
+    ui/rangeselectdialog.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -250,7 +254,6 @@ macx {
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
     LorrisAnalyzer/lorrisanalyzer.ui \
-    LorrisAnalyzer/DataWidgets/rangeselectdialog.ui \
     LorrisAnalyzer/sourceselectdialog.ui \
     LorrisShupito/lorrisshupito.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui \
@@ -262,7 +265,8 @@ FORMS += \
     LorrisAnalyzer/playback.ui \
     ui/chooseconnectiondlg.ui \
     LorrisShupito/overvccdialog.ui \
-    shared/terminalsettings.ui
+    shared/terminalsettings.ui \
+    ui/rangeselectdialog.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
