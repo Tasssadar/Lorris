@@ -56,6 +56,7 @@ private:
     static QScriptValue __newColorWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newGraphWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newInputWidget(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __newCircleWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newWidget(QScriptContext *context, QScriptEngine *engine);
 
     QScriptValue  m_global;

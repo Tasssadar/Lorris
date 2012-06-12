@@ -23,6 +23,7 @@ CircleWidget::CircleWidget(QWidget *parent) :
     m_circle = new CircleDraw(this);
     layout->addWidget(m_circle, 1);
     resize(150, 150);
+    this->setMinimumSize(10, 10);
 }
 
 CircleWidget::~CircleWidget()
@@ -91,7 +92,7 @@ void CircleWidget::setUp(Storage *storage)
     m_clockwiseAct = contextMenu->addAction(tr("Clockwise"));
     m_clockwiseAct->setCheckable(true);
     m_clockwiseAct->setChecked(true);
-    connect(m_clockwiseAct, SIGNAL(triggered(bool)), SLOT(clockwiseTriggered(bool)));
+    connect(m_clockwiseAct, SIGNAL(triggered(bool)), SLOT(setClockwise(bool)));
 }
 
 void CircleWidget::saveWidgetInfo(DataFileParser *file)
@@ -220,9 +221,9 @@ void CircleWidget::setNumType(int i)
     emit updateData();
 }
 
-void CircleWidget::clockwiseTriggered(bool checked)
+void CircleWidget::setClockwise(bool clockwise)
 {
-    m_clockwiseAct->setChecked(checked);
+    m_clockwiseAct->setChecked(clockwise);
     emit updateData();
 }
 

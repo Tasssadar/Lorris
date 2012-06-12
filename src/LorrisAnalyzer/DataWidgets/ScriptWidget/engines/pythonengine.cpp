@@ -86,6 +86,7 @@ void PythonEngine::setSource(const QString &source)
     m_module.addVariable("WIDGET_COLOR",  WIDGET_COLOR);
     m_module.addVariable("WIDGET_GRAPH",  WIDGET_GRAPH);
     m_module.addVariable("WIDGET_INPUT",  WIDGET_INPUT);
+    m_module.addVariable("WIDGET_CIRCLE",  WIDGET_CIRCLE);
 
     for(std::list<QTimer*>::iterator itr = m_timers.begin(); itr != m_timers.end(); ++itr)
         delete *itr;

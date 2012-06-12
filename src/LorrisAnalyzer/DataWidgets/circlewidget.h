@@ -36,6 +36,7 @@ public:
 
 public slots:
     void setValue(const QVariant &var);
+    void setClockwise(bool clockwise);
 
 protected:
      void processData(analyzer_data *data);
@@ -43,7 +44,6 @@ protected:
 private slots:
      void angTypeChanged(int i);
      void setNumType(int i);
-     void clockwiseTriggered(bool checked);
 
 private:
      float toRad(const QVariant& var);

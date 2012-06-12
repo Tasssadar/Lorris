@@ -83,6 +83,7 @@ void QtScriptEngine::prepareNewContext()
     QScriptValue colorW = m_engine.newFunction(&QtScriptEngine_private::__newColorWidget);
     QScriptValue graphW = m_engine.newFunction(&QtScriptEngine_private::__newGraphWidget);
     QScriptValue inputW = m_engine.newFunction(&QtScriptEngine_private::__newInputWidget);
+    QScriptValue circleW = m_engine.newFunction(&QtScriptEngine_private::__newCircleWidget);
     QScriptValue newW = m_engine.newFunction(&QtScriptEngine_private::__newWidget);
 
     m_global->setProperty("clearTerm", clearTerm);
@@ -103,6 +104,7 @@ void QtScriptEngine::prepareNewContext()
     m_global->setProperty("newColorWidget", colorW);
     m_global->setProperty("newGraphWidget", graphW);
     m_global->setProperty("newInputWidget", inputW);
+    m_global->setProperty("newCircleWidget", circleW);
     m_global->setProperty("newWidget", newW);
 
     // defines
@@ -111,6 +113,7 @@ void QtScriptEngine::prepareNewContext()
     m_global->setProperty("WIDGET_COLOR",  QScriptValue(&m_engine, WIDGET_COLOR));
     m_global->setProperty("WIDGET_GRAPH",  QScriptValue(&m_engine, WIDGET_GRAPH));
     m_global->setProperty("WIDGET_INPUT",  QScriptValue(&m_engine, WIDGET_INPUT));
+    m_global->setProperty("WIDGET_CIRCLE", QScriptValue(&m_engine, WIDGET_CIRCLE));
 
     m_global->setProperty("NUM_UINT8",  QScriptValue(&m_engine, NUM_UINT8));
     m_global->setProperty("NUM_UINT16", QScriptValue(&m_engine, NUM_UINT16));
@@ -448,10 +451,15 @@ QScriptValue QtScriptEngine_private::__newGraphWidget(QScriptContext *context, Q
     return engine->newQObject(w);
 }
 
-
 QScriptValue QtScriptEngine_private::__newInputWidget(QScriptContext *context, QScriptEngine *engine)
 {
     DataWidget *w = ((QtScriptEngine_private*)engine)->addWidget(WIDGET_INPUT, context);
+    return engine->newQObject(w);
+}
+
+QScriptValue QtScriptEngine_private::__newCircleWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    DataWidget *w = ((QtScriptEngine_private*)engine)->addWidget(WIDGET_CIRCLE, context);
     return engine->newQObject(w);
 }
 
