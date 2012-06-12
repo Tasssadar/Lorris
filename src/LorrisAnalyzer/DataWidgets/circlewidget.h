@@ -43,7 +43,7 @@ protected:
 private slots:
      void angTypeChanged(int i);
      void setNumType(int i);
-
+     void clockwiseTriggered(bool checked);
 
 private:
      float toRad(const QVariant& var);
@@ -51,6 +51,7 @@ private:
      CircleDraw *m_circle;
      QAction *m_type_act[ANG_MAX];
      QAction *m_bits_act[NUM_COUNT];
+     QAction *m_clockwiseAct;
      qint32 m_range_min;
      qint32 m_range_max;
      quint8 m_ang_type;

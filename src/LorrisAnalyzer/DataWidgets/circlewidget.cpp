@@ -77,15 +77,21 @@ void CircleWidget::setUp(Storage *storage)
     };
 
     QSignalMapper *map = new QSignalMapper(this);
+    QMenu *inMenu = contextMenu->addMenu(tr("Input"));
     for(int i = 0; i < ANG_MAX; ++i)
     {
-        m_type_act[i] = contextMenu->addAction(title[i]);
+        m_type_act[i] = inMenu->addAction(title[i]);
         m_type_act[i]->setCheckable(true);
         map->setMapping(m_type_act[i], i);
         connect(m_type_act[i], SIGNAL(triggered()), map, SLOT(map()));
     }
     changeAngType(ANG_RAD);
     connect(map, SIGNAL(mapped(int)), SLOT(angTypeChanged(int)));
+
+    m_clockwiseAct = contextMenu->addAction(tr("Clockwise"));
+    m_clockwiseAct->setCheckable(true);
+    m_clockwiseAct->setChecked(true);
+    connect(m_clockwiseAct, SIGNAL(triggered(bool)), SLOT(clockwiseTriggered(bool)));
 }
 
 void CircleWidget::saveWidgetInfo(DataFileParser *file)
@@ -99,6 +105,12 @@ void CircleWidget::saveWidgetInfo(DataFileParser *file)
     file->writeBlockIdentifier("circleWrange");
     file->write((char*)&m_range_min, sizeof(m_range_min));
     file->write((char*)&m_range_max, sizeof(m_range_max));
+
+    file->writeBlockIdentifier("circleWclockwise");
+    {
+        bool clockwise = m_clockwiseAct->isChecked();
+        file->write((char*)&clockwise, sizeof(clockwise));
+    }
 }
 
 void CircleWidget::loadWidgetInfo(DataFileParser *file)
@@ -117,13 +129,23 @@ void CircleWidget::loadWidgetInfo(DataFileParser *file)
         file->read((char*)&m_range_max, sizeof(m_range_max));
     }
 
+    if(file->seekToNextBlock("circleWclockwise", BLOCK_WIDGET))
+    {
+        bool clockwise = false;
+        file->read((char*)&clockwise, sizeof(clockwise));
+        m_clockwiseAct->setChecked(clockwise);
+    }
+
     changeAngType(m_ang_type);
     setNumType(m_num_type);
 }
 
 void CircleWidget::setValue(const QVariant &var)
 {
-    m_circle->setAngle(toRad(var));
+    float rad = toRad(var);
+    if(!m_clockwiseAct->isChecked())
+        rad = (2*M_PI) - rad;
+    m_circle->setAngle(rad);
 }
 
 void CircleWidget::processData(analyzer_data *data)
@@ -165,24 +187,28 @@ void CircleWidget::changeAngType(int i, int min, int max)
 
 float CircleWidget::toRad(const QVariant& var)
 {
+    float ret = 0.0f;
     switch(m_ang_type)
     {
         case ANG_RAD:
-            return var.toFloat();
+            ret = var.toFloat();
+            break;
         case ANG_DEG:
         {
-            float val = var.toFloat();
-            val = (val * M_PI*2) / 360.f;
-            return val;
+            ret = var.toFloat();
+            ret = (ret * M_PI*2) / 360.f;
+            break;
         }
         case ANG_RANGE:
         {
-            float val = var.toFloat()-m_range_min;
-            val = (val * M_PI*2) / (m_range_max-m_range_min);
-            return val;
+            ret = var.toFloat()-m_range_min;
+            ret = (ret * M_PI*2) / (m_range_max-m_range_min);
+            break;
         }
     }
-    return 0.0f;
+    ret = std::min(float(M_PI*2), ret);
+    ret = std::max(ret, 0.f);
+    return ret;
 }
 
 void CircleWidget::setNumType(int i)
@@ -191,6 +217,12 @@ void CircleWidget::setNumType(int i)
         m_bits_act[y]->setChecked(y == i);
 
     m_num_type = i;
+    emit updateData();
+}
+
+void CircleWidget::clockwiseTriggered(bool checked)
+{
+    m_clockwiseAct->setChecked(checked);
     emit updateData();
 }
 
@@ -219,8 +251,6 @@ void CircleDraw::paintEvent(QPaintEvent *)
 
 void CircleDraw::setAngle(float ang)
 {
-    ang = std::min(float(M_PI*2), ang);
-    ang = std::max(ang, 0.f);
     m_angle = ang;
     update();
 }
