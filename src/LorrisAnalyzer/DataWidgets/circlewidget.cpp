@@ -236,6 +236,7 @@ void CircleDraw::paintEvent(QPaintEvent *)
     QPainter p(this);
     QPen pen(Qt::black);
     pen.setWidth(4);
+    p.setBrush(QBrush(Qt::white));
     p.setPen(pen);
 
     int r = (std::min(width(), height()) / 2) - 5;
@@ -244,9 +245,14 @@ void CircleDraw::paintEvent(QPaintEvent *)
     p.drawEllipse(center, r, r);
 
     QPoint rot(center);
-    center.rx() += sin(m_angle)*r;
-    center.ry() -= cos(m_angle)*r;
+    rot.rx() += sin(m_angle)*r;
+    rot.ry() -= cos(m_angle)*r;
     p.drawLine(center, rot);
+
+    pen.setColor(Qt::red);
+    pen.setWidth(5);
+    p.setPen(pen);
+    p.drawPoint(center);
 }
 
 void CircleDraw::setAngle(float ang)
