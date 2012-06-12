@@ -11,6 +11,7 @@
 #include <QFrame>
 #include <set>
 #include <QHash>
+#include <QLocale>
 
 #include "tabwidget.h"
 
@@ -19,15 +20,18 @@ class QBoxLayout;
 class ResizeLine;
 class SplitOverlay;
 class QDrag;
+class WorkTabInfo;
+
+extern QLocale::Language langs[];
 
 class TabView : public QWidget
 {
     Q_OBJECT
 
 Q_SIGNALS:
-    void newTab();
     void openHomeTab(quint32 id);
     void statusBarMsg(const QString& message, int timeout = 0);
+    void close();
 
 public:
     explicit TabView(QWidget *parent = 0);
@@ -48,10 +52,26 @@ public:
     QBoxLayout *getLayoutForLine(ResizeLine *line);
     void createSplitOverlay(quint32 id, QDrag *drag);
 
+    QMenu *getFileMenu()
+    {
+        return m_file_menu;
+    }
+
+    QMenu *getHelpMenu()
+    {
+        return m_help_menu;
+    }
+
 private slots:
     void split(bool horizontal, int index);
     void removeWidget(quint32 id);
     void changeActiveWidget(TabWidget *widget);
+    void langChanged(int idx);
+    void NewSpecificTab();
+    void OpenConnectionManager();
+    void About();
+    void newTab();
+
 
 private:
     TabWidget *newTabWidget(QBoxLayout *l);
@@ -70,6 +90,12 @@ private:
     std::set<QBoxLayout*> m_layouts;
 
     TabWidget *m_active_widget;
+    std::vector<QAction*> m_lang_menu;
+
+    QMenu *m_file_menu;
+    QMenu *m_help_menu;
+
+    QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };
 
 class ResizeLine : public QFrame

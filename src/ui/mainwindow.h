@@ -16,8 +16,6 @@
 
 #include "../dep/ecwin7/ecwin7.h"
 
-extern QLocale::Language langs[];
-
 class WorkTabInfo;
 
 class MainWindow : public QMainWindow {
@@ -33,26 +31,10 @@ protected:
     void closeEvent(QCloseEvent *event);
     bool winEvent(MSG *message, long *result);
 
-private slots:
-    void NewSpecificTab();
-    void newTab();
-    void About();
-    void OpenConnectionManager();
-
-    void langChanged(int idx);
-
 private:
     QString getVersionString();
 
-    std::vector<QMenu*> m_tab_menu;
-    QMenuBar* menuBar;
-    QMenu* menuFile;
-    QMenu* menuHelp;
-
     EcWin7 m_win7;
-
-    std::vector<QAction*> m_lang_menu;
-    QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };
 
 #endif // MAINWINDOW_H

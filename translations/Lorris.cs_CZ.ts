@@ -275,80 +275,90 @@
         <translation>Kolo</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="41"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="42"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="45"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="46"/>
         <source>unsigned 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="46"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="47"/>
         <source>unsigned 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="47"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="48"/>
         <source>unsigned 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="48"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="49"/>
         <source>unsigned 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="50"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="51"/>
         <source>signed 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="51"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="52"/>
         <source>signed 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="52"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="53"/>
         <source>signed 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="53"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="54"/>
         <source>signed 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="55"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="56"/>
         <source>float (4 bytes)</source>
         <translation>float (4 byty)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="56"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="57"/>
         <source>double (8 bytes)</source>
         <translation>double (8 bytů)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="75"/>
         <source>Radians</source>
         <translation>Radiány</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="75"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="76"/>
         <source>Degrees</source>
         <translation>Stupně</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="76"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="77"/>
         <source>Range...</source>
         <translation>Rozmezí...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="81"/>
+        <source>Input</source>
+        <translation>Vstup</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="92"/>
+        <source>Clockwise</source>
+        <translation>Po směru hodinových ručiček</translation>
     </message>
 </context>
 <context>
     <name>CircleWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="230"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="267"/>
         <source>Circle</source>
         <translation>Kolo</translation>
     </message>
@@ -1710,65 +1720,53 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="57"/>
         <source>&amp;File</source>
-        <translation>&amp;Soubor</translation>
+        <translation type="obsolete">&amp;Soubor</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="58"/>
         <source>&amp;Help</source>
-        <translation>&amp;Nápověda</translation>
+        <translation type="obsolete">&amp;Nápověda</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="60"/>
         <source>&amp;Quit</source>
-        <translation>&amp;Ukončit</translation>
+        <translation type="obsolete">&amp;Ukončit</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="61"/>
         <source>About Lorris...</source>
-        <translation>O Lorris...</translation>
+        <translation type="obsolete">O Lorris...</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="62"/>
         <source>Connection &amp;manager...</source>
         <translatorcomment>Lepší by byl správce, ale není tam &quot;m&quot; na zkratku</translatorcomment>
-        <translation>&amp;Manažer připojení...</translation>
+        <translation type="obsolete">&amp;Manažer připojení...</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="64"/>
         <source>Language</source>
-        <translation>Jazyk</translation>
+        <translation type="obsolete">Jazyk</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="74"/>
         <source>Same as OS - </source>
-        <translation>Stejný jako OS - </translation>
+        <translation type="obsolete">Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="101"/>
         <source>&amp;New</source>
-        <translation>&amp;Nový</translation>
+        <translation type="obsolete">&amp;Nový</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="165"/>
         <source>Lorris version </source>
-        <translation>Verze Lorris </translation>
+        <translation type="obsolete">Verze Lorris </translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="170"/>
         <source>About Lorris</source>
-        <translation>O Lorris</translation>
+        <translation type="obsolete">O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="184"/>
         <source>Restart</source>
-        <translation>Restart</translation>
+        <translation type="obsolete">Restart</translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="185"/>
         <source>You need to restart Lorris for this change to take effect</source>
-        <translation>Musíte restartovat Lorris aby se tato změna projevila</translation>
+        <translation type="obsolete">Musíte restartovat Lorris aby se tato změna projevila</translation>
     </message>
 </context>
 <context>
@@ -2396,7 +2394,7 @@
 <context>
     <name>QtScriptEngine</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="171"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="174"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
@@ -2793,8 +2791,8 @@ ke změně uspořádání</translation>
 <context>
     <name>SplitOverlay</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="412"/>
-        <location filename="../src/ui/tabview.cpp" line="415"/>
+        <location filename="../src/ui/tabview.cpp" line="519"/>
+        <location filename="../src/ui/tabview.cpp" line="522"/>
         <source>Split</source>
         <translation>Rozdělit</translation>
     </message>
@@ -2830,36 +2828,99 @@ ke změně uspořádání</translation>
 <context>
     <name>TabBar</name>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="232"/>
+        <location filename="../src/ui/tabwidget.cpp" line="230"/>
         <source>Split view top/bottom</source>
         <translation>Rozdělit na vrch a spodek</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="233"/>
+        <location filename="../src/ui/tabwidget.cpp" line="231"/>
         <source>Split view left/right</source>
         <translation>Rozdělit napravo a nalevo</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="241"/>
+        <location filename="../src/ui/tabwidget.cpp" line="239"/>
         <source>Rename...</source>
         <translation>Přejmenovat...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="414"/>
+        <location filename="../src/ui/tabwidget.cpp" line="412"/>
         <source>Rename tab</source>
         <translation>Přejmenovat panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="414"/>
+        <location filename="../src/ui/tabwidget.cpp" line="412"/>
         <source>New name:</source>
         <translation>Nové jméno:</translation>
+    </message>
+</context>
+<context>
+    <name>TabView</name>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="35"/>
+        <source>&amp;File</source>
+        <translation>&amp;Soubor</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="36"/>
+        <source>&amp;Help</source>
+        <translation>&amp;Nápověda</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="38"/>
+        <source>&amp;New</source>
+        <translation>&amp;Nový</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="51"/>
+        <source>Connection &amp;manager...</source>
+        <translation>&amp;Manažer připojení...</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="52"/>
+        <source>&amp;Quit</source>
+        <translation>&amp;Ukončit</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="54"/>
+        <source>Language</source>
+        <translation>Jazyk</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="63"/>
+        <source>Same as OS - </source>
+        <translation>Stejný jako OS - </translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="75"/>
+        <source>About Lorris...</source>
+        <translation>O Lorris...</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="315"/>
+        <source>Restart</source>
+        <translation>Restart</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="316"/>
+        <source>You need to restart Lorris for this change to take effect</source>
+        <translation>Musíte restartovat Lorris aby se tato změna projevila</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="337"/>
+        <source>Lorris version </source>
+        <translation>Verze Lorris </translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="342"/>
+        <source>About Lorris</source>
+        <translation>O Lorris</translation>
     </message>
 </context>
 <context>
     <name>TabWidget</name>
     <message>
         <location filename="../src/ui/tabwidget.cpp" line="31"/>
-        <source>Menu</source>
+        <source>&amp;Menu</source>
         <translation></translation>
     </message>
 </context>

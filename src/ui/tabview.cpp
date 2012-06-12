@@ -11,11 +11,18 @@
 #include <QFrame>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QSignalMapper>
+#include <QMessageBox>
 
 #include "tabview.h"
+#include "homedialog.h"
+#include "chooseconnectiondlg.h"
 #include "../WorkTab/WorkTabMgr.h"
 
 #define LAYOUT_MARGIN 4
+
+QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
+
 TabView::TabView(QWidget *parent) :
     QWidget(parent)
 {
@@ -24,6 +31,59 @@ TabView::TabView(QWidget *parent) :
     layout->setMargin(LAYOUT_MARGIN);
 
     m_active_widget = newTabWidget(layout);
+
+    m_file_menu = new QMenu(tr("&File"), this);
+    m_help_menu = new QMenu(tr("&Help"), this);
+
+    QMenu * menuFileNew = m_file_menu->addMenu(tr("&New"));
+    {
+        WorkTabMgr::InfoList const & infos = sWorkTabMgr.GetWorkTabInfos();
+        for (int i = 0; i < infos.size(); ++i)
+        {
+            WorkTabInfo * info = infos[i];
+            QAction * action = menuFileNew->addAction(info->GetName());
+            m_actionTabInfoMap[action] = info;
+            connect(action, SIGNAL(triggered()), this, SLOT(NewSpecificTab()));
+            menuFileNew->addAction(action);
+        }
+    }
+
+    QAction* actionConnectionManager = m_file_menu->addAction(tr("Connection &manager..."));
+    QAction* actionQuit = m_file_menu->addAction(tr("&Quit"));
+
+    QMenu* menuLang = m_help_menu->addMenu(tr("Language"));
+
+    QSignalMapper *langSignals = new QSignalMapper(this);
+    connect(langSignals, SIGNAL(mapped(int)), this, SLOT(langChanged(int)));
+
+    for(quint8 i = 0; i < 3; ++i)
+    {
+        QString langName = QLocale::languageToString(langs[i]);
+        if(i == 0)
+            langName.prepend(tr("Same as OS - "));
+
+        QAction* actLang = menuLang->addAction(langName);
+        actLang->setCheckable(true);
+        m_lang_menu.push_back(actLang);
+
+        langSignals->setMapping(actLang, i);
+        connect(actLang, SIGNAL(triggered()), langSignals, SLOT(map()));
+
+        if(i == 0)
+            menuLang->addSeparator();
+    }
+    QAction* actionAbout = m_help_menu->addAction(tr("About Lorris..."));
+
+    quint32 curLang = sConfig.get(CFG_QUINT32_LANGUAGE);
+    if(curLang >= m_lang_menu.size())
+        curLang = 0;
+    m_lang_menu[curLang]->setChecked(true);
+
+    actionQuit->setShortcut(QKeySequence("Alt+F4"));
+
+    connect(actionQuit,     SIGNAL(triggered()), this, SIGNAL(close()));
+    connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
+    connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
 }
 
 TabWidget *TabView::newTabWidget(QBoxLayout *l)
@@ -33,7 +93,7 @@ TabWidget *TabView::newTabWidget(QBoxLayout *l)
 
     l->addWidget(tabW, 50);
 
-    connect(tabW, SIGNAL(newTab()),                       SIGNAL(newTab()));
+    connect(tabW, SIGNAL(newTab()),                       SLOT(newTab()));
     connect(tabW, SIGNAL(openHomeTab(quint32)),           SIGNAL(openHomeTab(quint32)));
     connect(tabW, SIGNAL(statusBarMsg(QString,int)),      SIGNAL(statusBarMsg(QString,int)));
     connect(tabW, SIGNAL(split(bool,int)),                SLOT(split(bool,int)));
@@ -242,6 +302,53 @@ QBoxLayout *TabView::newLayout(bool hor)
     QBoxLayout *l = hor ? (QBoxLayout*)new QVBoxLayout : (QBoxLayout*)new QHBoxLayout;
     m_layouts.insert(l);
     return l;
+}
+
+
+void TabView::langChanged(int idx)
+{
+    sConfig.set(CFG_QUINT32_LANGUAGE, idx);
+    for(quint8 i = 0; i < m_lang_menu.size(); ++i)
+        m_lang_menu[i]->setChecked(i == idx);
+
+    QMessageBox box(this);
+    box.setWindowTitle(tr("Restart"));
+    box.setText(tr("You need to restart Lorris for this change to take effect"));
+    box.setIcon(QMessageBox::Information);
+    box.exec();
+}
+
+void TabView::NewSpecificTab()
+{
+    WorkTabInfo * info = m_actionTabInfoMap.value(this->sender());
+    if (info)
+        sWorkTabMgr.AddWorkTab(info);
+}
+
+
+void TabView::OpenConnectionManager()
+{
+    ChooseConnectionDlg dialog(0, this);
+    dialog.exec();
+}
+
+void TabView::About()
+{
+    QString text = tr("Lorris version " VERSION);
+    if(text.contains("-dev"))
+        text += ", git revision " + QString::number(REVISION);
+
+    QMessageBox box(this);
+    box.setWindowTitle(tr("About Lorris"));
+    box.setText(text);
+    box.setIcon(QMessageBox::Information);
+    box.exec();
+}
+
+void TabView::newTab()
+{
+    HomeDialog dialog(this);
+    dialog.exec();
 }
 
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)

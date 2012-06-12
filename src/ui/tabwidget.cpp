@@ -28,20 +28,16 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
 
     m_tab_bar = new TabBar(m_id, this);
     setTabBar(m_tab_bar);
-    m_menuBtn = new QPushButton(tr("Menu"), this);
+    m_menuBtn = new QPushButton(tr("&Menu"), this);
     m_menuBtn->setMenu(m_menu);
     m_menuBtn->setFlat(true);
 
-    QPushButton* newTabBtn = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogNewFolder), "", this);
-    newTabBtn->setShortcut(QKeySequence("Ctrl+T"));
-
+    m_menuBtn->setShortcut(QKeySequence("Alt"));
     setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
-    setCornerWidget(newTabBtn, Qt::TopRightCorner);
 
     connect(this,      SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
     connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
     connect(m_tab_bar, SIGNAL(tabMoved(int,int)),      SLOT(tabMoved(int,int)));
-    connect(newTabBtn, SIGNAL(clicked()),              SLOT(newTabBtn()));
     connect(m_tab_bar, SIGNAL(plusPressed()),          SLOT(newTabBtn()));
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
     connect(m_tab_bar, SIGNAL(pullTab(int,TabWidget*,int)),
@@ -210,7 +206,7 @@ void TabWidget::changeMenu(int idx)
     if(!tab || tab->getMenu().empty())
         return clearMenu();
 
-    m_menu->clear();
+    clearMenu();
     for(quint32 i = 0; i < tab->getMenu().size(); ++i)
         m_menu->addMenu(tab->getMenu()[i]);
     m_menuBtn->setEnabled(true);
@@ -219,7 +215,9 @@ void TabWidget::changeMenu(int idx)
 void TabWidget::clearMenu()
 {
     m_menu->clear();
-    m_menuBtn->setEnabled(false);
+    m_menu->addMenu(sWorkTabMgr.getWi()->getFileMenu());
+    m_menu->addMenu(sWorkTabMgr.getWi()->getHelpMenu());
+    m_menu->addSeparator();
 }
 
 TabBar::TabBar(quint32 id, QWidget *parent) :
