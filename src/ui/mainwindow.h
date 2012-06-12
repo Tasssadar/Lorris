@@ -32,6 +32,8 @@ protected:
     bool winEvent(MSG *message, long *result);
 
 private:
+    void saveWindowParams();
+    void loadWindowParams();
     QString getVersionString();
 
     EcWin7 m_win7;
