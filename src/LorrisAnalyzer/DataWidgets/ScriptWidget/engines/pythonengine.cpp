@@ -88,6 +88,14 @@ void PythonEngine::setSource(const QString &source)
     m_module.addVariable("WIDGET_INPUT",  WIDGET_INPUT);
     m_module.addVariable("WIDGET_CIRCLE",  WIDGET_CIRCLE);
 
+    const WidgetArea::w_map& widgets = m_area->getWidgets();
+    for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
+    {
+        QString name = sanitizeWidgetName((*itr)->getTitle());
+        if(!name.isEmpty())
+            m_module.addObject(name, *itr);
+    }
+
     for(std::list<QTimer*>::iterator itr = m_timers.begin(); itr != m_timers.end(); ++itr)
         delete *itr;
     m_timers.clear();
