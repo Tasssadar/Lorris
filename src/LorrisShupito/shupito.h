@@ -130,7 +130,6 @@ private:
 
     ShupitoPacket m_packet;
     ShupitoDesc *m_desc;
-    QMutex mutex;
     vdd_setup m_vdd_setup;
 
     ShupitoDesc::config *m_vdd_config;
