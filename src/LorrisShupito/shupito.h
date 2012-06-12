@@ -119,16 +119,16 @@ private slots:
     void tunnelDataSend();
 
 private:
-    void handlePacket(ShupitoPacket& p);
-    void handleVccPacket(ShupitoPacket& p);
-    void handleTunnelPacket(ShupitoPacket& p);
+    void handlePacket();
+    void handleVccPacket();
+    void handleTunnelPacket();
 
     void SendSetComSpeed();
 
     PortConnection *m_con;
     QScopedPointer<ShupitoTunnel> m_tunnel_conn;
 
-    ShupitoPacket *m_packet;
+    ShupitoPacket m_packet;
     ShupitoDesc *m_desc;
     QMutex mutex;
     vdd_setup m_vdd_setup;
