@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QSignalMapper>
 #include <QInputDialog>
+#include <QTimer>
 
 #include "graphwidget.h"
 #include "graph.h"
@@ -49,6 +50,7 @@ void GraphWidget::setUp(Storage *storage)
     DataWidget::setUp(storage);
 
     m_storage = storage;
+    m_doReplot = false;
 
     m_editCurve = contextMenu->addAction(tr("Edit curve properties"));
     m_editCurve->setEnabled(false);
@@ -90,11 +92,15 @@ void GraphWidget::setUp(Storage *storage)
     m_autoScroll->setCheckable(true);
     toggleAutoScroll(true);
 
+    QTimer *replotTimer = new QTimer(this);
+    replotTimer->start(100);
+
     connect(m_editCurve,  SIGNAL(triggered()),        SLOT(editCurve()));
     connect(sampleMap,    SIGNAL(mapped(int)),        SLOT(sampleSizeChanged(int)));
     connect(m_showLegend, SIGNAL(triggered(bool)),    SLOT(showLegend(bool)));
     connect(m_autoScroll, SIGNAL(triggered(bool)),    SLOT(toggleAutoScroll(bool)));
     connect(m_graph,      SIGNAL(updateSampleSize()), SLOT(updateSampleSize()));
+    connect(replotTimer,  SIGNAL(timeout()),          SLOT(tryReplot()));
 }
 
 void GraphWidget::updateRemoveMapping()
@@ -383,24 +389,32 @@ void GraphWidget::updateVisibleArea()
 {
     if(m_curves.empty())
         return;
+    m_doReplot = true;
+}
 
-    if(m_enableAutoScroll)
+void GraphWidget::tryReplot()
+{
+    if(m_doReplot)
     {
-        qint32 size = 0;
-
-        for(quint8 i = 0; i < m_curves.size(); ++i)
+        if(m_enableAutoScroll)
         {
-            qint32 c_size = m_curves[i]->curve->getSize();
+            qint32 size = 0;
 
-            if(c_size > size)
-                size = c_size;
+            for(quint8 i = 0; i < m_curves.size(); ++i)
+            {
+                qint32 c_size = m_curves[i]->curve->getSize();
+
+                if(c_size > size)
+                    size = c_size;
+            }
+
+            qint32 x_max = m_graph->XupperBound() - m_graph->XlowerBound();
+            m_graph->setAxisScale(QwtPlot::xBottom, size - x_max, size);
         }
 
-        qint32 x_max = m_graph->XupperBound() - m_graph->XlowerBound();
-        m_graph->setAxisScale(QwtPlot::xBottom, size - x_max, size);
+        m_graph->replot();
+        m_doReplot = false;
     }
-
-    m_graph->replot();
 }
 
 void GraphWidget::sampleSizeChanged(int val)
@@ -476,7 +490,7 @@ void GraphWidget::removeCurve(QString name)
     delete m_deleteAct[name];
     m_deleteAct.erase(name);
 
-    m_graph->replot();
+    m_doReplot = true;
 
     m_editCurve->setEnabled(!m_curves.empty());
     m_deleteCurve->setEnabled(!m_curves.empty());

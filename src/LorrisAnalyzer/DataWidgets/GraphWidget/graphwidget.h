@@ -58,6 +58,7 @@ private slots:
      void showLegend(bool show);
      void toggleAutoScroll(bool scroll);
      void updateSampleSize();
+     void tryReplot();
 
 private:
      void updateRemoveMapping();
@@ -81,6 +82,7 @@ private:
      bool m_enableAutoScroll;
 
      std::vector<GraphCurveInfo*> m_curves;
+     bool m_doReplot;
 };
 
 class GraphWidgetAddBtn : public DataWidgetAddBtn
