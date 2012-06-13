@@ -92,7 +92,13 @@ void CircleWidget::setUp(Storage *storage)
     m_clockwiseAct = contextMenu->addAction(tr("Clockwise"));
     m_clockwiseAct->setCheckable(true);
     m_clockwiseAct->setChecked(true);
+
+    m_drawAngAct = contextMenu->addAction(tr("Show angle as text"));
+    m_drawAngAct->setCheckable(true);
+    m_drawAngAct->setChecked(true);
+
     connect(m_clockwiseAct, SIGNAL(triggered(bool)), SLOT(setClockwise(bool)));
+    connect(m_drawAngAct, SIGNAL(triggered(bool)),   SLOT(drawAngle(bool)));
 }
 
 void CircleWidget::saveWidgetInfo(DataFileParser *file)
@@ -111,6 +117,12 @@ void CircleWidget::saveWidgetInfo(DataFileParser *file)
     {
         bool clockwise = m_clockwiseAct->isChecked();
         file->write((char*)&clockwise, sizeof(clockwise));
+    }
+
+    file->writeBlockIdentifier("circleWdrawAngText");
+    {
+        bool draw = m_drawAngAct->isChecked();
+        file->write((char*)&draw, sizeof(draw));
     }
 }
 
@@ -135,6 +147,14 @@ void CircleWidget::loadWidgetInfo(DataFileParser *file)
         bool clockwise = false;
         file->read((char*)&clockwise, sizeof(clockwise));
         m_clockwiseAct->setChecked(clockwise);
+        m_circle->setClockwise(clockwise);
+    }
+
+    if(file->seekToNextBlock("circleWdrawAngText", BLOCK_WIDGET))
+    {
+        bool draw = false;
+        file->read((char*)&draw, sizeof(draw));
+        drawAngle(draw);
     }
 
     changeAngType(m_ang_type);
@@ -224,12 +244,21 @@ void CircleWidget::setNumType(int i)
 void CircleWidget::setClockwise(bool clockwise)
 {
     m_clockwiseAct->setChecked(clockwise);
+    m_circle->setClockwise(clockwise);
     emit updateData();
+}
+
+void CircleWidget::drawAngle(bool draw)
+{
+    m_drawAngAct->setChecked(draw);
+    m_circle->setDrawAngle(draw);
 }
 
 CircleDraw::CircleDraw(QWidget *parent) : QWidget(parent)
 {
     m_angle = 0;
+    m_clockwise = true;
+    m_draw_angle = true;
 }
 
 void CircleDraw::paintEvent(QPaintEvent *)
@@ -250,15 +279,32 @@ void CircleDraw::paintEvent(QPaintEvent *)
     rot.ry() -= cos(m_angle)*r;
     p.drawLine(center, rot);
 
+    p.setPen(Qt::black);
+    p.drawLine(center.x(), center.y()-r, center.x(), center.y()+r);
+    p.drawLine(center.x()-r, center.y(), center.x()+r, center.y());
+
+    if(m_draw_angle)
+        p.drawText(rect(), QString("%1\n%2\x00b0").arg(m_angle, -1, 'f', 3).arg(m_angle*57.2958, -1, 'f', 1));
+
     pen.setColor(Qt::red);
     pen.setWidth(5);
     p.setPen(pen);
     p.drawPoint(center);
+
+    QRect angRect(center.x()-r, center.y()-r, r*2, r*2);
+    int arcAngle = m_angle*916.732; // (1/(M_PI*2))*5760 = 916.732
+    p.drawArc(angRect, 1440, m_clockwise ? -arcAngle : 5760 - arcAngle);
 }
 
 void CircleDraw::setAngle(float ang)
 {
     m_angle = ang;
+    update();
+}
+
+void CircleDraw::setClockwise(bool clockwise)
+{
+    m_clockwise = clockwise;
     update();
 }
 

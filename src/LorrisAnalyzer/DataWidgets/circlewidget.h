@@ -37,6 +37,7 @@ public:
 public slots:
     void setValue(const QVariant &var);
     void setClockwise(bool clockwise);
+    void drawAngle(bool draw);
 
 protected:
      void processData(analyzer_data *data);
@@ -52,6 +53,7 @@ private:
      QAction *m_type_act[ANG_MAX];
      QAction *m_bits_act[NUM_COUNT];
      QAction *m_clockwiseAct;
+     QAction *m_drawAngAct;
      qint32 m_range_min;
      qint32 m_range_max;
      quint8 m_ang_type;
@@ -65,12 +67,21 @@ public:
     CircleDraw(QWidget *parent = 0);
 
     void setAngle(float ang);
+    void setClockwise(bool clockwise);
+
+    void setDrawAngle(bool draw)
+    {
+        m_draw_angle = draw;
+        update();
+    }
 
 protected:
     void paintEvent(QPaintEvent *);
 
 private:
     float m_angle;
+    bool m_clockwise;
+    bool m_draw_angle;
 };
 
 class CircleWidgetAddBtn : public DataWidgetAddBtn
