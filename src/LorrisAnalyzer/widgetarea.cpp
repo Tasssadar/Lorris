@@ -8,6 +8,9 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QVarLengthArray>
+#include <QMenu>
+#include <QInputDialog>
 
 #include "widgetarea.h"
 #include "lorrisanalyzer.h"
@@ -24,13 +27,38 @@
 #include "DataWidgets/buttonwidget.h"
 #include "DataWidgets/circlewidget.h"
 
+QPoint& operator %=(QPoint& a, const int& b)
+{
+    a.rx() %= b;
+    a.ry() %= b;
+    return a;
+}
+
 WidgetArea::WidgetArea(QWidget *parent) :
-    QFrame(parent)
+    QFrame(parent), m_menu(new QMenu(this))
 {
     m_widgetIdCounter = 0;
     m_skipNextMove = false;
+    m_show_grid = sConfig.get(CFG_BOOL_ANALYZER_SHOW_GRID);
+    m_grid = sConfig.get(CFG_BOOL_ANALYZER_ENABLE_GRID) ? sConfig.get(CFG_QUINT32_ANALYZER_GRID_SIZE) : 1;
 
     setCursor(Qt::OpenHandCursor);
+
+    QAction *enableGrid = m_menu->addAction(tr("Enable grid"));
+    QAction *showGrid = m_menu->addAction(tr("Show grid"));
+    QAction *gridSize = m_menu->addAction(tr("Set grid size..."));
+    QAction *align = m_menu->addAction(tr("Align widgets to the grid"));
+    enableGrid->setCheckable(true);
+    enableGrid->setChecked(m_grid != 1);
+    showGrid->setCheckable(true);
+    showGrid->setChecked(m_show_grid);
+
+    connect(enableGrid, SIGNAL(toggled(bool)),           SLOT(enableGrid(bool)));
+    connect(enableGrid, SIGNAL(toggled(bool)), showGrid, SLOT(setEnabled(bool)));
+    connect(enableGrid, SIGNAL(toggled(bool)), gridSize, SLOT(setEnabled(bool)));
+    connect(showGrid,   SIGNAL(toggled(bool)),           SLOT(showGrid(bool)));
+    connect(gridSize,   SIGNAL(triggered()),             SLOT(setGridSize()));
+    connect(align,      SIGNAL(triggered()),             SLOT(alignWidgets()));
 }
 
 WidgetArea::~WidgetArea()
@@ -56,7 +84,9 @@ void WidgetArea::dropEvent(QDropEvent *event)
 
     event->acceptProposedAction();
 
-    addWidget(event->pos(), type);
+    DataWidget *w = addWidget(event->pos(), type);
+    if(m_grid != 1)
+        w->align();
 }
 
 DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
@@ -205,12 +235,38 @@ void WidgetArea::LoadWidgets(DataFileParser *file, bool skip)
     update();
 }
 
+void WidgetArea::SaveSettings(DataFileParser *file)
+{
+    file->writeBlockIdentifier("areaGridSettings");
+    file->write((char*)&m_grid, sizeof(m_grid));
+    file->write((char*)&m_show_grid, sizeof(m_show_grid));
+}
+
+void WidgetArea::LoadSettings(DataFileParser *file)
+{
+    if(file->seekToNextBlock("areaGridSettings", BLOCK_DATA_INDEX))
+    {
+        file->read((char*)&m_grid, sizeof(m_grid));
+        file->read((char*)&m_show_grid, sizeof(m_show_grid));
+
+        m_menu->actions()[0]->setChecked(m_grid != 1);
+        m_menu->actions()[1]->setChecked(m_show_grid);
+    }
+}
+
 void WidgetArea::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
+    switch(event->button())
     {
-        m_mouse_orig = event->globalPos();
-        setCursor(Qt::ClosedHandCursor);
+        case Qt::LeftButton:
+            m_mouse_orig = event->globalPos();
+            setCursor(Qt::ClosedHandCursor);
+            break;
+        case Qt::RightButton:
+            m_menu->exec(event->globalPos());
+            break;
+        default:
+            break;
     }
 }
 
@@ -224,18 +280,29 @@ void WidgetArea::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
 
-    event->accept();
-
-    if(m_marks.empty())
+    if(!m_show_grid && m_grid == 1 && m_marks.empty())
         return;
 
     QPainter painter(this);
 
-    painter.setPen(Qt::red);
-    painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+    if(m_show_grid && m_grid > 1)
+    {
+        QVarLengthArray<QPoint, 8000> points((width()/10)*(height()/10));
+        for(QPoint p; p.y() < height(); p.ry() += m_grid)
+            for(p.rx() = 0; p.x() < width(); p.rx() += m_grid)
+                points.append(p + m_grid_offset);
 
-    for(mark_map::iterator itr = m_marks.begin(); itr != m_marks.end(); ++itr)
-        painter.drawRect(*itr);
+        painter.drawPoints(points.data(), points.size());
+    }
+
+    if(!m_marks.empty())
+    {
+        painter.setPen(Qt::red);
+        painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+
+        for(mark_map::iterator itr = m_marks.begin(); itr != m_marks.end(); ++itr)
+            painter.drawRect(*itr);
+    }
 }
 
 void WidgetArea::mouseMoveEvent(QMouseEvent *event)
@@ -244,7 +311,6 @@ void WidgetArea::mouseMoveEvent(QMouseEvent *event)
         return;
 
     QPoint n = event->globalPos() - m_mouse_orig;
-
     moveWidgets(n);
 
     m_mouse_orig = event->globalPos();
@@ -252,6 +318,9 @@ void WidgetArea::mouseMoveEvent(QMouseEvent *event)
 
 void WidgetArea::moveWidgets(QPoint diff)
 {
+    m_grid_offset += diff;
+    m_grid_offset %= m_grid;
+
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
     {
         QPoint pos = (*itr)->pos() + diff;
@@ -322,4 +391,35 @@ void WidgetArea::resizeEvent(QResizeEvent *)
 {
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         updateMarker(*itr);
+}
+
+void WidgetArea::enableGrid(bool enable)
+{
+    if(enable) m_grid = sConfig.get(CFG_QUINT32_ANALYZER_GRID_SIZE);
+    else       m_grid = 1;
+
+    sConfig.set(CFG_BOOL_ANALYZER_ENABLE_GRID, enable);
+
+    update();
+}
+
+void WidgetArea::showGrid(bool show)
+{
+    m_show_grid = show;
+    sConfig.set(CFG_BOOL_ANALYZER_SHOW_GRID, show);
+
+    update();
+}
+
+void WidgetArea::setGridSize()
+{
+    m_grid = QInputDialog::getInt(this, tr("Grid size"), tr("Enter grid size in pixels"), m_grid, 2);
+    sConfig.set(CFG_QUINT32_ANALYZER_GRID_SIZE, m_grid);
+    update();
+}
+
+void WidgetArea::alignWidgets()
+{
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+        (*itr)->align();
 }

@@ -138,6 +138,8 @@ public:
 
     quint8 getWidgetType() const { return m_widgetType; }
 
+    void align();
+
 public slots:
     virtual void newData(analyzer_data *data, quint32);
     void setTitle(const QString& title);
@@ -178,26 +180,9 @@ private slots:
     void setTitleTriggered();
 
 private:
-    inline bool iw(int w) { return w + width() > ((QWidget*)parent())->width(); }
-    inline bool ih(int h) { return h + height() > ((QWidget*)parent())->height(); }
-
-    inline int getWPosInside(int w)
-    {
-        if(ih(w))
-            return ((QWidget*)parent())->width() - width();
-        else if(w < 0)
-            return 0;
-        return w;
-    }
-
-    inline int getHPosInside(int h)
-    {
-        if(ih(h))
-            return ((QWidget*)parent())->height() - height();
-        else if(h < 0)
-            return 0;
-        return h;
-    }
+    inline void mapToGrid(int &val);
+    void mapXYToGrid(QPoint& point);
+    void mapXYToGrid(int& x, int& y);
 
     quint8 getDragAction(const QPoint& clickPos);
     void dragResize(QMouseEvent* e);

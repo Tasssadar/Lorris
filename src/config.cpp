@@ -28,6 +28,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "shupito/verify_mode",       // CFG_QUINT32_SHUPITO_VERIFY
     "analyzer/play_delay",       // CFG_QUINT32_ANALYZER_PLAY_DEL
     "shupito/terminal_format",   // CFG_QUITN32_SHUPITO_TERM_FMT
+    "analyzer/grid_size",        // CFG_QUINT32_ANALYZER_GRID_SIZE
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -57,6 +58,8 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/turnoff_vcc",        // CFG_BOOL_SHUPITO_TURNOFF_VCC
     "shupito/translate_fuses",    // CFG_BOOL_SHUPITO_TRANSLATE_FUSES
     "shupito/hide_reserved",      // CFG_BOOL_SHUPITO_HIDE_RESERVED
+    "analyzer/enable_grid",       // CFG_BOOL_ANALYZER_ENABLE_GRID,
+    "analyzer/show_grid",         // CFG_BOOL_ANALYZER_SHOW_GRID,
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =
@@ -87,6 +90,7 @@ Config::Config()
     m_def_quint32[CFG_QUINT32_SHUPITO_VERIFY]      = 1;
     m_def_quint32[CFG_QUINT32_ANALYZER_PLAY_DEL]   = 1000;
     m_def_quint32[CFG_QUITN32_SHUPITO_TERM_FMT]    = 0;
+    m_def_quint32[CFG_QUINT32_ANALYZER_GRID_SIZE]  = 10;
 
     m_def_string[CFG_STRING_SERIAL_PORT]           = "";
     m_def_string[CFG_STRING_SHUPITO_PORT]          = "";
@@ -110,6 +114,8 @@ Config::Config()
     m_def_bool[CFG_BOOL_SHUPITO_TURNOFF_VCC]       = false;
     m_def_bool[CFG_BOOL_SHUPITO_TRANSLATE_FUSES]   = true;
     m_def_bool[CFG_BOOL_SHUPITO_HIDE_RESERVED]     = true;
+    m_def_bool[CFG_BOOL_ANALYZER_ENABLE_GRID]      = true;
+    m_def_bool[CFG_BOOL_ANALYZER_SHOW_GRID]        = false;
 
     m_def_float[CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL] = 5.5f;
 }

@@ -261,7 +261,10 @@ void DataWidget::dragResize(QMouseEvent* e)
     int h = height();
     int x = pos().x();
     int y = pos().y();
-    int gx = x + e->pos().x();
+
+    QPoint m_pos = e->pos();
+    mapXYToGrid(m_pos);
+    int gx = x + m_pos.x();
 
     if(m_dragAction & DRAG_RES_LEFT)
     {
@@ -269,10 +272,10 @@ void DataWidget::dragResize(QMouseEvent* e)
         x = gx;
     }
     else if(m_dragAction & DRAG_RES_RIGHT)
-        w = e->pos().x();
+        w = m_pos.x();
 
     if(m_dragAction & DRAG_RES_BOTTOM)
-        h = e->pos().y();
+        h = m_pos.y();
 
     if(w < minimumWidth())
     {
@@ -292,8 +295,12 @@ void DataWidget::dragResize(QMouseEvent* e)
 
 void DataWidget::dragMove(QMouseEvent *e)
 {
-    move(pos() + ( e->globalPos() - mOrigin ));
+    QPoint p = pos() + ( e->globalPos() - mOrigin );
+    mapXYToGrid(p);
+    move(p);
+
     mOrigin = e->globalPos();
+    mapXYToGrid(mOrigin);
 
     emit updateMarker(this);
 }
@@ -428,6 +435,41 @@ void DataWidget::onWidgetRemove(DataWidget */*w*/)
 void DataWidget::onScriptEvent(const QString& /*eventId*/)
 {
 
+}
+
+void DataWidget::mapXYToGrid(QPoint& point)
+{
+    mapToGrid(point.rx());
+    mapToGrid(point.ry());
+    point += ((WidgetArea*)parent())->getGridOffset();
+}
+
+void DataWidget::mapXYToGrid(int& x, int& y)
+{
+    mapToGrid(x);
+    mapToGrid(y);
+
+    const QPoint& offset = ((WidgetArea*)parent())->getGridOffset();
+    x += offset.x();
+    y += offset.y();
+}
+
+void DataWidget::mapToGrid(int &val)
+{
+    int grid = ((WidgetArea*)parent())->getGrid();
+    int div = val%grid;
+    val += div >= grid/2 ? grid - div : -div;
+}
+
+void DataWidget::align()
+{
+    QPoint p(pos());
+    mapXYToGrid(p);
+    move(p);
+
+    p = QPoint(width(), height());
+    mapXYToGrid(p);
+    resize(p.x(), p.y());
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)

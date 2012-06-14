@@ -170,6 +170,9 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
     buffer->writeBlockIdentifier(BLOCK_WIDGETS);
     area->SaveWidgets(buffer);
 
+    // Area settings
+    area->SaveSettings(buffer);
+
     // Data index
     buffer->writeBlockIdentifier(BLOCK_DATA_INDEX);
     quint32 idx = m_analyzer->getCurrentIndex();
@@ -372,6 +375,9 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
     //Widgets
     if(buffer->seekToNextBlock(BLOCK_WIDGETS, 0))
         area->LoadWidgets(buffer, !(load & STORAGE_WIDGETS));
+
+    // Area settings
+    area->LoadSettings(buffer);
 
     // Data index
     if((load & STORAGE_DATA) && buffer->seekToNextBlock(BLOCK_DATA_INDEX, 0))

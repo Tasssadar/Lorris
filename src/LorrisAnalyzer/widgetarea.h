@@ -46,6 +46,9 @@ public:
 
     void SaveWidgets(DataFileParser *file);
     void LoadWidgets(DataFileParser *file, bool skip);
+    void SaveSettings(DataFileParser *file);
+    void LoadSettings(DataFileParser *file);
+
     static DataWidget *newWidget(quint8 type, QWidget *parent);
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void moveWidgets(QPoint diff);
@@ -53,11 +56,12 @@ public:
     void skipNextMove() { m_skipNextMove = true; }
 
     DataWidget *getWidget(quint32 id);
+    const w_map& getWidgets() const { return m_widgets; }
 
-    const w_map& getWidgets()
-    {
-        return m_widgets;
-    }
+    void setGridOffset(int x, int y) { m_grid_offset = QPoint(x, y); }
+    const QPoint& getGridOffset() const { return m_grid_offset; }
+    quint32 getGrid() const { return m_grid; }
+    void setGrid(quint32 grid) { m_grid = grid; }
 
 public slots:
     void removeWidget(quint32 id);
@@ -73,6 +77,12 @@ protected:
     void moveEvent(QMoveEvent *event);
     void resizeEvent(QResizeEvent *);
 
+private slots:
+    void enableGrid(bool enable);
+    void showGrid(bool show);
+    void setGridSize();
+    void alignWidgets();
+
 private:
     void getMarkPos(int &x, int &y, QSize &size);
     quint32 getNewId() { return m_widgetIdCounter++; }
@@ -86,6 +96,11 @@ private:
     QPoint m_mouse_orig;
 
     bool m_skipNextMove;
+    QPoint m_grid_offset;
+    quint32 m_grid;
+    bool m_show_grid;
+
+    QMenu *m_menu;
 };
 
 #endif // WIDGETAREA_H

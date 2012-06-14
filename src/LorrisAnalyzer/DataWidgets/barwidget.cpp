@@ -184,11 +184,6 @@ void BarWidget::rotationSelected(int i)
 
     resize(0, 0);
     adjustSize();
-
-    if(i == 0)
-        setMaximumSize(width(), 16777215);
-    else
-        setMaximumSize(16777215, height());
 }
 
 void BarWidget::rotate(int i)
