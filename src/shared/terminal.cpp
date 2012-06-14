@@ -125,7 +125,7 @@ void Terminal::addLines(const QString &text)
     QChar *line_start = (QChar*)text.data();
     QChar *line_end = line_start;
 
-    for(int i = 0; i < text.size() && *line_end != 0; ++i)
+    for(int i = 0; i < text.size(); ++i)
     {
         switch((*line_end).unicode())
         {
@@ -210,6 +210,25 @@ void Terminal::addLines(const QString &text)
                 else
                     ++line_end;
                 break;
+            }
+            case 0:
+            {
+                if(!m_settings.chars[SET_IGNORE_NULL])
+                {
+                    i = text.size()+1;
+                    break;
+                }
+                else
+                {
+                    addLine(pos, line_start, line_end);
+
+                    std::vector<QString>::iterator linePos = m_lines.begin() + pos;
+                    if(linePos != m_lines.end())
+                        (*linePos).append('.');
+                    else
+                        m_lines.push_back(QString("."));
+                    break;
+                }
             }
             default:
             {

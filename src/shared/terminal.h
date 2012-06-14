@@ -28,6 +28,7 @@ enum settings
     SET_RETURN,
     SET_BACKSPACE,
     SET_FORMFEED,
+    SET_IGNORE_NULL,
 
     SET_MAX
 };
@@ -123,6 +124,7 @@ private:
             chars[SET_BACKSPACE] = 1;
             chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
             chars[SET_RETURN] = NL_RETURN;
+            chars[SET_IGNORE_NULL] = 1;
             tabReplace = 4;
         }
 
@@ -192,6 +194,7 @@ struct terminal_settings
         chars[SET_BACKSPACE] = 1;
         chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
         chars[SET_RETURN] = NL_RETURN;
+        chars[SET_IGNORE_NULL] = 1;
         tabReplace = 4;
     }
 
