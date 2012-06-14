@@ -57,7 +57,7 @@
 <context>
     <name>BarWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="270"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="265"/>
         <source>Bar</source>
         <translation></translation>
     </message>
@@ -371,12 +371,12 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="519"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="561"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="520"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="562"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -492,12 +492,12 @@
         <translation>Změnit jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="332"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="339"/>
         <source>Set widget title</source>
         <translation>Nastavení jména widgetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="332"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="339"/>
         <source>Enter title:</source>
         <translation>Zadejne nové jméno:</translation>
     </message>
@@ -2005,27 +2005,27 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="608"/>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="197"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="200"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="198"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="201"/>
         <source>Import Data</source>
         <translation>Import dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="246"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="249"/>
         <source>Warning!</source>
         <translation>Pozor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="247"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="250"/>
         <source>You are opening file with old structure format, some things may be messed up!</source>
         <translation>Otevíráte soubor staré verze, něco může být rozbité!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="256"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="259"/>
         <source>Data file has wrong magic!</source>
         <translation>Data mají špatné magic číslo!</translation>
     </message>
@@ -2035,7 +2035,7 @@
         <translation>Importovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="208"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="211"/>
         <location filename="../src/LorrisTerminal/eeprom.cpp" line="89"/>
         <source>Can&apos;t open file!</source>
         <translation>Nemůžu otevřít soubor!</translation>
@@ -2820,12 +2820,12 @@ ke změně uspořádání</translation>
         <translation>Chcete soubor přesto uložit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="213"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="216"/>
         <source>Loading data file...</source>
         <translation>Načítám datový soubor...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="414"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="420"/>
         <source>Unable to open file %1 for writing!</source>
         <translation>Nemůžu otevřít subor %1!</translation>
     </message>
@@ -3219,6 +3219,39 @@ ke změně uspořádání</translation>
         <location filename="../src/utils.cpp" line="72"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
+    </message>
+</context>
+<context>
+    <name>WidgetArea</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="47"/>
+        <source>Enable grid</source>
+        <translation>Povolit síť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="48"/>
+        <source>Show grid</source>
+        <translation>Ukázat síť</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="49"/>
+        <source>Set grid size...</source>
+        <translation>Nastavit rozteč sítě...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="50"/>
+        <source>Align widgets to the grid</source>
+        <translation>Zarovnat widgety k síti</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="416"/>
+        <source>Grid size</source>
+        <translation>Rozteč sítě</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="416"/>
+        <source>Enter grid size in pixels</source>
+        <translation>Zadejte rozteč sítě v pixelech</translation>
     </message>
 </context>
 </TS>
