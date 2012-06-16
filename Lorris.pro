@@ -234,7 +234,7 @@ unix:!macx:!symbian {
         dep/qextserialport/src/qextserialport_unix.cpp \
         dep/qextserialport/src/qextserialenumerator_unix.cpp
 
-    LIBS += -lqwt -ludev -lSDL -lusb
+    LIBS += -lqwt -lSDL
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" \
         & \
