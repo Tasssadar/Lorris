@@ -129,15 +129,8 @@ bool UsbAcmConnection::openImpl()
         return false;
 
     if (libusby_set_configuration(m_handle, 1) < 0
-        || !this->readConfig(m_handle))
-    {
-        libusby_close(m_handle);
-        m_handle = 0;
-        return false;
-    }
-
-    int res = libusby_claim_interface(m_handle, 1);
-    if (res < 0)
+        || !this->readConfig(m_handle)
+        || libusby_claim_interface(m_handle, 1))
     {
         libusby_close(m_handle);
         m_handle = 0;
