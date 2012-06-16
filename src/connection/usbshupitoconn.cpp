@@ -195,9 +195,9 @@ void UsbAcmConnection::static_write_completed(libusby_transfer * t)
     QMutexLocker write_lock(&self->m_write_mutex);
     if (t->status != LIBUSBY_TRANSFER_COMPLETED || self->m_write_buffer_pos + t->actual_length == self->m_write_buffer.size())
     {
-        self->m_write_buffer.clear();
         self->m_write_buffer_pos = 0;
-        self->m_write_buffer.swap(self->m_send_data);
+        self->m_write_buffer = self->m_send_data;
+        self->m_send_data.clear();
     }
     else
     {
