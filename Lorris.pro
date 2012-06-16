@@ -229,7 +229,7 @@ win32 {
     else:LIBS += -lqwt
 }
 unix:!macx:!symbian {
-    CONFIG += link_pkgconfig
+    CONFIG += link_pkgconfig libusby
     SOURCES += \
         dep/qextserialport/src/qextserialport_unix.cpp \
         dep/qextserialport/src/qextserialenumerator_unix.cpp
