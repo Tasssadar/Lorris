@@ -73,13 +73,14 @@ public slots:
     void refresh();
 
 private slots:
-    void connectionDestroyed();
+    void acmConnectionDestroyed();
+    void shupitoConnectionDestroyed();
 
 private:
     libusby_context * m_usb_ctx;
     QScopedPointer<QThread> m_eventDispatcher;
 
-    QHash<libusby_device *, UsbAcmConnection *> m_devmap;
+    QHash<libusby_device *, Connection *> m_devmap;
 
     QTimer m_refreshTimer;
 };

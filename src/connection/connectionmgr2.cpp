@@ -145,7 +145,7 @@ UsbShupitoEnumerator::~UsbShupitoEnumerator()
     while (!m_devmap.isEmpty())
         (*m_devmap.begin())->releaseAll();
 
-	libusby_stop_event_loop(m_usb_ctx);
+    libusby_stop_event_loop(m_usb_ctx);
     m_eventDispatcher->wait();
     libusby_exit(m_usb_ctx);
 }
@@ -160,27 +160,48 @@ void UsbShupitoEnumerator::refresh()
     if (dev_count < 0)
         return;
 
-    QList<UsbAcmConnection *> portsToDisown = m_devmap.values();
+    QList<Connection *> portsToDisown = m_devmap.values();
     for (int i = 0; i < dev_count; ++i)
     {
         libusby_device * dev = dev_list[i];
-        if (!UsbAcmConnection::isDeviceSupported(dev))
+        if (UsbShupitoConnection::isDeviceSupported(dev))
+        {
+            if (m_devmap.contains(dev))
+            {
+                portsToDisown.removeOne(m_devmap[dev]);
+            }
+            else
+            {
+                ConnectionPointer<UsbShupitoConnection> conn(new UsbShupitoConnection(m_usb_ctx));
+                if (!conn->setUsbDevice(dev))
+                    continue;
+                conn->setRemovable(false);
+                conn->setName(conn->product());
+                m_devmap[dev] = conn.data();
+                connect(conn.data(), SIGNAL(destroying()), this, SLOT(shupitoConnectionDestroyed()));
+                sConMgr2.addConnection(conn.take());
+            }
             continue;
-
-        if (m_devmap.contains(dev))
-        {
-            portsToDisown.removeOne(m_devmap[dev]);
         }
-        else
+
+        if (UsbAcmConnection::isDeviceSupported(dev))
         {
-            ConnectionPointer<UsbAcmConnection> conn(new UsbAcmConnection(m_usb_ctx));
-            if (!conn->setUsbDevice(dev))
-                continue;
-            conn->setRemovable(false);
-            conn->setName(conn->product());
-            m_devmap[dev] = conn.data();
-            connect(conn.data(), SIGNAL(destroying()), this, SLOT(connectionDestroyed()));
-            sConMgr2.addConnection(conn.take());
+            if (m_devmap.contains(dev))
+            {
+                portsToDisown.removeOne(m_devmap[dev]);
+            }
+            else
+            {
+                ConnectionPointer<UsbAcmConnection> conn(new UsbAcmConnection(m_usb_ctx));
+                if (!conn->setUsbDevice(dev))
+                    continue;
+                conn->setRemovable(false);
+                conn->setName(conn->product());
+                m_devmap[dev] = conn.data();
+                connect(conn.data(), SIGNAL(destroying()), this, SLOT(acmConnectionDestroyed()));
+                sConMgr2.addConnection(conn.take());
+            }
+            continue;
         }
     }
 
@@ -190,9 +211,15 @@ void UsbShupitoEnumerator::refresh()
         portsToDisown[i]->releaseAll();
 }
 
-void UsbShupitoEnumerator::connectionDestroyed()
+void UsbShupitoEnumerator::acmConnectionDestroyed()
 {
     UsbAcmConnection * conn = static_cast<UsbAcmConnection *>(this->sender());
+    m_devmap.remove(conn->usbDevice());
+}
+
+void UsbShupitoEnumerator::shupitoConnectionDestroyed()
+{
+    UsbShupitoConnection * conn = static_cast<UsbShupitoConnection *>(this->sender());
     m_devmap.remove(conn->usbDevice());
 }
 

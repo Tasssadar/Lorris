@@ -92,28 +92,53 @@ bool UsbAcmConnection::event(QEvent * ev)
 
 bool UsbAcmConnection::readConfig(libusby_device_handle * handle)
 {
-    libusby_config_descriptor * cdesc = 0;
-    if (libusby_get_active_config_descriptor(handle, &cdesc) < 0)
-        return false;
-    ScopedConfigDescriptor cdesc_guard(cdesc);
+    Q_ASSERT(handle);
 
-    if (cdesc->bNumInterfaces != 2)
+    libusby_device_descriptor desc;
+    if (libusby_get_device_descriptor(handle, &desc) < 0)
         return false;
 
-    if (cdesc->interface[1].num_altsetting != 1)
+    bool res = false;
+    int selected_config;
+    int selected_intf;
+    for (int i = 0; !res && i < desc.bNumConfigurations; ++i)
+    {
+        libusby_config_descriptor * cdesc = 0;
+        if (libusby_get_config_descriptor(handle, i, &cdesc) < 0)
+            return false;
+        ScopedConfigDescriptor cdesc_guard(cdesc);
+
+        for (int j = 0; !res && j < cdesc->bNumInterfaces; ++j)
+        {
+            libusby_interface_descriptor const & intf = cdesc->interface[j].altsetting[0];
+            if (intf.bInterfaceClass != 0x0a || intf.bNumEndpoints != 2)
+                continue;
+
+            m_write_ep = intf.endpoint[0].bEndpointAddress;
+            m_read_ep = intf.endpoint[1].bEndpointAddress;
+
+            if ((m_write_ep & LIBUSBY_ENDPOINT_DIR_MASK) == LIBUSBY_ENDPOINT_IN)
+                std::swap(m_write_ep, m_read_ep);
+
+            if ((m_write_ep & LIBUSBY_ENDPOINT_DIR_MASK) != LIBUSBY_ENDPOINT_OUT
+                || (m_read_ep & LIBUSBY_ENDPOINT_DIR_MASK) != LIBUSBY_ENDPOINT_IN)
+            {
+                continue;
+            }
+
+            res = true;
+            selected_config = cdesc->bConfigurationValue;
+            selected_intf = intf.bInterfaceNumber;
+        }
+    }
+
+    if (!res)
         return false;
 
-    if (cdesc->interface[1].altsetting[0].bNumEndpoints != 2)
+    if (libusby_set_configuration(handle, selected_config) < 0)
         return false;
 
-    m_write_ep = cdesc->interface[1].altsetting[0].endpoint[0].bEndpointAddress;
-    m_read_ep = cdesc->interface[1].altsetting[0].endpoint[1].bEndpointAddress;
-
-    if ((m_write_ep & LIBUSBY_ENDPOINT_DIR_MASK) == LIBUSBY_ENDPOINT_IN)
-        std::swap(m_write_ep, m_read_ep);
-
-    if ((m_write_ep & LIBUSBY_ENDPOINT_DIR_MASK) != LIBUSBY_ENDPOINT_OUT
-            || (m_read_ep & LIBUSBY_ENDPOINT_DIR_MASK) != LIBUSBY_ENDPOINT_IN)
+    if (libusby_claim_interface(handle, selected_intf) < 0)
         return false;
 
     return true;
@@ -128,9 +153,7 @@ bool UsbAcmConnection::openImpl()
     if (libusby_open(m_dev, &m_handle) < 0)
         return false;
 
-    if (libusby_set_configuration(m_handle, 1) < 0
-        || !this->readConfig(m_handle)
-        || libusby_claim_interface(m_handle, 1))
+    if (!this->readConfig(m_handle))
     {
         libusby_close(m_handle);
         m_handle = 0;
@@ -301,11 +324,86 @@ bool UsbAcmConnection::isDeviceSupported(libusby_device * dev)
     if (libusby_get_device_descriptor_cached(dev, &desc) < 0)
         return false;
 
-    if (desc.idVendor == 0x4a61 && (desc.idProduct == 0x679a || desc.idProduct == 0x679b))
+    bool res = false;
+    for (int i = 0; !res && i < desc.bNumConfigurations; ++i)
     {
-        // FIXME: check that the descriptor is consistent
-        return true;
+        libusby_config_descriptor * config;
+        if (libusby_get_config_descriptor_cached(dev, i, &config) < 0)
+            continue;
+
+        for (int j = 0; !res && j < config->bNumInterfaces; ++j)
+        {
+            if (config->interface[j].altsetting[0].bInterfaceClass == 0x0a)
+                res = true;
+        }
+
+        libusby_free_config_descriptor(config);
     }
 
-    return false;
+    return res;
+}
+
+UsbShupitoConnection::UsbShupitoConnection(libusby_context * ctx)
+    : ShupitoConnection(CONNECTION_USB_SHUPITO)
+{
+    m_acm_conn.reset(new UsbAcmConnection(ctx));
+    m_shupito_conn.reset(new PortShupitoConnection());
+    m_shupito_conn->setPort(m_acm_conn);
+    connect(m_shupito_conn.data(), SIGNAL(packetRead(ShupitoPacket)), this, SIGNAL(packetRead(ShupitoPacket)));
+    connect(m_shupito_conn.data(), SIGNAL(stateChanged(ConnectionState)), this, SLOT(shupitoConnStateChanged(ConnectionState)));
+}
+
+UsbShupitoConnection::~UsbShupitoConnection()
+{
+}
+
+QString UsbShupitoConnection::details() const
+{
+    return m_acm_conn->details();
+}
+
+void UsbShupitoConnection::OpenConcurrent()
+{
+    this->SetState(st_connecting);
+    m_shupito_conn->OpenConcurrent();
+}
+
+void UsbShupitoConnection::Close()
+{
+    if (this->state() == st_connected)
+    {
+        emit disconnecting();
+        this->SetState(st_disconnected);
+        m_shupito_conn->Close();
+    }
+}
+
+void UsbShupitoConnection::sendPacket(ShupitoPacket const & packet)
+{
+    m_shupito_conn->sendPacket(packet);
+}
+
+bool UsbShupitoConnection::isDeviceSupported(libusby_device * dev)
+{
+    Q_ASSERT(dev);
+
+    libusby_device_descriptor desc;
+    if (libusby_get_device_descriptor_cached(dev, &desc) < 0)
+        return false;
+
+    return desc.idVendor == 0x4a61 && (desc.idProduct == 0x679a/* || desc.idProduct == 0x679b*/);
+}
+
+void UsbShupitoConnection::shupitoConnStateChanged(ConnectionState state)
+{
+    if (this->state() == st_disconnected && state != st_disconnected)
+        this->SetState(st_connecting);
+
+    if (this->state() == st_connecting)
+    {
+        if (state == st_disconnected)
+            this->SetState(st_disconnected);
+        if (state == st_connected)
+            this->SetState(st_connected);
+    }
 }

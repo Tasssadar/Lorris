@@ -10,6 +10,8 @@
 
 class UsbAcmConnection : public PortConnection
 {
+    Q_OBJECT
+
 public:
     explicit UsbAcmConnection(libusby_context * ctx);
     ~UsbAcmConnection();
@@ -59,6 +61,38 @@ private:
     QString m_manufacturer;
     QString m_product;
     QString m_serialNumber;
+};
+
+class UsbShupitoConnection : public ShupitoConnection
+{
+    Q_OBJECT
+
+public:
+    explicit UsbShupitoConnection(libusby_context * ctx);
+    ~UsbShupitoConnection();
+
+    QString manufacturer() const { return m_acm_conn->manufacturer(); }
+    QString product() const { return m_acm_conn->product(); }
+    QString serialNumber() const { return m_acm_conn->serialNumber(); }
+
+    libusby_device * usbDevice() const { return m_acm_conn->usbDevice(); }
+    bool setUsbDevice(libusby_device * dev) { return m_acm_conn->setUsbDevice(dev); }
+
+    QString details() const;
+    void OpenConcurrent();
+    void Close();
+
+    static bool isDeviceSupported(libusby_device * dev);
+
+public slots:
+    void sendPacket(ShupitoPacket const & packet);
+
+private slots:
+    void shupitoConnStateChanged(ConnectionState state);
+
+private:
+    ConnectionPointer<UsbAcmConnection> m_acm_conn;
+    ConnectionPointer<PortShupitoConnection> m_shupito_conn;
 };
 
 #endif // USBSHUPITOCONN_H
