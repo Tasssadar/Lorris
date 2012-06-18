@@ -11,7 +11,6 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QScrollBar>
-#include <QProgressBar>
 #include <QLabel>
 #include <QKeyEvent>
 #include <QProgressDialog>
@@ -109,6 +108,7 @@ void LorrisTerminal::initUI()
 
     ui->hexFile->setText(sConfig.get(CFG_STRING_HEX_FOLDER));
     ui->terminal->loadSettings(sConfig.get(CFG_STRING_TERMINAL_SETTINGS));
+    ui->progressBar->hide();
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
@@ -230,10 +230,8 @@ void LorrisTerminal::eeprom_write(QString id)
         return;
     }
 
-    QProgressBar *bar = new QProgressBar(this);
-    bar->setMaximum(m_eeprom->GetEEPROMSize());
-    bar->setObjectName("FlashProgress");
-    ui->mainLayout->insertWidget(1, bar);
+    ui->progressBar->show();
+    ui->progressBar->setMaximum(m_eeprom->GetEEPROMSize());
 
     flashTimeoutTimer = new QTimer();
     connect(flashTimeoutTimer, SIGNAL(timeout()), this, SLOT(flashTimeout()));
@@ -245,22 +243,22 @@ void LorrisTerminal::eeprom_write(QString id)
 bool LorrisTerminal::eeprom_send_page()
 {
     page *p = m_eeprom->getNextPage();
-    QProgressBar *bar = findChild<QProgressBar *>("FlashProgress");
+
     if(!p)
     {
         delete flashTimeoutTimer;
         flashTimeoutTimer = NULL;
-        ui->mainLayout->removeWidget(bar);
-        delete bar;
         delete m_eeprom;
 
+        ui->progressBar->setValue(0);
+        ui->progressBar->hide();
         m_state &= ~(STATE_EEPROM_WRITE);
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return false;
     }
 
     flashTimeoutTimer->start(1500);
-    bar->setValue(p->address);
+    ui->progressBar->setValue(p->address);
 
     QByteArray data;
     data[0] = 0x14;
@@ -306,10 +304,8 @@ void LorrisTerminal::eeprom_read(QString id)
 
     m_eeprom = new EEPROM(this, cd);
 
-    QProgressBar *bar = new QProgressBar(this);
-    bar->setMaximum(m_eeprom->GetEEPROMSize());
-    bar->setObjectName("FlashProgress");
-    ui->mainLayout->insertWidget(1, bar);
+    ui->progressBar->show();
+    ui->progressBar->setMaximum(m_eeprom->GetEEPROMSize());
 
     flashTimeoutTimer = new QTimer();
     connect(flashTimeoutTimer, SIGNAL(timeout()), this, SLOT(flashTimeout()));
@@ -322,15 +318,13 @@ void LorrisTerminal::eeprom_read_block(QByteArray data)
     m_eepromItr += data.count();
     m_eeprom->AddData(data);
 
-    QProgressBar *bar = findChild<QProgressBar *>("FlashProgress");
-
     if(m_eepromItr >= m_eeprom->GetEEPROMSize())
     {
         delete flashTimeoutTimer;
         flashTimeoutTimer = NULL;
 
-        ui->mainLayout->removeWidget(bar);
-        delete bar;
+        ui->progressBar->setValue(0);
+        ui->progressBar->hide();
 
         m_state &= ~(STATE_EEPROM_READ);
         m_eeprom->Export();
@@ -339,7 +333,7 @@ void LorrisTerminal::eeprom_read_block(QByteArray data)
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
     }
-    bar->setValue(m_eepromItr);
+    ui->progressBar->setValue(m_eepromItr);
 
     if(m_eepromItr%128 == 0)
     {
@@ -565,10 +559,8 @@ void LorrisTerminal::flash_prepare(QString deviceId)
         return;
     }
 
-    QProgressBar *bar = new QProgressBar(this);
-    bar->setMaximum(m_pages.size());
-    bar->setObjectName("FlashProgress");
-    ui->mainLayout->insertWidget(1, bar);
+    ui->progressBar->show();
+    ui->progressBar->setMaximum(m_pages.size());
 
     ui->flashText->setText(tr("Flashing into ") + cd.getName() + "...");
 
@@ -583,12 +575,11 @@ void LorrisTerminal::flash_prepare(QString deviceId)
 bool LorrisTerminal::SendNextPage()
 {
     flashTimeoutTimer->start(1500);
-    QProgressBar *bar = findChild<QProgressBar *>("FlashProgress");
 
     if(m_cur_page >= m_pages.size())
     {
-        ui->mainLayout->removeWidget(bar);
-        delete bar;
+        ui->progressBar->setValue(0);
+        ui->progressBar->hide();
 
         ui->flashText->setText("");
 
@@ -614,7 +605,7 @@ bool LorrisTerminal::SendNextPage()
     for(quint16 i = 0; i < p.data.size(); ++i)
         data[i] = p.data[i];
     m_con->SendData(data);
-    bar->setValue(bar->value()+1);
+    ui->progressBar->setValue(ui->progressBar->value()+1);
     return true;
 }
 
@@ -626,9 +617,8 @@ void LorrisTerminal::flashTimeout()
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
 
-    QProgressBar *bar =  findChild<QProgressBar *>("FlashProgress");
-    ui->mainLayout->removeWidget(bar);
-    delete bar;
+    ui->progressBar->setValue(0);
+    ui->progressBar->hide();
 
     if(m_state & STATE_EEPROM_READ)
     {
