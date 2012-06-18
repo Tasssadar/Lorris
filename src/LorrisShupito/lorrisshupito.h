@@ -41,9 +41,9 @@ enum VddColor
 
 enum TabIndex
 {
-    TAB_FLASH = 0,
+    TAB_TERMINAL = 0,
+    TAB_FLASH,
     TAB_EEPROM,
-    TAB_TERMINAL,
     TAB_MAX
 };
 
@@ -95,8 +95,9 @@ private slots:
     void setTunnelName();
     void verifyChanged(int mode);
 
-    void hideLogBtn();
-    void hideFusesBtn();
+    void hideLogBtn(bool checked);
+    void hideFusesBtn(bool checked);
+    void hideSettingsBtn(bool checked);
 
     void readMemButton()
     {
@@ -159,7 +160,6 @@ private:
     void writeMem(quint8 memId, chip_definition& chip);
     void readFuses(chip_definition& chip);
     void writeFuses(chip_definition& chip);
-    void hideFuses(bool hide);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     bool showContinueBox(const QString& title, const QString& text);
     void postFlashSwitchCheck(chip_definition &chip);

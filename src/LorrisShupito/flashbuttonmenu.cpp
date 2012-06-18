@@ -6,6 +6,7 @@
 ***********************************************/
 
 #include "flashbuttonmenu.h"
+#include "lorrisshupito.h"
 
 FlashButtonMenu::FlashButtonMenu(bool read, QToolButton *btn, QWidget *parent) :
     QMenu(parent)
@@ -65,7 +66,7 @@ void FlashButtonMenu::createActions()
 
 void FlashButtonMenu::setActiveAction(int actInt)
 {
-    ActionSlots act = ActionSlots(actInt);
+    ActionSlots act = actInt == TAB_EEPROM ? ACT_EEPROM : ACT_FLASH;
 
     if(act == ACT_ALL) // set flash as active for terminal
         act = ACT_FLASH;

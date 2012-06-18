@@ -62,23 +62,19 @@ LorrisShupito::LorrisShupito()
 
     ui->progSpeedBox->setEditText(QString::number(m_prog_speed_hz));
 
-    if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_LOG))
-        ui->logText->hide();
-
-    if(!sConfig.get(CFG_BOOL_SHUPITO_SHOW_FUSES))
-        m_fuse_widget->hide();
-
     ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
 
     connect(ui->tunnelSpeedBox,  SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
     connect(ui->tunnelCheck,     SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
     connect(ui->progSpeedBox,    SIGNAL(editTextChanged(QString)), SLOT(progSpeedChanged(QString)));
-    connect(ui->hideLogBtn,      SIGNAL(clicked()),                SLOT(hideLogBtn()));
+    connect(ui->hideLogBtn,      SIGNAL(clicked(bool)),            SLOT(hideLogBtn(bool)));
     connect(ui->eraseButton,     SIGNAL(clicked()),                SLOT(eraseDevice()));
-    connect(ui->hideFusesBtn,    SIGNAL(clicked()),                SLOT(hideFusesBtn()));
+    connect(ui->hideFusesBtn,    SIGNAL(clicked(bool)),            SLOT(hideFusesBtn(bool)));
+    connect(ui->settingsBtn,     SIGNAL(clicked(bool)),            SLOT(hideSettingsBtn(bool)));
     connect(ui->over_enable,     SIGNAL(toggled(bool)),            SLOT(overvoltageSwitched(bool)));
     connect(ui->over_val,        SIGNAL(valueChanged(double)),     SLOT(overvoltageChanged(double)));
     connect(ui->over_turnoff,    SIGNAL(clicked(bool)),            SLOT(overvoltageTurnOffVcc(bool)));
+    connect(ui->startStopBtn,    SIGNAL(clicked()),                SLOT(startstopChip()));
     connect(m_fuse_widget,       SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
@@ -89,20 +85,29 @@ LorrisShupito::LorrisShupito()
     ui->hideFusesBtn->setFixedWidth(w);
     ui->hideFusesBtn->setRotation(ROTATE_90);
 
+    hideLogBtn(sConfig.get(CFG_BOOL_SHUPITO_SHOW_LOG));
+    hideFusesBtn(sConfig.get(CFG_BOOL_SHUPITO_SHOW_FUSES));
+    hideSettingsBtn(sConfig.get(CFG_BOOL_SHUPITO_SHOW_SETTINGS));
+
     ui->tunnelSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
     ui->progSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
 
     initMenus();
 
+    m_terminal = new Terminal(this);
+    m_terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
+    m_terminal->loadSettings(sConfig.get(CFG_STRING_SHUPITO_TERM_SET));
+    ui->memTabs->addTab(m_terminal, tr("Terminal"));
+
     QByteArray data = QByteArray(1024, (char)0xFF);
     static const QString memNames[] = { tr("Program memory"), tr("EEPROM") };
     m_hexAreas[0] = NULL;
-    for(quint8 i = 0; i < TAB_TERMINAL; ++i)
+    for(quint8 i = 1; i < TAB_MAX; ++i)
     {
         QHexEdit *h = new QHexEdit(this);
         h->setData(data);
-        m_hexAreas[i+1] = h;
-        ui->memTabs->addTab(h, memNames[i]);
+        m_hexAreas[i] = h;
+        ui->memTabs->addTab(h, memNames[i-1]);
     }
 
     m_shupito = new Shupito(this);
@@ -114,11 +119,6 @@ LorrisShupito::LorrisShupito()
     connect(m_shupito, SIGNAL(tunnelStatus(bool)), this, SLOT(tunnelStateChanged(bool)));
 
     m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
-
-    m_terminal = new Terminal(this);
-    m_terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
-    m_terminal->loadSettings(sConfig.get(CFG_STRING_SHUPITO_TERM_SET));
-    ui->memTabs->addTab(m_terminal, tr("Terminal"));
 
     connect(m_terminal, SIGNAL(settingsChanged()),           this,       SLOT(saveTermSettings()));
     connect(m_terminal, SIGNAL(keyPressed(QString)),         m_shupito,  SLOT(sendTunnelData(QString)));
@@ -264,10 +264,6 @@ void LorrisShupito::initMenus()
 
     bar->addAction(m_load_flash);
     bar->addAction(m_save_flash);
-    bar->addSeparator();
-    bar->addAction(m_start_act);
-    bar->addAction(m_stop_act);
-    bar->addAction(m_restart_act);
     bar->addSeparator();
 
     QPushButton *btn = new QPushButton(QIcon(":/actions/wire"), tr("Mode"), this);
@@ -700,21 +696,25 @@ void LorrisShupito::updateProgressLabel(const QString &text)
     m_progress_dialog->setLabelText(text);
 }
 
-void LorrisShupito::hideLogBtn()
+void LorrisShupito::hideLogBtn(bool checked)
 {
-   ui->logText->setVisible(!ui->logText->isVisible());
-   sConfig.set(CFG_BOOL_SHUPITO_SHOW_LOG, ui->logText->isVisible());
+    ui->hideLogBtn->setChecked(checked);
+    ui->logText->setVisible(checked);
+    sConfig.set(CFG_BOOL_SHUPITO_SHOW_LOG, checked);
 }
 
-void LorrisShupito::hideFusesBtn()
+void LorrisShupito::hideFusesBtn(bool checked)
 {
-    hideFuses(m_fuse_widget->isVisible());
+    ui->hideFusesBtn->setChecked(checked);
+    m_fuse_widget->setVisible(checked);
+    sConfig.set(CFG_BOOL_SHUPITO_SHOW_FUSES, checked);
 }
 
-void LorrisShupito::hideFuses(bool hide)
+void LorrisShupito::hideSettingsBtn(bool checked)
 {
-    m_fuse_widget->setVisible(!hide);
-    sConfig.set(CFG_BOOL_SHUPITO_SHOW_FUSES, !hide);
+    ui->settingsBtn->setChecked(checked);
+    ui->settingsFrame->setVisible(checked);
+    sConfig.set(CFG_BOOL_SHUPITO_SHOW_SETTINGS, checked);
 }
 
 chip_definition LorrisShupito::switchToFlashAndGetId()
@@ -818,11 +818,15 @@ void LorrisShupito::updateStartStopUi(bool stopped)
     {
         m_start_act->setEnabled(true);
         m_stop_act->setEnabled(false);
+        ui->startStopBtn->setIcon(QIcon(":/icons/start"));
+        ui->startStopBtn->setText(tr("Start"));
     }
     else
     {
         m_start_act->setEnabled(false);
         m_stop_act->setEnabled(true);
+        ui->startStopBtn->setIcon(QIcon(":/icons/stop"));
+        ui->startStopBtn->setText(tr("Stop"));
     }
 
     m_chipStopped = stopped;
@@ -991,7 +995,7 @@ void LorrisShupito::readMemInFlash(quint8 memId)
             m_modes[m_cur_mode]->switchToRunMode();
         }
 
-        ui->memTabs->setCurrentIndex(memId - 1);
+        ui->memTabs->setCurrentIndex(memId);
     }
     catch(QString ex)
     {
@@ -1056,7 +1060,7 @@ void LorrisShupito::readFuses(chip_definition& chip)
 
     m_fuse_widget->setUpdatesEnabled(true);
 
-    hideFuses(false);
+    hideFusesBtn(true);
 }
 
 void LorrisShupito::writeAll()
@@ -1270,15 +1274,20 @@ void LorrisShupito::tryFileReload(quint8 memId)
 void LorrisShupito::focusChanged(QWidget *prev, QWidget */*curr*/)
 {
     if(prev == NULL)
-        tryFileReload(getMemIndex()+1);
+        tryFileReload(getMemIndex());
 }
 
 int LorrisShupito::getMemIndex()
 {
-    int res = ui->memTabs->currentIndex();
-    if(res == TAB_TERMINAL)
-        res = TAB_FLASH;
-    return res;
+    switch(ui->memTabs->currentIndex())
+    {
+        default:
+        case TAB_TERMINAL:
+        case TAB_FLASH:
+            return MEM_FLASH;
+        case TAB_EEPROM:
+            return MEM_EEPROM;
+    }
 }
 
 void LorrisShupito::setConnection(PortConnection *con)
