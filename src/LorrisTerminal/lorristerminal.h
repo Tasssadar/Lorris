@@ -83,6 +83,7 @@ private slots:
     void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);
     void saveTermSettings();
+    void showBootloader(bool show);
 
     //Timers
     void stopTimerSig();
@@ -90,6 +91,7 @@ private slots:
     void deviceIdTimeout();
 
 private:
+    void setHexName(const QString& name);
     void flash_prepare(QString deviceId);
     void eeprom_read(QString id);
     void eeprom_write(QString id);
@@ -103,6 +105,10 @@ private:
     QTimer *flashTimeoutTimer;
     QByteArray stopCmd;
     HexFile *hex;
+
+    QString m_filename;
+    QDateTime m_filedate;
+    QDateTime m_flashdate;
 
     QAction *m_export_eeprom;
     QAction *m_import_eeprom;

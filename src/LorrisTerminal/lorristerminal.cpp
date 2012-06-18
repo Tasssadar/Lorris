@@ -104,9 +104,16 @@ void LorrisTerminal::initUI()
 
     QAction *chgSettings = dataMenu->addAction(tr("Change settings..."));
 
+    QAction *bootloaderAct = new QAction(tr("Show bootloader controls"), this);
+    bootloaderAct->setCheckable(true);
+    addAction(bootloaderAct);
+    dataMenu->addAction(bootloaderAct);
+
+    showBootloader(sConfig.get(CFG_BOOL_TERMINAL_SHOW_BOOTLOADER));
+
     inputAct(sConfig.get(CFG_QUINT32_TERMINAL_INPUT));
 
-    ui->hexFile->setText(sConfig.get(CFG_STRING_HEX_FOLDER));
+    setHexName(sConfig.get(CFG_STRING_HEX_FOLDER));
     ui->terminal->loadSettings(sConfig.get(CFG_STRING_TERMINAL_SETTINGS));
     ui->progressBar->hide();
 
@@ -119,12 +126,14 @@ void LorrisTerminal::initUI()
     connect(ui->pauseButton,   SIGNAL(clicked()),                   SLOT(pauseButton()));
     connect(ui->clearButton,   SIGNAL(clicked()),                   SLOT(clearButton()));
     connect(ui->terminal,      SIGNAL(settingsChanged()),           SLOT(saveTermSettings()));
+    connect(ui->fmtBox,        SIGNAL(activated(int)),              SLOT(fmtAction(int)));
     connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromButton()));
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
     connect(binSave,           SIGNAL(triggered()),                 SLOT(saveBin()));
     connect(chgSettings,       SIGNAL(triggered()),   ui->terminal, SLOT(showSettings()));
+    connect(bootloaderAct,     SIGNAL(triggered(bool)),             SLOT(showBootloader(bool)));
     connect(ui->terminal,      SIGNAL(fmtSelected(int)),            SLOT(checkFmtAct(int)));
     connect(ui->terminal,      SIGNAL(paused(bool)),                SLOT(setPauseBtnText(bool)));
 
@@ -154,9 +163,11 @@ void LorrisTerminal::browseForHex()
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     sConfig.get(CFG_STRING_HEX_FOLDER),
                                                     tr("Intel hex file (*.hex)"));
-    ui->hexFile->setText(filename);
-    if(filename.length() != 0)
-        sConfig.set(CFG_STRING_HEX_FOLDER, filename);
+    if(filename.isEmpty())
+        return;
+
+    setHexName(filename);
+    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
 }
 
 void LorrisTerminal::clearButton()
@@ -503,7 +514,7 @@ void LorrisTerminal::flashButton()
     hex = new HexFile();
     try
     {
-        hex->LoadFromFile(ui->hexFile->text());
+        hex->LoadFromFile(m_filename);
     }
     catch(QString ex)
     {
@@ -698,6 +709,9 @@ void LorrisTerminal::EnableButtons(quint16 buttons, bool enable)
 
 void LorrisTerminal::fmtAction(int act)
 {
+    if(ui->terminal->getFmt() == act)
+        return;
+
     sConfig.set(CFG_QUINT32_TERMINAL_FMT, act);
     ui->terminal->setFmt(act);
 }
@@ -706,6 +720,7 @@ void LorrisTerminal::checkFmtAct(int act)
 {
     for(quint8 i = 0; i < FMT_MAX; ++i)
         m_fmt_act[i]->setChecked(i == act);
+    ui->fmtBox->setCurrentIndex(act);
 }
 
 void LorrisTerminal::loadText()
@@ -792,4 +807,28 @@ void LorrisTerminal::setConnection(PortConnection *con)
 void LorrisTerminal::saveTermSettings()
 {
     sConfig.set(CFG_STRING_TERMINAL_SETTINGS, ui->terminal->getSettingsData());
+}
+
+void LorrisTerminal::showBootloader(bool show)
+{
+    ui->stopButton->setVisible(show);
+    ui->flashButton->setVisible(show);
+    ui->fileDate->setVisible(show);
+    ui->fileName->setVisible(show);
+    ui->browseBtn->setVisible(show);
+    actions()[0]->setChecked(show);
+    sConfig.set(CFG_BOOL_TERMINAL_SHOW_BOOTLOADER, show);
+}
+
+void LorrisTerminal::setHexName(const QString& name)
+{
+    m_filename = name;
+
+    QFileInfo info(name);
+    m_filedate = info.lastModified();
+
+    ui->fileName->setText(name);
+    ui->fileName->setToolTip(name);
+    ui->fileDate->setText(m_filedate.toString(tr(" | h:mm:ss d.M.yyyy")));
+    ui->fileDate->setToolTip(ui->fileDate->text());
 }

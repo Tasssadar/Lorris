@@ -61,6 +61,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "analyzer/enable_grid",       // CFG_BOOL_ANALYZER_ENABLE_GRID,
     "analyzer/show_grid",         // CFG_BOOL_ANALYZER_SHOW_GRID,
     "shupito/show_settings",      // CFG_BOOL_SHUPITO_SHOW_SETTINGS
+    "terminal/show_bootloader",   // CFG_BOOL_TERMINAL_SHOW_BOOTLOADER
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =
@@ -118,6 +119,7 @@ Config::Config()
     m_def_bool[CFG_BOOL_ANALYZER_ENABLE_GRID]      = true;
     m_def_bool[CFG_BOOL_ANALYZER_SHOW_GRID]        = false;
     m_def_bool[CFG_BOOL_SHUPITO_SHOW_SETTINGS]     = true;
+    m_def_bool[CFG_BOOL_TERMINAL_SHOW_BOOTLOADER]  = false;
 
     m_def_float[CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL] = 5.5f;
 }
