@@ -19,7 +19,7 @@
 
 QString PythonEngine::getNewModuleName()
 {
-    static char i = 'a';
+    static int i = 0;
     return QString(5, i++);
 }
 
