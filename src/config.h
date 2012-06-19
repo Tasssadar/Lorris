@@ -88,11 +88,6 @@ enum cfg_float
 
 class Config : public Singleton<Config>
 {
-    typedef QHash<cfg_quint32, quint32> def_map_quint32;
-    typedef QHash<cfg_string, QString> def_map_string;
-    typedef QHash<cfg_bool, bool> def_map_bool;
-    typedef QHash<cfg_float, float> def_map_float;
-
 public:
     Config();
     ~Config();
@@ -113,10 +108,6 @@ private:
     void openSettings();
 
     QSettings *m_settings;
-    def_map_quint32 m_def_quint32;
-    def_map_string m_def_string;
-    def_map_bool m_def_bool;
-    def_map_float m_def_float;
 };
 
 #define sConfig Config::GetSingleton()
