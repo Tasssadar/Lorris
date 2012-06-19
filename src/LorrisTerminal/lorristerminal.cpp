@@ -23,6 +23,7 @@
 #include "../shared/defmgr.h"
 #include "../ui/ui_lorristerminal.h"
 #include "../ui/chooseconnectiondlg.h"
+#include "../ui/tooltipwarn.h"
 
 LorrisTerminal::LorrisTerminal()
     : ui(new Ui::LorrisTerminal)
@@ -109,7 +110,12 @@ void LorrisTerminal::initUI()
     addAction(bootloaderAct);
     dataMenu->addAction(bootloaderAct);
 
+    QAction *showWarnAct = new QAction(tr("Show warn when flashing the same file twice"), this);
+    showWarnAct->setCheckable(true);
+    addAction(showWarnAct);
+
     showBootloader(sConfig.get(CFG_BOOL_TERMINAL_SHOW_BOOTLOADER));
+    showWarn(sConfig.get(CFG_BOOL_TERMINAL_SHOW_WARN));
 
     inputAct(sConfig.get(CFG_QUINT32_TERMINAL_INPUT));
 
@@ -124,7 +130,7 @@ void LorrisTerminal::initUI()
     connect(ui->stopButton,    SIGNAL(clicked()),                   SLOT(stopButton()));
     connect(ui->flashButton,   SIGNAL(clicked()),                   SLOT(flashButton()));
     connect(ui->pauseButton,   SIGNAL(clicked()),                   SLOT(pauseButton()));
-    connect(ui->clearButton,   SIGNAL(clicked()),                   SLOT(clearButton()));
+    connect(ui->clearButton,   SIGNAL(clicked()),     ui->terminal, SLOT(clear()));
     connect(ui->terminal,      SIGNAL(settingsChanged()),           SLOT(saveTermSettings()));
     connect(ui->fmtBox,        SIGNAL(activated(int)),              SLOT(fmtAction(int)));
     connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromButton()));
@@ -134,6 +140,7 @@ void LorrisTerminal::initUI()
     connect(binSave,           SIGNAL(triggered()),                 SLOT(saveBin()));
     connect(chgSettings,       SIGNAL(triggered()),   ui->terminal, SLOT(showSettings()));
     connect(bootloaderAct,     SIGNAL(triggered(bool)),             SLOT(showBootloader(bool)));
+    connect(showWarnAct,       SIGNAL(triggered(bool)),             SLOT(showWarn(bool)));
     connect(ui->terminal,      SIGNAL(fmtSelected(int)),            SLOT(checkFmtAct(int)));
     connect(ui->terminal,      SIGNAL(paused(bool)),                SLOT(setPauseBtnText(bool)));
 
@@ -168,11 +175,6 @@ void LorrisTerminal::browseForHex()
 
     setHexName(filename);
     sConfig.set(CFG_STRING_HEX_FOLDER, filename);
-}
-
-void LorrisTerminal::clearButton()
-{
-    ui->terminal->clear();
 }
 
 void LorrisTerminal::pauseButton()
@@ -512,6 +514,12 @@ void LorrisTerminal::flashButton()
 {
     if(hex) delete hex;
     hex = new HexFile();
+
+    setHexName();
+
+    if(actions()[1]->isChecked() && m_filedate.isValid() && m_filedate == m_flashdate)
+        new ToolTipWarn(tr("You have flashed this file already, and it was not changed since."), ui->flashButton, this);
+
     try
     {
         hex->LoadFromFile(m_filename);
@@ -524,6 +532,8 @@ void LorrisTerminal::flashButton()
         hex = NULL;
         return;
     }
+
+    m_flashdate = m_filedate;
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
@@ -820,15 +830,22 @@ void LorrisTerminal::showBootloader(bool show)
     sConfig.set(CFG_BOOL_TERMINAL_SHOW_BOOTLOADER, show);
 }
 
-void LorrisTerminal::setHexName(const QString& name)
+void LorrisTerminal::setHexName(QString name)
 {
-    m_filename = name;
+    if(!name.isNull())
+        m_filename = name;
 
-    QFileInfo info(name);
+    QFileInfo info(m_filename);
     m_filedate = info.lastModified();
 
-    ui->fileName->setText(name);
-    ui->fileName->setToolTip(name);
+    ui->fileName->setText(m_filename);
+    ui->fileName->setToolTip(m_filename);
     ui->fileDate->setText(m_filedate.toString(tr(" | h:mm:ss d.M.yyyy")));
     ui->fileDate->setToolTip(ui->fileDate->text());
+}
+
+void LorrisTerminal::showWarn(bool show)
+{
+    actions()[1]->setChecked(show);
+    sConfig.set(CFG_BOOL_TERMINAL_SHOW_WARN, show);
 }

@@ -146,6 +146,7 @@ private slots:
     void saveToFile(int memId);
     void focusChanged(QWidget *prev, QWidget *curr);
     void saveTermSettings();
+    void flashWarnBox(bool checked);
 
     void overvoltageSwitched(bool enabled);
     void overvoltageChanged(double val);
@@ -197,6 +198,7 @@ private:
     Terminal *m_terminal;
     QString m_hexFilenames[MEM_FUSES];
     QDateTime m_hexWriteTimes[MEM_FUSES];
+    QDateTime m_hexFlashTimes[MEM_FUSES];
     ShupitoMode *m_modes[MODE_COUNT];
     quint8 m_cur_mode;
 

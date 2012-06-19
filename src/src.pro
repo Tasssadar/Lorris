@@ -110,7 +110,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.cpp \
     LorrisAnalyzer/DataWidgets/circlewidget.cpp \
     ui/rangeselectdialog.cpp \
-    ui/progressbar.cpp
+    ui/progressbar.cpp \
+    ui/tooltipwarn.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -203,7 +204,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.h \
     LorrisAnalyzer/DataWidgets/circlewidget.h \
     ui/rangeselectdialog.h \
-    ui/progressbar.h
+    ui/progressbar.h \
+    ui/tooltipwarn.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include

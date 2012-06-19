@@ -29,6 +29,7 @@
 #include "../shared/chipdefs.h"
 #include "flashbuttonmenu.h"
 #include "overvccdialog.h"
+#include "../ui/tooltipwarn.h"
 
 #include "ui_lorrisshupito.h"
 
@@ -75,6 +76,7 @@ LorrisShupito::LorrisShupito()
     connect(ui->over_val,        SIGNAL(valueChanged(double)),     SLOT(overvoltageChanged(double)));
     connect(ui->over_turnoff,    SIGNAL(clicked(bool)),            SLOT(overvoltageTurnOffVcc(bool)));
     connect(ui->startStopBtn,    SIGNAL(clicked()),                SLOT(startstopChip()));
+    connect(ui->flashWarnBox,    SIGNAL(clicked(bool)),            SLOT(flashWarnBox(bool)));
     connect(m_fuse_widget,       SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
@@ -142,6 +144,8 @@ LorrisShupito::LorrisShupito()
     ui->over_enable->setChecked(sConfig.get(CFG_BOOL_SHUPITO_OVERVOLTAGE));
     ui->over_val->setValue(sConfig.get(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL));
     ui->over_turnoff->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TURNOFF_VCC));
+
+    ui->flashWarnBox->setChecked(sConfig.get(CFG_BOOL_SHUPITO_SHOW_FLASH_WARN));
 
     m_connectButton = new ConnectButton(ui->connectButton);
     connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
@@ -712,8 +716,10 @@ void LorrisShupito::hideFusesBtn(bool checked)
 
 void LorrisShupito::hideSettingsBtn(bool checked)
 {
+    ui->progBox->setVisible(checked);
+    ui->tunnelBox->setVisible(checked);
+    ui->overvccBox->setVisible(checked);
     ui->settingsBtn->setChecked(checked);
-    ui->settingsFrame->setVisible(checked);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_SETTINGS, checked);
 }
 
@@ -1183,6 +1189,15 @@ void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
     log("Writing memory");
     showProgressDialog(tr("Writing memory"), m_modes[m_cur_mode]);
 
+    QDateTime lastMod = m_hexFlashTimes[memId];
+    if(!m_hexFilenames[memId].isEmpty())
+    {
+        QFileInfo info(m_hexFilenames[memId]);
+        if(ui->flashWarnBox->isChecked() && info.exists() && m_hexFlashTimes[memId] == info.lastModified())
+            new ToolTipWarn(tr("You have flashed this file already, and it was not changed since."), ui->writeButton, this);
+        lastMod = info.lastModified();
+    }
+
     HexFile file;
     file.setData(data);
 
@@ -1190,6 +1205,8 @@ void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
     m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
 
     updateProgressDialog(-1);
+
+    m_hexFlashTimes[memId] = lastMod;
 }
 
 void LorrisShupito::writeFuses(chip_definition &chip)
@@ -1381,4 +1398,10 @@ void LorrisShupito::shutdownVcc()
 void LorrisShupito::overvoltageTurnOffVcc(bool enabled)
 {
     sConfig.set(CFG_BOOL_SHUPITO_TURNOFF_VCC, enabled);
+}
+
+void LorrisShupito::flashWarnBox(bool checked)
+{
+    ui->flashWarnBox->setChecked(checked);
+    sConfig.set(CFG_BOOL_SHUPITO_SHOW_FLASH_WARN, checked);
 }

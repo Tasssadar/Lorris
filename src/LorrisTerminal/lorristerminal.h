@@ -64,7 +64,6 @@ public:
 private slots:
     //Buttons
     void browseForHex();
-    void clearButton();
     void stopButton();
     void flashButton();
     void pauseButton();
@@ -84,6 +83,7 @@ private slots:
     void connectedStatus(bool connected);
     void saveTermSettings();
     void showBootloader(bool show);
+    void showWarn(bool show);
 
     //Timers
     void stopTimerSig();
@@ -91,7 +91,7 @@ private slots:
     void deviceIdTimeout();
 
 private:
-    void setHexName(const QString& name);
+    void setHexName(QString name = QString());
     void flash_prepare(QString deviceId);
     void eeprom_read(QString id);
     void eeprom_write(QString id);
