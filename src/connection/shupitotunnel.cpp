@@ -24,6 +24,7 @@ ShupitoTunnel::ShupitoTunnel()
 
 ShupitoTunnel::~ShupitoTunnel()
 {
+    Close();
 }
 
 bool ShupitoTunnel::Open()
