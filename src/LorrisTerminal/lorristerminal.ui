@@ -184,7 +184,7 @@
    <item>
     <widget class="ProgressBar" name="progressBar">
      <property name="value">
-      <number>24</number>
+      <number>100</number>
      </property>
     </widget>
    </item>
