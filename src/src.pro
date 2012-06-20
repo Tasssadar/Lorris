@@ -111,7 +111,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/circlewidget.cpp \
     ui/rangeselectdialog.cpp \
     ui/progressbar.cpp \
-    ui/tooltipwarn.cpp
+    ui/tooltipwarn.cpp \
+    updater.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -205,7 +206,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/DataWidgets/circlewidget.h \
     ui/rangeselectdialog.h \
     ui/progressbar.h \
-    ui/tooltipwarn.h
+    ui/tooltipwarn.h \
+    updater.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include

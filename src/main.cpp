@@ -11,6 +11,7 @@
 #include <QLibraryInfo>
 #include <stdio.h>
 
+#include "updater.h"
 #include "revision.h"
 #include "ui/mainwindow.h"
 #include "config.h"
@@ -90,6 +91,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     psConMgr2 = new ConnectionManager2(&a);
     installTranslator(a);
+
+    if(Updater::doUpdate())
+        return 0;
 
     MainWindow w;
     w.show(openFiles);

@@ -70,6 +70,7 @@ void Utils::ThrowException(const QString& text, QWidget* parent)
     QMessageBox box(parent);
     box.setIcon(QMessageBox::Critical);
     box.setWindowTitle(tr("Error!"));
+    box.setTextFormat(Qt::RichText);
     box.setText(text);
     box.exec();
 }
