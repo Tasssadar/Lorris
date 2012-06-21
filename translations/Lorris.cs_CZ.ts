@@ -2883,8 +2883,8 @@ ke změně uspořádání</translation>
 <context>
     <name>SplitOverlay</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="519"/>
-        <location filename="../src/ui/tabview.cpp" line="522"/>
+        <location filename="../src/ui/tabview.cpp" line="531"/>
+        <location filename="../src/ui/tabview.cpp" line="534"/>
         <source>Split</source>
         <translation>Rozdělit</translation>
     </message>
@@ -2948,64 +2948,79 @@ ke změně uspořádání</translation>
 <context>
     <name>TabView</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="35"/>
+        <location filename="../src/ui/tabview.cpp" line="36"/>
         <source>&amp;File</source>
         <translation>&amp;Soubor</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="36"/>
+        <location filename="../src/ui/tabview.cpp" line="37"/>
         <source>&amp;Help</source>
         <translation>&amp;Nápověda</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="38"/>
+        <location filename="../src/ui/tabview.cpp" line="39"/>
         <source>&amp;New</source>
         <translation>&amp;Nový</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="51"/>
+        <location filename="../src/ui/tabview.cpp" line="52"/>
         <source>Connection &amp;manager...</source>
         <translation>&amp;Manažer připojení...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="52"/>
+        <location filename="../src/ui/tabview.cpp" line="53"/>
         <source>&amp;Quit</source>
         <translation>&amp;Ukončit</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="54"/>
+        <location filename="../src/ui/tabview.cpp" line="55"/>
         <source>Language</source>
         <translation>Jazyk</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="63"/>
+        <location filename="../src/ui/tabview.cpp" line="64"/>
         <source>Same as OS - </source>
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="75"/>
+        <location filename="../src/ui/tabview.cpp" line="76"/>
+        <source>Check for update</source>
+        <translation>Zkontrolovat aktualizace</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="77"/>
         <source>About Lorris...</source>
         <translation>O Lorris...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="315"/>
+        <location filename="../src/ui/tabview.cpp" line="318"/>
         <source>Restart</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="316"/>
+        <location filename="../src/ui/tabview.cpp" line="319"/>
         <source>You need to restart Lorris for this change to take effect</source>
         <translation>Musíte restartovat Lorris aby se tato změna projevila</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="337"/>
+        <location filename="../src/ui/tabview.cpp" line="340"/>
         <source>Lorris version </source>
         <translation>Verze Lorris </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="342"/>
+        <location filename="../src/ui/tabview.cpp" line="345"/>
         <source>About Lorris</source>
         <translation>O Lorris</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="359"/>
+        <source>Checking for update...</source>
+        <translation>Kontroluji aktualizace...</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="363"/>
+        <source>No update available</source>
+        <translation>Žádná aktualizace není dostupná</translation>
     </message>
 </context>
 <context>
@@ -3303,6 +3318,39 @@ ke změně uspořádání</translation>
         <location filename="../src/LorrisAnalyzer/DataWidgets/terminalwidget.cpp" line="39"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
+    </message>
+</context>
+<context>
+    <name>UpdateCheck</name>
+    <message>
+        <location filename="../src/updatecheck.ui" line="20"/>
+        <source>Update available</source>
+        <translation>Aktualizace</translation>
+    </message>
+    <message>
+        <location filename="../src/updatecheck.ui" line="66"/>
+        <source>New version of Lorris is available. Should I update to this version?</source>
+        <translation>Je dostupná nová verze Lorris. Přejete si ji stáhnout a nainstalovat?</translation>
+    </message>
+    <message>
+        <location filename="../src/updatecheck.ui" line="73"/>
+        <source>Update without asking</source>
+        <translation>Neptat se při aktualizaci</translation>
+    </message>
+    <message>
+        <location filename="../src/updatecheck.ui" line="80"/>
+        <source>Don&apos;t check for updates</source>
+        <translation>Nekontrolovat aktualizace</translation>
+    </message>
+</context>
+<context>
+    <name>Updater</name>
+    <message>
+        <location filename="../src/updater.cpp" line="89"/>
+        <source>Could not start updater.exe, you have to download new version manually!
+&lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
+        <translation>Nemůžu spustit updater.exe, musíte provést aktualizaci ručně.
+&lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
 </context>
 <context>
