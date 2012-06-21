@@ -1079,10 +1079,6 @@
         <translation>&lt;Žádný soubor&gt;</translation>
     </message>
     <message>
-        <source>RS232 Tunnel speed:</source>
-        <translation type="obsolete">Rychlost RS232 tunelu:</translation>
-    </message>
-    <message>
         <location filename="../src/LorrisShupito/lorrisshupito.ui" line="91"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
@@ -1132,10 +1128,6 @@
         <translation></translation>
     </message>
     <message>
-        <source>Enable RS232 tunnel</source>
-        <translation type="obsolete">Povolit RS232 tunel</translation>
-    </message>
-    <message>
         <location filename="../src/LorrisShupito/lorrisshupito.ui" line="460"/>
         <source>Programming speed (Hz):</source>
         <translation>Rychlost programování (Hz):</translation>
@@ -1154,10 +1146,6 @@
         <location filename="../src/LorrisShupito/lorrisshupito.ui" line="720"/>
         <source>Turn off VCC</source>
         <translation>Vypnout VCC</translation>
-    </message>
-    <message>
-        <source>Overvoltage warning at:</source>
-        <translation type="obsolete">Varování o přepětí na:</translation>
     </message>
     <message>
         <location filename="../src/LorrisShupito/lorrisshupito.ui" line="142"/>
@@ -1807,58 +1795,6 @@ stejného souboru vícekrát:</translation>
         <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="792"/>
         <source>Can&apos;t open/create file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít/vytvořit soubor &quot;%1&quot;!</translation>
-    </message>
-</context>
-<context>
-    <name>MainWindow</name>
-    <message>
-        <source>&amp;File</source>
-        <translation type="obsolete">&amp;Soubor</translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
-        <translation type="obsolete">&amp;Nápověda</translation>
-    </message>
-    <message>
-        <source>&amp;Quit</source>
-        <translation type="obsolete">&amp;Ukončit</translation>
-    </message>
-    <message>
-        <source>About Lorris...</source>
-        <translation type="obsolete">O Lorris...</translation>
-    </message>
-    <message>
-        <source>Connection &amp;manager...</source>
-        <translatorcomment>Lepší by byl správce, ale není tam &quot;m&quot; na zkratku</translatorcomment>
-        <translation type="obsolete">&amp;Manažer připojení...</translation>
-    </message>
-    <message>
-        <source>Language</source>
-        <translation type="obsolete">Jazyk</translation>
-    </message>
-    <message>
-        <source>Same as OS - </source>
-        <translation type="obsolete">Stejný jako OS - </translation>
-    </message>
-    <message>
-        <source>&amp;New</source>
-        <translation type="obsolete">&amp;Nový</translation>
-    </message>
-    <message>
-        <source>Lorris version </source>
-        <translation type="obsolete">Verze Lorris </translation>
-    </message>
-    <message>
-        <source>About Lorris</source>
-        <translation type="obsolete">O Lorris</translation>
-    </message>
-    <message>
-        <source>Restart</source>
-        <translation type="obsolete">Restart</translation>
-    </message>
-    <message>
-        <source>You need to restart Lorris for this change to take effect</source>
-        <translation type="obsolete">Musíte restartovat Lorris aby se tato změna projevila</translation>
     </message>
 </context>
 <context>
@@ -3346,10 +3282,17 @@ ke změně uspořádání</translation>
 <context>
     <name>Updater</name>
     <message>
-        <location filename="../src/updater.cpp" line="89"/>
+        <location filename="../src/updater.cpp" line="87"/>
         <source>Could not start updater.exe, you have to download new version manually!
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Nemůžu spustit updater.exe, musíte provést aktualizaci ručně.
+&lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/updater.cpp" line="94"/>
+        <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
+&lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
+        <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
 </context>

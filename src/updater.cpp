@@ -65,9 +65,6 @@ bool Updater::askForUpdate()
 
 bool Updater::doUpdate(bool autoCheck)
 {
-#ifndef Q_OS_WIN
-    return false;
-#else
     quint32 time = QDateTime::currentDateTime().toTime_t();
     if(autoCheck)
     {
@@ -83,6 +80,7 @@ bool Updater::doUpdate(bool autoCheck)
 
     sConfig.set(CFG_QUINT32_LAST_UPDATE_CHECK, time);
 
+#ifdef Q_OS_WIN
     if(!QFile::copy("updater.exe", "tmp_updater.exe") ||
        !QProcess::startDetached("tmp_updater.exe", (QStringList() << VERSION << QString::number(REVISION))))
     {
@@ -92,6 +90,10 @@ bool Updater::doUpdate(bool autoCheck)
     }
     else
         return true;
+#else
+    Utils::ThrowException(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
+                             "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
+    return false;
 #endif
 }
 
