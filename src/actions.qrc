@@ -10,5 +10,6 @@
         <file alias="stop">icons/media-playback-stop.png</file>
         <file alias="refresh">icons/view-refresh.png</file>
         <file alias="wire">icons/network-wired.png</file>
+        <file alias="update">icons/system-software-update.png</file>
     </qresource>
 </RCC>

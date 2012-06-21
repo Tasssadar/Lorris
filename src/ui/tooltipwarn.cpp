@@ -13,7 +13,7 @@
 
 #include "tooltipwarn.h"
 
-ToolTipWarn::ToolTipWarn(const QString& text, QWidget *posTo, QWidget *parent,  int delay) :
+ToolTipWarn::ToolTipWarn(const QString& text, QWidget *posTo, QWidget *parent, int delay) :
     QWidget(parent, Qt::ToolTip)
 {
     QHBoxLayout *l = new QHBoxLayout(this);

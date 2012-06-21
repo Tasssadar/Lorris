@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
     connect(tabWidget, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
-    connect(tabWidget, SIGNAL(close()),                                SLOT(close()));
+    connect(tabWidget, SIGNAL(closeLorris()),                          SLOT(close()));
 
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);

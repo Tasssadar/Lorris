@@ -29,6 +29,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "analyzer/play_delay",       // CFG_QUINT32_ANALYZER_PLAY_DEL
     "shupito/terminal_format",   // CFG_QUITN32_SHUPITO_TERM_FMT
     "analyzer/grid_size",        // CFG_QUINT32_ANALYZER_GRID_SIZE
+    "general/last_update_check", // CFG_QUINT32_LAST_UPDATE_CHECK
 };
 
 static const quint32 def_quint32[CFG_QUINT32_NUM] =
@@ -47,6 +48,7 @@ static const quint32 def_quint32[CFG_QUINT32_NUM] =
     1000,                        // CFG_QUINT32_ANALYZER_PLAY_DEL
     0,                           // CFG_QUITN32_SHUPITO_TERM_FMT
     10,                          // CFG_QUINT32_ANALYZER_GRID_SIZE
+    0,                           // CFG_QUINT32_LAST_UPDATE_CHECK
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -100,11 +102,12 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "terminal/show_bootloader",   // CFG_BOOL_TERMINAL_SHOW_BOOTLOADER
     "terminal/show_warn",         // CFG_BOOL_TERMINAL_SHOW_WARN
     "shupito/show_flash_warn",    // CFG_BOOL_SHUPITO_SHOW_FLASH_WARN
+    "general/auto_update",        // CFG_BOOL_AUTO_UPDATE
+    "general/check_for_updates",  // CFG_BOOL_CHECK_FOR_UPDATE
 };
 
 static const bool def_bool[CFG_BOOL_NUM] =
 {
-
     true,                         // CFG_BOOL_SHUPITO_TUNNEL
     false,                        // CFG_BOOL_SHUPITO_SHOW_LOG
     true,                         // CFG_BOOL_SHUPITO_SHOW_FUSES
@@ -118,6 +121,8 @@ static const bool def_bool[CFG_BOOL_NUM] =
     false,                        // CFG_BOOL_TERMINAL_SHOW_BOOTLOADER
     true,                         // CFG_BOOL_TERMINAL_SHOW_WARN
     true,                         // CFG_BOOL_SHUPITO_SHOW_FLASH_WARN
+    false,                        // CFG_BOOL_AUTO_UPDATE
+    true,                         // CFG_BOOL_CHECK_FOR_UPDATE
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =

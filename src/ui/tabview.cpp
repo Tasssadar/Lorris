@@ -18,6 +18,7 @@
 #include "homedialog.h"
 #include "chooseconnectiondlg.h"
 #include "../WorkTab/WorkTabMgr.h"
+#include "../updater.h"
 
 #define LAYOUT_MARGIN 4
 
@@ -72,6 +73,7 @@ TabView::TabView(QWidget *parent) :
         if(i == 0)
             menuLang->addSeparator();
     }
+    QAction* checkUpdate = m_help_menu->addAction(tr("Check for update"));
     QAction* actionAbout = m_help_menu->addAction(tr("About Lorris..."));
 
     quint32 curLang = sConfig.get(CFG_QUINT32_LANGUAGE);
@@ -81,9 +83,10 @@ TabView::TabView(QWidget *parent) :
 
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
-    connect(actionQuit,     SIGNAL(triggered()), this, SIGNAL(close()));
+    connect(actionQuit,     SIGNAL(triggered()), this, SIGNAL(closeLorris()));
     connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
     connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
+    connect(checkUpdate,    SIGNAL(triggered()), this, SLOT(checkForUpdate()));
 }
 
 TabWidget *TabView::newTabWidget(QBoxLayout *l)
@@ -349,6 +352,15 @@ void TabView::newTab()
 {
     HomeDialog dialog(this);
     dialog.exec();
+}
+
+void TabView::checkForUpdate()
+{
+    Utils::printToStatusBar(tr("Checking for update..."), 0);
+    if(Updater::doUpdate(false))
+        emit closeLorris();
+    else
+        Utils::printToStatusBar(tr("No update available"));
 }
 
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)

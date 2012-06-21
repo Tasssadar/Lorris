@@ -272,7 +272,8 @@ FORMS += \
     ui/chooseconnectiondlg.ui \
     LorrisShupito/overvccdialog.ui \
     shared/terminalsettings.ui \
-    ui/rangeselectdialog.ui
+    ui/rangeselectdialog.ui \
+    updatecheck.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

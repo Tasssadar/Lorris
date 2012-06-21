@@ -11,19 +11,20 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QApplication>
+#include <QDateTime>
+#include <QFile>
 
 #include "updater.h"
 #include "revision.h"
 #include "utils.h"
+#include "config.h"
 
-bool Updater::checkForUpdate()
+#define MANIFEST_URL "http://dl.dropbox.com/u/54372958/lorris.txt"
+
+bool Updater::checkForUpdate(bool autoCheck)
 {
-#ifndef Q_OS_WIN
     QNetworkAccessManager manager;
-    //  if(manager.networkAccessible() != QNetworkAccessManager::Accessible)
-    //        return false;
-
-    QNetworkRequest request(QUrl("http://dl.dropbox.com/u/54372958/lorris.txt"));
+    QNetworkRequest request(QUrl(MANIFEST_URL));
     request.setRawHeader( "User-Agent", "Mozilla/5.0 (X11; U; Linux i686 (x86_64); "
                           "en-US; rv:1.9.0.1) Gecko/2008070206 Firefox/3.0.1" );
     request.setRawHeader( "Accept-Charset", "win1251,utf-8;q=0.7,*;q=0.7" );
@@ -47,46 +48,73 @@ bool Updater::checkForUpdate()
             if(!ver.contains(parts[0]))
                 continue;
 
-            qDebug("found %s!", parts[0].toStdString().c_str());
             if(REVISION < parts[1].toInt())
-            {
-                qDebug("%u < %u", REVISION, parts[1].toUInt());
-                return askForUpdate();
-            }
+                return (autoCheck && sConfig.get(CFG_BOOL_AUTO_UPDATE)) || askForUpdate();
             else
-            {
-                qDebug("%u > %u", REVISION, parts[1].toUInt());
                 return false;
-            }
         }
     }
-#endif
     return false;
 }
 
 bool Updater::askForUpdate()
 {
-    QMessageBox box(QMessageBox::Question, QObject::tr("Update available"),
-                    QObject::tr("New version of Lorris is available. Should I update to this version?"));
-    box.addButton(QMessageBox::Yes);
-    box.addButton(QMessageBox::No);
-    return box.exec() == QMessageBox::Yes;
+    UpdaterDialog d;
+    return d.exec() == QDialog::Accepted;
 }
 
-bool Updater::doUpdate()
+bool Updater::doUpdate(bool autoCheck)
 {
-    if(!checkForUpdate())
+#ifndef Q_OS_WIN
+    return false;
+#else
+    quint32 time = QDateTime::currentDateTime().toTime_t();
+    if(autoCheck)
+    {
+        if(!sConfig.get(CFG_BOOL_CHECK_FOR_UPDATE))
+            return false;
+
+        if(time < sConfig.get(CFG_QUINT32_LAST_UPDATE_CHECK)+3600)
+            return false;
+    }
+
+    if(!checkForUpdate(autoCheck))
         return false;
 
-    if(!QProcess::startDetached("updater.exe", (QStringList() << VERSION << QString::number(REVISION))))
+    sConfig.set(CFG_QUINT32_LAST_UPDATE_CHECK, time);
+
+    if(!QFile::copy("updater.exe", "tmp_updater.exe") ||
+       !QProcess::startDetached("tmp_updater.exe", (QStringList() << VERSION << QString::number(REVISION))))
     {
         Utils::ThrowException(tr("Could not start updater.exe, you have to download new version manually!\n"
                                  "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
         return false;
     }
     else
-    {
-        QCoreApplication::exit();
         return true;
-    }
+#endif
+}
+
+UpdaterDialog::UpdaterDialog(QWidget *parent) :
+    QDialog(parent), ui(new Ui::UpdateCheck)
+{
+    ui->setupUi(this);
+
+    ui->noAskBox->setChecked(sConfig.get(CFG_BOOL_AUTO_UPDATE));
+    ui->noCheckBox->setChecked(!sConfig.get(CFG_BOOL_CHECK_FOR_UPDATE));
+}
+
+UpdaterDialog::~UpdaterDialog()
+{
+    delete ui;
+}
+
+void UpdaterDialog::on_noAskBox_clicked(bool checked)
+{
+    sConfig.set(CFG_BOOL_AUTO_UPDATE, checked);
+}
+
+void UpdaterDialog::on_noCheckBox_clicked(bool checked)
+{
+    sConfig.set(CFG_BOOL_CHECK_FOR_UPDATE, !checked);
 }

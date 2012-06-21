@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     psConMgr2 = new ConnectionManager2(&a);
     installTranslator(a);
 
-    if(Updater::doUpdate())
+    if(Updater::doUpdate(true))
         return 0;
 
     MainWindow w;

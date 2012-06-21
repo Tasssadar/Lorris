@@ -31,7 +31,7 @@ class TabView : public QWidget
 Q_SIGNALS:
     void openHomeTab(quint32 id);
     void statusBarMsg(const QString& message, int timeout = 0);
-    void close();
+    void closeLorris();
 
 public:
     explicit TabView(QWidget *parent = 0);
@@ -71,7 +71,7 @@ private slots:
     void OpenConnectionManager();
     void About();
     void newTab();
-
+    void checkForUpdate();
 
 private:
     TabWidget *newTabWidget(QBoxLayout *l);
