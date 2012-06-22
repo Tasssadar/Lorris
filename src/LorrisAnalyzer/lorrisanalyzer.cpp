@@ -223,8 +223,11 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     }
 }
 
-void LorrisAnalyzer::onTabShow()
+void LorrisAnalyzer::onTabShow(const QString& filename)
 {
+    if(!filename.isEmpty())
+        openFile(filename);
+
     if (!m_con)
     {
         m_connectButton->choose();
@@ -232,7 +235,8 @@ void LorrisAnalyzer::onTabShow()
             m_con->OpenConcurrent();
     }
 
-    this->doNewSource();
+    if(filename.isEmpty())
+        this->doNewSource();
 }
 
 void LorrisAnalyzer::doNewSource()

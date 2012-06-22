@@ -31,7 +31,7 @@ public:
 
     static void DeleteAllMembers(QLayout *layout);
 
-    virtual void onTabShow();
+    virtual void onTabShow(const QString& filename);
     virtual bool onTabClose();
     virtual void openFile(const QString& filename);
     virtual std::vector<QMenu*>& getMenu() { return m_menus; }

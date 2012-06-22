@@ -38,7 +38,7 @@ void WorkTab::DeleteAllMembers(QLayout *layout)
     }
 }
 
-void WorkTab::onTabShow()
+void WorkTab::onTabShow(const QString &)
 {
 
 }

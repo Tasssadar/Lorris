@@ -354,8 +354,11 @@ void LorrisShupito::stopAll(bool wait)
     }
 }
 
-void LorrisShupito::onTabShow()
+void LorrisShupito::onTabShow(const QString& filename)
 {
+    if(!filename.isEmpty())
+        openFile(filename);
+
     if (!m_con)
     {
         m_connectButton->choose();

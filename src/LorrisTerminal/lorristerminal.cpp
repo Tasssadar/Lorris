@@ -153,7 +153,7 @@ LorrisTerminal::~LorrisTerminal()
     delete ui;
 }
 
-void LorrisTerminal::onTabShow()
+void LorrisTerminal::onTabShow(const QString&)
 {
     this->connectedStatus(m_con && m_con->isOpen());
 

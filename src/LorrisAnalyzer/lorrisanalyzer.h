@@ -67,7 +67,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         void openFile(const QString& filename);
 
     public slots:
-        void onTabShow();
+        void onTabShow(const QString& filename);
         bool onTabClose();
         void updateData();
         void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);

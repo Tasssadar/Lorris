@@ -70,13 +70,13 @@ void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
     return;
 }
 
-WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info)
+WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info, QString filename)
 {
     QScopedPointer<WorkTab> tab(this->GetNewTab(info));
     this->AddWorkTab(tab.data(), info->GetName());
 
     WorkTab * tabp = tab.take();
-    tabp->onTabShow();
+    tabp->onTabShow(filename);
     return tabp;
 }
 
@@ -148,9 +148,7 @@ void WorkTabMgr::openTabWithFile(const QString &filename)
         if(!(*itr)->GetHandledFiles().contains(suffix))
             continue;
 
-        WorkTab *tab = AddWorkTab(*itr);
-        if(tab)
-           tab->openFile(filename);
+        AddWorkTab(*itr, filename);
         return;
     }
 }

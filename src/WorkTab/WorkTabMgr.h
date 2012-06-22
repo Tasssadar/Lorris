@@ -34,7 +34,7 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
         InfoList const & GetWorkTabInfos() const;
         void SortTabInfos();
         void AddWorkTab(WorkTab *tab, QString label);
-        WorkTab *AddWorkTab(WorkTabInfo * info);
+        WorkTab *AddWorkTab(WorkTabInfo * info, QString filename = QString());
         WorkTab* GetNewTab(WorkTabInfo *info);
 
         WorkTab* getWorkTab(quint32 id)

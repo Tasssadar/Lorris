@@ -77,7 +77,7 @@ public:
     void stopAll(bool wait);
 
 private slots:
-    void onTabShow();
+    void onTabShow(const QString& filename);
     void connDisconnecting();
 
     void connectionResult(Connection*,bool);

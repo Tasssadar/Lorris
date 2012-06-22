@@ -125,7 +125,7 @@ void LorrisProxy::removeConnection(quint32 id)
     delete items[0];
 }
 
-void LorrisProxy::onTabShow()
+void LorrisProxy::onTabShow(const QString&)
 {
     if (!m_con)
     {
