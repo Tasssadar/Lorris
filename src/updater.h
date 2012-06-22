@@ -22,6 +22,7 @@ public:
 private:
     static bool checkForUpdate(bool autoCheck);
     static bool askForUpdate();
+    static bool copyUpdater();
 };
 
 class UpdaterDialog : public QDialog, private Ui::UpdateCheck

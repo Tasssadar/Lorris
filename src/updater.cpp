@@ -81,7 +81,7 @@ bool Updater::doUpdate(bool autoCheck)
     sConfig.set(CFG_QUINT32_LAST_UPDATE_CHECK, time);
 
 #ifdef Q_OS_WIN
-    if(!QFile::copy("updater.exe", "tmp_updater.exe") ||
+    if(!copyUpdater() ||
        !QProcess::startDetached("tmp_updater.exe", (QStringList() << VERSION << QString::number(REVISION))))
     {
         Utils::ThrowException(tr("Could not start updater.exe, you have to download new version manually!\n"
@@ -95,6 +95,16 @@ bool Updater::doUpdate(bool autoCheck)
                              "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
     return false;
 #endif
+}
+
+bool Updater::copyUpdater()
+{
+    if(QFile::exists("tmp_updater.exe") && !QFile::remove("tmp_updater.exe"))
+        return false;
+
+    if(!QFile::copy("updater.exe", "tmp_updater.exe"))
+        return false;
+    return true;
 }
 
 UpdaterDialog::UpdaterDialog(QWidget *parent) :
