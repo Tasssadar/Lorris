@@ -457,18 +457,20 @@ void DataWidget::mapXYToGrid(int& x, int& y)
 void DataWidget::mapToGrid(int &val)
 {
     int grid = ((WidgetArea*)parent())->getGrid();
-    int div = val%grid;
+    int div = abs(val%grid);
     val += div >= grid/2 ? grid - div : -div;
 }
 
 void DataWidget::align()
 {
     QPoint p(pos());
+    p -= ((WidgetArea*)parent())->getGridOffset();
     mapXYToGrid(p);
     move(p);
 
     p = QPoint(width(), height());
     mapXYToGrid(p);
+    p -= ((WidgetArea*)parent())->getGridOffset();
     resize(p.x(), p.y());
 }
 

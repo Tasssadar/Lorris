@@ -240,6 +240,14 @@ void WidgetArea::SaveSettings(DataFileParser *file)
     file->writeBlockIdentifier("areaGridSettings");
     file->write((char*)&m_grid, sizeof(m_grid));
     file->write((char*)&m_show_grid, sizeof(m_show_grid));
+
+    file->writeBlockIdentifier("areaGridOffset");
+    {
+        int x = m_grid_offset.x();
+        int y = m_grid_offset.y();
+        file->write((char*)&x, sizeof(x));
+        file->write((char*)&y, sizeof(y));
+    }
 }
 
 void WidgetArea::LoadSettings(DataFileParser *file)
@@ -251,6 +259,15 @@ void WidgetArea::LoadSettings(DataFileParser *file)
 
         m_menu->actions()[0]->setChecked(m_grid != 1);
         m_menu->actions()[1]->setChecked(m_show_grid);
+    }
+
+    if(file->seekToNextBlock("areaGridOffset", BLOCK_DATA_INDEX))
+    {
+        int x, y;
+        file->read((char*)&x, sizeof(x));
+        file->read((char*)&y, sizeof(y));
+        m_grid_offset = QPoint(x, y);
+        update();
     }
 }
 
@@ -287,7 +304,7 @@ void WidgetArea::paintEvent(QPaintEvent *event)
 
     if(m_show_grid && m_grid > 1)
     {
-        QVarLengthArray<QPoint, 8000> points((width()/10)*(height()/10));
+        QVarLengthArray<QPoint, 8000> points((width()/m_grid)*(height()/m_grid));
         for(QPoint p; p.y() < height(); p.ry() += m_grid)
             for(p.rx() = 0; p.x() < width(); p.rx() += m_grid)
                 points.append(p + m_grid_offset);
