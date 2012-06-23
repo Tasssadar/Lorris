@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef TERMINAL_H
 #define TERMINAL_H
@@ -34,6 +18,28 @@
 class QMenu;
 class QByteArray;
 class QFile;
+struct terminal_settings;
+
+enum settings
+{
+    SET_REPLACE_TAB = 0,
+    SET_ALARM,
+    SET_NEWLINE,
+    SET_RETURN,
+    SET_BACKSPACE,
+    SET_FORMFEED,
+    SET_IGNORE_NULL,
+
+    SET_MAX
+};
+
+enum newlineBehavior
+{
+    NL_NEWLINE_RETURN = 0,
+    NL_NEWLINE,
+    NL_RETURN,
+    NL_NOTHING
+};
 
 enum term_fmt
 {
@@ -53,9 +59,13 @@ class Terminal : public QAbstractScrollArea
 {
     Q_OBJECT
 
+    friend struct terminal_settings;
+
 Q_SIGNALS:
     void keyPressed(QString key);
-    void fontChanged(const QString& fontData);
+    void settingsChanged();
+    void fmtSelected(int fmt);
+    void paused(bool pause);
 
 public:
     Terminal(QWidget *parent);
@@ -72,6 +82,8 @@ public:
     void setFont(const QFont &f);
     void loadFont(const QString& str);
     QString getFontData();
+    QString getSettingsData();
+    void loadSettings(const QString& data);
 
 public slots:
     void clear();
@@ -84,7 +96,8 @@ public slots:
     void appendText(const QByteArray& text);
     void setFmt(int fmt);
     void setInput(quint8 input);
-    void showFontDialog();
+    void showSettings();
+    void applySettings(const terminal_settings& set);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -101,10 +114,32 @@ private slots:
     void updateScrollBars();
 
 private:
+    struct term_settings_priv
+    {
+        term_settings_priv()
+        {
+            chars[SET_REPLACE_TAB] = 0;
+            chars[SET_ALARM] = 1;
+            chars[SET_FORMFEED] = 1;
+            chars[SET_BACKSPACE] = 1;
+            chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
+            chars[SET_RETURN] = NL_RETURN;
+            chars[SET_IGNORE_NULL] = 1;
+            tabReplace = 4;
+        }
+
+        void copy(const terminal_settings& set);
+
+        quint8 chars[SET_MAX];
+        quint8 tabReplace;
+    };
+
     void handleInput(const QString &data, int key = 0);
     void addLine(quint32 pos, QChar *&line_start, QChar *&line_end);
+    void newlineChar(quint8 option, quint32& pos);
     void addLines(const QString& text);
     void addHex();
+    void redrawAll();
     QPoint mouseToTextPos(const QPoint& pos);
 
     void selectAll();
@@ -140,10 +175,41 @@ private:
 
     QMenu *m_context_menu;
     QAction *m_fmt_act[FMT_MAX];
+    QAction *m_pauseAct;
 
     QTimer m_updateTimer;
 
     bool m_changed;
+
+    term_settings_priv m_settings;
 };
+
+struct terminal_settings
+{
+    terminal_settings()
+    {
+        chars[SET_REPLACE_TAB] = 0;
+        chars[SET_ALARM] = 1;
+        chars[SET_FORMFEED] = 1;
+        chars[SET_BACKSPACE] = 1;
+        chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
+        chars[SET_RETURN] = NL_RETURN;
+        chars[SET_IGNORE_NULL] = 1;
+        tabReplace = 4;
+    }
+
+    terminal_settings(const Terminal::term_settings_priv& set, const QFont& fnt)
+    {
+        for(int i = 0; i < SET_MAX; ++i)
+            chars[i] = set.chars[i];
+        tabReplace = set.tabReplace;
+        font = fnt;
+    }
+
+    quint8 chars[SET_MAX];
+    quint8 tabReplace;
+    QFont font;
+};
+
 
 #endif // TERMINAL_H

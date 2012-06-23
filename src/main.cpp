@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QtGui/QApplication>
 #include <QTranslator>
@@ -27,6 +11,7 @@
 #include <QLibraryInfo>
 #include <stdio.h>
 
+#include "updater.h"
 #include "revision.h"
 #include "ui/mainwindow.h"
 #include "config.h"
@@ -106,6 +91,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     psConMgr2 = new ConnectionManager2(&a);
     installTranslator(a);
+
+    if(Updater::doUpdate(true))
+        return 0;
 
     MainWindow w;
     w.show(openFiles);

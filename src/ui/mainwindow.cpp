@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QPushButton>
 #include <QString>
@@ -46,97 +30,29 @@
 #include <QCloseEvent>
 
 #include "mainwindow.h"
-#include "HomeTab.h"
-#include "homedialog.h"
 #include "../WorkTab/WorkTab.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../WorkTab/WorkTabInfo.h"
 #include "../revision.h"
 #include "../config.h"
-#include "../ui/chooseconnectiondlg.h"
-
-QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     setWindowTitle(getVersionString());
     setMinimumSize(600, 500);
-    setWindowState(Qt::WindowMaximized);
     setWindowIcon(QIcon(":/icons/icon.png"));
+    loadWindowParams();
 
-    // menu bar
-    menuBar = new QMenuBar(this);
-    menuFile = new QMenu(tr("&File"), this);
-    menuHelp = new QMenu(tr("&Help"), this);
-
-    QAction* actionQuit = new QAction(tr("&Quit"), this);
-    QAction* actionAbout = new QAction(tr("About Lorris..."), this);
-    QAction* actionConnectionManager = new QAction(tr("Connection &manager..."), this);
-
-    QMenu* menuLang = new QMenu(tr("Language"), this);
-
-    QSignalMapper *langSignals = new QSignalMapper(this);
-    connect(langSignals, SIGNAL(mapped(int)), this, SLOT(langChanged(int)));
-
-
-    for(quint8 i = 0; i < 3; ++i)
-    {
-        QString langName = QLocale::languageToString(langs[i]);
-        if(i == 0)
-            langName.prepend(tr("Same as OS - "));
-
-        QAction* actLang = menuLang->addAction(langName);
-        actLang->setCheckable(true);
-        m_lang_menu.push_back(actLang);
-
-        langSignals->setMapping(actLang, i);
-        connect(actLang, SIGNAL(triggered()), langSignals, SLOT(map()));
-
-        if(i == 0)
-            menuLang->addSeparator();
-    }
+    m_win7.init(winId());
+    Utils::setWin7(&m_win7);
 
     setStatusBar(new QStatusBar(this));
     Utils::setStatusBar(statusBar());
 
-    quint32 curLang = sConfig.get(CFG_QUINT32_LANGUAGE);
-    if(curLang >= m_lang_menu.size())
-        curLang = 0;
-    m_lang_menu[curLang]->setChecked(true);
-
-    actionQuit->setShortcut(QKeySequence("Alt+F4"));
-
-    connect(actionQuit,     SIGNAL(triggered()), this, SLOT(close()));
-    connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
-    connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
-
-    QMenu * menuFileNew = menuFile->addMenu(tr("&New"));
-
-    {
-        WorkTabMgr::InfoList const & infos = sWorkTabMgr.GetWorkTabInfos();
-        for (int i = 0; i < infos.size(); ++i)
-        {
-            WorkTabInfo * info = infos[i];
-            QAction * action = new QAction(info->GetName(), this);
-            m_actionTabInfoMap[action] = info;
-            connect(action, SIGNAL(triggered()), this, SLOT(NewSpecificTab()));
-            menuFileNew->addAction(action);
-        }
-    }
-
-    menuFile->addAction(actionConnectionManager);
-    menuFile->addAction(actionQuit);
-    menuHelp->addAction(actionAbout);
-    menuHelp->addMenu(menuLang);
-    menuBar->addMenu(menuFile);
-    menuBar->addMenu(menuHelp);
-    setMenuBar(menuBar);
-
-    //Tabs
     TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
     connect(tabWidget, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
-    connect(tabWidget, SIGNAL(newTab()),                               SLOT(newTab()));
+    connect(tabWidget, SIGNAL(closeLorris()),                          SLOT(close()));
 
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);
@@ -144,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    Utils::setWin7(NULL);
     Utils::setStatusBar(NULL);
 }
 
@@ -155,43 +72,15 @@ void MainWindow::show(const QStringList& openFiles)
         sWorkTabMgr.openTabWithFile(*itr);
 }
 
+bool MainWindow::winEvent(MSG *message, long *result)
+{
+    return m_win7.winEvent(message, result);
+}
+
 QString MainWindow::getVersionString()
 {
     QString ver = "Lorris v" + QString::number(REVISION);
     return ver;
-}
-
-void MainWindow::OpenConnectionManager()
-{
-    ChooseConnectionDlg dialog(0, this);
-    dialog.exec();
-}
-
-void MainWindow::About()
-{
-    QString text = tr("Lorris version " VERSION);
-    if(text.contains("-dev"))
-        text += ", git revision " + QString::number(REVISION);
-
-    QMessageBox *box = new QMessageBox(this);
-    box->setWindowTitle(tr("About Lorris"));
-    box->setText(text);
-    box->setIcon(QMessageBox::Information);
-    box->exec();
-    delete box;
-}
-
-void MainWindow::langChanged(int idx)
-{
-    sConfig.set(CFG_QUINT32_LANGUAGE, idx);
-    for(quint8 i = 0; i < m_lang_menu.size(); ++i)
-        m_lang_menu[i]->setChecked(i == idx);
-
-    QMessageBox box(this);
-    box.setWindowTitle(tr("Restart"));
-    box.setText(tr("You need to restart Lorris for this change to take effect"));
-    box.setIcon(QMessageBox::Information);
-    box.exec();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -199,18 +88,46 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if(!sWorkTabMgr.onTabsClose())
         event->ignore();
     else
+    {
+        saveWindowParams();
         event->accept();
+    }
 }
 
-void MainWindow::NewSpecificTab()
+void MainWindow::saveWindowParams()
 {
-    WorkTabInfo * info = m_actionTabInfoMap.value(this->sender());
-    if (info)
-        sWorkTabMgr.AddWorkTab(info);
+    QStringList params;
+    params << QString::number(isMaximized())
+           << QString::number(width()) << QString::number(height())
+           << QString::number(x()) << QString::number(y());
+    sConfig.set(CFG_STRING_WINDOW_PARAMS, params.join(";"));
 }
 
-void MainWindow::newTab()
+void MainWindow::loadWindowParams()
 {
-    HomeDialog dialog(this);
-    dialog.exec();
+    QStringList params = sConfig.get(CFG_STRING_WINDOW_PARAMS).split(';');
+    if(params.size() != 5)
+        return;
+
+    QRect s;
+    for(int i = 0; i < params.size(); ++i)
+    {
+        int val = params[i].toInt();
+        switch(i)
+        {
+            case 0:
+                if(val != 0)
+                {
+                    setWindowState(Qt::WindowMaximized);
+                    return;
+                }
+                break;
+            case 1: s.setWidth(val); break;
+            case 2: s.setHeight(val);break;
+            case 3: s.setX(val); break;
+            case 4: s.setY(val); break;
+        }
+    }
+    resize(s.size());
+    move(s.topLeft());
 }

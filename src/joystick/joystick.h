@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
@@ -28,6 +12,7 @@
 #include <QMutex>
 #include <set>
 #include <vector>
+#include <QTimer>
 
 #ifdef Q_OS_WIN
     #include <SDL.h>
@@ -35,56 +20,34 @@
     #include <SDL/SDL.h>
 #endif
 
+struct btn_event
+{
+    int id;
+    quint8 status;
+};
+
 class Joystick : public QObject
 {
     Q_OBJECT
 
 Q_SIGNALS:
+    void removeJoystick(Joystick *joy);
+    void buttonChanged(int id, quint8 status);
+    void axesChanged(const QList<int>& axes);
+
+public:
+    Joystick(int id, SDL_Joystick *joy, QObject *parent = 0);
+    ~Joystick();
+
     void axisEvent(int id, qint16 val);
     void ballEvent(int id, qint16 x, qint16 y);
     void hatEvent(int id, quint8 val);
     void buttonEvent(int id, quint8 state);
 
-    void removeJoystick(Joystick *joy);
-
-public:
-    Joystick(int id, QObject *parent = 0);
-    ~Joystick();
-
-    bool open();
-    int getId() const { return m_id; }
-
-    void __axisEvent(int id, qint16 val)
-    {
-        m_lock.lock();
-        m_axes[id] = val;
-        m_lock.unlock();
-
-        emit axisEvent(id, val);
-    }
-
-    void __ballEvent(int id, qint16 x, qint16 y)
-    {
-        emit ballEvent(id, x, y);
-    }
-
-    void __hatEvent(int id, quint8 val)
-    {
-        emit hatEvent(id, val);
-    }
-
-    void __buttonEvent(int id, quint8 state)
-    {
-        m_lock.lock();
-        m_buttons[id] = state;
-        m_lock.unlock();
-
-        emit buttonEvent(id, state);
-    }
-
     bool isUsed() const { return !m_used.empty(); }
 
 public slots:
+    int getId() const { return m_id; }
     int getNumAxes() const { return m_num_axes; }
     int getNumBalls() const { return m_num_balls; }
     int getNumHats() const { return m_num_hats; }
@@ -115,9 +78,17 @@ public slots:
             emit removeJoystick(this);
     }
 
+    void setSignalTimer(int periodMS);
+
+private slots:
+    void timeout();
+
 private:
+    void init();
+
     int m_id;
     SDL_Joystick *m_joy;
+    QTimer m_timer;
 
     int m_num_axes;
     int m_num_balls;
@@ -126,6 +97,8 @@ private:
 
     std::vector<int> m_axes;
     std::vector<quint8> m_buttons;
+    std::set<int> m_changed_axes;
+    std::list<btn_event> m_changed_btns;
 
     std::set<QObject*> m_used;
 

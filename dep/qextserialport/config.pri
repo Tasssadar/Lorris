@@ -8,4 +8,6 @@
 QEXTSERIALPORT_LIBRARY = yes
 
 # uncomment the following line too if you want to use it as static library
-QEXTSERIALPORT_STATIC = yes
+unix:!macx {
+    QEXTSERIALPORT_STATIC = yes
+}

@@ -1,30 +1,12 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef BARWIDGET_H
 #define BARWIDGET_H
-
-#include <QDialog>
 
 #include "datawidget.h"
 
@@ -70,33 +52,6 @@ class BarWidgetAddBtn : public DataWidgetAddBtn
     Q_OBJECT
 public:
     BarWidgetAddBtn(QWidget *parent);
-};
-
-namespace Ui {
-  class RangeSelectDialog;
-}
-
-class RangeSelectDialog : public QDialog
-{
-    Q_OBJECT
-public:
-    RangeSelectDialog(int val_min, int val_max, int max, int min, QWidget *parent);
-    ~RangeSelectDialog();
-
-    int getMax() { return m_maxRes; }
-    int getMin() { return m_minRes; }
-    bool getRes() { return m_res; }
-
-private slots:
-    void maxChanged(int value);
-    void minChanged(int value);
-    void boxClicked(QAbstractButton* b);
-
-private:
-    Ui::RangeSelectDialog *ui;
-    int m_minRes;
-    int m_maxRes;
-    bool m_res;
 };
 
 #endif // BARWIDGET_H

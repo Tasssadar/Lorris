@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <qapplication.h>
 #include <qlayout.h>
@@ -48,11 +32,11 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
 {
     // zoom in/out with the wheel
     QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( canvas() );
-    magnifier->setMouseButton(Qt::LeftButton);
+    magnifier->setMouseButton(Qt::MiddleButton);
 
     // panning with the left mouse button
     QwtPlotPanner *panner =  new QwtPlotPanner( canvas() );
-    panner->setMouseButton(Qt::MiddleButton);
+    panner->setMouseButton(Qt::LeftButton);
 
 #if defined(Q_WS_X11)
     // Even if not recommended by TrollTech, Qt::WA_PaintOutsidePaintEvent
@@ -110,15 +94,8 @@ void Graph::mousePressEvent(QMouseEvent *event)
     {
         return QWidget::mousePressEvent(event);
     }
-
     QwtPlot::mousePressEvent(event);
     event->accept();
-}
-
-void Graph::mouseMoveEvent(QMouseEvent *event)
-{
-    QwtPlot::mouseMoveEvent(event);
-    QWidget::mouseMoveEvent(event);
 }
 
 void Graph::wheelEvent(QWheelEvent *event)

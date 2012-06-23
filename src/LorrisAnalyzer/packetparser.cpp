@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include "storage.h"
 #include "packetparser.h"
@@ -36,6 +20,7 @@ PacketParser::PacketParser(Storage *storage, QObject *parent) :
 
 PacketParser::~PacketParser()
 {
+    m_import.close();
     delete m_curData;
 }
 
@@ -103,5 +88,38 @@ void PacketParser::resetCurPacket()
     {
         m_curData->setPacket(m_packet);
         m_curData->clear();
+        tryImport();
+    }
+    else
+    {
+        m_curData = new analyzer_data(m_packet);
+        tryImport();
+    }
+}
+
+void PacketParser::setImport(const QString& filename)
+{
+    m_import.close();
+    m_import.setFileName(filename);
+    m_import.open(QIODevice::ReadOnly);
+}
+
+void PacketParser::tryImport()
+{
+    if(!m_curData || !m_import.isOpen())
+        return;
+
+    m_import.seek(0);
+
+    bool fromheader = false;
+    int len = m_curData->getLenght(&fromheader);
+
+    newData(m_import.read(len));
+
+    if((m_packet->header->data_mask & DATA_LEN) && !fromheader && m_import.size() >= len)
+    {
+        int total = m_curData->getLenght(&fromheader);
+        if(fromheader)
+            newData(m_import.read(total - len));
     }
 }

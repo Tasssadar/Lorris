@@ -5,6 +5,52 @@ Copyright (C) 2012 Vojtěch Boček
 Contact: <vbocek@gmail.com>
          https://github.com/Tasssadar
 
+Version 0.5.0 - git revision [430] - be480e09f75a2101e37204d1e6b994402dd66135
+================================================================
+ * Use precompiled headers to speed-up compilation
+ * Change build steps - dependecies area now automaticaly built on linux
+   (and precompiled binaries are shipped with Lorris for Windows)
+ * Implement drag&drop for tabs - drag the tab and see what happens
+ * Support for Win7 taskbar progress info
+ * Implement new settings for all Terminals throughout the app,
+   accessible by right-click. Mostly control chars behavior.
+ * Make serial port speeds user-specified, which fixes high speeds on Windows
+ * Remove top bar and put it's contents to "Menu" button
+ * Save window position and size on close
+ * Fix crash with ShupitoTunnel
+ * Implement auto-update on windows
+
+ LorrisAnalyzer:
+ * Fix parser for packets without header
+ * Fix some bugs in widget resize code
+ * Switch graph mouse buttons:
+    - Left: moves the graph
+    - Middle: zoom
+ * Implement import/export of binary files
+ * Set "hand" cursor for WidgetArea, so that user can see it is movable
+ * Implement support for Python 2.7 to ScriptWidget. Requires Python 2.7 installed.
+ * Add circle widget. Shows angle.
+ * Limit graph replot rate to 100ms, improves performance
+ * Implement grid. Right click to widget area for settings.
+ * Fix Graph's curve edit dialog color loading
+ * Implement export of Graph curve(s) data as binary or CSV
+
+ LorrisProxy:
+ * Allow to select and copy server's address
+
+ LorrisShupito:
+ * Add overvoltage warning
+ * Fuse names and values translation to human-readable form. Long description
+   is in tooltip (move mouse to fuse name and wait)
+ * Change layout a bit
+ * Show warning when flashing the same file twice
+ * Add controls to terminal tab
+
+ LorrisTerminal:
+ * Option to hide/show bootloader controls, default is hidden.
+   Configure by right-clicking somewhere near other buttons.
+ * Show warning when flashing the same file twice
+
 Version 0.4.0 - git revision [347] - 7e229ab0fe389eb9093313ca2d95e0b841e8cde4
 ================================================================
  * Fix crash on joystick close

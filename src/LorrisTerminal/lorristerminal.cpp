@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QTextEdit>
 #include <QHBoxLayout>
@@ -27,7 +11,6 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QScrollBar>
-#include <QProgressBar>
 #include <QLabel>
 #include <QKeyEvent>
 #include <QProgressDialog>
@@ -37,9 +20,10 @@
 #include "../shared/terminal.h"
 #include "eeprom.h"
 #include "../shared/hexfile.h"
-#include "../shared/chipdefs.h"
+#include "../shared/defmgr.h"
 #include "../ui/ui_lorristerminal.h"
 #include "../ui/chooseconnectiondlg.h"
+#include "../ui/tooltipwarn.h"
 
 LorrisTerminal::LorrisTerminal()
     : ui(new Ui::LorrisTerminal)
@@ -54,8 +38,6 @@ LorrisTerminal::LorrisTerminal()
     stopTimer = NULL;
     hex = NULL;
     m_eeprom = NULL;
-
-    chip_definition::parse_default_chipsets(m_chip_defs);
 
     initUI();
 }
@@ -75,44 +57,71 @@ void LorrisTerminal::initUI()
     addTopMenu(fmtBar);
 
     QSignalMapper *fmtMap = new QSignalMapper(this);
+    quint32 fmt = sConfig.get(CFG_QUINT32_TERMINAL_FMT);
     for(quint8 i = 0; i < FMT_MAX; ++i)
     {
         static const QString fmtText[] = { tr("Text"), tr("Hex dump") };
 
         m_fmt_act[i] = fmtBar->addAction(fmtText[i]);
         m_fmt_act[i]->setCheckable(true);
+        m_fmt_act[i]->setChecked(i == fmt);
         fmtMap->setMapping(m_fmt_act[i], i);
         connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
     }
 
-    fmtAction(sConfig.get(CFG_QUINT32_TERMINAL_FMT));
+    fmtAction(fmt);
 
     QMenu *dataMenu = new QMenu(tr("Terminal"), this);
     addTopMenu(dataMenu);
     QAction *termLoad = dataMenu->addAction(tr("Load text file into terminal"));
-    QAction *termSave = dataMenu->addAction(tr("Save terminal content to text file"));
-    termSave->setShortcut(QKeySequence("Ctrl+S"));
 
     dataMenu->addSeparator();
 
-    QMenu *inputMenu = dataMenu->addMenu(tr("Input handling"));
+    QAction *termSave = dataMenu->addAction(tr("Save terminal content to text file"));
+    QAction *binSave = dataMenu->addAction(tr("Save received data to binary file"));
+    termSave->setShortcut(QKeySequence("Ctrl+Shift+S"));
+    binSave->setShortcut(QKeySequence("Ctrl+S"));
+
+    dataMenu->addSeparator();
+
+    QMenu *inputMenu = new QMenu(tr("Input handling"), this);
+    addTopMenu(inputMenu);
     QSignalMapper *inputMap = new QSignalMapper(this);
     for(quint8 i = 0; i < INPUT_MAX; ++i)
     {
         static const QString inputText[] = { tr("Just send key presses"), tr("TCP-terminal-like") };
+        static const QString inputTip[] =
+        {
+            tr("Send key code immediately after press"),
+            tr("Show pressed keys in terminal and send after pressing return")
+        };
 
         m_input[i] = inputMenu->addAction(inputText[i]);
+        m_input[i]->setStatusTip(inputTip[i]);
         m_input[i]->setCheckable(true);
         inputMap->setMapping(m_input[i], i);
         connect(m_input[i], SIGNAL(triggered()), inputMap, SLOT(map()));
     }
 
-    QAction *chgFont = dataMenu->addAction(tr("Change font..."));
+    QAction *chgSettings = dataMenu->addAction(tr("Change settings..."));
+
+    QAction *bootloaderAct = new QAction(tr("Show bootloader controls"), this);
+    bootloaderAct->setCheckable(true);
+    addAction(bootloaderAct);
+    dataMenu->addAction(bootloaderAct);
+
+    QAction *showWarnAct = new QAction(tr("Show warn when flashing the same file twice"), this);
+    showWarnAct->setCheckable(true);
+    addAction(showWarnAct);
+
+    showBootloader(sConfig.get(CFG_BOOL_TERMINAL_SHOW_BOOTLOADER));
+    showWarn(sConfig.get(CFG_BOOL_TERMINAL_SHOW_WARN));
 
     inputAct(sConfig.get(CFG_QUINT32_TERMINAL_INPUT));
 
-    ui->hexFile->setText(sConfig.get(CFG_STRING_HEX_FOLDER));
-    ui->terminal->loadFont(sConfig.get(CFG_STRING_TERMINAL_FONT));
+    setHexName(sConfig.get(CFG_STRING_HEX_FOLDER));
+    ui->terminal->loadSettings(sConfig.get(CFG_STRING_TERMINAL_SETTINGS));
+    ui->progressBar->hide();
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
@@ -121,13 +130,19 @@ void LorrisTerminal::initUI()
     connect(ui->stopButton,    SIGNAL(clicked()),                   SLOT(stopButton()));
     connect(ui->flashButton,   SIGNAL(clicked()),                   SLOT(flashButton()));
     connect(ui->pauseButton,   SIGNAL(clicked()),                   SLOT(pauseButton()));
-    connect(ui->clearButton,   SIGNAL(clicked()),                   SLOT(clearButton()));
-    connect(ui->terminal,      SIGNAL(fontChanged(QString)),        SLOT(saveTermFont(QString)));
+    connect(ui->clearButton,   SIGNAL(clicked()),     ui->terminal, SLOT(clear()));
+    connect(ui->terminal,      SIGNAL(settingsChanged()),           SLOT(saveTermSettings()));
+    connect(ui->fmtBox,        SIGNAL(activated(int)),              SLOT(fmtAction(int)));
     connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromButton()));
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
     connect(termSave,          SIGNAL(triggered()),                 SLOT(saveText()));
-    connect(chgFont,           SIGNAL(triggered()),   ui->terminal, SLOT(showFontDialog()));
+    connect(binSave,           SIGNAL(triggered()),                 SLOT(saveBin()));
+    connect(chgSettings,       SIGNAL(triggered()),   ui->terminal, SLOT(showSettings()));
+    connect(bootloaderAct,     SIGNAL(triggered(bool)),             SLOT(showBootloader(bool)));
+    connect(showWarnAct,       SIGNAL(triggered(bool)),             SLOT(showWarn(bool)));
+    connect(ui->terminal,      SIGNAL(fmtSelected(int)),            SLOT(checkFmtAct(int)));
+    connect(ui->terminal,      SIGNAL(paused(bool)),                SLOT(setPauseBtnText(bool)));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
@@ -138,7 +153,7 @@ LorrisTerminal::~LorrisTerminal()
     delete ui;
 }
 
-void LorrisTerminal::onTabShow()
+void LorrisTerminal::onTabShow(const QString&)
 {
     this->connectedStatus(m_con && m_con->isOpen());
 
@@ -155,26 +170,25 @@ void LorrisTerminal::browseForHex()
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     sConfig.get(CFG_STRING_HEX_FOLDER),
                                                     tr("Intel hex file (*.hex)"));
-    ui->hexFile->setText(filename);
-    if(filename.length() != 0)
-        sConfig.set(CFG_STRING_HEX_FOLDER, filename);
-}
+    if(filename.isEmpty())
+        return;
 
-void LorrisTerminal::clearButton()
-{
-    ui->terminal->clear();
+    setHexName(filename);
+    sConfig.set(CFG_STRING_HEX_FOLDER, filename);
 }
 
 void LorrisTerminal::pauseButton()
 {
     m_state ^= STATE_PAUSED;
+    ui->terminal->pause(m_state & STATE_PAUSED);
+}
 
-    if(m_state & STATE_PAUSED)
+void LorrisTerminal::setPauseBtnText(bool pause)
+{
+    if(pause)
         ui->pauseButton->setText(tr("Unpause"));
     else
         ui->pauseButton->setText(tr("Pause"));
-
-    ui->terminal->pause(m_state & STATE_PAUSED);
 }
 
 void LorrisTerminal::eepromButton()
@@ -211,10 +225,7 @@ void LorrisTerminal::eeprom_write(QString id)
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    chip_definition cd;
-    cd.setSign("avr232boot:" + id);
-    chip_definition::update_chipdef(m_chip_defs, cd);
-
+    chip_definition cd = sDefMgr.findChipdef("avr232boot:" + id);
     if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
         m_state &= ~(STATE_EEPROM_WRITE);
@@ -232,10 +243,8 @@ void LorrisTerminal::eeprom_write(QString id)
         return;
     }
 
-    QProgressBar *bar = new QProgressBar(this);
-    bar->setMaximum(m_eeprom->GetEEPROMSize());
-    bar->setObjectName("FlashProgress");
-    ui->mainLayout->insertWidget(1, bar);
+    ui->progressBar->show();
+    ui->progressBar->setMaximum(m_eeprom->GetEEPROMSize());
 
     flashTimeoutTimer = new QTimer();
     connect(flashTimeoutTimer, SIGNAL(timeout()), this, SLOT(flashTimeout()));
@@ -247,22 +256,22 @@ void LorrisTerminal::eeprom_write(QString id)
 bool LorrisTerminal::eeprom_send_page()
 {
     page *p = m_eeprom->getNextPage();
-    QProgressBar *bar = findChild<QProgressBar *>("FlashProgress");
+
     if(!p)
     {
         delete flashTimeoutTimer;
         flashTimeoutTimer = NULL;
-        ui->mainLayout->removeWidget(bar);
-        delete bar;
         delete m_eeprom;
 
+        ui->progressBar->setValue(0);
+        ui->progressBar->hide();
         m_state &= ~(STATE_EEPROM_WRITE);
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return false;
     }
 
     flashTimeoutTimer->start(1500);
-    bar->setValue(p->address);
+    ui->progressBar->setValue(p->address);
 
     QByteArray data;
     data[0] = 0x14;
@@ -285,10 +294,7 @@ void LorrisTerminal::eeprom_read(QString id)
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    chip_definition cd;
-    cd.setSign("avr232boot:" + id);
-    chip_definition::update_chipdef(m_chip_defs, cd);
-
+    chip_definition cd = sDefMgr.findChipdef("avr232boot:" + id);
     if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
         m_state &= ~(STATE_EEPROM_READ);
@@ -311,10 +317,8 @@ void LorrisTerminal::eeprom_read(QString id)
 
     m_eeprom = new EEPROM(this, cd);
 
-    QProgressBar *bar = new QProgressBar(this);
-    bar->setMaximum(m_eeprom->GetEEPROMSize());
-    bar->setObjectName("FlashProgress");
-    ui->mainLayout->insertWidget(1, bar);
+    ui->progressBar->show();
+    ui->progressBar->setMaximum(m_eeprom->GetEEPROMSize());
 
     flashTimeoutTimer = new QTimer();
     connect(flashTimeoutTimer, SIGNAL(timeout()), this, SLOT(flashTimeout()));
@@ -327,15 +331,13 @@ void LorrisTerminal::eeprom_read_block(QByteArray data)
     m_eepromItr += data.count();
     m_eeprom->AddData(data);
 
-    QProgressBar *bar = findChild<QProgressBar *>("FlashProgress");
-
     if(m_eepromItr >= m_eeprom->GetEEPROMSize())
     {
         delete flashTimeoutTimer;
         flashTimeoutTimer = NULL;
 
-        ui->mainLayout->removeWidget(bar);
-        delete bar;
+        ui->progressBar->setValue(0);
+        ui->progressBar->hide();
 
         m_state &= ~(STATE_EEPROM_READ);
         m_eeprom->Export();
@@ -344,7 +346,7 @@ void LorrisTerminal::eeprom_read_block(QByteArray data)
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         return;
     }
-    bar->setValue(m_eepromItr);
+    ui->progressBar->setValue(m_eepromItr);
 
     if(m_eepromItr%128 == 0)
     {
@@ -512,9 +514,15 @@ void LorrisTerminal::flashButton()
 {
     if(hex) delete hex;
     hex = new HexFile();
+
+    setHexName();
+
+    if(actions()[1]->isChecked() && m_filedate.isValid() && m_filedate == m_flashdate)
+        new ToolTipWarn(tr("You have flashed this file already, and it was not changed since."), ui->flashButton, this);
+
     try
     {
-        hex->LoadFromFile(ui->hexFile->text());
+        hex->LoadFromFile(m_filename);
     }
     catch(QString ex)
     {
@@ -524,6 +532,8 @@ void LorrisTerminal::flashButton()
         hex = NULL;
         return;
     }
+
+    m_flashdate = m_filedate;
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
@@ -542,10 +552,7 @@ void LorrisTerminal::flash_prepare(QString deviceId)
     delete flashTimeoutTimer;
     flashTimeoutTimer = NULL;
 
-    chip_definition cd;
-    cd.setSign("avr232boot:" + deviceId);
-    chip_definition::update_chipdef(m_chip_defs, cd);
-
+    chip_definition cd = sDefMgr.findChipdef("avr232boot:" + deviceId);
     if(cd.getName().isEmpty())
     {
         Utils::ThrowException(tr("Unsupported chip: ") + deviceId);
@@ -573,10 +580,8 @@ void LorrisTerminal::flash_prepare(QString deviceId)
         return;
     }
 
-    QProgressBar *bar = new QProgressBar(this);
-    bar->setMaximum(m_pages.size());
-    bar->setObjectName("FlashProgress");
-    ui->mainLayout->insertWidget(1, bar);
+    ui->progressBar->show();
+    ui->progressBar->setMaximum(m_pages.size());
 
     ui->flashText->setText(tr("Flashing into ") + cd.getName() + "...");
 
@@ -591,12 +596,11 @@ void LorrisTerminal::flash_prepare(QString deviceId)
 bool LorrisTerminal::SendNextPage()
 {
     flashTimeoutTimer->start(1500);
-    QProgressBar *bar = findChild<QProgressBar *>("FlashProgress");
 
     if(m_cur_page >= m_pages.size())
     {
-        ui->mainLayout->removeWidget(bar);
-        delete bar;
+        ui->progressBar->setValue(0);
+        ui->progressBar->hide();
 
         ui->flashText->setText("");
 
@@ -622,7 +626,7 @@ bool LorrisTerminal::SendNextPage()
     for(quint16 i = 0; i < p.data.size(); ++i)
         data[i] = p.data[i];
     m_con->SendData(data);
-    bar->setValue(bar->value()+1);
+    ui->progressBar->setValue(ui->progressBar->value()+1);
     return true;
 }
 
@@ -634,9 +638,8 @@ void LorrisTerminal::flashTimeout()
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
 
-    QProgressBar *bar =  findChild<QProgressBar *>("FlashProgress");
-    ui->mainLayout->removeWidget(bar);
-    delete bar;
+    ui->progressBar->setValue(0);
+    ui->progressBar->hide();
 
     if(m_state & STATE_EEPROM_READ)
     {
@@ -716,11 +719,18 @@ void LorrisTerminal::EnableButtons(quint16 buttons, bool enable)
 
 void LorrisTerminal::fmtAction(int act)
 {
-    for(quint8 i = 0; i < FMT_MAX; ++i)
-        m_fmt_act[i]->setChecked(i == act);
+    if(ui->terminal->getFmt() == act)
+        return;
 
     sConfig.set(CFG_QUINT32_TERMINAL_FMT, act);
     ui->terminal->setFmt(act);
+}
+
+void LorrisTerminal::checkFmtAct(int act)
+{
+    for(quint8 i = 0; i < FMT_MAX; ++i)
+        m_fmt_act[i]->setChecked(i == act);
+    ui->fmtBox->setCurrentIndex(act);
 }
 
 void LorrisTerminal::loadText()
@@ -748,7 +758,7 @@ void LorrisTerminal::loadText()
 void LorrisTerminal::saveText()
 {
     static const QString filters = tr("Text file (*.txt);;Any file (*.*)");
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save data"),
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save text data"),
                                                     sConfig.get(CFG_STRING_TERMINAL_TEXTFILE), filters);
 
     if(filename.isEmpty())
@@ -762,6 +772,27 @@ void LorrisTerminal::saveText()
     }
 
     ui->terminal->writeToFile(&file);
+    file.close();
+
+    sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);
+}
+
+void LorrisTerminal::saveBin()
+{
+    static const QString filters = tr("Any file (*.*)");
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save binary data"),
+                                                    sConfig.get(CFG_STRING_TERMINAL_TEXTFILE), filters);
+
+    if(filename.isEmpty())
+        return;
+
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        Utils::ThrowException(tr("Can't open/create file \"%1\"!").arg(filename), this);
+        return;
+    }
+    file.write(ui->terminal->getData());
     file.close();
 
     sConfig.set(CFG_STRING_TERMINAL_TEXTFILE, filename);
@@ -783,7 +814,38 @@ void LorrisTerminal::setConnection(PortConnection *con)
     connectedStatus(con && con->isOpen());
 }
 
-void LorrisTerminal::saveTermFont(const QString &fontData)
+void LorrisTerminal::saveTermSettings()
 {
-    sConfig.set(CFG_STRING_TERMINAL_FONT, fontData);
+    sConfig.set(CFG_STRING_TERMINAL_SETTINGS, ui->terminal->getSettingsData());
+}
+
+void LorrisTerminal::showBootloader(bool show)
+{
+    ui->stopButton->setVisible(show);
+    ui->flashButton->setVisible(show);
+    ui->fileDate->setVisible(show);
+    ui->fileName->setVisible(show);
+    ui->browseBtn->setVisible(show);
+    actions()[0]->setChecked(show);
+    sConfig.set(CFG_BOOL_TERMINAL_SHOW_BOOTLOADER, show);
+}
+
+void LorrisTerminal::setHexName(QString name)
+{
+    if(!name.isNull())
+        m_filename = name;
+
+    QFileInfo info(m_filename);
+    m_filedate = info.lastModified();
+
+    ui->fileName->setText(m_filename);
+    ui->fileName->setToolTip(m_filename);
+    ui->fileDate->setText(m_filedate.toString(tr(" | h:mm:ss d.M.yyyy")));
+    ui->fileDate->setToolTip(ui->fileDate->text());
+}
+
+void LorrisTerminal::showWarn(bool show)
+{
+    actions()[1]->setChecked(show);
+    sConfig.set(CFG_BOOL_TERMINAL_SHOW_WARN, show);
 }

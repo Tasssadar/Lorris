@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -37,8 +21,8 @@
 #include "packet.h"
 #include "packetparser.h"
 
-SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
-    QDialog(parent),ui(new Ui::SourceDialog)
+SourceDialog::SourceDialog(analyzer_packet *pkt, PortConnection *con, const QString &importFile) :
+    QDialog(),ui(new Ui::SourceDialog)
 {
     ui->setupUi(this);
     setFixedSize(width(), height());
@@ -50,6 +34,10 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
 
     m_parser = new PacketParser(NULL, this);
     m_parser->setPacket(&m_packet);
+    m_parser->setImport(importFile);
+
+    if(con)
+        connect(con, SIGNAL(dataRead(QByteArray)), m_parser, SLOT(newData(QByteArray)));
 
     QWidget *w = new QWidget(this);
     scroll_layout = new ScrollDataLayout(m_packet.header, false, false, NULL, NULL, w);
@@ -64,8 +52,8 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
 
     ui->header_scroll->setWidget(w);
 
-    connect(this,               SIGNAL(readData(QByteArray)),     m_parser,      SLOT(newData(QByteArray)));
     connect(ui->len_box,        SIGNAL(valueChanged(int)),        scroll_layout, SLOT(lenChanged(int)));
+    connect(ui->len_box,        SIGNAL(valueChanged(int)),                       SLOT(packetLenChanged(int)));
     connect(ui->fmt_combo,      SIGNAL(currentIndexChanged(int)), scroll_layout, SLOT(fmtChanged(int)));
     connect(ui->len_check,      SIGNAL(toggled(bool)),                           SLOT(headerLenToggled(bool)));
     connect(ui->header_len_box, SIGNAL(valueChanged(int)),                       SLOT(headerLenChanged(int)));
@@ -110,7 +98,10 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, QWidget *parent) :
         staticLenChanged(pkt->header->static_len);
 
         for(quint8 i = 0; i < pkt->header->static_len; ++i)
+        {
             ui->staticList->item(i)->setText(Utils::hexToString(pkt->static_data[i], true));
+            m_packet.static_data[i] = pkt->static_data[i];
+        }
     }
 }
 
@@ -288,10 +279,9 @@ void SourceDialog::staticDataChanged(QListWidgetItem *)
     m_parser->resetCurPacket();
 }
 
-analyzer_packet *SourceDialog::getStructure()
+analyzer_packet *SourceDialog::getStructure(analyzer_packet *pkt, PortConnection *con, const QString &importFile)
 {
-    exec();
-    if(!setted)
-        return NULL;
-    return new analyzer_packet(&m_packet);
+    SourceDialog d(pkt, con, importFile);
+    d.exec();
+    return d.setted ? new analyzer_packet(&d.m_packet) : NULL;
 }

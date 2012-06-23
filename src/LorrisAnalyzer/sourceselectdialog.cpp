@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -34,10 +18,7 @@ SourceSelectDialog::SourceSelectDialog(QWidget *parent) :
     ui->setupUi(this);
 
     ui->fileEdit->setText(sConfig.get(CFG_STRING_ANALYZER_FOLDER));
-
-    connect(ui->contButton, SIGNAL(clicked()), this, SLOT(contButton()));
-    connect(ui->browseButton, SIGNAL(clicked()), this, SLOT(browse()));
-    connect(ui->loadRadio, SIGNAL(toggled(bool)), this, SLOT(loadRadioToggled(bool)));
+    ui->importEdit->setText(sConfig.get(CFG_STRING_ANALYZER_IMPORT));
 }
 
 SourceSelectDialog::~SourceSelectDialog()
@@ -51,17 +32,13 @@ void SourceSelectDialog::DisableNew()
     ui->loadRadio->setChecked(true);
 }
 
-void SourceSelectDialog::contButton()
+void SourceSelectDialog::on_contButton_clicked()
 {
-    if(ui->newRadio->isChecked())
+    if(ui->loadRadio->isChecked() && !ui->structBox->isChecked() &&
+       !ui->dataBox->isChecked() && !ui->widgetBox->isChecked())
     {
-        accept();
-        return;
-    }
-
-    if(!ui->structBox->isChecked() && !ui->dataBox->isChecked() && !ui->widgetBox->isChecked())
         return Utils::ThrowException(tr("You have to select at least one thing to load."), this);
-
+    }
     accept();
 }
 
@@ -70,7 +47,11 @@ qint8 SourceSelectDialog::get()
     if(exec() == QDialog::Rejected)
         return -1;
 
-    return ui->newRadio->isChecked();
+    if(ui->newRadio->isChecked())
+        return 0;
+    if(ui->loadRadio->isChecked())
+        return 1;
+    return 2;
 }
 
 quint8 SourceSelectDialog::getDataMask()
@@ -90,13 +71,43 @@ quint8 SourceSelectDialog::getDataMask()
 
 QString SourceSelectDialog::getFileName()
 {
-    return ui->fileEdit->text();
+    if(ui->loadRadio->isChecked())
+        return ui->fileEdit->text();
+    else
+        return ui->importEdit->text();
 }
 
-void SourceSelectDialog::browse()
+void SourceSelectDialog::on_newRadio_toggled(bool toggle)
 {
-    QString filters = QObject::tr("Lorris data files (*.ldta *.cldta)");
-    QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import Data"),
+    if(toggle)
+    {
+        ui->contButton->setEnabled(true);
+        ui->stack->setCurrentIndex(0);
+    }
+}
+
+void SourceSelectDialog::on_loadRadio_toggled(bool toggle)
+{
+    if(toggle)
+    {
+        ui->contButton->setEnabled(!ui->fileEdit->text().isEmpty());
+        ui->stack->setCurrentIndex(1);
+    }
+}
+
+void SourceSelectDialog::on_binRadio_toggled(bool toggle)
+{
+    if(toggle)
+    {
+        ui->contButton->setEnabled(!ui->importEdit->text().isEmpty());
+        ui->stack->setCurrentIndex(2);
+    }
+}
+
+void SourceSelectDialog::on_loadBrowse_clicked()
+{
+    static const QString filters = tr("Lorris data files (*.ldta *.cldta)");
+    QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Load Data"),
                                                     sConfig.get(CFG_STRING_ANALYZER_FOLDER),
                                                     filters);
     if(filename.isEmpty())
@@ -107,7 +118,16 @@ void SourceSelectDialog::browse()
     sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
 }
 
-void SourceSelectDialog::loadRadioToggled(bool toggle)
+void SourceSelectDialog::on_importBrowse_clicked()
 {
-    ui->contButton->setEnabled(!toggle || !ui->fileEdit->text().isEmpty());
+    static const QString filters = tr("Any file (*.*)");
+    QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import binary data"),
+                                                    sConfig.get(CFG_STRING_ANALYZER_IMPORT),
+                                                    filters);
+    if(filename.isEmpty())
+        return;
+
+    ui->importEdit->setText(filename);
+    ui->contButton->setEnabled(true);
+    sConfig.set(CFG_STRING_ANALYZER_IMPORT, filename);
 }

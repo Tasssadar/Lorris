@@ -57,7 +57,7 @@ QextSerialPortPrivate::QextSerialPortPrivate(QextSerialPort *q)
     :lock(QReadWriteLock::Recursive), q_ptr(q)
 {
     lastErr = E_NO_ERROR;
-    Settings.BaudRate = BAUD9600;
+    Settings.BaudRate = 9600;
     Settings.Parity = PAR_NONE;
     Settings.FlowControl = FLOW_OFF;
     Settings.DataBits = DATA_8;
@@ -73,63 +73,12 @@ QextSerialPortPrivate::~QextSerialPortPrivate()
     platformSpecificDestruct();
 }
 
-void QextSerialPortPrivate::setBaudRate(BaudRateType baudRate, bool update)
+void QextSerialPortPrivate::setBaudRate(int baudRate, bool update)
 {
-    switch (baudRate) {
-#ifdef Q_OS_WIN
-    //Windows Special
-    case BAUD14400:
-    case BAUD56000:
-    case BAUD128000:
-    case BAUD256000:
-        QESP_PORTABILITY_WARNING()<<"QextSerialPort Portability Warning: POSIX does not support baudRate:"<<baudRate;
-#elif defined(Q_OS_UNIX)
-    //Unix Special
-    case BAUD50:
-    case BAUD75:
-    case BAUD134:
-    case BAUD150:
-    case BAUD200:
-    case BAUD1800:
-#ifdef B76800
-    case BAUD76800:
-#endif
-#if defined(B230400) && defined(B4000000)
-    case BAUD230400:
-    case BAUD460800:
-    case BAUD500000:
-    case BAUD576000:
-    case BAUD921600:
-    case BAUD1000000:
-    case BAUD1152000:
-    case BAUD1500000:
-    case BAUD2000000:
-    case BAUD2500000:
-    case BAUD3000000:
-    case BAUD3500000:
-    case BAUD4000000:
-#endif
-        QESP_PORTABILITY_WARNING()<<"QextSerialPort Portability Warning: Windows does not support baudRate:"<<baudRate;
-#endif
-    case BAUD110:
-    case BAUD300:
-    case BAUD600:
-    case BAUD1200:
-    case BAUD2400:
-    case BAUD4800:
-    case BAUD9600:
-    case BAUD19200:
-    case BAUD38400:
-    case BAUD57600:
-    case BAUD115200:
-        Settings.BaudRate=baudRate;
-        settingsDirtyFlags |= DFE_BaudRate;
-        if (update && q_func()->isOpen())
-            updatePortSettings();
-        break;
-    default:
-        QESP_WARNING()<<"QextSerialPort does not support baudRate:"<<baudRate;
-    }
+    Settings.BaudRate=baudRate;
+    settingsDirtyFlags |= DFE_BaudRate;
+    if (update && q_func()->isOpen())
+        updatePortSettings();
 }
 
 void QextSerialPortPrivate::setParity(ParityType parity, bool update)
@@ -609,7 +558,7 @@ QByteArray QextSerialPort::readAll()
     Returns the baud rate of the serial port.  For a list of possible return values see
     the definition of the enum BaudRateType.
 */
-BaudRateType QextSerialPort::baudRate() const
+int QextSerialPort::baudRate() const
 {
     QReadLocker locker(&d_func()->lock);
     return d_func()->Settings.BaudRate;
@@ -896,7 +845,7 @@ void QextSerialPort::setStopBits(StopBitsType stopBits)
     \endcode
 */
 
-void QextSerialPort::setBaudRate(BaudRateType baudRate)
+void QextSerialPort::setBaudRate(int baudRate)
 {
     Q_D(QextSerialPort);
     QWriteLocker locker(&d->lock);

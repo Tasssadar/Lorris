@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <qscriptsyntaxhighlighter_p.h>
 #include <QPainter>
@@ -28,11 +12,13 @@
 #include <QFileDialog>
 
 #include "scripteditor.h"
-#include "ui_scripteditor.h"
 #include "../../../common.h"
+#include "engines/scriptengine.h"
+#include "engines/pythonhighlighter.h"
 
-ScriptEditor::ScriptEditor(const QString& source, const QString& widgetName) :
-    QDialog(),
+
+ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widgetName) :
+    QDialog(NULL, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint),
     ui(new Ui::ScriptEditor)
 {
     ui->setupUi(this);
@@ -40,26 +26,30 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& widgetName) :
     m_line_num = new LineNumber(this);
     ui->editLayout->insertWidget(0, m_line_num);
 
-    new QScriptSyntaxHighlighter(ui->sourceEdit->document());
+    m_highlighter = NULL;
+    m_errors = 0;
 
+#ifdef Q_OS_MAC
+    ui->sourceEdit->setFont(Utils::getMonospaceFont(12));
+#else
     ui->sourceEdit->setFont(Utils::getMonospaceFont());
+#endif
     setWindowTitle(windowTitle() + widgetName);
-
-    QMenuBar *menu = new QMenuBar(this);
-    ui->verticalLayout->insertWidget(0, menu);
-
-    QAction *loadAct = menu->addAction(tr("Load file..."));
-    loadAct->setShortcut(QKeySequence("Ctrl+O"));
 
     QScrollBar *bar = ui->sourceEdit->verticalScrollBar();
     connect(bar,            SIGNAL(rangeChanged(int,int)),     SLOT(rangeChanged(int,int)));
     connect(bar,            SIGNAL(valueChanged(int)),         SLOT(sliderMoved(int)));
-    connect(ui->buttonBox,  SIGNAL(clicked(QAbstractButton*)), SLOT(buttonPressed(QAbstractButton*)));
-    connect(ui->sourceEdit, SIGNAL(textChanged()),             SLOT(textChanged()));
-    connect(loadAct,        SIGNAL(triggered()),               SLOT(loadFile()));
+    connect(ui->sourceEdit->document(), SIGNAL(contentsChange(int,int,int)),
+                                        SLOT(contentsChange(int,int,int)));
 
     ui->sourceEdit->setPlainText(source);
     ui->sourceEdit->setTabStopWidth(ui->sourceEdit->fontMetrics().width(' ') * 4);
+
+    m_changed = !source.isNull();
+
+    ui->langBox->addItems(ScriptEngine::getEngineList());
+    ui->langBox->setCurrentIndex(type);
+    ui->errorEdit->hide();
 }
 
 ScriptEditor::~ScriptEditor()
@@ -72,7 +62,12 @@ QString ScriptEditor::getSource()
     return ui->sourceEdit->toPlainText();
 }
 
-void ScriptEditor::buttonPressed(QAbstractButton *btn)
+int ScriptEditor::getEngine()
+{
+    return ui->langBox->currentIndex();
+}
+
+void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
 {
     switch(ui->buttonBox->buttonRole(btn))
     {
@@ -82,9 +77,15 @@ void ScriptEditor::buttonPressed(QAbstractButton *btn)
     }
 }
 
-void ScriptEditor::textChanged()
+void ScriptEditor::on_sourceEdit_textChanged()
 {
     m_line_num->setLineNum(ui->sourceEdit->document()->lineCount());
+}
+
+void ScriptEditor::contentsChange(int /*position*/, int charsRemoved, int charsAdded)
+{
+    if(charsRemoved != charsAdded)
+        m_changed = true;
 }
 
 void ScriptEditor::sliderMoved(int val)
@@ -97,12 +98,17 @@ void ScriptEditor::rangeChanged(int, int)
     m_line_num->setScroll(ui->sourceEdit->verticalScrollBar()->value());
 }
 
-void ScriptEditor::loadFile()
+void ScriptEditor::on_loadBtn_clicked()
 {
-    static const QString filters = tr("JavaScript file (*.js);;Any file (*.*)");
-    QString filename = QFileDialog::getOpenFileName(this, tr("Load file"),
-                                                    sConfig.get(CFG_STRING_ANALYZER_JS), filters);
+    static const QString filters[ENGINE_MAX] =
+    {
+        tr("JavaScript file (*.js);;Any file (*.*)"),
+        tr("Python file (*.py);;Any file (*.*)"),
+    };
 
+    QString filename = QFileDialog::getOpenFileName(this, tr("Load file"),
+                                                    sConfig.get(CFG_STRING_ANALYZER_JS),
+                                                    filters[ui->langBox->currentIndex()]);
     if(filename.isEmpty())
         return;
 
@@ -117,9 +123,83 @@ void ScriptEditor::loadFile()
     sConfig.set(CFG_STRING_ANALYZER_JS, filename);
 }
 
+void ScriptEditor::on_langBox_currentIndexChanged(int idx)
+{
+    if(!m_changed)
+    {
+        static const QString defaultCode[ENGINE_MAX] = {
+            tr("// You can use clearTerm() and appendTerm(string) to set term content\n"
+            "// You can use sendData(Array of ints) to send data to device. It expects array of uint8s\n\n"
+            "// This function gets called on data received\n"
+            "// it should return string, which is automatically appended to terminal\n"
+            "function onDataChanged(data, dev, cmd, index) {\n"
+            "\treturn \"\";\n"
+            "}\n\n"
+            "// This function is called on key press in terminal.\n"
+            "// Param is string\n"
+            "function onKeyPress(key) {\n"
+            "\n"
+            "}\n"),
+
+            tr("# You can use terminal.clear() and terminal.appendText(string) to set term content\n"
+            "# You can use lorris.sendData(QByteArray) to send data to device.\n"
+            "\n"
+            "# This function gets called on data received\n"
+            "# it should return string, which is automatically appended to terminal\n"
+            "def onDataChanged(data, dev, cmd, index):\n"
+            "\treturn \"\";\n"
+            "\n"
+            "# This function is called on key press in terminal.\n"
+            "# Param is string\n"
+            "def onKeyPress(key):\n"
+            "\treturn;\n")
+        };
+
+        ui->sourceEdit->setPlainText(defaultCode[idx]);
+        m_changed = false;
+    }
+
+    delete m_highlighter;
+    switch(idx)
+    {
+        case ENGINE_QTSCRIPT:
+            m_highlighter = new QScriptSyntaxHighlighter(ui->sourceEdit->document());
+            break;
+        case ENGINE_PYTHON:
+            m_highlighter = new PythonHighlighter(ui->sourceEdit->document());
+            break;
+        default:
+            m_highlighter = NULL;
+            break;
+    }
+}
+
+void ScriptEditor::on_errorBtn_toggled(bool checked)
+{
+    ui->errorEdit->setShown(checked);
+}
+
+void ScriptEditor::addError(const QString& error)
+{
+    ui->errorEdit->insertPlainText(error);
+    ++m_errors;
+    ui->errorBtn->setText(tr("Show errors (%1)").arg(m_errors));
+}
+
+void ScriptEditor::clearErrors()
+{
+    ui->errorEdit->clear();
+    m_errors = 0;
+    ui->errorBtn->setText(tr("Show errors (%1)").arg(m_errors));
+}
+
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)
 {
+#ifdef Q_OS_MAC
+    setFont(Utils::getMonospaceFont(12));
+#else
     setFont(Utils::getMonospaceFont());
+#endif
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
     setMinimumSize(5, 5);
 

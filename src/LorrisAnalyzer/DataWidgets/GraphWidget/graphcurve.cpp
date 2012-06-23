@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <qwt_plot.h>
 
@@ -29,18 +13,27 @@
 GraphCurve::GraphCurve(const QString &name, GraphDataSimple *data) :
     QObject(NULL),QwtPlotCurve(name)
 {
-
-    //setRenderHint(QwtPlotItem::RenderAntialiased);
-    setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
-    setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
-
     m_data = data;
-    setData(m_data);
+    init();
+}
+
+GraphCurve::GraphCurve(const GraphCurve &curve) : QObject(NULL), QwtPlotCurve(curve.title())
+{
+    m_data = curve.m_data;
+    init();
 }
 
 GraphCurve::~GraphCurve()
 {
     detach();
+}
+
+void GraphCurve::init()
+{
+    //setRenderHint(QwtPlotItem::RenderAntialiased);
+    setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
+    setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
+    setData(m_data);
 }
 
 void GraphCurve::setSampleSize(qint32 size)

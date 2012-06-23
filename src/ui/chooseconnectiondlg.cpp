@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include "chooseconnectiondlg.h"
 #include "ui_chooseconnectiondlg.h"
@@ -51,6 +35,7 @@ void ChooseConnectionDlg::init(Connection * preselectedConn)
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     ui->removeConnectionBtn->setDefaultAction(ui->actionRemoveConnection);
+    ui->spBaudRateEdit->setValidator(new QIntValidator(1, INT_MAX, this));
 
     QMenu * menu = new QMenu(this);
     menu->addAction(ui->actionCreateSerialPort);
@@ -230,7 +215,7 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
     if (!ok)
         return;
 
-    static_cast<SerialPort *>(m_current)->setBaudRate(BaudRateType(editValue));
+    static_cast<SerialPort *>(m_current)->setBaudRate(editValue);
 }
 
 void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)

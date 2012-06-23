@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QtCore/QtConcurrentRun>
 #include <QtCore/QThreadPool>
@@ -38,7 +22,7 @@
 #include "../WorkTab/WorkTabInfo.h"
 
 SerialPort::SerialPort()
-    : m_rate(BAUD38400),
+    : m_rate(38400),
       m_devNameEditable(true)
 {
     m_type = CONNECTION_SERIAL_PORT;
@@ -84,15 +68,7 @@ void SerialPort::Close()
 void SerialPort::SendData(const QByteArray& data)
 {
     if(this->isOpen())
-    {
-        qint64 len = m_port->write(data);
-        // FIXME: Some serial ports needs this
-        if(len == -1)
-        {
-            Utils::msleep(1);
-            m_port->write(data);
-        }
-    }
+        m_port->write(data);
 }
 
 void SerialPort::OpenConcurrent()
@@ -116,7 +92,7 @@ bool SerialPort::openPort()
     m_port->setDataBits(DATA_8);
     m_port->setStopBits(STOP_1);
     m_port->setFlowControl(FLOW_OFF);
-    m_port->setTimeout(-1);
+    m_port->setTimeout(500);
 
     bool res = m_port->open(QIODevice::ReadWrite | QIODevice::Unbuffered);
     if(!res)
@@ -174,6 +150,6 @@ QHash<QString, QVariant> SerialPort::config() const
 bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
 {
     this->setDeviceName(config.value("device_name").toString());
-    this->setBaudRate((BaudRateType)config.value("baud_rate", 38400).toInt());
+    this->setBaudRate(config.value("baud_rate", 38400).toInt());
     return this->Connection::applyConfig(config);
 }

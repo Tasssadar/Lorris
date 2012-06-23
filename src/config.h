@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef CONFIG_H
 #define CONFIG_H
@@ -45,6 +29,8 @@ enum cfg_quint32
     CFG_QUINT32_SHUPITO_VERIFY,
     CFG_QUINT32_ANALYZER_PLAY_DEL,
     CFG_QUITN32_SHUPITO_TERM_FMT,
+    CFG_QUINT32_ANALYZER_GRID_SIZE,
+    CFG_QUINT32_LAST_UPDATE_CHECK,
 
     CFG_QUINT32_NUM
 };
@@ -61,8 +47,11 @@ enum cfg_string
     CFG_STRING_PROXY_ADDR,
     CFG_STRING_ANALYZER_JS,
     CFG_STRING_TERMINAL_TEXTFILE,
-    CFG_STRING_TERMINAL_FONT,
-    CFG_STRING_SHUPITO_TERM_FONT,
+    CFG_STRING_TERMINAL_SETTINGS,
+    CFG_STRING_SHUPITO_TERM_SET,
+    CFG_STRING_ANALYZER_IMPORT,
+    CFG_STRING_WINDOW_PARAMS,
+    CFG_STRING_GRAPH_EXPORT,
 
     CFG_STRING_NUM
 };
@@ -72,6 +61,18 @@ enum cfg_bool
     CFG_BOOL_SHUPITO_TUNNEL = 0,
     CFG_BOOL_SHUPITO_SHOW_LOG,
     CFG_BOOL_SHUPITO_SHOW_FUSES,
+    CFG_BOOL_SHUPITO_OVERVOLTAGE,
+    CFG_BOOL_SHUPITO_TURNOFF_VCC,
+    CFG_BOOL_SHUPITO_TRANSLATE_FUSES,
+    CFG_BOOL_SHUPITO_HIDE_RESERVED,
+    CFG_BOOL_ANALYZER_ENABLE_GRID,
+    CFG_BOOL_ANALYZER_SHOW_GRID,
+    CFG_BOOL_SHUPITO_SHOW_SETTINGS,
+    CFG_BOOL_TERMINAL_SHOW_BOOTLOADER,
+    CFG_BOOL_TERMINAL_SHOW_WARN,
+    CFG_BOOL_SHUPITO_SHOW_FLASH_WARN,
+    CFG_BOOL_AUTO_UPDATE,
+    CFG_BOOL_CHECK_FOR_UPDATE,
 
     CFG_BOOL_NUM
 };
@@ -82,12 +83,15 @@ enum cfg_variant
     CFG_VARIANT_NUM
 };
 
+enum cfg_float
+{
+    CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL = 0,
+
+    CFG_FLOAT_NUM
+};
+
 class Config : public Singleton<Config>
 {
-    typedef QHash<cfg_quint32, quint32> def_map_quint32;
-    typedef QHash<cfg_string, QString> def_map_string;
-    typedef QHash<cfg_bool, bool> def_map_bool;
-
 public:
     Config();
     ~Config();
@@ -96,19 +100,18 @@ public:
     QString get(cfg_string item);
     bool    get(cfg_bool item);
     QVariant get(cfg_variant item);
+    float   get(cfg_float item);
 
     void set(cfg_quint32 item, quint32        val);
     void set(cfg_string  item, const QString& val);
     void set(cfg_bool    item, bool           val);
     void set(cfg_variant item, QVariant const & val);
+    void set(cfg_float   item, float          val);
 
 private:
     void openSettings();
 
     QSettings *m_settings;
-    def_map_quint32 m_def_quint32;
-    def_map_string m_def_string;
-    def_map_bool m_def_bool;
 };
 
 #define sConfig Config::GetSingleton()

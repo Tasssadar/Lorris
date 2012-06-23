@@ -1,29 +1,14 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <QEventLoop>
+#include <QCoreApplication>
 
 #include "shupito.h"
 #include "lorrisshupito.h"
@@ -36,7 +21,6 @@ Shupito::Shupito(QObject *parent) :
 {
     m_con = NULL;
     m_desc = NULL;
-    m_packet = NULL;
 
     m_vdd_config = m_tunnel_config = NULL;
     m_tunnel_pipe = 0;
@@ -51,7 +35,6 @@ Shupito::Shupito(QObject *parent) :
 
 Shupito::~Shupito()
 {
-    delete m_packet;
 }
 
 void Shupito::init(PortConnection *con, ShupitoDesc *desc)
@@ -59,10 +42,7 @@ void Shupito::init(PortConnection *con, ShupitoDesc *desc)
     m_con = con;
     m_desc = desc;
 
-    chip_definition::parse_default_chipsets(m_chip_defs);
-
-    delete m_packet;
-    m_packet = new ShupitoPacket();
+    m_packet.Clear();
 
     ShupitoPacket getInfo(MSG_INFO, 1, 0x00);
     QByteArray data = waitForStream(getInfo, MSG_INFO);
@@ -74,11 +54,6 @@ void Shupito::init(PortConnection *con, ShupitoDesc *desc)
 
 void Shupito::readData(const QByteArray &data)
 {
-    mutex.lock();
-
-    std::vector<ShupitoPacket*> packets;
-    ShupitoPacket *packet = m_packet;
-
     char *d_start = (char*)data.data();
     char *d_itr = d_start;
     char *d_end = d_start + data.size();
@@ -86,31 +61,23 @@ void Shupito::readData(const QByteArray &data)
     quint8 curRead = 1;
     while(d_itr != d_end)
     {
-        if(packet->isFresh() || curRead == 0)
+        if(m_packet.isFresh() || curRead == 0)
         {
             int index = data.indexOf(char(0x80), d_itr - d_start);
             if(index == -1)
                 break;
             d_itr = d_start+index;
-            packet->Clear();
+            m_packet.Clear();
         }
 
-        curRead = packet->addData(d_itr, d_end);
+        curRead = m_packet.addData(d_itr, d_end);
         d_itr += curRead;
 
-        if(packet->isValid())
+        if(m_packet.isValid())
         {
-            packets.push_back(packet);
-            packet = new ShupitoPacket();
+            handlePacket();
+            m_packet.Clear();
         }
-    }
-    m_packet = packet;
-    mutex.unlock();
-
-    for(quint32 i = 0; i < packets.size(); ++i)
-    {
-        handlePacket(*packets[i]);
-        delete packets[i];
     }
 }
 
@@ -120,14 +87,14 @@ ShupitoPacket Shupito::waitForPacket(const QByteArray& data, quint8 cmd)
 
     responseTimer = new QTimer;
     responseTimer->start(1000);
-    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReceived()));
 
     m_wait_cmd = cmd;
     m_wait_packet = ShupitoPacket();
     m_wait_type = WAIT_PACKET;
 
     QEventLoop loop;
-    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+    loop.connect(this, SIGNAL(packetReceived()), SLOT(quit()));
 
     m_con->SendData(data);
 
@@ -147,7 +114,7 @@ QByteArray Shupito::waitForStream(const QByteArray& data, quint8 cmd, quint16 ma
 
     responseTimer = new QTimer;
     responseTimer->start(1000);
-    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReceived()));
 
     m_wait_cmd = cmd;
     m_wait_data.clear();
@@ -155,7 +122,7 @@ QByteArray Shupito::waitForStream(const QByteArray& data, quint8 cmd, quint16 ma
     m_wait_max_packets = max_packets;
 
     QEventLoop loop;
-    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+    loop.connect(this, SIGNAL(packetReceived()), SLOT(quit()));
 
     m_con->SendData(data);
 
@@ -207,63 +174,63 @@ void Shupito::sendTunnelData(const QByteArray &data)
     }
 }
 
-void Shupito::handlePacket(ShupitoPacket& p)
+void Shupito::handlePacket()
 {
     switch(m_wait_type)
     {
         case WAIT_NONE: break;
         case WAIT_PACKET:
         {
-            if(p.getOpcode() == m_wait_cmd)
+            if(m_packet.getOpcode() == m_wait_cmd)
             {
-                m_wait_packet = p;
+                m_wait_packet = m_packet;
                 m_wait_type = WAIT_NONE;
-                emit packetReveived();
+                emit packetReceived();
             }
             break;
         }
         case WAIT_STREAM:
         {
-            if(p.getOpcode() != m_wait_cmd)
+            if(m_packet.getOpcode() != m_wait_cmd)
             {
                 if(--m_wait_max_packets == 0)
-                    emit packetReveived();
+                    emit packetReceived();
             }
             else
             {
                 responseTimer->start(1000);
-                m_wait_data.append(p.getData());
-                if(p.getLen() < 15)
+                m_wait_data.append(m_packet.getData());
+                if(m_packet.getLen() < 15)
                 {
                     m_wait_max_packets = 0;
                     m_wait_type = WAIT_NONE;
-                    emit packetReveived();
+                    emit packetReceived();
                 }
             }
             break;
         }
     }
 
-    switch(p.getOpcode())
+    switch(m_packet.getOpcode())
     {
         case MSG_VCC:
         {
-            handleVccPacket(p);
+            handleVccPacket();
             break;
         }
         case MSG_TUNNEL:
         {
-            handleTunnelPacket(p);
+            handleTunnelPacket();
             break;
         }
     }
 }
 
-void Shupito::handleVccPacket(ShupitoPacket &p)
+void Shupito::handleVccPacket()
 {
     //void handle_packet(yb_packet const & p)
     //vcc value
-    if(p.getLen() == 4 && p[0] == 0x01 && p[1] == 0x03)
+    if(m_packet.getLen() == 4 && m_packet[0] == 0x01 && m_packet[1] == 0x03)
     {
         if(!m_vdd_config)
             return;
@@ -275,27 +242,27 @@ void Shupito::handleVccPacket(ShupitoPacket &p)
             millivolts_per_unit = mpu_16_16 / 65536.0;
         }
 
-        qint32 vdd = (qint8)p[p.getLen()-1];
-        for (int i = p.getLen() - 1; i > 2; --i)
-            vdd = (vdd << 8) | p[i-1];
+        qint32 vdd = (qint8)m_packet[m_packet.getLen()-1];
+        for (int i = m_packet.getLen() - 1; i > 2; --i)
+            vdd = (vdd << 8) | m_packet[i-1];
 
         double value = vdd * (millivolts_per_unit / 1000.0);
 
-        emit vccValueChanged(p[0] - 1, value);
+        emit vccValueChanged(m_packet[0] - 1, value);
     }
 
     // bool handle_vdd_desc(yb_packet const & p)
-    else if(p.getLen() >= 3 && p[0] == 0 && p[1] == 0 && p[2] == 0)
+    else if(m_packet.getLen() >= 3 && m_packet[0] == 0 && m_packet[1] == 0 && m_packet[2] == 0)
     {
         m_vdd_setup.clear();
-        for(quint8 i = 3; i < p.getLen(); ++i)
+        for(quint8 i = 3; i < m_packet.getLen(); ++i)
         {
             vdd_point vp;
             vp.current_drive = 0;
-            quint8 len = p[i];
-            if(i + 1 + len > p.getLen())
+            quint8 len = m_packet[i];
+            if(i + 1 + len > m_packet.getLen())
                return;
-            vp.name.append(p.getData().mid(i+1, len));
+            vp.name.append(m_packet.getData().mid(i+1, len));
             i += len + 1;
             m_vdd_setup.push_back(vp);
         }
@@ -303,20 +270,20 @@ void Shupito::handleVccPacket(ShupitoPacket &p)
     }
 
     //bool handle_vdd_point_desc(yb_packet const & p)
-    else if(p.getLen() >= 2 && p[0] == 0)
+    else if(m_packet.getLen() >= 2 && m_packet[0] == 0)
     {
-        if(p[1] == 0 || p[1] > m_vdd_setup.size())
+        if(m_packet[1] == 0 || m_packet[1] > m_vdd_setup.size())
             return;
 
-        vdd_point & vp = m_vdd_setup[p[1] - 1];
+        vdd_point & vp = m_vdd_setup[m_packet[1] - 1];
         vp.drives.clear();
 
-        for(quint8 i = 2; i < p.getLen();)
+        for(quint8 i = 2; i < m_packet.getLen();)
         {
-            if(i + 4 <= p.getLen())
+            if(i + 4 <= m_packet.getLen())
             {
-                double voltage = (p[i] | (p[i+1] << 8)) / 1000.0;
-                quint16 amps = p[i+2]| (p[i+3] << 8);
+                double voltage = (m_packet[i] | (m_packet[i+1] << 8)) / 1000.0;
+                quint16 amps = m_packet[i+2]| (m_packet[i+3] << 8);
                 if(amps == 0)
                     vp.drives.push_back("<hiz>");
                 else
@@ -332,35 +299,35 @@ void Shupito::handleVccPacket(ShupitoPacket &p)
     }
 
     //bool handle_vdd_drive_state(yb_packet const & p)
-    else if(p.getLen() == 3 && p[1] == 1)
+    else if(m_packet.getLen() == 3 && m_packet[1] == 1)
     {
-        if(p[0]== 0 || p[0] > m_vdd_setup.size())
+        if(m_packet[0]== 0 || m_packet[0] > m_vdd_setup.size())
             return;
 
-        vdd_point & vp = m_vdd_setup[p[1] - 1];
-        vp.current_drive = p[2];
+        vdd_point & vp = m_vdd_setup[m_packet[1] - 1];
+        vp.current_drive = m_packet[2];
 
         emit vddDesc(m_vdd_setup);
     }
 }
 
-void Shupito::handleTunnelPacket(ShupitoPacket &p)
+void Shupito::handleTunnelPacket()
 {
-    if(!m_tunnel_config || p.getOpcode() != m_tunnel_config->cmd)
+    if(!m_tunnel_config || m_packet.getOpcode() != m_tunnel_config->cmd)
         return;
 
-    if(p.getLen() >= 2 && p[0] == 0)
+    if(m_packet.getLen() >= 2 && m_packet[0] == 0)
     {
-        switch(p[1])
+        switch(m_packet[1])
         {
             // Tunnel list
             case 0:
             {
-                for(quint8 i = 2; i < p.getLen(); ++i)
+                for(quint8 i = 2; i < m_packet.getLen(); ++i)
                 {
-                    if (i + 1 + p[i] > p.getLen())
+                    if (i + 1 + m_packet[i] > m_packet.getLen())
                         return Utils::ThrowException("Invalid response while enumerating pipes.");
-                    i += 1 + p[i];
+                    i += 1 + m_packet[i];
                 }
 
                 setTunnelState(true);
@@ -369,9 +336,9 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
             // App tunnel activated
             case 1:
             {
-                if(p.getLen() == 3)
+                if(m_packet.getLen() == 3)
                 {
-                    m_tunnel_pipe = p[2];
+                    m_tunnel_pipe = m_packet[2];
                     if(!m_tunnel_pipe)
                         return;
 
@@ -396,7 +363,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
             //App tunnel disabled
             case 2:
             {
-                if(p.getLen() == 3 && p[2] == m_tunnel_pipe)
+                if(m_packet.getLen() == 3 && m_packet[2] == m_tunnel_pipe)
                 {
                     m_tunnel_pipe = 0;
 
@@ -412,9 +379,9 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
         }
     }
     // Tunnel incoming data
-    if (m_tunnel_pipe && p[0] == m_tunnel_pipe)
+    if (m_tunnel_pipe && m_packet[0] == m_tunnel_pipe)
     {
-        QByteArray data = p.getData();
+        QByteArray data = m_packet.getData();
         m_tunnel_data.append(data.remove(0, 1));
     }
 }

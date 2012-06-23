@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef LORRISTERMINAL_H
 #define LORRISTERMINAL_H
@@ -74,28 +58,32 @@ public:
     explicit LorrisTerminal();
     virtual ~LorrisTerminal();
 
-    void onTabShow();
+    void onTabShow(const QString& filename);
     virtual void setConnection(PortConnection *con);
 
 private slots:
     //Buttons
     void browseForHex();
-    void clearButton();
     void stopButton();
     void flashButton();
     void pauseButton();
+    void setPauseBtnText(bool pause);
     void eepromButton();
     void eepromImportButton();
     void fmtAction(int act);
+    void checkFmtAct(int act);
     void loadText();
     void saveText();
+    void saveBin();
     void inputAct(int act);
 
     void readData(const QByteArray& data);
     void sendKeyEvent(const QString& key);
     void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);
-    void saveTermFont(const QString& fontData);
+    void saveTermSettings();
+    void showBootloader(bool show);
+    void showWarn(bool show);
 
     //Timers
     void stopTimerSig();
@@ -103,6 +91,7 @@ private slots:
     void deviceIdTimeout();
 
 private:
+    void setHexName(QString name = QString());
     void flash_prepare(QString deviceId);
     void eeprom_read(QString id);
     void eeprom_write(QString id);
@@ -117,6 +106,10 @@ private:
     QByteArray stopCmd;
     HexFile *hex;
 
+    QString m_filename;
+    QDateTime m_filedate;
+    QDateTime m_flashdate;
+
     QAction *m_export_eeprom;
     QAction *m_import_eeprom;
     QAction *m_fmt_act[FMT_MAX];
@@ -126,7 +119,6 @@ private:
     quint16 m_eepromItr;
     EEPROM *m_eeprom;
 
-    std::vector<chip_definition> m_chip_defs;
     std::vector<page> m_pages;
     quint32 m_cur_page;
 

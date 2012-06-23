@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -186,6 +170,9 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
     buffer->writeBlockIdentifier(BLOCK_WIDGETS);
     area->SaveWidgets(buffer);
 
+    // Area settings
+    area->SaveSettings(buffer);
+
     // Data index
     buffer->writeBlockIdentifier(BLOCK_DATA_INDEX);
     quint32 idx = m_analyzer->getCurrentIndex();
@@ -346,6 +333,11 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
     {
         quint8 static_len = 0;
         buffer->read((char*)&static_len, sizeof(quint8));
+
+        // FIXME: header data and this lenght must be same,
+        // corrupted file?
+        m_packet->header->static_len = static_len;
+
         if(static_len)
         {
             m_packet->static_data.resize(static_len);
@@ -384,6 +376,9 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
     if(buffer->seekToNextBlock(BLOCK_WIDGETS, 0))
         area->LoadWidgets(buffer, !(load & STORAGE_WIDGETS));
 
+    // Area settings
+    area->LoadSettings(buffer);
+
     // Data index
     if((load & STORAGE_DATA) && buffer->seekToNextBlock(BLOCK_DATA_INDEX, 0))
         buffer->read((char*)&data_idx, sizeof(data_idx));
@@ -416,4 +411,16 @@ bool Storage::checkMagic(DataFileParser *file)
     }
     delete[] itr;
     return true;
+}
+
+void Storage::ExportToBin(const QString &filename)
+{
+    QFile f(filename);
+    if(!f.open(QIODevice::Truncate | QIODevice::WriteOnly))
+        throw tr("Unable to open file %1 for writing!").arg(filename);
+
+    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+        f.write((*itr)->getData());
+
+    f.close();
 }

@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef SOURCEDIALOG_H
 #define SOURCEDIALOG_H
@@ -40,19 +24,17 @@ class QLabel;
 class QAbstractButton;
 class PacketParser;
 class QListWidgetItem;
+class PortConnection;
 
 class SourceDialog : public QDialog
 {
     Q_OBJECT
 
-Q_SIGNALS:
-    void readData(const QByteArray& data);
-
 public:
-    explicit SourceDialog(analyzer_packet *pkt, QWidget *parent = 0);
+    SourceDialog(analyzer_packet *pkt, PortConnection *con, const QString &importFile = QString());
     ~SourceDialog();
 
-    analyzer_packet *getStructure();
+    static analyzer_packet *getStructure(analyzer_packet *pkt, PortConnection *con, const QString &importFile = QString());
 
 public slots:
     void headerLenToggled(bool checked);

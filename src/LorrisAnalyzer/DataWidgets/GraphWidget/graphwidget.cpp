@@ -1,31 +1,16 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QDropEvent>
 #include <qwt_plot_curve.h>
 #include <QMenu>
 #include <QSignalMapper>
 #include <QInputDialog>
+#include <QTimer>
 
 #include "graphwidget.h"
 #include "graph.h"
@@ -33,6 +18,7 @@
 #include "graphdata.h"
 #include "graphcurve.h"
 #include "../../storage.h"
+#include "graphexport.h"
 
 static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
@@ -65,6 +51,7 @@ void GraphWidget::setUp(Storage *storage)
     DataWidget::setUp(storage);
 
     m_storage = storage;
+    m_doReplot = false;
 
     m_editCurve = contextMenu->addAction(tr("Edit curve properties"));
     m_editCurve->setEnabled(false);
@@ -98,6 +85,8 @@ void GraphWidget::setUp(Storage *storage)
 
     updateSampleSize();
 
+    QAction *exportAct = contextMenu->addAction(tr("Export data..."));
+
     m_showLegend = contextMenu->addAction(tr("Show legend"));
     m_showLegend->setCheckable(true);
     m_showLegend->setChecked(true);
@@ -106,11 +95,16 @@ void GraphWidget::setUp(Storage *storage)
     m_autoScroll->setCheckable(true);
     toggleAutoScroll(true);
 
+    QTimer *replotTimer = new QTimer(this);
+    replotTimer->start(100);
+
     connect(m_editCurve,  SIGNAL(triggered()),        SLOT(editCurve()));
+    connect(exportAct,    SIGNAL(triggered()),        SLOT(exportData()));
     connect(sampleMap,    SIGNAL(mapped(int)),        SLOT(sampleSizeChanged(int)));
     connect(m_showLegend, SIGNAL(triggered(bool)),    SLOT(showLegend(bool)));
     connect(m_autoScroll, SIGNAL(triggered(bool)),    SLOT(toggleAutoScroll(bool)));
     connect(m_graph,      SIGNAL(updateSampleSize()), SLOT(updateSampleSize()));
+    connect(replotTimer,  SIGNAL(timeout()),          SLOT(tryReplot()));
 }
 
 void GraphWidget::updateRemoveMapping()
@@ -399,24 +393,32 @@ void GraphWidget::updateVisibleArea()
 {
     if(m_curves.empty())
         return;
+    m_doReplot = true;
+}
 
-    if(m_enableAutoScroll)
+void GraphWidget::tryReplot()
+{
+    if(m_doReplot)
     {
-        qint32 size = 0;
-
-        for(quint8 i = 0; i < m_curves.size(); ++i)
+        if(m_enableAutoScroll)
         {
-            qint32 c_size = m_curves[i]->curve->getSize();
+            qint32 size = 0;
 
-            if(c_size > size)
-                size = c_size;
+            for(quint8 i = 0; i < m_curves.size(); ++i)
+            {
+                qint32 c_size = m_curves[i]->curve->getSize();
+
+                if(c_size > size)
+                    size = c_size;
+            }
+
+            qint32 x_max = m_graph->XupperBound() - m_graph->XlowerBound();
+            m_graph->setAxisScale(QwtPlot::xBottom, size - x_max, size);
         }
 
-        qint32 x_max = m_graph->XupperBound() - m_graph->XlowerBound();
-        m_graph->setAxisScale(QwtPlot::xBottom, size - x_max, size);
+        m_graph->replot();
+        m_doReplot = false;
     }
-
-    m_graph->replot();
 }
 
 void GraphWidget::sampleSizeChanged(int val)
@@ -492,7 +494,7 @@ void GraphWidget::removeCurve(QString name)
     delete m_deleteAct[name];
     m_deleteAct.erase(name);
 
-    m_graph->replot();
+    m_doReplot = true;
 
     m_editCurve->setEnabled(!m_curves.empty());
     m_deleteCurve->setEnabled(!m_curves.empty());
@@ -539,6 +541,12 @@ void GraphWidget::updateSampleSize()
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
         m_curves[i]->curve->setSampleSize(size);
+}
+
+void GraphWidget::exportData()
+{
+    GraphExport ex(&m_curves, this);
+    ex.exec();
 }
 
 GraphWidgetAddBtn::GraphWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

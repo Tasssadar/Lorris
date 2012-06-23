@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef DATAWIDGET_H
 #define DATAWIDGET_H
@@ -44,6 +28,7 @@ enum WidgetTypes
     WIDGET_INPUT,
     WIDGET_TERMINAL,
     WIDGET_BUTTON,
+    WIDGET_CIRCLE,
 
     WIDGET_MAX
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
@@ -70,6 +55,7 @@ enum NumberTypes
 
 enum DragActions
 {
+    DRAG_NONE       = 0x00,
     DRAG_MOVE       = 0x01,
     DRAG_RES_LEFT   = 0x02,
     DRAG_RES_RIGHT  = 0x04,
@@ -152,6 +138,8 @@ public:
 
     quint8 getWidgetType() const { return m_widgetType; }
 
+    void align();
+
 public slots:
     virtual void newData(analyzer_data *data, quint32);
     void setTitle(const QString& title);
@@ -168,6 +156,7 @@ public slots:
 protected:
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent *ev);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void contextMenuEvent ( QContextMenuEvent * event );
@@ -191,26 +180,9 @@ private slots:
     void setTitleTriggered();
 
 private:
-    inline bool iw(int w) { return w + width() > ((QWidget*)parent())->width(); }
-    inline bool ih(int h) { return h + height() > ((QWidget*)parent())->height(); }
-
-    inline int getWPosInside(int w)
-    {
-        if(ih(w))
-            return ((QWidget*)parent())->width() - width();
-        else if(w < 0)
-            return 0;
-        return w;
-    }
-
-    inline int getHPosInside(int h)
-    {
-        if(ih(h))
-            return ((QWidget*)parent())->height() - height();
-        else if(h < 0)
-            return 0;
-        return h;
-    }
+    inline void mapToGrid(int &val);
+    void mapXYToGrid(QPoint& point);
+    void mapXYToGrid(int& x, int& y);
 
     quint8 getDragAction(const QPoint& clickPos);
     void dragResize(QMouseEvent* e);

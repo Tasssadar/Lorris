@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 
 #include "WorkTabMgr.h"
@@ -86,13 +70,13 @@ void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
     return;
 }
 
-WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info)
+WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info, QString filename)
 {
     QScopedPointer<WorkTab> tab(this->GetNewTab(info));
     this->AddWorkTab(tab.data(), info->GetName());
 
     WorkTab * tabp = tab.take();
-    tabp->onTabShow();
+    tabp->onTabShow(filename);
     return tabp;
 }
 
@@ -164,9 +148,7 @@ void WorkTabMgr::openTabWithFile(const QString &filename)
         if(!(*itr)->GetHandledFiles().contains(suffix))
             continue;
 
-        WorkTab *tab = AddWorkTab(*itr);
-        if(tab)
-           tab->openFile(filename);
+        AddWorkTab(*itr, filename);
         return;
     }
 }
