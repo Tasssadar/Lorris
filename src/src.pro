@@ -288,7 +288,9 @@ RESOURCES += \
 RC_FILE = winicon.rc
 
 OTHER_FILES += \
-    ../dep/qextserialport/qextserialport.pri
+    ../dep/qextserialport/qextserialport.pri \
+    shared/fusedesc.txt \
+    shared/chipdefs.txt
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {
