@@ -77,6 +77,11 @@ LorrisShupito::LorrisShupito()
     connect(ui->over_turnoff,    SIGNAL(clicked(bool)),            SLOT(overvoltageTurnOffVcc(bool)));
     connect(ui->startStopBtn,    SIGNAL(clicked()),                SLOT(startstopChip()));
     connect(ui->flashWarnBox,    SIGNAL(clicked(bool)),            SLOT(flashWarnBox(bool)));
+    connect(ui->fmtBox,          SIGNAL(activated(int)),   ui->terminal, SLOT(setFmt(int)));
+    connect(ui->terminal,        SIGNAL(fmtSelected(int)), ui->fmtBox,   SLOT(setCurrentIndex(int)));
+    connect(ui->terminal,        SIGNAL(paused(bool)),     ui->pauseBtn, SLOT(setChecked(bool)));
+    connect(ui->clearBtn,        SIGNAL(clicked()),        ui->terminal, SLOT(clear()));
+    connect(ui->pauseBtn,        SIGNAL(clicked(bool)),    ui->terminal, SLOT(pause(bool)));
     connect(m_fuse_widget,       SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
@@ -96,10 +101,8 @@ LorrisShupito::LorrisShupito()
 
     initMenus();
 
-    m_terminal = new Terminal(this);
-    m_terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
-    m_terminal->loadSettings(sConfig.get(CFG_STRING_SHUPITO_TERM_SET));
-    ui->memTabs->addTab(m_terminal, tr("Terminal"));
+    ui->terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
+    ui->terminal->loadSettings(sConfig.get(CFG_STRING_SHUPITO_TERM_SET));
 
     QByteArray data = QByteArray(1024, (char)0xFF);
     static const QString memNames[] = { tr("Program memory"), tr("EEPROM") };
@@ -122,9 +125,9 @@ LorrisShupito::LorrisShupito()
 
     m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
 
-    connect(m_terminal, SIGNAL(settingsChanged()),           this,       SLOT(saveTermSettings()));
-    connect(m_terminal, SIGNAL(keyPressed(QString)),         m_shupito,  SLOT(sendTunnelData(QString)));
-    connect(m_shupito,  SIGNAL(tunnelData(QByteArray)),      m_terminal, SLOT(appendText(QByteArray)));
+    connect(ui->terminal, SIGNAL(settingsChanged()),     this,         SLOT(saveTermSettings()));
+    connect(ui->terminal, SIGNAL(keyPressed(QString)),   m_shupito,    SLOT(sendTunnelData(QString)));
+    connect(m_shupito,  SIGNAL(tunnelData(QByteArray)),  ui->terminal, SLOT(appendText(QByteArray)));
 
     m_vcc = 0;
     lastVccIndex = 0;
@@ -153,7 +156,7 @@ LorrisShupito::LorrisShupito()
 
 LorrisShupito::~LorrisShupito()
 {
-    sConfig.set(CFG_QUITN32_SHUPITO_TERM_FMT, m_terminal->getFmt());
+    sConfig.set(CFG_QUITN32_SHUPITO_TERM_FMT, ui->terminal->getFmt());
 
     stopAll(false);
     delete m_shupito;
@@ -1322,7 +1325,7 @@ void LorrisShupito::setConnection(PortConnection *con)
 
 void LorrisShupito::saveTermSettings()
 {
-    sConfig.set(CFG_STRING_SHUPITO_TERM_SET, m_terminal->getSettingsData());
+    sConfig.set(CFG_STRING_SHUPITO_TERM_SET, ui->terminal->getSettingsData());
 }
 
 void LorrisShupito::overvoltageSwitched(bool enabled)

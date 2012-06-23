@@ -195,7 +195,6 @@ private:
     quint8 m_verify_mode;
 
     QHexEdit *m_hexAreas[MEM_FUSES];
-    Terminal *m_terminal;
     QString m_hexFilenames[MEM_FUSES];
     QDateTime m_hexWriteTimes[MEM_FUSES];
     QDateTime m_hexFlashTimes[MEM_FUSES];
