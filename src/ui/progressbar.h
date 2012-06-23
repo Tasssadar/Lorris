@@ -16,10 +16,9 @@ class ProgressBar : public QProgressBar
 public:
     explicit ProgressBar(QWidget *parent = 0);
 
+public slots:
     void setValue(int value);
-
-protected:
-    void hideEvent(QHideEvent *ev);
+    void hide();
 };
 
 #endif // PROGRESSBAR_H

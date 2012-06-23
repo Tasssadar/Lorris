@@ -39,7 +39,6 @@ GraphExport::GraphExport(std::vector<GraphCurveInfo*> *curves, QWidget *parent) 
     connect(ui->endBox,      SIGNAL(currentIndexChanged(int)),      SLOT(updatePreview()));
     connect(ui->sepEdit,     SIGNAL(textChanged(QString)),          SLOT(updatePreview()));
     connect(ui->colList,     SIGNAL(itemChanged(QListWidgetItem*)), SLOT(updatePreview()), Qt::QueuedConnection);
-    connect(this,            SIGNAL(updateProgress(int)), ui->progress, SLOT(setValue(int)), Qt::QueuedConnection);
 
     updatePreview();
 }
@@ -230,7 +229,8 @@ bool GraphExport::exportData()
         return false;
 
     ui->progress->show();
-    ui->progress->setValue(0);
+    ui->progress->setValue(50);
+    connect(this, SIGNAL(updateProgress(int)), ui->progress, SLOT(setValue(int)), Qt::QueuedConnection);
 
     if(ui->binRadio->isChecked())
         m_future = QtConcurrent::run(this, &GraphExport::generateBin);
@@ -244,6 +244,8 @@ bool GraphExport::exportData()
 
     file.write(m_watcher.result());
     file.close();
+
+    ui->progress->setValue(-1);
     return true;
 }
 
