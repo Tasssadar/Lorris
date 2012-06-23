@@ -170,4 +170,20 @@ void GraphCurveAddDialog::curveChanged(int idx)
     GraphCurve* curve = m_curves->at(idx)->curve;
     edit_widget_ui->nameEdit->setText(curve->title().text());
     edit_widget_ui->dataTypeBox->setCurrentIndex(curve->getDataType());
+
+    bool set = false;
+    for(int i = 0; !set && i < edit_widget_ui->colorBox->count(); ++i)
+    {
+        if(QColor(edit_widget_ui->colorBox->itemText(i)) == curve->pen().color())
+        {
+            edit_widget_ui->colorBox->setCurrentIndex(i);
+            set = true;
+        }
+    }
+
+    if(!set)
+    {
+        edit_widget_ui->colorBox->setCurrentIndex(0);
+        edit_widget_ui->ColorEdit->setText(curve->pen().color().name());
+    }
 }

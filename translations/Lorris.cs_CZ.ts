@@ -737,7 +737,7 @@
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="41"/>
         <source>Type:</source>
-        <translation>Typ:</translation>
+        <translation>Zadat:</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="95"/>
