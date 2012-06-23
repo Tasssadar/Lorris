@@ -229,7 +229,7 @@ bool GraphExport::exportData()
         return false;
 
     ui->progress->show();
-    ui->progress->setValue(50);
+    ui->progress->setValue(0);
     connect(this, SIGNAL(updateProgress(int)), ui->progress, SLOT(setValue(int)), Qt::QueuedConnection);
 
     if(ui->binRadio->isChecked())
@@ -245,7 +245,7 @@ bool GraphExport::exportData()
     file.write(m_watcher.result());
     file.close();
 
-    ui->progress->setValue(-1);
+    ui->progress->setValue(100);
     return true;
 }
 
