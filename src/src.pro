@@ -112,7 +112,8 @@ SOURCES += ui/mainwindow.cpp \
     ui/rangeselectdialog.cpp \
     ui/progressbar.cpp \
     ui/tooltipwarn.cpp \
-    updater.cpp
+    updater.cpp \
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -207,7 +208,8 @@ HEADERS += ui/mainwindow.h \
     ui/rangeselectdialog.h \
     ui/progressbar.h \
     ui/tooltipwarn.h \
-    updater.h
+    updater.h \
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -273,7 +275,8 @@ FORMS += \
     LorrisShupito/overvccdialog.ui \
     shared/terminalsettings.ui \
     ui/rangeselectdialog.ui \
-    updatecheck.ui
+    updatecheck.ui \
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

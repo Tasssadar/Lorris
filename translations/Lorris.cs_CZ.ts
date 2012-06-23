@@ -751,59 +751,257 @@
     </message>
 </context>
 <context>
+    <name>GraphExport</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="14"/>
+        <source>Export graph data</source>
+        <translation>Export dat z grafu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="29"/>
+        <source>Format:</source>
+        <translation>Formát:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="36"/>
+        <source>Binary</source>
+        <translation>Binární</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="46"/>
+        <source>CSV</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="69"/>
+        <source>Output file:</source>
+        <translation>Výstup:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="79"/>
+        <source>Browse</source>
+        <translation>Vybrat soubor</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="90"/>
+        <source>Settings</source>
+        <translation>Nastavení</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="109"/>
+        <source>Curve:</source>
+        <translation>Křivka:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="119"/>
+        <source>Index:</source>
+        <translation>Index:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="126"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="386"/>
+        <source>Include</source>
+        <translation>Zahrnout</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="133"/>
+        <source>Index width:</source>
+        <translation>Šířka indexu:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="163"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="197"/>
+        <source>1 byte</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="168"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="202"/>
+        <source>2 bytes</source>
+        <translation>2 byty</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="173"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="207"/>
+        <source>4 bytes</source>
+        <translation>4 byty</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="178"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="212"/>
+        <source>8 bytes</source>
+        <translation>8 bytu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="186"/>
+        <source>Data width:</source>
+        <translation>Šířka dat:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="220"/>
+        <source>Data type:</source>
+        <translation>Datový typ:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="228"/>
+        <source>Integer</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="233"/>
+        <source>Float (4 bytes)</source>
+        <translation>Float (4 byty)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="238"/>
+        <source>Double (8 bytes)</source>
+        <translation>Double (8 bytů)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="246"/>
+        <source>Endianness:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="254"/>
+        <source>Big endian</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="259"/>
+        <source>Little endian</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="295"/>
+        <source>Columns (drag to reorder):</source>
+        <translation>Sloupce (tažením změníte pořadí):</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="321"/>
+        <source>Index</source>
+        <translation>Index</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="334"/>
+        <source>Separator:</source>
+        <translation>Oddělovací sekvence:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="341"/>
+        <source>,</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="348"/>
+        <source>Line edning:</source>
+        <translation>Konce řádků:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="356"/>
+        <source>\r\n</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="361"/>
+        <source>\n</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="366"/>
+        <source>\n\r</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="371"/>
+        <source>\r</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="379"/>
+        <source>Column names:</source>
+        <translation>Jména sloupců:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="425"/>
+        <source>Preview:</source>
+        <translation>Náhled:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp" line="57"/>
+        <source>No preview available for binary format.</source>
+        <translation>Náhled pro binární formát není k dispozici.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp" line="221"/>
+        <source>Failed to open output file!</source>
+        <translation>Nemůžu otevřít výstupní soubor!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp" line="259"/>
+        <source>Graph data export</source>
+        <translation>Export dat z grafu</translation>
+    </message>
+</context>
+<context>
     <name>GraphWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="28"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="29"/>
         <source>Graph</source>
         <translation>Graf</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="55"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="56"/>
         <source>Edit curve properties</source>
         <translation>Upravit vlastnosti křivky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="58"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="59"/>
         <source>Remove Curve</source>
         <translation>Odebrat křivku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="62"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="63"/>
         <source>Sample size</source>
         <translation>Velikost vzorku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="67"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="68"/>
         <source>Show all data</source>
         <translation>Zobrazit všechna data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="67"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="68"/>
         <source>Set custom...</source>
         <translation>Zadat...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="67"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="68"/>
         <source>According to X axis</source>
         <translation>Podle osy X</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="87"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="88"/>
+        <source>Export data...</source>
+        <translation>Exportovat data...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="90"/>
         <source>Show legend</source>
         <translation>Zobrazit legendu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="91"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="94"/>
         <source>Automaticaly scroll graph</source>
         <translation>Automaticky posouvat graf</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="429"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="433"/>
         <source>Set sample size</source>
         <translation>Nastavení velikosti vzorku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="429"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="433"/>
         <source>Sample size:</source>
         <translation>Velikost vzorku</translation>
     </message>
@@ -811,7 +1009,7 @@
 <context>
     <name>GraphWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="544"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="554"/>
         <source>Graph</source>
         <translation>Graf</translation>
     </message>

@@ -23,6 +23,7 @@ public:
     static QString parseChar(char c);
 
     template <typename T> static inline void swapEndian(char *val);
+    static void swapEndian(char *val, quint8 size);
 
     static QString toBase16(quint8 const * first, quint8 const * last);
     static QString toBinary(std::size_t width, int value);
@@ -53,6 +54,5 @@ void Utils::swapEndian(char *val)
     for(qint8 i = sizeof(T); i > 0; i -= 2, ++val)
         std::swap(*val, *(val + i - 1));
 }
-
 
 #endif // NUM_FUNC_H

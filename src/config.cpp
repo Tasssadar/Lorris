@@ -67,6 +67,7 @@ static const QString keys_string[CFG_STRING_NUM] =
     "shupito/term_settings",      // CFG_STRING_SHUPITO_TERM_SET
     "analyzer/import_folder",     // CFG_STRING_ANALYZER_IMPORT
     "general/window_params",      // CFG_STRING_WINDOW_PARAMS
+    "analyzer/graph_export_path", // CFG_STRING_GRAPH_EXPORT
 };
 
 static const QString def_string[CFG_STRING_NUM] =
@@ -85,6 +86,7 @@ static const QString def_string[CFG_STRING_NUM] =
     "",                           // CFG_STRING_SHUPITO_TERM_SET
     "",                           // CFG_STRING_ANALYZER_IMPORT
     "",                           // CFG_STRING_WINDOW_PARAMS
+    "",                           // CFG_STRING_GRAPH_EXPORT
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =

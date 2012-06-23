@@ -59,6 +59,7 @@ private slots:
      void toggleAutoScroll(bool scroll);
      void updateSampleSize();
      void tryReplot();
+     void exportData();
 
 private:
      void updateRemoveMapping();

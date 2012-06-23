@@ -105,6 +105,12 @@ void Utils::setProgress(int val)
     }
 }
 
+void Utils::swapEndian(char *val, quint8 size)
+{
+    for(qint8 i = size; i > 0; i -= 2, ++val)
+        std::swap(*val, *(val + i - 1));
+}
+
 // FIXME: some better implementation?
 #ifdef Q_OS_WIN
 #include <windows.h>

@@ -18,6 +18,7 @@
 #include "graphdata.h"
 #include "graphcurve.h"
 #include "../../storage.h"
+#include "graphexport.h"
 
 static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
@@ -84,6 +85,8 @@ void GraphWidget::setUp(Storage *storage)
 
     updateSampleSize();
 
+    QAction *exportAct = contextMenu->addAction(tr("Export data..."));
+
     m_showLegend = contextMenu->addAction(tr("Show legend"));
     m_showLegend->setCheckable(true);
     m_showLegend->setChecked(true);
@@ -96,6 +99,7 @@ void GraphWidget::setUp(Storage *storage)
     replotTimer->start(100);
 
     connect(m_editCurve,  SIGNAL(triggered()),        SLOT(editCurve()));
+    connect(exportAct,    SIGNAL(triggered()),        SLOT(exportData()));
     connect(sampleMap,    SIGNAL(mapped(int)),        SLOT(sampleSizeChanged(int)));
     connect(m_showLegend, SIGNAL(triggered(bool)),    SLOT(showLegend(bool)));
     connect(m_autoScroll, SIGNAL(triggered(bool)),    SLOT(toggleAutoScroll(bool)));
@@ -537,6 +541,12 @@ void GraphWidget::updateSampleSize()
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
         m_curves[i]->curve->setSampleSize(size);
+}
+
+void GraphWidget::exportData()
+{
+    GraphExport ex(&m_curves, this);
+    ex.exec();
 }
 
 GraphWidgetAddBtn::GraphWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
