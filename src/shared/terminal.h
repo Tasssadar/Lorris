@@ -85,6 +85,8 @@ public:
     QString getSettingsData();
     void loadSettings(const QString& data);
 
+    bool isPaused() const { return m_paused; }
+
 public slots:
     void clear();
     void pause(bool pause);

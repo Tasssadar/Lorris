@@ -113,7 +113,8 @@ SOURCES += ui/mainwindow.cpp \
     ui/progressbar.cpp \
     ui/tooltipwarn.cpp \
     updater.cpp \
-    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp \
+    LorrisTerminal/avr232boot.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -209,7 +210,8 @@ HEADERS += ui/mainwindow.h \
     ui/progressbar.h \
     ui/tooltipwarn.h \
     updater.h \
-    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.h
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.h \
+    LorrisTerminal/avr232boot.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
