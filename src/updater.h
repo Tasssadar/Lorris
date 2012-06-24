@@ -13,9 +13,8 @@
 
 #include "ui_updatecheck.h"
 
-class Updater : public QObject
+class Updater
 {
-    Q_OBJECT
 public:
     static bool doUpdate(bool autoCheck);
 

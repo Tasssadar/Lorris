@@ -84,14 +84,14 @@ bool Updater::doUpdate(bool autoCheck)
     if(!copyUpdater() ||
        !QProcess::startDetached("tmp_updater.exe", (QStringList() << VERSION << QString::number(REVISION))))
     {
-        Utils::ThrowException(tr("Could not start updater.exe, you have to download new version manually!\n"
+        Utils::ThrowException(QObject::tr("Could not start updater.exe, you have to download new version manually!\n"
                                  "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
         return false;
     }
     else
         return true;
 #else
-    Utils::ThrowException(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
+    Utils::ThrowException(QObject::tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                              "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
     return false;
 #endif
