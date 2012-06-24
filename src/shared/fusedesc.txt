@@ -131,11 +131,6 @@
     selfprgen | Enable self programming (default: disabled) | 0b01=Disabled | 0b0=Enabled
 }
 
-atxmega128a avr:1e9746 flash=139264:512,eeprom=2048:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
-atxmega64a avr:1e9646 flash=69632:256,eeprom=2048:32,fuses=8   jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
-atxmega32a avr:1e9541 flash=36864:256,eeprom=1024:32,fuses=8   jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
-atxmega16a avr:1e9441 flash=20480:256,eeprom=1024:32,fuses=8   jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
-
 # atxmega128a, atxmega64a, atxmega32a, atxmega16a
 {=avr:1e9746,avr:1e9646,avr:1e9541,avr:1e9441
     jtaguid | JTAG user id (default: 0b00000000)
