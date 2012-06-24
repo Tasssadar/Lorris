@@ -89,7 +89,7 @@ bool avr232boot::startStop()
 
         m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
         // FIXME: first sequence restarts chip to bootloader,
-        // but I do wont get any ack byte. Correct?
+        // but I won't get the ack byte. Correct?
         //if(!waitForAck())
         //    return false;
         Utils::msleep(50);
