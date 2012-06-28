@@ -17,7 +17,7 @@
 #include "lorrisanalyzer.h"
 
 static const char *ANALYZER_DATA_FORMAT = "v7";
-static const char ANALYZER_DATA_MAGIC[] = { 0xFF, 0x80, 0x68 };
+static const char ANALYZER_DATA_MAGIC[] = { (char)0xFF, (char)0x80, 0x68 };
 
 #define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
 

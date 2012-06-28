@@ -109,16 +109,7 @@ bool avr232boot::getChipId()
     m_state |= STATE_WAITING_ID;
     m_con->SendData(QByteArray(1, 0x12));
 
-    QEventLoop ev(this);
-    QTimer t(this);
-
-    connect(&t,   SIGNAL(timeout()), &ev, SLOT(quit()));
-    connect(this, SIGNAL(received()),  &ev, SLOT(quit()));
-
-    t.setSingleShot(true);
-    t.start(1000);
-
-    ev.exec();
+    waitForRec();
 
     m_state &= ~(STATE_WAITING_ID);
 

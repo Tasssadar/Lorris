@@ -300,9 +300,10 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 }
 
 python:unix {
-    LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt -lpython2.7
+    LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt
     DEFINES += WITH_PYTHON
-    INCLUDEPATH += ../dep/python2.7/linux/
+    LIBS += $$system(python2.7-config --libs)
+    QMAKE_CXXFLAGS += $$system(python2.7-config --includes)
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 }
@@ -310,7 +311,7 @@ python:unix {
 python:win32 {
     LIBS += -L"$$PWD/../dep/pythonqt/win/" -lPythonQt
     DEFINES += WITH_PYTHON
-    INCLUDEPATH += ../dep/python2.7/win/
+    INCLUDEPATH += ../dep/python2.7/
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 
