@@ -10,7 +10,7 @@ QWT_ROOT = $${PWD}/..
 include( $${QWT_ROOT}/qwtconfig.pri )
 include( $${QWT_ROOT}/qwtbuild.pri )
 TEMPLATE = lib
-TARGET = $$qtLibraryTarget(qwt)
+TARGET = $$qtLibraryTarget(qwt_lorris)
 DESTDIR = $${QWT_ROOT}/lib
 contains(QWT_CONFIG, QwtDll) { 
     CONFIG += dll
@@ -187,8 +187,8 @@ target.path = $${QWT_INSTALL_LIBS}
 doc.files = $${QWT_ROOT}/doc/html
 unix:doc.files += $${QWT_ROOT}/doc/man
 doc.path = $${QWT_INSTALL_DOCS}
-INSTALLS = target \
-    doc
+#INSTALLS = target \
+#    doc
 CONFIG(lib_bundle) { 
     FRAMEWORK_HEADERS.version = Versions
     FRAMEWORK_HEADERS.files = $${HEADERS}
@@ -198,5 +198,5 @@ CONFIG(lib_bundle) {
 else { 
     headers.files = $${HEADERS}
     headers.path = $${QWT_INSTALL_HEADERS}
-    INSTALLS += headers
+#    INSTALLS += headers
 }

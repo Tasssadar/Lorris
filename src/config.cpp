@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QSettings>
 #include <QFile>
@@ -44,6 +28,27 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "shupito/verify_mode",       // CFG_QUINT32_SHUPITO_VERIFY
     "analyzer/play_delay",       // CFG_QUINT32_ANALYZER_PLAY_DEL
     "shupito/terminal_format",   // CFG_QUITN32_SHUPITO_TERM_FMT
+    "analyzer/grid_size",        // CFG_QUINT32_ANALYZER_GRID_SIZE
+    "general/last_update_check", // CFG_QUINT32_LAST_UPDATE_CHECK
+};
+
+static const quint32 def_quint32[CFG_QUINT32_NUM] =
+{
+    MAX_CON_TYPE,                // CFG_QUINT32_CONNECTION_TYPE
+    0,                           // CFG_QUINT32_TAB_TYPE
+    38400,                       // CFG_QUINT32_SERIAL_BAUD
+    0,                           // CFG_QUINT32_SHUPITO_MODE
+    0,                           // CFG_QUINT32_SHUPITO_PRG_SPEED
+    0,                           // CFG_QUINT32_LANGUAGE
+    0,                           // CFG_QUINT32_TERMINAL_FMT
+    0,                           // CFG_QUINT32_TCP_PORT
+    0,                           // CFG_QUINT32_TERMINAL_INPUT
+    0,                           // CFG_QUINT32_PROXY_PORT
+    1,                           // CFG_QUINT32_SHUPITO_VERIFY
+    1000,                        // CFG_QUINT32_ANALYZER_PLAY_DEL
+    0,                           // CFG_QUITN32_SHUPITO_TERM_FMT
+    10,                          // CFG_QUINT32_ANALYZER_GRID_SIZE
+    0,                           // CFG_QUINT32_LAST_UPDATE_CHECK
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -58,8 +63,30 @@ static const QString keys_string[CFG_STRING_NUM] =
     "proxy/address",              // CFG_STRING_PROXY_ADDR
     "analyzer/js_source",         // CFG_STRING_ANALYZER_JS
     "terminal/textfile",          // CFG_STRING_TERMINAL_TEXTFILE
-    "terminal/font",              // CFG_STRING_TERMINAL_FONT
-    "shupito/terminal_font",      // CFG_STRING_SHUPITO_TERM_FONT
+    "terminal/settings",          // CFG_STRING_TERMINAL_SETTINGS
+    "shupito/term_settings",      // CFG_STRING_SHUPITO_TERM_SET
+    "analyzer/import_folder",     // CFG_STRING_ANALYZER_IMPORT
+    "general/window_params",      // CFG_STRING_WINDOW_PARAMS
+    "analyzer/graph_export_path", // CFG_STRING_GRAPH_EXPORT
+};
+
+static const QString def_string[CFG_STRING_NUM] =
+{
+    "",                           // CFG_STRING_SERIAL_PORT
+    "",                           // CFG_STRING_SHUPITO_PORT
+    "",                           // CFG_STRING_HEX_FOLDER
+    "",                           // CFG_STRING_ANALYZER_FOLDER
+    "",                           // CFG_STRING_SHUPITO_HEX_FOLDER
+    "app",                        // CFG_STRING_SHUPITO_TUNNEL
+    "127.0.0.1",                  // CFG_STRING_TCP_ADDR
+    "0",                          // CFG_STRING_PROXY_ADDR
+    "",                           // CFG_STRING_ANALYZER_JS
+    "",                           // CFG_STRING_TERMINAL_TEXTFILE
+    "",                           // CFG_STRING_TERMINAL_SETTINGS
+    "",                           // CFG_STRING_SHUPITO_TERM_SET
+    "",                           // CFG_STRING_ANALYZER_IMPORT
+    "",                           // CFG_STRING_WINDOW_PARAMS
+    "",                           // CFG_STRING_GRAPH_EXPORT
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -67,6 +94,37 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
     "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
     "shupito/show_fuses",         // CFG_BOOL_SHUPITO_SHOW_FUSES
+    "shupito/overvoltage_warn",   // CFG_BOOL_SHUPITO_OVERVOLTAGE
+    "shupito/turnoff_vcc",        // CFG_BOOL_SHUPITO_TURNOFF_VCC
+    "shupito/translate_fuses",    // CFG_BOOL_SHUPITO_TRANSLATE_FUSES
+    "shupito/hide_reserved",      // CFG_BOOL_SHUPITO_HIDE_RESERVED
+    "analyzer/enable_grid",       // CFG_BOOL_ANALYZER_ENABLE_GRID,
+    "analyzer/show_grid",         // CFG_BOOL_ANALYZER_SHOW_GRID,
+    "shupito/show_settings",      // CFG_BOOL_SHUPITO_SHOW_SETTINGS
+    "terminal/show_bootloader",   // CFG_BOOL_TERMINAL_SHOW_BOOTLOADER
+    "terminal/show_warn",         // CFG_BOOL_TERMINAL_SHOW_WARN
+    "shupito/show_flash_warn",    // CFG_BOOL_SHUPITO_SHOW_FLASH_WARN
+    "general/auto_update",        // CFG_BOOL_AUTO_UPDATE
+    "general/check_for_updates",  // CFG_BOOL_CHECK_FOR_UPDATE
+};
+
+static const bool def_bool[CFG_BOOL_NUM] =
+{
+    true,                         // CFG_BOOL_SHUPITO_TUNNEL
+    false,                        // CFG_BOOL_SHUPITO_SHOW_LOG
+    true,                         // CFG_BOOL_SHUPITO_SHOW_FUSES
+    false,                        // CFG_BOOL_SHUPITO_OVERVOLTAGE
+    false,                        // CFG_BOOL_SHUPITO_TURNOFF_VCC
+    true,                         // CFG_BOOL_SHUPITO_TRANSLATE_FUSES
+    true,                         // CFG_BOOL_SHUPITO_HIDE_RESERVED
+    true,                         // CFG_BOOL_ANALYZER_ENABLE_GRID,
+    false,                        // CFG_BOOL_ANALYZER_SHOW_GRID,
+    true,                         // CFG_BOOL_SHUPITO_SHOW_SETTINGS
+    false,                        // CFG_BOOL_TERMINAL_SHOW_BOOTLOADER
+    true,                         // CFG_BOOL_TERMINAL_SHOW_WARN
+    true,                         // CFG_BOOL_SHUPITO_SHOW_FLASH_WARN
+    false,                        // CFG_BOOL_AUTO_UPDATE
+    true,                         // CFG_BOOL_CHECK_FOR_UPDATE
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =
@@ -74,41 +132,19 @@ static const QString keys_variant[CFG_VARIANT_NUM] =
     "general/connections",        // CFG_VARIANT_CONNECTIONS
 };
 
+static const QString keys_float[CFG_FLOAT_NUM] =
+{
+    "shupito/overvoltage_val",    // CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL
+};
+
+static const float def_float[CFG_FLOAT_NUM] =
+{
+    5.5f,                         // CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL
+};
+
 Config::Config()
 {
     openSettings();
-
-    // Fill default values
-    m_def_quint32[CFG_QUINT32_CONNECTION_TYPE]     = MAX_CON_TYPE;
-    m_def_quint32[CFG_QUINT32_TAB_TYPE]            = 0;
-    m_def_quint32[CFG_QUINT32_SERIAL_BAUD]         = BAUD38400;
-    m_def_quint32[CFG_QUINT32_SHUPITO_MODE]        = 0;
-    m_def_quint32[CFG_QUINT32_SHUPITO_PRG_SPEED]   = 0;
-    m_def_quint32[CFG_QUINT32_LANGUAGE]            = 0;
-    m_def_quint32[CFG_QUINT32_TERMINAL_FMT]        = 0;
-    m_def_quint32[CFG_QUINT32_TCP_PORT]            = 0;
-    m_def_quint32[CFG_QUINT32_TERMINAL_INPUT]      = 0;
-    m_def_quint32[CFG_QUINT32_PROXY_PORT]          = 0;
-    m_def_quint32[CFG_QUINT32_SHUPITO_VERIFY]      = 1;
-    m_def_quint32[CFG_QUINT32_ANALYZER_PLAY_DEL]   = 1000;
-    m_def_quint32[CFG_QUITN32_SHUPITO_TERM_FMT]    = 0;
-
-    m_def_string[CFG_STRING_SERIAL_PORT]           = "";
-    m_def_string[CFG_STRING_SHUPITO_PORT]          = "";
-    m_def_string[CFG_STRING_HEX_FOLDER]            = "";
-    m_def_string[CFG_STRING_ANALYZER_FOLDER]       = "";
-    m_def_string[CFG_STRING_SHUPITO_HEX_FOLDER]    = "";
-    m_def_string[CFG_STRING_SHUPITO_TUNNEL]        = "app";
-    m_def_string[CFG_STRING_TCP_ADDR]              = "127.0.0.1";
-    m_def_string[CFG_STRING_PROXY_ADDR]            = "0";
-    m_def_string[CFG_STRING_ANALYZER_JS]           = "";
-    m_def_string[CFG_STRING_TERMINAL_TEXTFILE]     = "";
-    m_def_string[CFG_STRING_TERMINAL_FONT]         = "";
-    m_def_string[CFG_STRING_SHUPITO_TERM_FONT]     = "";
-
-    m_def_bool[CFG_BOOL_SHUPITO_TUNNEL]            = true;
-    m_def_bool[CFG_BOOL_SHUPITO_SHOW_LOG]          = false;
-    m_def_bool[CFG_BOOL_SHUPITO_SHOW_FUSES]        = true;
 }
 
 Config::~Config()
@@ -145,7 +181,7 @@ void Config::openSettings()
 
 quint32 Config::get(cfg_quint32 item)
 {
-    return (quint32)m_settings->value(keys_quint32[item], m_def_quint32[item]).toInt();
+    return (quint32)m_settings->value(keys_quint32[item], def_quint32[item]).toInt();
 }
 
 void Config::set(cfg_quint32 item, quint32 val)
@@ -155,7 +191,7 @@ void Config::set(cfg_quint32 item, quint32 val)
 
 QString Config::get(cfg_string item)
 {
-    return m_settings->value(keys_string[item], m_def_string[item]).toString();
+    return m_settings->value(keys_string[item], def_string[item]).toString();
 }
 
 void Config::set(cfg_string item, const QString &val)
@@ -165,7 +201,7 @@ void Config::set(cfg_string item, const QString &val)
 
 bool Config::get(cfg_bool item)
 {
-    return m_settings->value(keys_bool[item], m_def_bool[item]).toBool();
+    return m_settings->value(keys_bool[item], def_bool[item]).toBool();
 }
 
 void Config::set(cfg_bool item, bool val)
@@ -181,4 +217,14 @@ QVariant Config::get(cfg_variant item)
 void Config::set(cfg_variant item, QVariant const & val)
 {
     m_settings->setValue(keys_variant[item], val);
+}
+
+float Config::get(cfg_float item)
+{
+    return m_settings->value(keys_float[item], def_float[item]).toFloat();
+}
+
+void Config::set(cfg_float item, float val)
+{
+    m_settings->setValue(keys_float[item], val);
 }

@@ -223,7 +223,7 @@ public:
 #endif
 
     /*fill PortSettings*/
-    void setBaudRate(BaudRateType baudRate, bool update=true);
+    void setBaudRate(int baudRate, bool update=true);
     void setDataBits(DataBitsType dataBits, bool update=true);
     void setParity(ParityType parity, bool update=true);
     void setStopBits(StopBitsType stopbits, bool update=true);

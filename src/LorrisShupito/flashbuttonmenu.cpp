@@ -1,27 +1,12 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include "flashbuttonmenu.h"
+#include "lorrisshupito.h"
 
 FlashButtonMenu::FlashButtonMenu(bool read, QToolButton *btn, QWidget *parent) :
     QMenu(parent)
@@ -81,12 +66,9 @@ void FlashButtonMenu::createActions()
 
 void FlashButtonMenu::setActiveAction(int actInt)
 {
-    ActionSlots act = ActionSlots(actInt);
+    ActionSlots act = actInt == TAB_EEPROM ? ACT_EEPROM : ACT_FLASH;
 
-    if(act == ACT_ALL) // set flash as active for terminal
-        act = ACT_FLASH;
-
-    if((act == m_active) || (act != ACT_FLASH && act != ACT_EEPROM))
+    if((act == m_active))
         return;
 
     if(m_active != ACT_ALL)

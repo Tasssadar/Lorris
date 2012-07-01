@@ -121,6 +121,7 @@ qint64 QextSerialPortPrivate::bytesAvailable_sys() const
 {
     int bytesQueued;
     if (::ioctl(fd, FIONREAD, &bytesQueued) == -1) {
+        q_ptr->emitSocketError(ERR_IOCTL_FAILED);
         return (qint64)-1;
     }
     return bytesQueued;
@@ -243,100 +244,100 @@ void QextSerialPortPrivate::updatePortSettings()
 
     if (settingsDirtyFlags & DFE_BaudRate) {
         switch (Settings.BaudRate) {
-        case BAUD50:
+        case 50:
             setBaudRate2Termios(&Posix_CommConfig, B50);
             break;
-        case BAUD75:
+        case 75:
             setBaudRate2Termios(&Posix_CommConfig, B75);
             break;
-        case BAUD110:
+        case 110:
             setBaudRate2Termios(&Posix_CommConfig, B110);
             break;
-        case BAUD134:
+        case 134:
             setBaudRate2Termios(&Posix_CommConfig, B134);
             break;
-        case BAUD150:
+        case 150:
             setBaudRate2Termios(&Posix_CommConfig, B150);
             break;
-        case BAUD200:
+        case 200:
             setBaudRate2Termios(&Posix_CommConfig, B200);
             break;
-        case BAUD300:
+        case 300:
             setBaudRate2Termios(&Posix_CommConfig, B300);
             break;
-        case BAUD600:
+        case 600:
             setBaudRate2Termios(&Posix_CommConfig, B600);
             break;
-        case BAUD1200:
+        case 1200:
             setBaudRate2Termios(&Posix_CommConfig, B1200);
             break;
-        case BAUD1800:
+        case 1800:
             setBaudRate2Termios(&Posix_CommConfig, B1800);
             break;
-        case BAUD2400:
+        case 2400:
             setBaudRate2Termios(&Posix_CommConfig, B2400);
             break;
-        case BAUD4800:
+        case 4800:
             setBaudRate2Termios(&Posix_CommConfig, B4800);
             break;
-        case BAUD9600:
+        case 9600:
             setBaudRate2Termios(&Posix_CommConfig, B9600);
             break;
-        case BAUD19200:
+        case 19200:
             setBaudRate2Termios(&Posix_CommConfig, B19200);
             break;
-        case BAUD38400:
+        case 38400:
             setBaudRate2Termios(&Posix_CommConfig, B38400);
             break;
-        case BAUD57600:
+        case 57600:
             setBaudRate2Termios(&Posix_CommConfig, B57600);
             break;
 #ifdef B76800
-        case BAUD76800:
+        case 76800:
             setBaudRate2Termios(&Posix_CommConfig, B76800);
             break;
 #endif
-        case BAUD115200:
+        case 115200:
             setBaudRate2Termios(&Posix_CommConfig, B115200);
             break;
 #if defined(B230400) && defined(B4000000)
-        case BAUD230400:
+        case 230400:
             setBaudRate2Termios(&Posix_CommConfig, B230400);
             break;
-        case BAUD460800:
+        case 460800:
             setBaudRate2Termios(&Posix_CommConfig, B460800);
             break;
-        case BAUD500000:
+        case 500000:
             setBaudRate2Termios(&Posix_CommConfig, B500000);
             break;
-        case BAUD576000:
+        case 576000:
             setBaudRate2Termios(&Posix_CommConfig, B576000);
             break;
-        case BAUD921600:
+        case 921600:
             setBaudRate2Termios(&Posix_CommConfig, B921600);
             break;
-        case BAUD1000000:
+        case 1000000:
             setBaudRate2Termios(&Posix_CommConfig, B1000000);
             break;
-        case BAUD1152000:
+        case 1152000:
             setBaudRate2Termios(&Posix_CommConfig, B1152000);
             break;
-        case BAUD1500000:
+        case 1500000:
             setBaudRate2Termios(&Posix_CommConfig, B1500000);
             break;
-        case BAUD2000000:
+        case 2000000:
             setBaudRate2Termios(&Posix_CommConfig, B2000000);
             break;
-        case BAUD2500000:
+        case 2500000:
             setBaudRate2Termios(&Posix_CommConfig, B2500000);
             break;
-        case BAUD3000000:
+        case 3000000:
             setBaudRate2Termios(&Posix_CommConfig, B3000000);
             break;
-        case BAUD3500000:
+        case 3500000:
             setBaudRate2Termios(&Posix_CommConfig, B3500000);
             break;
-        case BAUD4000000:
+        case 4000000:
             setBaudRate2Termios(&Posix_CommConfig, B4000000);
             break;
 #endif

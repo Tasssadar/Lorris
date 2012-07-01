@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 
 #include "WorkTabMgr.h"
@@ -52,6 +36,11 @@ static bool compareTabInfos(WorkTabInfo * lhs, WorkTabInfo * rhs)
 void WorkTabMgr::SortTabInfos()
 {
     std::sort(m_workTabInfos.begin(), m_workTabInfos.end(), compareTabInfos);
+
+    // Must be done here, because RegisterTabInfo is called from
+    // WorkTabInfo's constructor so virtual methods do not work
+    for(InfoList::Iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
+        m_handledTypes += (*itr)->GetHandledFiles();
 }
 
 WorkTabMgr::InfoList const & WorkTabMgr::GetWorkTabInfos() const
@@ -81,13 +70,13 @@ void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
     return;
 }
 
-WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info)
+WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info, QString filename)
 {
     QScopedPointer<WorkTab> tab(this->GetNewTab(info));
     this->AddWorkTab(tab.data(), info->GetName());
 
     WorkTab * tabp = tab.take();
-    tabp->onTabShow();
+    tabp->onTabShow(filename);
     return tabp;
 }
 
@@ -149,4 +138,17 @@ bool WorkTabMgr::onTabsClose()
             return false;
     }
     return true;
+}
+
+void WorkTabMgr::openTabWithFile(const QString &filename)
+{
+    QString suffix = filename.split(".", QString::SkipEmptyParts).back();
+    for(InfoList::Iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
+    {
+        if(!(*itr)->GetHandledFiles().contains(suffix))
+            continue;
+
+        AddWorkTab(*itr, filename);
+        return;
+    }
 }

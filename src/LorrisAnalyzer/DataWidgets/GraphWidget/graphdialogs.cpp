@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QMessageBox>
 
@@ -186,4 +170,20 @@ void GraphCurveAddDialog::curveChanged(int idx)
     GraphCurve* curve = m_curves->at(idx)->curve;
     edit_widget_ui->nameEdit->setText(curve->title().text());
     edit_widget_ui->dataTypeBox->setCurrentIndex(curve->getDataType());
+
+    bool set = false;
+    for(int i = 0; !set && i < edit_widget_ui->colorBox->count(); ++i)
+    {
+        if(QColor(edit_widget_ui->colorBox->itemText(i)) == curve->pen().color())
+        {
+            edit_widget_ui->colorBox->setCurrentIndex(i);
+            set = true;
+        }
+    }
+
+    if(!set)
+    {
+        edit_widget_ui->colorBox->setCurrentIndex(0);
+        edit_widget_ui->ColorEdit->setText(curve->pen().color().name());
+    }
 }

@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef LORRISSHUPITO_H
 #define LORRISSHUPITO_H
@@ -32,6 +16,7 @@
 #include "../ui/connectbutton.h"
 
 #include <QDateTime>
+#include <QPointer>
 
 enum state
 {
@@ -56,9 +41,9 @@ enum VddColor
 
 enum TabIndex
 {
-    TAB_FLASH = 0,
+    TAB_TERMINAL = 0,
+    TAB_FLASH,
     TAB_EEPROM,
-    TAB_TERMINAL,
     TAB_MAX
 };
 
@@ -76,6 +61,7 @@ class ShupitoMode;
 class chip_definition;
 class FuseWidget;
 class ProgressDialog;
+class OverVccDialog;
 
 class LorrisShupito : public WorkTab
 {
@@ -96,7 +82,7 @@ protected:
     ConnectionPointer<ShupitoConnection> m_con;
 
 private slots:
-    void onTabShow();
+    void onTabShow(const QString& filename);
     void connDisconnecting();
 
     void connectedStatus(bool connected);
@@ -113,8 +99,9 @@ private slots:
     void setTunnelName();
     void verifyChanged(int mode);
 
-    void hideLogBtn();
-    void hideFusesBtn();
+    void hideLogBtn(bool checked);
+    void hideFusesBtn(bool checked);
+    void hideSettingsBtn(bool checked);
 
     void readMemButton()
     {
@@ -152,6 +139,7 @@ private slots:
     void modeSelected(int idx);
     void status(const QString& text);
 
+    void openFile(const QString &filename);
     void loadFromFile()
     {
         loadFromFile(MEM_FLASH);
@@ -161,7 +149,12 @@ private slots:
     void loadFromFile(int memId, const QString& filename);
     void saveToFile(int memId);
     void focusChanged(QWidget *prev, QWidget *curr);
-    void saveTermFont(const QString& fontData);
+    void saveTermSettings();
+    void flashWarnBox(bool checked);
+
+    void overvoltageSwitched(bool enabled);
+    void overvoltageChanged(double val);
+    void overvoltageTurnOffVcc(bool enabled);
 
 private:
     void log(const QString& text);
@@ -172,7 +165,6 @@ private:
     void writeMem(quint8 memId, chip_definition& chip);
     void readFuses(chip_definition& chip);
     void writeFuses(chip_definition& chip);
-    void hideFuses(bool hide);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     bool showContinueBox(const QString& title, const QString& text);
     void postFlashSwitchCheck(chip_definition &chip);
@@ -181,6 +173,9 @@ private:
     void initMenus();
 
     void changeVddColor(float val);
+    void checkOvervoltage();
+    void shutdownVcc();
+    void disableOvervoltVDDs();
     void tryFileReload(quint8 memId);
     inline int getMemIndex();
 
@@ -204,9 +199,9 @@ private:
     quint8 m_verify_mode;
 
     QHexEdit *m_hexAreas[MEM_FUSES];
-    Terminal *m_terminal;
     QString m_hexFilenames[MEM_FUSES];
     QDateTime m_hexWriteTimes[MEM_FUSES];
+    QDateTime m_hexFlashTimes[MEM_FUSES];
     ShupitoMode *m_modes[MODE_COUNT];
     quint8 m_cur_mode;
 
@@ -214,6 +209,9 @@ private:
     double m_vcc;
     int lastVccIndex;
     VddColor m_color;
+    double m_overvcc;
+    bool m_enable_overvcc;
+    QPointer<OverVccDialog> m_overvcc_dialog;
 
     std::vector<QRadioButton*> m_vdd_radios;
     QSignalMapper *m_vdd_signals;

@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include "../../common.h"
 #include "../shupito.h"
@@ -98,7 +82,7 @@ void ShupitoCC25XX::prepareMemForWriting(chip_definition::memorydef */*memdef*/,
     quint8 read_config[] = { 0x20 };
     ShupitoPacket pkt = execute_cmd(read_config, 1);
 
-    quint8 write_config[] = { 0x18, pkt[0] & ~(1<<2) };
+    quint8 write_config[] = { 0x18, quint8(pkt[0] & ~(1<<2)) };
     execute_cmd(write_config, 1);
 }
 
@@ -120,7 +104,7 @@ void ShupitoCC25XX::readMemRange(quint8 /*memid*/, QByteArray &memory, quint32 a
     {
         write_sfr(0xC7, bank & 7); // MEMCTR
 
-        quint8 load_dptr_instr[] = { 0x90, offset >> 8, offset }; // mov DPTR, offset
+        quint8 load_dptr_instr[] = { 0x90, quint8(offset >> 8), (quint8)offset }; // mov DPTR, offset
         execute_instr(load_dptr_instr);
 
         quint32 chunk = 0x10000 - offset;
@@ -203,7 +187,7 @@ void ShupitoCC25XX::flashPage(chip_definition::memorydef */*memdef*/, std::vecto
 }
 quint8 ShupitoCC25XX::read_xdata(quint16 addr)
 {
-    quint8 instr1[] = { 0x90, (addr >> 8), addr }; // mov DPTR, addr
+    quint8 instr1[] = { 0x90, quint8(addr >> 8), (quint8)addr }; // mov DPTR, addr
     execute_instr(instr1);
 
     const quint8 instr2[] = { 0xE0 }; // movx A,@DPTR
@@ -212,7 +196,7 @@ quint8 ShupitoCC25XX::read_xdata(quint16 addr)
 
 void ShupitoCC25XX::write_xdata(quint16 addr, quint8 data)
 {
-    quint8 instr1[] = { 0x90, addr >> 8, addr }; // mov DPTR, addr
+    quint8 instr1[] = { 0x90, quint8(addr >> 8), (quint8)addr }; // mov DPTR, addr
     execute_instr(instr1);
 
     quint8 load_acc_instr[] = { 0x74, data }; // mov A,#data

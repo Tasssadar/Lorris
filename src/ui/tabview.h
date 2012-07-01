@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef TABVIEW_H
 #define TABVIEW_H
@@ -27,22 +11,27 @@
 #include <QFrame>
 #include <set>
 #include <QHash>
+#include <QLocale>
 
 #include "tabwidget.h"
 
 class QLayoutItem;
 class QBoxLayout;
 class ResizeLine;
+class SplitOverlay;
+class QDrag;
+class WorkTabInfo;
+
+extern QLocale::Language langs[];
 
 class TabView : public QWidget
 {
     Q_OBJECT
 
 Q_SIGNALS:
-    void newTab();
     void openHomeTab(quint32 id);
-    void changeMenu(quint32 id);
     void statusBarMsg(const QString& message, int timeout = 0);
+    void closeLorris();
 
 public:
     explicit TabView(QWidget *parent = 0);
@@ -61,11 +50,28 @@ public:
     }
 
     QBoxLayout *getLayoutForLine(ResizeLine *line);
+    void createSplitOverlay(quint32 id, QDrag *drag);
+
+    QMenu *getFileMenu()
+    {
+        return m_file_menu;
+    }
+
+    QMenu *getHelpMenu()
+    {
+        return m_help_menu;
+    }
 
 private slots:
     void split(bool horizontal, int index);
     void removeWidget(quint32 id);
     void changeActiveWidget(TabWidget *widget);
+    void langChanged(int idx);
+    void NewSpecificTab();
+    void OpenConnectionManager();
+    void About();
+    void newTab();
+    void checkForUpdate();
 
 private:
     TabWidget *newTabWidget(QBoxLayout *l);
@@ -74,11 +80,22 @@ private:
     void updateResizeLines(QBoxLayout *l);
     inline void newResizeLine(QBoxLayout *l, int idx);
 
+    inline QBoxLayout *getLayoutForWidget(QWidget *widget);
+    inline void removeEmptyLayouts();
+    inline QBoxLayout *newLayout(bool hor);
+
     QHash<quint32, TabWidget*> m_tab_widgets;
     QHash<ResizeLine*, QBoxLayout*> m_resize_lines;
+
     std::set<QBoxLayout*> m_layouts;
 
     TabWidget *m_active_widget;
+    std::vector<QAction*> m_lang_menu;
+
+    QMenu *m_file_menu;
+    QMenu *m_help_menu;
+
+    QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };
 
 class ResizeLine : public QFrame
@@ -102,6 +119,35 @@ private:
     QPoint m_resize_pos[2];
     QPoint m_mouse_pos;
     int m_resize_index;
+};
+
+class SplitOverlay : public QWidget
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void split(bool horizontal, int index);
+
+public:
+    enum position
+    {
+        POS_RIGHT = 0,
+        POS_BOTTOM,
+
+        POS_MAX
+    };
+
+    SplitOverlay(position pos, QWidget *parent = 0);
+
+protected:
+    void paintEvent(QPaintEvent *);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dropEvent(QDropEvent *event);
+
+private:
+    position m_pos;
+    bool m_hover;
 };
 
 #endif // TABVIEW_H

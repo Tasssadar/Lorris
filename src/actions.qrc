@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/actions">
+        <file alias="new">icons/document-new.png</file>
+        <file alias="open">icons/document-open.png</file>
+        <file alias="save-as">icons/document-save-as.png</file>
+        <file alias="clear">icons/edit-clear.png</file>
+        <file alias="system">icons/emblem-system.png</file>
+        <file alias="save">icons/document-save.png</file>
+        <file alias="start">icons/media-playback-start.png</file>
+        <file alias="stop">icons/media-playback-stop.png</file>
+        <file alias="refresh">icons/view-refresh.png</file>
+        <file alias="wire">icons/network-wired.png</file>
+        <file alias="update">icons/system-software-update.png</file>
+    </qresource>
+</RCC>

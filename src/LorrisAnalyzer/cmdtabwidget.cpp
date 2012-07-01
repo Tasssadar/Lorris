@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QAction>
 #include <QInputDialog>
@@ -29,7 +13,7 @@
 #include "cmdtabwidget.h"
 #include "../common.h"
 #include "DataWidgets/datawidget.h"
-#include "analyzerdatafile.h"
+#include "datafileparser.h"
 #include "../ui/plustabbar.h"
 
 CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent) :
@@ -102,9 +86,16 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
 
     QScrollArea *area = new QScrollArea(this);
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     ScrollDataLayout *layout = NULL;
     QWidget *w = new QWidget();
+
+    QPalette p = area->palette();
+    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    area->setPalette(p);
+    area->setAutoFillBackground(true);
+
     if(m_header)
     {
         layout = new ScrollDataLayout(m_header, false, true, this, m_devTab, w);
@@ -239,7 +230,7 @@ qint16 CmdTabWidget::getCurrentCmd()
     return -1;
 }
 
-void CmdTabWidget::Save(AnalyzerDataFile *file)
+void CmdTabWidget::Save(DataFileParser *file)
 {
     quint32 size = m_cmds.size();
     if(m_all_cmds)
@@ -262,7 +253,7 @@ void CmdTabWidget::Save(AnalyzerDataFile *file)
     }
 }
 
-void CmdTabWidget::Load(AnalyzerDataFile *file, bool /*skip*/)
+void CmdTabWidget::Load(DataFileParser *file, bool /*skip*/)
 {
     quint32 count = 0;
     file->read((char*)&count, sizeof(quint32));

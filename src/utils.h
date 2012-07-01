@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef NUM_FUNC_H
 #define NUM_FUNC_H
@@ -28,13 +12,18 @@
 #include <QThread>
 #include <QFont>
 
+class QStatusBar;
+class EcWin7;
+
 class Utils : public QThread
 {
+    Q_OBJECT
 public:
     static QString hexToString(quint8 data, bool withZeroEx = false);
     static QString parseChar(char c);
 
     template <typename T> static inline void swapEndian(char *val);
+    static void swapEndian(char *val, quint8 size);
 
     static QString toBase16(quint8 const * first, quint8 const * last);
     static QString toBinary(std::size_t width, int value);
@@ -46,6 +35,17 @@ public:
     static QFont getMonospaceFont(quint8 size = 9);
 
     static void ThrowException(const QString& text, QWidget* parent = 0);
+    static void printToStatusBar(const QString& msg, int timeout = 5000);
+    static void setStatusBar(QStatusBar *bar);
+
+    static void playErrorSound();
+
+    static void setWin7(EcWin7 *win7);
+    static void setProgress(int val);
+
+private:
+    static QStatusBar* m_status_bar;
+    static EcWin7* m_win7;
 };
 
 template <typename T>
@@ -54,6 +54,5 @@ void Utils::swapEndian(char *val)
     for(qint8 i = sizeof(T); i > 0; i -= 2, ++val)
         std::swap(*val, *(val + i - 1));
 }
-
 
 #endif // NUM_FUNC_H

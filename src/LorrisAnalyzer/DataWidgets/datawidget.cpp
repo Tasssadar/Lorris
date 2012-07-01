@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QLabel>
 #include <QMouseEvent>
@@ -32,8 +16,8 @@
 
 #include "datawidget.h"
 #include "../../WorkTab/WorkTab.h"
-#include "../analyzerdataarea.h"
-#include "../analyzerdatafile.h"
+#include "../widgetarea.h"
+#include "../datafileparser.h"
 
 DataWidget::DataWidget(QWidget *parent) :
     QFrame(parent)
@@ -70,9 +54,14 @@ DataWidget::DataWidget(QWidget *parent) :
     setMidLineWidth(2);
     setAutoFillBackground(true);
 
+    QPalette p;
+    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    setPalette(p);
+
     contextMenu = NULL;
     m_mouseIn = false;
     m_updating = true;
+    m_dragAction = DRAG_NONE;
 
     m_widgetControlled = -1;
 }
@@ -93,7 +82,7 @@ void DataWidget::setId(quint32 id)
     m_closeLabel->setId(id);
 }
 
-void DataWidget::setUp(AnalyzerDataStorage */*storage*/)
+void DataWidget::setUp(Storage */*storage*/)
 {
     setAcceptDrops(true);
     m_assigned = false;
@@ -163,15 +152,11 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
     {
         case Qt::NoButton:
         {
-            quint8 act = getDragAction(e->pos());
-            if(!act)
+            switch(getDragAction(e->pos()))
             {
-                setCursor(Qt::ArrowCursor);
-                break;
-            }
-
-            switch(act)
-            {
+                case DRAG_NONE:
+                    setCursor(Qt::ArrowCursor);
+                    break;
                 case DRAG_MOVE:
                     setCursor(Qt::SizeAllCursor);
                     break;
@@ -193,15 +178,23 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
         }
         case Qt::LeftButton:
         {
-            if(m_dragAction == DRAG_MOVE)
-                dragMove(e);
-            else
-                dragResize(e);
+            switch(m_dragAction)
+            {
+                case DRAG_NONE: break;
+                case DRAG_MOVE: dragMove(e); break;
+                default: dragResize(e); break;
+            }
             break;
         }
         default:
             break;
     }
+}
+
+void DataWidget::mouseReleaseEvent(QMouseEvent *ev)
+{
+    m_dragAction = DRAG_NONE;
+    QWidget::mouseReleaseEvent(ev);
 }
 
 void DataWidget::enterEvent(QEvent *)
@@ -220,7 +213,7 @@ void DataWidget::leaveEvent(QEvent *)
 
 void DataWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(m_locked || event->mimeData()->text().at(0) == 'w')
+    if(m_locked || !event->source() || event->mimeData()->text().at(0) == 'w')
     {
         QFrame::dragEnterEvent(event);
         return;
@@ -268,7 +261,10 @@ void DataWidget::dragResize(QMouseEvent* e)
     int h = height();
     int x = pos().x();
     int y = pos().y();
-    int gx = x + e->pos().x();
+
+    QPoint m_pos = e->pos();
+    mapXYToGrid(m_pos);
+    int gx = x + m_pos.x();
 
     if(m_dragAction & DRAG_RES_LEFT)
     {
@@ -276,10 +272,10 @@ void DataWidget::dragResize(QMouseEvent* e)
         x = gx;
     }
     else if(m_dragAction & DRAG_RES_RIGHT)
-        w = e->pos().x();
+        w = m_pos.x();
 
     if(m_dragAction & DRAG_RES_BOTTOM)
-        h = e->pos().y();
+        h = m_pos.y();
 
     if(w < minimumWidth())
     {
@@ -299,8 +295,12 @@ void DataWidget::dragResize(QMouseEvent* e)
 
 void DataWidget::dragMove(QMouseEvent *e)
 {
-    move(pos() + ( e->globalPos() - mOrigin ));
+    QPoint p = pos() + ( e->globalPos() - mOrigin );
+    mapXYToGrid(p);
+    move(p);
+
     mOrigin = e->globalPos();
+    mapXYToGrid(mOrigin);
 
     emit updateMarker(this);
 }
@@ -342,7 +342,7 @@ void DataWidget::setTitleTriggered()
     setTitle(title);
 }
 
-void DataWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void DataWidget::saveWidgetInfo(DataFileParser *file)
 {
     char *p = NULL;
 
@@ -374,7 +374,7 @@ void DataWidget::saveWidgetInfo(AnalyzerDataFile *file)
     file->write(title.data());
 }
 
-void DataWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void DataWidget::loadWidgetInfo(DataFileParser *file)
 {
     // data info
     char *p = NULL;
@@ -437,6 +437,43 @@ void DataWidget::onScriptEvent(const QString& /*eventId*/)
 
 }
 
+void DataWidget::mapXYToGrid(QPoint& point)
+{
+    mapToGrid(point.rx());
+    mapToGrid(point.ry());
+    point += ((WidgetArea*)parent())->getGridOffset();
+}
+
+void DataWidget::mapXYToGrid(int& x, int& y)
+{
+    mapToGrid(x);
+    mapToGrid(y);
+
+    const QPoint& offset = ((WidgetArea*)parent())->getGridOffset();
+    x += offset.x();
+    y += offset.y();
+}
+
+void DataWidget::mapToGrid(int &val)
+{
+    int grid = ((WidgetArea*)parent())->getGrid();
+    int div = abs(val%grid);
+    val += div >= grid/2 ? grid - div : -div;
+}
+
+void DataWidget::align()
+{
+    QPoint p(pos());
+    p -= ((WidgetArea*)parent())->getGridOffset();
+    mapXYToGrid(p);
+    move(p);
+
+    p = QPoint(width(), height());
+    mapXYToGrid(p);
+    p -= ((WidgetArea*)parent())->getGridOffset();
+    resize(p.x(), p.y());
+}
+
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 {
     setFlat(true);
@@ -468,7 +505,7 @@ const QPixmap& DataWidgetAddBtn::getRender()
 {
     if(!m_pixmap)
     {
-        DataWidget *w = AnalyzerDataArea::newWidget(m_widgetType, this);
+        DataWidget *w = WidgetArea::newWidget(m_widgetType, this);
         if(w)
         {
             m_pixmap = new QPixmap(w->size());

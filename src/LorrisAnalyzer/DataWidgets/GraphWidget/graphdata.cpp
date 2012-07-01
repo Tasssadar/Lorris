@@ -1,29 +1,13 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include "graphdata.h"
 #include "../datawidget.h"
-#include "../../analyzerdatastorage.h"
+#include "../../storage.h"
 
 GraphDataSimple::GraphDataSimple() : QwtSeriesData<QPointF>()
 {
@@ -56,8 +40,8 @@ void GraphDataSimple::setMinMax(double val)
 
 void GraphDataSimple::resetMinMax()
 {
-    m_max = -999999999;
-    m_min = 99999999;
+    m_max = INT_MIN;
+    m_min = INT_MAX;
 }
 
 void GraphDataSimple::addPoint(quint32 index, qreal data)
@@ -96,7 +80,7 @@ void GraphDataSimple::clear()
     m_indexes.clear();
 }
 
-GraphData::GraphData(AnalyzerDataStorage *storage, data_widget_info &info, qint32 sample_size, quint8 data_type) :
+GraphData::GraphData(Storage *storage, data_widget_info &info, qint32 sample_size, quint8 data_type) :
     GraphDataSimple()
 {
     m_storage = storage;

@@ -51,7 +51,9 @@
  *	}
  *      @endcode
  */
+#if !defined USING_PCH && !defined(Q_OS_MAC) 
 #define main	SDL_main
+#endif
 
 /** The prototype for the application's main() function */
 extern C_LINKAGE int SDL_main(int argc, char *argv[]);

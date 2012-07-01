@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QProgressBar>
 #include <QHBoxLayout>
@@ -30,8 +14,8 @@
 #include <QDialogButtonBox>
 
 #include "barwidget.h"
-#include "ui_rangeselectdialog.h"
-#include "../analyzerdatafile.h"
+#include "../../ui/rangeselectdialog.h"
+#include "../datafileparser.h"
 
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -51,7 +35,7 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     adjustSize();
 }
 
-void BarWidget::setUp(AnalyzerDataStorage *storage)
+void BarWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -183,12 +167,11 @@ void BarWidget::rangeSelected()
             break;
     }
 
-    RangeSelectDialog *dialog = new RangeSelectDialog(m_bar->minimum(), m_bar->maximum(), max, min, this);
-    dialog->exec();
-    if(dialog->getRes())
-        m_bar->setRange(dialog->getMin(), dialog->getMax());
+    RangeSelectDialog dialog(m_bar->minimum(), m_bar->maximum(), max, min, this);
+    dialog.exec();
+    if(dialog.getRes())
+        m_bar->setRange(dialog.getMin(), dialog.getMax());
 
-    delete dialog;
     emit updateData();
 }
 
@@ -201,11 +184,6 @@ void BarWidget::rotationSelected(int i)
 
     resize(0, 0);
     adjustSize();
-
-    if(i == 0)
-        setMaximumSize(width(), 16777215);
-    else
-        setMaximumSize(16777215, height());
 }
 
 void BarWidget::rotate(int i)
@@ -233,7 +211,7 @@ void BarWidget::rotate(int i)
     m_bar->setOrientation(horizontal ? Qt::Horizontal : Qt::Vertical);
 }
 
-void BarWidget::saveWidgetInfo(AnalyzerDataFile *file)
+void BarWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
@@ -253,7 +231,7 @@ void BarWidget::saveWidgetInfo(AnalyzerDataFile *file)
     file->write((char*)&m_rotation, sizeof(m_rotation));
 }
 
-void BarWidget::loadWidgetInfo(AnalyzerDataFile *file)
+void BarWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
 
@@ -289,48 +267,4 @@ BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
     setIcon(QIcon(":/dataWidgetIcons/bar.png"));
 
     m_widgetType = WIDGET_BAR;
-}
-
-RangeSelectDialog::RangeSelectDialog(int val_min, int val_max, int max, int min, QWidget *parent) : QDialog(parent), ui(new Ui::RangeSelectDialog)
-{
-    ui->setupUi(this);
-
-    ui->maxBox->setRange(val_min, max);
-    ui->minBox->setRange(min, val_max);
-    ui->maxBox->setValue(val_max);
-    ui->minBox->setValue(val_min);
-
-    connect(ui->maxBox, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
-    connect(ui->minBox, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
-    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(boxClicked(QAbstractButton*)));
-
-    m_minRes = val_min;
-    m_maxRes = val_max;
-    m_res = false;
-
-    setFixedSize(size());
-}
-
-RangeSelectDialog::~RangeSelectDialog()
-{
-    delete ui;
-}
-
-void RangeSelectDialog::maxChanged(int value)
-{
-    m_maxRes = value;
-    ui->minBox->setMaximum(value);
-}
-
-void RangeSelectDialog::minChanged(int value)
-{
-    m_minRes = value;
-    ui->maxBox->setMinimum(value);
-}
-
-void RangeSelectDialog::boxClicked(QAbstractButton *b)
-{
-    if(ui->buttonBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
-        m_res = true;
-    close();
 }

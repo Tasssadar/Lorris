@@ -15,9 +15,9 @@
   </property>
   <layout class="QHBoxLayout" name="mainLayout">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,4,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="topLayout">
        <item>
         <widget class="QToolButton" name="connectButton">
          <property name="sizePolicy">
@@ -44,25 +44,20 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="startstopButton">
-         <property name="text">
-          <string>Stop</string>
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Chip ID:</string>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="chipIdLabel">
-         <property name="text">
-          <string notr="true"/>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
          </property>
-        </widget>
+        </spacer>
        </item>
        <item>
         <spacer name="horizontalSpacer">
@@ -83,169 +78,44 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1,1">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="loadBtn">
-         <property name="text">
-          <string>Load file...</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="filename">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QToolButton" name="settingsBtn">
+         <property name="minimumSize">
+          <size>
+           <width>1</width>
+           <height>72</height>
+          </size>
          </property>
          <property name="text">
-          <string>&lt;No file loaded&gt;</string>
+          <string>Settings</string>
+         </property>
+         <property name="icon">
+          <iconset resource="shupitoicons.qrc">
+           <normaloff>:/icons/icons/settings.png</normaloff>:/icons/icons/settings.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>48</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="popupMode">
+          <enum>QToolButton::DelayedPopup</enum>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="filedate">
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QFrame" name="frame">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>RS232 Tunnel speed:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="tunnelSpeedBox">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="editable">
-             <bool>true</bool>
-            </property>
-            <property name="minimumContentsLength">
-             <number>1</number>
-            </property>
-            <item>
-             <property name="text">
-              <string>38400</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>57600</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>115200</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>500000</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>1000000</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>1500000</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>2000000</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QCheckBox" name="tunnelCheck">
-            <property name="text">
-             <string>Enable RS232 tunnel</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="tristate">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Programming speed (Hz):</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="progSpeedBox">
-            <property name="editable">
-             <bool>true</bool>
-            </property>
-            <property name="currentIndex">
-             <number>3</number>
-            </property>
-            <item>
-             <property name="text">
-              <string>250000</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>500000</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>1000000</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>2000000</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_2">
+        <spacer name="horizontalSpacer_8">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -254,7 +124,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>40</width>
+           <width>20</width>
            <height>20</height>
           </size>
          </property>
@@ -262,20 +132,11 @@
        </item>
        <item>
         <widget class="QToolButton" name="readButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
          <property name="minimumSize">
           <size>
            <width>82</width>
-           <height>70</height>
+           <height>72</height>
           </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
          </property>
          <property name="text">
           <string>Read</string>
@@ -295,9 +156,6 @@
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <property name="autoRaise">
-          <bool>false</bool>
          </property>
          <property name="arrowType">
           <enum>Qt::NoArrow</enum>
@@ -387,7 +245,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>10</width>
+           <width>13</width>
            <height>20</height>
           </size>
          </property>
@@ -447,6 +305,71 @@
         </widget>
        </item>
        <item>
+        <spacer name="horizontalSpacer_7">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QToolButton" name="startStopBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>71</width>
+           <height>70</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>Stop</string>
+         </property>
+         <property name="icon">
+          <iconset resource="shupitoicons.qrc">
+           <normaloff>:/icons/stop</normaloff>
+           <normalon>:/icons/stop</normalon>
+           <activeon>:/icons/stop</activeon>:/icons/stop</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>48</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <property name="popupMode">
+          <enum>QToolButton::DelayedPopup</enum>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+         <property name="autoRaise">
+          <bool>false</bool>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::NoArrow</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -465,10 +388,466 @@
       </layout>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="toolLayout" stretch="0,0,0,0">
+       <item>
+        <widget class="QLabel" name="filename">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>&lt;No file loaded&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="filedate">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Chip ID:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="chipIdLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QGroupBox" name="progBox">
+         <property name="title">
+          <string>Programming</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="1">
+           <widget class="QLabel" name="label">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Programming speed (Hz):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="progSpeedBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+            <property name="currentIndex">
+             <number>3</number>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string>250000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>500000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1000000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2000000</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Show warning when
+flashing same file twice:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QCheckBox" name="flashWarnBox">
+            <property name="text">
+             <string>Show</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_12">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer_13">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="tunnelBox">
+         <property name="title">
+          <string>RS232 tunnel</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Speed:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QComboBox" name="tunnelSpeedBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <property name="minimumContentsLength">
+             <number>1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>38400</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>57600</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>115200</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>500000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1000000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1500000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2000000</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <spacer name="horizontalSpacer_10">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer_11">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="2">
+           <widget class="QCheckBox" name="tunnelCheck">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+            <property name="tristate">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Enable:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="overvccBox">
+         <property name="title">
+          <string>Overvoltage warning</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Warn at:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="over_val">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="suffix">
+             <string> V</string>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="over_enable">
+            <property name="text">
+             <string>Enable</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QCheckBox" name="over_turnoff">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Turn off VCC</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <widget class="QTabWidget" name="memTabs">
        <property name="currentIndex">
-        <number>-1</number>
+        <number>0</number>
        </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Terminal</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Format:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="fmtBox">
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
+             </property>
+             <item>
+              <property name="text">
+               <string>Text</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Hex dump</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_15">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pauseBtn">
+             <property name="text">
+              <string>Pause</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="clearBtn">
+             <property name="text">
+              <string>Clear</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_14">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Terminal" name="terminal">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
      <item>
@@ -478,6 +857,12 @@
        </property>
        <property name="text">
         <string>Log</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
        <property name="flat">
         <bool>false</bool>
@@ -507,6 +892,9 @@
      <property name="text">
       <string>Fuses</string>
      </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
      <property name="flat">
       <bool>false</bool>
      </property>
@@ -520,26 +908,15 @@
    <extends>QPushButton</extends>
    <header location="global">src/shared/rotatebutton.h</header>
   </customwidget>
+  <customwidget>
+   <class>Terminal</class>
+   <extends>QFrame</extends>
+   <header>../src/shared/terminal.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="shupitoicons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>tunnelCheck</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>tunnelSpeedBox</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>287</x>
-     <y>17</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>156</x>
-     <y>17</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

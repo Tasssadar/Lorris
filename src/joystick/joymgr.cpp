@@ -1,35 +1,17 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QDebug>
 #include "joymgr.h"
 
 JoyMgr::JoyMgr() : QObject()
 {
-    // SDL needs video to be enabled
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
-
-    SDL_JoystickEventState(SDL_ENABLE);
+    // SDL needs video initialized
+    SDL_Init(SDL_INIT_VIDEO);
 
     updateJoystickNames();
 
@@ -45,14 +27,23 @@ JoyMgr::~JoyMgr()
     for(QHash<int, Joystick*>::iterator itr = m_joysticks.begin(); itr != m_joysticks.end(); ++itr)
         delete *itr;
 
-    SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+    SDL_Quit();
 }
 
 void JoyMgr::updateJoystickNames()
 {
-    int cnt = SDL_NumJoysticks();
+    // Reinit joystick system to load newly connected joysticks
+    if(m_joysticks.empty())
+    {
+        SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+        SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+        SDL_JoystickEventState(SDL_ENABLE);
+    }
 
+    int cnt = SDL_NumJoysticks();
     qDebug() << "Joystick count: " << cnt;
+
+    m_names.clear();
     for(int i = 0; i < cnt; ++i)
     {
         m_names.insert(i, SDL_JoystickName(i));
@@ -72,14 +63,11 @@ Joystick *JoyMgr::getJoystick(int id, bool create)
     else if(!create)
         return NULL;
 
-    Joystick *joy = new Joystick(id);
-
-    if(!joy->open())
-    {
-        delete joy;
+    SDL_Joystick *sdl_joy = SDL_JoystickOpen(id);
+    if(!sdl_joy)
         return NULL;
-    }
 
+    Joystick *joy = new Joystick(id, sdl_joy);
     connect(joy, SIGNAL(removeJoystick(Joystick*)), SLOT(removeJoystick(Joystick*)));
 
     m_joysticks[id] = joy;

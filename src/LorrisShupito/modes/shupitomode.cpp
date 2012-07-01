@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QObject>
 #include <set>
@@ -30,7 +14,7 @@
 #include "shupitospi.h"
 #include "shupitopdi.h"
 #include "shupitocc25xx.h"
-#include "../../shared/chipdefs.h"
+#include "../../shared/defmgr.h"
 #include "../../shared/hexfile.h"
 
 ShupitoMode::ShupitoMode(Shupito *shupito) : QObject()
@@ -155,11 +139,7 @@ chip_definition ShupitoMode::readDeviceId()
 
     m_prepared = true;
 
-    chip_definition cd;
-    cd.setSign(id);
-    chip_definition::update_chipdef(m_shupito->getDefs(), cd);
-
-    return cd;
+    return sDefMgr.findChipdef(id);
 }
 
 void ShupitoMode::editIdArgs(QString &id, quint8 &/*id_lenght*/)
@@ -265,7 +245,10 @@ void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, q
 {
     HexFile file;
     file.addRegion(0, &data[0], &data[0] + data.size(), 0);
-    flashRaw(file, MEM_FUSES, chip, verifyMode);
+    // FIXME: verifyMode - some chips (atmega16) has only 3 lock/fuse bytes,
+    // and the 4th byte changes during fuse programming and breaks verification.
+    // How to handle it?
+    flashRaw(file, MEM_FUSES, chip, VERIFY_NONE);
 }
 
 //void flash_raw(avrflash::memory const & mem, std::string const & memid, avrflash::chip_definition const & chip, bool verify)
@@ -303,6 +286,8 @@ void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, q
         m_cancel_requested = false;
         throw QString(QObject::tr("Flashing interruped!"));
     }
+
+    Utils::msleep(50);
 
     if(verifyMode != VERIFY_NONE && is_read_memory_supported(memdef))
     {

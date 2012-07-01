@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #include <QtNetwork/QTcpSocket>
 #include <QtCore/QtConcurrentRun>
@@ -39,6 +23,8 @@ static const int CONNECT_TIMEOUT = 10000 / 50; // 10s
 TcpSocket::TcpSocket()
     : PortConnection(CONNECTION_TCP_SOCKET)
 {
+    m_port = 0;
+
     m_socket = new QTcpSocket(this);
 
     connect(m_socket,   SIGNAL(readyRead()),                                SLOT(readyRead()));
@@ -131,7 +117,10 @@ void TcpSocket::readyRead()
 void TcpSocket::stateChanged()
 {
     if(this->isOpen() && m_socket->state() != QAbstractSocket::ConnectedState)
+    {
+        Utils::printToStatusBar(tr("Connection to %1:%2 lost!").arg(m_address).arg(m_port));
         Close();
+    }
 }
 
 void TcpSocket::setHost(QString const & value)

@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef LORRISANALYZER_H
 #define LORRISANALYZER_H
@@ -31,14 +15,15 @@
 #include "packet.h"
 #include "DataWidgets/datawidget.h"
 #include "../ui/connectbutton.h"
+#include "storage.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
 class QMdiArea;
-class AnalyzerDataStorage;
+class Storage;
 class QSlider;
 class DeviceTabWidget;
-class AnalyzerDataArea;
+class WidgetArea;
 class QSpinBox;
 class QScrollArea;
 class PacketParser;
@@ -77,9 +62,10 @@ class LorrisAnalyzer : public PortConnWorkTab
         bool showTitleBars() const { return m_title_action->isChecked(); }
 
         void setPortConnection(ConnectionPointer<PortConnection> const & con);
+        void openFile(const QString& filename);
 
     public slots:
-        void onTabShow();
+        void onTabShow(const QString& filename);
         bool onTabClose();
         void updateData();
         void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);
@@ -90,6 +76,7 @@ class LorrisAnalyzer : public PortConnWorkTab
 
         void saveButton();
         void saveAsButton();
+        void exportBin();
         void clearAllButton();
         void clearDataButton();
         void openFile();
@@ -105,12 +92,14 @@ class LorrisAnalyzer : public PortConnWorkTab
 
     private:
         void readData(const QByteArray& data);
-        void load(QString *name, quint8 mask);
+        bool load(QString& name, quint8 mask);
+        void importBinary(const QString& filename);
+        void resetDevAndStorage(analyzer_packet *packet = NULL);
 
         bool highlightInfoNotNull;
         data_widget_info highlightInfo;
         Ui::LorrisAnalyzer *ui;
-        AnalyzerDataStorage *m_storage;
+        Storage *m_storage;
         analyzer_packet *m_packet;
         PacketParser *m_parser;
 

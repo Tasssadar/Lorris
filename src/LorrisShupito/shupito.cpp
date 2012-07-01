@@ -58,7 +58,7 @@ void Shupito::init(ShupitoConnection *con, ShupitoDesc *desc)
     m_con = con;
     m_desc = desc;
 
-    chip_definition::parse_default_chipsets(m_chip_defs);
+    //chip_definition::parse_default_chipsets(m_chip_defs);
 
     ShupitoPacket getInfo = makeShupitoPacket(MSG_INFO, 1, 0x00);
     QByteArray data = waitForStream(getInfo, MSG_INFO);

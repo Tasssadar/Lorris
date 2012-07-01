@@ -1,39 +1,21 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef SCRIPTEDITOR_H
 #define SCRIPTEDITOR_H
 
 #include <QDialog>
-
-namespace Ui {
-    class ScriptEditor;
-}
+#include "ui_scripteditor.h"
 
 class QAbstractButton;
 class LineNumber;
+class QSyntaxHighlighter;
 
-class ScriptEditor : public QDialog
+class ScriptEditor : public QDialog, private Ui::ScriptEditor
 {
     Q_OBJECT
 
@@ -41,21 +23,35 @@ Q_SIGNALS:
     void applySource(bool close);
     
 public:
-    explicit ScriptEditor(const QString& source, const QString &widgetName = 0);
+    ScriptEditor(const QString& source, int type, const QString &widgetName = 0);
     ~ScriptEditor();
 
     QString getSource();
-    
+    int getEngine();
+
+public slots:
+    void addError(const QString& error);
+    void clearErrors();
+
 private slots:
-    void buttonPressed(QAbstractButton *btn);
-    void textChanged();
     void sliderMoved(int val = -1);
     void rangeChanged(int, int);
-    void loadFile();
+
+    void on_buttonBox_clicked(QAbstractButton *btn);
+    void on_sourceEdit_textChanged();
+    void on_loadBtn_clicked();
+    void on_langBox_currentIndexChanged(int idx);
+    void on_errorBtn_toggled(bool checked);
+
+    void contentsChange(int position, int charsRemoved, int charsAdded);
 
 private:
     Ui::ScriptEditor *ui;
     LineNumber *m_line_num;
+    bool m_changed;
+    quint32 m_errors;
+
+    QSyntaxHighlighter *m_highlighter;
 };
 
 class LineNumber : public QWidget

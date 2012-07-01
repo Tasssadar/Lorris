@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef LORRISTERMINAL_H
 #define LORRISTERMINAL_H
@@ -34,6 +18,7 @@
 #include "../shared/terminal.h"
 #include "../ui/chooseconnectiondlg.h"
 #include "../ui/connectbutton.h"
+#include "avr232boot.h"
 
 class QVBoxLayout;
 class QTextEdit;
@@ -41,19 +26,6 @@ class HexFile;
 class EEPROM;
 class chip_definition;
 struct page;
-
-enum states_
-{
-    STATE_STOPPING1    = 0x01,
-    STATE_STOPPING2    = 0x02,
-    STATE_STOPPED      = 0x04,
-    STATE_AWAITING_ID  = 0x08,
-    STATE_FLASHING     = 0x10,
-    STATE_PAUSED       = 0x20,
-    STATE_DISCONNECTED = 0x40,
-    STATE_EEPROM_READ  = 0x80,
-    STATE_EEPROM_WRITE = 0x100
-};
 
 enum buttons_
 {
@@ -74,63 +46,52 @@ public:
     explicit LorrisTerminal();
     virtual ~LorrisTerminal();
 
-    void onTabShow();
     virtual void setPortConnection(ConnectionPointer<PortConnection> const & con);
+    void onTabShow(const QString& filename);
 
 private slots:
     //Buttons
     void browseForHex();
-    void clearButton();
     void stopButton();
     void flashButton();
     void pauseButton();
-    void eepromButton();
+    void setPauseBtnText(bool pause);
+    void eepromExportButton();
     void eepromImportButton();
     void fmtAction(int act);
+    void checkFmtAct(int act);
     void loadText();
     void saveText();
+    void saveBin();
     void inputAct(int act);
 
     void readData(const QByteArray& data);
     void sendKeyEvent(const QString& key);
     void connectedStatus(bool connected);
-    void saveTermFont(const QString& fontData);
-
-    //Timers
-    void stopTimerSig();
-    void flashTimeout();
-    void deviceIdTimeout();
+    void saveTermSettings();
+    void showBootloader(bool show);
+    void showWarn(bool show);
 
 private:
-    void flash_prepare(QString deviceId);
-    void eeprom_read(QString id);
-    void eeprom_write(QString id);
-    bool eeprom_send_page();
-    void eeprom_read_block(QByteArray data);
-    bool SendNextPage();
+    void setHexName(QString name = QString());
     void EnableButtons(quint16 buttons, bool enable);
     void initUI();
 
-    QTimer *stopTimer;
-    QTimer *flashTimeoutTimer;
-    QByteArray stopCmd;
-    HexFile *hex;
+    QString m_filename;
+    QDateTime m_filedate;
+    QDateTime m_flashdate;
 
     QAction *m_export_eeprom;
     QAction *m_import_eeprom;
     QAction *m_fmt_act[FMT_MAX];
     QAction *m_input[INPUT_MAX];
 
-    quint16 m_state;
-    quint16 m_eepromItr;
-    EEPROM *m_eeprom;
-
-    std::vector<chip_definition> m_chip_defs;
-    std::vector<page> m_pages;
-    quint32 m_cur_page;
+    bool m_stopped;
 
     ConnectButton * m_connectButton;
     Ui::LorrisTerminal *ui;
+
+    avr232boot m_bootloader;
 };
 
 #endif // LORRISTERMINAL_H

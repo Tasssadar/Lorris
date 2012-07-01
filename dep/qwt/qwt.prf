@@ -35,7 +35,7 @@ else {
 }   
 
 INCLUDEPATH_QWT = $${INCLUDEPATH}
-qtAddLibrary(qwt)
+qtAddLibrary(qwt_lorris)
 
 # we don't want qtAddLibrary to expand the 
 # include path, with directories, that might

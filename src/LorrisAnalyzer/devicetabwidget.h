@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef STRUCTURETABWIDGET_H
 #define STRUCTURETABWIDGET_H
@@ -32,7 +16,7 @@
 #include "cmdtabwidget.h"
 
 class QAction;
-class AnalyzerDataFile;
+class DataFileParser;
 
 struct data_widget_info;
 
@@ -50,13 +34,20 @@ public:
     explicit DeviceTabWidget(QWidget *parent = 0);
     ~DeviceTabWidget();
 
+    void reset(analyzer_header *header)
+    {
+        removeAll();
+        setHeader(header);
+        addDevice();
+    }
+
     void setHeader(analyzer_header *h);
     CmdTabWidget *addDevice(bool all_devices = true, quint8 id = 0);
     void setEnableIds(bool enable) { m_id_enabled = enable; }
     qint16 getCurrentDevice();
     void removeAll();
-    void Save(AnalyzerDataFile *file);
-    void Load(AnalyzerDataFile *file, bool skip);
+    void Save(DataFileParser *file);
+    void Load(DataFileParser *file, bool skip);
 
     bool setHighlightPos(const data_widget_info& info, bool highlight);
 

@@ -1,25 +1,9 @@
-/****************************************************************************
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
 **
-**    This file is part of Lorris.
-**    Copyright (C) 2012 Vojtěch Boček
-**
-**    Contact: <vbocek@gmail.com>
-**             https://github.com/Tasssadar
-**
-**    Lorris is free software: you can redistribute it and/or modify
-**    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation, either version 3 of the License, or
-**    (at your option) any later version.
-**
-**    Lorris is distributed in the hope that it will be useful,
-**    but WITHOUT ANY WARRANTY; without even the implied warranty of
-**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**    GNU General Public License for more details.
-**
-**    You should have received a copy of the GNU General Public License
-**    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
-**
-****************************************************************************/
+**    See README and COPYING
+***********************************************/
 
 #ifndef PACKET_H
 #define PACKET_H
@@ -27,6 +11,7 @@
 #include <QTypeInfo>
 #include <QByteArray>
 #include <algorithm>
+#include <vector>
 
 #include "../common.h"
 
@@ -57,7 +42,7 @@ struct analyzer_header
     {
         length = 0;
         data_mask = 0;
-        static_len = 1;
+        static_len = 0;
         len_fmt = 0;
         packet_length = 0;
         len_offset = 0;
@@ -143,11 +128,10 @@ struct analyzer_packet
         Reset();
     }
 
-    analyzer_packet(analyzer_header *h, bool b_e, quint8 *s_d)
+    analyzer_packet(analyzer_header *h, bool b_e)
     {
         header = h;
         big_endian = b_e;
-        static_data = s_d;
     }
 
     analyzer_packet(analyzer_packet *p)
@@ -155,29 +139,23 @@ struct analyzer_packet
         copy(p);
     }
 
-    ~analyzer_packet()
-    {
-        delete[] static_data;
-    }
-
     void copy(analyzer_packet *p)
     {
         header = new analyzer_header(p->header);
         big_endian = p->big_endian;
-        static_data = new quint8[header->static_len];
-        std::copy(p->static_data, p->static_data+header->static_len, static_data);
+        static_data.assign(p->static_data.begin(), p->static_data.end());
     }
 
     void Reset()
     {
-        static_data = NULL;
+        static_data.clear();
         header = NULL;
         big_endian = true;
     }
 
     analyzer_header *header;
     bool big_endian;
-    quint8 *static_data;
+    std::vector<quint8> static_data;
 };
 
 // Real data
