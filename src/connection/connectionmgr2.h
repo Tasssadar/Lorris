@@ -53,6 +53,9 @@ public:
     UsbShupitoEnumerator();
     ~UsbShupitoEnumerator();
 
+    QVariant config() const;
+    bool applyConfig(QVariant const & config);
+
 public slots:
     void refresh();
 
@@ -65,6 +68,9 @@ private:
     QScopedPointer<QThread> m_eventDispatcher;
 
     QHash<libusby_device *, Connection *> m_devmap;
+
+    QHash<QString, QString> m_dev_names;
+    QHash<Connection *, QString> m_unique_ids;
 
     QTimer m_refreshTimer;
 };

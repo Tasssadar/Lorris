@@ -80,6 +80,7 @@ enum cfg_bool
 enum cfg_variant
 {
     CFG_VARIANT_CONNECTIONS,
+    CFG_VARIANT_USB_ENUMERATOR,
     CFG_VARIANT_NUM
 };
 

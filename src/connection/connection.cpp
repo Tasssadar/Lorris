@@ -23,8 +23,7 @@ Connection::~Connection()
 
 QString Connection::details() const
 {
-    // XXX
-    return QString::number(m_refcount);
+    return QString();
 }
 
 

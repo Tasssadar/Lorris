@@ -134,6 +134,39 @@ UsbShupitoEnumerator::~UsbShupitoEnumerator()
     libusby_exit(m_usb_ctx);
 }
 
+QVariant UsbShupitoEnumerator::config() const
+{
+    QHash<QString, QVariant> dev_names;
+
+    for (QHash<QString, QString>::const_iterator it = m_dev_names.begin(); it != m_dev_names.end(); ++it)
+    {
+        QHash<QString, QVariant> dev_config;
+        dev_config["name"] = it.key();
+        dev_names[it.value()] = dev_config;
+    }
+
+    for (QHash<Connection *, QString>::const_iterator it = m_unique_ids.begin(); it != m_unique_ids.end(); ++it)
+    {
+        QHash<QString, QVariant> dev_config;
+        dev_config["name"] = it.key()->name();
+        dev_names[it.value()] = dev_config;
+    }
+
+    return dev_names;
+}
+
+bool UsbShupitoEnumerator::applyConfig(QVariant const & config)
+{
+    QHash<QString, QVariant> dev_names = config.toHash();
+    for (QHash<QString, QVariant>::const_iterator it = dev_names.begin(); it != dev_names.end(); ++it)
+    {
+        QHash<QString, QVariant> dev_config = it.value().toHash();
+        m_dev_names[it.key()] = dev_config["name"].toString();
+    }
+
+    return true;
+}
+
 void UsbShupitoEnumerator::refresh()
 {
     if (!m_usb_ctx)
@@ -161,6 +194,22 @@ void UsbShupitoEnumerator::refresh()
                     continue;
                 conn->setRemovable(false);
                 conn->setName(conn->product());
+
+                QString const & sn = conn->serialNumber();
+                if (!sn.isEmpty())
+                {
+                    libusby_device_descriptor dev_desc;
+                    if (libusby_get_device_descriptor_cached(dev, &dev_desc) >= 0)
+                    {
+                        QString uniqueId = QString("%1:%2:%3").arg(QString::number(dev_desc.idVendor, 16), QString::number(dev_desc.idProduct, 16), sn);
+                        m_unique_ids.insert(conn.data(), uniqueId);
+
+                        QString name = m_dev_names.value(uniqueId);
+                        if (!name.isNull())
+                            conn->setName(name);
+                    }
+                }
+
                 m_devmap[dev] = conn.data();
                 connect(conn.data(), SIGNAL(destroying()), this, SLOT(shupitoConnectionDestroyed()));
                 sConMgr2.addConnection(conn.take());
@@ -205,6 +254,11 @@ void UsbShupitoEnumerator::shupitoConnectionDestroyed()
 {
     UsbShupitoConnection * conn = static_cast<UsbShupitoConnection *>(this->sender());
     m_devmap.remove(conn->usbDevice());
+
+    QString uniqueId = m_unique_ids.value(conn);
+    if (!uniqueId.isNull())
+        m_dev_names[uniqueId] = conn->name();
+    m_unique_ids.remove(conn);
 }
 
 #endif // HAVE_LIBUSBY
@@ -220,6 +274,10 @@ ConnectionManager2::ConnectionManager2(QObject * parent)
     QVariant config = sConfig.get(CFG_VARIANT_CONNECTIONS);
     if (config.isValid())
         this->applyConfig(config);
+
+    config = sConfig.get(CFG_VARIANT_USB_ENUMERATOR);
+    if (config.isValid())
+        m_usbShupitoEnumerator->applyConfig(config);
 }
 
 ConnectionManager2::~ConnectionManager2()
@@ -227,6 +285,7 @@ ConnectionManager2::~ConnectionManager2()
     // If this were a perfect world, the config would be stored in a *structured*
     // storage, also known as JSON.
     sConfig.set(CFG_VARIANT_CONNECTIONS, this->config());
+    sConfig.set(CFG_VARIANT_USB_ENUMERATOR, m_usbShupitoEnumerator->config());
 
     m_serialPortEnumerator.reset();
 #ifdef HAVE_LIBUSBY
