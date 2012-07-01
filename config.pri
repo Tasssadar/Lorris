@@ -1,2 +1,4 @@
 # comment out following line to disable python in Lorris
-CONFIG += python
+!win32-msvc* {
+    CONFIG += python
+}

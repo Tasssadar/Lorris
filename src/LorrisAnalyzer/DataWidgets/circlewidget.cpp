@@ -12,6 +12,8 @@
 #include "circlewidget.h"
 #include "../../ui/rangeselectdialog.h"
 
+static const double pi = 3.1415926535897932384626433832795;
+
 CircleWidget::CircleWidget(QWidget *parent) :
     DataWidget(parent)
 {
@@ -165,7 +167,7 @@ void CircleWidget::setValue(const QVariant &var)
 {
     float rad = toRad(var);
     if(!m_clockwiseAct->isChecked())
-        rad = (2*M_PI) - rad;
+        rad = (2*pi) - rad;
     m_circle->setAngle(rad);
 }
 
@@ -217,17 +219,17 @@ float CircleWidget::toRad(const QVariant& var)
         case ANG_DEG:
         {
             ret = var.toFloat();
-            ret = (ret * M_PI*2) / 360.f;
+            ret = (ret * pi*2) / 360.f;
             break;
         }
         case ANG_RANGE:
         {
             ret = var.toFloat()-m_range_min;
-            ret = (ret * M_PI*2) / (m_range_max-m_range_min);
+            ret = (ret * pi*2) / (m_range_max-m_range_min);
             break;
         }
     }
-    ret = std::min(float(M_PI*2), ret);
+    ret = std::min(float(pi*2), ret);
     ret = std::max(ret, 0.f);
     return ret;
 }
@@ -292,7 +294,7 @@ void CircleDraw::paintEvent(QPaintEvent *)
     p.drawPoint(center);
 
     QRect angRect(center.x()-r, center.y()-r, r*2, r*2);
-    int arcAngle = m_angle*916.732; // (1/(M_PI*2))*5760 = 916.732
+    int arcAngle = m_angle*916.732; // (1/(pi*2))*5760 = 916.732
     p.drawArc(angRect, 1440, m_clockwise ? -arcAngle : 5760 - arcAngle);
 }
 

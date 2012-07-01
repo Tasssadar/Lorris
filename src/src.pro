@@ -243,7 +243,6 @@ win32 {
     }
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
-    QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
     HEADERS += \
         ../dep/qextserialport/src/qextwineventnotifier_p.h \
