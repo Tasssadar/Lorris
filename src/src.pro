@@ -202,7 +202,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/packetparser.h \
     ui/plustabbar.h \
     ui/homedialog.h \
-    LorrisAnalyzer/datafileparser.h \
     LorrisAnalyzer/widgetarea.h \
     LorrisAnalyzer/storage.h \
     LorrisShupito/overvccdialog.h \
