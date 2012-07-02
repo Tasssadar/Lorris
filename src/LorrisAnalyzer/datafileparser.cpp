@@ -167,3 +167,21 @@ char *DataFileParser::getBlockWithFormat(const char *block, quint8& lenght)
     --name;
     return name;
 }
+
+void DataFileParser::writeString(const QString &str)
+{
+    QByteArray utf = str.toUtf8();
+    quint32 size = utf.size();
+
+    write((char*)&size, sizeof(size));
+    write(utf);
+}
+
+QString DataFileParser::readString()
+{
+    quint32 size = 0;
+    read((char*)&size, sizeof(size));
+
+    QByteArray raw = read(size);
+    return QString::fromUtf8(raw.data(), size);
+}

@@ -172,11 +172,7 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
     // background color
     file->writeBlockIdentifier("graphWBgColor");
     {
-        QByteArray color = m_graph->getBgColor().name().toAscii();
-        quint32 size = color.size();
-
-        file->write((char*)&size, sizeof(size));
-        file->write(color);
+        file->writeString(m_graph->getBgColor().name());
     }
 
     // curves
@@ -211,10 +207,7 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
 
         // color
         file->writeBlockIdentifier("graphWCurveColor");
-        QByteArray color = info->curve->pen().color().name().toAscii();
-        size = color.length();
-        file->write((char*)&size, sizeof(quint32));
-        file->write(color.data());
+        file->writeString(info->curve->pen().color().name());
     }
 }
 
@@ -266,9 +259,7 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
     // background color
     if(file->seekToNextBlock("graphWBgColor", BLOCK_WIDGET))
     {
-        quint32 size = 0;
-        file->read((char*)&size, sizeof(size));
-        QString color = file->read(size);
+        QString color = file->readString();
         m_graph->setBgColor(QColor(color));
     }
 
@@ -315,9 +306,7 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         if(!file->seekToNextBlock("graphWCurveColor", "graphWCurve"))
             continue;
         {
-            quint32 size = 0;
-            file->read((char*)&size, sizeof(quint32));
-            color = file->read(size);
+            color = file->readString();
         }
 
         GraphDataSimple *dta = new GraphData(m_storage, info, m_sample_size, dataType);

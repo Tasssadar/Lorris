@@ -45,6 +45,9 @@ public:
     
     char* getBlockName(DataBlocks block);
 
+    void writeString(const QString& str);
+    QString readString();
+
 private:
     char *getBlockWithFormat(const char *block, quint8& lenght);
 

@@ -89,13 +89,7 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
 
     // source
     file->writeBlockIdentifier("scriptWSource");
-    {
-        QByteArray source = m_engine->getSource().toUtf8();
-        quint32 len = source.length();
-
-        file->write((char*)&len, sizeof(quint32));
-        file->write(source.data(), len);
-    }
+    file->writeString(m_engine->getSource());
 
     // terminal data
     file->writeBlockIdentifier("scriptWTerm");
@@ -125,12 +119,7 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     QString source = "";
     // source
     if(file->seekToNextBlock("scriptWSource", BLOCK_WIDGET))
-    {
-        quint32 size = 0;
-        file->read((char*)&size, sizeof(quint32));
-
-        source = QString::fromUtf8(file->read(size), size);
-    }
+        source = file->readString();
 
     // terminal data
     if(file->seekToNextBlock("scriptWTerm", BLOCK_WIDGET))
