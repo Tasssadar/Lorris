@@ -275,9 +275,11 @@ ConnectionManager2::ConnectionManager2(QObject * parent)
     if (config.isValid())
         this->applyConfig(config);
 
+#ifdef HAVE_LIBUSBY
     config = sConfig.get(CFG_VARIANT_USB_ENUMERATOR);
     if (config.isValid())
         m_usbShupitoEnumerator->applyConfig(config);
+#endif // HAVE_LIBUSBY
 }
 
 ConnectionManager2::~ConnectionManager2()
@@ -285,7 +287,9 @@ ConnectionManager2::~ConnectionManager2()
     // If this were a perfect world, the config would be stored in a *structured*
     // storage, also known as JSON.
     sConfig.set(CFG_VARIANT_CONNECTIONS, this->config());
+#ifdef HAVE_LIBUSBY
     sConfig.set(CFG_VARIANT_USB_ENUMERATOR, m_usbShupitoEnumerator->config());
+#endif // HAVE_LIBUSBY
 
     m_serialPortEnumerator.reset();
 #ifdef HAVE_LIBUSBY
