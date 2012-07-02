@@ -89,7 +89,7 @@
 <context>
     <name>ButtonWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="86"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="74"/>
         <source>Button</source>
         <translation>Tlačítko</translation>
     </message>
@@ -647,72 +647,67 @@
         <translation>Nastavit pro existující křivku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="36"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="39"/>
         <source>unsigned 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="37"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="40"/>
         <source>unsigned 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="38"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="41"/>
         <source>unsigned 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="39"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="42"/>
         <source>unsigned 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="41"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="44"/>
         <source>signed 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="42"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="45"/>
         <source>signed 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="43"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="46"/>
         <source>signed 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="44"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="47"/>
         <source>signed 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="46"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="49"/>
         <source>float (4 bytes)</source>
         <translation>float (4 byty)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="47"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="50"/>
         <source>double (8 bytes)</source>
         <translation>double (8 bytů)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="119"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="114"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="128"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="123"/>
         <source>You have to set name!</source>
         <translation>Musíte nastavit jméno křivky!</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="135"/>
-        <source>You have to set color!</source>
-        <translation>Musíte nastavit barvu křivky!</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="147"/>
         <source>This name is already taken</source>
         <translation>Tohle jméno je už zabrané</translation>
     </message>
@@ -720,32 +715,27 @@
 <context>
     <name>GraphCurveEditWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="14"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="20"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="20"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="36"/>
         <source>Name</source>
         <translation>Jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="30"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="46"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="41"/>
-        <source>Type:</source>
-        <translation>Zadat:</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="95"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="26"/>
         <source>Curve</source>
         <translation>Křivka</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="81"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="77"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
@@ -946,62 +936,67 @@
 <context>
     <name>GraphWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="29"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="32"/>
         <source>Graph</source>
         <translation>Graf</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="56"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="59"/>
         <source>Edit curve properties</source>
         <translation>Upravit vlastnosti křivky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="59"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="62"/>
         <source>Remove Curve</source>
         <translation>Odebrat křivku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="63"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="66"/>
         <source>Sample size</source>
         <translation>Velikost vzorku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="68"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="71"/>
         <source>Show all data</source>
         <translation>Zobrazit všechna data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="68"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="71"/>
         <source>Set custom...</source>
         <translation>Zadat...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="68"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="71"/>
         <source>According to X axis</source>
         <translation>Podle osy X</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="88"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="91"/>
         <source>Export data...</source>
         <translation>Exportovat data...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="90"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="92"/>
+        <source>Change background...</source>
+        <translation>Změnit barvu pozadí...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="94"/>
         <source>Show legend</source>
         <translation>Zobrazit legendu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="94"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="98"/>
         <source>Automaticaly scroll graph</source>
         <translation>Automaticky posouvat graf</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="433"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="446"/>
         <source>Set sample size</source>
         <translation>Nastavení velikosti vzorku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="433"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="446"/>
         <source>Sample size:</source>
         <translation>Velikost vzorku</translation>
     </message>
@@ -1009,7 +1004,7 @@
 <context>
     <name>GraphWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="554"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="577"/>
         <source>Graph</source>
         <translation>Graf</translation>
     </message>
@@ -2770,7 +2765,7 @@ def onKeyPress(key):
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="229"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="218"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -3511,39 +3506,39 @@ ke změně uspořádání</translation>
 <context>
     <name>avr232boot</name>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="127"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="118"/>
         <source>Can&apos;t read chip ID!</source>
         <translation>Nemůžu přečíst ID čipu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="140"/>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="193"/>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="239"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="131"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="184"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="230"/>
         <source>Unsupported chip: </source>
         <translation>Nepodporovaný čip: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="148"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="139"/>
         <source>Error making pages: </source>
         <translation>Chyba při vytváření stránek: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="155"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="146"/>
         <source>Flashing into </source>
         <translation>Čip: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="178"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="169"/>
         <source>Timeout during flashing!</source>
         <translation>Timeout při nahrávání programu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="223"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="214"/>
         <source>Timeout during EEPROM read.</source>
         <translation>Timout při čtení EEPROM.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="272"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="263"/>
         <source>Timout during EEPROM write!</source>
         <translation>Timout při zapisování EEPROM!</translation>
     </message>
