@@ -11,6 +11,9 @@
 #include <QSignalMapper>
 #include <QInputDialog>
 #include <QTimer>
+#include <QColorDialog>
+#include <qwt_plot_canvas.h>
+#include <qwt_plot_grid.h>
 
 #include "graphwidget.h"
 #include "graph.h"
@@ -86,6 +89,7 @@ void GraphWidget::setUp(Storage *storage)
     updateSampleSize();
 
     QAction *exportAct = contextMenu->addAction(tr("Export data..."));
+    QAction *bgAct = contextMenu->addAction(tr("Change background..."));
 
     m_showLegend = contextMenu->addAction(tr("Show legend"));
     m_showLegend->setCheckable(true);
@@ -100,6 +104,7 @@ void GraphWidget::setUp(Storage *storage)
 
     connect(m_editCurve,  SIGNAL(triggered()),        SLOT(editCurve()));
     connect(exportAct,    SIGNAL(triggered()),        SLOT(exportData()));
+    connect(bgAct,        SIGNAL(triggered()),        SLOT(changeBackground()));
     connect(sampleMap,    SIGNAL(mapped(int)),        SLOT(sampleSizeChanged(int)));
     connect(m_showLegend, SIGNAL(triggered(bool)),    SLOT(showLegend(bool)));
     connect(m_autoScroll, SIGNAL(triggered(bool)),    SLOT(toggleAutoScroll(bool)));
@@ -162,6 +167,16 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
     file->writeBlockIdentifier("graphWAutoScroll");
     {
         file->write((char*)&m_enableAutoScroll, sizeof(bool));
+    }
+
+    // background color
+    file->writeBlockIdentifier("graphWBgColor");
+    {
+        QByteArray color = m_graph->getBgColor().name().toAscii();
+        quint32 size = color.size();
+
+        file->write((char*)&size, sizeof(size));
+        file->write(color);
     }
 
     // curves
@@ -246,6 +261,15 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         bool enable;
         file->read((char*)&enable, sizeof(enable));
         toggleAutoScroll(enable);
+    }
+
+    // background color
+    if(file->seekToNextBlock("graphWBgColor", BLOCK_WIDGET))
+    {
+        quint32 size = 0;
+        file->read((char*)&size, sizeof(size));
+        QString color = file->read(size);
+        m_graph->setBgColor(QColor(color));
     }
 
     if(!file->seekToNextBlock("graphWCurveCount", BLOCK_WIDGET))
@@ -547,6 +571,16 @@ void GraphWidget::exportData()
 {
     GraphExport ex(&m_curves, this);
     ex.exec();
+}
+
+void GraphWidget::changeBackground()
+{
+    QColor c = QColorDialog::getColor(m_graph->canvas()->palette().color(QPalette::Window));
+
+    if(!c.isValid())
+        return;
+
+    m_graph->setBgColor(c);
 }
 
 GraphWidgetAddBtn::GraphWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

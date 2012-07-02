@@ -60,6 +60,7 @@ private slots:
      void updateSampleSize();
      void tryReplot();
      void exportData();
+     void changeBackground();
 
 private:
      void updateRemoveMapping();

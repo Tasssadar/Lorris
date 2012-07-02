@@ -8,7 +8,10 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <QColor>
 #include <qwt_plot.h>
+
+class QwtPlotGrid;
 
 class Graph : public QwtPlot
 {
@@ -27,12 +30,18 @@ public:
     double YupperBound();
     double YlowerBound();
 
+    void setBgColor(const QColor& c);
+    QColor getBgColor();
+
 protected:
     void mousePressEvent(QMouseEvent * event);
     void wheelEvent(QWheelEvent *event);
 
 public slots:
     void showCurve(QwtPlotItem *item, bool on);
+
+private:
+    QwtPlotGrid *m_grid;
 };
 
 #endif // GRAPH_H
