@@ -25,7 +25,7 @@ public:
     ~GraphCurveAddDialog();
 
     QString getName();
-    QString getColor();
+    QColor getColor();
     QString getCurrentCurve();
     quint8 getDataType();
     QString getEditName();
@@ -35,12 +35,13 @@ public:
 
 private slots:
     void newOrEditCurve(bool newCurve);
-    void colorChanged(int idx);
     void tryAccept();
     void curveChanged(int idx);
+    void selectColor();
 
 private:
     void showError(const QString& text);
+    void setButtonColor(const QColor& clr);
 
     Ui::GraphCurveAddDialog *ui;
     Ui::GraphCurveEditWidget *edit_widget_ui;

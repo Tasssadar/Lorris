@@ -341,7 +341,7 @@ void GraphWidget::addCurve()
     {
         GraphData *data = new GraphData(m_storage, m_info, m_sample_size, m_add_dialog->getDataType());
         GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), data);
-        curve->setPen(QPen(QColor(m_add_dialog->getColor())));
+        curve->setPen(QPen(m_add_dialog->getColor()));
         curve->attach(m_graph);
         m_graph->showCurve(curve, true);
         m_curves.push_back(new GraphCurveInfo(curve, m_info));
@@ -373,8 +373,8 @@ void GraphWidget::addCurve()
         m_deleteAct[m_add_dialog->getName()] = deleteCurve;
 
         info->curve->setTitle(m_add_dialog->getName());
-        info->curve->setPen(QPen(QColor(m_add_dialog->getColor())));
-        if(m_add_dialog->forceEdit())
+        info->curve->setPen(QPen(m_add_dialog->getColor()));
+        if(!m_add_dialog->forceEdit())
             info->curve->setDataInfo(m_info);
         info->curve->setDataType(m_add_dialog->getDataType());
     }
