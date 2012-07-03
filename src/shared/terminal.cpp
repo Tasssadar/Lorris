@@ -44,10 +44,10 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
     QColor color_black(0, 0, 0);
     QColor color_white(255, 255, 255);
-    QPalette palette;
-    palette.setColor(QPalette::Base, color_black);
-    palette.setColor(QPalette::Text, color_white);
-    setPalette(palette);
+    QPalette p = palette();
+    p.setColor(QPalette::Base, color_black);
+    p.setColor(QPalette::Text, color_white);
+    setPalette(p);
 
     m_paused = false;
     m_fmt = FMT_MAX+1;
@@ -520,13 +520,11 @@ void Terminal::paintEvent(QPaintEvent *)
         y = (cursor.y() - startY)*m_char_height;
         m_cursor.moveTo(x, y);
 
-        painter.setPen(QPen(Qt::green));
+        painter.setPen(QPen(m_settings.colors[COLOR_CURSOR]));
         if(hasFocus())
-            painter.setBrush(QBrush(Qt::green, Qt::SolidPattern));
+            painter.setBrush(QBrush(m_settings.colors[COLOR_CURSOR], Qt::SolidPattern));
 
         painter.drawRect(m_cursor);
-
-        painter.setPen(QPen(Qt::white));
         painter.setBrush(Qt::NoBrush);
     }
 
@@ -563,8 +561,6 @@ void Terminal::paintEvent(QPaintEvent *)
             x = 0;
             y += m_char_height;
         }
-
-        painter.setPen(QPen(Qt::white));
         painter.setBrush(Qt::NoBrush);
     }
 
@@ -572,6 +568,9 @@ void Terminal::paintEvent(QPaintEvent *)
     std::size_t i = startY;
     int maxLines = i + height + 1;
     int maxLen = viewport()->width()/m_char_width + 1;
+
+    painter.setPen(QPen(m_settings.colors[COLOR_TEXT]));
+
     for(y = 0; (int)i < maxLines && i < lines().size(); ++i, y += m_char_height)
     {
         QString& l = lines()[i];
@@ -793,8 +792,12 @@ QString Terminal::getSettingsData()
     QString res;
     for(int i = 0; i < SET_MAX; ++i)
         res += QString("%1;").arg(m_settings.chars[i]);
+
     res += QString("|%1|").arg(m_settings.tabReplace);
-    res += getFontData();
+    res += getFontData() + "|";
+
+    for(int i = 0; i < COLOR_MAX; ++i)
+        res += QString("%1;").arg(m_settings.colors[i].name());
     return res;
 }
 
@@ -813,6 +816,18 @@ void Terminal::loadSettings(const QString& data)
         m_settings.tabReplace = addVals[0].toUInt();
 
     loadFont(lst[2]);
+
+    if(lst.size() >= 4)
+    {
+        QStringList colors = lst[3].split(';', QString::SkipEmptyParts);
+        for(int i = 0; i < colors.size() && i < COLOR_MAX; ++i)
+            m_settings.colors[i] = QColor(colors[i]);
+
+        QPalette p = palette();
+        p.setColor(QPalette::Base, m_settings.colors[COLOR_BG]);
+        p.setColor(QPalette::Text, m_settings.colors[COLOR_TEXT]);
+        setPalette(p);
+    }
 }
 
 void Terminal::setFont(const QFont &f)
@@ -825,12 +840,13 @@ void Terminal::setFont(const QFont &f)
     m_cursor.setSize(QSize(m_char_width, m_char_height));
 
     m_changed = true;
+    m_settings.font = f;
     updateScrollBars();
 }
 
 void Terminal::showSettings()
 {
-    TerminalSettings s(terminal_settings(m_settings, font()), this);
+    TerminalSettings s(m_settings, this);
     connect(&s, SIGNAL(applySettings(terminal_settings)), SLOT(applySettings(terminal_settings)));
 
     if(s.exec() == QDialog::Accepted)
@@ -841,6 +857,12 @@ void Terminal::applySettings(const terminal_settings& set)
 {
     m_settings.copy(set);
     setFont(set.font);
+
+    QPalette p = palette();
+    p.setColor(QPalette::Base, m_settings.colors[COLOR_BG]);
+    p.setColor(QPalette::Text, m_settings.colors[COLOR_TEXT]);
+    setPalette(p);
+
     redrawAll();
 
     emit settingsChanged();
@@ -866,9 +888,3 @@ void Terminal::redrawAll()
     pause(paused);
 }
 
-void Terminal::term_settings_priv::copy(const terminal_settings &set)
-{
-    for(int i = 0; i < SET_MAX; ++i)
-        chars[i] = set.chars[i];
-    tabReplace = set.tabReplace;
-}

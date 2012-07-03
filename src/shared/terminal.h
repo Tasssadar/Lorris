@@ -33,6 +33,15 @@ enum settings
     SET_MAX
 };
 
+enum set_colors
+{
+    COLOR_BG = 0,
+    COLOR_TEXT,
+    COLOR_CURSOR,
+
+    COLOR_MAX
+};
+
 enum newlineBehavior
 {
     NL_NEWLINE_RETURN = 0,
@@ -55,11 +64,46 @@ enum term_input
     INPUT_MAX
 };
 
+
+struct terminal_settings
+{
+    terminal_settings()
+    {
+        chars[SET_REPLACE_TAB] = 0;
+        chars[SET_ALARM] = 1;
+        chars[SET_FORMFEED] = 1;
+        chars[SET_BACKSPACE] = 1;
+        chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
+        chars[SET_RETURN] = NL_RETURN;
+        chars[SET_IGNORE_NULL] = 1;
+        tabReplace = 4;
+
+        colors[COLOR_BG] = Qt::black;
+        colors[COLOR_TEXT] = Qt::white;
+        colors[COLOR_CURSOR] = Qt::green;
+    }
+
+    void copy(const terminal_settings& set)
+    {
+        for(int i = 0; i < SET_MAX; ++i)
+            chars[i] = set.chars[i];
+
+        for(int i = 0; i < COLOR_MAX; ++i)
+            colors[i] = set.colors[i];
+
+        tabReplace = set.tabReplace;
+        font = set.font;
+    }
+
+    quint8 chars[SET_MAX];
+    quint8 tabReplace;
+    QColor colors[COLOR_MAX];
+    QFont font;
+};
+
 class Terminal : public QAbstractScrollArea
 {
     Q_OBJECT
-
-    friend struct terminal_settings;
 
 Q_SIGNALS:
     void keyPressed(QString key);
@@ -116,26 +160,6 @@ private slots:
     void updateScrollBars();
 
 private:
-    struct term_settings_priv
-    {
-        term_settings_priv()
-        {
-            chars[SET_REPLACE_TAB] = 0;
-            chars[SET_ALARM] = 1;
-            chars[SET_FORMFEED] = 1;
-            chars[SET_BACKSPACE] = 1;
-            chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
-            chars[SET_RETURN] = NL_RETURN;
-            chars[SET_IGNORE_NULL] = 1;
-            tabReplace = 4;
-        }
-
-        void copy(const terminal_settings& set);
-
-        quint8 chars[SET_MAX];
-        quint8 tabReplace;
-    };
-
     void handleInput(const QString &data, int key = 0);
     void addLine(quint32 pos, QChar *&line_start, QChar *&line_end);
     void newlineChar(quint8 option, quint32& pos);
@@ -183,35 +207,7 @@ private:
 
     bool m_changed;
 
-    term_settings_priv m_settings;
+    terminal_settings m_settings;
 };
-
-struct terminal_settings
-{
-    terminal_settings()
-    {
-        chars[SET_REPLACE_TAB] = 0;
-        chars[SET_ALARM] = 1;
-        chars[SET_FORMFEED] = 1;
-        chars[SET_BACKSPACE] = 1;
-        chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
-        chars[SET_RETURN] = NL_RETURN;
-        chars[SET_IGNORE_NULL] = 1;
-        tabReplace = 4;
-    }
-
-    terminal_settings(const Terminal::term_settings_priv& set, const QFont& fnt)
-    {
-        for(int i = 0; i < SET_MAX; ++i)
-            chars[i] = set.chars[i];
-        tabReplace = set.tabReplace;
-        font = fnt;
-    }
-
-    quint8 chars[SET_MAX];
-    quint8 tabReplace;
-    QFont font;
-};
-
 
 #endif // TERMINAL_H

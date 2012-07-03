@@ -3447,6 +3447,26 @@ ke změně uspořádání</translation>
         <source>128</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="331"/>
+        <source>Colors</source>
+        <translation>Barvy</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="337"/>
+        <source>Background:</source>
+        <translation>Pozadí:</translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="357"/>
+        <source>Text:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/shared/terminalsettings.ui" line="380"/>
+        <source>Cursor:</source>
+        <translation>Kurzor:</translation>
+    </message>
 </context>
 <context>
     <name>TerminalWidget</name>
