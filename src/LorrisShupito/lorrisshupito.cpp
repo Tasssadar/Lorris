@@ -181,6 +181,9 @@ void LorrisShupito::initMenus()
     connect(ui->memTabs, SIGNAL(currentChanged(int)), readBtnMenu,  SLOT(setActiveAction(int)));
     connect(ui->memTabs, SIGNAL(currentChanged(int)), writeBtnMenu, SLOT(setActiveAction(int)));
 
+    readBtnMenu->setActiveAction(0);
+    writeBtnMenu->setActiveAction(0);
+
     // top menu bar
     QMenu *chipBar = new QMenu(tr("Chip"), this);
     addTopMenu(chipBar);
