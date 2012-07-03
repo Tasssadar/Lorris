@@ -233,7 +233,7 @@ void DataWidget::dropEvent(QDropEvent *event)
     qint16 cmd = data[2].toInt();
     setInfo(device, cmd, pos);
     m_assigned = true;
-    emit updateData();
+    emit updateForMe();
 }
 
 quint8 DataWidget::getDragAction(const QPoint &clickPos)

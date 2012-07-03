@@ -399,7 +399,7 @@ void GraphWidget::addCurve()
     m_add_dialog = NULL;
 
     m_assigned = true;
-    emit updateData();
+    emit updateForMe();
 }
 
 void GraphWidget::updateVisibleArea()

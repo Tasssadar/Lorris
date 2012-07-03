@@ -672,3 +672,15 @@ void LorrisAnalyzer::setConnection(PortConnection *con)
     if(con)
         connect(this, SIGNAL(SendData(QByteArray)), con, SLOT(SendData(QByteArray)));
 }
+
+void LorrisAnalyzer::updateForWidget()
+{
+    Q_ASSERT(sender());
+    if(!sender())
+        return;
+
+    m_data_changed = true;
+
+    if(m_curIndex && (quint32)m_curIndex < m_storage->getSize())
+        ((DataWidget*)sender())->newData(m_storage->get(m_curIndex), m_curIndex);
+}

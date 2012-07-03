@@ -142,7 +142,7 @@ void BarWidget::setDataType(int i)
             bitsAction[y]->setChecked(y == i);
 
     m_numberType = i;
-    emit updateData();
+    emit updateForMe();
 }
 
 void BarWidget::rangeSelected()
@@ -172,7 +172,7 @@ void BarWidget::rangeSelected()
     if(dialog.getRes())
         m_bar->setRange(dialog.getMin(), dialog.getMax());
 
-    emit updateData();
+    emit updateForMe();
 }
 
 void BarWidget::rotationSelected(int i)

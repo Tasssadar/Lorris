@@ -93,6 +93,8 @@ class LorrisAnalyzer : public PortConnWorkTab
         void indexChanged(int value);
         void showTitleTriggered(bool checked);
 
+        void updateForWidget();
+
     private:
         void readData(const QByteArray& data);
         bool load(QString& name, quint8 mask);
