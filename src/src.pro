@@ -285,14 +285,19 @@ RESOURCES += \
     LorrisShupito/shupitoicons.qrc \
     icons.qrc \
     actions.qrc \
-    shared/definitions.qrc
+    shared/definitions.qrc \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc
 
 RC_FILE = winicon.rc
 
 OTHER_FILES += \
     ../dep/qextserialport/qextserialport.pri \
     shared/fusedesc.txt \
-    shared/chipdefs.txt
+    shared/chipdefs.txt \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {

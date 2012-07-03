@@ -42,10 +42,13 @@ private slots:
     void on_loadBtn_clicked();
     void on_langBox_currentIndexChanged(int idx);
     void on_errorBtn_toggled(bool checked);
+    void on_exampleBox_activated(int index);
 
     void contentsChange(int position, int charsRemoved, int charsAdded);
 
 private:
+    void updateExampleList();
+
     Ui::ScriptEditor *ui;
     LineNumber *m_line_num;
     bool m_changed;

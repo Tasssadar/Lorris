@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/examples">
+        <file>snake.js</file>
+        <file>snake.py</file>
+        <file>default.js</file>
+        <file>default.py</file>
+    </qresource>
+</RCC>

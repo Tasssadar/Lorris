@@ -256,6 +256,11 @@ void PythonFunctions::moveWidget(QWidget *w, int x, int y)
     w->move(x, y);
 }
 
+void PythonFunctions::resizeWidget(QWidget *w, int width, int height)
+{
+    w->resize(width, height);
+}
+
 DataWidget *PythonFunctions::newWidget(int type, QString title, int width, int height, int x, int y)
 {
     DataWidget *w = m_engine->m_area->addWidget(QPoint(0,0), type);

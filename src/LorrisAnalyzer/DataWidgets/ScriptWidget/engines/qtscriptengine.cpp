@@ -77,6 +77,7 @@ void QtScriptEngine::prepareNewContext()
     QScriptValue newTimer = m_engine.newFunction(&QtScriptEngine_private::__newTimer);
     QScriptValue addComboItems = m_engine.newFunction(&QtScriptEngine_private::__addComboBoxItems);
     QScriptValue moveW = m_engine.newFunction(&QtScriptEngine_private::__moveWidget);
+    QScriptValue resizeW = m_engine.newFunction(&QtScriptEngine_private::__resizeWidget);
 
     QScriptValue numberW = m_engine.newFunction(&QtScriptEngine_private::__newNumberWidget);
     QScriptValue barW = m_engine.newFunction(&QtScriptEngine_private::__newBarWidget);
@@ -98,6 +99,7 @@ void QtScriptEngine::prepareNewContext()
     m_global->setProperty("newTimer", newTimer);
     m_global->setProperty("addComboBoxItems", addComboItems);
     m_global->setProperty("moveWidget", moveW);
+    m_global->setProperty("resizeWidget", resizeW);
 
     m_global->setProperty("newNumberWidget", numberW);
     m_global->setProperty("newBarWidget", barW);
@@ -575,6 +577,20 @@ QScriptValue QtScriptEngine_private::__moveWidget(QScriptContext *context, QScri
 
     QWidget *w = (QWidget*)context->argument(0).toQObject();
     w->move(context->argument(1).toInt32(), context->argument(2).toInt32());
+
+    return QScriptValue();
+}
+
+QScriptValue QtScriptEngine_private::__resizeWidget(QScriptContext *context, QScriptEngine */*engine*/)
+{
+    if(context->argumentCount() != 3)
+        return QScriptValue();
+
+    if(!context->argument(0).isQObject() || !context->argument(0).toQObject()->inherits("QWidget"))
+        return QScriptValue();
+
+    QWidget *w = (QWidget*)context->argument(0).toQObject();
+    w->resize(context->argument(1).toInt32(), context->argument(2).toInt32());
 
     return QScriptValue();
 }
