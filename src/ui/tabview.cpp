@@ -18,7 +18,10 @@
 #include "homedialog.h"
 #include "chooseconnectiondlg.h"
 #include "../WorkTab/WorkTabMgr.h"
-#include "../updater.h"
+
+#ifdef Q_OS_WIN
+ #include "../updater.h"
+#endif
 
 #define LAYOUT_MARGIN 4
 
@@ -356,11 +359,16 @@ void TabView::newTab()
 
 void TabView::checkForUpdate()
 {
+#ifdef Q_OS_WIN
     Utils::printToStatusBar(tr("Checking for update..."), 0);
     if(Updater::doUpdate(false))
         emit closeLorris();
     else
         Utils::printToStatusBar(tr("No update available"));
+#else
+    Utils::ThrowException(QObject::tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
+                                      "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
+#endif
 }
 
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)

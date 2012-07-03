@@ -2073,7 +2073,7 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>NumberWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="278"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="281"/>
         <source>Number</source>
         <translation>Číslo</translation>
     </message>
@@ -2495,14 +2495,14 @@ stejného souboru vícekrát:</translation>
         <translation>Importovat binární data</translation>
     </message>
     <message>
-        <location filename="../src/updater.cpp" line="87"/>
+        <location filename="../src/updater.cpp" line="86"/>
         <source>Could not start updater.exe, you have to download new version manually!
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Nemůžu spustit updater.exe, musíte provést aktualizaci ručně.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/updater.cpp" line="94"/>
+        <location filename="../src/ui/tabview.cpp" line="369"/>
         <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
@@ -3007,8 +3007,8 @@ ke změně uspořádání</translation>
 <context>
     <name>SplitOverlay</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="531"/>
-        <location filename="../src/ui/tabview.cpp" line="534"/>
+        <location filename="../src/ui/tabview.cpp" line="539"/>
+        <location filename="../src/ui/tabview.cpp" line="542"/>
         <source>Split</source>
         <translation>Rozdělit</translation>
     </message>
@@ -3072,77 +3072,77 @@ ke změně uspořádání</translation>
 <context>
     <name>TabView</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="36"/>
+        <location filename="../src/ui/tabview.cpp" line="39"/>
         <source>&amp;File</source>
         <translation>&amp;Soubor</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="37"/>
+        <location filename="../src/ui/tabview.cpp" line="40"/>
         <source>&amp;Help</source>
         <translation>&amp;Nápověda</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="39"/>
+        <location filename="../src/ui/tabview.cpp" line="42"/>
         <source>&amp;New</source>
         <translation>&amp;Nový</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="52"/>
+        <location filename="../src/ui/tabview.cpp" line="55"/>
         <source>Connection &amp;manager...</source>
         <translation>&amp;Manažer připojení...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="53"/>
+        <location filename="../src/ui/tabview.cpp" line="56"/>
         <source>&amp;Quit</source>
         <translation>&amp;Ukončit</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="55"/>
+        <location filename="../src/ui/tabview.cpp" line="58"/>
         <source>Language</source>
         <translation>Jazyk</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="64"/>
+        <location filename="../src/ui/tabview.cpp" line="67"/>
         <source>Same as OS - </source>
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="76"/>
+        <location filename="../src/ui/tabview.cpp" line="79"/>
         <source>Check for update</source>
         <translation>Zkontrolovat aktualizace</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="77"/>
+        <location filename="../src/ui/tabview.cpp" line="80"/>
         <source>About Lorris...</source>
         <translation>O Lorris...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="318"/>
+        <location filename="../src/ui/tabview.cpp" line="321"/>
         <source>Restart</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="319"/>
+        <location filename="../src/ui/tabview.cpp" line="322"/>
         <source>You need to restart Lorris for this change to take effect</source>
         <translation>Musíte restartovat Lorris aby se tato změna projevila</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="340"/>
+        <location filename="../src/ui/tabview.cpp" line="343"/>
         <source>Lorris version </source>
         <translation>Verze Lorris </translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="345"/>
+        <location filename="../src/ui/tabview.cpp" line="348"/>
         <source>About Lorris</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="359"/>
+        <location filename="../src/ui/tabview.cpp" line="363"/>
         <source>Checking for update...</source>
         <translation>Kontroluji aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="363"/>
+        <location filename="../src/ui/tabview.cpp" line="367"/>
         <source>No update available</source>
         <translation>Žádná aktualizace není dostupná</translation>
     </message>
@@ -3498,12 +3498,12 @@ ke změně uspořádání</translation>
         <translation>Zarovnat widgety k síti</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="433"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="434"/>
         <source>Grid size</source>
         <translation>Rozteč sítě</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="433"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="434"/>
         <source>Enter grid size in pixels</source>
         <translation>Zadejte rozteč sítě v pixelech</translation>
     </message>

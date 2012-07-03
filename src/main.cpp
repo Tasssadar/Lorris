@@ -11,13 +11,15 @@
 #include <QLibraryInfo>
 #include <stdio.h>
 
-#include "updater.h"
 #include "revision.h"
 #include "ui/mainwindow.h"
 #include "config.h"
-
 #include "connection/connectionmgr2.h"
 #include "WorkTab/WorkTabMgr.h"
+
+#ifdef Q_OS_WIN
+ #include "updater.h"
+#endif
 
 static bool checkArgs(int argc, char** argv, QStringList& openFiles)
 {
@@ -92,8 +94,10 @@ int main(int argc, char *argv[])
     psConMgr2 = new ConnectionManager2(&a);
     installTranslator(a);
 
+#ifdef Q_OS_WIN
     if(Updater::doUpdate(true))
         return 0;
+#endif
 
     MainWindow w;
     w.show(openFiles);
