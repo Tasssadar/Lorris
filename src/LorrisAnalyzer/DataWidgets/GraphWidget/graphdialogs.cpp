@@ -94,7 +94,7 @@ QString GraphCurveAddDialog::getEditName()
 
 QColor GraphCurveAddDialog::getColor()
 {
-    return edit_widget_ui->colorBtn->palette().color(QPalette::Button);
+    return m_color;
 }
 
 QString GraphCurveAddDialog::getCurrentCurve()
@@ -164,7 +164,7 @@ void GraphCurveAddDialog::curveChanged(int idx)
 
 void GraphCurveAddDialog::selectColor()
 {
-    QColor color = QColorDialog::getColor(edit_widget_ui->colorBtn->palette().color(QPalette::Button), this);
+    QColor color = QColorDialog::getColor(m_color, this);
 
     if(!color.isValid())
         return;
@@ -174,7 +174,8 @@ void GraphCurveAddDialog::selectColor()
 
 void GraphCurveAddDialog::setButtonColor(const QColor& clr)
 {
-    QPalette p(edit_widget_ui->colorBtn->palette());
-    p.setColor(QPalette::Button, clr);
-    edit_widget_ui->colorBtn->setPalette(p);
+    QPixmap map(50, 25);
+    map.fill(clr);
+    m_color = clr;
+    edit_widget_ui->colorBtn->setIcon(QIcon(map));
 }

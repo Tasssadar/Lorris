@@ -47,6 +47,7 @@ private:
     Ui::GraphCurveEditWidget *edit_widget_ui;
     QWidget *m_edit_widget;
     std::vector<GraphCurveInfo*> *m_curves;
+    QColor m_color;
 };
 
 #endif // GRAPHDIALOGS_H
