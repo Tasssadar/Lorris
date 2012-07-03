@@ -20,9 +20,8 @@
 QString PythonEngine::getNewModuleName()
 {
     static int i = 0;
-    return QString(5, i++);
+    return QString::number(i++).repeated(3);
 }
-
 
 PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent) :
     ScriptEngine(area, w_id, terminal, parent), m_functions(this, parent)

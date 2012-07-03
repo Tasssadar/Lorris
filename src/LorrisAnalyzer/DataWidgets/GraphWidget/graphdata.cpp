@@ -14,6 +14,11 @@ GraphDataSimple::GraphDataSimple() : QwtSeriesData<QPointF>()
     resetMinMax();
 }
 
+GraphDataSimple::~GraphDataSimple()
+{
+    clear();
+}
+
 QPointF GraphDataSimple::sample(size_t i) const
 {
     if(i < m_data.size())
