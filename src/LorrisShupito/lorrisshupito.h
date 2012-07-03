@@ -152,6 +152,8 @@ private slots:
     void overvoltageChanged(double val);
     void overvoltageTurnOffVcc(bool enabled);
 
+    void timeout();
+
 private:
     void log(const QString& text);
     bool checkVoltage(bool active);
@@ -221,6 +223,8 @@ private:
     chip_definition m_cur_def;
 
     ConnectButton * m_connectButton;
+
+    QTimer m_timout_timer;
 };
 
 #endif // LORRISSHUPITO_H

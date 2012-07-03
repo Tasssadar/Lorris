@@ -50,6 +50,8 @@ LorrisShupito::LorrisShupito()
     m_overvcc = 0.0;
     m_enable_overvcc = false;
 
+    m_timout_timer.setInterval(1000);
+
     m_fuse_widget = new FuseWidget(this);
     ui->mainLayout->addWidget(m_fuse_widget);
 
@@ -86,6 +88,7 @@ LorrisShupito::LorrisShupito()
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
     connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
+    connect(&m_timout_timer,     SIGNAL(timeout()),                SLOT(timeout()));
 
     int w = ui->hideFusesBtn->fontMetrics().height()+10;
     ui->hideLogBtn->setFixedHeight(w);
@@ -118,10 +121,10 @@ LorrisShupito::LorrisShupito()
     m_shupito = new Shupito(this);
     m_desc = NULL;
 
-    connect(m_shupito, SIGNAL(descRead(bool)), this, SLOT(descRead(bool)));
-    connect(m_shupito, SIGNAL(vccValueChanged(quint8,double)), this, SLOT(vccValueChanged(quint8,double)));
-    connect(m_shupito, SIGNAL(vddDesc(vdd_setup)), this, SLOT(vddSetup(vdd_setup)));
-    connect(m_shupito, SIGNAL(tunnelStatus(bool)), this, SLOT(tunnelStateChanged(bool)));
+    connect(m_shupito, SIGNAL(descRead(bool)),                  SLOT(descRead(bool)));
+    connect(m_shupito, SIGNAL(vccValueChanged(quint8,double)),  SLOT(vccValueChanged(quint8,double)));
+    connect(m_shupito, SIGNAL(vddDesc(vdd_setup)),              SLOT(vddSetup(vdd_setup)));
+    connect(m_shupito, SIGNAL(tunnelStatus(bool)),              SLOT(tunnelStateChanged(bool)));
 
     m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
 
@@ -310,6 +313,7 @@ void LorrisShupito::connectedStatus(bool connected)
     {
         m_state |= STATE_DISCONNECTED;
         updateStartStopUi(false);
+        m_timout_timer.stop();
     }
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
@@ -429,6 +433,8 @@ void LorrisShupito::descRead(bool correct)
 
 void LorrisShupito::vccValueChanged(quint8 id, double value)
 {
+    m_timout_timer.start();
+
     if(id == 0 && !ui->engineLabel->text().isEmpty() && m_vcc != value)
     {
         if((value < 0 ? -value : value) < 0.03)
@@ -1410,4 +1416,10 @@ void LorrisShupito::flashWarnBox(bool checked)
 {
     ui->flashWarnBox->setChecked(checked);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_FLASH_WARN, checked);
+}
+
+void LorrisShupito::timeout()
+{
+    m_timout_timer.stop();
+    Utils::ThrowException(tr("Shupito is not responding, try to re-plug it into computer!"));
 }
