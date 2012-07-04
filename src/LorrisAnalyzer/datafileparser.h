@@ -10,6 +10,7 @@
 
 #include <QFile>
 #include <QBuffer>
+#include <vector>
 
 enum DataBlocks
 {

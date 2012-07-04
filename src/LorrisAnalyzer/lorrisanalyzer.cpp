@@ -84,6 +84,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     QAction* saveAct = menuData->addAction(QIcon(":/actions/save"), tr("Save"));
     QAction* saveAsAct = menuData->addAction(QIcon(":/actions/save-as"), tr("Save as..."));
     menuData->addSeparator();
+    QAction* importAct = menuData->addAction(tr("Import binary data"));
     QAction* exportAct = menuData->addAction(tr("Export binary data"));
     menuData->addSeparator();
     QAction* clearAct = menuData->addAction(QIcon(":/actions/clear"), tr("Clear received data"));
@@ -129,6 +130,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(m_title_action, SIGNAL(triggered(bool)), SLOT(showTitleTriggered(bool)));
     connect(structAct,      SIGNAL(triggered()),     SLOT(editStruture()));
     connect(exportAct,      SIGNAL(triggered()),     SLOT(exportBin()));
+    connect(importAct,      SIGNAL(triggered()),     SLOT(importBinAct()));
 
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better
@@ -288,9 +290,9 @@ void LorrisAnalyzer::doNewSource()
     }
 }
 
-void LorrisAnalyzer::importBinary(const QString& filename)
+void LorrisAnalyzer::importBinary(const QString& filename, bool reset)
 {
-    analyzer_packet *packet = SourceDialog::getStructure(NULL, NULL, filename);
+    analyzer_packet *packet = SourceDialog::getStructure(reset ? NULL : m_packet, NULL, filename);
     if(!packet)
     {
         m_parser->setPaused(false);
@@ -303,8 +305,16 @@ void LorrisAnalyzer::importBinary(const QString& filename)
         delete m_packet;
     }
 
-    resetDevAndStorage(packet);
     m_packet = packet;
+
+    if(reset)
+        resetDevAndStorage(packet);
+    else
+    {
+        ui->devTabs->setHeader(packet->header);
+        m_parser->setPacket(packet);
+        m_storage->setPacket(packet);
+    }
 
     m_parser->setPaused(false);
 
@@ -319,7 +329,7 @@ void LorrisAnalyzer::importBinary(const QString& filename)
 
     QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 100);
 
-    m_parser->newData(f.readAll());
+    m_parser->newData(f.readAll(), false);
     f.close();
 
     quint32 max = m_storage->getMaxIdx();
@@ -457,6 +467,19 @@ void LorrisAnalyzer::exportBin()
     emit statusBarMsg(tr("Binary data were exported to file \"%1\"").arg(name), 5000);
 
     sConfig.set(CFG_STRING_ANALYZER_IMPORT, filename);
+}
+
+void LorrisAnalyzer::importBinAct()
+{
+    static const QString filters = QObject::tr("Any file (*.*)");
+    QString filename = QFileDialog::getOpenFileName(NULL, tr("Import binary data"),
+                                                sConfig.get(CFG_STRING_ANALYZER_IMPORT),
+                                                filters);
+    if(filename.isEmpty())
+        return;
+
+    sConfig.set(CFG_STRING_ANALYZER_IMPORT, filename);
+    importBinary(filename, false);
 }
 
 void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
