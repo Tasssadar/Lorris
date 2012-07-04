@@ -101,6 +101,10 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
         file->write(data.data(), len);
     }
 
+    // terminal settings
+    file->writeBlockIdentifier("scriptWTermSett");
+    file->writeString(m_terminal->getSettingsData());
+
     // storage data
     m_engine->onSave();
     m_engine->getStorage()->saveToFile(file);
@@ -129,6 +133,13 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
 
         QByteArray data(file->read(size));
         m_terminal->appendText(data);
+    }
+
+    // terminal settings
+    if(file->seekToNextBlock("scriptWTermSett", BLOCK_WIDGET))
+    {
+        QString settings = file->readString();
+        m_terminal->loadSettings(settings);
     }
 
     createEngine();
