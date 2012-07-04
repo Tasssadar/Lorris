@@ -42,11 +42,9 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QColor color_black(0, 0, 0);
-    QColor color_white(255, 255, 255);
     QPalette p = palette();
-    p.setColor(QPalette::Base, color_black);
-    p.setColor(QPalette::Text, color_white);
+    p.setColor(QPalette::Base, Qt::black);
+    p.setColor(QPalette::Text, Qt::white);
     setPalette(p);
 
     m_paused = false;
@@ -95,6 +93,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     setFmt(FMT_TEXT);
 
     m_updateTimer.start(100);
+    viewport()->setAutoFillBackground(true);
 }
 
 Terminal::~Terminal()
