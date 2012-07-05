@@ -52,6 +52,11 @@ public:
     bool removable() const { return m_removable; }
     void setRemovable(bool value) { m_removable = value; emit changed(); }
 
+    virtual bool present() const { return true; }
+
+    bool persistent() const { return m_persistent; }
+    void setPersistent(bool value);
+
     quint8 getType() { return m_type; }
 
     void setIDString(const QString& str) { if (m_idString != str) { m_idString = str; emit changed(); } }
@@ -109,6 +114,7 @@ private:
     int m_refcount;
     int m_tabcount;
     bool m_removable;
+    bool m_persistent;
     quint8 m_type;
 };
 

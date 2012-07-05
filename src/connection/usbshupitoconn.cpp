@@ -29,14 +29,14 @@ struct ScopedConfigDescriptor
     libusby_config_descriptor * m_desc;
 };
 
-UsbAcmConnection::UsbAcmConnection(libusby_context * ctx)
-    : PortConnection(CONNECTION_USB_ACM), m_dev(0), m_handle(0), m_read_transfer(0), m_write_buffer_pos(0)
+UsbAcmConnection::UsbAcmConnection(libusby::context & ctx)
+    : PortConnection(CONNECTION_USB_ACM), m_handle(0), m_read_transfer(0), m_write_buffer_pos(0)
 {
-    m_read_transfer = libusby_alloc_transfer(ctx, 0);
+    m_read_transfer = libusby_alloc_transfer(ctx.get(), 0);
     if (!m_read_transfer)
         throw std::runtime_error("Failed to allocate a USB transfer.");
 
-    m_write_transfer = libusby_alloc_transfer(ctx, 0);
+    m_write_transfer = libusby_alloc_transfer(ctx.get(), 0);
     if (!m_write_transfer)
     {
         libusby_free_transfer(m_read_transfer);
@@ -47,7 +47,6 @@ UsbAcmConnection::UsbAcmConnection(libusby_context * ctx)
 UsbAcmConnection::~UsbAcmConnection()
 {
     this->Close();
-    this->setUsbDevice(0);
 
     libusby_free_transfer(m_read_transfer);
     libusby_free_transfer(m_write_transfer);
@@ -150,7 +149,7 @@ bool UsbAcmConnection::openImpl()
         return false;
 
     Q_ASSERT(m_handle == 0);
-    if (libusby_open(m_dev, &m_handle) < 0)
+    if (libusby_open(m_dev.get(), &m_handle) < 0)
         return false;
 
     if (!this->readConfig(m_handle))
@@ -187,21 +186,17 @@ void UsbAcmConnection::Close()
     this->SetState(st_disconnected);
 }
 
-bool UsbAcmConnection::setUsbDevice(libusby_device * dev)
+bool UsbAcmConnection::setUsbDevice(libusby::device const & dev)
 {
     if (this->state() == st_connected)
         this->Close();
 
     Q_ASSERT(this->state() == st_disconnected);
-    if (m_dev)
-        libusby_unref_device(m_dev);
     m_dev = dev;
-    if (m_dev)
-    {
-        libusby_ref_device(m_dev);
-        return this->updateStrings();
-    }
+    if (m_dev && !this->updateStrings())
+        return false;
 
+    emit changed();
     return true;
 }
 
@@ -280,14 +275,14 @@ static QString getUsbString(libusby_device_handle * h, int index, int langid)
 bool UsbAcmConnection::updateStrings()
 {
     libusby_device_descriptor desc;
-    if (libusby_get_device_descriptor_cached(m_dev, &desc) < 0)
+    if (libusby_get_device_descriptor_cached(m_dev.get(), &desc) < 0)
         return false;
 
     if (desc.iProduct == 0)
         return false;
 
     libusby_device_handle * h = 0;
-    if (libusby_open(m_dev, &h) < 0)
+    if (libusby_open(m_dev.get(), &h) < 0)
         return false;
 
     unsigned char buf[64];
@@ -316,19 +311,19 @@ bool UsbAcmConnection::updateStrings()
     return true;
 }
 
-bool UsbAcmConnection::isDeviceSupported(libusby_device * dev)
+bool UsbAcmConnection::isDeviceSupported(libusby::device & dev)
 {
     Q_ASSERT(dev);
 
     libusby_device_descriptor desc;
-    if (libusby_get_device_descriptor_cached(dev, &desc) < 0)
+    if (libusby_get_device_descriptor_cached(dev.get(), &desc) < 0)
         return false;
 
     bool res = false;
     for (int i = 0; !res && i < desc.bNumConfigurations; ++i)
     {
         libusby_config_descriptor * config;
-        if (libusby_get_config_descriptor_cached(dev, i, &config) < 0)
+        if (libusby_get_config_descriptor_cached(dev.get(), i, &config) < 0)
             continue;
 
         for (int j = 0; !res && j < config->bNumInterfaces; ++j)
@@ -343,7 +338,7 @@ bool UsbAcmConnection::isDeviceSupported(libusby_device * dev)
     return res;
 }
 
-UsbShupitoConnection::UsbShupitoConnection(libusby_context * ctx)
+UsbShupitoConnection::UsbShupitoConnection(libusby::context & ctx)
     : ShupitoConnection(CONNECTION_USB_SHUPITO)
 {
     m_acm_conn.reset(new UsbAcmConnection(ctx));
@@ -351,6 +346,7 @@ UsbShupitoConnection::UsbShupitoConnection(libusby_context * ctx)
     m_shupito_conn->setPort(m_acm_conn);
     connect(m_shupito_conn.data(), SIGNAL(packetRead(ShupitoPacket)), this, SIGNAL(packetRead(ShupitoPacket)));
     connect(m_shupito_conn.data(), SIGNAL(stateChanged(ConnectionState)), this, SLOT(shupitoConnStateChanged(ConnectionState)));
+    connect(m_acm_conn.data(), SIGNAL(changed()), this, SLOT(acmConnChanged()));
 }
 
 UsbShupitoConnection::~UsbShupitoConnection()
@@ -364,18 +360,13 @@ QString UsbShupitoConnection::details() const
 
 void UsbShupitoConnection::OpenConcurrent()
 {
-    this->SetState(st_connecting);
     m_shupito_conn->OpenConcurrent();
 }
 
 void UsbShupitoConnection::Close()
 {
-    if (this->state() == st_connected)
-    {
-        emit disconnecting();
-        this->SetState(st_disconnected);
-        m_shupito_conn->Close();
-    }
+    emit disconnecting();
+    m_shupito_conn->Close();
 }
 
 void UsbShupitoConnection::sendPacket(ShupitoPacket const & packet)
@@ -383,12 +374,12 @@ void UsbShupitoConnection::sendPacket(ShupitoPacket const & packet)
     m_shupito_conn->sendPacket(packet);
 }
 
-bool UsbShupitoConnection::isDeviceSupported(libusby_device * dev)
+bool UsbShupitoConnection::isDeviceSupported(libusby::device & dev)
 {
     Q_ASSERT(dev);
 
     libusby_device_descriptor desc;
-    if (libusby_get_device_descriptor_cached(dev, &desc) < 0)
+    if (libusby_get_device_descriptor_cached(dev.get(), &desc) < 0)
         return false;
 
     return desc.idVendor == 0x4a61 && (desc.idProduct == 0x679a/* || desc.idProduct == 0x679b*/);
@@ -396,14 +387,10 @@ bool UsbShupitoConnection::isDeviceSupported(libusby_device * dev)
 
 void UsbShupitoConnection::shupitoConnStateChanged(ConnectionState state)
 {
-    if (this->state() == st_disconnected && state != st_disconnected)
-        this->SetState(st_connecting);
+    this->SetState(state);
+}
 
-    if (this->state() == st_connecting)
-    {
-        if (state == st_disconnected)
-            this->SetState(st_disconnected);
-        if (state == st_connected)
-            this->SetState(st_connected);
-    }
+void UsbShupitoConnection::acmConnChanged()
+{
+    emit changed();
 }

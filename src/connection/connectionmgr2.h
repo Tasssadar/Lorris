@@ -41,7 +41,8 @@ private:
 
 #ifdef HAVE_LIBUSBY
 
-#include <libusby.h>
+#include "usbshupitoconn.h"
+#include <libusby.hpp>
 
 class UsbAcmConnection;
 
@@ -60,17 +61,15 @@ public slots:
     void refresh();
 
 private slots:
-    void acmConnectionDestroyed();
     void shupitoConnectionDestroyed();
 
 private:
-    libusby_context * m_usb_ctx;
+    libusby::context m_usb_ctx;
     QScopedPointer<QThread> m_eventDispatcher;
 
-    QHash<libusby_device *, Connection *> m_devmap;
-
-    QHash<QString, QString> m_dev_names;
-    QHash<Connection *, QString> m_unique_ids;
+    std::map<libusby::device, UsbShupitoConnection *> m_seen_devices;
+    QHash<QString, UsbShupitoConnection *> m_stand_by_conns;
+    QHash<UsbShupitoConnection *, QString> m_unique_ids;
 
     QTimer m_refreshTimer;
 };

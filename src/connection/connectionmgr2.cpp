@@ -99,24 +99,23 @@ void SerialPortEnumerator::connectionDestroyed()
 class UsbEventDispatcher : public QThread
 {
 public:
-    UsbEventDispatcher(libusby_context * ctx)
+    UsbEventDispatcher(libusby::context & ctx)
         : m_ctx(ctx)
     {
     }
 
     void run()
     {
-        libusby_run_event_loop(m_ctx);
+        m_ctx.run_event_loop();
     }
 
 private:
-    libusby_context * m_ctx;
+    libusby::context & m_ctx;
 };
 
 UsbShupitoEnumerator::UsbShupitoEnumerator()
-    : m_usb_ctx(0)
 {
-    int res = libusby_init(&m_usb_ctx);
+    m_usb_ctx.create();
     m_eventDispatcher.reset(new UsbEventDispatcher(m_usb_ctx));
     m_eventDispatcher->start();
 
@@ -126,27 +125,31 @@ UsbShupitoEnumerator::UsbShupitoEnumerator()
 
 UsbShupitoEnumerator::~UsbShupitoEnumerator()
 {
-    while (!m_devmap.isEmpty())
-        (*m_devmap.begin())->releaseAll();
+    std::map<libusby::device, UsbShupitoConnection *> seen_devices;
+    seen_devices.swap(m_seen_devices);
 
-    libusby_stop_event_loop(m_usb_ctx);
+    for (std::map<libusby::device, UsbShupitoConnection *>::const_iterator it = seen_devices.begin(); it != seen_devices.end(); ++it)
+        it->second->releaseAll();
+
+    QHash<QString, UsbShupitoConnection *> stand_by_conns;
+    stand_by_conns.swap(m_stand_by_conns);
+
+    for (QHash<QString, UsbShupitoConnection *>::const_iterator it = stand_by_conns.begin(); it != stand_by_conns.end(); ++it)
+        it.value()->releaseAll();
+
+    m_usb_ctx.stop_event_loop();
     m_eventDispatcher->wait();
-    libusby_exit(m_usb_ctx);
 }
 
 QVariant UsbShupitoEnumerator::config() const
 {
     QHash<QString, QVariant> dev_names;
 
-    for (QHash<QString, QString>::const_iterator it = m_dev_names.begin(); it != m_dev_names.end(); ++it)
+    for (QHash<UsbShupitoConnection *, QString>::const_iterator it = m_unique_ids.begin(); it != m_unique_ids.end(); ++it)
     {
-        QHash<QString, QVariant> dev_config;
-        dev_config["name"] = it.key();
-        dev_names[it.value()] = dev_config;
-    }
+        if (!it.key()->persistent())
+            continue;
 
-    for (QHash<Connection *, QString>::const_iterator it = m_unique_ids.begin(); it != m_unique_ids.end(); ++it)
-    {
         QHash<QString, QVariant> dev_config;
         dev_config["name"] = it.key()->name();
         dev_names[it.value()] = dev_config;
@@ -161,7 +164,16 @@ bool UsbShupitoEnumerator::applyConfig(QVariant const & config)
     for (QHash<QString, QVariant>::const_iterator it = dev_names.begin(); it != dev_names.end(); ++it)
     {
         QHash<QString, QVariant> dev_config = it.value().toHash();
-        m_dev_names[it.key()] = dev_config["name"].toString();
+
+        ConnectionPointer<UsbShupitoConnection> conn(new UsbShupitoConnection(m_usb_ctx));
+        connect(conn.data(), SIGNAL(destroying()), this, SLOT(shupitoConnectionDestroyed()));
+
+        conn->setName(dev_config["name"].toString());
+        m_unique_ids[conn.data()] = it.key();
+        m_stand_by_conns[it.key()] = conn.data();
+        conn->setPersistent(true);
+
+        sConMgr2.addConnection(conn.data());
     }
 
     return true;
@@ -169,95 +181,111 @@ bool UsbShupitoEnumerator::applyConfig(QVariant const & config)
 
 void UsbShupitoEnumerator::refresh()
 {
-    if (!m_usb_ctx)
-        return;
+    libusby::device_list dev_list = m_usb_ctx.get_device_list();
 
-    libusby_device ** dev_list = 0;
-    int dev_count = libusby_get_device_list(m_usb_ctx, &dev_list);
-    if (dev_count < 0)
-        return;
-
-    QList<Connection *> portsToDisown = m_devmap.values();
-    for (int i = 0; i < dev_count; ++i)
+    std::map<libusby::device, UsbShupitoConnection *> unseen_devices = m_seen_devices;
+    for (std::size_t i = 0; i < dev_list.size(); ++i)
     {
-        libusby_device * dev = dev_list[i];
-        if (UsbShupitoConnection::isDeviceSupported(dev))
+        libusby::device & dev = dev_list[i];
+        if (m_seen_devices.find(dev) != m_seen_devices.end())
         {
-            if (m_devmap.contains(dev))
-            {
-                portsToDisown.removeOne(m_devmap[dev]);
-            }
-            else
-            {
-                ConnectionPointer<UsbShupitoConnection> conn(new UsbShupitoConnection(m_usb_ctx));
-                if (!conn->setUsbDevice(dev))
-                    continue;
-                conn->setRemovable(false);
-                conn->setName(conn->product());
-
-                QString const & sn = conn->serialNumber();
-                if (!sn.isEmpty())
-                {
-                    libusby_device_descriptor dev_desc;
-                    if (libusby_get_device_descriptor_cached(dev, &dev_desc) >= 0)
-                    {
-                        QString uniqueId = QString("%1:%2:%3").arg(QString::number(dev_desc.idVendor, 16), QString::number(dev_desc.idProduct, 16), sn);
-                        m_unique_ids.insert(conn.data(), uniqueId);
-
-                        QString name = m_dev_names.value(uniqueId);
-                        if (!name.isNull())
-                            conn->setName(name);
-                    }
-                }
-
-                m_devmap[dev] = conn.data();
-                connect(conn.data(), SIGNAL(destroying()), this, SLOT(shupitoConnectionDestroyed()));
-                sConMgr2.addConnection(conn.take());
-            }
+            unseen_devices.erase(dev);
             continue;
         }
+        UsbShupitoConnection *& seen_conn = m_seen_devices[dev];
+        seen_conn = 0;
 
-        if (UsbAcmConnection::isDeviceSupported(dev))
+        if (UsbShupitoConnection::isDeviceSupported(dev))
         {
-            if (m_devmap.contains(dev))
+            QString uniqueId;
+
+            libusby_device_descriptor dev_desc;
+            if (libusby_get_device_descriptor_cached(dev.get(), &dev_desc) >= 0 && dev_desc.iSerialNumber != 0)
             {
-                portsToDisown.removeOne(m_devmap[dev]);
+                try
+                {
+                    libusby::device_handle handle(dev);
+                    std::string sn = handle.get_string_desc_utf8(dev_desc.iSerialNumber);
+                    uniqueId = QString("%1:%2:%3").arg(QString::number(dev_desc.idVendor, 16), QString::number(dev_desc.idProduct, 16), QString::fromUtf8(sn.data(), sn.size()));
+                }
+                catch (libusby::error const &)
+                {
+                }
             }
-            else
+
+            ConnectionPointer<UsbShupitoConnection> conn;
+
+            if (!uniqueId.isNull())
             {
-                ConnectionPointer<UsbAcmConnection> conn(new UsbAcmConnection(m_usb_ctx));
+                // Look for a device with the same unique id in the stand by list
+                conn.reset(m_stand_by_conns.value(uniqueId));
+                if (conn)
+                {
+                    conn->addRef();
+                    m_stand_by_conns.remove(uniqueId);
+
+                    if (!conn->setUsbDevice(dev))
+                        continue;
+                }
+            }
+
+            if (!conn)
+            {
+                conn.reset(new UsbShupitoConnection(m_usb_ctx));
+                connect(conn.data(), SIGNAL(destroying()), this, SLOT(shupitoConnectionDestroyed()));
+
+                if (!uniqueId.isNull())
+                    m_unique_ids[conn.data()] = uniqueId;
+
                 if (!conn->setUsbDevice(dev))
                     continue;
-                conn->setRemovable(false);
+
                 conn->setName(conn->product());
-                m_devmap[dev] = conn.data();
-                connect(conn.data(), SIGNAL(destroying()), this, SLOT(acmConnectionDestroyed()));
-                sConMgr2.addConnection(conn.take());
+
+                sConMgr2.addConnection(conn.data());
+                conn->setPersistent(true);
             }
+
+            conn->setRemovable(false);
+            seen_conn = conn.data();
+            conn.take();
             continue;
         }
     }
 
-    libusby_free_device_list(dev_list, 1);
+    for (std::map<libusby::device, UsbShupitoConnection *>::const_iterator it = unseen_devices.begin(); it != unseen_devices.end(); ++it)
+    {
+        UsbShupitoConnection * conn = it->second;
 
-    for (int i = 0; i < portsToDisown.size(); ++i)
-        portsToDisown[i]->releaseAll();
-}
+        // The device is gone, but the connection may still have clients.
+        // Do not destroy the connection completely, let the clients keep using it.
+        // We merely make the device removable so that it can be removed by the user.
+        if (conn)
+        {
+            conn->setUsbDevice(libusby::device());
+            conn->setRemovable(true);
 
-void UsbShupitoEnumerator::acmConnectionDestroyed()
-{
-    UsbAcmConnection * conn = static_cast<UsbAcmConnection *>(this->sender());
-    m_devmap.remove(conn->usbDevice());
+            // If the connection has a unique id, keep a reference to it,
+            // so that we can revive it if it is connected again.
+            QString unique_id = m_unique_ids.value(conn);
+            if (!unique_id.isNull())
+                m_stand_by_conns[unique_id] = conn;
+
+            conn->release();
+        }
+
+        m_seen_devices.erase(it->first);
+    }
 }
 
 void UsbShupitoEnumerator::shupitoConnectionDestroyed()
 {
     UsbShupitoConnection * conn = static_cast<UsbShupitoConnection *>(this->sender());
-    m_devmap.remove(conn->usbDevice());
+    m_seen_devices.erase(conn->usbDevice());
 
     QString uniqueId = m_unique_ids.value(conn);
     if (!uniqueId.isNull())
-        m_dev_names[uniqueId] = conn->name();
+        m_stand_by_conns.remove(uniqueId);
     m_unique_ids.remove(conn);
 }
 
@@ -266,6 +294,9 @@ void UsbShupitoEnumerator::shupitoConnectionDestroyed()
 ConnectionManager2::ConnectionManager2(QObject * parent)
     : QObject(parent)
 {
+    Q_ASSERT(psConMgr2 == 0);
+    psConMgr2 = this;
+
     m_serialPortEnumerator.reset(new SerialPortEnumerator());
 #ifdef HAVE_LIBUSBY
     m_usbShupitoEnumerator.reset(new UsbShupitoEnumerator());

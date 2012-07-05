@@ -10,7 +10,7 @@
 #include <QStringBuilder>
 
 Connection::Connection(ConnectionType type)
-    : m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_removable(true), m_type(type)
+    : m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_removable(true), m_persistent(false), m_type(type)
 {
 }
 
@@ -93,4 +93,16 @@ void Connection::releaseAll()
 {
     emit destroying();
     delete this;
+}
+
+void Connection::setPersistent(bool value)
+{
+    if (m_persistent != value)
+    {
+        m_persistent = value;
+        if (value)
+            this->addRef();
+        else
+            this->release();
+    }
 }

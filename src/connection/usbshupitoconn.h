@@ -6,15 +6,17 @@
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
-#include <libusby.h>
+#include <libusby.hpp>
 
 class UsbAcmConnection : public PortConnection
 {
     Q_OBJECT
 
 public:
-    explicit UsbAcmConnection(libusby_context * ctx);
+    explicit UsbAcmConnection(libusby::context & ctx);
     ~UsbAcmConnection();
+
+    bool present() const { return m_dev != 0; }
 
     QString details() const;
 
@@ -22,13 +24,13 @@ public:
     QString product() const { return m_product; }
     QString serialNumber() const { return m_serialNumber; }
 
-    libusby_device * usbDevice() const { return m_dev; }
-    bool setUsbDevice(libusby_device * dev);
+    libusby::device const & usbDevice() const { return m_dev; }
+    bool setUsbDevice(libusby::device const & dev);
 
     void OpenConcurrent();
     void Close();
 
-    static bool isDeviceSupported(libusby_device * dev);
+    static bool isDeviceSupported(libusby::device & dev);
 
 protected:
     bool event(QEvent * ev);
@@ -43,7 +45,7 @@ private:
     static void static_read_completed(libusby_transfer * t);
     static void static_write_completed(libusby_transfer * t);
 
-    libusby_device * m_dev;
+    libusby::device m_dev;
     libusby_device_handle * m_handle;
     libusby_transfer * m_read_transfer;
     libusby_transfer * m_write_transfer;
@@ -68,26 +70,29 @@ class UsbShupitoConnection : public ShupitoConnection
     Q_OBJECT
 
 public:
-    explicit UsbShupitoConnection(libusby_context * ctx);
+    explicit UsbShupitoConnection(libusby::context & ctx);
     ~UsbShupitoConnection();
+
+    bool present() const { return m_acm_conn->present(); }
 
     QString manufacturer() const { return m_acm_conn->manufacturer(); }
     QString product() const { return m_acm_conn->product(); }
     QString serialNumber() const { return m_acm_conn->serialNumber(); }
 
-    libusby_device * usbDevice() const { return m_acm_conn->usbDevice(); }
-    bool setUsbDevice(libusby_device * dev) { return m_acm_conn->setUsbDevice(dev); }
+    libusby::device const & usbDevice() const { return m_acm_conn->usbDevice(); }
+    bool setUsbDevice(libusby::device const & dev) { return m_acm_conn->setUsbDevice(dev); }
 
     QString details() const;
     void OpenConcurrent();
     void Close();
 
-    static bool isDeviceSupported(libusby_device * dev);
+    static bool isDeviceSupported(libusby::device & dev);
 
 public slots:
     void sendPacket(ShupitoPacket const & packet);
 
 private slots:
+    void acmConnChanged();
     void shupitoConnStateChanged(ConnectionState state);
 
 private:
