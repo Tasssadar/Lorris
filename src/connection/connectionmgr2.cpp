@@ -129,7 +129,10 @@ UsbShupitoEnumerator::~UsbShupitoEnumerator()
     seen_devices.swap(m_seen_devices);
 
     for (std::map<libusby::device, UsbShupitoConnection *>::const_iterator it = seen_devices.begin(); it != seen_devices.end(); ++it)
-        it->second->releaseAll();
+    {
+        if (it->second)
+            it->second->releaseAll();
+    }
 
     QHash<QString, UsbShupitoConnection *> stand_by_conns;
     stand_by_conns.swap(m_stand_by_conns);
