@@ -260,6 +260,8 @@ win32 {
     LIBS += -lsdl -lsetupapi -lwinmm -lole32
 }
 unix:!macx:!symbian {
+    CONFIG += libusby
+
     LIBS += -lqwt_lorris -ludev -lSDL -lqextserialport
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" 2> /dev/null \
