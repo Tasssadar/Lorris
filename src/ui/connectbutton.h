@@ -33,6 +33,7 @@ Q_SIGNALS:
 private slots:
     void connectTriggered();
     void connectionStateChanged(ConnectionState state);
+    void connectionBeingDestroyed();
 
 private:
     QMenu m_menu;

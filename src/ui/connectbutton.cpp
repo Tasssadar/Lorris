@@ -77,6 +77,7 @@ void ConnectButton::setConn(ConnectionPointer<Connection> const & conn)
         if (m_conn)
         {
             connect(m_conn.data(), SIGNAL(stateChanged(ConnectionState)), this, SLOT(connectionStateChanged(ConnectionState)));
+            connect(m_conn.data(), SIGNAL(destroying()), this, SLOT(connectionBeingDestroyed()));
             this->connectionStateChanged(m_conn->state());
         }
         else
@@ -105,4 +106,12 @@ void ConnectButton::connectionStateChanged(ConnectionState state)
         m_connectAction->setEnabled(true);
         break;
     }
+}
+
+void ConnectButton::connectionBeingDestroyed()
+{
+    disconnect(m_conn.data(), 0, this, 0);
+    m_conn.take();
+    this->connectionStateChanged(st_disconnected);
+    emit connectionChosen(m_conn);
 }
