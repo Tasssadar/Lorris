@@ -205,7 +205,7 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/widgetarea.h \
     LorrisAnalyzer/storage.h \
     LorrisShupito/overvccdialog.h \
-#    pch.h \
+    pch.h \
     shared/fuse_desc.h \
     shared/defmgr.h \
     ../dep/ecwin7/ecwin7.h \
@@ -318,10 +318,10 @@ OTHER_FILES += \
     shared/fusedesc.txt \
     shared/chipdefs.txt
 
-#PRECOMPILED_HEADER  = pch.h
-#precompile_header:!isEmpty(PRECOMPILED_HEADER) {
-#    DEFINES += USING_PCH
-#}
+PRECOMPILED_HEADER  = pch.h
+precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+    DEFINES += USING_PCH
+}
 
 python:unix {
     LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt
