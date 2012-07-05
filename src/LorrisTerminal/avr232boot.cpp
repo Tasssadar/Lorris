@@ -9,7 +9,7 @@
 #include <QTimer>
 
 #include "avr232boot.h"
-#include "../utils.h"
+#include "../misc/utils.h"
 #include "../connection/connection.h"
 #include "../shared/defmgr.h"
 

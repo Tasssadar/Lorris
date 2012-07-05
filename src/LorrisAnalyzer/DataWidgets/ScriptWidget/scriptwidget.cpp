@@ -10,7 +10,7 @@
 #include "scriptwidget.h"
 #include "scripteditor.h"
 #include "engines/qtscriptengine.h"
-#include "../../../shared/terminal.h"
+#include "../../../ui/terminal.h"
 
 ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 {

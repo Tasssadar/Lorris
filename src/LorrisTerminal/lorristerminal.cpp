@@ -17,7 +17,7 @@
 #include <QSignalMapper>
 
 #include "lorristerminal.h"
-#include "../shared/terminal.h"
+#include "../ui/terminal.h"
 #include "eeprom.h"
 #include "../shared/hexfile.h"
 #include "../shared/defmgr.h"

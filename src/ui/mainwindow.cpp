@@ -34,7 +34,7 @@
 #include "../WorkTab/WorkTabMgr.h"
 #include "../WorkTab/WorkTabInfo.h"
 #include "../revision.h"
-#include "../config.h"
+#include "../misc/config.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)

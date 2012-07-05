@@ -15,7 +15,7 @@
 #include <QToolButton>
 
 #include "../WorkTab/WorkTab.h"
-#include "../shared/terminal.h"
+#include "../ui/terminal.h"
 #include "../ui/chooseconnectiondlg.h"
 #include "../ui/connectbutton.h"
 #include "avr232boot.h"

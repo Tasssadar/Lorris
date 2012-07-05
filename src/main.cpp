@@ -13,7 +13,7 @@
 
 #include "revision.h"
 #include "ui/mainwindow.h"
-#include "config.h"
+#include "misc/config.h"
 #include "connection/connectionmgr2.h"
 #include "WorkTab/WorkTabMgr.h"
 

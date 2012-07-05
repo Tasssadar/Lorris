@@ -12,7 +12,7 @@
 #include "shupito.h"
 #include "shupitodesc.h"
 #include "../shared/hexfile.h"
-#include "../shared/terminal.h"
+#include "../ui/terminal.h"
 #include "../ui/connectbutton.h"
 
 #include <QDateTime>

@@ -11,7 +11,7 @@
 #include <vector>
 #include <QHash>
 
-#include "../singleton.h"
+#include "../misc/singleton.h"
 #include "WorkTab.h"
 #include "../ui/tabview.h"
 

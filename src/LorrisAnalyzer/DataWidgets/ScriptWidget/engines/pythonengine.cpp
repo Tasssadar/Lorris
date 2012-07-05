@@ -10,7 +10,7 @@
 #include <QComboBox>
 
 #include "pythonengine.h"
-#include "../../../../shared/terminal.h"
+#include "../../../../ui/terminal.h"
 #include "../../../packet.h"
 #include "../scriptstorage.h"
 #include "../../../widgetarea.h"

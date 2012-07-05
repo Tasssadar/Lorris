@@ -13,7 +13,7 @@
 #include <QTextStream>
 #include <QMultiHash>
 
-#include "../singleton.h"
+#include "../misc/singleton.h"
 #include "chipdefs.h"
 #include "fuse_desc.h"
 

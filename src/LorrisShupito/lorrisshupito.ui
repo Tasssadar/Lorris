@@ -906,12 +906,12 @@ flashing same file twice:</string>
   <customwidget>
    <class>RotateButton</class>
    <extends>QPushButton</extends>
-   <header>../src/shared/rotatebutton.h</header>
+   <header>../src/ui/rotatebutton.h</header>
   </customwidget>
   <customwidget>
    <class>Terminal</class>
    <extends>QFrame</extends>
-   <header>../src/shared/terminal.h</header>
+   <header>../src/ui/terminal.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

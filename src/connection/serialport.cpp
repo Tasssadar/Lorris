@@ -16,7 +16,7 @@
 #include <qextserialenumerator.h>
 
 #include "serialport.h"
-#include "../config.h"
+#include "../misc/config.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../WorkTab/WorkTab.h"
 #include "../WorkTab/WorkTabInfo.h"

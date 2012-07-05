@@ -36,7 +36,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     LorrisAnalyzer/lorrisanalyzer.cpp \
     LorrisAnalyzer/sourcedialog.cpp \
-    utils.cpp \
     LorrisAnalyzer/labellayout.cpp \
     LorrisAnalyzer/packet.cpp \
     LorrisAnalyzer/devicetabwidget.cpp \
@@ -55,7 +54,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp \
     connection/shupitotunnel.cpp \
-    config.cpp \
     ../dep/qhexedit2/src/xbytearray.cpp \
     ../dep/qhexedit2/src/qhexedit_p.cpp \
     ../dep/qhexedit2/src/qhexedit.cpp \
@@ -78,11 +76,9 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/progressdialog.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp \
-    shared/terminal.cpp \
     ../dep/qscriptsyntaxhighlighter.cpp \
     LorrisAnalyzer/playback.cpp \
     LorrisAnalyzer/DataWidgets/inputwidget.cpp \
-    shared/rotatebutton.cpp \
     joystick/joymgr.cpp \
     joystick/joystick.cpp \
     LorrisAnalyzer/DataWidgets/terminalwidget.cpp \
@@ -103,7 +99,6 @@ SOURCES += ui/mainwindow.cpp \
     shared/fuse_desc.cpp \
     shared/defmgr.cpp \
     ../dep/ecwin7/ecwin7.cpp \
-    shared/terminalsettings.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.cpp \
@@ -113,14 +108,18 @@ SOURCES += ui/mainwindow.cpp \
     ui/progressbar.cpp \
     ui/tooltipwarn.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp \
-    LorrisTerminal/avr232boot.cpp
+    LorrisTerminal/avr232boot.cpp \
+    misc/utils.cpp \
+    misc/config.cpp \
+    ui/rotatebutton.cpp \
+    ui/terminalsettings.cpp \
+    ui/terminal.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
     WorkTab/WorkTab.h \
     WorkTab/WorkTabMgr.h \
     WorkTab/WorkTabInfo.h \
-    singleton.h \
     LorrisTerminal/lorristerminal.h \
     LorrisTerminal/lorristerminalinfo.h \
     connection/connection.h \
@@ -130,7 +129,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/lorrisanalyzerinfo.h \
     common.h \
     LorrisAnalyzer/sourcedialog.h \
-    utils.h \
     LorrisAnalyzer/labellayout.h \
     LorrisAnalyzer/packet.h \
     LorrisAnalyzer/devicetabwidget.h \
@@ -149,7 +147,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.h \
     connection/shupitotunnel.h \
-    config.h \
     ../dep/qhexedit2/src/xbytearray.h \
     ../dep/qhexedit2/src/qhexedit_p.h \
     ../dep/qhexedit2/src/qhexedit.h \
@@ -172,11 +169,9 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/progressdialog.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.h \
-    shared/terminal.h \
     ../dep/qscriptsyntaxhighlighter_p.h \
     LorrisAnalyzer/playback.h \
     LorrisAnalyzer/DataWidgets/inputwidget.h \
-    shared/rotatebutton.h \
     joystick/joymgr.h \
     joystick/joystick.h \
     LorrisAnalyzer/DataWidgets/terminalwidget.h \
@@ -199,7 +194,6 @@ HEADERS += ui/mainwindow.h \
     shared/fuse_desc.h \
     shared/defmgr.h \
     ../dep/ecwin7/ecwin7.h \
-    shared/terminalsettings.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.h \
@@ -209,7 +203,13 @@ HEADERS += ui/mainwindow.h \
     ui/progressbar.h \
     ui/tooltipwarn.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.h \
-    LorrisTerminal/avr232boot.h
+    LorrisTerminal/avr232boot.h \
+    misc/utils.h \
+    misc/singleton.h \
+    misc/config.h \
+    ui/rotatebutton.h \
+    ui/terminalsettings.h \
+    ui/terminal.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -224,14 +224,14 @@ win32 {
         ../dep/qextserialport/src/qextserialport.h \
         ../dep/qextserialport/src/qextserialenumerator_p.h \
         ../dep/qextserialport/src/qextserialenumerator.h \
-        updater.h
+        misc/updater.h
     SOURCES += \
         ../dep/qextserialport/src/qextserialenumerator_win.cpp \
         ../dep/qextserialport/src/qextwineventnotifier_p.cpp \
         ../dep/qextserialport/src/qextserialport_win.cpp \
         ../dep/qextserialport/src/qextserialport.cpp \
         ../dep/qextserialport/src/qextserialenumerator.cpp \
-        updater.cpp
+        misc/updater.cpp
 
     LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm -lole32 -lqwt
 }
@@ -275,10 +275,10 @@ FORMS += \
     LorrisAnalyzer/playback.ui \
     ui/chooseconnectiondlg.ui \
     LorrisShupito/overvccdialog.ui \
-    shared/terminalsettings.ui \
     ui/rangeselectdialog.ui \
     updatecheck.ui \
-    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
+    ui/terminalsettings.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

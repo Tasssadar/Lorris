@@ -274,7 +274,7 @@
   <customwidget>
    <class>RotateButton</class>
    <extends>QPushButton</extends>
-   <header>../src/shared/rotatebutton.h</header>
+   <header>../src/ui/rotatebutton.h</header>
   </customwidget>
   <customwidget>
    <class>DeviceTabWidget</class>

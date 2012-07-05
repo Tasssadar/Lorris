@@ -9,7 +9,7 @@
 #include "../connection/serialport.h"
 #include "../connection/tcpsocket.h"
 #include <qextserialenumerator.h>
-#include "../config.h"
+#include "../misc/config.h"
 
 ConnectionManager2 * psConMgr2 = 0;
 
