@@ -58,13 +58,7 @@ void ButtonWidget::saveWidgetInfo(DataFileParser *file)
     DataWidget::saveWidgetInfo(file);
 
     file->writeBlockIdentifier("buttonWText");
-    {
-        QByteArray text = m_button->text().toUtf8();
-        quint32 len = text.length();
-
-        file->write((char*)&len, sizeof(quint32));
-        file->write(text.data(), len);
-    }
+    file->writeString(m_button->text());
 }
 
 void ButtonWidget::loadWidgetInfo(DataFileParser *file)
@@ -72,13 +66,7 @@ void ButtonWidget::loadWidgetInfo(DataFileParser *file)
     DataWidget::loadWidgetInfo(file);
 
     if(file->seekToNextBlock("buttonWText", BLOCK_WIDGET))
-    {
-        quint32 size = 0;
-        file->read((char*)&size, sizeof(quint32));
-
-        QString text = QString::fromUtf8(file->read(size), size);
-        m_button->setText(text);
-    }
+        m_button->setText(file->readString());
 }
 
 ButtonWidgetAddBtn::ButtonWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

@@ -120,7 +120,6 @@ SOURCES += ui/mainwindow.cpp \
     ui/rangeselectdialog.cpp \
     ui/progressbar.cpp \
     ui/tooltipwarn.cpp \
-    updater.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp \
     LorrisTerminal/avr232boot.cpp \
     connection/shupitoconn.cpp
@@ -218,7 +217,6 @@ HEADERS += ui/mainwindow.h \
     ui/rangeselectdialog.h \
     ui/progressbar.h \
     ui/tooltipwarn.h \
-    updater.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.h \
     LorrisTerminal/avr232boot.h \
     connection/shupitoconn.h
@@ -249,13 +247,15 @@ win32 {
         ../dep/qextserialport/src/qextserialport_global.h \
         ../dep/qextserialport/src/qextserialport.h \
         ../dep/qextserialport/src/qextserialenumerator_p.h \
-        ../dep/qextserialport/src/qextserialenumerator.h
+        ../dep/qextserialport/src/qextserialenumerator.h \
+        updater.h
     SOURCES += \
         ../dep/qextserialport/src/qextserialenumerator_win.cpp \
         ../dep/qextserialport/src/qextwineventnotifier_p.cpp \
         ../dep/qextserialport/src/qextserialport_win.cpp \
         ../dep/qextserialport/src/qextserialport.cpp \
         ../dep/qextserialport/src/qextserialenumerator.cpp \
+        updater.cpp
 
     LIBS += -lsdl -lsetupapi -lwinmm -lole32
 }
@@ -309,14 +309,19 @@ RESOURCES += \
     LorrisShupito/shupitoicons.qrc \
     icons.qrc \
     actions.qrc \
-    shared/definitions.qrc
+    shared/definitions.qrc \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc
 
 RC_FILE = winicon.rc
 
 OTHER_FILES += \
     ../dep/qextserialport/qextserialport.pri \
     shared/fusedesc.txt \
-    shared/chipdefs.txt
+    shared/chipdefs.txt \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {

@@ -65,11 +65,7 @@ void ScriptStorage::saveToFile(DataFileParser *file)
     {
         ScriptData *data = *itr;
 
-        QByteArray key = itr.key().toUtf8();
-        quint32 key_len = key.size();
-
-        file->write((char*)&key_len, sizeof(quint32));
-        file->write(key.data(), key_len);
+        file->writeString(itr.key());
 
         file->write((char*)(&data->len), sizeof(data->len));
         file->write(data->data, data->len);
@@ -86,10 +82,7 @@ void ScriptStorage::loadFromFile(DataFileParser *file)
 
     for(quint32 i = 0; i < size; ++i)
     {
-        quint32 key_len = 0;
-        file->read((char*)&key_len, sizeof(key_len));
-
-        QString key = QString::fromUtf8(file->read(key_len), key_len);
+        QString key = file->readString();
 
         ScriptData *data = new ScriptData();
         file->read((char*)(&data->len), sizeof(data->len));

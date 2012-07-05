@@ -77,6 +77,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         void saveButton();
         void saveAsButton();
         void exportBin();
+        void importBinAct();
         void clearAllButton();
         void clearDataButton();
         void openFile();
@@ -90,10 +91,12 @@ class LorrisAnalyzer : public PortConnWorkTab
         void indexChanged(int value);
         void showTitleTriggered(bool checked);
 
+        void updateForWidget();
+
     private:
         void readData(const QByteArray& data);
         bool load(QString& name, quint8 mask);
-        void importBinary(const QString& filename);
+        void importBinary(const QString& filename, bool reset = true);
         void resetDevAndStorage(analyzer_packet *packet = NULL);
 
         bool highlightInfoNotNull;

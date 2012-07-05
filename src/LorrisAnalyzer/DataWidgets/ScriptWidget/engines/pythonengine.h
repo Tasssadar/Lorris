@@ -33,6 +33,7 @@ public slots:
     QTimer *newTimer();
     void AddComboBoxItems(QComboBox *box, QStringList items);
     void moveWidget(QWidget *w, int x, int y);
+    void resizeWidget(QWidget *w, int width, int height);
     DataWidget *newWidget(int type, QString title, int width, int height, int x, int y);
     DataWidget *newWidget(int type, QString title, int width, int height)
     {

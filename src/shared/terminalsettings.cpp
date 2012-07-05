@@ -5,6 +5,8 @@
 **    See README and COPYING
 ***********************************************/
 
+#include <QColorDialog>
+
 #include "terminalsettings.h"
 #include "ui_terminalsettings.h"
 
@@ -25,6 +27,10 @@ TerminalSettings::TerminalSettings(const terminal_settings &set, QWidget *parent
     ui->widthBox->setValue(set.tabReplace);
     ui->fontBox->setCurrentFont(set.font);
     ui->sizeBox->setEditText(QString::number(set.font.pointSize()));
+
+    setBtnColor(ui->backBtn, set.colors[COLOR_BG], COLOR_BG);
+    setBtnColor(ui->textBtn, set.colors[COLOR_TEXT], COLOR_TEXT);
+    setBtnColor(ui->cursorBtn, set.colors[COLOR_CURSOR], COLOR_CURSOR);
 }
 
 TerminalSettings::~TerminalSettings()
@@ -47,6 +53,9 @@ terminal_settings TerminalSettings::getSettings()
     int size = ui->sizeBox->currentText().toUInt();
     set.font.setPointSize(size ? size : 9);
 
+    for(int i = 0; i < COLOR_MAX; ++i)
+        set.colors[i] = m_colors[i];
+
     return set;
 }
 
@@ -54,4 +63,37 @@ void TerminalSettings::on_buttonBox_clicked(QAbstractButton *button)
 {
     if(ui->buttonBox->buttonRole(button) == QDialogButtonBox::ApplyRole)
         emit applySettings(getSettings());
+}
+
+void TerminalSettings::on_backBtn_clicked()
+{
+    QColor clr = QColorDialog::getColor(m_colors[COLOR_BG], this);
+    if(!clr.isValid())
+        return;
+    setBtnColor(ui->backBtn, clr, COLOR_BG);
+}
+
+void TerminalSettings::on_textBtn_clicked()
+{
+    QColor clr = QColorDialog::getColor(m_colors[COLOR_TEXT], this);
+    if(!clr.isValid())
+        return;
+    setBtnColor(ui->textBtn, clr, COLOR_TEXT);
+}
+
+void TerminalSettings::on_cursorBtn_clicked()
+{
+    QColor clr = QColorDialog::getColor(m_colors[COLOR_CURSOR], this);
+    if(!clr.isValid())
+        return;
+    setBtnColor(ui->cursorBtn, clr, COLOR_CURSOR);
+}
+
+void TerminalSettings::setBtnColor(QPushButton *btn, QColor clr, int idx)
+{
+    m_colors[idx] = clr;
+
+    QPixmap map(btn->iconSize());
+    map.fill(clr);
+    btn->setIcon(QIcon(map));
 }

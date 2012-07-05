@@ -89,13 +89,7 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
 
     // source
     file->writeBlockIdentifier("scriptWSource");
-    {
-        QByteArray source = m_engine->getSource().toUtf8();
-        quint32 len = source.length();
-
-        file->write((char*)&len, sizeof(quint32));
-        file->write(source.data(), len);
-    }
+    file->writeString(m_engine->getSource());
 
     // terminal data
     file->writeBlockIdentifier("scriptWTerm");
@@ -106,6 +100,10 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
         file->write((char*)&len, sizeof(quint32));
         file->write(data.data(), len);
     }
+
+    // terminal settings
+    file->writeBlockIdentifier("scriptWTermSett");
+    file->writeString(m_terminal->getSettingsData());
 
     // storage data
     m_engine->onSave();
@@ -125,12 +123,7 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     QString source = "";
     // source
     if(file->seekToNextBlock("scriptWSource", BLOCK_WIDGET))
-    {
-        quint32 size = 0;
-        file->read((char*)&size, sizeof(quint32));
-
-        source = QString::fromUtf8(file->read(size), size);
-    }
+        source = file->readString();
 
     // terminal data
     if(file->seekToNextBlock("scriptWTerm", BLOCK_WIDGET))
@@ -140,6 +133,13 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
 
         QByteArray data(file->read(size));
         m_terminal->appendText(data);
+    }
+
+    // terminal settings
+    if(file->seekToNextBlock("scriptWTermSett", BLOCK_WIDGET))
+    {
+        QString settings = file->readString();
+        m_terminal->loadSettings(settings);
     }
 
     createEngine();
@@ -186,7 +186,7 @@ void ScriptWidget::sourceSet(bool close)
             m_editor->deleteLater();
             m_editor = NULL;
         }
-        emit updateData();
+        emit updateForMe();
     }
     catch(const QString& text)
     {

@@ -10,6 +10,8 @@
 #include <QScrollBar>
 #include <QMenuBar>
 #include <QFileDialog>
+#include <QDir>
+#include <QMessageBox>
 
 #include "scripteditor.h"
 #include "../../../common.h"
@@ -50,6 +52,8 @@ ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widge
     ui->langBox->addItems(ScriptEngine::getEngineList());
     ui->langBox->setCurrentIndex(type);
     ui->errorEdit->hide();
+
+    updateExampleList();
 }
 
 ScriptEditor::~ScriptEditor()
@@ -85,7 +89,10 @@ void ScriptEditor::on_sourceEdit_textChanged()
 void ScriptEditor::contentsChange(int /*position*/, int charsRemoved, int charsAdded)
 {
     if(charsRemoved != charsAdded)
+    {
         m_changed = true;
+        ui->exampleBox->setCurrentIndex(0);
+    }
 }
 
 void ScriptEditor::sliderMoved(int val)
@@ -172,11 +179,38 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
             m_highlighter = NULL;
             break;
     }
+    updateExampleList();
 }
 
 void ScriptEditor::on_errorBtn_toggled(bool checked)
 {
     ui->errorEdit->setShown(checked);
+}
+
+void ScriptEditor::on_exampleBox_activated(int index)
+{
+    if(index == 0)
+        return;
+
+    if(m_changed)
+    {
+        QMessageBox box(QMessageBox::Question, tr("Load example"), tr("Script was changed, do you really want to load an example?"),
+                       (QMessageBox::Yes | QMessageBox::No), this);
+
+        if(box.exec() == QMessageBox::No)
+        {
+            ui->exampleBox->setCurrentIndex(0);
+            return;
+        }
+    }
+
+    QFile file(":/examples/" + ui->exampleBox->currentText());
+    if(!file.open(QIODevice::ReadOnly))
+        return;
+
+    ui->sourceEdit->setPlainText(file.readAll());
+    ui->exampleBox->setCurrentIndex(index);
+    m_changed = false;
 }
 
 void ScriptEditor::addError(const QString& error)
@@ -191,6 +225,21 @@ void ScriptEditor::clearErrors()
     ui->errorEdit->clear();
     m_errors = 0;
     ui->errorBtn->setText(tr("Show errors (%1)").arg(m_errors));
+}
+
+void ScriptEditor::updateExampleList()
+{
+    static const QStringList filters[ENGINE_MAX] =
+    {
+        (QStringList() << "*.js"),
+        (QStringList() << "*.py")
+    };
+
+    while(ui->exampleBox->count() > 1)
+        ui->exampleBox->removeItem(1);
+
+    QDir dir(":/examples");
+    ui->exampleBox->addItems(dir.entryList(filters[ui->langBox->currentIndex()], QDir::NoFilter, QDir::Name));
 }
 
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)

@@ -205,7 +205,7 @@ void CircleWidget::changeAngType(int i, int min, int max)
         m_range_max = max;
     }
 
-    emit updateData();
+    emit updateForMe();
 }
 
 float CircleWidget::toRad(const QVariant& var)
@@ -240,14 +240,14 @@ void CircleWidget::setNumType(int i)
         m_bits_act[y]->setChecked(y == i);
 
     m_num_type = i;
-    emit updateData();
+    emit updateForMe();
 }
 
 void CircleWidget::setClockwise(bool clockwise)
 {
     m_clockwiseAct->setChecked(clockwise);
     m_circle->setClockwise(clockwise);
-    emit updateData();
+    emit updateForMe();
 }
 
 void CircleWidget::drawAngle(bool draw)

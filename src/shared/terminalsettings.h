@@ -28,9 +28,15 @@ public:
     
 private slots:
     void on_buttonBox_clicked(QAbstractButton *button);
+    void on_backBtn_clicked();
+    void on_textBtn_clicked();
+    void on_cursorBtn_clicked();
 
 private:
+    void setBtnColor(QPushButton *btn, QColor clr, int idx);
+
     Ui::TerminalSettings *ui;
+    QColor m_colors[COLOR_MAX];
 };
 
 #endif // TERMINALSETTINGS_H

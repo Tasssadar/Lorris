@@ -94,6 +94,7 @@ class DataWidget : public QFrame
 
 Q_SIGNALS:
     void updateData();
+    void updateForMe();
     void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);

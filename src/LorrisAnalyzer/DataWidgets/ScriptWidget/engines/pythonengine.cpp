@@ -20,9 +20,8 @@
 QString PythonEngine::getNewModuleName()
 {
     static int i = 0;
-    return QString(5, i++);
+    return QString::number(i++).repeated(3);
 }
-
 
 PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent) :
     ScriptEngine(area, w_id, terminal, parent), m_functions(this, parent)
@@ -255,6 +254,11 @@ void PythonFunctions::AddComboBoxItems(QComboBox *box, QStringList items)
 void PythonFunctions::moveWidget(QWidget *w, int x, int y)
 {
     w->move(x, y);
+}
+
+void PythonFunctions::resizeWidget(QWidget *w, int width, int height)
+{
+    w->resize(width, height);
 }
 
 DataWidget *PythonFunctions::newWidget(int type, QString title, int width, int height, int x, int y)

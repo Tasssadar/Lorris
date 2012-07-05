@@ -45,13 +45,14 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
     canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
 #endif
 
-    QwtPlotGrid *grid = new QwtPlotGrid();
-    grid->setPen(QPen(Qt::gray, 0.0, Qt::DotLine));
-    grid->enableX(true);
-    grid->enableXMin(true);
-    grid->enableY(true);
-    grid->enableYMin(false);
-    grid->attach(this);
+    m_grid = new QwtPlotGrid();
+    m_grid->setMinPen(QPen(Qt::gray, 0.0, Qt::DotLine));
+    m_grid->setMajPen(QPen(Qt::black, 0.0, Qt::DotLine));
+    m_grid->enableX(true);
+    m_grid->enableXMin(true);
+    m_grid->enableY(true);
+    m_grid->enableYMin(false);
+    m_grid->attach(this);
 
     QwtLegend *legend = new QwtLegend;
     legend->setItemMode(QwtLegend::CheckableItem);
@@ -138,15 +139,39 @@ double Graph::XupperBound()
 {
     return axisScaleDiv(QwtPlot::xBottom)->upperBound();
 }
+
 double Graph::XlowerBound()
 {
     return axisScaleDiv(QwtPlot::xBottom)->lowerBound();
 }
+
 double Graph::YupperBound()
 {
     return axisScaleDiv(QwtPlot::yLeft)->upperBound();
 }
+
 double Graph::YlowerBound()
 {
     return axisScaleDiv(QwtPlot::yLeft)->lowerBound();
+}
+
+void Graph::setBgColor(const QColor &c)
+{
+    QColor text;
+
+    int diff = (299*c.red() + 587*c.green() + 114*c.blue())/1000;
+    if(diff < 130) text = Qt::white;
+    else           text = Qt::black;
+
+    QPalette p = canvas()->palette();
+    p.setColor(QPalette::Window, c);
+    canvas()->setPalette(p);
+    m_grid->setMajPen(QPen(text, 0.0, Qt::DotLine));
+
+    replot();
+}
+
+QColor Graph::getBgColor()
+{
+    return canvas()->palette().color(QPalette::Window);
 }
