@@ -21,6 +21,7 @@
 #include "chooseconnectiondlg.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../misc/datafileparser.h"
+#include "tooltipwarn.h"
 
 #ifdef Q_OS_WIN
  #include "../updater.h"
@@ -382,7 +383,7 @@ void TabView::checkForUpdate()
     if(Updater::doUpdate(false))
         emit closeLorris();
     else
-        Utils::printToStatusBar(tr("No update available"));
+        new ToolTipWarn(tr("No update available"), (QWidget*)sender(), this);
 #else
     Utils::ThrowException(QObject::tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                                       "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
