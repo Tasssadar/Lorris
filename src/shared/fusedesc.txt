@@ -11,7 +11,7 @@
     lb | Memory lock bit (Default: No lock) | 0b11=No lock | 0b10=Disable write | 0b00=Disable read and write | 0b01=<reserved>
     blb0 | Boot lock bit (Default: No restrictions) | 0b11=No restrictions
     blb1 | Boot lock bit (Default: No restrictions) | 0b11=No restrictions
-    wdton | Watchdog Timer always on (Default: Yes) | 0b1=Yes | 0b0=No
+    wdton | Watchdog Timer always on (Default: Yes) | 0b1=No | 0b0=Yes
     spien | Enable SPI Serial program and Data downloading (default: enabled) | 0b0=Enabled | 0b1=Disabled
 }
 
