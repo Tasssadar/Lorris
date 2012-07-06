@@ -31,6 +31,9 @@ public:
     void setConnection(PortConnection *con);
     void onTabShow(const QString& filename);
 
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
 private slots:
     void updateAddressText();
     void listenChanged();

@@ -139,3 +139,30 @@ QString LorrisProxy::GetIdString()
 {
     return "LorrisProxy";
 }
+
+void LorrisProxy::saveData(DataFileParser *file)
+{
+    PortConnWorkTab::saveData(file);
+
+    file->writeBlockIdentifier("LorrProxyAddr");
+    file->writeString(ui->addressEdit->text());
+    file->writeVal(ui->portBox->value());
+
+    file->writeBlockIdentifier("LorrProxyStatus");
+    file->writeVal(m_server->isListening());
+}
+
+void LorrisProxy::loadData(DataFileParser *file)
+{
+    PortConnWorkTab::loadData(file);
+
+    if(file->seekToNextBlock("LorrProxyAddr", BLOCK_WORKTAB))
+    {
+        ui->addressEdit->setText(file->readString());
+        ui->portBox->setValue(file->readVal<int>());
+    }
+
+    if(file->seekToNextBlock("LorrProxyStatus", BLOCK_WORKTAB))
+        if(file->readVal<bool>())
+            listenChanged();
+}
