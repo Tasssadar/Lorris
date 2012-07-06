@@ -34,9 +34,7 @@ SessionMgr::SessionMgr(QObject *parent) : QObject(parent)
 
 QByteArray SessionMgr::openSessionFile(const QString& name)
 {
-    static const QString path = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name;
-
-    QFile file(path);
+    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name);
     if(!file.open(QIODevice::ReadOnly))
         return QByteArray();
 
