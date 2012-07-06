@@ -450,6 +450,7 @@ void TabView::loadData(DataFileParser *file)
     m_active_widget = NULL;
 
     QBoxLayout *l = newLayout(type == ITEM_LAYOUT_V);
+    l->setMargin(LAYOUT_MARGIN);
     setLayout(l);
 
     QHash<quint32, quint32> id_pair;
@@ -492,6 +493,7 @@ void TabView::loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHas
             case ITEM_LAYOUT_V:
             {
                 QBoxLayout *l = newLayout(type == ITEM_LAYOUT_V);
+                l->setMargin(0);
                 parent->addLayout(l, 50);
                 loadLayoutStructure(file, l, id_pair);
                 break;
