@@ -31,6 +31,8 @@ LorrisTerminal::LorrisTerminal()
     m_stopped = false;
 
     initUI();
+
+    EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 }
 
 void LorrisTerminal::initUI()
@@ -188,6 +190,9 @@ void LorrisTerminal::setPauseBtnText(bool pause)
 
 void LorrisTerminal::eepromExportButton()
 {
+    if(!m_stopped)
+        stopButton();
+
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
     if(!m_bootloader.getChipId())
@@ -201,6 +206,9 @@ exit:
 
 void LorrisTerminal::eepromImportButton()
 {
+    if(!m_stopped)
+        stopButton();
+
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
     if(!m_bootloader.getChipId())
@@ -216,7 +224,7 @@ void LorrisTerminal::connectedStatus(bool connected)
 {
     if(connected)
     {
-        ui->stopButton->setEnabled(true);
+        EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         ui->stopButton->setText(tr("Stop"));
 
         ui->terminal->setFocus();
@@ -255,21 +263,19 @@ void LorrisTerminal::stopButton()
     }
 
     if(m_stopped)
-    {
         ui->stopButton->setText(tr("Stop"));
-        EnableButtons((BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
-    }
     else
-    {
         ui->stopButton->setText(tr("Start"));
-        EnableButtons((BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
-    }
+
     ui->terminal->setFocus();
     m_stopped = !m_stopped;
 }
 
 void LorrisTerminal::flashButton()
 {
+    if(!m_stopped)
+        stopButton();
+
     setHexName();
 
     if(actions()[1]->isChecked() && m_filedate.isValid() && m_filedate == m_flashdate)

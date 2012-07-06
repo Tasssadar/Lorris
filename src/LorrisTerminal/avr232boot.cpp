@@ -118,6 +118,7 @@ bool avr232boot::getChipId()
         Utils::ThrowException(tr("Can't read chip ID!"));
         return false;
     }
+
     return true;
 }
 
@@ -129,8 +130,11 @@ void avr232boot::flash(Ui::LorrisTerminal *ui)
     if(cd.getName().isEmpty())
     {
         Utils::ThrowException(tr("Unsupported chip: ") + deviceId);
+        ui->flashText->setText(tr("Chip: %1").arg(tr("<unknown>")));
         return;
     }
+
+     ui->flashText->setText(tr("Chip: %1").arg(cd.getName()));
 
     std::vector<page> pages;
     try {
@@ -142,8 +146,6 @@ void avr232boot::flash(Ui::LorrisTerminal *ui)
 
     ui->progressBar->show();
     ui->progressBar->setMaximum(pages.size());
-
-    ui->flashText->setText(tr("Flashing into ") + cd.getName() + "...");
 
     quint32 cur_page = 0;
     do
@@ -171,7 +173,6 @@ void avr232boot::flash(Ui::LorrisTerminal *ui)
 exit:
     ui->progressBar->setValue(0);
     ui->progressBar->hide();
-    ui->flashText->setText("");
 }
 
 void avr232boot::readEEPROM(Ui::LorrisTerminal *ui)
