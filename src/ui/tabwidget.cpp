@@ -269,6 +269,8 @@ void TabWidget::loadData(DataFileParser *file)
         if(!tab)
             continue;
 
+        tab->loadData(file);
+
         sWorkTabMgr.registerTab(tab);
         addTab(tab, name, tab->getId());
     }

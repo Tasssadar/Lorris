@@ -57,6 +57,9 @@ public:
     QVariant config() const;
     bool applyConfig(QVariant const & config);
 
+    PortConnection *getConnWithConfig(quint8 type, const QHash<QString, QVariant>& cfg);
+
+
 Q_SIGNALS:
     void connAdded(Connection * conn);
     void connRemoved(Connection * conn);

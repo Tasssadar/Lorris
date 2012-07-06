@@ -203,6 +203,7 @@ SessionDialog::SessionDialog(SessionMgr *mgr, QWidget *parent) :
 
     ui->sessionList->addItems(m_mgr->getSessions());
     ui->loadLastBox->setChecked(sConfig.get(CFG_BOOL_LOAD_LAST_SESSION));
+    ui->autoConnBox->setChecked(sConfig.get(CFG_BOOL_SESSION_CONNECT));
 }
 
 SessionDialog::~SessionDialog()
@@ -244,4 +245,9 @@ void SessionDialog::on_removeBtn_clicked()
 void SessionDialog::on_loadLastBox_clicked(bool checked)
 {
     sConfig.set(CFG_BOOL_LOAD_LAST_SESSION, checked);
+}
+
+void SessionDialog::on_autoConnBox_clicked(bool checked)
+{
+    sConfig.set(CFG_BOOL_SESSION_CONNECT, checked);
 }

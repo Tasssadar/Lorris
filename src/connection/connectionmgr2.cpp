@@ -245,3 +245,45 @@ void ConnectionManager2::connectionDestroyed()
     if (m_conns.removeOne(conn))
         emit connRemoved(conn);
 }
+
+PortConnection *ConnectionManager2::getConnWithConfig(quint8 type, const QHash<QString, QVariant> &cfg)
+{
+    m_serialPortEnumerator->refresh();
+
+    PortConnection *enumCon = NULL;
+    for(int i = 0; i < m_conns.size(); ++i)
+    {
+        if(m_conns[i]->getType() != type)
+            continue;
+
+        switch(type)
+        {
+            case CONNECTION_SERIAL_PORT:
+            {
+                SerialPort *sp = (SerialPort*)m_conns[i];
+                if(sp->deviceName() == cfg["device_name"])
+                {
+                    if(!sp->removable())
+                        enumCon = sp;
+                    else if(sp->baudRate() == cfg["baud_rate"])
+                        return sp;
+                }
+                break;
+            }
+            case CONNECTION_TCP_SOCKET:
+            {
+                TcpSocket *socket = (TcpSocket*)m_conns[i];
+                if(socket->host() == cfg["host"] && socket->port() == cfg["port"])
+                    return socket;
+                break;
+            }
+        }
+    }
+
+    if(enumCon)
+    {
+        enumCon->applyConfig(cfg);
+        return enumCon;
+    }
+    return NULL;
+}

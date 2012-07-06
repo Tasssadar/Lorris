@@ -41,6 +41,7 @@ public:
     void setInfo(WorkTabInfo *info) { m_info = info; }
 
     virtual void saveData(DataFileParser *file);
+    virtual void loadData(DataFileParser *file);
     virtual QString GetIdString() = 0;
 
 protected:
@@ -62,6 +63,9 @@ class PortConnWorkTab : public WorkTab
 public:
     PortConnWorkTab();
     ~PortConnWorkTab();
+
+    virtual void saveData(DataFileParser *file);
+    virtual void loadData(DataFileParser *file);
 
 public slots:
     virtual void setConnection(PortConnection *con);

@@ -58,6 +58,7 @@ private slots:
     void on_addBtn_clicked();
     void on_removeBtn_clicked();
     void on_loadLastBox_clicked(bool checked);
+    void on_autoConnBox_clicked(bool checked);
 
 private:
     Ui::SessionDialog *ui;
