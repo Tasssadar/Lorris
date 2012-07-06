@@ -46,11 +46,13 @@ public:
     }
 
     bool getChipId();
-    void flash(Ui::LorrisTerminal *ui);
+    bool flash(Ui::LorrisTerminal *ui);
     void readEEPROM(Ui::LorrisTerminal *ui);
     void writeEEPROM(Ui::LorrisTerminal *ui);
 
     HexFile *getHex() { return &m_hex; }
+
+    void setStopStatus(bool stopped);
 
 private:
     bool waitForAck();

@@ -122,7 +122,7 @@ bool avr232boot::getChipId()
     return true;
 }
 
-void avr232boot::flash(Ui::LorrisTerminal *ui)
+bool avr232boot::flash(Ui::LorrisTerminal *ui)
 {
     QString deviceId(m_dev_id);
 
@@ -131,7 +131,7 @@ void avr232boot::flash(Ui::LorrisTerminal *ui)
     {
         Utils::ThrowException(tr("Unsupported chip: ") + deviceId);
         ui->flashText->setText(tr("Chip: %1").arg(tr("<unknown>")));
-        return;
+        return false;
     }
 
      ui->flashText->setText(tr("Chip: %1").arg(cd.getName()));
@@ -141,7 +141,7 @@ void avr232boot::flash(Ui::LorrisTerminal *ui)
         m_hex.makePages(pages, MEM_FLASH, cd, NULL);
     } catch(QString ex) {
         Utils::ThrowException(tr("Error making pages: ") + ex);
-        return;
+        return false;
     }
 
     ui->progressBar->show();
@@ -173,6 +173,8 @@ void avr232boot::flash(Ui::LorrisTerminal *ui)
 exit:
     ui->progressBar->setValue(0);
     ui->progressBar->hide();
+
+    return cur_page >= pages.size();
 }
 
 void avr232boot::readEEPROM(Ui::LorrisTerminal *ui)
@@ -266,4 +268,12 @@ void avr232boot::writeEEPROM(Ui::LorrisTerminal *ui)
 exit:
     ui->progressBar->setValue(0);
     ui->progressBar->hide();
+}
+
+void avr232boot::setStopStatus(bool stopped)
+{
+    if(stopped)
+        m_state |= STATE_STOPPED;
+    else
+        m_state &= ~(STATE_STOPPED);
 }

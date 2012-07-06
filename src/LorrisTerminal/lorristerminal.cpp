@@ -226,7 +226,8 @@ void LorrisTerminal::connectedStatus(bool connected)
     {
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         ui->stopButton->setText(tr("Stop"));
-
+        m_stopped = false;
+        m_bootloader.setStopStatus(false);
         ui->terminal->setFocus();
     }
     else
@@ -273,6 +274,8 @@ void LorrisTerminal::stopButton()
 
 void LorrisTerminal::flashButton()
 {
+    bool restart = !m_stopped;
+
     if(!m_stopped)
         stopButton();
 
@@ -291,14 +294,18 @@ void LorrisTerminal::flashButton()
         return;
     }
 
-    m_flashdate = m_filedate;
-
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
     if(!m_bootloader.getChipId())
         goto exit;
 
-    m_bootloader.flash(ui);
+    if(m_bootloader.flash(ui))
+    {
+        m_flashdate = m_filedate;
+
+        if(restart)
+            stopButton();
+    }
 
 exit:
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
