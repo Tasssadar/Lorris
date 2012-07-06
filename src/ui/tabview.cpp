@@ -24,7 +24,7 @@
 #include "tooltipwarn.h"
 
 #ifdef Q_OS_WIN
- #include "../updater.h"
+ #include "../misc/updater.h"
 #endif
 
 #define LAYOUT_MARGIN 4

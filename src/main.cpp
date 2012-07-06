@@ -18,7 +18,7 @@
 #include "WorkTab/WorkTabMgr.h"
 
 #ifdef Q_OS_WIN
- #include "updater.h"
+ #include "misc/updater.h"
 #endif
 
 static bool checkArgs(int argc, char** argv, QStringList& openFiles)

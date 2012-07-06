@@ -10,8 +10,8 @@
 #include <QDesktopServices>
 #include <qextserialport.h>
 
-#include "connection/connection.h"
-#include "misc/config.h"
+#include "../connection/connection.h"
+#include "config.h"
 
 static const QString keys_quint32[CFG_QUINT32_NUM] =
 {
