@@ -53,6 +53,8 @@ class LorrisAnalyzer : public PortConnWorkTab
         explicit LorrisAnalyzer();
         virtual ~LorrisAnalyzer();
 
+        QString GetIdString();
+
         bool isAreaVisible(quint8 area);
         void setAreaVisibility(quint8 area, bool visible);
         analyzer_data *getLastData(quint32& idx);

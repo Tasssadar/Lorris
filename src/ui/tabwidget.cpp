@@ -19,6 +19,7 @@
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
+#include "../misc/datafileparser.h"
 
 TabWidget::TabWidget(quint32 id, QWidget *parent) :
     QTabWidget(parent)
@@ -215,9 +216,71 @@ void TabWidget::changeMenu(int idx)
 void TabWidget::clearMenu()
 {
     m_menu->clear();
-    m_menu->addMenu(sWorkTabMgr.getWi()->getFileMenu());
-    m_menu->addMenu(sWorkTabMgr.getWi()->getHelpMenu());
+
+    const std::vector<QMenu*>& menus = sWorkTabMgr.getWi()->getMenus();
+    for(quint32 i = 0; i < menus.size(); ++i)
+        m_menu->addMenu(menus[i]);
+
     m_menu->addSeparator();
+}
+
+void TabWidget::saveData(DataFileParser *file)
+{
+    file->writeVal(m_id);
+
+    if(m_tab_ids.empty())
+    {
+        file->writeVal((quint32)0);
+        return;
+    }
+
+    file->writeVal(count());
+    for(int i = 0; i < count(); ++i)
+    {
+        file->writeBlockIdentifier("tabWidgetTab");
+        file->writeString(tabText(i));
+        ((WorkTab*)widget(i))->saveData(file);
+    }
+
+    file->writeBlockIdentifier("tabWidgetIdx");
+    file->writeVal(currentIndex());
+}
+
+void TabWidget::loadData(DataFileParser *file)
+{
+    int count = 0;
+    file->readVal(count);
+
+    const WorkTabMgr::InfoList& info = sWorkTabMgr.GetWorkTabInfos();
+
+    for(int i = 0; i < count; ++i)
+    {
+        if(!file->seekToNextBlock("tabWidgetTab", "tabWidget"))
+            break;
+
+        QString name = file->readString();
+        QString id = file->readString();
+
+        WorkTab *tab = NULL;
+        for(WorkTabMgr::InfoList::const_iterator itr = info.begin(); !tab && itr != info.end(); ++itr)
+            if((*itr)->GetIdString() == id)
+                tab = sWorkTabMgr.GetNewTab(*itr);
+
+        if(!tab)
+            continue;
+
+        sWorkTabMgr.registerTab(tab);
+        addTab(tab, name, tab->getId());
+    }
+
+    if(file->seekToNextBlock("tabWidgetIdx", "tabWidget"))
+    {
+        int idx = 0;
+        file->readVal(idx);
+        setCurrentIndex(idx);
+    }
+
+    checkEmpty();
 }
 
 TabBar::TabBar(quint32 id, QWidget *parent) :

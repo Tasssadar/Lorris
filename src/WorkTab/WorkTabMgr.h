@@ -36,6 +36,7 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
         void AddWorkTab(WorkTab *tab, QString label);
         WorkTab *AddWorkTab(WorkTabInfo * info, QString filename = QString());
         WorkTab* GetNewTab(WorkTabInfo *info);
+        void registerTab(WorkTab *tab);
 
         WorkTab* getWorkTab(quint32 id)
         {
@@ -78,6 +79,11 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
         void CloseHomeTab();
 
         bool onTabsClose();
+
+        bool isAnyTabOpened() const
+        {
+            return !m_workTabs.isEmpty();
+        }
 
     private slots:
         void OpenHomeTab(quint32 id);

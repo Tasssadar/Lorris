@@ -18,6 +18,7 @@ class QHBoxLayout;
 class QMenu;
 class TabBar;
 class WorkTab;
+class DataFileParser;
 
 class TabWidget : public QTabWidget
 {
@@ -54,20 +55,28 @@ public:
         return QSize(0, 0);
     }
 
+    bool isEmpty()
+    {
+        return m_tab_ids.empty();
+    }
+
     void changeMenu(int idx);
     void clearMenu();
     void checkEmpty();
 
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
 public slots:
     int pullTab(int index, TabWidget *origin);
     void pullTab(int index, TabWidget *origin, int to);
+    void closeTab(int index);
 
 protected:
     void mousePressEvent(QMouseEvent *ev);
     void mouseDoubleClickEvent(QMouseEvent *event);
 
 private slots:
-    void closeTab(int index);
     void tabMoved(int from, int to);
     void newTabBtn();
     void currentIndexChanged(int idx);

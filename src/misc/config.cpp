@@ -106,6 +106,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "shupito/show_flash_warn",    // CFG_BOOL_SHUPITO_SHOW_FLASH_WARN
     "general/auto_update",        // CFG_BOOL_AUTO_UPDATE
     "general/check_for_updates",  // CFG_BOOL_CHECK_FOR_UPDATE
+    "general/load_last_session",  // CFG_BOOL_LOAD_LAST_SESSION
 };
 
 static const bool def_bool[CFG_BOOL_NUM] =
@@ -125,6 +126,7 @@ static const bool def_bool[CFG_BOOL_NUM] =
     true,                         // CFG_BOOL_SHUPITO_SHOW_FLASH_WARN
     false,                        // CFG_BOOL_AUTO_UPDATE
     true,                         // CFG_BOOL_CHECK_FOR_UPDATE
+    false,                        // CFG_BOOL_LOAD_LAST_SESSION
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =
@@ -154,7 +156,7 @@ Config::~Config()
 
 void Config::openSettings()
 {
-    static const QString cfgFileLocations[] =
+    static QString cfgFileLocations[] =
     {
         "./config.ini",
         QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/config.ini"

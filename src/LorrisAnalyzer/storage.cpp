@@ -13,7 +13,7 @@
 #include "storage.h"
 #include "widgetarea.h"
 #include "devicetabwidget.h"
-#include "datafileparser.h"
+#include "../misc/datafileparser.h"
 #include "lorrisanalyzer.h"
 
 static const char *ANALYZER_DATA_FORMAT = "v7";

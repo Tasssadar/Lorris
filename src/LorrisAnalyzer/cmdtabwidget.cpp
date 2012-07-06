@@ -13,7 +13,7 @@
 #include "cmdtabwidget.h"
 #include "../common.h"
 #include "DataWidgets/datawidget.h"
-#include "datafileparser.h"
+#include "../misc/datafileparser.h"
 #include "../ui/plustabbar.h"
 
 CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWidget *parent) :

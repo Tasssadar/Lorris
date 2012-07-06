@@ -73,6 +73,8 @@ public:
     LorrisShupito();
     ~LorrisShupito();
 
+    QString GetIdString();
+
     void setConnection(PortConnection *con);
     void stopAll(bool wait);
 

@@ -13,11 +13,14 @@
 #include <QPainter>
 #include <QSignalMapper>
 #include <QMessageBox>
+#include <stdio.h>
+#include <QLabel>
 
 #include "tabview.h"
 #include "homedialog.h"
 #include "chooseconnectiondlg.h"
 #include "../WorkTab/WorkTabMgr.h"
+#include "../misc/datafileparser.h"
 
 #ifdef Q_OS_WIN
  #include "../updater.h"
@@ -28,7 +31,7 @@
 QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
 
 TabView::TabView(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), m_active_widget(NULL), m_session_mgr(this)
 {
     QHBoxLayout *layout = new QHBoxLayout(this);
     m_layouts.insert(layout);
@@ -36,10 +39,15 @@ TabView::TabView(QWidget *parent) :
 
     m_active_widget = newTabWidget(layout);
 
-    m_file_menu = new QMenu(tr("&File"), this);
-    m_help_menu = new QMenu(tr("&Help"), this);
+    QMenu *file_menu = new QMenu(tr("&File"), this);
+    QMenu *session_menu = new QMenu(tr("&Sessions"), this);
+    QMenu *help_menu = new QMenu(tr("&Help"), this);
 
-    QMenu * menuFileNew = m_file_menu->addMenu(tr("&New"));
+    m_menus.push_back(file_menu);
+    m_menus.push_back(session_menu);
+    m_menus.push_back(help_menu);
+
+    QMenu * menuFileNew = file_menu->addMenu(tr("&New"));
     {
         WorkTabMgr::InfoList const & infos = sWorkTabMgr.GetWorkTabInfos();
         for (int i = 0; i < infos.size(); ++i)
@@ -52,10 +60,12 @@ TabView::TabView(QWidget *parent) :
         }
     }
 
-    QAction* actionConnectionManager = m_file_menu->addAction(tr("Connection &manager..."));
-    QAction* actionQuit = m_file_menu->addAction(tr("&Quit"));
+    QAction* actionConnectionManager = file_menu->addAction(tr("Connection &manager..."));
+    QAction* actionQuit = file_menu->addAction(tr("&Quit"));
 
-    QMenu* menuLang = m_help_menu->addMenu(tr("Language"));
+    m_session_mgr.initMenu(session_menu);
+
+    QMenu* menuLang = help_menu->addMenu(tr("Language"));
 
     QSignalMapper *langSignals = new QSignalMapper(this);
     connect(langSignals, SIGNAL(mapped(int)), this, SLOT(langChanged(int)));
@@ -76,8 +86,8 @@ TabView::TabView(QWidget *parent) :
         if(i == 0)
             menuLang->addSeparator();
     }
-    QAction* checkUpdate = m_help_menu->addAction(tr("Check for update"));
-    QAction* actionAbout = m_help_menu->addAction(tr("About Lorris..."));
+    QAction* checkUpdate = help_menu->addAction(tr("Check for update"));
+    QAction* actionAbout = help_menu->addAction(tr("About Lorris..."));
 
     quint32 curLang = sConfig.get(CFG_QUINT32_LANGUAGE);
     if(curLang >= m_lang_menu.size())
@@ -94,10 +104,17 @@ TabView::TabView(QWidget *parent) :
 
 TabWidget *TabView::newTabWidget(QBoxLayout *l)
 {
-    TabWidget *tabW = new TabWidget(sWorkTabMgr.generateNewWidgetId(), this);
-    m_tab_widgets.insert(tabW->getId(), tabW);
+    quint32 id = sWorkTabMgr.generateNewWidgetId();
+    if(m_tab_widgets.empty())
+        id = 0;
+
+    TabWidget *tabW = new TabWidget(id, this);
+    m_tab_widgets.insert(id, tabW);
 
     l->addWidget(tabW, 50);
+
+    if(!m_active_widget)
+        m_active_widget = tabW;
 
     connect(tabW, SIGNAL(newTab()),                       SLOT(newTab()));
     connect(tabW, SIGNAL(openHomeTab(quint32)),           SIGNAL(openHomeTab(quint32)));
@@ -203,7 +220,7 @@ void TabView::updateResizeLines(QBoxLayout *l)
             m_resize_lines.remove((ResizeLine*)curItem->widget());
             delete curItem->widget();
 
-            if(l->isEmpty())
+            if(!l->count())
             {
                 m_layouts.erase(l);
                 delete l;
@@ -292,10 +309,12 @@ void TabView::removeEmptyLayouts()
 {
     for(std::set<QBoxLayout*>::iterator i = m_layouts.begin(); i != m_layouts.end();)
     {
-        if((*i)->isEmpty())
+        // DAMNYOUQT: aparently, when you have layout
+        // with non-QWidget item inside, it is empty.
+        if(!(*i)->count())
         {
-            m_layouts.erase(i);
             delete *i;
+            m_layouts.erase(i);
             i = m_layouts.begin();
         }
         else
@@ -303,13 +322,12 @@ void TabView::removeEmptyLayouts()
     }
 }
 
-QBoxLayout *TabView::newLayout(bool hor)
+QBoxLayout *TabView::newLayout(bool ver)
 {
-    QBoxLayout *l = hor ? (QBoxLayout*)new QVBoxLayout : (QBoxLayout*)new QHBoxLayout;
+    QBoxLayout *l = ver ? (QBoxLayout*)new QVBoxLayout : (QBoxLayout*)new QHBoxLayout;
     m_layouts.insert(l);
     return l;
 }
-
 
 void TabView::langChanged(int idx)
 {
@@ -369,6 +387,125 @@ void TabView::checkForUpdate()
     Utils::ThrowException(QObject::tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                                       "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
 #endif
+}
+
+void TabView::saveData(DataFileParser *file)
+{
+    file->writeBlockIdentifier("tabViewLayouts");
+    writeLayoutStructure(file, layout());
+
+    file->writeBlockIdentifier("tabViewWidgets");
+    file->writeVal(m_tab_widgets.count());
+
+    for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); ++itr)
+    {
+        file->writeBlockIdentifier("tabWidget");
+        (*itr)->saveData(file);
+    }
+}
+
+void TabView::writeLayoutStructure(DataFileParser *file, QLayout *l)
+{
+    file->writeVal(quint8(l->inherits("QHBoxLayout") ? ITEM_LAYOUT_H : ITEM_LAYOUT_V));
+    file->writeVal(l->count());
+    for(int i = 0; i < l->count(); ++i)
+    {
+        QLayoutItem *item = l->itemAt(i);
+        if(item->layout())
+            writeLayoutStructure(file, item->layout());
+        else if(!isResizeLine(item) && item->widget())
+        {
+            file->writeVal((quint8)ITEM_WIDGET);
+            file->writeVal( ((TabWidget*)item->widget())->getId() );
+        }
+        else
+            file->writeVal((quint8)ITEM_SKIP);
+    }
+}
+
+void TabView::loadData(DataFileParser *file)
+{
+    // close all tabs
+    QHash<quint32, TabWidget*> tabs = m_tab_widgets;
+    for(QHash<quint32, TabWidget*>::iterator itr = tabs.begin(); itr != tabs.end(); ++itr)
+    {
+        while(!(*itr)->isEmpty())
+            (*itr)->closeTab((*itr)->count()-1);
+    }
+
+    if(!file->seekToNextBlock("tabViewLayouts", 0))
+        return;
+
+    sWorkTabMgr.CloseHomeTab();
+
+    quint8 type = 0;
+    file->readVal(type);
+
+    delete layout();
+
+    m_tab_widgets.clear();
+    m_layouts.clear();
+    m_active_widget = NULL;
+
+    QBoxLayout *l = newLayout(type == ITEM_LAYOUT_V);
+    setLayout(l);
+
+    QHash<quint32, quint32> id_pair;
+
+    loadLayoutStructure(file, l, id_pair);
+
+    if(!file->seekToNextBlock("tabViewWidgets", 0))
+        return;
+
+    int count = 0;
+    file->readVal(count);
+
+    for(int i = 0; i < count; ++i)
+    {
+        if(!file->seekToNextBlock("tabWidget", 0))
+            break;
+
+        quint32 id = 0;
+        file->readVal(id);
+
+        if(!id_pair.contains(id))
+            continue;
+
+        m_tab_widgets[id_pair[id]]->loadData(file);
+    }
+}
+
+void TabView::loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHash<quint32, quint32>& id_pair)
+{
+    int count = 0;
+    file->readVal(count);
+
+    for(int i = 0; i < count; ++i)
+    {
+        quint8 type = 0;
+        file->readVal(type);
+        switch(type)
+        {
+            case ITEM_LAYOUT_H:
+            case ITEM_LAYOUT_V:
+            {
+                QBoxLayout *l = newLayout(type == ITEM_LAYOUT_V);
+                parent->addLayout(l, 50);
+                loadLayoutStructure(file, l, id_pair);
+                break;
+            }
+            case ITEM_WIDGET:
+            {
+                quint32 new_id = newTabWidget(parent)->getId();
+                quint32 load_id = 0;
+                file->readVal(load_id);
+                id_pair.insert(load_id, new_id);
+                break;
+            }
+            case ITEM_SKIP:
+                break;
+        }
+    }
 }
 
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)

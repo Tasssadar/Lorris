@@ -7,6 +7,7 @@
 
 #include <QLayout>
 #include <QMessageBox>
+#include <typeinfo>
 
 #include "WorkTab.h"
 
@@ -56,6 +57,11 @@ void WorkTab::addTopMenu(QMenu *menu)
 void WorkTab::openFile(const QString &/*filename*/)
 {
 
+}
+
+void WorkTab::saveData(DataFileParser *file)
+{
+    file->writeString(GetIdString());
 }
 
 //----------------------------------------------------------------------------

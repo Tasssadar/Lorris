@@ -70,6 +70,12 @@ void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
     return;
 }
 
+void WorkTabMgr::registerTab(WorkTab *tab)
+{
+    CloseHomeTab();
+    m_workTabs.insert(tab->getId(), tab);
+}
+
 WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info, QString filename)
 {
     QScopedPointer<WorkTab> tab(this->GetNewTab(info));
@@ -132,6 +138,8 @@ TabView *WorkTabMgr::CreateWidget(QWidget *parent)
 
 bool WorkTabMgr::onTabsClose()
 {
+    tabView->getSessionMgr()->saveSession();
+
     for(WorkTabMap::iterator itr = m_workTabs.begin(); itr != m_workTabs.end(); ++itr)
     {
         if(!(*itr)->onTabClose())

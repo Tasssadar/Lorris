@@ -6,7 +6,7 @@
 ***********************************************/
 
 #include "scriptstorage.h"
-#include "../../datafileparser.h"
+#include "../../../misc/datafileparser.h"
 
 ScriptStorage::ScriptStorage(QObject *parent) :
     QObject(parent)

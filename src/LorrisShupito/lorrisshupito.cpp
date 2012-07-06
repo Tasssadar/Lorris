@@ -1426,3 +1426,8 @@ void LorrisShupito::timeout()
     m_timout_timer.stop();
     Utils::ThrowException(tr("Shupito is not responding, try to re-plug it into computer!"));
 }
+
+QString LorrisShupito::GetIdString()
+{
+    return "LorrisShupito";
+}

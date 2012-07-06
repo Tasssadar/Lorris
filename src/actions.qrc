@@ -11,5 +11,7 @@
         <file alias="refresh">icons/view-refresh.png</file>
         <file alias="wire">icons/network-wired.png</file>
         <file alias="update">icons/system-software-update.png</file>
+        <file>icons/list-add_32.png</file>
+        <file>icons/list-remove_32.png</file>
     </qresource>
 </RCC>

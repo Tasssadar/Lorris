@@ -15,6 +15,7 @@
 #include "../common.h"
 #include "../connection/connection.h"
 #include "WorkTabInfo.h"
+#include "../misc/datafileparser.h"
 
 class WorkTab : public QWidget
 {
@@ -38,6 +39,9 @@ public:
 
     WorkTabInfo *getInfo() const { return m_info; }
     void setInfo(WorkTabInfo *info) { m_info = info; }
+
+    virtual void saveData(DataFileParser *file);
+    virtual QString GetIdString() = 0;
 
 protected:
     WorkTab();

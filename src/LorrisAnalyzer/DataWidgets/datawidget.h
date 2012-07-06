@@ -16,7 +16,7 @@
 #include <QMenu>
 
 #include "../packet.h"
-#include "../datafileparser.h"
+#include "../../misc/datafileparser.h"
 
 enum WidgetTypes
 {

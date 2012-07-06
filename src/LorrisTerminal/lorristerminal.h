@@ -46,6 +46,8 @@ public:
     explicit LorrisTerminal();
     virtual ~LorrisTerminal();
 
+    QString GetIdString();
+
     void onTabShow(const QString& filename);
     virtual void setConnection(PortConnection *con);
 

@@ -13,6 +13,7 @@
 #include <QHash>
 #include <QLocale>
 
+#include "../misc/sessionmgr.h"
 #include "tabwidget.h"
 
 class QLayoutItem;
@@ -21,8 +22,17 @@ class ResizeLine;
 class SplitOverlay;
 class QDrag;
 class WorkTabInfo;
+class DataFileParser;
 
 extern QLocale::Language langs[];
+
+enum saveLayoutItem
+{
+    ITEM_WIDGET = 0,
+    ITEM_LAYOUT_H,
+    ITEM_LAYOUT_V,
+    ITEM_SKIP
+};
 
 class TabView : public QWidget
 {
@@ -52,14 +62,17 @@ public:
     QBoxLayout *getLayoutForLine(ResizeLine *line);
     void createSplitOverlay(quint32 id, QDrag *drag);
 
-    QMenu *getFileMenu()
+    const std::vector<QMenu*>& getMenus() const
     {
-        return m_file_menu;
+        return m_menus;
     }
 
-    QMenu *getHelpMenu()
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
+    SessionMgr *getSessionMgr()
     {
-        return m_help_menu;
+        return &m_session_mgr;
     }
 
 private slots:
@@ -82,7 +95,10 @@ private:
 
     inline QBoxLayout *getLayoutForWidget(QWidget *widget);
     inline void removeEmptyLayouts();
-    inline QBoxLayout *newLayout(bool hor);
+    inline QBoxLayout *newLayout(bool ver);
+
+    void writeLayoutStructure(DataFileParser *file, QLayout *l);
+    void loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHash<quint32, quint32>& id_pair);
 
     QHash<quint32, TabWidget*> m_tab_widgets;
     QHash<ResizeLine*, QBoxLayout*> m_resize_lines;
@@ -92,8 +108,9 @@ private:
     TabWidget *m_active_widget;
     std::vector<QAction*> m_lang_menu;
 
-    QMenu *m_file_menu;
-    QMenu *m_help_menu;
+    std::vector<QMenu*> m_menus;
+
+    SessionMgr m_session_mgr;
 
     QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };

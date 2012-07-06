@@ -56,6 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);
+
+    if(sConfig.get(CFG_BOOL_LOAD_LAST_SESSION))
+        tabWidget->getSessionMgr()->loadSession();
 }
 
 MainWindow::~MainWindow()

@@ -134,3 +134,8 @@ void LorrisProxy::onTabShow(const QString&)
             m_con->OpenConcurrent();
     }
 }
+
+QString LorrisProxy::GetIdString()
+{
+    return "LorrisProxy";
+}

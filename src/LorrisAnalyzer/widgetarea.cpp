@@ -14,7 +14,7 @@
 
 #include "widgetarea.h"
 #include "lorrisanalyzer.h"
-#include "datafileparser.h"
+#include "../misc/datafileparser.h"
 #include "storage.h"
 
 #include "DataWidgets/numberwidget.h"

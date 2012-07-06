@@ -17,7 +17,7 @@
 #include "datawidget.h"
 #include "../../WorkTab/WorkTab.h"
 #include "../widgetarea.h"
-#include "../datafileparser.h"
+#include "../../misc/datafileparser.h"
 
 DataWidget::DataWidget(QWidget *parent) :
     QFrame(parent)

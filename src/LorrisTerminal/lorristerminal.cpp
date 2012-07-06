@@ -144,6 +144,11 @@ LorrisTerminal::~LorrisTerminal()
     delete ui;
 }
 
+QString LorrisTerminal::GetIdString()
+{
+    return "LorrisTerminal";
+}
+
 void LorrisTerminal::onTabShow(const QString&)
 {
     this->connectedStatus(m_con && m_con->isOpen());

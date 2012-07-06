@@ -26,6 +26,8 @@ public:
     explicit LorrisProxy();
     ~LorrisProxy();
 
+    QString GetIdString();
+
     void setConnection(PortConnection *con);
     void onTabShow(const QString& filename);
 

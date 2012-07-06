@@ -15,7 +15,7 @@
 
 #include "barwidget.h"
 #include "../../ui/rangeselectdialog.h"
-#include "../datafileparser.h"
+#include "../../misc/datafileparser.h"
 
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {

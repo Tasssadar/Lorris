@@ -48,7 +48,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/lorrisshupitoinfo.cpp \
     LorrisShupito/shupito.cpp \
     LorrisShupito/shupitodesc.cpp \
-    LorrisAnalyzer/datafileparser.cpp \
     LorrisAnalyzer/DataWidgets/colorwidget.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp \
@@ -113,7 +112,9 @@ SOURCES += ui/mainwindow.cpp \
     misc/config.cpp \
     ui/rotatebutton.cpp \
     ui/terminalsettings.cpp \
-    ui/terminal.cpp
+    ui/terminal.cpp \
+    misc/sessionmgr.cpp \
+    misc/datafileparser.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -186,7 +187,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/packetparser.h \
     ui/plustabbar.h \
     ui/homedialog.h \
-    LorrisAnalyzer/datafileparser.h \
     LorrisAnalyzer/widgetarea.h \
     LorrisAnalyzer/storage.h \
     LorrisShupito/overvccdialog.h \
@@ -209,7 +209,9 @@ HEADERS += ui/mainwindow.h \
     misc/config.h \
     ui/rotatebutton.h \
     ui/terminalsettings.h \
-    ui/terminal.h
+    ui/terminal.h \
+    misc/sessionmgr.h \
+    misc/datafileparser.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -278,7 +280,8 @@ FORMS += \
     ui/rangeselectdialog.ui \
     updatecheck.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
-    ui/terminalsettings.ui
+    ui/terminalsettings.ui \
+    misc/sessiondialog.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

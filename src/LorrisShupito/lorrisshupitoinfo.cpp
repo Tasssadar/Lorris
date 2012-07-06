@@ -34,3 +34,8 @@ QStringList LorrisShupitoInfo::GetHandledFiles()
 {
     return QStringList("hex");
 }
+
+QString LorrisShupitoInfo::GetIdString()
+{
+    return "LorrisShupito";
+}

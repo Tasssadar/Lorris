@@ -707,3 +707,8 @@ void LorrisAnalyzer::updateForWidget()
     if(m_curIndex && (quint32)m_curIndex < m_storage->getSize())
         ((DataWidget*)sender())->newData(m_storage->get(m_curIndex), m_curIndex);
 }
+
+QString LorrisAnalyzer::GetIdString()
+{
+    return "LorrisAnalyzer";
+}
