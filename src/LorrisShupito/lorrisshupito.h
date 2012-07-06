@@ -78,6 +78,9 @@ public:
     void setConnection(PortConnection *con);
     void stopAll(bool wait);
 
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
 private slots:
     void onTabShow(const QString& filename);
     void connDisconnecting();
