@@ -154,7 +154,7 @@ void PortConnWorkTab::loadData(DataFileParser *file)
 {
     WorkTab::loadData(file);
 
-    if(file->seekToNextBlock("portTabCon", "tabWidget"))
+    if(file->seekToNextBlock("portTabCon", BLOCK_WORKTAB))
     {
         quint8 type = 0;
         file->readVal(type);

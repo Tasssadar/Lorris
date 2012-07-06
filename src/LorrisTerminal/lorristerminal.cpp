@@ -465,3 +465,52 @@ void LorrisTerminal::showWarn(bool show)
     actions()[1]->setChecked(show);
     sConfig.set(CFG_BOOL_TERMINAL_SHOW_WARN, show);
 }
+
+void LorrisTerminal::saveData(DataFileParser *file)
+{
+    PortConnWorkTab::saveData(file);
+
+    file->writeBlockIdentifier("LorrTermData");
+    {
+        QByteArray termData = ui->terminal->getData();
+        file->writeVal(termData.size());
+        file->write(termData);
+    }
+
+    file->writeBlockIdentifier("LorrTermFilename");
+    file->writeString(m_filename);
+
+    file->writeBlockIdentifier("LorrTermSettings");
+    file->writeString(ui->terminal->getSettingsData());
+
+    file->writeBlockIdentifier("LorrTermFmtInput");
+    file->writeVal(ui->terminal->getFmt());
+    file->writeVal(ui->terminal->getInput());
+}
+
+void LorrisTerminal::loadData(DataFileParser *file)
+{
+    PortConnWorkTab::loadData(file);
+
+    if(file->seekToNextBlock("LorrTermData", BLOCK_WORKTAB))
+    {
+        int size = file->readVal<int>();
+        QByteArray termData = file->read(size);
+        ui->terminal->appendText(termData);
+    }
+
+    if(file->seekToNextBlock("LorrTermFilename", BLOCK_WORKTAB))
+    {
+        QString name = file->readString();
+        setHexName(name);
+    }
+
+    if(file->seekToNextBlock("LorrTermSettings", BLOCK_WORKTAB))
+       ui->terminal->loadSettings(file->readString());
+
+    if(file->seekToNextBlock("LorrTermFmtInput", BLOCK_WORKTAB))
+    {
+        ui->terminal->setFmt(file->readVal<int>());
+        inputAct(file->readVal<int>());
+    }
+}

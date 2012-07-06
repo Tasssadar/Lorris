@@ -51,6 +51,9 @@ public:
     void onTabShow(const QString& filename);
     virtual void setConnection(PortConnection *con);
 
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
 private slots:
     //Buttons
     void browseForHex();

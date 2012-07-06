@@ -135,8 +135,8 @@ char* DataFileParser::getBlockName(DataBlocks block)
         case BLOCK_WIDGET:           strcpy(res, "widgetBlock");     break;
         case BLOCK_DATA_INDEX:       strcpy(res, "dataIndexBlock");  break;
 
-        case BLOCK_SESSIONS_INFO:    strcpy(res, "sessionsInfo");    break;
-        case BLOCK_SESSION:          strcpy(res, "sessionData");     break;
+        case BLOCK_TABWIDGET:        strcpy(res, "tabWidget");       break;
+        case BLOCK_WORKTAB:          strcpy(res, "tabWidgetTab");    break;
         default: return NULL;
     }
     return res;

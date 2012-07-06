@@ -26,8 +26,8 @@ enum DataBlocks
     BLOCK_WIDGET,
     BLOCK_DATA_INDEX,
 
-    BLOCK_SESSIONS_INFO,
-    BLOCK_SESSION
+    BLOCK_TABWIDGET,
+    BLOCK_WORKTAB
 };
 
 class DataFileParser : public QBuffer
@@ -53,6 +53,7 @@ public:
     QString readString();
 
     template <typename T> void readVal(T& val);
+    template <typename T> T readVal();
     template <typename T> void writeVal(T val);
 
 private:
@@ -65,6 +66,14 @@ template <typename T>
 void DataFileParser::readVal(T& val)
 {
     read((char*)&val, sizeof(T));
+}
+
+template <typename T>
+T DataFileParser::readVal()
+{
+    T t;
+    read((char*)&t, sizeof(t));
+    return t;
 }
 
 template <typename T>
