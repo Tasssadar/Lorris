@@ -25,13 +25,13 @@ public:
     void initMenu(QMenu *menu);
     QByteArray openSessionFile(const QString& name);
 
-    void saveSession(QString name = "<Last session>");
+    void saveSession(QString name = "[Last session]");
 
     const QStringList& getSessions() const { return m_sessions; }
 
 public slots:
     void saveSessionAct();
-    void loadSession(QString name = "<Last session>");
+    void loadSession(QString name = "[Last session]");
     void removeSession(QString name);
 
 private slots:

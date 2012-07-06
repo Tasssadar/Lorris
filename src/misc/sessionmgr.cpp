@@ -110,7 +110,7 @@ void SessionMgr::saveSessionAct()
     if(name.isEmpty())
         return;
 
-    name.replace(QRegExp("[/\\\\]"), "_");
+    name.replace(QRegExp("[/\\\\<>\\*:\"\\|\\?]"), "_");
 
     if(name.startsWith(".."))
         name.prepend("_");

@@ -438,6 +438,7 @@ void TabView::loadData(DataFileParser *file)
         return;
 
     sWorkTabMgr.CloseHomeTab();
+    delete m_tab_widgets[0];
 
     quint8 type = 0;
     file->readVal(type);
