@@ -211,10 +211,12 @@ void NumberWidget::levelSelected()
 
 void NumberWidget::resizeEvent(QResizeEvent *event)
 {
+    QSize old = event->oldSize();
     if(event->oldSize().height() < minimumHeight())
-        return;
+        old = minimumSize();
+
     QFont f = num->font();
-    f.setPointSize(f.pointSize() + event->size().height() - event->oldSize().height());
+    f.setPointSize(f.pointSize() + event->size().height() - old.height());
     num->setFont(f);
     DataWidget::resizeEvent(event);
 }

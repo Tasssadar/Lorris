@@ -68,6 +68,9 @@ class LorrisAnalyzer : public PortConnWorkTab
         void setConnection(PortConnection *con);
         void openFile(const QString& filename);
 
+        void saveData(DataFileParser *file);
+        void loadData(DataFileParser *file);
+
     public slots:
         void onTabShow(const QString& filename);
         bool onTabClose();

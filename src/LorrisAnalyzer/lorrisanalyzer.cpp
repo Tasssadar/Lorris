@@ -627,7 +627,7 @@ void LorrisAnalyzer::resetDevAndStorage(analyzer_packet *packet)
 void LorrisAnalyzer::openFile(const QString& filename)
 {
     if(load((QString&)filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS)))
-        sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
+        sConfig.set(CFG_STRING_ANALYZER_FOLDER, m_storage->getFilename());
 }
 
 void LorrisAnalyzer::openFile()
@@ -711,4 +711,20 @@ void LorrisAnalyzer::updateForWidget()
 QString LorrisAnalyzer::GetIdString()
 {
     return "LorrisAnalyzer";
+}
+
+void LorrisAnalyzer::saveData(DataFileParser *file)
+{
+    PortConnWorkTab::saveData(file);
+
+    file->writeBlockIdentifier("LorrAnalyzerFile");
+    file->writeString(m_storage->getFilename());
+}
+
+void LorrisAnalyzer::loadData(DataFileParser *file)
+{
+    PortConnWorkTab::loadData(file);
+
+    if(file->seekToNextBlock("LorrAnalyzerFile", BLOCK_WORKTAB))
+        openFile(file->readString());
 }

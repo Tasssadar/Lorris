@@ -230,7 +230,10 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
     }
 
     m_file_md5 = MD5(data);
-    m_filename = filename;
+    {
+        QFileInfo info(filename);
+        m_filename = info.absoluteFilePath();
+    }
 
     if(filename.endsWith(".cldta"))
         data = qUncompress(data);
