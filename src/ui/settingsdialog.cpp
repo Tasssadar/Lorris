@@ -122,7 +122,7 @@ fail:
 void SettingsDialog::on_updateBtn_clicked()
 {
 #ifdef Q_OS_WIN
-    ui->updateBtn->setText(tr("Checking for update..."), 0);
+    ui->updateBtn->setText(tr("Checking for update..."));
     if(Updater::doUpdate(false))
         emit closeLorris();
     else
