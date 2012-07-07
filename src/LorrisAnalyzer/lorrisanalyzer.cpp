@@ -46,6 +46,11 @@
 #include "DataWidgets/circlewidget.h"
 #include "DataWidgets/sliderwidget.h"
 
+static bool sortDataWidget(DataWidgetAddBtn *a, DataWidgetAddBtn *b)
+{
+    return a->text().localeAwareCompare(a->text(), b->text()) < 0;
+}
+
 LorrisAnalyzer::LorrisAnalyzer()
     : ui(new Ui::LorrisAnalyzer),
       m_connectButton(0)
@@ -150,15 +155,22 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
-    widgetBtnL->addWidget(new NumberWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new BarWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new ColorWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new GraphWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new ScriptWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new TerminalWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new ButtonWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new CircleWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new SliderWidgetAddBtn(tmp));
+
+    std::vector<DataWidgetAddBtn*> buttons;
+    buttons.push_back(new NumberWidgetAddBtn(tmp));
+    buttons.push_back(new BarWidgetAddBtn(tmp));
+    buttons.push_back(new ColorWidgetAddBtn(tmp));
+    buttons.push_back(new GraphWidgetAddBtn(tmp));
+    buttons.push_back(new ScriptWidgetAddBtn(tmp));
+    buttons.push_back(new TerminalWidgetAddBtn(tmp));
+    buttons.push_back(new ButtonWidgetAddBtn(tmp));
+    buttons.push_back(new CircleWidgetAddBtn(tmp));
+    buttons.push_back(new SliderWidgetAddBtn(tmp));
+
+    std::sort(buttons.begin(), buttons.end(), sortDataWidget);
+
+    for(quint32 i = 0; i < buttons.size(); ++i)
+        widgetBtnL->addWidget(buttons[i]);
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);
