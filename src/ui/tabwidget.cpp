@@ -354,6 +354,7 @@ void TabBar::mousePressEvent(QMouseEvent *event)
     {
         case Qt::LeftButton:
             m_startDragPos = event->pos();
+            PlusTabBar::mousePressEvent(event);
             break;
         case Qt::MidButton:
         {
