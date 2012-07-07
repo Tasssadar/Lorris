@@ -64,6 +64,8 @@ DataWidget::DataWidget(QWidget *parent) :
     m_dragAction = DRAG_NONE;
 
     m_widgetControlled = -1;
+
+    setMinimumSize(20, 20);
 }
 
 DataWidget::~DataWidget()
