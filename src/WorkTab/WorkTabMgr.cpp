@@ -138,7 +138,9 @@ TabView *WorkTabMgr::CreateWidget(QWidget *parent)
 
 bool WorkTabMgr::onTabsClose()
 {
-    tabView->getSessionMgr()->saveSession();
+    try {
+        tabView->getSessionMgr()->saveSession();
+    } catch(const QString&) { }
 
     for(WorkTabMap::iterator itr = m_workTabs.begin(); itr != m_workTabs.end(); ++itr)
     {

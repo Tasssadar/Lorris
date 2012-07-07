@@ -219,9 +219,9 @@ void TabWidget::clearMenu()
 {
     m_menu->clear();
 
-    const std::vector<QMenu*>& menus = sWorkTabMgr.getWi()->getMenus();
+    const std::vector<QAction*>& menus = sWorkTabMgr.getWi()->getMenus();
     for(quint32 i = 0; i < menus.size(); ++i)
-        m_menu->addMenu(menus[i]);
+        m_menu->addAction(menus[i]);
 
     m_menu->addSeparator();
 }

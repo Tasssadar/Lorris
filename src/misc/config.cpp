@@ -68,6 +68,7 @@ static const QString keys_string[CFG_STRING_NUM] =
     "analyzer/import_folder",     // CFG_STRING_ANALYZER_IMPORT
     "general/window_params",      // CFG_STRING_WINDOW_PARAMS
     "analyzer/graph_export_path", // CFG_STRING_GRAPH_EXPORT
+    "general/font",               // CFG_STRING_APP_FONT
 };
 
 static const QString def_string[CFG_STRING_NUM] =
@@ -87,6 +88,7 @@ static const QString def_string[CFG_STRING_NUM] =
     "",                           // CFG_STRING_ANALYZER_IMPORT
     "",                           // CFG_STRING_WINDOW_PARAMS
     "",                           // CFG_STRING_GRAPH_EXPORT
+    "",                           // CFG_STRING_APP_FONT
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -108,6 +110,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "general/check_for_updates",  // CFG_BOOL_CHECK_FOR_UPDATE
     "general/load_last_session",  // CFG_BOOL_LOAD_LAST_SESSION
     "general/session_connect",    // CFG_BOOL_SESSION_CONNECT
+    "general/portable",           // CFG_BOOL_PORTABLE
 };
 
 static const bool def_bool[CFG_BOOL_NUM] =
@@ -129,6 +132,7 @@ static const bool def_bool[CFG_BOOL_NUM] =
     true,                         // CFG_BOOL_CHECK_FOR_UPDATE
     false,                        // CFG_BOOL_LOAD_LAST_SESSION
     true,                         // CFG_BOOL_SESSION_CONNECT
+    false,                        // CFG_BOOL_PORTABLE
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =
@@ -160,16 +164,20 @@ void Config::openSettings()
 {
     static QString cfgFileLocations[] =
     {
-        "./config.ini",
+        "./data/config.ini",
         QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/config.ini"
     };
 
     QFile file;
+    bool portable = false;
     for(quint8 i = 0; i < sizeof(cfgFileLocations)/sizeof(QString); ++i)
     {
         file.setFileName(cfgFileLocations[i]);
         if(file.open(QIODevice::ReadOnly))
+        {
+            portable = (i == 0);
             break;
+        }
     }
 
     QString filename = cfgFileLocations[1];
@@ -181,6 +189,35 @@ void Config::openSettings()
     }
 
     m_settings = new QSettings(filename, QSettings::IniFormat);
+
+    set(CFG_BOOL_PORTABLE, portable);
+}
+
+void Config::closeSettings()
+{
+    delete m_settings;
+    m_settings = NULL;
+}
+
+void Config::resetToDefault()
+{
+    for(int i = 0; i < CFG_QUINT32_NUM; ++i)
+        set((cfg_quint32)i, def_quint32[i]);
+
+    for(int i = 0; i < CFG_STRING_NUM; ++i)
+        set((cfg_string)i, def_string[i]);
+
+    for(int i = 0; i < CFG_BOOL_NUM; ++i)
+    {
+        if(i != CFG_BOOL_PORTABLE)
+            set((cfg_bool)i, def_bool[i]);
+    }
+
+    for(int i = 0; i < CFG_VARIANT_NUM; ++i)
+        set((cfg_variant)i, QVariant());
+
+    for(int i = 0; i < CFG_FLOAT_NUM; ++i)
+        set((cfg_float)i, def_float[i]);
 }
 
 quint32 Config::get(cfg_quint32 item)

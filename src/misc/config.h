@@ -52,6 +52,7 @@ enum cfg_string
     CFG_STRING_ANALYZER_IMPORT,
     CFG_STRING_WINDOW_PARAMS,
     CFG_STRING_GRAPH_EXPORT,
+    CFG_STRING_APP_FONT,
 
     CFG_STRING_NUM
 };
@@ -75,6 +76,7 @@ enum cfg_bool
     CFG_BOOL_CHECK_FOR_UPDATE,
     CFG_BOOL_LOAD_LAST_SESSION,
     CFG_BOOL_SESSION_CONNECT,
+    CFG_BOOL_PORTABLE,
 
     CFG_BOOL_NUM
 };
@@ -98,6 +100,10 @@ public:
     Config();
     ~Config();
 
+    void openSettings();
+    void closeSettings();
+    void resetToDefault();
+
     quint32 get(cfg_quint32 item);
     QString get(cfg_string item);
     bool    get(cfg_bool item);
@@ -111,8 +117,6 @@ public:
     void set(cfg_float   item, float          val);
 
 private:
-    void openSettings();
-
     QSettings *m_settings;
 };
 

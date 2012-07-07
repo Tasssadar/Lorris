@@ -43,6 +43,9 @@ public:
     static void setWin7(EcWin7 *win7);
     static void setProgress(int val);
 
+    static QString getFontSaveString(const QFont& font);
+    static QFont getFontFromString(const QString& str);
+
 private:
     static QStatusBar* m_status_bar;
     static EcWin7* m_win7;

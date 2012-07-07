@@ -125,8 +125,6 @@ public:
     int getFmt() { return m_fmt; }
     int getInput() { return m_input; }
     void setFont(const QFont &f);
-    void loadFont(const QString& str);
-    QString getFontData();
     QString getSettingsData();
     void loadSettings(const QString& data);
 

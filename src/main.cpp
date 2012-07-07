@@ -16,6 +16,7 @@
 #include "misc/config.h"
 #include "connection/connectionmgr2.h"
 #include "WorkTab/WorkTabMgr.h"
+#include "ui/settingsdialog.h"
 
 #ifdef Q_OS_WIN
  #include "misc/updater.h"

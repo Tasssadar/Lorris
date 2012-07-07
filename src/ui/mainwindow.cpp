@@ -44,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowIcon(QIcon(":/icons/icon.png"));
     loadWindowParams();
 
+    QApplication::setFont(Utils::getFontFromString(sConfig.get(CFG_STRING_APP_FONT)));
+
     m_win7.init(winId());
     Utils::setWin7(&m_win7);
 

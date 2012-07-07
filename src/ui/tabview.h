@@ -24,8 +24,6 @@ class QDrag;
 class WorkTabInfo;
 class DataFileParser;
 
-extern QLocale::Language langs[];
-
 enum saveLayoutItem
 {
     ITEM_WIDGET = 0,
@@ -62,7 +60,7 @@ public:
     QBoxLayout *getLayoutForLine(ResizeLine *line);
     void createSplitOverlay(quint32 id, QDrag *drag);
 
-    const std::vector<QMenu*>& getMenus() const
+    const std::vector<QAction*>& getMenus() const
     {
         return m_menus;
     }
@@ -79,12 +77,10 @@ private slots:
     void split(bool horizontal, int index);
     void removeWidget(quint32 id);
     void changeActiveWidget(TabWidget *widget);
-    void langChanged(int idx);
     void NewSpecificTab();
     void OpenConnectionManager();
-    void About();
     void newTab();
-    void checkForUpdate();
+    void showSettings();
 
 private:
     TabWidget *newTabWidget(QBoxLayout *l);
@@ -108,7 +104,7 @@ private:
     TabWidget *m_active_widget;
     std::vector<QAction*> m_lang_menu;
 
-    std::vector<QMenu*> m_menus;
+    std::vector<QAction*> m_menus;
 
     SessionMgr m_session_mgr;
 

@@ -32,9 +32,17 @@ SessionMgr::SessionMgr(QObject *parent) : QObject(parent)
     updateSessions();
 }
 
+QString SessionMgr::getFolder()
+{
+    if(sConfig.get(CFG_BOOL_PORTABLE))
+        return "./data/";
+    else
+        return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/";;
+}
+
 QByteArray SessionMgr::openSessionFile(const QString& name)
 {
-    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name);
+    QFile file(getFolder() + name);
     if(!file.open(QIODevice::ReadOnly))
         return QByteArray();
 
@@ -86,9 +94,13 @@ void SessionMgr::openManager()
 
 void SessionMgr::saveSession(QString name)
 {
-    QFile file(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name + ".cldta");
+    QDir dir(getFolder());
+    if(!dir.exists())
+        dir.mkpath(dir.absolutePath());
+
+    QFile file(getFolder() + name + ".cldta");
     if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
-        return Utils::ThrowException(tr("Could not open session data file!"));
+        return throw tr("Could not open session data file!");
 
     QByteArray data;
     DataFileParser parser(&data);
@@ -115,8 +127,12 @@ void SessionMgr::saveSessionAct()
     if(name.startsWith(".."))
         name.prepend("_");
 
-    saveSession(name);
-    Utils::printToStatusBar(tr("Session %1 saved.").arg(name));
+    try {
+        saveSession(name);
+        Utils::printToStatusBar(tr("Session %1 saved.").arg(name));
+    } catch(const QString& ex) {
+        Utils::ThrowException(ex);
+    }
 
     updateSessions();
 }
@@ -147,7 +163,7 @@ void SessionMgr::loadSession(QString name)
 
 void SessionMgr::updateSessions()
 {
-    QDir dir(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+    QDir dir(getFolder());
     m_sessions = dir.entryList((QStringList() << "*.cldta"));
 
     if(!m_menu)
@@ -188,7 +204,7 @@ void SessionMgr::removeSession(QString name)
     if(!name.contains("cldta"))
         name.append(".cldta");
 
-    QFile::remove(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/" + name);
+    QFile::remove(getFolder() + name);
     updateSessions();
 }
 

@@ -115,7 +115,8 @@ SOURCES += ui/mainwindow.cpp \
     ui/terminal.cpp \
     misc/sessionmgr.cpp \
     misc/datafileparser.cpp \
-    LorrisAnalyzer/DataWidgets/sliderwidget.cpp
+    LorrisAnalyzer/DataWidgets/sliderwidget.cpp \
+    ui/settingsdialog.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -213,7 +214,8 @@ HEADERS += ui/mainwindow.h \
     ui/terminal.h \
     misc/sessionmgr.h \
     misc/datafileparser.h \
-    LorrisAnalyzer/DataWidgets/sliderwidget.h
+    LorrisAnalyzer/DataWidgets/sliderwidget.h \
+    ui/settingsdialog.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -284,7 +286,8 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
     ui/terminalsettings.ui \
     misc/sessiondialog.ui \
-    LorrisAnalyzer/DataWidgets/sliderwidget.ui
+    LorrisAnalyzer/DataWidgets/sliderwidget.ui \
+    ui/settingsdialog.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

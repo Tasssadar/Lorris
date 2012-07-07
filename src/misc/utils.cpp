@@ -124,3 +124,48 @@ void Utils::playErrorSound()
     qApp->beep();
 }
 #endif
+
+QString Utils::getFontSaveString(const QFont &font)
+{
+    QStringList vals;
+    vals << font.family() << QString::number(font.pointSize())
+         << QString::number((int)font.styleHint()) << QString::number(font.weight());
+    return vals.join(";");
+}
+
+QFont Utils::getFontFromString(const QString &str)
+{
+    QStringList vals = str.split(';', QString::SkipEmptyParts);
+    if(vals.size() != 4)
+        return QFont();
+
+    QFont fnt;
+
+    for(quint8 i = 0; i < 4; ++i)
+    {
+        if(i == 0)
+        {
+            fnt.setFamily(vals[i]);
+            continue;
+        }
+
+        bool ok = false;
+        int val = vals[i].toInt(&ok);
+        if(!ok)
+            return QFont();
+
+        switch(i)
+        {
+            case 1: // point size
+                fnt.setPointSize(val);
+                break;
+            case 2: // style hint
+                fnt.setStyleHint(QFont::StyleHint(val));
+                break;
+            case 3: // weight
+                fnt.setWeight(val);
+                break;
+        }
+    }
+    return fnt;
+}

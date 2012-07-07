@@ -740,52 +740,6 @@ void Terminal::setInput(quint8 input)
     m_command.clear();
 }
 
-void Terminal::loadFont(const QString& str)
-{
-    QStringList vals = str.split(';', QString::SkipEmptyParts);
-    if(vals.size() != 4)
-        return;
-
-    QFont fnt;
-
-    for(quint8 i = 0; i < 4; ++i)
-    {
-        if(i == 0)
-        {
-            fnt.setFamily(vals[i]);
-            continue;
-        }
-
-        bool ok = false;
-        int val = vals[i].toInt(&ok);
-        if(!ok)
-            return;
-
-        switch(i)
-        {
-            case 1: // point size
-                fnt.setPointSize(val);
-                break;
-            case 2: // style hint
-                fnt.setStyleHint(QFont::StyleHint(val));
-                break;
-            case 3: // weight
-                fnt.setWeight(val);
-                break;
-        }
-    }
-    setFont(fnt);
-}
-
-QString Terminal::getFontData()
-{
-    QStringList vals;
-    vals << font().family() << QString::number(font().pointSize())
-         << QString::number((int)font().styleHint()) << QString::number(font().weight());
-
-    return vals.join(";");
-}
-
 QString Terminal::getSettingsData()
 {
     QString res;
@@ -793,7 +747,7 @@ QString Terminal::getSettingsData()
         res += QString("%1;").arg(m_settings.chars[i]);
 
     res += QString("|%1|").arg(m_settings.tabReplace);
-    res += getFontData() + "|";
+    res += Utils::getFontSaveString(font()) + "|";
 
     for(int i = 0; i < COLOR_MAX; ++i)
         res += QString("%1;").arg(m_settings.colors[i].name());
@@ -814,7 +768,7 @@ void Terminal::loadSettings(const QString& data)
     if(addVals.size() > 0)
         m_settings.tabReplace = addVals[0].toUInt();
 
-    loadFont(lst[2]);
+    setFont(Utils::getFontFromString(lst[2]));
 
     if(lst.size() >= 4)
     {

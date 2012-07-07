@@ -22,14 +22,13 @@
 #include "../WorkTab/WorkTabMgr.h"
 #include "../misc/datafileparser.h"
 #include "tooltipwarn.h"
+#include "settingsdialog.h"
 
 #ifdef Q_OS_WIN
  #include "../misc/updater.h"
 #endif
 
 #define LAYOUT_MARGIN 4
-
-QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
 
 TabView::TabView(QWidget *parent) :
     QWidget(parent), m_active_widget(NULL), m_session_mgr(this)
@@ -42,11 +41,11 @@ TabView::TabView(QWidget *parent) :
 
     QMenu *file_menu = new QMenu(tr("&File"), this);
     QMenu *session_menu = new QMenu(tr("&Sessions"), this);
-    QMenu *help_menu = new QMenu(tr("&Help"), this);
+    QAction *settingsAct = new QAction(tr("Setti&ngs..."), this);
 
-    m_menus.push_back(file_menu);
-    m_menus.push_back(session_menu);
-    m_menus.push_back(help_menu);
+    m_menus.push_back(file_menu->menuAction());
+    m_menus.push_back(session_menu->menuAction());
+    m_menus.push_back(settingsAct);
 
     QMenu * menuFileNew = file_menu->addMenu(tr("&New"));
     {
@@ -63,44 +62,13 @@ TabView::TabView(QWidget *parent) :
 
     QAction* actionConnectionManager = file_menu->addAction(tr("Connection &manager..."));
     QAction* actionQuit = file_menu->addAction(tr("&Quit"));
+    actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
     m_session_mgr.initMenu(session_menu);
 
-    QMenu* menuLang = help_menu->addMenu(tr("Language"));
-
-    QSignalMapper *langSignals = new QSignalMapper(this);
-    connect(langSignals, SIGNAL(mapped(int)), this, SLOT(langChanged(int)));
-
-    for(quint8 i = 0; i < 3; ++i)
-    {
-        QString langName = QLocale::languageToString(langs[i]);
-        if(i == 0)
-            langName.prepend(tr("Same as OS - "));
-
-        QAction* actLang = menuLang->addAction(langName);
-        actLang->setCheckable(true);
-        m_lang_menu.push_back(actLang);
-
-        langSignals->setMapping(actLang, i);
-        connect(actLang, SIGNAL(triggered()), langSignals, SLOT(map()));
-
-        if(i == 0)
-            menuLang->addSeparator();
-    }
-    QAction* checkUpdate = help_menu->addAction(tr("Check for update"));
-    QAction* actionAbout = help_menu->addAction(tr("About Lorris..."));
-
-    quint32 curLang = sConfig.get(CFG_QUINT32_LANGUAGE);
-    if(curLang >= m_lang_menu.size())
-        curLang = 0;
-    m_lang_menu[curLang]->setChecked(true);
-
-    actionQuit->setShortcut(QKeySequence("Alt+F4"));
-
-    connect(actionQuit,     SIGNAL(triggered()), this, SIGNAL(closeLorris()));
-    connect(actionAbout,    SIGNAL(triggered()), this, SLOT(About()));
-    connect(actionConnectionManager, SIGNAL(triggered()), this, SLOT(OpenConnectionManager()));
-    connect(checkUpdate,    SIGNAL(triggered()), this, SLOT(checkForUpdate()));
+    connect(actionConnectionManager, SIGNAL(triggered()), SLOT(OpenConnectionManager()));
+    connect(settingsAct,             SIGNAL(triggered()), SLOT(showSettings()));
+    connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeLorris()));
 }
 
 TabWidget *TabView::newTabWidget(QBoxLayout *l)
@@ -330,19 +298,6 @@ QBoxLayout *TabView::newLayout(bool ver)
     return l;
 }
 
-void TabView::langChanged(int idx)
-{
-    sConfig.set(CFG_QUINT32_LANGUAGE, idx);
-    for(quint8 i = 0; i < m_lang_menu.size(); ++i)
-        m_lang_menu[i]->setChecked(i == idx);
-
-    QMessageBox box(this);
-    box.setWindowTitle(tr("Restart"));
-    box.setText(tr("You need to restart Lorris for this change to take effect"));
-    box.setIcon(QMessageBox::Information);
-    box.exec();
-}
-
 void TabView::NewSpecificTab()
 {
     WorkTabInfo * info = m_actionTabInfoMap.value(this->sender());
@@ -350,44 +305,16 @@ void TabView::NewSpecificTab()
         sWorkTabMgr.AddWorkTab(info);
 }
 
-
 void TabView::OpenConnectionManager()
 {
     ChooseConnectionDlg dialog(0, this);
     dialog.exec();
 }
 
-void TabView::About()
-{
-    QString text = tr("Lorris version " VERSION);
-    if(text.contains("-dev"))
-        text += ", git revision " + QString::number(REVISION);
-
-    QMessageBox box(this);
-    box.setWindowTitle(tr("About Lorris"));
-    box.setText(text);
-    box.setIcon(QMessageBox::Information);
-    box.exec();
-}
-
 void TabView::newTab()
 {
     HomeDialog dialog(this);
     dialog.exec();
-}
-
-void TabView::checkForUpdate()
-{
-#ifdef Q_OS_WIN
-    Utils::printToStatusBar(tr("Checking for update..."), 0);
-    if(Updater::doUpdate(false))
-        emit closeLorris();
-    else
-        new ToolTipWarn(tr("No update available"), (QWidget*)sender(), this);
-#else
-    Utils::ThrowException(QObject::tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
-                                      "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
-#endif
 }
 
 void TabView::saveData(DataFileParser *file)
@@ -510,6 +437,13 @@ void TabView::loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHas
                 break;
         }
     }
+}
+
+void TabView::showSettings()
+{
+    SettingsDialog d(this);
+    connect(&d, SIGNAL(closeLorris()), SIGNAL(closeLorris()));
+    d.exec();
 }
 
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)
