@@ -78,6 +78,8 @@ private slots:
     void showBootloader(bool show);
     void showWarn(bool show);
 
+    void focusChanged(QWidget *prev, QWidget *curr);
+
 private:
     void setHexName(QString name = QString());
     void EnableButtons(quint16 buttons, bool enable);

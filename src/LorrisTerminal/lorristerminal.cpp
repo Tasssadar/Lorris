@@ -136,6 +136,7 @@ void LorrisTerminal::initUI()
     connect(showWarnAct,       SIGNAL(triggered(bool)),             SLOT(showWarn(bool)));
     connect(ui->terminal,      SIGNAL(fmtSelected(int)),            SLOT(checkFmtAct(int)));
     connect(ui->terminal,      SIGNAL(paused(bool)),                SLOT(setPauseBtnText(bool)));
+    connect(qApp,              SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
@@ -532,4 +533,10 @@ void LorrisTerminal::loadData(DataFileParser *file)
         showBootloader(file->readVal<bool>());
         showWarn(file->readVal<bool>());
     }
+}
+
+void LorrisTerminal::focusChanged(QWidget *prev, QWidget *curr)
+{
+    if(!prev && curr)
+        setHexName();
 }
