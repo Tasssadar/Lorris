@@ -92,6 +92,8 @@ void PortConnWorkTab::setConnection(PortConnection *con)
         m_con->releaseTab();
     }
 
+    emit setConnId(con ? con->GetIDString() : QString(), m_con != NULL);
+
     m_con = con;
 
     if(!con)

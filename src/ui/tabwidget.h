@@ -80,9 +80,11 @@ private slots:
     void tabMoved(int from, int to);
     void newTabBtn();
     void currentIndexChanged(int idx);
+    void setConnString(const QString& str, bool hadConn);
 
 private:
     bool checkEvent(QMouseEvent *event);
+    void setTabNameAndTooltip(int idx, QString name);
 
     quint32 m_id;
     std::vector<quint32> m_tab_ids;

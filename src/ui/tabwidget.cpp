@@ -64,7 +64,9 @@ int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
         m_tab_bar->enableSplit(true);
 
     connect(widget, SIGNAL(statusBarMsg(QString,int)), SIGNAL(statusBarMsg(QString,int)));
+    connect(widget, SIGNAL(setConnId(QString,bool)), SLOT(setConnString(QString,bool)));
 
+    setTabNameAndTooltip(idx, name);
     setTabsClosable(true);
     return idx;
 }
@@ -238,7 +240,7 @@ void TabWidget::saveData(DataFileParser *file)
     for(int i = 0; i < count(); ++i)
     {
         file->writeBlockIdentifier("tabWidgetTab");
-        file->writeString(tabText(i));
+        file->writeString(tabToolTip(i));
         ((WorkTab*)widget(i))->saveData(file);
     }
 
@@ -283,6 +285,42 @@ void TabWidget::loadData(DataFileParser *file)
     }
 
     checkEmpty();
+}
+
+void TabWidget::setConnString(const QString &str, bool hadConn)
+{
+    Q_ASSERT(sender());
+    if(!sender())
+        return;
+
+    int idx = indexOf((QWidget*)sender());
+    if(idx == -1)
+        return;
+
+    QString text = tabToolTip(idx);
+    if(!hadConn)
+        text += " - " + str;
+    else
+    {
+        text = text.left(text.lastIndexOf(" - "));
+        if(!str.isEmpty())
+            text += " - " + str;
+    }
+
+    setTabNameAndTooltip(idx, text);
+}
+
+void TabWidget::setTabNameAndTooltip(int idx, QString name)
+{
+    setTabToolTip(idx, name);
+
+    if(name.size() > 25)
+    {
+        name.resize(28);
+        name.replace(25, 3, "...");
+    }
+
+    setTabText(idx, name);
 }
 
 TabBar::TabBar(quint32 id, QWidget *parent) :
@@ -474,10 +512,30 @@ void TabBar::paintEvent(QPaintEvent *event)
 
 void TabBar::renameTab()
 {
-    QString name = QInputDialog::getText(this, tr("Rename tab"), tr("New name:"),
-                                         QLineEdit::Normal, tabText(m_cur_menu_tab));
-    if(!name.isEmpty())
-        setTabText(m_cur_menu_tab, name);
+    QString name = tabToolTip(m_cur_menu_tab);
+    QString conStr;
+    if(name.contains(" - "))
+    {
+        conStr = name.mid(name.lastIndexOf(" - "));
+        name = name.left(name.lastIndexOf(" - "));
+    }
+
+    QString newName = QInputDialog::getText(this, tr("Rename tab"), tr("New name:"),
+                                         QLineEdit::Normal, name);
+    if(!newName.isEmpty())
+    {
+        newName.replace('-', '_');
+        newName += conStr;
+
+        setTabToolTip(m_cur_menu_tab, newName);
+
+        if(newName.size() > 25)
+        {
+            newName.resize(25);
+            newName += "...";
+        }
+        setTabText(m_cur_menu_tab, newName);
+    }
 }
 
 void TabBar::splitTop()
