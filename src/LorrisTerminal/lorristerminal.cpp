@@ -486,6 +486,10 @@ void LorrisTerminal::saveData(DataFileParser *file)
     file->writeBlockIdentifier("LorrTermFmtInput");
     file->writeVal(ui->terminal->getFmt());
     file->writeVal(ui->terminal->getInput());
+
+    file->writeBlockIdentifier("LorrTermActions");
+    file->writeVal(actions()[0]->isChecked());
+    file->writeVal(actions()[1]->isChecked());
 }
 
 void LorrisTerminal::loadData(DataFileParser *file)
@@ -512,5 +516,11 @@ void LorrisTerminal::loadData(DataFileParser *file)
     {
         ui->terminal->setFmt(file->readVal<int>());
         inputAct(file->readVal<int>());
+    }
+
+    if(file->seekToNextBlock("LorrTermActions", BLOCK_WORKTAB))
+    {
+        showBootloader(file->readVal<bool>());
+        showWarn(file->readVal<bool>());
     }
 }
