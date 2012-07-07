@@ -51,6 +51,7 @@ private:
     void parseMinMax(bool isMax, const QString& text);
 
     Ui::SliderWidget *ui;
+    bool m_isDouble;
 };
 
 class SliderWidgetAddBtn : public DataWidgetAddBtn

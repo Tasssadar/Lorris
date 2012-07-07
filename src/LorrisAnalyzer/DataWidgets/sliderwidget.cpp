@@ -41,6 +41,7 @@ void SliderWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
+    m_isDouble = false;
     setInteger();
 
     connect(ui->slider,      SIGNAL(valueChanged(int)),    SLOT(on_slider_valueChanged(int)));
@@ -63,7 +64,7 @@ double SliderWidget::getValue()
 {
     double value = ui->slider->value();
 
-    if(ui->doubleRadio->isChecked())
+    if(m_isDouble)
         return value/DOUBLE_DIV;
 
     return value;
@@ -71,7 +72,7 @@ double SliderWidget::getValue()
 
 void SliderWidget::setValue(double val)
 {
-    if(ui->doubleRadio->isChecked())
+    if(m_isDouble)
         val *= DOUBLE_DIV;
     ui->slider->setValue(val);
 }
@@ -90,7 +91,7 @@ double SliderWidget::getMin() const
 {
     double value = ui->slider->minimum();
 
-    if(ui->doubleRadio->isChecked())
+    if(m_isDouble)
         return value/DOUBLE_DIV;
 
     return value;
@@ -100,7 +101,7 @@ double SliderWidget::getMax() const
 {
     double value = ui->slider->maximum();
 
-    if(ui->doubleRadio->isChecked())
+    if(m_isDouble)
         return value/DOUBLE_DIV;
 
     return value;
@@ -118,6 +119,7 @@ bool SliderWidget::isDouble() const
 
 void SliderWidget::setType(bool isDouble)
 {
+    int val = ui->slider->value();
     if(!isDouble)
     {
         ui->intRadio->setChecked(true);
@@ -127,6 +129,9 @@ void SliderWidget::setType(bool isDouble)
 
         ui->minEdit->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
         ui->maxEdit->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
+
+        if(m_isDouble)
+            val /= DOUBLE_DIV;
     }
     else
     {
@@ -135,9 +140,14 @@ void SliderWidget::setType(bool isDouble)
         ui->minEdit->setValidator(new QDoubleValidator(INT_MIN/DOUBLE_DIV, INT_MAX/DOUBLE_DIV, 3, this));
         ui->maxEdit->setValidator(new QDoubleValidator(INT_MIN/DOUBLE_DIV, INT_MAX/DOUBLE_DIV, 3, this));
 
-        on_minEdit_textChanged(ui->minEdit->text());
-        on_maxEdit_textChanged(ui->maxEdit->text());
+        if(!m_isDouble)
+            val *= DOUBLE_DIV;
     }
+    m_isDouble = isDouble;
+
+    on_minEdit_textChanged(ui->minEdit->text());
+    on_maxEdit_textChanged(ui->maxEdit->text());
+    ui->slider->setValue(val);
 
     emit scriptEvent(getTitle() + "_typeChanged");
 }
@@ -156,7 +166,7 @@ void SliderWidget::on_maxEdit_textChanged(const QString &text)
 
 void SliderWidget::on_slider_valueChanged(int val)
 {
-    if(ui->intRadio->isChecked())
+    if(!m_isDouble)
         ui->curLabel->setText(QString::number(val));
     else
         ui->curLabel->setText(QString::number(double(val)/DOUBLE_DIV));
@@ -168,7 +178,7 @@ void SliderWidget::parseMinMax(bool isMax, const QString& text)
 {
     int val = 0;
 
-    if(ui->intRadio->isChecked())
+    if(!m_isDouble)
         val = text.toInt();
     else
         val = text.toDouble()*DOUBLE_DIV;
