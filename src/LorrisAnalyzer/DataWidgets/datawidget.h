@@ -29,6 +29,7 @@ enum WidgetTypes
     WIDGET_TERMINAL,
     WIDGET_BUTTON,
     WIDGET_CIRCLE,
+    WIDGET_SLIDER,
 
     WIDGET_MAX
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
@@ -144,7 +145,6 @@ public:
 public slots:
     virtual void newData(analyzer_data *data, quint32);
     void setTitle(const QString& title);
-    virtual void setValue(const QVariant &var);
     void lockTriggered();
     void remove();
     void setTitleVisibility(bool visible);

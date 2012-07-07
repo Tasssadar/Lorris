@@ -54,7 +54,7 @@ DataWidget::DataWidget(QWidget *parent) :
     setMidLineWidth(2);
     setAutoFillBackground(true);
 
-    QPalette p;
+    QPalette p = palette();
     p.setColor(QPalette::Window, QColor("#F5F5F5"));
     setPalette(p);
 
@@ -404,10 +404,6 @@ void DataWidget::loadWidgetInfo(DataFileParser *file)
         QString title(file->read(size));
         setTitle(title);
     }
-}
-
-void DataWidget::setValue(const QVariant &/*var*/)
-{
 }
 
 void DataWidget::setWidgetControlled(qint32 widget)

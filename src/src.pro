@@ -114,7 +114,8 @@ SOURCES += ui/mainwindow.cpp \
     ui/terminalsettings.cpp \
     ui/terminal.cpp \
     misc/sessionmgr.cpp \
-    misc/datafileparser.cpp
+    misc/datafileparser.cpp \
+    LorrisAnalyzer/DataWidgets/sliderwidget.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -211,7 +212,8 @@ HEADERS += ui/mainwindow.h \
     ui/terminalsettings.h \
     ui/terminal.h \
     misc/sessionmgr.h \
-    misc/datafileparser.h
+    misc/datafileparser.h \
+    LorrisAnalyzer/DataWidgets/sliderwidget.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -281,7 +283,8 @@ FORMS += \
     updatecheck.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
     ui/terminalsettings.ui \
-    misc/sessiondialog.ui
+    misc/sessiondialog.ui \
+    LorrisAnalyzer/DataWidgets/sliderwidget.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
@@ -300,7 +303,9 @@ OTHER_FILES += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.py \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.js \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.py
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {

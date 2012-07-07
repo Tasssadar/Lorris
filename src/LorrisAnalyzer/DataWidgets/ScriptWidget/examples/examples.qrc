@@ -4,5 +4,7 @@
         <file>snake.py</file>
         <file>default.js</file>
         <file>default.py</file>
+        <file>slider.js</file>
+        <file>slider.py</file>
     </qresource>
 </RCC>
