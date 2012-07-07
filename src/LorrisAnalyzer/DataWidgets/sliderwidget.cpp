@@ -53,11 +53,31 @@ void SliderWidget::setUp(Storage *storage)
 void SliderWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
+
+    file->writeBlockIdentifier("sliderWValues");
+    {
+        file->writeVal(m_isDouble);
+
+        file->writeString(ui->minEdit->text());
+        file->writeString(ui->maxEdit->text());
+
+        file->writeVal(ui->slider->value());
+    }
 }
 
 void SliderWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
+
+    if(file->seekToNextBlock("sliderWValues", BLOCK_WIDGET))
+    {
+        setType(file->readVal<bool>());
+
+        ui->minEdit->setText(file->readString());
+        ui->maxEdit->setText(file->readString());
+
+        ui->slider->setValue(file->readVal<int>());
+    }
 }
 
 double SliderWidget::getValue()
