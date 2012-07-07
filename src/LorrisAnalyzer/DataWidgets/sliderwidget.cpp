@@ -47,6 +47,7 @@ void SliderWidget::setUp(Storage *storage)
     connect(ui->slider,      SIGNAL(valueChanged(int)),    SLOT(on_slider_valueChanged(int)));
     connect(ui->minEdit,     SIGNAL(textChanged(QString)), SLOT(on_minEdit_textChanged(QString)));
     connect(ui->maxEdit,     SIGNAL(textChanged(QString)), SLOT(on_maxEdit_textChanged(QString)));
+    connect(ui->curEdit,     SIGNAL(textEdited(QString)),  SLOT(on_curEdit_textEdited(QString)));
     connect(ui->doubleRadio, SIGNAL(toggled(bool)),        SLOT(setType(bool)));
 }
 
@@ -149,6 +150,7 @@ void SliderWidget::setType(bool isDouble)
 
         ui->minEdit->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
         ui->maxEdit->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
+        ui->curEdit->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
 
         if(m_isDouble)
             val /= DOUBLE_DIV;
@@ -159,6 +161,7 @@ void SliderWidget::setType(bool isDouble)
 
         ui->minEdit->setValidator(new QDoubleValidator(INT_MIN/DOUBLE_DIV, INT_MAX/DOUBLE_DIV, 3, this));
         ui->maxEdit->setValidator(new QDoubleValidator(INT_MIN/DOUBLE_DIV, INT_MAX/DOUBLE_DIV, 3, this));
+        ui->curEdit->setValidator(new QDoubleValidator(INT_MIN/DOUBLE_DIV, INT_MAX/DOUBLE_DIV, 3, this));
 
         if(!m_isDouble)
             val *= DOUBLE_DIV;
@@ -184,12 +187,20 @@ void SliderWidget::on_maxEdit_textChanged(const QString &text)
     emit scriptEvent(getTitle() + "_maximumChanged");
 }
 
+void SliderWidget::on_curEdit_textEdited(const QString &text)
+{
+    if(!m_isDouble)
+        ui->slider->setValue(text.toInt());
+    else
+        ui->slider->setValue(text.toDouble()*DOUBLE_DIV);
+}
+
 void SliderWidget::on_slider_valueChanged(int val)
 {
     if(!m_isDouble)
-        ui->curLabel->setText(QString::number(val));
+        ui->curEdit->setText(QString::number(val));
     else
-        ui->curLabel->setText(QString::number(double(val)/DOUBLE_DIV));
+        ui->curEdit->setText(QString::number(double(val)/DOUBLE_DIV));
 
     emit scriptEvent(getTitle() + "_valueChanged");
 }

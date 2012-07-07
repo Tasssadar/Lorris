@@ -91,6 +91,9 @@
        <property name="text">
         <string>0</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
       </widget>
      </item>
      <item>
@@ -107,9 +110,12 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="curLabel">
+      <widget class="QLineEdit" name="curEdit">
        <property name="text">
         <string>0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -130,6 +136,9 @@
       <widget class="QLineEdit" name="maxEdit">
        <property name="text">
         <string>100</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
