@@ -352,6 +352,9 @@ void TabBar::mousePressEvent(QMouseEvent *event)
 {
     switch(event->button())
     {
+        case Qt::LeftButton:
+            m_startDragPos = event->pos();
+            break;
         case Qt::MidButton:
         {
             int tab = tabAt(event->pos());
@@ -380,6 +383,9 @@ void TabBar::mousePressEvent(QMouseEvent *event)
 void TabBar::mouseMoveEvent(QMouseEvent *event)
 {
     if(!(event->buttons() & Qt::LeftButton) || !tabsClosable())
+        return PlusTabBar::mouseMoveEvent(event);
+
+    if((event->pos() - m_startDragPos).manhattanLength() < QApplication::startDragDistance())
         return PlusTabBar::mouseMoveEvent(event);
 
     int idx = tabAt(event->pos());

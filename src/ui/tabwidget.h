@@ -132,6 +132,7 @@ private:
     QMenu *m_menu;
     QAction *m_newTopBottom;
     QAction *m_newLeftRight;
+    QPoint m_startDragPos;
 };
 
 #endif // MAINTABWIDGET_H
