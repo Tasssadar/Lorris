@@ -19,7 +19,6 @@ ButtonWidget::ButtonWidget(QWidget *parent) : DataWidget(parent)
     m_button = new QPushButton(tr("Button"), this);
     m_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    layout->setContentsMargins(5, 0, 5, 5);
     layout->addWidget(m_button, 4);
 
     adjustSize();

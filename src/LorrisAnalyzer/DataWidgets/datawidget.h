@@ -163,6 +163,8 @@ protected:
     void contextMenuEvent ( QContextMenuEvent * event );
     void enterEvent(QEvent *);
     void leaveEvent(QEvent *);
+    void childEvent(QChildEvent *event);
+    bool eventFilter(QObject *, QEvent *ev);
 
     virtual void processData(analyzer_data *data);
 

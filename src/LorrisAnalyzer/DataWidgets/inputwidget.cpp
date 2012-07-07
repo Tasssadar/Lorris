@@ -22,7 +22,6 @@ InputWidget::InputWidget(QWidget *parent) :
     setMinimumSize(width(), height());
 
     layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    layout->setContentsMargins(5, 0, 5, 5);
 }
 
 InputWidget::~InputWidget()

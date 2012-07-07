@@ -32,6 +32,7 @@ DataWidget::DataWidget(QWidget *parent) :
     m_title_label->setObjectName("titleLabel");
     m_title_label->setStyleSheet("border-right: 1px solid black; border-bottom: 1px solid black");
     m_title_label->setAlignment(Qt::AlignVCenter);
+    m_title_label->setCursor(Qt::SizeAllCursor);
 
     m_closeLabel = new CloseLabel(this);
 
@@ -43,8 +44,8 @@ DataWidget::DataWidget(QWidget *parent) :
     title_bar->addWidget(m_title_label, 1);
     title_bar->addWidget(m_closeLabel, 0);
 
-    layout->setMargin(0);
     title_bar->setMargin(0);
+    layout->setContentsMargins(5, 0, 5, 5);
 
     layout->addLayout(title_bar);
     layout->addWidget(sepV);
@@ -137,6 +138,21 @@ void DataWidget::setIcon(QString path)
 void DataWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     contextMenu->exec(event->globalPos());
+}
+
+void DataWidget::childEvent(QChildEvent *event)
+{
+    QFrame::childEvent(event);
+
+    if(event->type() == QEvent::ChildAdded)
+        event->child()->installEventFilter(this);
+}
+
+bool DataWidget::eventFilter(QObject *, QEvent *ev)
+{
+    if(ev->type() == QEvent::Enter)
+        setCursor(Qt::ArrowCursor);
+    return false;
 }
 
 void DataWidget::mousePressEvent( QMouseEvent* e )

@@ -23,7 +23,6 @@ CircleWidget::CircleWidget(QWidget *parent) :
     m_circle = new CircleDraw(this);
     layout->addWidget(m_circle, 1);
     resize(150, 150);
-    this->setMinimumSize(10, 10);
 }
 
 CircleWidget::~CircleWidget()

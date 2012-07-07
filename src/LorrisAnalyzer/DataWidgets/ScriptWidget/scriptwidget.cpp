@@ -21,7 +21,6 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
     m_editor = NULL;
 
     m_terminal = new Terminal(this);
-    layout->setContentsMargins(5, 0, 5, 5);
     layout->addWidget(m_terminal, 4);
 
     resize(120, 100);
