@@ -193,6 +193,9 @@ void LorrisTerminal::eepromExportButton()
     if(!m_stopped)
         stopButton();
 
+    if(!m_stopped)
+        return;
+
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
     if(!m_bootloader.getChipId())
@@ -208,6 +211,9 @@ void LorrisTerminal::eepromImportButton()
 {
     if(!m_stopped)
         stopButton();
+
+    if(!m_stopped)
+        return;
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
@@ -278,6 +284,9 @@ void LorrisTerminal::flashButton()
 
     if(!m_stopped)
         stopButton();
+
+    if(!m_stopped)
+        return;
 
     setHexName();
 

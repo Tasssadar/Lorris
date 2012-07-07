@@ -134,7 +134,7 @@ bool avr232boot::flash(Ui::LorrisTerminal *ui)
         return false;
     }
 
-     ui->flashText->setText(tr("Chip: %1").arg(cd.getName()));
+    ui->flashText->setText(tr("Chip: %1").arg(cd.getName()));
 
     std::vector<page> pages;
     try {
