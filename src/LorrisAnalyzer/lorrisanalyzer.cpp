@@ -596,6 +596,7 @@ void LorrisAnalyzer::clearAllButton()
     m_packet = NULL;
 
     resetDevAndStorage();
+    m_storage->clearFilename();
 
     m_curIndex = 0;
     ui->timeSlider->setMaximum(0);

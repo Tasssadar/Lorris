@@ -49,6 +49,7 @@ public:
     analyzer_packet *loadFromFile(QString *name, quint8 load, WidgetArea *area, DeviceTabWidget *devices, quint32 &data_idx);
 
     const QString& getFilename() { return m_filename; }
+    void clearFilename() { m_filename.clear(); }
 
 public slots:
     void SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *devices);
