@@ -292,8 +292,9 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
     ui/terminalsettings.ui \
     misc/sessiondialog.ui \
-    LorrisAnalyzer/DataWidgets/sliderwidget.ui \
-    ui/settingsdialog.ui
+    ui/settingsdialog.ui \
+    LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui \
+    LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
