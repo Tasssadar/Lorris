@@ -49,13 +49,19 @@ void SliderWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
+    m_int_act = contextMenu->addAction(tr("Integer"));
+    m_double_act = contextMenu->addAction(tr("Double"));
+    m_int_act->setCheckable(true);
+    m_double_act->setCheckable(true);
+
     setInteger();
 
-    connect(ui->slider,      SIGNAL(valueChanged(double)),    SLOT(on_slider_valueChanged(double)));
+    connect(ui->slider,      SIGNAL(valueChanged(double)), SLOT(on_slider_valueChanged(double)));
     connect(ui->minEdit,     SIGNAL(textChanged(QString)), SLOT(on_minEdit_textChanged(QString)));
     connect(ui->maxEdit,     SIGNAL(textChanged(QString)), SLOT(on_maxEdit_textChanged(QString)));
     connect(ui->curEdit,     SIGNAL(textEdited(QString)),  SLOT(on_curEdit_textEdited(QString)));
-    connect(ui->doubleRadio, SIGNAL(toggled(bool)),        SLOT(setType(bool)));
+    connect(m_int_act,       SIGNAL(triggered(bool)),      SLOT(intAct(bool)));
+    connect(m_double_act,    SIGNAL(triggered(bool)),      SLOT(doubleAct(bool)));
 }
 
 void SliderWidget::saveWidgetInfo(DataFileParser *file)
@@ -64,7 +70,7 @@ void SliderWidget::saveWidgetInfo(DataFileParser *file)
 
     file->writeBlockIdentifier("sliderWValues2");
     {
-        file->writeVal(ui->doubleRadio->isChecked());
+        file->writeVal(m_double_act->isChecked());
 
         file->writeString(ui->minEdit->text());
         file->writeString(ui->maxEdit->text());
@@ -120,20 +126,21 @@ double SliderWidget::getMax() const
 
 bool SliderWidget::isInteger() const
 {
-    return ui->intRadio->isChecked();
+    return m_int_act->isChecked();
 }
 
 bool SliderWidget::isDouble() const
 {
-    return ui->doubleRadio->isChecked();
+    return m_double_act->isChecked();
 }
 
 void SliderWidget::setType(bool isDouble)
 {
+    m_int_act->setChecked(!isDouble);
+    m_double_act->setChecked(isDouble);
+
     if(!isDouble)
     {
-        ui->intRadio->setChecked(true);
-
         ui->minEdit->setText(fixValueToInt(ui->minEdit->text()));
         ui->maxEdit->setText(fixValueToInt(ui->maxEdit->text()));
 
@@ -146,8 +153,6 @@ void SliderWidget::setType(bool isDouble)
     }
     else
     {
-        ui->doubleRadio->setChecked(true);
-
         ui->minEdit->setValidator(new QDoubleValidator(-DBL_MIN, DBL_MAX, 0, this));
         ui->maxEdit->setValidator(new QDoubleValidator(-DBL_MIN, DBL_MAX, 0, this));
         ui->curEdit->setValidator(new QDoubleValidator(-DBL_MIN, DBL_MAX, 0, this));
@@ -186,7 +191,7 @@ void SliderWidget::on_slider_valueChanged(double val)
 void SliderWidget::parseMinMax(bool isMax, const QString& text)
 {
     double val = text.toDouble();
-    double step = ui->intRadio->isChecked() ? 1.0 : (ui->slider->maxValue() - ui->slider->minValue())/ui->slider->width();
+    double step = m_int_act->isChecked() ? 1.0 : (ui->slider->maxValue() - ui->slider->minValue())/ui->slider->width();
     if(isMax) ui->slider->setRange(ui->slider->minValue(), val, step);
     else      ui->slider->setRange(val, ui->slider->maxValue(), step);
 }
@@ -197,6 +202,18 @@ QString SliderWidget::fixValueToInt(const QString& val)
     if(idx != -1)
         return val.left(idx);
     return val;
+}
+
+void SliderWidget::intAct(bool checked)
+{
+    if(checked)
+        setInteger();
+}
+
+void SliderWidget::doubleAct(bool checked)
+{
+    if(checked)
+        setDouble();
 }
 
 SliderWidgetAddBtn::SliderWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

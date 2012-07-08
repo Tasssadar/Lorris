@@ -47,11 +47,16 @@ private slots:
     void on_curEdit_textEdited(const QString& text);
     void on_slider_valueChanged(double val);
 
+    void intAct(bool checked);
+    void doubleAct(bool checked);
+
 private:
     QString fixValueToInt(const QString &val);
     void parseMinMax(bool isMax, const QString& text);
 
     Ui::SliderWidget *ui;
+    QAction *m_int_act;
+    QAction *m_double_act;
 };
 
 class SliderWidgetAddBtn : public DataWidgetAddBtn
