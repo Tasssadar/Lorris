@@ -361,7 +361,14 @@ bool LorrisAnalyzer::onTabClose()
         return true;
 
     QMessageBox box(this);
-    box.setText(tr("Data has been modified."));
+    if(m_storage->getFilename().isEmpty())
+        box.setText(tr("Data has been modified."));
+    else
+    {
+        box.setText(tr("Data has been modified.\n\n%1").arg(m_storage->getFilename()));
+        box.setToolTip(m_storage->getFilename());
+    }
+
     box.setInformativeText(tr("Do you want to save your changes?"));
     box.setIcon(QMessageBox::Question);
     box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);

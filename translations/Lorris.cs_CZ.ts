@@ -1081,35 +1081,35 @@
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="231"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="353"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="433"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="604"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="626"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="440"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="611"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="633"/>
         <source> of </source>
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="364"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="365"/>
         <source>Data has been modified.</source>
         <translation>Data byla změněna.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="365"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="372"/>
         <source>Do you want to save your changes?</source>
         <translation>Chcete je uložit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="450"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="461"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="457"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="468"/>
         <source>File &quot;%1&quot; was saved</source>
         <translation>Soubor &quot;%1&quot; byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="586"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="593"/>
         <source>Clear everything?</source>
         <translation>Vymazat vše?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="587"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="594"/>
         <source>Do you really want to clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
@@ -1135,13 +1135,13 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="93"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="489"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="496"/>
         <source>Import binary data</source>
         <translation>Importovat binární data</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="94"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="468"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="475"/>
         <source>Export binary data</source>
         <translation>Exportovat binární data</translation>
     </message>
@@ -1186,17 +1186,26 @@
         <translation>Importuji vaše data...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="481"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="368"/>
+        <source>Data has been modified.
+
+%1</source>
+        <translation>Data byla změněna.
+
+%1</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="488"/>
         <source>Binary data were exported to file &quot;%1&quot;</source>
         <translation>Binární data byla exportována do souboru &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="588"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="595"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="589"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="596"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -2207,13 +2216,13 @@ stejného souboru vícekrát:</translation>
         <translation>Komprimovaný datový soubor Lorris (*.cldta);;Datový soubor Lorris (*.ldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="467"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="488"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="474"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="495"/>
         <source>Any file (*.*)</source>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="650"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="657"/>
         <location filename="../src/LorrisAnalyzer/storage.cpp" line="200"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -2477,7 +2486,7 @@ stejného souboru vícekrát:</translation>
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="651"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="658"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
@@ -2934,35 +2943,35 @@ def onKeyPress(key):
         <translation>Nastaví písmo pro celou aplikaci</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="153"/>
+        <location filename="../src/ui/settingsdialog.ui" line="256"/>
         <source>Portable</source>
         <translation>Přenositelnost</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="159"/>
+        <location filename="../src/ui/settingsdialog.ui" line="305"/>
         <source>Make application portable - save all settings and session files into same directory as the binary.
 Handy for USB flash drives.</source>
         <translation>Nastaví &quot;přenositelný&quot; mód - uloží všechna nastavení a sezení do složky, ve které je aplikace.
 Užitečné při použití z USB flash disku.</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="188"/>
+        <location filename="../src/ui/settingsdialog.ui" line="280"/>
         <source>Make portable</source>
         <translation>Přenostelný mód</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="232"/>
-        <location filename="../src/ui/settingsdialog.cpp" line="137"/>
+        <location filename="../src/ui/settingsdialog.ui" line="153"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="138"/>
         <source>Reset settings</source>
         <translation>Reset nastavení</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="278"/>
+        <location filename="../src/ui/settingsdialog.ui" line="199"/>
         <source>Reset</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="303"/>
+        <location filename="../src/ui/settingsdialog.ui" line="224"/>
         <source>Resets all settings to their default values.</source>
         <translation>Resetuje všechna nastavení na jejich výchozí hodnoty.</translation>
     </message>
@@ -3011,29 +3020,29 @@ p, li { white-space: pre-wrap; }
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="118"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="119"/>
         <source>Unable to copy settings files!</source>
         <translation>Nemůžu zkopírovat soubor s nastavením!</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="124"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="125"/>
         <source>Checking for update...</source>
         <translation>Kontroluji aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="128"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="129"/>
         <source>No update available</source>
         <translation>Žádná aktualizace není dostupná</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="130"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="131"/>
         <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="137"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="138"/>
         <source>Do you really wanna to reset all settings to their default values? This will not affect already loaded settings.</source>
         <translation>Opravdu chcete resetovat nastavení na výchozí hodnoty? Toto neovlivní již načtená nastavení.</translation>
     </message>
@@ -3046,23 +3055,23 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="48"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="52"/>
         <source>Integer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="58"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="53"/>
         <source>Double</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="92"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="115"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="38"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="61"/>
         <source>0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="138"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="84"/>
         <source>100</source>
         <translation></translation>
     </message>
@@ -3075,7 +3084,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SliderWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="231"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="221"/>
         <source>Slider</source>
         <translation></translation>
     </message>
@@ -3356,12 +3365,12 @@ ke změně uspořádání</translation>
         <translation>Přejmenovat...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="529"/>
+        <location filename="../src/ui/tabwidget.cpp" line="530"/>
         <source>Rename tab</source>
         <translation>Přejmenovat panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="529"/>
+        <location filename="../src/ui/tabwidget.cpp" line="530"/>
         <source>New name:</source>
         <translation>Nové jméno:</translation>
     </message>
