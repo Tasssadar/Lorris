@@ -28,12 +28,19 @@
     </spacer>
    </item>
    <item>
-    <widget class="QwtSlider" name="slider" native="true"/>
+    <widget class="QwtSlider" name="slider" native="true">
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QLineEdit" name="minEdit">
+       <property name="toolTip">
+        <string>Minimum</string>
+       </property>
        <property name="text">
         <string>0</string>
        </property>
@@ -57,6 +64,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="curEdit">
+       <property name="toolTip">
+        <string>Current value</string>
+       </property>
        <property name="text">
         <string>0</string>
        </property>
@@ -80,6 +90,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="maxEdit">
+       <property name="toolTip">
+        <string>Maximum</string>
+       </property>
        <property name="text">
         <string>100</string>
        </property>
