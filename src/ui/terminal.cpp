@@ -258,7 +258,9 @@ void Terminal::addLine(quint32 pos, QChar *&line_start, QChar *&line_end)
     {
         QChar tmp = *line_end;
         *line_end = 0;
-        m_lines.insert(linePos, QString(line_start));
+        uint len = 0;
+        for(QChar *len_i = line_start; *len_i != 0; ++len_i, ++len) {}
+        m_lines.insert(linePos, QString(line_start, len));
         *line_end = tmp;
 
         m_cursor_pos.setX(m_lines[pos].length());

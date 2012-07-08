@@ -2,7 +2,7 @@
 
 # Change this variable to your python version (2.5, 2.6)
 win32:PYTHON_VERSION=27
-unix:PYTHON_VERSION=2.7
+unix:PYTHON_VERSION=2.6
 
 macx {
   # for macx you need to have the Python development kit installed as framework

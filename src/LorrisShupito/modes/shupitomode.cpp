@@ -387,7 +387,10 @@ void ShupitoMode::flashPage(chip_definition::memorydef *memdef, std::vector<quin
         {
             quint32 chunk = size > 14 ? 14 : size;
             pkt[1] = ((m_prog_cmd_base + 6) << 4) | (chunk + 1);
-            pkt.replace(3, 100, mem_itr, chunk);
+            pkt.resize(3+chunk);
+            for(int i = 0; i < chunk; ++i)
+                pkt[3+i] = mem_itr[i];
+            //pkt.replace(3, 100, mem_itr, chunk);
             mem_itr += chunk;
             size -= chunk;
 

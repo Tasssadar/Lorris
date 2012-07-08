@@ -9,7 +9,7 @@
 #define SCRIPTAGENT_H
 
 #include <QScriptEngineAgent>
-#include <QElapsedTimer>
+//#include <QElapsedTimer>
 
 class QtScriptEngine;
 class ScriptAgent : public QScriptEngineAgent
@@ -21,7 +21,7 @@ public:
     void scriptLoad(qint64, const QString &, const QString &, int);
 
 private:
-    QElapsedTimer m_timer;
+//    QElapsedTimer m_timer;
     quint8 m_errors;
     QtScriptEngine *m_engine;
 };

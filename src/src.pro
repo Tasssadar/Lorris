@@ -242,7 +242,7 @@ win32 {
     LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm -lole32 -lqwt
 }
 unix:!macx:!symbian {
-    LIBS += -lqwt_lorris -ludev -lSDL -lqextserialport
+    LIBS += -lqwt_lorris -lSDL -lqextserialport
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" 2> /dev/null \
         ; \
@@ -318,8 +318,8 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 python:unix {
     LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt
     DEFINES += WITH_PYTHON
-    LIBS += $$system(python2.7-config --libs)
-    QMAKE_CXXFLAGS += $$system(python2.7-config --includes)
+    LIBS += $$system(python2.6-config --libs)
+    QMAKE_CXXFLAGS += $$system(python2.6-config --includes)
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 }

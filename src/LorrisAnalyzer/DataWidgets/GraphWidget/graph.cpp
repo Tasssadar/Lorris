@@ -32,7 +32,7 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
 {
     // zoom in/out with the wheel
     QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( canvas() );
-    magnifier->setMouseButton(Qt::MiddleButton);
+    magnifier->setMouseButton(Qt::MidButton);
 
     // panning with the left mouse button
     QwtPlotPanner *panner =  new QwtPlotPanner( canvas() );

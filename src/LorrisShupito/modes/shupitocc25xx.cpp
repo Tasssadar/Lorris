@@ -161,7 +161,10 @@ void ShupitoCC25XX::flashPage(chip_definition::memorydef */*memdef*/, std::vecto
 
         pkt[1] = ((m_prog_cmd_base + 4) << 4) | (chunk + 1);
         pkt[2] = (address & 0x7F);
-        pkt.replace(3, 100, mem, chunk);
+        pkt.resize(3+chunk);
+        for(int i = 0; i < chunk; ++i)
+            pkt[3+i] = mem[i];
+        //pkt.replace(3, 100, mem, chunk);
         mem += chunk;
 
         ShupitoPacket res = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 4);
