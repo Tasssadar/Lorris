@@ -144,7 +144,6 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/lorrisshupitoinfo.h \
     LorrisShupito/shupito.h \
     LorrisShupito/shupitodesc.h \
-    LorrisAnalyzer/datafileparser.h \
     LorrisAnalyzer/DataWidgets/colorwidget.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
@@ -242,7 +241,14 @@ win32 {
     LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm -lole32 -lqwt
 }
 unix:!macx:!symbian {
-    LIBS += -lqwt_lorris -ludev -lSDL -lqextserialport
+    LIBS += -ludev -lSDL -lqextserialport
+
+    system_qwt {
+        LIBS += -lqwt
+    } else {
+        LIBS += -lqwt_lorris
+    }
+
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" 2> /dev/null \
         ; \
@@ -318,8 +324,8 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 python:unix {
     LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt
     DEFINES += WITH_PYTHON
-    LIBS += $$system(python2.7-config --libs)
-    QMAKE_CXXFLAGS += $$system(python2.7-config --includes)
+    LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
+    QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 }
