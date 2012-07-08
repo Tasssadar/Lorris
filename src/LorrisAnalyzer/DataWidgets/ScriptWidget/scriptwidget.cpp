@@ -107,6 +107,10 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
     // storage data
     m_engine->onSave();
     m_engine->getStorage()->saveToFile(file);
+
+    // scripts filename
+    file->writeBlockIdentifier("scriptWFilename");
+    file->writeString(m_filename);
 }
 
 void ScriptWidget::loadWidgetInfo(DataFileParser *file)
@@ -146,6 +150,10 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     // storage data
     m_engine->getStorage()->loadFromFile(file);
 
+    // Filename
+    if(file->seekToNextBlock("scriptWFilename", BLOCK_WIDGET))
+        m_filename = file->readString();
+
     try
     {
         m_engine->setSource(source);
@@ -154,12 +162,17 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
 
 void ScriptWidget::setSourceTriggered()
 {
-    delete m_editor;
+    if(m_editor)
+    {
+        m_editor->activateWindow();
+        return;
+    }
 
-    m_editor = new ScriptEditor(m_engine->getSource(), m_engine_type, getTitle());
+    m_editor = new ScriptEditor(m_engine->getSource(), m_filename, m_engine_type, getTitle());
     m_editor->show();
 
     connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
+    connect(m_editor, SIGNAL(rejected()),        SLOT(editorRejected()));
     connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
 }
 
@@ -179,6 +192,7 @@ void ScriptWidget::sourceSet(bool close)
         m_editor->clearErrors();
 
         m_engine->setSource(m_editor->getSource());
+        m_filename = m_editor->getFilename();
 
         if(close)
         {
@@ -191,6 +205,12 @@ void ScriptWidget::sourceSet(bool close)
     {
         Utils::ThrowException(text, m_editor);
     }
+}
+
+void ScriptWidget::editorRejected()
+{
+    m_editor->deleteLater();
+    m_editor = NULL;
 }
 
 void ScriptWidget::moveEvent(QMoveEvent *)

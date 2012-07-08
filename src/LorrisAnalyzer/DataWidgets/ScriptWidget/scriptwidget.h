@@ -34,6 +34,7 @@ public slots:
 protected slots:
      void setSourceTriggered();
      void sourceSet(bool close);
+     void editorRejected();
 
 protected:
      void newData(analyzer_data *data, quint32 index);
@@ -46,6 +47,7 @@ protected:
      ScriptEngine *m_engine;
      int m_engine_type;
      Terminal *m_terminal;
+     QString m_filename;
 };
 
 class ScriptWidgetAddBtn : public DataWidgetAddBtn

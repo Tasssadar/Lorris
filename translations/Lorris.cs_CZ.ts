@@ -2671,21 +2671,35 @@ stejného souboru vícekrát:</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="68"/>
-        <source>Load from file...</source>
-        <translation>Načíst ze souboru...</translation>
+        <source>Load...</source>
+        <translation>Otevřít...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="71"/>
+        <source>Load from file...</source>
+        <translation type="obsolete">Načíst ze souboru...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="75"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="233"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="82"/>
+        <source>Save</source>
+        <translation>Uložit</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="89"/>
+        <source>Ctrl+S</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="260"/>
         <source>Show errors (0)</source>
         <translation>Zobrazit chyby (0)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="138"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="179"/>
         <source>// You can use clearTerm() and appendTerm(string) to set term content
 // You can use sendData(Array of ints) to send data to device. It expects array of uint8s
 
@@ -2718,7 +2732,7 @@ function onKeyPress(key) {
 </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="151"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="192"/>
         <source># You can use terminal.clear() and terminal.appendText(string) to set term content
 # You can use lorris.sendData(QByteArray) to send data to device.
 
@@ -2747,40 +2761,100 @@ def onKeyPress(key):
 </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="112"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="27"/>
         <source>JavaScript file (*.js);;Any file (*.*)</source>
         <translation>JavaScript soubory (*.js);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="113"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="28"/>
         <source>Python file (*.py);;Any file (*.*)</source>
         <translation>Python soubor (*.py);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="116"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="65"/>
+        <source>Save as...</source>
+        <translation>Uložit jako...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="113"/>
+        <source>Script changed</source>
+        <translation>Script se změnil</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="113"/>
+        <source>Script was changed, but not applied.</source>
+        <translation>Script byl změněn.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="115"/>
+        <source>Do you really want to close editor?</source>
+        <translation>Opravdu chcete tyto změny zahodit a zavřít editor?</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="156"/>
         <source>Load file</source>
         <translation>Načíst ze souboru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="124"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="164"/>
         <source>Failed to open &quot;%1!&quot;</source>
         <translation>Nemůžu otevřit &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="197"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="238"/>
         <source>Load example</source>
         <translation>Načíst příklad</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="197"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="238"/>
         <source>Script was changed, do you really want to load an example?</source>
         <translation>Script byl změněn, přejete si přesto načíst vybraný příklad?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="220"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="227"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="261"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="268"/>
         <source>Show errors (%1)</source>
         <translation>Zobrazit chyby (%1)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="299"/>
+        <source>Can&apos;t open file %1 for writing!</source>
+        <translation>Nemůžu otevčit soubor %1 pro zápis!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="305"/>
+        <source>File %1 was saved</source>
+        <translation>Subor %1 byl uložen</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="311"/>
+        <source>Save file</source>
+        <translation>Uložit soubor</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="346"/>
+        <source>File on disk was changed</source>
+        <translation>Soubor na disku byl změněn</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="347"/>
+        <source>File on disk was changed. What do you want to do?</source>
+        <translation>Soubor na disku byl změněn. Co s tím?</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="351"/>
+        <source>Reload from disk</source>
+        <translation>Načíst z disku</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="352"/>
+        <source>Ignore</source>
+        <translation>Ignorovat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="362"/>
+        <source>Can&apos;t open file %1 for reading!</source>
+        <translation>Nemůžu otevčit soubor %1 pro čtení!</translation>
     </message>
 </context>
 <context>
@@ -2804,7 +2878,7 @@ def onKeyPress(key):
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="228"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="248"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -3050,9 +3124,9 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SliderWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="14"/>
-        <source>Form</source>
-        <translation></translation>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="50"/>
+        <source>Data type</source>
+        <translation>Datový typ</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="52"/>
@@ -3065,18 +3139,37 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="38"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="61"/>
-        <source>0</source>
-        <translation></translation>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="57"/>
+        <source>Orientation</source>
+        <translation>Orientace</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.ui" line="84"/>
-        <source>100</source>
-        <translation></translation>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="62"/>
+        <source>Horizontal, left to right</source>
+        <translation>Vodorovně, zleva doprava</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="23"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="63"/>
+        <source>Vertical, bottom to top</source>
+        <translation>Svisle, odspodu nahoru</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="64"/>
+        <source>Horizontal, right to left</source>
+        <translation>Vodorovně, zprava doleva</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="65"/>
+        <source>Vertical, top to bottom</source>
+        <translation>Svisle, shora dolů</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="75"/>
+        <source>Hide min and max setting</source>
+        <translation>Schovat nastavení min a max</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="22"/>
         <source>Slider</source>
         <translation></translation>
     </message>
@@ -3084,8 +3177,91 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SliderWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="221"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="371"/>
         <source>Slider</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>SliderWidget_horizontal</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui" line="42"/>
+        <source>Minimum</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui" line="45"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui" line="71"/>
+        <source>0</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui" line="68"/>
+        <source>Current value</source>
+        <translation>Současná hodnota</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui" line="94"/>
+        <source>Maximum</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui" line="97"/>
+        <source>100</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>SliderWidget_vertical</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="22"/>
+        <source>Max</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="29"/>
+        <source>Maximum</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="32"/>
+        <source>100</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="83"/>
+        <source>Curr:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="90"/>
+        <source>Current value</source>
+        <translation>Současná hodnota</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="93"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="113"/>
+        <source>0</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="103"/>
+        <source>Min</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui" line="110"/>
+        <source>Minimum</source>
         <translation></translation>
     </message>
 </context>
