@@ -452,6 +452,7 @@ ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)
     m_cur_stretch = 50;
     m_tab_view = parent;
     m_resize_layout = NULL;
+    m_pct_label = NULL;
 
     setFrameStyle((vertical ? QFrame::VLine : QFrame::HLine) | QFrame::Plain);
 
@@ -520,6 +521,12 @@ void ResizeLine::mousePressEvent(QMouseEvent *event)
         }
         else
             m_resize_pos[1] = item->layout()->geometry().bottomRight();
+
+        m_pct_label = new QLabel(this, Qt::ToolTip);
+
+        setPctLabel(event->globalPos(), m_resize_layout->stretch(m_resize_index-1),
+                                        m_resize_layout->stretch(m_resize_index+1));
+        m_pct_label->show();
     }
 }
 
@@ -531,6 +538,8 @@ void ResizeLine::mouseReleaseEvent(QMouseEvent *event)
     event->accept();
 
     m_resize_layout = NULL;
+    delete m_pct_label;
+    m_pct_label = NULL;
 }
 
 void ResizeLine::mouseMoveEvent(QMouseEvent *event)
@@ -559,10 +568,25 @@ void ResizeLine::mouseMoveEvent(QMouseEvent *event)
     if(m_cur_stretch > 100)    m_cur_stretch = 100;
     else if(m_cur_stretch < 0) m_cur_stretch = 0;
 
-    m_resize_layout->setStretch(m_resize_index-1, (int)m_cur_stretch);
-    m_resize_layout->setStretch(m_resize_index+1, 100 - (int)m_cur_stretch);
+    int stretch = m_cur_stretch;
+    if(abs(50 - m_cur_stretch) < 3)
+        stretch = 50;
+
+    m_resize_layout->setStretch(m_resize_index-1, stretch);
+    m_resize_layout->setStretch(m_resize_index+1, 100 - stretch);
 
     m_mouse_pos = event->globalPos();
+
+    setPctLabel(m_mouse_pos, stretch, 100 - stretch);
+}
+
+void ResizeLine::setPctLabel(const QPoint& p, int l, int r)
+{
+    if(!m_pct_label)
+        return;
+
+    m_pct_label->move(p + QPoint(0, 15));
+    m_pct_label->setText(tr("%1% / %2%").arg(l).arg(r));
 }
 
 #define OVERLAY_1 40

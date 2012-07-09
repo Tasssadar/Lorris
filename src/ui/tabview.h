@@ -23,6 +23,7 @@ class SplitOverlay;
 class QDrag;
 class WorkTabInfo;
 class DataFileParser;
+class QLabel;
 
 enum saveLayoutItem
 {
@@ -125,6 +126,8 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
 
 private:
+    void setPctLabel(const QPoint& p, int l, int r);
+
     bool m_vertical;
     float m_cur_stretch;
     TabView *m_tab_view;
@@ -132,6 +135,7 @@ private:
     QPoint m_resize_pos[2];
     QPoint m_mouse_pos;
     int m_resize_index;
+    QLabel *m_pct_label;
 };
 
 class SplitOverlay : public QWidget
