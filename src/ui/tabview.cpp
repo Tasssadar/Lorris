@@ -523,6 +523,11 @@ void ResizeLine::mousePressEvent(QMouseEvent *event)
             m_resize_pos[1] = item->layout()->geometry().bottomRight();
 
         m_pct_label = new QLabel(this, Qt::ToolTip);
+        m_pct_label->setMargin(3);
+
+        QPalette p(m_pct_label->palette());
+        p.setColor(QPalette::Window, p.color(QPalette::ToolTipBase));
+        m_pct_label->setPalette(p);
 
         setPctLabel(event->globalPos(), m_resize_layout->stretch(m_resize_index-1),
                                         m_resize_layout->stretch(m_resize_index+1));
