@@ -1829,7 +1829,7 @@ stejného souboru vícekrát:</translation>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="185"/>
         <source>Send bytes...</source>
-        <translation>Postlat byty...</translation>
+        <translation>Poslat byty...</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="155"/>
