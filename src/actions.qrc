@@ -13,5 +13,6 @@
         <file alias="update">icons/system-software-update.png</file>
         <file>icons/list-add_32.png</file>
         <file>icons/list-remove_32.png</file>
+        <file alias="red-cross">icons/emblem-unreadable.png</file>
     </qresource>
 </RCC>

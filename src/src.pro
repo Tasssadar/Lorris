@@ -116,7 +116,8 @@ SOURCES += ui/mainwindow.cpp \
     misc/sessionmgr.cpp \
     misc/datafileparser.cpp \
     LorrisAnalyzer/DataWidgets/sliderwidget.cpp \
-    ui/settingsdialog.cpp
+    ui/settingsdialog.cpp \
+    ui/shortcutinputbox.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -214,7 +215,8 @@ HEADERS += ui/mainwindow.h \
     misc/sessionmgr.h \
     misc/datafileparser.h \
     LorrisAnalyzer/DataWidgets/sliderwidget.h \
-    ui/settingsdialog.h
+    ui/settingsdialog.h \
+    ui/shortcutinputbox.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
