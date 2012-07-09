@@ -1800,8 +1800,8 @@ stejného souboru vícekrát:</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="90"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="235"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="274"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="239"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="278"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
@@ -1853,7 +1853,7 @@ stejného souboru vícekrát:</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="169"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="364"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="368"/>
         <source>Open File</source>
         <translation>Otevřít soubor</translation>
     </message>
@@ -1945,64 +1945,64 @@ stejného souboru vícekrát:</translation>
         <translation>Zobrazit varování při flashování stejného souboru vícekrát</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="252"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="256"/>
         <source>Can&apos;t open serial port!</source>
         <translation>Nemůžu otevřít sériový port!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="276"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="280"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="269"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="273"/>
         <source>Timeout on stopping chip!</source>
         <translation>Timeout při zastavování čipu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="295"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="299"/>
         <source>You have flashed this file already, and it was not changed since.</source>
         <translation>Tento soubor se od posledního flashnutí nezměnil!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="303"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="307"/>
         <source>Error loading hex file: </source>
         <translation>Chyba při načítání hex souboru: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="363"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="385"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="367"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="389"/>
         <source>Text file (*.txt);;Any file (*.*)</source>
         <translation>Textový soubor (*.txt);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="373"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="377"/>
         <source>Can&apos;t open file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="386"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="390"/>
         <source>Save text data</source>
         <translation>Uložit textová data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="407"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="411"/>
         <source>Any file (*.*)</source>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="408"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="412"/>
         <source>Save binary data</source>
         <translation>Uložit binární data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="469"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="473"/>
         <source> | h:mm:ss d.M.yyyy</source>
         <translation> | h:mm:ss d.M.yyyy</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="395"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="417"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="399"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="421"/>
         <source>Can&apos;t open/create file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít/vytvořit soubor &quot;%1&quot;!</translation>
     </message>
@@ -2660,7 +2660,7 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>ResizeLine</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="594"/>
+        <location filename="../src/ui/tabview.cpp" line="615"/>
         <source>%1% / %2%</source>
         <translation></translation>
     </message>
@@ -3517,8 +3517,8 @@ ke změně uspořádání</translation>
 <context>
     <name>SplitOverlay</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="643"/>
-        <location filename="../src/ui/tabview.cpp" line="646"/>
+        <location filename="../src/ui/tabview.cpp" line="664"/>
+        <location filename="../src/ui/tabview.cpp" line="667"/>
         <source>Split</source>
         <translation>Rozdělit</translation>
     </message>
@@ -3593,8 +3593,8 @@ ke změně uspořádání</translation>
     </message>
     <message>
         <location filename="../src/ui/tabview.cpp" line="44"/>
-        <source>Setti&amp;ngs...</source>
-        <translation>&amp;Nastavení...</translation>
+        <source>&amp;Options</source>
+        <translation>&amp;Volby</translation>
     </message>
     <message>
         <location filename="../src/ui/tabview.cpp" line="50"/>
@@ -3610,6 +3610,34 @@ ke změně uspořádání</translation>
         <location filename="../src/ui/tabview.cpp" line="64"/>
         <source>&amp;Quit</source>
         <translation>&amp;Ukončit</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="69"/>
+        <source>&amp;Settings</source>
+        <translation>Na&amp;stavení</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="70"/>
+        <source>Check for update...</source>
+        <translation>Zkontrolovat aktualizace...</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="456"/>
+        <source>Checking for update...</source>
+        <translation>Kontroluji aktualizace...</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="461"/>
+        <location filename="../src/ui/tabview.cpp" line="462"/>
+        <source>No update available</source>
+        <translation>Žádná aktualizace není dostupná</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="465"/>
+        <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
+&lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
+        <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
+&lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
 </context>
 <context>
@@ -3996,45 +4024,45 @@ ke změně uspořádání</translation>
 <context>
     <name>avr232boot</name>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="118"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="125"/>
         <source>Can&apos;t read chip ID!</source>
         <translation>Nemůžu přečíst ID čipu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="132"/>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="187"/>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="233"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="139"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="194"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="240"/>
         <source>Unsupported chip: </source>
         <translation>Nepodporovaný čip: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="133"/>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="137"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="140"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="144"/>
         <source>Chip: %1</source>
         <translation>Čip: %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="133"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="140"/>
         <source>&lt;unknown&gt;</source>
         <translation>&lt;neznámý&gt;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="143"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="150"/>
         <source>Error making pages: </source>
         <translation>Chyba při vytváření stránek: </translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="171"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="178"/>
         <source>Timeout during flashing!</source>
         <translation>Timeout při nahrávání programu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="217"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="224"/>
         <source>Timeout during EEPROM read.</source>
         <translation>Timout při čtení EEPROM.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="266"/>
+        <location filename="../src/LorrisTerminal/avr232boot.cpp" line="273"/>
         <source>Timout during EEPROM write!</source>
         <translation>Timout při zapisování EEPROM!</translation>
     </message>

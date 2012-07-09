@@ -82,6 +82,7 @@ private slots:
     void OpenConnectionManager();
     void newTab();
     void showSettings();
+    void checkForUpdate();
 
 private:
     TabWidget *newTabWidget(QBoxLayout *l);

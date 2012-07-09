@@ -41,11 +41,11 @@ TabView::TabView(QWidget *parent) :
 
     QMenu *file_menu = new QMenu(tr("&File"), this);
     QMenu *session_menu = new QMenu(tr("&Sessions"), this);
-    QAction *settingsAct = new QAction(tr("Setti&ngs..."), this);
+    QMenu *opt_menu = new QMenu(tr("&Options"), this);
 
     m_menus.push_back(file_menu->menuAction());
     m_menus.push_back(session_menu->menuAction());
-    m_menus.push_back(settingsAct);
+    m_menus.push_back(opt_menu->menuAction());
 
     QMenu * menuFileNew = file_menu->addMenu(tr("&New"));
     {
@@ -66,8 +66,12 @@ TabView::TabView(QWidget *parent) :
 
     m_session_mgr.initMenu(session_menu);
 
+    QAction *settingsAct = opt_menu->addAction(tr("&Settings"));
+    QAction *updateAct = opt_menu->addAction(tr("Check for update..."));
+
     connect(actionConnectionManager, SIGNAL(triggered()), SLOT(OpenConnectionManager()));
     connect(settingsAct,             SIGNAL(triggered()), SLOT(showSettings()));
+    connect(updateAct,               SIGNAL(triggered()), SLOT(checkForUpdate()));
     connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeLorris()));
 }
 
@@ -444,6 +448,23 @@ void TabView::showSettings()
     SettingsDialog d(this);
     connect(&d, SIGNAL(closeLorris()), SIGNAL(closeLorris()));
     d.exec();
+}
+
+void TabView::checkForUpdate()
+{
+#ifdef Q_OS_WIN
+     Utils::printToStatusBar(tr("Checking for update..."), 0);
+    if(Updater::doUpdate(false))
+        emit closeLorris();
+    else
+    {
+        Utils::printToStatusBar(tr("No update available"));
+        new ToolTipWarn(tr("No update available"), (QWidget*)sender(), this);
+    }
+#else
+    Utils::ThrowException(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
+                             "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
+#endif
 }
 
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)
