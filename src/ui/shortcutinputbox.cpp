@@ -60,6 +60,9 @@ void ShortcutInputBox::resizeEvent(QResizeEvent *)
 
 void ShortcutInputBox::keyPressEvent(QKeyEvent *event)
 {
+    if(event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter)
+        return QLineEdit::keyPressEvent(event);
+
     if(event->text().isEmpty())
         return;
 
