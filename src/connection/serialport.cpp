@@ -28,12 +28,22 @@ SerialPort::SerialPort()
     m_type = CONNECTION_SERIAL_PORT;
     m_port = NULL;
 
+#ifdef Q_OS_WIN
+    m_thread = new SerialPortThread(this);
+    m_thread->start();
+#endif
+
     connect(&m_watcher, SIGNAL(finished()), SLOT(openResult()));
 }
 
 SerialPort::~SerialPort()
 {
     Close();
+
+#ifdef Q_OS_WIN
+    m_thread->stop();
+    m_thread->wait(500);
+#endif
 }
 
 bool SerialPort::Open()
@@ -49,13 +59,18 @@ void SerialPort::connectResultSer(bool opened)
 
 void SerialPort::Close()
 {
+    if(m_port)
+        emit disconnecting();
+
+#ifdef Q_OS_WIN
+    m_thread->setPort(NULL);
+#endif
+
     {
         QMutexLocker l(&m_port_mutex);
 
         if(m_port)
         {
-            emit disconnecting();
-
             m_port->close();
             delete m_port;
             m_port = NULL;
@@ -68,7 +83,10 @@ void SerialPort::Close()
 void SerialPort::SendData(const QByteArray& data)
 {
     if(this->isOpen())
+    {
+        QMutexLocker l(&m_port_mutex);
         m_port->write(data);
+    }
 }
 
 void SerialPort::OpenConcurrent()
@@ -86,13 +104,19 @@ bool SerialPort::openPort()
 {
     m_port_mutex.lock();
 
+#ifdef Q_OS_WIN
+    m_port = new QextSerialPort(this->deviceName(), QextSerialPort::Polling);
+    m_port->setTimeout(0);
+#else
     m_port = new QextSerialPort(this->deviceName(), QextSerialPort::EventDriven);
+    m_port->setTimeout(500);
+#endif
+
     m_port->setBaudRate(m_rate);
     m_port->setParity(PAR_NONE);
     m_port->setDataBits(DATA_8);
     m_port->setStopBits(STOP_1);
     m_port->setFlowControl(FLOW_OFF);
-    m_port->setTimeout(500);
 
     bool res = m_port->open(QIODevice::ReadWrite | QIODevice::Unbuffered);
     if(!res)
@@ -113,11 +137,18 @@ bool SerialPort::openPort()
 
 void SerialPort::readyRead()
 {
-    emit dataRead(m_port->readAll());
+    lockMutex();
+    QByteArray data = m_port->readAll();
+    unlockMutex();
+
+    emit dataRead(data);
 }
 
 void SerialPort::openResult()
 {
+#ifdef Q_OS_WIN
+    m_thread->setPort(m_port);
+#endif
     connectResultSer(m_future.result());
 }
 
@@ -153,3 +184,51 @@ bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
     this->setBaudRate(config.value("baud_rate", 38400).toInt());
     return this->Connection::applyConfig(config);
 }
+
+#ifdef Q_OS_WIN
+
+SerialPortThread::SerialPortThread(SerialPort *con) : QThread(con)
+{
+    m_run = true;
+    m_port = NULL;
+    m_con = con;
+    connect(this, SIGNAL(readyRead()), con, SLOT(readyRead()), Qt::QueuedConnection);
+}
+
+void SerialPortThread::setPort(QextSerialPort *port)
+{
+    m_con->lockMutex();
+
+    if(!m_port && port)
+    {
+        m_run = true;
+        m_port = port;
+        start();
+    }
+    else if(m_port && !port)
+    {
+        m_run = false;
+        m_port = port;
+        wait(500);
+    }
+
+    m_con->unlockMutex();
+}
+
+void SerialPortThread::run()
+{
+    while(m_run)
+    {
+        m_con->lockMutex();
+
+        if(m_port && m_port->isOpen())
+            if(m_port->bytesAvailable() > 0)
+                emit readyRead();
+
+        m_con->unlockMutex();
+
+        msleep(1);
+    }
+}
+
+#endif // Q_OS_WIN
