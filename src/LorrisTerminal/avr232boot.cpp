@@ -85,20 +85,27 @@ bool avr232boot::startStop()
     }
     else
     {
-        static const char stopCmd[4] = { 0x74, 0x7E, 0x7A, 0x33 };
-
-        m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
-        // FIXME: first sequence restarts chip to bootloader,
-        // but I won't get the ack byte. Correct?
-        //if(!waitForAck())
-        //    return false;
-        Utils::msleep(50);
-
-        m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
-        if(!waitForAck())
+        if(!stopSequence())
             return false;
     }
     m_state ^= STATE_STOPPED;
+    return true;
+}
+
+bool avr232boot::stopSequence()
+{
+    static const char stopCmd[4] = { 0x74, 0x7E, 0x7A, 0x33 };
+
+    m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
+    // FIXME: first sequence restarts chip to bootloader,
+    // but I won't get the ack byte. Correct?
+    //if(!waitForAck())
+    //    return false;
+    QApplication::processEvents(QEventLoop::WaitForMoreEvents, 100);
+
+    m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
+    if(!waitForAck())
+        return false;
     return true;
 }
 

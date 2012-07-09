@@ -193,6 +193,11 @@ void LorrisTerminal::eepromExportButton()
 {
     if(!m_stopped)
         stopButton();
+    else
+    {
+        if(!m_bootloader.stopSequence())
+            return;
+    }
 
     if(!m_stopped)
         return;
@@ -210,8 +215,7 @@ exit:
 
 void LorrisTerminal::eepromImportButton()
 {
-    if(!m_stopped)
-        stopButton();
+    stopButton();
 
     if(!m_stopped)
         return;

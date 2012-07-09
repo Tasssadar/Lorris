@@ -40,6 +40,7 @@ public:
 
     bool dataRead(const QByteArray& data);
     bool startStop();
+    bool stopSequence();
     void setCon(PortConnection *con)
     {
         m_con = con;
