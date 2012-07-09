@@ -101,7 +101,12 @@ bool avr232boot::stopSequence()
     // but I won't get the ack byte. Correct?
     //if(!waitForAck())
     //    return false;
-    QApplication::processEvents(QEventLoop::WaitForMoreEvents, 100);
+
+    for(int i = 0; i < 10; ++i)
+    {
+        QApplication::processEvents();
+        Utils::msleep(10);
+    }
 
     m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
     if(!waitForAck())
