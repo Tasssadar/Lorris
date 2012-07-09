@@ -23,7 +23,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui(new Ui::SettingsDialog)
 {
     ui->setupUi(this);
-    ui->versionLabel->setText(tr("%1 - git revision %2").arg(VERSION).arg(REVISION));
+    ui->versionLabel->setText(tr("%1 - git revision %2, using Qt %3").arg(VERSION).arg(REVISION).arg(qVersion()));
+    ui->versionLabel->setToolTip(tr("Qt runtime %1; compiled againts Qt %2").arg(qVersion()).arg(QT_VERSION_STR));
     loadSettings();
 }
 

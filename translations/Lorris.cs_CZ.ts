@@ -65,31 +65,41 @@
 <context>
     <name>ButtonWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="14"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="19"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="16"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="21"/>
         <source>Button</source>
         <translation>Tlacitko</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="31"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="33"/>
         <source>Set button text...</source>
         <translation>Nastavit text tlačítka...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="44"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="34"/>
+        <source>Set shortcut...</source>
+        <translation>Nastavit zkratku...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="48"/>
         <source>Button text</source>
         <translation>Text tlačítka</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="44"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="48"/>
         <source>Enter new button text</source>
         <translation>Zadejte nový text</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="63"/>
+        <source>Set button shortcut</source>
+        <translation>Nastavit zkratku</translation>
     </message>
 </context>
 <context>
     <name>ButtonWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="73"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="109"/>
         <source>Button</source>
         <translation>Tlačítko</translation>
     </message>
@@ -2648,6 +2658,14 @@ stejného souboru vícekrát:</translation>
     </message>
 </context>
 <context>
+    <name>ResizeLine</name>
+    <message>
+        <location filename="../src/ui/tabview.cpp" line="594"/>
+        <source>%1% / %2%</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>ScriptEditor</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="14"/>
@@ -2673,10 +2691,6 @@ stejného souboru vícekrát:</translation>
         <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="68"/>
         <source>Load...</source>
         <translation>Otevřít...</translation>
-    </message>
-    <message>
-        <source>Load from file...</source>
-        <translation type="obsolete">Načíst ze souboru...</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="75"/>
@@ -3035,7 +3049,7 @@ Užitečné při použití z USB flash disku.</translation>
     </message>
     <message>
         <location filename="../src/ui/settingsdialog.ui" line="153"/>
-        <location filename="../src/ui/settingsdialog.cpp" line="138"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="139"/>
         <source>Reset settings</source>
         <translation>Reset nastavení</translation>
     </message>
@@ -3085,40 +3099,54 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/ui/settingsdialog.cpp" line="26"/>
-        <source>%1 - git revision %2</source>
-        <translation>%1 - git revize %2</translation>
+        <source>%1 - git revision %2, using Qt %3</source>
+        <translation>%1 - git revize %2, používá Qt %3</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="42"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="27"/>
+        <source>Qt runtime %1; compiled againts Qt %2</source>
+        <translation>Qt knihovny %1, zkompilováno proti Qt %2</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/settingsdialog.cpp" line="43"/>
         <source>Same as OS - </source>
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="119"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="120"/>
         <source>Unable to copy settings files!</source>
         <translation>Nemůžu zkopírovat soubor s nastavením!</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="125"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="126"/>
         <source>Checking for update...</source>
         <translation>Kontroluji aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="129"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="130"/>
         <source>No update available</source>
         <translation>Žádná aktualizace není dostupná</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="131"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="132"/>
         <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="138"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="139"/>
         <source>Do you really wanna to reset all settings to their default values? This will not affect already loaded settings.</source>
         <translation>Opravdu chcete resetovat nastavení na výchozí hodnoty? Toto neovlivní již načtená nastavení.</translation>
+    </message>
+</context>
+<context>
+    <name>ShortcutInputBox</name>
+    <message>
+        <location filename="../src/ui/shortcutinputbox.cpp" line="27"/>
+        <location filename="../src/ui/shortcutinputbox.cpp" line="28"/>
+        <source>Press keys...</source>
+        <translation>Stisknětě klávesy...</translation>
     </message>
 </context>
 <context>
@@ -3489,8 +3517,8 @@ ke změně uspořádání</translation>
 <context>
     <name>SplitOverlay</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="614"/>
-        <location filename="../src/ui/tabview.cpp" line="617"/>
+        <location filename="../src/ui/tabview.cpp" line="643"/>
+        <location filename="../src/ui/tabview.cpp" line="646"/>
         <source>Split</source>
         <translation>Rozdělit</translation>
     </message>
