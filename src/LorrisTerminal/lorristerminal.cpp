@@ -62,8 +62,6 @@ void LorrisTerminal::initUI()
         connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
     }
 
-    fmtAction(fmt);
-
     QMenu *dataMenu = new QMenu(tr("Terminal"), this);
     addTopMenu(dataMenu);
     QAction *termLoad = dataMenu->addAction(tr("Load text file into terminal"));
@@ -140,6 +138,8 @@ void LorrisTerminal::initUI()
 
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+
+    fmtAction(fmt);
 }
 
 LorrisTerminal::~LorrisTerminal()
