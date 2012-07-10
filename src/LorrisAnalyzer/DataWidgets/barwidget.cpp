@@ -17,6 +17,8 @@
 #include "../../ui/rangeselectdialog.h"
 #include "../../misc/datafileparser.h"
 
+REGISTER_DATAWIDGET(WIDGET_BAR, Bar)
+
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle("BarWidget");

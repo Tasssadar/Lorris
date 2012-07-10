@@ -10,6 +10,8 @@
 
 #include "inputwidget.h"
 
+REGISTER_DATAWIDGET_NOBTN(WIDGET_INPUT, Input)
+
 InputWidget::InputWidget(QWidget *parent) :
     DataWidget(parent)
 {

@@ -10,6 +10,8 @@
 
 #include "canvaswidget.h"
 
+REGISTER_DATAWIDGET(WIDGET_CANVAS, Canvas)
+
 CanvasWidget::CanvasWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle(tr("Canvas"));

@@ -16,18 +16,7 @@
 #include "lorrisanalyzer.h"
 #include "../misc/datafileparser.h"
 #include "storage.h"
-
-#include "DataWidgets/numberwidget.h"
-#include "DataWidgets/barwidget.h"
-#include "DataWidgets/colorwidget.h"
-#include "DataWidgets/GraphWidget/graphwidget.h"
-#include "DataWidgets/ScriptWidget/scriptwidget.h"
-#include "DataWidgets/inputwidget.h"
-#include "DataWidgets/terminalwidget.h"
-#include "DataWidgets/buttonwidget.h"
-#include "DataWidgets/circlewidget.h"
-#include "DataWidgets/sliderwidget.h"
-#include "DataWidgets/canvaswidget.h"
+#include "widgetfactory.h"
 
 QPoint& operator %=(QPoint& a, const int& b)
 {
@@ -93,7 +82,7 @@ void WidgetArea::dropEvent(QDropEvent *event)
 
 DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
 {
-    DataWidget *w = newWidget(type, this);
+    DataWidget *w = sWidgetFactory.getWidget(type, this);
     if(!w)
         return NULL;
 
@@ -135,25 +124,6 @@ void WidgetArea::dragEnterEvent(QDragEnterEvent *event)
         event->acceptProposedAction();
     else
         QFrame::dragEnterEvent(event);
-}
-
-DataWidget *WidgetArea::newWidget(quint8 type, QWidget *parent)
-{
-    switch(type)
-    {
-        case WIDGET_NUMBERS: return new NumberWidget(parent);
-        case WIDGET_BAR:     return new BarWidget(parent);
-        case WIDGET_COLOR:   return new ColorWidget(parent);
-        case WIDGET_GRAPH:   return new GraphWidget(parent);
-        case WIDGET_SCRIPT:  return new ScriptWidget(parent);
-        case WIDGET_INPUT:   return new InputWidget(parent);
-        case WIDGET_TERMINAL:return new TerminalWidget(parent);
-        case WIDGET_BUTTON:  return new ButtonWidget(parent);
-        case WIDGET_CIRCLE:  return new CircleWidget(parent);
-        case WIDGET_SLIDER:  return new SliderWidget(parent);
-        case WIDGET_CANVAS:  return new CanvasWidget(parent);
-    }
-    return NULL;
 }
 
 void WidgetArea::removeWidget(quint32 id)

@@ -12,6 +12,8 @@
 #include "engines/qtscriptengine.h"
 #include "../../../ui/terminal.h"
 
+REGISTER_DATAWIDGET(WIDGET_SCRIPT, Script)
+
 ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle(tr("Script"));

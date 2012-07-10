@@ -118,7 +118,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/sliderwidget.cpp \
     ui/settingsdialog.cpp \
     ui/shortcutinputbox.cpp \
-    LorrisAnalyzer/DataWidgets/canvaswidget.cpp
+    LorrisAnalyzer/DataWidgets/canvaswidget.cpp \
+    LorrisAnalyzer/widgetfactory.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -218,7 +219,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/DataWidgets/sliderwidget.h \
     ui/settingsdialog.h \
     ui/shortcutinputbox.h \
-    LorrisAnalyzer/DataWidgets/canvaswidget.h
+    LorrisAnalyzer/DataWidgets/canvaswidget.h \
+    LorrisAnalyzer/widgetfactory.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include

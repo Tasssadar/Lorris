@@ -11,6 +11,8 @@
 #include "buttonwidget.h"
 #include "../../ui/shortcutinputbox.h"
 
+REGISTER_DATAWIDGET(WIDGET_BUTTON, Button)
+
 ButtonWidget::ButtonWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle(tr("Button"));

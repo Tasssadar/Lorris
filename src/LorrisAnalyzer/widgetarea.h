@@ -49,7 +49,6 @@ public:
     void SaveSettings(DataFileParser *file);
     void LoadSettings(DataFileParser *file);
 
-    static DataWidget *newWidget(quint8 type, QWidget *parent);
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void moveWidgets(QPoint diff);
 

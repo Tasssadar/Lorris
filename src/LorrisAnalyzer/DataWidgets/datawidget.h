@@ -17,6 +17,7 @@
 
 #include "../packet.h"
 #include "../../misc/datafileparser.h"
+#include "../widgetfactory.h"
 
 enum WidgetTypes
 {
@@ -34,7 +35,6 @@ enum WidgetTypes
 
     WIDGET_MAX
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
-
 };
 
 enum NumberTypes
