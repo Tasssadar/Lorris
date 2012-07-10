@@ -6,5 +6,7 @@
         <file>default.py</file>
         <file>slider.js</file>
         <file>slider.py</file>
+        <file>canvas.js</file>
+        <file>canvas.py</file>
     </qresource>
 </RCC>

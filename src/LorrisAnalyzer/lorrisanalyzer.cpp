@@ -45,6 +45,7 @@
 #include "DataWidgets/buttonwidget.h"
 #include "DataWidgets/circlewidget.h"
 #include "DataWidgets/sliderwidget.h"
+#include "DataWidgets/canvaswidget.h"
 
 static bool sortDataWidget(DataWidgetAddBtn *a, DataWidgetAddBtn *b)
 {
@@ -166,6 +167,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     buttons.push_back(new ButtonWidgetAddBtn(tmp));
     buttons.push_back(new CircleWidgetAddBtn(tmp));
     buttons.push_back(new SliderWidgetAddBtn(tmp));
+    buttons.push_back(new CanvasWidgetAddBtn(tmp));
 
     std::sort(buttons.begin(), buttons.end(), sortDataWidget);
 

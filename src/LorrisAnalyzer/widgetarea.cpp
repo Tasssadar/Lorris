@@ -27,6 +27,7 @@
 #include "DataWidgets/buttonwidget.h"
 #include "DataWidgets/circlewidget.h"
 #include "DataWidgets/sliderwidget.h"
+#include "DataWidgets/canvaswidget.h"
 
 QPoint& operator %=(QPoint& a, const int& b)
 {
@@ -150,6 +151,7 @@ DataWidget *WidgetArea::newWidget(quint8 type, QWidget *parent)
         case WIDGET_BUTTON:  return new ButtonWidget(parent);
         case WIDGET_CIRCLE:  return new CircleWidget(parent);
         case WIDGET_SLIDER:  return new SliderWidget(parent);
+        case WIDGET_CANVAS:  return new CanvasWidget(parent);
     }
     return NULL;
 }

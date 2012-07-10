@@ -117,7 +117,8 @@ SOURCES += ui/mainwindow.cpp \
     misc/datafileparser.cpp \
     LorrisAnalyzer/DataWidgets/sliderwidget.cpp \
     ui/settingsdialog.cpp \
-    ui/shortcutinputbox.cpp
+    ui/shortcutinputbox.cpp \
+    LorrisAnalyzer/DataWidgets/canvaswidget.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -216,7 +217,8 @@ HEADERS += ui/mainwindow.h \
     misc/datafileparser.h \
     LorrisAnalyzer/DataWidgets/sliderwidget.h \
     ui/settingsdialog.h \
-    ui/shortcutinputbox.h
+    ui/shortcutinputbox.h \
+    LorrisAnalyzer/DataWidgets/canvaswidget.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
@@ -316,7 +318,9 @@ OTHER_FILES += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.js \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.py
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.py
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {
