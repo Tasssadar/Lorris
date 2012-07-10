@@ -39,6 +39,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     m_highlighter = NULL;
     m_errors = 0;
+    m_ignoreNextFocus = false;
 
 #ifdef Q_OS_MAC
     ui->sourceEdit->setFont(Utils::getMonospaceFont(12));
@@ -330,7 +331,7 @@ void ScriptEditor::setStatus(const QString &status)
 
 void ScriptEditor::checkChange()
 {
-    if(m_filename.isEmpty())
+    if(m_contentChanged || m_filename.isEmpty())
         return;
 
     QFile f(m_filename);
@@ -354,7 +355,7 @@ void ScriptEditor::checkChange()
 
         switch(box.exec())
         {
-            case  QMessageBox::Close:
+            case QMessageBox::Close:
                 m_filename.clear();
                 break;
             case QMessageBox::AcceptRole:
@@ -362,6 +363,10 @@ void ScriptEditor::checkChange()
                     Utils::ThrowException(tr("Can't open file %1 for reading!").arg(m_filename));
                 ui->sourceEdit->setPlainText(QString::fromUtf8(f.readAll()));
                 break;
+            case QMessageBox::RejectRole:
+                m_ignoreNextFocus = true;
+                break;
+
         }
     }
 }
@@ -369,7 +374,12 @@ void ScriptEditor::checkChange()
 void ScriptEditor::focusChanged(QWidget *prev, QWidget *now)
 {
     if(!prev && now)
-        checkChange();
+    {
+        if(m_ignoreNextFocus)
+            m_ignoreNextFocus = false;
+        else
+            checkChange();
+    }
 }
 
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)

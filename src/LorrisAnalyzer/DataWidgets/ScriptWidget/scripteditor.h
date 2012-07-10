@@ -67,6 +67,7 @@ private:
     LineNumber *m_line_num;
     bool m_changed;
     bool m_contentChanged;
+    bool m_ignoreNextFocus;
     quint32 m_errors;
 
     QSyntaxHighlighter *m_highlighter;
