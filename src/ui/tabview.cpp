@@ -347,8 +347,9 @@ void TabView::writeLayoutStructure(DataFileParser *file, QLayout *l)
             writeLayoutStructure(file, item->layout());
         else if(!isResizeLine(item) && item->widget())
         {
-            file->writeVal((quint8)ITEM_WIDGET);
+            file->writeVal((quint8)ITEM_WIDGET_WITH_PCT);
             file->writeVal( ((TabWidget*)item->widget())->getId() );
+            file->writeVal( ((QBoxLayout*)l)->stretch(i) );
         }
         else
             file->writeVal((quint8)ITEM_SKIP);
@@ -430,11 +431,17 @@ void TabView::loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHas
                 break;
             }
             case ITEM_WIDGET:
+            case ITEM_WIDGET_WITH_PCT:
             {
                 quint32 new_id = newTabWidget(parent)->getId();
                 quint32 load_id = 0;
                 file->readVal(load_id);
                 id_pair.insert(load_id, new_id);
+
+                if(type == ITEM_WIDGET)
+                    break;
+
+                parent->setStretch(parent->count()-1, file->readVal<int>());
                 break;
             }
             case ITEM_SKIP:

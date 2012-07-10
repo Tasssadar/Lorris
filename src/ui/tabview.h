@@ -27,10 +27,11 @@ class QLabel;
 
 enum saveLayoutItem
 {
-    ITEM_WIDGET = 0,
+    ITEM_WIDGET = 0, // used in old session files
     ITEM_LAYOUT_H,
     ITEM_LAYOUT_V,
-    ITEM_SKIP
+    ITEM_SKIP,
+    ITEM_WIDGET_WITH_PCT
 };
 
 class TabView : public QWidget
