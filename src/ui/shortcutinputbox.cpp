@@ -24,7 +24,7 @@ ShortcutInputBox::ShortcutInputBox(const QKeySequence &seq, QWidget *parent) : Q
 
 void ShortcutInputBox::init()
 {
-    setPlaceholderText(tr("Press keys..."));
+    //setPlaceholderText(tr("Press keys...")); <- not available in Qt 4.6
     setToolTip(tr("Press keys..."));
 
     m_clear_btn = new QToolButton(this);

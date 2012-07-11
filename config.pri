@@ -3,8 +3,8 @@ CONFIG += python
 
 python {
     # Change this variable to your python version (2.5, 2.6, 2.7)
-    win32:PYTHON_VERSION=27
-    unix:PYTHON_VERSION=2.7
+    win32:PYTHON_VERSION=26
+    unix:PYTHON_VERSION=2.6
 }
 
 unix {
