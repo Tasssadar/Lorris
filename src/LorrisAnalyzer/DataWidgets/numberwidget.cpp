@@ -16,6 +16,7 @@
 
 #include "numberwidget.h"
 
+REGISTER_DATAWIDGET(WIDGET_NUMBERS, Number)
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {

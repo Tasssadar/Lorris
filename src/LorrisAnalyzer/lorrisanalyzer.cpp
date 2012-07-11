@@ -36,15 +36,7 @@
 #include "packetparser.h"
 
 #include "DataWidgets/datawidget.h"
-#include "DataWidgets/numberwidget.h"
-#include "DataWidgets/barwidget.h"
-#include "DataWidgets/colorwidget.h"
-#include "DataWidgets/GraphWidget/graphwidget.h"
-#include "DataWidgets/ScriptWidget/scriptwidget.h"
-#include "DataWidgets/terminalwidget.h"
-#include "DataWidgets/buttonwidget.h"
-#include "DataWidgets/circlewidget.h"
-#include "DataWidgets/sliderwidget.h"
+#include "widgetfactory.h"
 
 static bool sortDataWidget(DataWidgetAddBtn *a, DataWidgetAddBtn *b)
 {
@@ -156,17 +148,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
 
-    std::vector<DataWidgetAddBtn*> buttons;
-    buttons.push_back(new NumberWidgetAddBtn(tmp));
-    buttons.push_back(new BarWidgetAddBtn(tmp));
-    buttons.push_back(new ColorWidgetAddBtn(tmp));
-    buttons.push_back(new GraphWidgetAddBtn(tmp));
-    buttons.push_back(new ScriptWidgetAddBtn(tmp));
-    buttons.push_back(new TerminalWidgetAddBtn(tmp));
-    buttons.push_back(new ButtonWidgetAddBtn(tmp));
-    buttons.push_back(new CircleWidgetAddBtn(tmp));
-    buttons.push_back(new SliderWidgetAddBtn(tmp));
-
+    std::vector<DataWidgetAddBtn*> buttons = sWidgetFactory.getButtons(tmp);
     std::sort(buttons.begin(), buttons.end(), sortDataWidget);
 
     for(quint32 i = 0; i < buttons.size(); ++i)
@@ -361,7 +343,14 @@ bool LorrisAnalyzer::onTabClose()
         return true;
 
     QMessageBox box(this);
-    box.setText(tr("Data has been modified."));
+    if(m_storage->getFilename().isEmpty())
+        box.setText(tr("Data has been modified."));
+    else
+    {
+        box.setText(tr("Data has been modified.\n\n%1").arg(m_storage->getFilename()));
+        box.setToolTip(m_storage->getFilename());
+    }
+
     box.setInformativeText(tr("Do you want to save your changes?"));
     box.setIcon(QMessageBox::Question);
     box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);

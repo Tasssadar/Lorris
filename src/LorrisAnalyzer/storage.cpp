@@ -94,8 +94,9 @@ void Storage::SaveToFile(WidgetArea *area, DeviceTabWidget *devices)
 
 void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *devices)
 {
+    analyzer_packet *packet = m_packet;
     if(!m_packet)
-        return;
+        packet = new analyzer_packet(new analyzer_header, true);
 
     if(filename.isEmpty())
     {
@@ -126,11 +127,11 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
     buffer->write(ANALYZER_DATA_MAGIC, 3);
 
     //Header
-    char *itr = (char*)&m_packet->header->length;
+    char *itr = (char*)&packet->header->length;
     buffer->write(itr, sizeof(analyzer_header));
 
     //Packet
-    itr = (char*)&m_packet->big_endian;
+    itr = (char*)&packet->big_endian;
     buffer->write(itr, sizeof(bool));
 
     //collapse status
@@ -146,8 +147,8 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
 
     //header static data
     buffer->writeBlockIdentifier(BLOCK_STATIC_DATA);
-    buffer->write((char*)&m_packet->header->static_len, sizeof(m_packet->header->static_len));
-    buffer->write((char*)m_packet->static_data.data(), m_packet->header->static_len);
+    buffer->write((char*)&packet->header->static_len, sizeof(packet->header->static_len));
+    buffer->write((char*)packet->static_data.data(), packet->header->static_len);
 
     //Devices and commands
     buffer->writeBlockIdentifier(BLOCK_DEVICE_TABS);
@@ -186,6 +187,12 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
 
     file.write(data);
     file.close();
+
+    if(!m_packet)
+    {
+        delete packet->header;
+        delete packet;
+    }
 
     m_file_md5 = MD5(data);
 }

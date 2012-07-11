@@ -18,6 +18,13 @@ function onKeyPress(key)
         Slider.setMin(-55.5);
         Slider.setMax(1000.433);
         Slider.setValue(50.5);
+        //Slider.setRange(min, max, step) <-- also possible
+
+        // like in menu - 0 - hor, l -> r; 1 - ver, b -> t; 2 - hor, r -> l; 3 - ver, t -> b
+        Slider.setOrientation(1);
+
+        Slider.setValue(50.5);
+        Slider.hideMinMax(True);
     }
 }
 
@@ -43,4 +50,16 @@ function Slider_maximumChanged()
 function Slider_typeChanged()
 {
     appendTerm("type changed to " + (Slider.isInteger() ? "Integer" : "Double") + "\n");
+}
+
+// called whenever the orientation is changed
+function Slider_orientationChanged()
+{
+    appendTerm("orientation changed to " + Slider.getOrientation() + "\n");
+}
+
+// called whenever the visibility of min/max boxes is changed
+function Slider_visibilityChanged()
+{
+    appendTerm("min/max visibility changed: " + (Slider.isMinMaxVisible() ? "Visible" : "Hidden") + "\n");
 }

@@ -23,13 +23,15 @@ class SplitOverlay;
 class QDrag;
 class WorkTabInfo;
 class DataFileParser;
+class QLabel;
 
 enum saveLayoutItem
 {
-    ITEM_WIDGET = 0,
+    ITEM_WIDGET = 0, // used in old session files
     ITEM_LAYOUT_H,
     ITEM_LAYOUT_V,
-    ITEM_SKIP
+    ITEM_SKIP,
+    ITEM_WIDGET_WITH_PCT
 };
 
 class TabView : public QWidget
@@ -81,6 +83,7 @@ private slots:
     void OpenConnectionManager();
     void newTab();
     void showSettings();
+    void checkForUpdate();
 
 private:
     TabWidget *newTabWidget(QBoxLayout *l);
@@ -125,6 +128,8 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
 
 private:
+    void setPctLabel(const QPoint& p, int l, int r);
+
     bool m_vertical;
     float m_cur_stretch;
     TabView *m_tab_view;
@@ -132,6 +137,7 @@ private:
     QPoint m_resize_pos[2];
     QPoint m_mouse_pos;
     int m_resize_index;
+    QLabel *m_pct_label;
 };
 
 class SplitOverlay : public QWidget

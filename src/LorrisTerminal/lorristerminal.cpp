@@ -15,6 +15,7 @@
 #include <QKeyEvent>
 #include <QProgressDialog>
 #include <QSignalMapper>
+#include <QInputDialog>
 
 #include "lorristerminal.h"
 #include "../ui/terminal.h"
@@ -61,8 +62,6 @@ void LorrisTerminal::initUI()
         fmtMap->setMapping(m_fmt_act[i], i);
         connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
     }
-
-    fmtAction(fmt);
 
     QMenu *dataMenu = new QMenu(tr("Terminal"), this);
     addTopMenu(dataMenu);
@@ -126,6 +125,7 @@ void LorrisTerminal::initUI()
     connect(ui->clearButton,   SIGNAL(clicked()),     ui->terminal, SLOT(clear()));
     connect(ui->terminal,      SIGNAL(settingsChanged()),           SLOT(saveTermSettings()));
     connect(ui->fmtBox,        SIGNAL(activated(int)),              SLOT(fmtAction(int)));
+    connect(ui->sendBtn,       SIGNAL(clicked()),                   SLOT(sendButton()));
     connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromExportButton()));
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
@@ -140,6 +140,8 @@ void LorrisTerminal::initUI()
 
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+
+    fmtAction(fmt);
 }
 
 LorrisTerminal::~LorrisTerminal()
@@ -193,6 +195,11 @@ void LorrisTerminal::eepromExportButton()
 {
     if(!m_stopped)
         stopButton();
+    else
+    {
+        if(!m_bootloader.stopSequence())
+            return;
+    }
 
     if(!m_stopped)
         return;
@@ -210,8 +217,7 @@ exit:
 
 void LorrisTerminal::eepromImportButton()
 {
-    if(!m_stopped)
-        stopButton();
+    stopButton();
 
     if(!m_stopped)
         return;
@@ -539,4 +545,37 @@ void LorrisTerminal::focusChanged(QWidget *prev, QWidget *curr)
 {
     if(!prev && curr)
         setHexName();
+}
+
+void LorrisTerminal::sendButton()
+{
+    static QString lastText;
+    QString text = QInputDialog::getText(this, tr("Send data"), tr("Enter bytes to send:\n - Numbers from 0 to 255,"
+                                         "-127 to 128 or 0x00 to 0xFF\n - Separated by space"), QLineEdit::Normal, lastText);
+    if(text.isEmpty())
+        return;
+
+    QStringList nums = text.split(" ", QString::SkipEmptyParts);
+    QByteArray data;
+    bool ok = false;
+    for(int i = 0; i < nums.size(); ++i)
+    {
+        int base;
+        if(nums[i].contains(QChar('x'), Qt::CaseInsensitive))
+            base = 16;
+        else
+            base = 10;
+
+        char num = nums[i].toInt(&ok, base);
+        if(ok)
+            data.push_back(num);
+    }
+
+    if(data.isEmpty())
+        return;
+
+    if(m_con)
+        m_con->SendData(data);
+
+    lastText = text;
 }

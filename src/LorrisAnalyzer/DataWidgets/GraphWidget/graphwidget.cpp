@@ -23,6 +23,8 @@
 #include "../../storage.h"
 #include "graphexport.h"
 
+REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph)
+
 static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
 GraphWidget::GraphWidget(QWidget *parent) : DataWidget(parent)

@@ -116,7 +116,10 @@ SOURCES += ui/mainwindow.cpp \
     misc/sessionmgr.cpp \
     misc/datafileparser.cpp \
     LorrisAnalyzer/DataWidgets/sliderwidget.cpp \
-    ui/settingsdialog.cpp
+    ui/settingsdialog.cpp \
+    ui/shortcutinputbox.cpp \
+    LorrisAnalyzer/DataWidgets/canvaswidget.cpp \
+    LorrisAnalyzer/widgetfactory.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -144,7 +147,6 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/lorrisshupitoinfo.h \
     LorrisShupito/shupito.h \
     LorrisShupito/shupitodesc.h \
-    LorrisAnalyzer/datafileparser.h \
     LorrisAnalyzer/DataWidgets/colorwidget.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
@@ -215,13 +217,15 @@ HEADERS += ui/mainwindow.h \
     misc/sessionmgr.h \
     misc/datafileparser.h \
     LorrisAnalyzer/DataWidgets/sliderwidget.h \
-    ui/settingsdialog.h
+    ui/settingsdialog.h \
+    ui/shortcutinputbox.h \
+    LorrisAnalyzer/DataWidgets/canvaswidget.h \
+    LorrisAnalyzer/widgetfactory.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
-    QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
     HEADERS += \
         ../dep/qextserialport/src/qextwineventnotifier_p.h \
@@ -242,7 +246,14 @@ win32 {
     LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm -lole32 -lqwt
 }
 unix:!macx:!symbian {
-    LIBS += -lqwt_lorris -lSDL -lqextserialport
+    LIBS += -lSDL -lqextserialport
+
+    system_qwt {
+        LIBS += -lqwt
+    } else {
+        LIBS += -lqwt_lorris
+    }
+
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" 2> /dev/null \
         ; \
@@ -286,8 +297,9 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
     ui/terminalsettings.ui \
     misc/sessiondialog.ui \
-    LorrisAnalyzer/DataWidgets/sliderwidget.ui \
-    ui/settingsdialog.ui
+    ui/settingsdialog.ui \
+    LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui \
+    LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
@@ -308,7 +320,9 @@ OTHER_FILES += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.js \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.py
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.py
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {
@@ -318,8 +332,8 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 python:unix {
     LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt
     DEFINES += WITH_PYTHON
-    LIBS += $$system(python2.6-config --libs)
-    QMAKE_CXXFLAGS += $$system(python2.6-config --includes)
+    LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
+    QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 }

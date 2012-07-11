@@ -41,11 +41,11 @@ TabView::TabView(QWidget *parent) :
 
     QMenu *file_menu = new QMenu(tr("&File"), this);
     QMenu *session_menu = new QMenu(tr("&Sessions"), this);
-    QAction *settingsAct = new QAction(tr("Setti&ngs..."), this);
+    QMenu *opt_menu = new QMenu(tr("&Options"), this);
 
     m_menus.push_back(file_menu->menuAction());
     m_menus.push_back(session_menu->menuAction());
-    m_menus.push_back(settingsAct);
+    m_menus.push_back(opt_menu->menuAction());
 
     QMenu * menuFileNew = file_menu->addMenu(tr("&New"));
     {
@@ -66,8 +66,12 @@ TabView::TabView(QWidget *parent) :
 
     m_session_mgr.initMenu(session_menu);
 
+    QAction *settingsAct = opt_menu->addAction(tr("&Settings"));
+    QAction *updateAct = opt_menu->addAction(tr("Check for update..."));
+
     connect(actionConnectionManager, SIGNAL(triggered()), SLOT(OpenConnectionManager()));
     connect(settingsAct,             SIGNAL(triggered()), SLOT(showSettings()));
+    connect(updateAct,               SIGNAL(triggered()), SLOT(checkForUpdate()));
     connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeLorris()));
 }
 
@@ -343,8 +347,9 @@ void TabView::writeLayoutStructure(DataFileParser *file, QLayout *l)
             writeLayoutStructure(file, item->layout());
         else if(!isResizeLine(item) && item->widget())
         {
-            file->writeVal((quint8)ITEM_WIDGET);
+            file->writeVal((quint8)ITEM_WIDGET_WITH_PCT);
             file->writeVal( ((TabWidget*)item->widget())->getId() );
+            file->writeVal( ((QBoxLayout*)l)->stretch(i) );
         }
         else
             file->writeVal((quint8)ITEM_SKIP);
@@ -426,11 +431,17 @@ void TabView::loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHas
                 break;
             }
             case ITEM_WIDGET:
+            case ITEM_WIDGET_WITH_PCT:
             {
                 quint32 new_id = newTabWidget(parent)->getId();
                 quint32 load_id = 0;
                 file->readVal(load_id);
                 id_pair.insert(load_id, new_id);
+
+                if(type == ITEM_WIDGET)
+                    break;
+
+                parent->setStretch(parent->count()-1, file->readVal<int>());
                 break;
             }
             case ITEM_SKIP:
@@ -446,12 +457,30 @@ void TabView::showSettings()
     d.exec();
 }
 
+void TabView::checkForUpdate()
+{
+#ifdef Q_OS_WIN
+     Utils::printToStatusBar(tr("Checking for update..."), 0);
+    if(Updater::doUpdate(false))
+        emit closeLorris();
+    else
+    {
+        Utils::printToStatusBar(tr("No update available"));
+        new ToolTipWarn(tr("No update available"), (QWidget*)sender(), this);
+    }
+#else
+    Utils::ThrowException(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
+                             "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
+#endif
+}
+
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)
 {
     m_vertical = vertical;
     m_cur_stretch = 50;
     m_tab_view = parent;
     m_resize_layout = NULL;
+    m_pct_label = NULL;
 
     setFrameStyle((vertical ? QFrame::VLine : QFrame::HLine) | QFrame::Plain);
 
@@ -520,6 +549,17 @@ void ResizeLine::mousePressEvent(QMouseEvent *event)
         }
         else
             m_resize_pos[1] = item->layout()->geometry().bottomRight();
+
+        m_pct_label = new QLabel(this, Qt::ToolTip);
+        m_pct_label->setMargin(3);
+
+        QPalette p(m_pct_label->palette());
+        p.setColor(QPalette::Window, p.color(QPalette::ToolTipBase));
+        m_pct_label->setPalette(p);
+
+        setPctLabel(event->globalPos(), m_resize_layout->stretch(m_resize_index-1),
+                                        m_resize_layout->stretch(m_resize_index+1));
+        m_pct_label->show();
     }
 }
 
@@ -531,6 +571,8 @@ void ResizeLine::mouseReleaseEvent(QMouseEvent *event)
     event->accept();
 
     m_resize_layout = NULL;
+    delete m_pct_label;
+    m_pct_label = NULL;
 }
 
 void ResizeLine::mouseMoveEvent(QMouseEvent *event)
@@ -559,10 +601,25 @@ void ResizeLine::mouseMoveEvent(QMouseEvent *event)
     if(m_cur_stretch > 100)    m_cur_stretch = 100;
     else if(m_cur_stretch < 0) m_cur_stretch = 0;
 
-    m_resize_layout->setStretch(m_resize_index-1, (int)m_cur_stretch);
-    m_resize_layout->setStretch(m_resize_index+1, 100 - (int)m_cur_stretch);
+    int stretch = m_cur_stretch;
+    if(abs(50 - m_cur_stretch) < 3)
+        stretch = 50;
+
+    m_resize_layout->setStretch(m_resize_index-1, stretch);
+    m_resize_layout->setStretch(m_resize_index+1, 100 - stretch);
 
     m_mouse_pos = event->globalPos();
+
+    setPctLabel(m_mouse_pos, stretch, 100 - stretch);
+}
+
+void ResizeLine::setPctLabel(const QPoint& p, int l, int r)
+{
+    if(!m_pct_label)
+        return;
+
+    m_pct_label->move(p + QPoint(0, 15));
+    m_pct_label->setText(tr("%1% / %2%").arg(l).arg(r));
 }
 
 #define OVERLAY_1 40

@@ -13,6 +13,8 @@
 #include "../../WorkTab/WorkTab.h"
 #include "colorwidget.h"
 
+REGISTER_DATAWIDGET(WIDGET_COLOR, Color)
+
 ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle(tr("Color"));

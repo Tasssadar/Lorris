@@ -15,7 +15,13 @@ def onKeyPress(key):
         Slider.setDouble();
         Slider.setMin(-55.5);
         Slider.setMax(1000.433);
+        #Slider.setRange(min, max, step) <-- also possible
+
+        # like in menu - 0 - hor, l -> r; 1 - ver, b -> t; 2 - hor, r -> l; 3 - ver, t -> b
+        Slider.setOrientation(1);
+
         Slider.setValue(50.5);
+        Slider.hideMinMax(True);
 
 # called whenever the value is changed
 def Slider_valueChanged():
@@ -32,3 +38,11 @@ def Slider_maximumChanged():
 # called whenever the data type is changed
 def Slider_typeChanged():
     terminal.appendText("type changed to " + ("Integer" if Slider.isInteger() else "Double") + "\n");
+
+# called whenever the orientation is changed
+def Slider_orientationChanged():
+    terminal.appendText("orientation changed to " + str(Slider.getOrientation()) + "\n");
+
+# called whenever the visibility of min/max boxes is changed
+def Slider_visibilityChanged():
+    terminal.appendText("min/max visibility changed: " + ("Visible" if Slider.isMinMaxVisible() else "Hidden") + "\n");

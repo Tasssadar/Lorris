@@ -69,6 +69,7 @@ private slots:
     void saveText();
     void saveBin();
     void inputAct(int act);
+    void sendButton();
 
     void readData(const QByteArray& data);
     void sendKeyEvent(const QString& key);

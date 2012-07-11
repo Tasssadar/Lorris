@@ -40,6 +40,7 @@ public:
 
     bool dataRead(const QByteArray& data);
     bool startStop();
+    bool stopSequence();
     void setCon(PortConnection *con)
     {
         m_con = con;
@@ -55,8 +56,8 @@ public:
     void setStopStatus(bool stopped);
 
 private:
-    bool waitForAck();
-    bool waitForRec();
+    bool waitForAck(int timeout = 1000);
+    bool waitForRec(int timeout = 1000);
 
     quint8 m_state;
     PortConnection *m_con;

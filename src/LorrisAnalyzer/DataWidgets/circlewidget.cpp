@@ -12,6 +12,8 @@
 #include "circlewidget.h"
 #include "../../ui/rangeselectdialog.h"
 
+REGISTER_DATAWIDGET(WIDGET_CIRCLE, Circle)
+
 CircleWidget::CircleWidget(QWidget *parent) :
     DataWidget(parent)
 {

@@ -519,7 +519,7 @@ const QPixmap& DataWidgetAddBtn::getRender()
 {
     if(!m_pixmap)
     {
-        DataWidget *w = WidgetArea::newWidget(m_widgetType, this);
+        DataWidget *w = sWidgetFactory.getWidget(m_widgetType, this);
         if(w)
         {
             m_pixmap = new QPixmap(w->size());
