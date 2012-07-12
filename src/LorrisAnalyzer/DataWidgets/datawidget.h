@@ -39,7 +39,7 @@ enum WidgetTypes
 
 enum NumberTypes
 {
-    NUM_UINT8,
+    NUM_UINT8 = 0,
     NUM_UINT16,
     NUM_UINT32,
     NUM_UINT64,

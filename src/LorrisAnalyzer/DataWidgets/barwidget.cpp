@@ -5,13 +5,12 @@
 **    See README and COPYING
 ***********************************************/
 
-#include <QProgressBar>
 #include <QHBoxLayout>
 #include <QSignalMapper>
 #include <QMenu>
 #include <QContextMenuEvent>
-#include <QSpinBox>
-#include <QDialogButtonBox>
+#include <qwt_thermo.h>
+#include <float.h>
 
 #include "barwidget.h"
 #include "../../ui/rangeselectdialog.h"
@@ -25,16 +24,28 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     setIcon(":/dataWidgetIcons/bar.png");
 
     m_widgetType = WIDGET_BAR;
-    m_bar = new QProgressBar(this);
-    m_bar->setMaximum(1000);
-    m_bar->setTextVisible(false);
-    m_bar->setOrientation(Qt::Vertical);
-    m_bar->adjustSize();
+
+    m_showScaleAct = NULL;
+    m_showValAct = NULL;
+
+    m_bar = new QwtThermo(this);
+    m_bar->setOrientation(Qt::Vertical, QwtThermo::RightScale);
+    m_bar->setRangeFlags(QwtInterval::IncludeBorders);
+    m_bar->setRange(0, 1000);
+
+    m_label = new QLabel("0", this);
+    m_label->setAlignment(Qt::AlignCenter);
+    m_label->setFont(Utils::getMonospaceFont(12));
 
     QHBoxLayout *bar_l = new QHBoxLayout();
     bar_l->addWidget(m_bar);
-    layout->addLayout(bar_l);
-    adjustSize();
+    layout->addStretch();
+    layout->addLayout(bar_l, 1);
+    layout->addSpacing(5);
+    layout->addWidget(m_label);
+    layout->addStretch();
+
+    resize(100, 200);
 }
 
 void BarWidget::setUp(Storage *storage)
@@ -49,90 +60,84 @@ void BarWidget::setUp(Storage *storage)
     QMenu *bitsMenu = contextMenu->addMenu(tr("Data type"));
     QMenu *rotMenu = contextMenu->addMenu(tr("Rotation"));
 
-    static const QString dataTypes[] =
-    {
-        tr("unsigned 8bit"),
-        tr("unsigned 16bit"),
-
-        tr("signed 8bit"),
-        tr("signed 16bit"),
-        tr("signed 32bit"),
-    };
-
     QSignalMapper *signalMapBits = new QSignalMapper(this);
-
-    quint8 y,i;
-    for(y = i = 0; i < NUM_COUNT; ++i)
+    for(quint8 i = 0; i < NUM_COUNT; ++i)
     {
-        if(i == 2)
+        static const QString dataTypes[] =
+        {
+            tr("unsigned 8bit"),
+            tr("unsigned 16bit"),
+            tr("unsigned 32bit"),
+            tr("unsigned 64bit"),
+
+            tr("signed 8bit"),
+            tr("signed 16bit"),
+            tr("signed 32bit"),
+            tr("signed 64bit"),
+
+            tr("float (4 bytes)"),
+            tr("double (8 bytes)")
+        };
+
+        if(i%4 == 0 && i != 0)
             bitsMenu->addSeparator();
 
-        if(i == NUM_UINT32 || i == NUM_UINT64 || i > NUM_INT32)
-        {
-            bitsAction[i] = NULL;
-            continue;
-        }
-
-        bitsAction[i] = new QAction(dataTypes[y], this);
-        bitsAction[i]->setCheckable(true);
-        bitsMenu->addAction(bitsAction[i]);
-        signalMapBits->setMapping(bitsAction[i], i);
-        connect(bitsAction[i], SIGNAL(triggered()), signalMapBits, SLOT(map()));
-        ++y;
+        m_bitsAct[i] = bitsMenu->addAction(dataTypes[i]);
+        m_bitsAct[i]->setCheckable(true);
+        signalMapBits->setMapping(m_bitsAct[i], i);
+        connect(m_bitsAct[i], SIGNAL(triggered()), signalMapBits, SLOT(map()));
     }
-    bitsAction[0]->setChecked(true);
+    m_bitsAct[0]->setChecked(true);
     connect(signalMapBits, SIGNAL(mapped(int)), SLOT(setDataType(int)));
 
     QSignalMapper *signalMapRot = new QSignalMapper(this);
-
-    static const QString rotText[]=
+    for(quint8 i = 0; i < 2; ++i)
     {
-        tr("Vertical"),
-        tr("Horizontal")
-    };
-    for(i = 0; i < 2; ++i)
-    {
-        rotAction[i] = new QAction(rotText[i], this);
-        rotAction[i]->setCheckable(true);
-        rotMenu->addAction(rotAction[i]);
-        signalMapRot->setMapping(rotAction[i], i);
-        connect(rotAction[i], SIGNAL(triggered()), signalMapRot, SLOT(map()));
+        static const QString rotText[] = { tr("Vertical"), tr("Horizontal") };
+        m_rotAct[i] = rotMenu->addAction(rotText[i]);
+        m_rotAct[i]->setCheckable(true);
+        signalMapRot->setMapping(m_rotAct[i], i);
+        connect(m_rotAct[i], SIGNAL(triggered()), signalMapRot, SLOT(map()));
     }
     rotationSelected(0);
     connect(signalMapRot, SIGNAL(mapped(int)), SLOT(rotationSelected(int)));
 
-    rangeAction = new QAction(tr("Set range"), this);
-    contextMenu->addAction(rangeAction);
-    connect(rangeAction, SIGNAL(triggered()), this, SLOT(rangeSelected()));
+    m_rangeAct = contextMenu->addAction(tr("Set range..."));
+    m_showScaleAct = contextMenu->addAction(tr("Show scale"));
+    m_showValAct = contextMenu->addAction(tr("Show value"));
+    m_showScaleAct->setCheckable(true);
+    m_showValAct->setCheckable(true);
+    m_showScaleAct->setChecked(true);
+    m_showValAct->setChecked(true);
+
+
+    connect(m_rangeAct,     SIGNAL(triggered()),     SLOT(rangeSelected()));
+    connect(m_showScaleAct, SIGNAL(triggered(bool)), SLOT(showScale(bool)));
+    connect(m_showValAct,   SIGNAL(triggered(bool)), SLOT(showVal(bool)));
 }
 
 void BarWidget::processData(analyzer_data *data)
 {
-    int value = 0;
+    double value;
     try
     {
-        switch(m_numberType)
-        {
-            case NUM_UINT8:  value = data->getUInt8(m_info.pos);  break;
-            case NUM_UINT16: value = data->getUInt16(m_info.pos); break;
-            case NUM_INT8:   value = data->getInt8(m_info.pos);   break;
-            case NUM_INT16:  value = data->getInt16(m_info.pos);  break;
-            case NUM_INT32:  value = data->getInt32(m_info.pos);  break;
-        }
+        value = DataWidget::getNumFromPacket(data, m_info.pos, m_numberType).toDouble();
     }
     catch(char const* e)
     {
         return;
     }
     m_bar->setValue(value);
+    m_label->setText(QString::number(value));
 }
 
 void BarWidget::setValue(const QVariant &var)
 {
-    m_bar->setValue(var.toInt());
+    m_bar->setValue(var.toDouble());
+    m_label->setText(QString::number(var.toDouble()));
 }
 
-void BarWidget::setRange(int min, int max)
+void BarWidget::setRange(double min, double max)
 {
     m_bar->setRange(min, max);
 }
@@ -140,8 +145,7 @@ void BarWidget::setRange(int min, int max)
 void BarWidget::setDataType(int i)
 {
     for(quint8 y = 0; y < NUM_COUNT; ++y)
-        if(bitsAction[y])
-            bitsAction[y]->setChecked(y == i);
+        m_bitsAct[y]->setChecked(y == i);
 
     m_numberType = i;
     emit updateForMe();
@@ -149,29 +153,9 @@ void BarWidget::setDataType(int i)
 
 void BarWidget::rangeSelected()
 {
-    int min = 0;
-    int max = 0;
-    switch(m_numberType)
-    {
-        case NUM_UINT8:  max = 0xFF; break;
-        case NUM_UINT16: max = 0xFFFF; break;
-        case NUM_INT8:
-            min = -128;
-            max = 127;
-            break;
-        case NUM_INT16:
-            min = -32768;
-            max = 32767;
-            break;
-        case NUM_INT32:
-            min = -2147483647;
-            max = 2147483646;
-            break;
-    }
-
-    RangeSelectDialog dialog(m_bar->minimum(), m_bar->maximum(), max, min, this);
-    dialog.exec();
-    if(dialog.getRes())
+    RangeSelectDialog dialog(m_bar->minValue(), m_bar->maxValue(),
+                             (m_numberType < NUM_FLOAT), this);
+    if(dialog.exec())
         m_bar->setRange(dialog.getMin(), dialog.getMax());
 
     emit updateForMe();
@@ -180,37 +164,19 @@ void BarWidget::rangeSelected()
 void BarWidget::rotationSelected(int i)
 {
     for(quint8 y = 0; y < 2; ++y)
-        rotAction[y]->setChecked(y == i);
+        m_rotAct[y]->setChecked(y == i);
 
     rotate(i);
-
-    resize(0, 0);
-    adjustSize();
 }
 
 void BarWidget::rotate(int i)
 {
     m_rotation = i;
 
-    bool horizontal = false;
-    //bool switchSides = false;
-    switch(i)
-    {
-        case 0: break;
-        case 1:
-            horizontal = true;
-            break;
-        case 2:
-            //switchSides = true;
-            break;
-        case 3:
-            //horizontal = switchSides = true;
-            break;
-
-    }
-    //FIXME: not working?
-    //m_bar->setInvertedAppearance(switchSides);
-    m_bar->setOrientation(horizontal ? Qt::Horizontal : Qt::Vertical);
+    if(m_rotation == 0)
+         m_bar->setOrientation(Qt::Vertical, (QwtThermo::ScalePos)getScalePos());
+    else
+         m_bar->setOrientation(Qt::Horizontal, (QwtThermo::ScalePos)getScalePos());
 }
 
 void BarWidget::saveWidgetInfo(DataFileParser *file)
@@ -222,15 +188,18 @@ void BarWidget::saveWidgetInfo(DataFileParser *file)
     file->write((char*)&m_numberType, sizeof(m_numberType));
 
     // range
-    file->writeBlockIdentifier("barWRange");
-    qint32 min = m_bar->minimum();
-    qint32 max = m_bar->maximum();
-    file->write((char*)&min, sizeof(qint32));
-    file->write((char*)&max, sizeof(qint32));
+    file->writeBlockIdentifier("barWRangeDouble");
+    file->writeVal(m_bar->minValue());
+    file->writeVal(m_bar->maxValue());
 
     //rotation
     file->writeBlockIdentifier("barWRotation");
     file->write((char*)&m_rotation, sizeof(m_rotation));
+
+    // visibility
+    file->writeBlockIdentifier("barWVisibility");
+    file->writeVal(m_showScaleAct->isChecked());
+    file->writeVal(m_showValAct->isChecked());
 }
 
 void BarWidget::loadWidgetInfo(DataFileParser *file)
@@ -245,12 +214,16 @@ void BarWidget::loadWidgetInfo(DataFileParser *file)
     }
 
     // range
-    if(file->seekToNextBlock("barWRange", BLOCK_WIDGET))
+    if(file->seekToNextBlock("barWRangeDouble", BLOCK_WIDGET))
     {
-        qint32 min = 0;
-        qint32 max = 0;
-        file->read((char*)&min, sizeof(qint32));
-        file->read((char*)&max, sizeof(qint32));
+        double min = file->readVal<double>();
+        double max = file->readVal<double>();
+        m_bar->setRange(min, max);
+    }
+    else if(file->seekToNextBlock("barWRange", BLOCK_WIDGET))
+    {
+        double min = file->readVal<int>();
+        double max = file->readVal<int>();
         m_bar->setRange(min, max);
     }
 
@@ -260,6 +233,36 @@ void BarWidget::loadWidgetInfo(DataFileParser *file)
         file->read((char*)&m_rotation, sizeof(m_rotation));
         rotate(m_rotation);
     }
+
+    // visibility
+    if(file->seekToNextBlock("barWVisibility", BLOCK_WIDGET))
+    {
+        showScale(file->readVal<bool>());
+        showVal(file->readVal<bool>());
+    }
+}
+
+void BarWidget::showScale(bool show)
+{
+    m_showScaleAct->setChecked(show);
+    m_bar->setScalePosition((QwtThermo::ScalePos)getScalePos());
+}
+
+int BarWidget::getScalePos()
+{
+    if(m_showScaleAct && !m_showScaleAct->isChecked())
+        return QwtThermo::NoScale;
+
+    if(m_rotation == 0)
+        return QwtThermo::RightScale;
+    else
+        return QwtThermo::TopScale;
+}
+
+void BarWidget::showVal(bool show)
+{
+    m_showValAct->setChecked(show);
+    m_label->setVisible(show);
 }
 
 BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

@@ -180,9 +180,8 @@ void CircleWidget::angTypeChanged(int i)
 {
     if(i == ANG_RANGE)
     {
-        RangeSelectDialog dialog(m_range_min, m_range_max, INT_MAX, INT_MIN, this);
-        dialog.exec();
-        if(dialog.getRes())
+        RangeSelectDialog dialog(m_range_min, m_range_max, true, this);
+        if(dialog.exec())
         {
             m_range_min = dialog.getMin();
             m_range_max = dialog.getMax();

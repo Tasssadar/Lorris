@@ -186,9 +186,9 @@ void SliderWidget::setType(bool isDouble)
     }
     else
     {
-        minEdit()->setValidator(new QDoubleValidator(-DBL_MIN, DBL_MAX, 0, this));
-        maxEdit()->setValidator(new QDoubleValidator(-DBL_MIN, DBL_MAX, 0, this));
-        curEdit()->setValidator(new QDoubleValidator(-DBL_MIN, DBL_MAX, 0, this));
+        minEdit()->setValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this));
+        maxEdit()->setValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this));
+        curEdit()->setValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this));
 
         double step = (m_max - m_min)/slider()->width();
         setRange(m_min, m_max, step);
