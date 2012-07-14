@@ -62,12 +62,14 @@ private:
     bool save(const QString& file);
     void updateExampleList();
     void setStatus(const QString& status);
+    void setFilename(const QString& filename);
 
     Ui::ScriptEditor *ui;
     LineNumber *m_line_num;
     bool m_changed;
     bool m_contentChanged;
     bool m_ignoreNextFocus;
+    bool m_ignoreFocus;
     quint32 m_errors;
 
     QSyntaxHighlighter *m_highlighter;

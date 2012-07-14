@@ -40,6 +40,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     m_highlighter = NULL;
     m_errors = 0;
     m_ignoreNextFocus = false;
+    m_ignoreFocus = false;
 
 #ifdef Q_OS_MAC
     ui->sourceEdit->setFont(Utils::getMonospaceFont(12));
@@ -72,7 +73,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     updateExampleList();
 
-    m_filename = filename;
+    setFilename(filename);
     m_contentChanged = false;
     checkChange();
 }
@@ -169,7 +170,16 @@ void ScriptEditor::on_loadBtn_clicked()
     file.close();
 
     sConfig.set(CFG_STRING_ANALYZER_JS, filename);
+    setFilename(filename);
+}
+
+void ScriptEditor::setFilename(const QString& filename)
+{
     m_filename = filename;
+    if(!m_filename.isEmpty())
+        ui->nameLabel->setText(filename.split("/").last());
+    else
+        ui->nameLabel->setText(QString());
 }
 
 void ScriptEditor::on_langBox_currentIndexChanged(int idx)
@@ -222,6 +232,7 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
             break;
     }
     updateExampleList();
+    setFilename(QString());
 }
 
 void ScriptEditor::on_errorBtn_toggled(bool checked)
@@ -319,7 +330,7 @@ void ScriptEditor::saveAs()
     sConfig.set(CFG_STRING_ANALYZER_JS, filename);
 
     if(save(filename))
-        m_filename = filename;
+        setFilename(filename);
 }
 
 void ScriptEditor::setStatus(const QString &status)
@@ -344,6 +355,7 @@ void ScriptEditor::checkChange()
 
     if(disk != here)
     {
+        m_ignoreFocus = true;
         QMessageBox box(QMessageBox::Question, tr("File on disk was changed"),
                         tr("File on disk was changed. What do you want to do?"), QMessageBox::NoButton, this);
         box.setInformativeText(m_filename);
@@ -356,7 +368,7 @@ void ScriptEditor::checkChange()
         switch(box.exec())
         {
             case QMessageBox::Close:
-                m_filename.clear();
+                setFilename(QString());
                 break;
             case QMessageBox::AcceptRole:
                 if(!f.open(QIODevice::ReadOnly))
@@ -366,14 +378,14 @@ void ScriptEditor::checkChange()
             case QMessageBox::RejectRole:
                 m_ignoreNextFocus = true;
                 break;
-
         }
+        m_ignoreFocus = false;
     }
 }
 
 void ScriptEditor::focusChanged(QWidget *prev, QWidget *now)
 {
-    if(!prev && now)
+    if(!prev && now && !m_ignoreFocus)
     {
         if(m_ignoreNextFocus)
             m_ignoreNextFocus = false;
