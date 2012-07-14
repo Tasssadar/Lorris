@@ -48,6 +48,8 @@ public:
     DataWidget *getWidget(quint32 type, QWidget *parent);
     std::vector<DataWidgetAddBtn*> getButtons(QWidget *parent);
 
+    DataWidget *copy(DataWidget *w);
+
 private:
     QHash<quint32, widgetInit> m_widgetInits;
     std::vector<btnInit> m_btnInits;

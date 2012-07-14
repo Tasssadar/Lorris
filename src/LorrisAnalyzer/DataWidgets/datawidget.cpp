@@ -63,6 +63,7 @@ DataWidget::DataWidget(QWidget *parent) :
     m_mouseIn = false;
     m_updating = true;
     m_dragAction = DRAG_NONE;
+    m_copy_widget = NULL;
 
     m_widgetControlled = -1;
 
@@ -165,7 +166,7 @@ void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
 
 void DataWidget::mousePressEvent( QMouseEvent* e )
 {
-    m_dragAction = getDragAction(e->pos());
+    m_dragAction = getDragAction(e);
     mOrigin = e->globalPos();
 }
 
@@ -178,7 +179,7 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
     {
         case Qt::NoButton:
         {
-            switch(getDragAction(e->pos()))
+            switch(getDragAction(e))
             {
                 case DRAG_NONE:
                     setCursor(Qt::ArrowCursor);
@@ -199,6 +200,9 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
                 case (DRAG_RES_RIGHT | DRAG_RES_BOTTOM):
                     setCursor(Qt::SizeFDiagCursor);
                     break;
+                case (DRAG_MOVE | DRAG_COPY):
+                    setCursor(Qt::UpArrowCursor);
+                    break;
             }
             break;
         }
@@ -207,7 +211,13 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
             switch(m_dragAction)
             {
                 case DRAG_NONE: break;
-                case DRAG_MOVE: dragMove(e); break;
+                case DRAG_MOVE:
+                    dragMove(e, this);
+                    break;
+                case (DRAG_MOVE | DRAG_COPY):
+                    if(m_copy_widget) dragMove(e, m_copy_widget);
+                    else              copyWidget(e);
+                    break;
                 default: dragResize(e); break;
             }
             break;
@@ -219,6 +229,7 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
 
 void DataWidget::mouseReleaseEvent(QMouseEvent *ev)
 {
+    m_copy_widget = NULL;
     m_dragAction = DRAG_NONE;
     QWidget::mouseReleaseEvent(ev);
 }
@@ -262,11 +273,11 @@ void DataWidget::dropEvent(QDropEvent *event)
     emit updateForMe();
 }
 
-quint8 DataWidget::getDragAction(const QPoint &clickPos)
+quint8 DataWidget::getDragAction(QMouseEvent *ev)
 {
     quint8 res = 0;
-    int x = clickPos.x();
-    int y = clickPos.y();
+    int x = ev->pos().x();
+    int y = ev->pos().y();
 
     if(x < RESIZE_BORDER)
         res |= DRAG_RES_LEFT;
@@ -277,7 +288,11 @@ quint8 DataWidget::getDragAction(const QPoint &clickPos)
         res |= DRAG_RES_BOTTOM;
 
     if(res == 0)
+    {
         res = DRAG_MOVE;
+        if(ev->modifiers() & Qt::ControlModifier)
+            res |= DRAG_COPY;
+    }
     return res;
 }
 
@@ -319,16 +334,16 @@ void DataWidget::dragResize(QMouseEvent* e)
     move(x, y);
 }
 
-void DataWidget::dragMove(QMouseEvent *e)
+void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
 {
-    QPoint p = pos() + ( e->globalPos() - mOrigin );
+    QPoint p = widget->pos() + ( e->globalPos() - mOrigin );
     mapXYToGrid(p);
-    move(p);
+    widget->move(p);
 
     mOrigin = e->globalPos();
     mapXYToGrid(mOrigin);
 
-    emit updateMarker(this);
+    emit updateMarker(widget);
 }
 
 void DataWidget::newData(analyzer_data *data, quint32 /*index*/)
@@ -494,6 +509,14 @@ void DataWidget::align()
     mapXYToGrid(p);
     p -= ((WidgetArea*)parent())->getGridOffset();
     resize(p.x(), p.y());
+}
+
+void DataWidget::copyWidget(QMouseEvent *ev)
+{
+    Q_ASSERT(!m_copy_widget);
+
+    m_copy_widget = sWidgetFactory.copy(this);
+    m_copy_widget->move(mapToParent(ev->pos()));
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)

@@ -7,6 +7,7 @@
 
 #include "widgetfactory.h"
 #include "DataWidgets/datawidget.h"
+#include "widgetarea.h"
 
 WidgetFactory::WidgetFactory()
 {
@@ -34,5 +35,25 @@ std::vector<DataWidgetAddBtn*> WidgetFactory::getButtons(QWidget *parent)
     std::vector<DataWidgetAddBtn*> res;
     for(quint32 i = 0; i < m_btnInits.size(); ++i)
         res.push_back(m_btnInits[i](parent));
+    return res;
+}
+
+DataWidget *WidgetFactory::copy(DataWidget *w)
+{
+    Q_ASSERT(w);
+    if(!w)
+        return NULL;
+
+    DataWidget *res = ((WidgetArea*)w->parent())->addWidget(w->pos(), w->getWidgetType());
+
+    QByteArray data;
+    DataFileParser p(&data);
+    p.open(QIODevice::ReadWrite);
+
+    w->saveWidgetInfo(&p);
+    p.seek(0);
+    res->loadWidgetInfo(&p);
+
+    res->resize(w->size());
     return res;
 }

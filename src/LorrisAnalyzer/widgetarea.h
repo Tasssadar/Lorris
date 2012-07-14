@@ -62,6 +62,8 @@ public:
     quint32 getGrid() const { return m_grid; }
     void setGrid(quint32 grid) { m_grid = grid; }
 
+    Storage *getStorage() const { return m_storage; }
+
 public slots:
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
