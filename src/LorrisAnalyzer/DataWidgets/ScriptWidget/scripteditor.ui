@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>JavaScript source - </string>
+   <string>Script</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../../icons.qrc">

@@ -177,9 +177,15 @@ void ScriptEditor::setFilename(const QString& filename)
 {
     m_filename = filename;
     if(!m_filename.isEmpty())
+    {
         ui->nameLabel->setText(filename.split("/").last());
+        setWindowTitle(tr("%1 - Script").arg(ui->nameLabel->text()));
+    }
     else
+    {
         ui->nameLabel->setText(QString());
+        setWindowTitle(tr("Script"));
+    }
 }
 
 void ScriptEditor::on_langBox_currentIndexChanged(int idx)
