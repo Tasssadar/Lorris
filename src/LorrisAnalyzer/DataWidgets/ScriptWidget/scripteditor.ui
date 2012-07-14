@@ -17,7 +17,7 @@
    <iconset resource="../../../icons.qrc">
     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,4,2,0">
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,70,0,40,0">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -139,6 +139,9 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="ResizeLine" name="resizeLine"/>
    </item>
    <item>
     <widget class="QPlainTextEdit" name="errorEdit">
@@ -336,6 +339,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ResizeLine</class>
+   <extends>QFrame</extends>
+   <header>../src/ui/resizeline.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../../../actions.qrc"/>
   <include location="../../../icons.qrc"/>

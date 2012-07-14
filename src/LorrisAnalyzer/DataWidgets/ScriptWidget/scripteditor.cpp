@@ -37,6 +37,10 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     m_line_num = new LineNumber(this);
     ui->editLayout->insertWidget(0, m_line_num);
 
+    ui->resizeLine->setOrientation(false);
+    ui->resizeLine->setResizeLayout(ui->mainLayout);
+    ui->resizeLine->updateStretch();
+
     m_highlighter = NULL;
     m_errors = 0;
     m_ignoreNextFocus = false;
@@ -62,7 +66,6 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     ui->langBox->addItems(ScriptEngine::getEngineList());
     ui->langBox->setCurrentIndex(type);
-    ui->errorEdit->hide();
 
     QAction *saveAs = new QAction(tr("Save as..."), this);
     ui->saveBtn->addAction(saveAs);
@@ -73,13 +76,18 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     updateExampleList();
 
+    on_errorBtn_toggled(sConfig.get(CFG_BOOL_SHOW_SCRIPT_ERROR));
+
     setFilename(filename);
     m_contentChanged = false;
     checkChange();
+
+    Utils::loadWindowParams(this, sConfig.get(CFG_STRING_SCRIPT_WND_PARAMS));
 }
 
 ScriptEditor::~ScriptEditor()
 {
+    sConfig.set(CFG_STRING_SCRIPT_WND_PARAMS, Utils::saveWindowParams(this));
     delete ui;
 }
 
@@ -244,6 +252,8 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
 void ScriptEditor::on_errorBtn_toggled(bool checked)
 {
     ui->errorEdit->setShown(checked);
+    ui->resizeLine->setShown(checked);
+    sConfig.set(CFG_BOOL_SHOW_SCRIPT_ERROR, checked);
 }
 
 void ScriptEditor::on_exampleBox_activated(int index)

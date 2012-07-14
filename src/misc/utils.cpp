@@ -169,3 +169,41 @@ QFont Utils::getFontFromString(const QString &str)
     }
     return fnt;
 }
+
+QString Utils::saveWindowParams(QWidget *w)
+{
+    QStringList params;
+    params << QString::number(w->isMaximized())
+           << QString::number(w->width()) << QString::number(w->height())
+           << QString::number(w->x()) << QString::number(w->y());
+    return params.join(";");
+}
+
+void Utils::loadWindowParams(QWidget *w, const QString &param)
+{
+    QStringList params = param.split(';', QString::SkipEmptyParts);
+    if(params.size() < 5)
+        return;
+
+    QRect s;
+    for(int i = 0; i < params.size(); ++i)
+    {
+        int val = params[i].toInt();
+        switch(i)
+        {
+            case 0:
+                if(val != 0)
+                {
+                    w->setWindowState(Qt::WindowMaximized);
+                    return;
+                }
+                break;
+            case 1: s.setWidth(val); break;
+            case 2: s.setHeight(val);break;
+            case 3: s.setX(val); break;
+            case 4: s.setY(val); break;
+        }
+    }
+    w->resize(s.size());
+    w->move(s.topLeft());
+}

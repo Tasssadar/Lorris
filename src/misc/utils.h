@@ -46,6 +46,9 @@ public:
     static QString getFontSaveString(const QFont& font);
     static QFont getFontFromString(const QString& str);
 
+    static QString saveWindowParams(QWidget *w);
+    static void loadWindowParams(QWidget *w, const QString& param);
+
 private:
     static QStatusBar* m_status_bar;
     static EcWin7* m_win7;

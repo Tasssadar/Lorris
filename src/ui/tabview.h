@@ -15,10 +15,11 @@
 
 #include "../misc/sessionmgr.h"
 #include "tabwidget.h"
+#include "resizeline.h"
 
 class QLayoutItem;
 class QBoxLayout;
-class ResizeLine;
+class TabViewResLine;
 class SplitOverlay;
 class QDrag;
 class WorkTabInfo;
@@ -59,7 +60,7 @@ public:
         return NULL;
     }
 
-    QBoxLayout *getLayoutForLine(ResizeLine *line);
+    QBoxLayout *getLayoutForLine(TabViewResLine *line);
     void createSplitOverlay(quint32 id, QDrag *drag);
 
     const std::vector<QAction*>& getMenus() const
@@ -100,7 +101,7 @@ private:
     void loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHash<quint32, quint32>& id_pair);
 
     QHash<quint32, TabWidget*> m_tab_widgets;
-    QHash<ResizeLine*, QBoxLayout*> m_resize_lines;
+    QHash<TabViewResLine*, QBoxLayout*> m_resize_lines;
 
     std::set<QBoxLayout*> m_layouts;
 
@@ -114,30 +115,19 @@ private:
     QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };
 
-class ResizeLine : public QFrame
+class TabViewResLine : public ResizeLine
 {
     Q_OBJECT
 public:
-    ResizeLine(bool vertical, TabView *parent);
+    TabViewResLine(bool vertical, TabView *parent);
 
-    void updateStretch();
+    void setResizeLayout(QBoxLayout *) { }
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    QBoxLayout *getLayout();
 
 private:
-    void setPctLabel(const QPoint& p, int l, int r);
-
-    bool m_vertical;
-    float m_cur_stretch;
     TabView *m_tab_view;
-    QBoxLayout *m_resize_layout;
-    QPoint m_resize_pos[2];
-    QPoint m_mouse_pos;
-    int m_resize_index;
-    QLabel *m_pct_label;
 };
 
 class SplitOverlay : public QWidget
