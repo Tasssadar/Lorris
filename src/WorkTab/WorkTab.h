@@ -45,6 +45,8 @@ public:
     virtual void loadData(DataFileParser *file);
     virtual QString GetIdString() = 0;
 
+    virtual void childClosed(QWidget *child);
+
 protected:
     WorkTab();
 

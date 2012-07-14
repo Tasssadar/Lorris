@@ -60,12 +60,17 @@ public:
         return m_tab_ids.empty();
     }
 
+    bool containsTab(quint32 id) const;
+
     void changeMenu(int idx);
     void clearMenu();
     void checkEmpty();
 
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
+
+    void addChildTab(QWidget *widget, const QString &name);
+    void removeChildTab(QWidget *widget);
 
 public slots:
     int pullTab(int index, TabWidget *origin);

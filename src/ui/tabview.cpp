@@ -474,6 +474,24 @@ void TabView::checkForUpdate()
 #endif
 }
 
+TabWidget *TabView::getWidgetWithTab(quint32 tabId)
+{
+    for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); ++itr)
+        if((*itr)->containsTab(tabId))
+            return *itr;
+
+    return NULL;
+}
+
+// very clear name
+TabWidget *TabView::getWidgetWithWidget(QWidget *widget)
+{
+    for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); ++itr)
+        if((*itr)->indexOf(widget) != -1)
+            return *itr;
+    return NULL;
+}
+
 ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)
 {
     m_vertical = vertical;

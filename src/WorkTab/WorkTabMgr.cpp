@@ -88,6 +88,16 @@ WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info, QString filename)
 
 void WorkTabMgr::removeTab(WorkTab *tab)
 {
+    ChildrenMap::iterator itr = m_children.find(tab->getId());
+    if(itr != m_children.end())
+    {
+        for(std::set<QWidget*>::const_iterator w_itr = (*itr).begin(); w_itr != (*itr).end(); ++w_itr)
+        {
+            TabWidget *tabW = tabView->getWidgetWithWidget(*w_itr);
+            tabW->removeChildTab(*w_itr);
+        }
+        m_children.erase(itr);
+    }
     m_workTabs.remove(tab->getId());
     delete tab;
 }
@@ -161,4 +171,42 @@ void WorkTabMgr::openTabWithFile(const QString &filename)
         AddWorkTab(*itr, filename);
         return;
     }
+}
+
+void WorkTabMgr::addChildTab(QWidget *child, const QString &name, quint32 workTabId)
+{
+    TabWidget *tabW = tabView->getWidgetWithTab(workTabId);
+    if(!tabW)
+        return;
+
+    tabW->addChildTab(child, name);
+    m_children[workTabId].insert(child);
+}
+
+void WorkTabMgr::removeChildTab(QWidget *child)
+{
+    quint32 tabId = 0;
+    for(ChildrenMap::iterator itr = m_children.begin(); itr != m_children.end(); ++itr)
+    {
+        std::set<QWidget*>::iterator w_itr = (*itr).find(child);
+        if(w_itr == (*itr).end())
+            continue;
+
+        tabId = itr.key();
+
+        (*itr).erase(w_itr);
+
+        if((*itr).empty())
+            m_children.erase(itr);
+        break;
+    }
+
+    WorkTab *tab = getWorkTab(tabId);
+    if(!tab)
+        return;
+
+    TabWidget *tabW = tabView->getWidgetWithWidget(child);
+    tabW->removeChildTab(child);
+
+    tab->childClosed(child);
 }

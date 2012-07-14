@@ -63,8 +63,8 @@ int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
     if(count() >= 2)
         m_tab_bar->enableSplit(true);
 
-    connect(widget, SIGNAL(statusBarMsg(QString,int)), SIGNAL(statusBarMsg(QString,int)));
-    connect(widget, SIGNAL(setConnId(QString,bool)), SLOT(setConnString(QString,bool)));
+    connect(widget, SIGNAL(statusBarMsg(QString,int)),     SIGNAL(statusBarMsg(QString,int)));
+    connect(widget, SIGNAL(setConnId(QString,bool)),       SLOT(setConnString(QString,bool)));
 
     setTabNameAndTooltip(idx, name);
     setTabsClosable(true);
@@ -96,17 +96,23 @@ void TabWidget::closeTab(int index)
         return;
     }
 
-    std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
+    quint32 id = m_tab_ids[index];
 
-    WorkTab *tab = sWorkTabMgr.getWorkTab(*itr);
-    if(!tab->onTabClose())
-        return;
+    if(id == UINT_MAX)
+        sWorkTabMgr.removeChildTab(widget(index));
+    else
+    {
+        WorkTab *tab = sWorkTabMgr.getWorkTab(id);
+        if(!tab->onTabClose())
+             return;
 
-    removeTab(index);
-    disconnect(tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
+        disconnect(tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
 
-    sWorkTabMgr.removeTab(tab);
-    m_tab_ids.erase(itr);
+        sWorkTabMgr.removeTab(tab);
+        removeTab(index);
+
+        m_tab_ids.erase(std::find(m_tab_ids.begin(), m_tab_ids.end(), id));
+    }
 
     changeMenu(currentIndex());
     checkEmpty();
@@ -321,6 +327,33 @@ void TabWidget::setTabNameAndTooltip(int idx, QString name)
     }
 
     setTabText(idx, name);
+}
+
+void TabWidget::addChildTab(QWidget *widget, const QString& name)
+{
+    int idx = addTab(widget, name);
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
+    m_tab_ids.insert(itr, UINT_MAX);
+}
+
+void TabWidget::removeChildTab(QWidget *widget)
+{
+    int idx = indexOf(widget);
+    if(idx == -1)
+        return;
+
+    removeTab(idx);
+
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
+    m_tab_ids.erase(itr);
+
+    changeMenu(currentIndex());
+    checkEmpty();
+}
+
+bool TabWidget::containsTab(quint32 id) const
+{
+    return std::find(m_tab_ids.begin(), m_tab_ids.end(), id) != m_tab_ids.end();
 }
 
 TabBar::TabBar(quint32 id, QWidget *parent) :

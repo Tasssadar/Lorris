@@ -72,6 +72,11 @@ void WorkTab::loadData(DataFileParser *)
 
 }
 
+void WorkTab::childClosed(QWidget *child)
+{
+    delete child;
+}
+
 //----------------------------------------------------------------------------
 PortConnWorkTab::PortConnWorkTab()
     : m_con(0)

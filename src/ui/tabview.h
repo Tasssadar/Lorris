@@ -59,6 +59,9 @@ public:
         return NULL;
     }
 
+    TabWidget *getWidgetWithTab(quint32 tabId);
+    TabWidget *getWidgetWithWidget(QWidget *widget);
+
     QBoxLayout *getLayoutForLine(ResizeLine *line);
     void createSplitOverlay(quint32 id, QDrag *drag);
 

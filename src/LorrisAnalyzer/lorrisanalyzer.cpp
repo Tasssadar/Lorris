@@ -34,6 +34,7 @@
 #include "widgetarea.h"
 #include "sourceselectdialog.h"
 #include "packetparser.h"
+#include "../WorkTab/WorkTabMgr.h"
 
 #include "DataWidgets/datawidget.h"
 #include "widgetfactory.h"
@@ -223,6 +224,8 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
 void LorrisAnalyzer::onTabShow(const QString& filename)
 {
+    sWorkTabMgr.addChildTab(sWidgetFactory.getWidget(WIDGET_CIRCLE, this), "circle", m_id);
+
     if(!filename.isEmpty())
         openFile(filename);
 
