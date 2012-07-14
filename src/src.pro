@@ -322,7 +322,9 @@ OTHER_FILES += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.js \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.py \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.py
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.py
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {

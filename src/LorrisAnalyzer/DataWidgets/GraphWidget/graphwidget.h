@@ -43,6 +43,7 @@ public:
 public slots:
     GraphCurve *addCurve(QString name, QString color);
     void setAxisScale(bool x, double min, double max);
+    void removeCurve(QString name);
     void updateVisibleArea();
 
 protected:
@@ -54,7 +55,6 @@ private slots:
      void newData(analyzer_data *data, quint32 index);
      void sampleSizeChanged(int val);
      void editCurve();
-     void removeCurve(QString name);
      void showLegend(bool show);
      void toggleAutoScroll(bool scroll);
      void updateSampleSize();

@@ -8,5 +8,7 @@
         <file>slider.py</file>
         <file>canvas.js</file>
         <file>canvas.py</file>
+        <file>graph.js</file>
+        <file>graph.py</file>
     </qresource>
 </RCC>
