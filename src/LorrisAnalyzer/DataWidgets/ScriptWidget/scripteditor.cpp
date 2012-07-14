@@ -76,7 +76,8 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     updateExampleList();
 
-    on_errorBtn_toggled(sConfig.get(CFG_BOOL_SHOW_SCRIPT_ERROR));
+    ui->errorBtn->setChecked(sConfig.get(CFG_BOOL_SHOW_SCRIPT_ERROR));
+    on_errorBtn_toggled(ui->errorBtn->isChecked());
 
     setFilename(filename);
     m_contentChanged = false;
@@ -87,7 +88,6 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
 ScriptEditor::~ScriptEditor()
 {
-    sConfig.set(CFG_STRING_SCRIPT_WND_PARAMS, Utils::saveWindowParams(this));
     delete ui;
 }
 
@@ -103,6 +103,8 @@ int ScriptEditor::getEngine()
 
 void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
 {
+    sConfig.set(CFG_STRING_SCRIPT_WND_PARAMS, Utils::saveWindowParams(this));
+
     switch(ui->buttonBox->buttonRole(btn))
     {
         case QDialogButtonBox::ApplyRole:  emit applySource(false); break;

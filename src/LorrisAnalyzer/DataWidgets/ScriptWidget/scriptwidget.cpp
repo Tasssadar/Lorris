@@ -29,6 +29,11 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 
     m_engine = NULL;
     m_engine_type = ENGINE_QTSCRIPT;
+    m_error_label = new QLabel(this);
+    m_error_label->setPixmap(QIcon(":/actions/red-cross").pixmap(16, 16));
+    m_error_label->hide();
+
+    ((QHBoxLayout*)layout->itemAt(0)->layout())->insertWidget(2, m_error_label);
 }
 
 ScriptWidget::~ScriptWidget()
@@ -41,7 +46,8 @@ void ScriptWidget::setUp(Storage *storage)
     DataWidget::setUp(storage);
 
     QAction *src_act = contextMenu->addAction(tr("Set source..."));
-    connect(src_act,    SIGNAL(triggered()),                 this,       SLOT(setSourceTriggered()));
+    connect(src_act,              SIGNAL(triggered()), SLOT(setSourceTriggered()));
+    connect(&m_error_blink_timer, SIGNAL(timeout()),   SLOT(blinkError()));
 
     createEngine();
 }
@@ -67,6 +73,7 @@ void ScriptWidget::createEngine()
     connect(m_engine,      SIGNAL(appendTerm(QString)),         m_terminal, SLOT(appendText(QString)));
     connect(m_engine,      SIGNAL(appendTermRaw(QByteArray)),   m_terminal, SLOT(appendText(QByteArray)));
     connect(m_engine,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
+    connect(m_engine,      SIGNAL(error(QString)),              this,       SLOT(blinkError()));
 }
 
 void ScriptWidget::newData(analyzer_data *data, quint32 index)
@@ -193,6 +200,9 @@ void ScriptWidget::sourceSet(bool close)
         }
         m_editor->clearErrors();
 
+        m_error_blink_timer.stop();
+        m_error_label->hide();
+
         m_engine->setSource(m_editor->getSource());
         m_filename = m_editor->getFilename();
 
@@ -243,6 +253,12 @@ void ScriptWidget::onScriptEvent(const QString& eventId)
 {
     if(m_engine)
         m_engine->callEventHandler(eventId);
+}
+
+void ScriptWidget::blinkError()
+{
+    m_error_label->setVisible(!m_error_label->isVisible());
+    m_error_blink_timer.start(500);
 }
 
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
