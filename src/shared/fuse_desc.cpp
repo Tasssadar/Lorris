@@ -6,6 +6,7 @@
 ***********************************************/
 
 #include "fuse_desc.h"
+#include <QStringList>
 
 fuse_desc::fuse_desc(const QString& name, const QStringList &chipSigns, const QString &desc)
 {

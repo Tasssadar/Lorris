@@ -9,6 +9,7 @@
 #define RANGESELECTDIALOG_H
 
 #include <QDialog>
+#include <QAbstractButton>
 
 namespace Ui {
   class RangeSelectDialog;

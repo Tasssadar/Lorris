@@ -40,8 +40,16 @@ patches-*
 bin/*
 moc/*
 obj/*
+Win32/*
 
 # OS specific
+# Windows
+*.pdb
+*.vcxproj*
+*.sln
+*.suo
+*.aps
+object_script.Lorris.*
 # MacOS
 .DS_Store
 

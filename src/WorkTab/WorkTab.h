@@ -72,15 +72,15 @@ public:
     virtual void loadData(DataFileParser *file);
 
 public slots:
-    virtual void setConnection(PortConnection *con);
+    virtual void setConnection(ConnectionPointer<Connection> const & con);
+    virtual void setPortConnection(ConnectionPointer<PortConnection> const & con);
 
 protected:
-    PortConnection *m_con;
+    ConnectionPointer<PortConnection> m_con;
 
 protected slots:
     virtual void readData(const QByteArray &data);
     virtual void connectedStatus(bool connected);
-    virtual void connectionDestroyed();
 };
 
 #endif // WORKTAB_H

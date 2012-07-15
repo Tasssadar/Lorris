@@ -26,9 +26,10 @@ public:
     explicit LorrisProxy();
     ~LorrisProxy();
 
+    void setPortConnection(ConnectionPointer<PortConnection> const & con);
+
     QString GetIdString();
 
-    void setConnection(PortConnection *con);
     void onTabShow(const QString& filename);
 
     void saveData(DataFileParser *file);
@@ -39,7 +40,6 @@ private slots:
     void listenChanged();
     void addConnection(QTcpSocket *connection, quint32 id);
     void removeConnection(quint32 id);
-    void connectionResult(Connection *con,bool result);
 
 private:
     Ui::LorrisProxy *ui;

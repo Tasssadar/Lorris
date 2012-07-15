@@ -13,15 +13,23 @@ MOC_DIR = $$PWD/../moc
 UI_DIR = $$PWD/../ui
 RCC_DIR = $$PWD/../qrc
 CONFIG += qwt
-LIBS += -L"$$PWD/../dep/qwt/lib"
+
+win32-msvc* {
+    LIBS += -L"$$PWD/../dep/qwt/lib/msvc"
+} else {
+    LIBS += -L"$$PWD/../dep/qwt/lib"
+}
 LIBS += -L"$$PWD/../dep/qextserialport/lib"
 TRANSLATIONS = ../translations/Lorris.cs_CZ.ts
 TEMPLATE = app
+
+INCLUDEPATH += ..
 INCLUDEPATH += ../dep/qwt/src
 INCLUDEPATH += ../dep/qserialdevice/src
 INCLUDEPATH += ../dep/qhexedit2/src
 INCLUDEPATH += ../dep
 INCLUDEPATH += ../dep/qextserialport/src
+
 SOURCES += ui/mainwindow.cpp \
     main.cpp \
     ui/HomeTab.cpp \
@@ -108,6 +116,7 @@ SOURCES += ui/mainwindow.cpp \
     ui/tooltipwarn.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp \
     LorrisTerminal/avr232boot.cpp \
+    connection/shupitoconn.cpp \
     misc/utils.cpp \
     misc/config.cpp \
     ui/rotatebutton.cpp \
@@ -123,6 +132,7 @@ SOURCES += ui/mainwindow.cpp \
     ui/resizeline.cpp \
     WorkTab/childtab.cpp \
     WorkTab/tab.cpp
+
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -211,6 +221,7 @@ HEADERS += ui/mainwindow.h \
     ui/tooltipwarn.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.h \
     LorrisTerminal/avr232boot.h \
+    connection/shupitoconn.h \
     misc/utils.h \
     misc/singleton.h \
     misc/config.h \
@@ -229,7 +240,22 @@ HEADERS += ui/mainwindow.h \
     WorkTab/tab.h
 
 win32 {
+    CONFIG -= flat
+    CONFIG += libusby
+
     INCLUDEPATH += ../dep/SDL/include
+
+    win32-msvc* {
+        CONFIG(debug, debug|release):LIBS += -lqwtd
+        else:LIBS += -lqwt
+
+        LIBS += -L"$$PWD/../dep/SDL/lib/msvc"
+        QMAKE_CXXFLAGS += /wd4138
+        QMAKE_CXXFLAGS_DEBUG += /Od
+    } else {
+        LIBS += -L"$$PWD/../dep/SDL/lib" -lqwt
+        QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
+    }
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
 
@@ -249,9 +275,10 @@ win32 {
         ../dep/qextserialport/src/qextserialenumerator.cpp \
         misc/updater.cpp
 
-    LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl -lsetupapi -lwinmm -lole32 -lqwt
+    LIBS += -lsdl -lsetupapi -lwinmm -lole32
 }
 unix:!macx:!symbian {
+    CONFIG += libusby
     LIBS += -ludev -lSDL -lqextserialport
 
     system_qwt {
@@ -356,3 +383,11 @@ python:win32 {
     QMAKE_POST_LINK = copy \""$$PWD\\..\\dep\\pythonqt\\win\\PythonQt.dll\"" \""$$PWD\\..\\bin\\release\\PythonQt.dll\""
 }
 
+libusby {
+    include(../dep/libusby/libusby.pri)
+    DEFINES += HAVE_LIBUSBY
+    SOURCES += \
+        connection/usbshupitoconn.cpp
+    HEADERS += \
+        connection/usbshupitoconn.h
+}

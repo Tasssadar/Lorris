@@ -28,7 +28,8 @@ Q_SIGNALS:
 
 public:
     SerialPort();
-    virtual ~SerialPort();
+
+    virtual QString details() const;
 
     bool Open();
     void Close();
@@ -39,8 +40,11 @@ public:
     int baudRate() const { return m_rate; }
     void setBaudRate(int value) { m_rate = value; emit changed(); }
 
-    QString deviceName() const { return m_deviceName; } // FIXME: id and devname should be separate
+    QString deviceName() const { return m_deviceName; }
     void setDeviceName(QString const & value);
+
+    QString friendlyName() const { return m_deviceName; }
+    void setFriendlyName(QString const & value);
 
     bool devNameEditable() const { return m_devNameEditable; }
     void setDevNameEditable(bool value) { m_devNameEditable = value; }
@@ -58,6 +62,9 @@ public:
         m_port_mutex.unlock();
     }
 
+protected:
+    ~SerialPort();
+
 private slots:
     void connectResultSer(bool opened);
     void openResult();
@@ -68,6 +75,7 @@ private:
     bool openPort();
 
     QString m_deviceName;
+    QString m_friendlyName;
 
     QextSerialPort *m_port;
     int m_rate;

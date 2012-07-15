@@ -5,6 +5,8 @@
 **    See README and COPYING
 ***********************************************/
 
+#ifdef __cplusplus
+
 #include <vector>
 #include <set>
 #include <QLabel>
@@ -20,3 +22,5 @@
 #endif
 #include "common.h"
 #include "shared/hexfile.h"
+
+#endif // __cplusplus

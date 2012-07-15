@@ -7,6 +7,8 @@
 
 #include <QDesktopServices>
 #include <QFile>
+#include <QStringList>
+#include "../misc/utils.h"
 
 #include "defmgr.h"
 

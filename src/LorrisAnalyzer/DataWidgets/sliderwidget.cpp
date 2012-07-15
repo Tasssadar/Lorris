@@ -182,7 +182,7 @@ void SliderWidget::setType(bool isDouble)
         curEdit()->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
 
         setRange(m_min, m_max, 1.0);
-        slider()->setValue(round(slider()->value()));
+        slider()->setValue(floor(slider()->value() + 0.5));
     }
     else
     {

@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
         return 0;
 
     QApplication a(argc, argv);
-    psConMgr2 = new ConnectionManager2(&a);
+    ConnectionManager2 conmgr(&a);
     installTranslator(a);
 
 #ifdef Q_OS_WIN
