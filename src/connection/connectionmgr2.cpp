@@ -348,11 +348,14 @@ QVariant ConnectionManager2::config() const
         Q_ASSERT(conn);
 
         static char const * connTypes[] = {
-            "serial_port", // CONNECTION_SERIAL_PORT
-            "file",        // CONNECTION_FILE
-            "shupito",     // CONNECTION_SHUPITO
-            "tcp_client"   // CONNECTION_TCP_SOCKET
+            "serial_port",     // CONNECTION_SERIAL_PORT
+            "shupito_tunnel",  // CONNECTION_SHUPITO_TUNNEL
+            "shupito",         // CONNECTION_PORT_SHUPITO
+            "tcp_client",      // CONNECTION_TCP_SOCKET
+            "shupito_usb",     // CONNECTION_TCP_SOCKET
+            "shupito_acm"      // CONNECTION_TCP_SOCKET
         };
+
         Q_ASSERT(sizeof connTypes / sizeof connTypes[0] == MAX_CON_TYPE);
         Q_ASSERT(conn->getType() < MAX_CON_TYPE);
 

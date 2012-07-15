@@ -66,7 +66,7 @@ void HomeTab::buttonClicked()
     }
 }
 
-void HomeTab::on_openConnManagerLink_linkActivated(const QString &link)
+void HomeTab::on_openConnManagerLink_linkActivated(const QString &)
 {
     ChooseConnectionDlg dialog(this);
     dialog.exec();
