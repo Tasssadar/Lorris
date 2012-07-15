@@ -172,7 +172,7 @@ void ScriptEditor::on_loadBtn_clicked()
         return;
 
     QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly))
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return Utils::ThrowException(tr("Failed to open \"%1!\"").arg(filename));
 
     ui->sourceEdit->clear();
@@ -364,7 +364,7 @@ void ScriptEditor::checkChange()
         return;
 
     QFile f(m_filename);
-    if(!f.open(QIODevice::ReadOnly))
+    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     QByteArray disk = MD5(f.readAll());
@@ -389,7 +389,7 @@ void ScriptEditor::checkChange()
                 setFilename(QString());
                 break;
             case QMessageBox::AcceptRole:
-                if(!f.open(QIODevice::ReadOnly))
+                if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
                     Utils::ThrowException(tr("Can't open file %1 for reading!").arg(m_filename));
                 ui->sourceEdit->setPlainText(QString::fromUtf8(f.readAll()));
                 break;
