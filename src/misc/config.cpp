@@ -69,6 +69,7 @@ static const QString keys_string[CFG_STRING_NUM] =
     "general/window_params",      // CFG_STRING_WINDOW_PARAMS
     "analyzer/graph_export_path", // CFG_STRING_GRAPH_EXPORT
     "general/font",               // CFG_STRING_APP_FONT
+    "analyzer/script_wnd_params", // CFG_STRING_SCRIPT_WND_PARAMS
 };
 
 static const QString def_string[CFG_STRING_NUM] =
@@ -89,6 +90,7 @@ static const QString def_string[CFG_STRING_NUM] =
     "",                           // CFG_STRING_WINDOW_PARAMS
     "",                           // CFG_STRING_GRAPH_EXPORT
     "",                           // CFG_STRING_APP_FONT
+    "",                           // CFG_STRING_SCRIPT_WND_PARAMS
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -111,6 +113,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "general/load_last_session",  // CFG_BOOL_LOAD_LAST_SESSION
     "general/session_connect",    // CFG_BOOL_SESSION_CONNECT
     "general/portable",           // CFG_BOOL_PORTABLE
+    "analyzer/script_show_errors",// CFG_BOOL_SHOW_SCRIPT_ERROR
 };
 
 static const bool def_bool[CFG_BOOL_NUM] =
@@ -133,6 +136,7 @@ static const bool def_bool[CFG_BOOL_NUM] =
     false,                        // CFG_BOOL_LOAD_LAST_SESSION
     true,                         // CFG_BOOL_SESSION_CONNECT
     false,                        // CFG_BOOL_PORTABLE
+    false,                        // CFG_BOOL_SHOW_SCRIPT_ERROR
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =

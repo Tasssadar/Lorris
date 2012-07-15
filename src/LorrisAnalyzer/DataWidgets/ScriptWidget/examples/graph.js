@@ -30,8 +30,10 @@ function onKeyPress(key) {
 				tg = addCurve(2);
 			break;
 		case "r": // Remove curves - they are indetified by name
+			// you can also use graph.removeAllCurves();
 			for(var i = 0; i < names.length; ++i)
 				graph.removeCurve(names[i]);
+			
 			sin = null;
 			cos = null;
 			tg = null;

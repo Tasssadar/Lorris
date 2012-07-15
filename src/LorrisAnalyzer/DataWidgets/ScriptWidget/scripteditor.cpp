@@ -37,6 +37,10 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     m_line_num = new LineNumber(this);
     ui->editLayout->insertWidget(0, m_line_num);
 
+    ui->resizeLine->setOrientation(false);
+    ui->resizeLine->setResizeLayout(ui->mainLayout);
+    ui->resizeLine->updateStretch();
+
     m_highlighter = NULL;
     m_errors = 0;
     m_ignoreNextFocus = false;
@@ -62,7 +66,6 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     ui->langBox->addItems(ScriptEngine::getEngineList());
     ui->langBox->setCurrentIndex(type);
-    ui->errorEdit->hide();
 
     QAction *saveAs = new QAction(tr("Save as..."), this);
     ui->saveBtn->addAction(saveAs);
@@ -73,9 +76,14 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     updateExampleList();
 
+    ui->errorBtn->setChecked(sConfig.get(CFG_BOOL_SHOW_SCRIPT_ERROR));
+    on_errorBtn_toggled(ui->errorBtn->isChecked());
+
     setFilename(filename);
     m_contentChanged = false;
     checkChange();
+
+    Utils::loadWindowParams(this, sConfig.get(CFG_STRING_SCRIPT_WND_PARAMS));
 }
 
 ScriptEditor::~ScriptEditor()
@@ -95,6 +103,8 @@ int ScriptEditor::getEngine()
 
 void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
 {
+    sConfig.set(CFG_STRING_SCRIPT_WND_PARAMS, Utils::saveWindowParams(this));
+
     switch(ui->buttonBox->buttonRole(btn))
     {
         case QDialogButtonBox::ApplyRole:  emit applySource(false); break;
@@ -162,7 +172,7 @@ void ScriptEditor::on_loadBtn_clicked()
         return;
 
     QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly))
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return Utils::ThrowException(tr("Failed to open \"%1!\"").arg(filename));
 
     ui->sourceEdit->clear();
@@ -177,9 +187,15 @@ void ScriptEditor::setFilename(const QString& filename)
 {
     m_filename = filename;
     if(!m_filename.isEmpty())
+    {
         ui->nameLabel->setText(filename.split("/").last());
+        setWindowTitle(tr("%1 - Script").arg(ui->nameLabel->text()));
+    }
     else
+    {
         ui->nameLabel->setText(QString());
+        setWindowTitle(tr("Script"));
+    }
 }
 
 void ScriptEditor::on_langBox_currentIndexChanged(int idx)
@@ -238,6 +254,8 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
 void ScriptEditor::on_errorBtn_toggled(bool checked)
 {
     ui->errorEdit->setShown(checked);
+    ui->resizeLine->setShown(checked);
+    sConfig.set(CFG_BOOL_SHOW_SCRIPT_ERROR, checked);
 }
 
 void ScriptEditor::on_exampleBox_activated(int index)
@@ -346,7 +364,7 @@ void ScriptEditor::checkChange()
         return;
 
     QFile f(m_filename);
-    if(!f.open(QIODevice::ReadOnly))
+    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     QByteArray disk = MD5(f.readAll());
@@ -371,7 +389,7 @@ void ScriptEditor::checkChange()
                 setFilename(QString());
                 break;
             case QMessageBox::AcceptRole:
-                if(!f.open(QIODevice::ReadOnly))
+                if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
                     Utils::ThrowException(tr("Can't open file %1 for reading!").arg(m_filename));
                 ui->sourceEdit->setPlainText(QString::fromUtf8(f.readAll()));
                 break;

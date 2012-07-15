@@ -30,7 +30,7 @@ def onKeyPress(key):
 		if tg == None:
 			tg = addCurve(2);
 	elif key == "r": # Remove curves - they are indetified by name
-		for name in names:
+		for name in names: # you can also use graph.removeAllCurves()
 			graph.removeCurve(name);
 		sin = cos = tg = None
 	elif key == "m": # scroll graph so that it is at its maximal value of x axis
