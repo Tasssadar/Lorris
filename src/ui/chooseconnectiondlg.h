@@ -18,16 +18,20 @@ namespace Ui {
 class ChooseConnectionDlg;
 }
 
+class Connection;
+class PortConnection;
+class ShupitoConnection;
+
 class ChooseConnectionDlg : public QDialog
 {
     Q_OBJECT
     
 public:
     explicit ChooseConnectionDlg(QWidget *parent = 0);
-    explicit ChooseConnectionDlg(Connection * preselectedConn, QWidget *parent = 0);
     ~ChooseConnectionDlg();
 
-    Connection * current() const { return m_current; }
+    ConnectionPointer<PortConnection> choosePort(ConnectionPointer<Connection> const & preselectedConn);
+    ConnectionPointer<ShupitoConnection> chooseShupito(ConnectionPointer<Connection> const & preselectedConn);
 
 private slots:
     void on_actionCreateSerialPort_triggered();
@@ -49,13 +53,18 @@ private slots:
 
     void on_tcPortEdit_valueChanged(int arg1);
 
+    void on_actionConnect_triggered();
+
+    void on_actionDisconnect_triggered();
+
 private:
-    void init(Connection * preselectedConn);
+    void selectConn(Connection * conn);
     void updateDetailsUi(Connection * conn);
 
     Ui::ChooseConnectionDlg *ui;
     QHash<Connection *, QListWidgetItem *> m_connectionItemMap;
-    Connection * m_current;
+    ConnectionPointer<Connection> m_current;
+    int m_allowedConns;
 };
 
 #endif // CHOOSECONNECTIONDLG_H

@@ -79,7 +79,6 @@ void WorkTab::childClosed(QWidget *child)
 
 //----------------------------------------------------------------------------
 PortConnWorkTab::PortConnWorkTab()
-    : m_con(0)
 {
 }
 
@@ -89,11 +88,16 @@ PortConnWorkTab::~PortConnWorkTab()
         m_con->releaseTab();
 }
 
-void PortConnWorkTab::setConnection(PortConnection *con)
+void PortConnWorkTab::setConnection(ConnectionPointer<Connection> const & con)
+{
+    this->setPortConnection(con.dynamicCast<PortConnection>());
+}
+
+void PortConnWorkTab::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
     if (m_con)
     {
-        disconnect(m_con, 0, this, 0);
+        disconnect(m_con.data(), 0, this, 0);
         m_con->releaseTab();
     }
 
@@ -101,18 +105,12 @@ void PortConnWorkTab::setConnection(PortConnection *con)
 
     m_con = con;
 
-    if(!con)
-        return;
-
-    connect(m_con, SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
-    connect(m_con, SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
-    connect(m_con, SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
-    m_con->addTabRef();
-}
-
-void PortConnWorkTab::connectionDestroyed()
-{
-    m_con = 0;
+    if(m_con)
+    {
+        connect(m_con.data(), SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
+        connect(m_con.data(), SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
+        m_con->addTabRef();
+    }
 }
 
 void PortConnWorkTab::readData(const QByteArray& /*data*/)
@@ -195,7 +193,7 @@ void PortConnWorkTab::loadData(DataFileParser *file)
             cfg.insert(key, val);
         }
 
-        PortConnection *con = sConMgr2.getConnWithConfig(type, cfg);
+        ConnectionPointer<Connection> con = sConMgr2.getConnWithConfig(type, cfg);
         if(con)
         {
             setConnection(con);

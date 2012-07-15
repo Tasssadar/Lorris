@@ -63,7 +63,7 @@ class FuseWidget;
 class ProgressDialog;
 class OverVccDialog;
 
-class LorrisShupito : public PortConnWorkTab
+class LorrisShupito : public WorkTab
 {
     Q_OBJECT
 Q_SIGNALS:
@@ -73,10 +73,15 @@ public:
     LorrisShupito();
     ~LorrisShupito();
 
-    QString GetIdString();
-
-    void setConnection(PortConnection *con);
     void stopAll(bool wait);
+
+public slots:
+    void setConnection(ConnectionPointer<Connection> const & con);
+
+protected:
+    ConnectionPointer<ShupitoConnection> m_con;
+
+    QString GetIdString();
 
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
@@ -85,9 +90,8 @@ private slots:
     void onTabShow(const QString& filename);
     void connDisconnecting();
 
-    void connectionResult(Connection*,bool);
     void connectedStatus(bool connected);
-    void readData(const QByteArray& data);
+    void readPacket(const ShupitoPacket & data);
     void descRead(bool correct);
 
     void vccValueChanged(quint8 id, double value);

@@ -59,13 +59,11 @@ class LorrisAnalyzer : public PortConnWorkTab
         void setAreaVisibility(quint8 area, bool visible);
         analyzer_data *getLastData(quint32& idx);
 
-        Connection *getCon() { return m_con; }
-
         quint32 getCurrentIndex();
 
         bool showTitleBars() const { return m_title_action->isChecked(); }
 
-        void setConnection(PortConnection *con);
+        void setPortConnection(ConnectionPointer<PortConnection> const & con);
         void openFile(const QString& filename);
 
         void saveData(DataFileParser *file);
@@ -94,7 +92,6 @@ class LorrisAnalyzer : public PortConnWorkTab
         void collapseRightButton();
         void collapseLeftButton();
 
-        void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
         void indexChanged(int value);
         void showTitleTriggered(bool checked);

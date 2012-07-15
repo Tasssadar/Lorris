@@ -30,6 +30,8 @@ public:
 private slots:
     void buttonClicked();
 
+    void on_openConnManagerLink_linkActivated(const QString &link);
+
 private:
     Ui::HomeTab *ui;
 

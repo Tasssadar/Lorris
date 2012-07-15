@@ -61,11 +61,11 @@ void ShupitoMode::switchToFlashMode(quint32 speed_hz)
     bsel = std::min(bsel, (quint32)m_bsel_max);
     bsel = std::max(bsel, (quint32)m_bsel_min);
 
-    ShupitoPacket pkt(m_prog_cmd_base, 2, (quint8)bsel, (quint8)(bsel >> 8));
+    ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base, 2, (quint8)bsel, (quint8)(bsel >> 8));
 
-    pkt = m_shupito->waitForPacket(pkt, 1);
-    if(pkt.getLen() != 1 || pkt[0] != 0)
-        throw QString(QObject::tr("Failed to switch to the flash mode (error %1)")).arg((int)pkt[0]);
+    pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base);
+    if(pkt.size() != 2 || pkt[1] != 0)
+        throw QString(QObject::tr("Failed to switch to the flash mode (error %1)")).arg((int)pkt[1]);
 
     m_prepared = true;
     m_flash_mode = true;
@@ -77,10 +77,10 @@ void ShupitoMode::switchToRunMode()
     m_flash_mode = false;
     m_prepared = false;
 
-    ShupitoPacket pkt(m_prog_cmd_base + 1, 0);
+    ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base + 1, 0);
     pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 1);
 
-    if(pkt.getLen() < 1 || pkt[0] != 0)
+    if(pkt.size() < 2 || pkt[1] != 0)
         throw QString(QObject::tr("Failed to switch to the run mode"));
 
     m_prepared = true;
@@ -125,23 +125,17 @@ chip_definition ShupitoMode::readDeviceId()
 {
     m_prepared = false;
 
-    ShupitoPacket pkt(m_prog_cmd_base + 2, 0x00);
+    ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base + 2, 0);
     pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 2);
 
-    if(pkt.getLen() == 0 || pkt[pkt.getLen()-1] != 0)
-        throw QString(QObject::tr("Failed to read the chip's signature (error %1).")).arg((int)pkt[pkt.getLen()-1]);
+    if(pkt.size() <= 1 || pkt.back() != 0)
+        throw QString(QObject::tr("Failed to read the chip's signature (error %1).")).arg((int)pkt.back());
 
-    quint8 id_lenght = (pkt.getLen() - 1 );
+    quint8 id_lenght = (pkt.size() - 2);
     QString id("");
     this->editIdArgs(id, id_lenght);
 
-    quint8 *p_data = new quint8[id_lenght];
-    for(quint8 i = 0; i < id_lenght; ++i)
-        p_data[i] = (quint8)pkt[i];
-
-    id += Utils::toBase16(p_data, p_data + id_lenght);
-
-    delete[] p_data;
+    id += Utils::toBase16(pkt.data() + 1, pkt.data() + 1 + id_lenght);
 
     m_prepared = true;
 
@@ -192,11 +186,11 @@ void ShupitoMode::readMemRange(quint8 memid, QByteArray& memory, quint32 address
 {
     Q_ASSERT(size < 65536);
 
-    ShupitoPacket pkt(4, 7, memid,
+    ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base + 3, 7, memid,
                      (quint8)address, (quint8)(address >> 8), (quint8)(address >> 16), (quint8)(address >> 24),
                      (quint8)size, (quint8)(size >> 8));
 
-    QByteArray p = m_shupito->waitForStream(pkt, 4);
+    QByteArray p = m_shupito->waitForStream(pkt, m_prog_cmd_base + 3);
     if((quint32)p.size() != size)
         throw QString(QObject::tr("The read returned wrong-sized stream."));
 
@@ -214,10 +208,10 @@ void ShupitoMode::erase_device(chip_definition& /*chip*/)
     m_prepared = false;
     m_flash_mode = false;
 
-    ShupitoPacket pkt(m_prog_cmd_base + 4, 0);
+    ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base + 4, 0);
     pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 4);
 
-    if(pkt.getLen() != 1 || pkt[0] != 0)
+    if(pkt.size() != 2 || pkt[1] != 0)
         throw QString(QObject::tr("Failed to erase chip's memory"));
 
     m_flash_mode = true;
@@ -347,10 +341,10 @@ void ShupitoMode::prepareMemForWriting(chip_definition::memorydef *memdef, chip_
     m_prepared = false;
     m_flash_mode = false;
 
-    ShupitoPacket pkt(m_prog_cmd_base + 4, 0x01, memdef->memid);
+    ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base + 4, 0x01, memdef->memid);
     pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 4);
 
-    if(pkt.getLen() != 1 || pkt[0] != 0)
+    if(pkt.size() != 2 || pkt[1] != 0)
         throw QString(QObject::tr("Failed to prepare chip's memory for writing"));
 
     m_flash_mode = true;
@@ -367,43 +361,44 @@ void ShupitoMode::flashPage(chip_definition::memorydef *memdef, std::vector<quin
     quint32 size = memory.size();
     // Prepare
     {
-        ShupitoPacket pkt(m_prog_cmd_base + 5, 0x05, memdef->memid,
+        ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base + 5, 0x05, memdef->memid,
                           (quint8)address, (quint8)(address >> 8),
                           (quint8)(address >> 16), (quint8)(address >> 24));
         pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 5);
-        if(pkt.getLen() != 1 || pkt[0] != 0)
+        if(pkt.size() != 2 || pkt[1] != 0)
             throw QString(QObject::tr("Failed to flash a page"));
     }
 
     //send data
     {
         ShupitoPacket res;
-        QByteArray pkt;
-        pkt[0] = 0x80;
-        pkt[2] = memdef->memid;
+
+        ShupitoPacket pkt;
+        pkt.push_back(m_prog_cmd_base + 6);
+        pkt.push_back(memdef->memid);
 
         char *mem_itr = (char*)memory.data();
         while(size > 0)
         {
             quint32 chunk = size > 14 ? 14 : size;
-            pkt[1] = ((m_prog_cmd_base + 6) << 4) | (chunk + 1);
-            pkt.replace(3, 100, mem_itr, chunk);
+            pkt.resize(2);
+            pkt.insert(pkt.end(), mem_itr, mem_itr + chunk);
             mem_itr += chunk;
             size -= chunk;
 
             res = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 6);
-            if(res.getLen() != 1 || res[0] != 0)
+            if(res.size() != 2 || res[1] != 0)
                 throw QString(QObject::tr("Failed to flash a page"));
         }
     }
 
     // "seal"
     {
-        ShupitoPacket pkt(m_prog_cmd_base + 7, 0x05, memdef->memid,
+        ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base + 7, 0x05, memdef->memid,
                           (quint8)address, (quint8)(address >> 8),
                           (quint8)(address >> 16), (quint8)(address >> 24));
         pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 7);
-        if(pkt.getLen() != 1 || pkt[0] != 0)
+        if(pkt.size() != 2 || pkt[1] != 0)
             throw QString(QObject::tr("Failed to flash a page"));
     }
 

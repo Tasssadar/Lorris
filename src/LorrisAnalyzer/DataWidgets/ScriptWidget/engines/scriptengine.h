@@ -10,6 +10,7 @@
 
 #include <QObject>
 #include <QSize>
+#include <QHash>
 
 class ScriptStorage;
 class analyzer_data;

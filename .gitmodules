@@ -1,0 +1,3 @@
+[submodule "dep/libusby"]
+	path = dep/libusby
+	url = git://github.com/avakar/libusby.git

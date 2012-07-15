@@ -169,7 +169,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     m_data_changed = false;
 
     m_connectButton = new ConnectButton(ui->connectButton);
-    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -183,15 +183,6 @@ LorrisAnalyzer::~LorrisAnalyzer()
     }
     delete ui->devTabs;
     delete ui;
-}
-
-void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
-{
-    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-    if(!result)
-    {
-        Utils::ThrowException(tr("Can't open connection!"));
-    }
 }
 
 void LorrisAnalyzer::connectedStatus(bool)
@@ -255,7 +246,7 @@ void LorrisAnalyzer::doNewSource()
             break;
         case 0:
         {
-            analyzer_packet *packet = SourceDialog::getStructure(NULL, m_con);
+            analyzer_packet *packet = SourceDialog::getStructure(NULL, m_con.data());
 
             m_parser->setPaused(false);
             if(!packet)
@@ -655,7 +646,7 @@ void LorrisAnalyzer::openFile()
 void LorrisAnalyzer::editStruture()
 {
     m_parser->setPaused(true);
-    analyzer_packet *packet = SourceDialog::getStructure(m_packet, m_con);
+    analyzer_packet *packet = SourceDialog::getStructure(m_packet, m_con.data());
 
     if(packet)
     {
@@ -694,13 +685,13 @@ void LorrisAnalyzer::showTitleTriggered(bool checked)
     emit setTitleVisibility(checked);
 }
 
-void LorrisAnalyzer::setConnection(PortConnection *con)
+void LorrisAnalyzer::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
-    this->PortConnWorkTab::setConnection(con);
+    this->PortConnWorkTab::setPortConnection(con);
     m_connectButton->setConn(con);
 
     if(con)
-        connect(this, SIGNAL(SendData(QByteArray)), con, SLOT(SendData(QByteArray)));
+        connect(this, SIGNAL(SendData(QByteArray)), con.data(), SLOT(SendData(QByteArray)));
 }
 
 void LorrisAnalyzer::updateForWidget()

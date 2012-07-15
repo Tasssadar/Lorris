@@ -139,7 +139,7 @@ void LorrisTerminal::initUI()
     connect(qApp,              SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
-    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 
     fmtAction(fmt);
 }
@@ -248,14 +248,6 @@ void LorrisTerminal::connectedStatus(bool connected)
         m_stopped = false;
         EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
     }
-}
-
-void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
-{
-    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-
-    if(!result)
-        Utils::ThrowException(tr("Can't open serial port!"));
 }
 
 void LorrisTerminal::readData(const QByteArray& data)
@@ -438,11 +430,11 @@ void LorrisTerminal::inputAct(int act)
     ui->terminal->setInput(act);
 }
 
-void LorrisTerminal::setConnection(PortConnection *con)
+void LorrisTerminal::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
-    this->PortConnWorkTab::setConnection(con);
+    this->PortConnWorkTab::setPortConnection(con);
     m_connectButton->setConn(con);
-    m_bootloader.setCon(con);
+    m_bootloader.setCon(con.data());
     connectedStatus(con && con->isOpen());
 }
 

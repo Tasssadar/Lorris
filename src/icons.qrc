@@ -5,6 +5,7 @@
         <file alias="split_top.png">icons/split_top.png</file>
         <file>icons/list-add.png</file>
         <file>icons/list-remove.png</file>
+        <file>icons/network-wired.png</file>
         <file>icons/list-add-glow.png</file>
     </qresource>
 </RCC>

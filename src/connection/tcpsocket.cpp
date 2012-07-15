@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QStringBuilder>
 
 #include "../common.h"
 #include "tcpsocket.h"
@@ -20,8 +21,8 @@
 static const int CONNECT_TIMEOUT = 10000 / 50; // 10s
 
 TcpSocket::TcpSocket()
+    : PortConnection(CONNECTION_TCP_SOCKET)
 {
-    m_type = CONNECTION_TCP_SOCKET;
     m_port = 0;
 
     m_socket = new QTcpSocket(this);
@@ -35,6 +36,14 @@ TcpSocket::~TcpSocket()
 {
     Close();
     delete m_socket;
+}
+
+QString TcpSocket::details() const
+{
+    QString res = Connection::details();
+    if (!res.isEmpty())
+        res += ", ";
+    return res % this->host() % ":" % QString::number(this->port());
 }
 
 bool TcpSocket::Open()

@@ -142,6 +142,7 @@ static const bool def_bool[CFG_BOOL_NUM] =
 static const QString keys_variant[CFG_VARIANT_NUM] =
 {
     "general/connections",        // CFG_VARIANT_CONNECTIONS
+    "general/usb_enumerator",     // CFG_VARIANT_USB_ENUMERATOR
 };
 
 static const QString keys_float[CFG_FLOAT_NUM] =
