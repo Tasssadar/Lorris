@@ -5,8 +5,15 @@
 **    See README and COPYING
 ***********************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.6.0-dev"
- #define REVISION 515
-#endif // REVISION_H
+#include "tab.h"
+
+Tab::Tab(quint8 type, QWidget *parent) :
+    QWidget(parent)
+{
+    m_type = type;
+}
+
+Tab::~Tab()
+{
+
+}

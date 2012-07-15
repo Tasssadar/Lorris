@@ -47,7 +47,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
-int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
+int TabWidget::addTab(Tab *widget, const QString &name, quint32 tabId)
 {
     if(m_id == 0)
         sWorkTabMgr.CloseHomeTab();
@@ -63,8 +63,11 @@ int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
     if(count() >= 2)
         m_tab_bar->enableSplit(true);
 
-    connect(widget, SIGNAL(statusBarMsg(QString,int)),     SIGNAL(statusBarMsg(QString,int)));
-    connect(widget, SIGNAL(setConnId(QString,bool)),       SLOT(setConnString(QString,bool)));
+    if(widget->isWorkTab())
+    {
+        connect(widget, SIGNAL(statusBarMsg(QString,int)),     SIGNAL(statusBarMsg(QString,int)));
+        connect(widget, SIGNAL(setConnId(QString,bool)),       SLOT(setConnString(QString,bool)));
+    }
 
     setTabNameAndTooltip(idx, name);
     setTabsClosable(true);
@@ -109,8 +112,6 @@ void TabWidget::closeTab(int index)
         disconnect(tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
 
         sWorkTabMgr.removeTab(tab);
-        removeTab(index);
-
         m_tab_ids.erase(std::find(m_tab_ids.begin(), m_tab_ids.end(), id));
     }
 
@@ -145,8 +146,8 @@ int TabWidget::pullTab(int index, TabWidget *origin)
 {
     QString name = origin->tabText(index);
 
-    WorkTab *tab = (WorkTab*)origin->unregisterTab(index);
-    int idx = addTab(tab, name, tab->getId());
+    Tab *tab = (Tab*)origin->unregisterTab(index);
+    int idx = addTab(tab, name, tab->isWorkTab() ? ((WorkTab*)tab)->getId() : UINT_MAX);
     origin->checkEmpty();
     return idx;
 }
@@ -159,12 +160,14 @@ void TabWidget::pullTab(int index, TabWidget *origin, int to)
 
 QWidget *TabWidget::unregisterTab(int index)
 {
-    QWidget *tab = widget(index);
+    Tab *tab = (Tab*)widget(index);
 
     Q_ASSERT(tab);
 
     removeTab(index);
-    disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
+
+    if(tab->isWorkTab())
+        disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
 
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
     m_tab_ids.erase(itr);
@@ -245,9 +248,13 @@ void TabWidget::saveData(DataFileParser *file)
     file->writeVal(count());
     for(int i = 0; i < count(); ++i)
     {
-        file->writeBlockIdentifier("tabWidgetTab");
-        file->writeString(tabToolTip(i));
-        ((WorkTab*)widget(i))->saveData(file);
+        Tab *tab = (Tab*)widget(i);
+        if(tab->isWorkTab())
+        {
+            file->writeBlockIdentifier("tabWidgetTab");
+            file->writeString(tabToolTip(i));
+            ((WorkTab*)tab)->saveData(file);
+        }
     }
 
     file->writeBlockIdentifier("tabWidgetIdx");

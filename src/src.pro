@@ -120,7 +120,9 @@ SOURCES += ui/mainwindow.cpp \
     ui/shortcutinputbox.cpp \
     LorrisAnalyzer/DataWidgets/canvaswidget.cpp \
     LorrisAnalyzer/widgetfactory.cpp \
-    ui/resizeline.cpp
+    ui/resizeline.cpp \
+    WorkTab/childtab.cpp \
+    WorkTab/tab.cpp
 HEADERS += ui/mainwindow.h \
     revision.h \
     ui/HomeTab.h \
@@ -222,7 +224,9 @@ HEADERS += ui/mainwindow.h \
     ui/shortcutinputbox.h \
     LorrisAnalyzer/DataWidgets/canvaswidget.h \
     LorrisAnalyzer/widgetfactory.h \
-    ui/resizeline.h
+    ui/resizeline.h \
+    WorkTab/childtab.h \
+    WorkTab/tab.h
 
 win32 {
     INCLUDEPATH += ../dep/SDL/include

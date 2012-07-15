@@ -14,7 +14,7 @@
 #include "../connection/serialport.h"
 #include "../connection/tcpsocket.h"
 
-WorkTab::WorkTab() : QWidget(NULL)
+WorkTab::WorkTab() : Tab(TABTYPE_WORKTAB, NULL)
 {
     m_id = 0;
     m_info = NULL;

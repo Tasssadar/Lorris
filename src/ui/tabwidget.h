@@ -19,6 +19,7 @@ class QMenu;
 class TabBar;
 class WorkTab;
 class DataFileParser;
+class Tab;
 
 class TabWidget : public QTabWidget
 {
@@ -42,7 +43,7 @@ public:
         return QTabWidget::addTab(widget, name);
     }
 
-    int addTab(WorkTab *widget, const QString& name, quint32 tabId);
+    int addTab(Tab *widget, const QString& name, quint32 tabId);
     QWidget* unregisterTab(int index);
 
     virtual QSize sizeHint() const

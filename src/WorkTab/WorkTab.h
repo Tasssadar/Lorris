@@ -16,8 +16,9 @@
 #include "../connection/connection.h"
 #include "WorkTabInfo.h"
 #include "../misc/datafileparser.h"
+#include "tab.h"
 
-class WorkTab : public QWidget
+class WorkTab : public Tab
 {
     Q_OBJECT
 
