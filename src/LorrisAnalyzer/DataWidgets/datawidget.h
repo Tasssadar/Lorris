@@ -16,7 +16,8 @@
 #include <QMenu>
 
 #include "../packet.h"
-#include "../datafileparser.h"
+#include "../../misc/datafileparser.h"
+#include "../widgetfactory.h"
 
 enum WidgetTypes
 {
@@ -29,15 +30,16 @@ enum WidgetTypes
     WIDGET_TERMINAL,
     WIDGET_BUTTON,
     WIDGET_CIRCLE,
+    WIDGET_SLIDER,
+    WIDGET_CANVAS,
 
     WIDGET_MAX
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
-
 };
 
 enum NumberTypes
 {
-    NUM_UINT8,
+    NUM_UINT8 = 0,
     NUM_UINT16,
     NUM_UINT32,
     NUM_UINT64,
@@ -60,7 +62,8 @@ enum DragActions
     DRAG_RES_LEFT   = 0x02,
     DRAG_RES_RIGHT  = 0x04,
     //DRAG_RES_TOP    = 0x08, // Unused
-    DRAG_RES_BOTTOM = 0x10
+    DRAG_RES_BOTTOM = 0x10,
+    DRAG_COPY       = 0x20
 };
 
 #define RESIZE_BORDER 15 // number of pixels from every side which counts as resize drag
@@ -144,7 +147,6 @@ public:
 public slots:
     virtual void newData(analyzer_data *data, quint32);
     void setTitle(const QString& title);
-    virtual void setValue(const QVariant &var);
     void lockTriggered();
     void remove();
     void setTitleVisibility(bool visible);
@@ -158,11 +160,14 @@ protected:
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent * event);
     void mouseReleaseEvent(QMouseEvent *ev);
+    void mouseDoubleClickEvent(QMouseEvent *e);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void contextMenuEvent ( QContextMenuEvent * event );
     void enterEvent(QEvent *);
     void leaveEvent(QEvent *);
+    void childEvent(QChildEvent *event);
+    bool eventFilter(QObject *, QEvent *ev);
 
     virtual void processData(analyzer_data *data);
 
@@ -185,12 +190,15 @@ private:
     void mapXYToGrid(QPoint& point);
     void mapXYToGrid(int& x, int& y);
 
-    quint8 getDragAction(const QPoint& clickPos);
+    quint8 getDragAction(QMouseEvent* ev);
     void dragResize(QMouseEvent* e);
-    void dragMove(QMouseEvent* e);
+    void dragMove(QMouseEvent* e, DataWidget *widget);
+
+    void copyWidget(QMouseEvent *ev);
 
     QPoint mOrigin;
     quint8 m_dragAction;
+    DataWidget *m_copy_widget;
     bool m_locked;
     bool m_mouseIn;
 

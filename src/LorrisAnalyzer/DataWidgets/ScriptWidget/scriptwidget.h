@@ -8,6 +8,8 @@
 #ifndef SCRIPTWIDGET_H
 #define SCRIPTWIDGET_H
 
+#include <QTimer>
+
 #include "../datawidget.h"
 
 class QLabel;
@@ -34,6 +36,8 @@ public slots:
 protected slots:
      void setSourceTriggered();
      void sourceSet(bool close);
+     void editorRejected();
+     void blinkError();
 
 protected:
      void newData(analyzer_data *data, quint32 index);
@@ -46,6 +50,9 @@ protected:
      ScriptEngine *m_engine;
      int m_engine_type;
      Terminal *m_terminal;
+     QString m_filename;
+     QLabel *m_error_label;
+     QTimer m_error_blink_timer;
 };
 
 class ScriptWidgetAddBtn : public DataWidgetAddBtn

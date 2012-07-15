@@ -7,7 +7,7 @@
 #include <QHideEvent>
 
 #include "progressbar.h"
-#include "../utils.h"
+#include "../misc/utils.h"
 
 ProgressBar::ProgressBar(QWidget *parent) :
     QProgressBar(parent)

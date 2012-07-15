@@ -27,7 +27,13 @@ public:
     ~LorrisProxy();
 
     void setPortConnection(ConnectionPointer<PortConnection> const & con);
+
+    QString GetIdString();
+
     void onTabShow(const QString& filename);
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
 
 private slots:
     void updateAddressText();

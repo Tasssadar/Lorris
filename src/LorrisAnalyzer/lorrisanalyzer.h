@@ -53,6 +53,8 @@ class LorrisAnalyzer : public PortConnWorkTab
         explicit LorrisAnalyzer();
         virtual ~LorrisAnalyzer();
 
+        QString GetIdString();
+
         bool isAreaVisible(quint8 area);
         void setAreaVisibility(quint8 area, bool visible);
         analyzer_data *getLastData(quint32& idx);
@@ -63,6 +65,9 @@ class LorrisAnalyzer : public PortConnWorkTab
 
         void setPortConnection(ConnectionPointer<PortConnection> const & con);
         void openFile(const QString& filename);
+
+        void saveData(DataFileParser *file);
+        void loadData(DataFileParser *file);
 
     public slots:
         void onTabShow(const QString& filename);

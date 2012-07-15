@@ -46,6 +46,9 @@ HomeTab::HomeTab(QWidget *parent) : QWidget(parent), ui(new Ui::HomeTab)
     }
 
     ui->tabButtonsWidget->layout()->addItem(vertStretch);
+
+    connect(ui->sessionMgrLabel, SIGNAL(linkActivated(QString)),
+            sWorkTabMgr.getWi()->getSessionMgr(), SLOT(openManager()));
 }
 
 HomeTab::~HomeTab()

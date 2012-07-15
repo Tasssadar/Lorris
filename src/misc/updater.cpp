@@ -15,7 +15,7 @@
 #include <QFile>
 
 #include "updater.h"
-#include "revision.h"
+#include "../revision.h"
 #include "utils.h"
 #include "config.h"
 

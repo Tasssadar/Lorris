@@ -19,6 +19,7 @@
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
+#include "../misc/datafileparser.h"
 
 TabWidget::TabWidget(quint32 id, QWidget *parent) :
     QTabWidget(parent)
@@ -46,7 +47,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
-int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
+int TabWidget::addTab(Tab *widget, const QString &name, quint32 tabId)
 {
     if(m_id == 0)
         sWorkTabMgr.CloseHomeTab();
@@ -62,8 +63,13 @@ int TabWidget::addTab(WorkTab *widget, const QString &name, quint32 tabId)
     if(count() >= 2)
         m_tab_bar->enableSplit(true);
 
-    connect(widget, SIGNAL(statusBarMsg(QString,int)), SIGNAL(statusBarMsg(QString,int)));
+    if(widget->isWorkTab())
+    {
+        connect(widget, SIGNAL(statusBarMsg(QString,int)),     SIGNAL(statusBarMsg(QString,int)));
+        connect(widget, SIGNAL(setConnId(QString,bool)),       SLOT(setConnString(QString,bool)));
+    }
 
+    setTabNameAndTooltip(idx, name);
     setTabsClosable(true);
     return idx;
 }
@@ -93,17 +99,21 @@ void TabWidget::closeTab(int index)
         return;
     }
 
-    std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
+    quint32 id = m_tab_ids[index];
 
-    WorkTab *tab = sWorkTabMgr.getWorkTab(*itr);
-    if(!tab->onTabClose())
-        return;
+    if(id == UINT_MAX)
+        sWorkTabMgr.removeChildTab(widget(index));
+    else
+    {
+        WorkTab *tab = sWorkTabMgr.getWorkTab(id);
+        if(!tab->onTabClose())
+             return;
 
-    removeTab(index);
-    disconnect(tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
+        disconnect(tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
 
-    sWorkTabMgr.removeTab(tab);
-    m_tab_ids.erase(itr);
+        sWorkTabMgr.removeTab(tab);
+        m_tab_ids.erase(std::find(m_tab_ids.begin(), m_tab_ids.end(), id));
+    }
 
     changeMenu(currentIndex());
     checkEmpty();
@@ -136,8 +146,8 @@ int TabWidget::pullTab(int index, TabWidget *origin)
 {
     QString name = origin->tabText(index);
 
-    WorkTab *tab = (WorkTab*)origin->unregisterTab(index);
-    int idx = addTab(tab, name, tab->getId());
+    Tab *tab = (Tab*)origin->unregisterTab(index);
+    int idx = addTab(tab, name, tab->isWorkTab() ? ((WorkTab*)tab)->getId() : UINT_MAX);
     origin->checkEmpty();
     return idx;
 }
@@ -150,12 +160,14 @@ void TabWidget::pullTab(int index, TabWidget *origin, int to)
 
 QWidget *TabWidget::unregisterTab(int index)
 {
-    QWidget *tab = widget(index);
+    Tab *tab = (Tab*)widget(index);
 
     Q_ASSERT(tab);
 
     removeTab(index);
-    disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
+
+    if(tab->isWorkTab())
+        disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
 
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
     m_tab_ids.erase(itr);
@@ -215,9 +227,140 @@ void TabWidget::changeMenu(int idx)
 void TabWidget::clearMenu()
 {
     m_menu->clear();
-    m_menu->addMenu(sWorkTabMgr.getWi()->getFileMenu());
-    m_menu->addMenu(sWorkTabMgr.getWi()->getHelpMenu());
+
+    const std::vector<QAction*>& menus = sWorkTabMgr.getWi()->getMenus();
+    for(quint32 i = 0; i < menus.size(); ++i)
+        m_menu->addAction(menus[i]);
+
     m_menu->addSeparator();
+}
+
+void TabWidget::saveData(DataFileParser *file)
+{
+    file->writeVal(m_id);
+
+    if(m_tab_ids.empty())
+    {
+        file->writeVal((quint32)0);
+        return;
+    }
+
+    file->writeVal(count());
+    for(int i = 0; i < count(); ++i)
+    {
+        Tab *tab = (Tab*)widget(i);
+        if(tab->isWorkTab())
+        {
+            file->writeBlockIdentifier("tabWidgetTab");
+            file->writeString(tabToolTip(i));
+            ((WorkTab*)tab)->saveData(file);
+        }
+    }
+
+    file->writeBlockIdentifier("tabWidgetIdx");
+    file->writeVal(currentIndex());
+}
+
+void TabWidget::loadData(DataFileParser *file)
+{
+    int count = 0;
+    file->readVal(count);
+
+    const WorkTabMgr::InfoList& info = sWorkTabMgr.GetWorkTabInfos();
+
+    for(int i = 0; i < count; ++i)
+    {
+        if(!file->seekToNextBlock("tabWidgetTab", "tabWidget"))
+            break;
+
+        QString name = file->readString();
+        QString id = file->readString();
+
+        WorkTab *tab = NULL;
+        for(WorkTabMgr::InfoList::const_iterator itr = info.begin(); !tab && itr != info.end(); ++itr)
+            if((*itr)->GetIdString() == id)
+                tab = sWorkTabMgr.GetNewTab(*itr);
+
+        if(!tab)
+            continue;
+
+        tab->loadData(file);
+
+        sWorkTabMgr.registerTab(tab);
+        addTab(tab, name, tab->getId());
+    }
+
+    if(file->seekToNextBlock("tabWidgetIdx", "tabWidget"))
+    {
+        int idx = 0;
+        file->readVal(idx);
+        setCurrentIndex(idx);
+    }
+
+    checkEmpty();
+}
+
+void TabWidget::setConnString(const QString &str, bool hadConn)
+{
+    Q_ASSERT(sender());
+    if(!sender())
+        return;
+
+    int idx = indexOf((QWidget*)sender());
+    if(idx == -1)
+        return;
+
+    QString text = tabToolTip(idx);
+    if(!hadConn)
+        text += " - " + str;
+    else
+    {
+        text = text.left(text.lastIndexOf(" - "));
+        if(!str.isEmpty())
+            text += " - " + str;
+    }
+
+    setTabNameAndTooltip(idx, text);
+}
+
+void TabWidget::setTabNameAndTooltip(int idx, QString name)
+{
+    setTabToolTip(idx, name);
+
+    if(name.size() > 25)
+    {
+        name.resize(28);
+        name.replace(25, 3, "...");
+    }
+
+    setTabText(idx, name);
+}
+
+void TabWidget::addChildTab(QWidget *widget, const QString& name)
+{
+    int idx = addTab(widget, name);
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
+    m_tab_ids.insert(itr, UINT_MAX);
+}
+
+void TabWidget::removeChildTab(QWidget *widget)
+{
+    int idx = indexOf(widget);
+    if(idx == -1)
+        return;
+
+    removeTab(idx);
+
+    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
+    m_tab_ids.erase(itr);
+
+    changeMenu(currentIndex());
+    checkEmpty();
+}
+
+bool TabWidget::containsTab(quint32 id) const
+{
+    return std::find(m_tab_ids.begin(), m_tab_ids.end(), id) != m_tab_ids.end();
 }
 
 TabBar::TabBar(quint32 id, QWidget *parent) :
@@ -249,6 +392,10 @@ void TabBar::mousePressEvent(QMouseEvent *event)
 {
     switch(event->button())
     {
+        case Qt::LeftButton:
+            m_startDragPos = event->pos();
+            PlusTabBar::mousePressEvent(event);
+            break;
         case Qt::MidButton:
         {
             int tab = tabAt(event->pos());
@@ -277,6 +424,9 @@ void TabBar::mousePressEvent(QMouseEvent *event)
 void TabBar::mouseMoveEvent(QMouseEvent *event)
 {
     if(!(event->buttons() & Qt::LeftButton) || !tabsClosable())
+        return PlusTabBar::mouseMoveEvent(event);
+
+    if((event->pos() - m_startDragPos).manhattanLength() < QApplication::startDragDistance())
         return PlusTabBar::mouseMoveEvent(event);
 
     int idx = tabAt(event->pos());
@@ -409,10 +559,30 @@ void TabBar::paintEvent(QPaintEvent *event)
 
 void TabBar::renameTab()
 {
-    QString name = QInputDialog::getText(this, tr("Rename tab"), tr("New name:"),
-                                         QLineEdit::Normal, tabText(m_cur_menu_tab));
-    if(!name.isEmpty())
-        setTabText(m_cur_menu_tab, name);
+    QString name = tabToolTip(m_cur_menu_tab);
+    QString conStr;
+    if(name.contains(" - "))
+    {
+        conStr = name.mid(name.lastIndexOf(" - "));
+        name = name.left(name.lastIndexOf(" - "));
+    }
+
+    QString newName = QInputDialog::getText(this, tr("Rename tab"), tr("New name:"),
+                                         QLineEdit::Normal, name);
+    if(!newName.isEmpty())
+    {
+        newName.replace('-', '_');
+        newName += conStr;
+
+        setTabToolTip(m_cur_menu_tab, newName);
+
+        if(newName.size() > 25)
+        {
+            newName.resize(25);
+            newName += "...";
+        }
+        setTabText(m_cur_menu_tab, newName);
+    }
 }
 
 void TabBar::splitTop()

@@ -4,5 +4,11 @@
         <file>snake.py</file>
         <file>default.js</file>
         <file>default.py</file>
+        <file>slider.js</file>
+        <file>slider.py</file>
+        <file>canvas.js</file>
+        <file>canvas.py</file>
+        <file>graph.js</file>
+        <file>graph.py</file>
     </qresource>
 </RCC>

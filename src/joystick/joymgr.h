@@ -18,7 +18,7 @@
     #include <SDL/SDL.h>
 #endif
 
-#include "../singleton.h"
+#include "../misc/singleton.h"
 #include "joystick.h"
 #include "joythread.h"
 

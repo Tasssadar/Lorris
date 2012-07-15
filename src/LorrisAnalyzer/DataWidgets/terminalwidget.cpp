@@ -8,6 +8,8 @@
 #include "ScriptWidget/engines/qtscriptengine.h"
 #include "terminalwidget.h"
 
+REGISTER_DATAWIDGET(WIDGET_TERMINAL, Terminal)
+
 TerminalWidget::TerminalWidget(QWidget *parent) : ScriptWidget(parent)
 {
     setTitle(tr("Terminal"));

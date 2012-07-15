@@ -34,7 +34,7 @@
 #include "../WorkTab/WorkTabMgr.h"
 #include "../WorkTab/WorkTabInfo.h"
 #include "../revision.h"
-#include "../config.h"
+#include "../misc/config.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -43,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setMinimumSize(600, 500);
     setWindowIcon(QIcon(":/icons/icon.png"));
     loadWindowParams();
+
+    QApplication::setFont(Utils::getFontFromString(sConfig.get(CFG_STRING_APP_FONT)));
 
     m_win7.init(winId());
     Utils::setWin7(&m_win7);
@@ -56,6 +58,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     sWorkTabMgr.OpenHomeTab();
     setCentralWidget(tabWidget);
+
+    if(sConfig.get(CFG_BOOL_LOAD_LAST_SESSION))
+        tabWidget->getSessionMgr()->loadSession();
 }
 
 MainWindow::~MainWindow()
@@ -96,38 +101,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::saveWindowParams()
 {
-    QStringList params;
-    params << QString::number(isMaximized())
-           << QString::number(width()) << QString::number(height())
-           << QString::number(x()) << QString::number(y());
-    sConfig.set(CFG_STRING_WINDOW_PARAMS, params.join(";"));
+    sConfig.set(CFG_STRING_WINDOW_PARAMS, Utils::saveWindowParams(this));
 }
 
 void MainWindow::loadWindowParams()
 {
-    QStringList params = sConfig.get(CFG_STRING_WINDOW_PARAMS).split(';');
-    if(params.size() != 5)
-        return;
-
-    QRect s;
-    for(int i = 0; i < params.size(); ++i)
-    {
-        int val = params[i].toInt();
-        switch(i)
-        {
-            case 0:
-                if(val != 0)
-                {
-                    setWindowState(Qt::WindowMaximized);
-                    return;
-                }
-                break;
-            case 1: s.setWidth(val); break;
-            case 2: s.setHeight(val);break;
-            case 3: s.setX(val); break;
-            case 4: s.setY(val); break;
-        }
-    }
-    resize(s.size());
-    move(s.topLeft());
+    Utils::loadWindowParams(this, sConfig.get(CFG_STRING_WINDOW_PARAMS));
 }

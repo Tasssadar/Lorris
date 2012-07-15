@@ -10,7 +10,7 @@
 #include <QComboBox>
 
 #include "pythonengine.h"
-#include "../../../../shared/terminal.h"
+#include "../../../../ui/terminal.h"
 #include "../../../packet.h"
 #include "../scriptstorage.h"
 #include "../../../widgetarea.h"
@@ -86,6 +86,8 @@ void PythonEngine::setSource(const QString &source)
     m_module.addVariable("WIDGET_GRAPH",  WIDGET_GRAPH);
     m_module.addVariable("WIDGET_INPUT",  WIDGET_INPUT);
     m_module.addVariable("WIDGET_CIRCLE",  WIDGET_CIRCLE);
+    m_module.addVariable("WIDGET_SLIDER",  WIDGET_SLIDER);
+    m_module.addVariable("WIDGET_CANVAS",  WIDGET_CANVAS);
 
     const WidgetArea::w_map& widgets = m_area->getWidgets();
     for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)

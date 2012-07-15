@@ -15,7 +15,7 @@
 #include <QToolButton>
 
 #include "../WorkTab/WorkTab.h"
-#include "../shared/terminal.h"
+#include "../ui/terminal.h"
 #include "../ui/chooseconnectiondlg.h"
 #include "../ui/connectbutton.h"
 #include "avr232boot.h"
@@ -47,7 +47,13 @@ public:
     virtual ~LorrisTerminal();
 
     virtual void setPortConnection(ConnectionPointer<PortConnection> const & con);
+
+    QString GetIdString();
+
     void onTabShow(const QString& filename);
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
 
 private slots:
     //Buttons
@@ -64,6 +70,7 @@ private slots:
     void saveText();
     void saveBin();
     void inputAct(int act);
+    void sendButton();
 
     void readData(const QByteArray& data);
     void sendKeyEvent(const QString& key);
@@ -71,6 +78,8 @@ private slots:
     void saveTermSettings();
     void showBootloader(bool show);
     void showWarn(bool show);
+
+    void focusChanged(QWidget *prev, QWidget *curr);
 
 private:
     void setHexName(QString name = QString());

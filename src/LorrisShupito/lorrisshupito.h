@@ -12,7 +12,7 @@
 #include "shupito.h"
 #include "shupitodesc.h"
 #include "../shared/hexfile.h"
-#include "../shared/terminal.h"
+#include "../ui/terminal.h"
 #include "../ui/connectbutton.h"
 
 #include <QDateTime>
@@ -80,6 +80,11 @@ public slots:
 
 protected:
     ConnectionPointer<ShupitoConnection> m_con;
+
+    QString GetIdString();
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
 
 private slots:
     void onTabShow(const QString& filename);

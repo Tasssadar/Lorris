@@ -15,9 +15,10 @@
 #include <QKeyEvent>
 #include <QProgressDialog>
 #include <QSignalMapper>
+#include <QInputDialog>
 
 #include "lorristerminal.h"
-#include "../shared/terminal.h"
+#include "../ui/terminal.h"
 #include "eeprom.h"
 #include "../shared/hexfile.h"
 #include "../shared/defmgr.h"
@@ -31,6 +32,8 @@ LorrisTerminal::LorrisTerminal()
     m_stopped = false;
 
     initUI();
+
+    EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 }
 
 void LorrisTerminal::initUI()
@@ -59,8 +62,6 @@ void LorrisTerminal::initUI()
         fmtMap->setMapping(m_fmt_act[i], i);
         connect(m_fmt_act[i], SIGNAL(triggered()), fmtMap, SLOT(map()));
     }
-
-    fmtAction(fmt);
 
     QMenu *dataMenu = new QMenu(tr("Terminal"), this);
     addTopMenu(dataMenu);
@@ -124,6 +125,7 @@ void LorrisTerminal::initUI()
     connect(ui->clearButton,   SIGNAL(clicked()),     ui->terminal, SLOT(clear()));
     connect(ui->terminal,      SIGNAL(settingsChanged()),           SLOT(saveTermSettings()));
     connect(ui->fmtBox,        SIGNAL(activated(int)),              SLOT(fmtAction(int)));
+    connect(ui->sendBtn,       SIGNAL(clicked()),                   SLOT(sendButton()));
     connect(m_export_eeprom,   SIGNAL(triggered()),                 SLOT(eepromExportButton()));
     connect(m_import_eeprom,   SIGNAL(triggered()),                 SLOT(eepromImportButton()));
     connect(termLoad,          SIGNAL(triggered()),                 SLOT(loadText()));
@@ -134,14 +136,22 @@ void LorrisTerminal::initUI()
     connect(showWarnAct,       SIGNAL(triggered(bool)),             SLOT(showWarn(bool)));
     connect(ui->terminal,      SIGNAL(fmtSelected(int)),            SLOT(checkFmtAct(int)));
     connect(ui->terminal,      SIGNAL(paused(bool)),                SLOT(setPauseBtnText(bool)));
+    connect(qApp,              SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+
+    fmtAction(fmt);
 }
 
 LorrisTerminal::~LorrisTerminal()
 {
     delete ui;
+}
+
+QString LorrisTerminal::GetIdString()
+{
+    return "LorrisTerminal";
 }
 
 void LorrisTerminal::onTabShow(const QString&)
@@ -183,6 +193,17 @@ void LorrisTerminal::setPauseBtnText(bool pause)
 
 void LorrisTerminal::eepromExportButton()
 {
+    if(!m_stopped)
+        stopButton();
+    else
+    {
+        if(!m_bootloader.stopSequence())
+            return;
+    }
+
+    if(!m_stopped)
+        return;
+
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
     if(!m_bootloader.getChipId())
@@ -196,6 +217,11 @@ exit:
 
 void LorrisTerminal::eepromImportButton()
 {
+    stopButton();
+
+    if(!m_stopped)
+        return;
+
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
     if(!m_bootloader.getChipId())
@@ -211,9 +237,10 @@ void LorrisTerminal::connectedStatus(bool connected)
 {
     if(connected)
     {
-        ui->stopButton->setEnabled(true);
+        EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
         ui->stopButton->setText(tr("Stop"));
-
+        m_stopped = false;
+        m_bootloader.setStopStatus(false);
         ui->terminal->setFocus();
     }
     else
@@ -242,21 +269,24 @@ void LorrisTerminal::stopButton()
     }
 
     if(m_stopped)
-    {
         ui->stopButton->setText(tr("Stop"));
-        EnableButtons((BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
-    }
     else
-    {
         ui->stopButton->setText(tr("Start"));
-        EnableButtons((BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
-    }
+
     ui->terminal->setFocus();
     m_stopped = !m_stopped;
 }
 
 void LorrisTerminal::flashButton()
 {
+    bool restart = !m_stopped;
+
+    if(!m_stopped)
+        stopButton();
+
+    if(!m_stopped)
+        return;
+
     setHexName();
 
     if(actions()[1]->isChecked() && m_filedate.isValid() && m_filedate == m_flashdate)
@@ -272,14 +302,18 @@ void LorrisTerminal::flashButton()
         return;
     }
 
-    m_flashdate = m_filedate;
-
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
     if(!m_bootloader.getChipId())
         goto exit;
 
-    m_bootloader.flash(ui);
+    if(m_bootloader.flash(ui))
+    {
+        m_flashdate = m_filedate;
+
+        if(restart)
+            stopButton();
+    }
 
 exit:
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
@@ -438,4 +472,102 @@ void LorrisTerminal::showWarn(bool show)
 {
     actions()[1]->setChecked(show);
     sConfig.set(CFG_BOOL_TERMINAL_SHOW_WARN, show);
+}
+
+void LorrisTerminal::saveData(DataFileParser *file)
+{
+    PortConnWorkTab::saveData(file);
+
+    file->writeBlockIdentifier("LorrTermData");
+    {
+        QByteArray termData = ui->terminal->getData();
+        file->writeVal(termData.size());
+        file->write(termData);
+    }
+
+    file->writeBlockIdentifier("LorrTermFilename");
+    file->writeString(m_filename);
+
+    file->writeBlockIdentifier("LorrTermSettings");
+    file->writeString(ui->terminal->getSettingsData());
+
+    file->writeBlockIdentifier("LorrTermFmtInput");
+    file->writeVal(ui->terminal->getFmt());
+    file->writeVal(ui->terminal->getInput());
+
+    file->writeBlockIdentifier("LorrTermActions");
+    file->writeVal(actions()[0]->isChecked());
+    file->writeVal(actions()[1]->isChecked());
+}
+
+void LorrisTerminal::loadData(DataFileParser *file)
+{
+    PortConnWorkTab::loadData(file);
+
+    if(file->seekToNextBlock("LorrTermData", BLOCK_WORKTAB))
+    {
+        int size = file->readVal<int>();
+        QByteArray termData = file->read(size);
+        ui->terminal->appendText(termData);
+    }
+
+    if(file->seekToNextBlock("LorrTermFilename", BLOCK_WORKTAB))
+    {
+        QString name = file->readString();
+        setHexName(name);
+    }
+
+    if(file->seekToNextBlock("LorrTermSettings", BLOCK_WORKTAB))
+       ui->terminal->loadSettings(file->readString());
+
+    if(file->seekToNextBlock("LorrTermFmtInput", BLOCK_WORKTAB))
+    {
+        ui->terminal->setFmt(file->readVal<int>());
+        inputAct(file->readVal<int>());
+    }
+
+    if(file->seekToNextBlock("LorrTermActions", BLOCK_WORKTAB))
+    {
+        showBootloader(file->readVal<bool>());
+        showWarn(file->readVal<bool>());
+    }
+}
+
+void LorrisTerminal::focusChanged(QWidget *prev, QWidget *curr)
+{
+    if(!prev && curr)
+        setHexName();
+}
+
+void LorrisTerminal::sendButton()
+{
+    static QString lastText;
+    QString text = QInputDialog::getText(this, tr("Send data"), tr("Enter bytes to send:\n - Numbers from 0 to 255,"
+                                         "-127 to 128 or 0x00 to 0xFF\n - Separated by space"), QLineEdit::Normal, lastText);
+    if(text.isEmpty())
+        return;
+
+    QStringList nums = text.split(" ", QString::SkipEmptyParts);
+    QByteArray data;
+    bool ok = false;
+    for(int i = 0; i < nums.size(); ++i)
+    {
+        int base;
+        if(nums[i].contains(QChar('x'), Qt::CaseInsensitive))
+            base = 16;
+        else
+            base = 10;
+
+        char num = nums[i].toInt(&ok, base);
+        if(ok)
+            data.push_back(num);
+    }
+
+    if(data.isEmpty())
+        return;
+
+    if(m_con)
+        m_con->SendData(data);
+
+    lastText = text;
 }

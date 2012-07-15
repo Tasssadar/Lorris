@@ -9,7 +9,7 @@
 #include <QStyle>
 
 #include "progressdialog.h"
-#include "../utils.h"
+#include "../misc/utils.h"
 
 ProgressDialog::ProgressDialog(const QString &text, QWidget *parent) :
     QProgressDialog(parent, Qt::CustomizeWindowHint)

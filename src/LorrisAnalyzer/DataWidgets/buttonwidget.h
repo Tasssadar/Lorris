@@ -22,6 +22,8 @@ public:
 public slots:
     void setButtonName(const QString& name);
     void setButtonName();
+    void setShortcut();
+    void setShortcut(const QString &shortcut);
 
 private slots:
     void buttonClicked();

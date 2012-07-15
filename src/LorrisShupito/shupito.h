@@ -88,6 +88,7 @@ public:
     void setTunnelConfig(ShupitoDesc::config *cfg) { m_tunnel_config = cfg; }
 
     void setTunnelSpeed(quint32 speed, bool send = true);
+    quint32 getTunnelSpeed() const { return m_tunnel_speed; }
     qint16 getTunnelCmd();
     quint8 getTunnelId() { return m_tunnel_pipe; }
     void setTunnelState(bool enable, bool wait = false);

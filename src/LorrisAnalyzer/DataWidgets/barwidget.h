@@ -10,8 +10,8 @@
 
 #include "datawidget.h"
 
-class QProgressBar;
 class QSpinBox;
+class QwtThermo;
 
 class BarWidget : public DataWidget
 {
@@ -26,24 +26,30 @@ public:
 
 public slots:
     void setValue(const QVariant &var);
-    void setRange(int min, int max);
+    void setRange(double min, double max);
     void rotationSelected(int i);
     void setDataType(int i);
 
 private slots:
     void rangeSelected();
+    void showScale(bool show);
+    void showVal(bool show);
 
 private:
     void rotate(int i);
+    int getScalePos();
 
-    QProgressBar *m_bar;
+    QwtThermo *m_bar;
+    QLabel *m_label;
     qint64 m_min;
     qint64 m_max;
     quint8 m_numberType;
 
-    QAction *bitsAction[NUM_COUNT];
-    QAction *rotAction[4];
-    QAction *rangeAction;
+    QAction *m_bitsAct[NUM_COUNT];
+    QAction *m_rotAct[2];
+    QAction *m_rangeAct;
+    QAction *m_showScaleAct;
+    QAction *m_showValAct;
     quint8 m_rotation;
 };
 

@@ -85,6 +85,8 @@ void QtScriptEngine::prepareNewContext()
     QScriptValue graphW = m_engine.newFunction(&QtScriptEngine_private::__newGraphWidget);
     QScriptValue inputW = m_engine.newFunction(&QtScriptEngine_private::__newInputWidget);
     QScriptValue circleW = m_engine.newFunction(&QtScriptEngine_private::__newCircleWidget);
+    QScriptValue sliderW = m_engine.newFunction(&QtScriptEngine_private::__newSliderWidget);
+    QScriptValue canvasW = m_engine.newFunction(&QtScriptEngine_private::__newCanvasWidget);
     QScriptValue newW = m_engine.newFunction(&QtScriptEngine_private::__newWidget);
 
     m_global->setProperty("clearTerm", clearTerm);
@@ -107,6 +109,8 @@ void QtScriptEngine::prepareNewContext()
     m_global->setProperty("newGraphWidget", graphW);
     m_global->setProperty("newInputWidget", inputW);
     m_global->setProperty("newCircleWidget", circleW);
+    m_global->setProperty("newSliderWidget", sliderW);
+    m_global->setProperty("newCanvasWidget", canvasW);
     m_global->setProperty("newWidget", newW);
 
     // defines
@@ -462,6 +466,19 @@ QScriptValue QtScriptEngine_private::__newInputWidget(QScriptContext *context, Q
 QScriptValue QtScriptEngine_private::__newCircleWidget(QScriptContext *context, QScriptEngine *engine)
 {
     DataWidget *w = ((QtScriptEngine_private*)engine)->addWidget(WIDGET_CIRCLE, context);
+    return engine->newQObject(w);
+}
+
+
+QScriptValue QtScriptEngine_private::__newSliderWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    DataWidget *w = ((QtScriptEngine_private*)engine)->addWidget(WIDGET_SLIDER, context);
+    return engine->newQObject(w);
+}
+
+QScriptValue QtScriptEngine_private::__newCanvasWidget(QScriptContext *context, QScriptEngine *engine)
+{
+    DataWidget *w = ((QtScriptEngine_private*)engine)->addWidget(WIDGET_CANVAS, context);
     return engine->newQObject(w);
 }
 

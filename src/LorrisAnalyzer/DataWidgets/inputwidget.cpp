@@ -10,6 +10,8 @@
 
 #include "inputwidget.h"
 
+REGISTER_DATAWIDGET_NOBTN(WIDGET_INPUT, Input)
+
 InputWidget::InputWidget(QWidget *parent) :
     DataWidget(parent)
 {
@@ -22,7 +24,6 @@ InputWidget::InputWidget(QWidget *parent) :
     setMinimumSize(width(), height());
 
     layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    layout->setContentsMargins(5, 0, 5, 5);
 }
 
 InputWidget::~InputWidget()

@@ -1433,3 +1433,106 @@ void LorrisShupito::timeout()
     m_timout_timer.stop();
     Utils::ThrowException(tr("Shupito is not responding, try to re-plug it into computer!"));
 }
+
+QString LorrisShupito::GetIdString()
+{
+    return "LorrisShupito";
+}
+
+void LorrisShupito::saveData(DataFileParser *file)
+{
+    WorkTab::saveData(file);
+
+    file->writeBlockIdentifier("LorrShupitoFiles");
+    for(int i = 1; i < MEM_FUSES; ++i)
+        file->writeString(m_hexFilenames[i]);
+
+    file->writeBlockIdentifier("LorrShupitoTermSett");
+    file->writeString(ui->terminal->getSettingsData());
+    file->writeVal(ui->terminal->getFmt());
+
+    file->writeBlockIdentifier("LorrShupitoTermData");
+    {
+        QByteArray data = ui->terminal->getData();
+        file->writeVal(data.size());
+        file->write(data);
+    }
+
+    file->writeBlockIdentifier("LorrShupitoSett");
+    {
+        file->writeVal(ui->memTabs->currentIndex());
+
+        file->writeVal(ui->hideLogBtn->isChecked());
+        file->writeVal(ui->hideFusesBtn->isChecked());
+        file->writeVal(ui->settingsBtn->isChecked());
+    }
+
+    file->writeBlockIdentifier("LorrShupitoProgSett");
+    file->writeVal(m_prog_speed_hz);
+    file->writeVal(ui->flashWarnBox->isChecked());
+
+    file->writeBlockIdentifier("LorrShupitoTunnel");
+    file->writeVal(ui->tunnelCheck->isChecked());
+    file->writeVal(m_shupito->getTunnelSpeed());
+
+    file->writeBlockIdentifier("LorrShupitoOvervcc");
+    file->writeVal(ui->over_enable->isChecked());
+    file->writeVal(ui->over_turnoff->isChecked());
+    file->writeVal(ui->over_val->value());
+}
+
+void LorrisShupito::loadData(DataFileParser *file)
+{
+    WorkTab::loadData(file);
+
+    if(file->seekToNextBlock("LorrShupitoFiles", BLOCK_WORKTAB))
+    {
+        for(int i = 1; i < MEM_FUSES; ++i)
+        {
+            try {
+                loadFromFile(i, file->readString());
+            } catch(const QString&) {}
+        }
+    }
+
+    if(file->seekToNextBlock("LorrShupitoTermSett", BLOCK_WORKTAB))
+    {
+        ui->terminal->loadSettings(file->readString());
+        ui->terminal->setFmt(file->readVal<int>());
+    }
+
+    if(file->seekToNextBlock("LorrShupitoTermData", BLOCK_WORKTAB))
+    {
+        int size = file->readVal<int>();
+        QByteArray data = file->read(size);
+        ui->terminal->appendText(data);
+    }
+
+    if(file->seekToNextBlock("LorrShupitoSett", BLOCK_WORKTAB))
+    {
+        ui->memTabs->setCurrentIndex(file->readVal<int>());
+
+        hideLogBtn(file->readVal<bool>());
+        hideFusesBtn(file->readVal<bool>());
+        hideSettingsBtn(file->readVal<bool>());
+    }
+
+    if(file->seekToNextBlock("LorrShupitoProgSett", BLOCK_WORKTAB))
+    {
+        ui->progSpeedBox->setEditText(QString::number(file->readVal<quint32>()));
+        ui->flashWarnBox->setChecked(file->readVal<bool>());
+    }
+
+    if(file->seekToNextBlock("LorrShupitoTunnel", BLOCK_WORKTAB))
+    {
+        ui->tunnelCheck->setChecked(file->readVal<bool>());
+        ui->tunnelSpeedBox->setEditText(QString::number(file->readVal<quint32>()));
+    }
+
+    if(file->seekToNextBlock("LorrShupitoOvervcc", BLOCK_WORKTAB))
+    {
+        ui->over_enable->setChecked(file->readVal<bool>());
+        ui->over_turnoff->setChecked(file->readVal<bool>());
+        ui->over_val->setValue(file->readVal<double>());
+    }
+}

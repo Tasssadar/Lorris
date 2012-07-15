@@ -34,16 +34,15 @@
 #include "widgetarea.h"
 #include "sourceselectdialog.h"
 #include "packetparser.h"
+#include "../WorkTab/WorkTabMgr.h"
 
 #include "DataWidgets/datawidget.h"
-#include "DataWidgets/numberwidget.h"
-#include "DataWidgets/barwidget.h"
-#include "DataWidgets/colorwidget.h"
-#include "DataWidgets/GraphWidget/graphwidget.h"
-#include "DataWidgets/ScriptWidget/scriptwidget.h"
-#include "DataWidgets/terminalwidget.h"
-#include "DataWidgets/buttonwidget.h"
-#include "DataWidgets/circlewidget.h"
+#include "widgetfactory.h"
+
+static bool sortDataWidget(DataWidgetAddBtn *a, DataWidgetAddBtn *b)
+{
+    return a->text().localeAwareCompare(a->text(), b->text()) < 0;
+}
 
 LorrisAnalyzer::LorrisAnalyzer()
     : ui(new Ui::LorrisAnalyzer),
@@ -149,14 +148,12 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
-    widgetBtnL->addWidget(new NumberWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new BarWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new ColorWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new GraphWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new ScriptWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new TerminalWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new ButtonWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new CircleWidgetAddBtn(tmp));
+
+    std::vector<DataWidgetAddBtn*> buttons = sWidgetFactory.getButtons(tmp);
+    std::sort(buttons.begin(), buttons.end(), sortDataWidget);
+
+    for(quint32 i = 0; i < buttons.size(); ++i)
+        widgetBtnL->addWidget(buttons[i]);
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);
@@ -218,6 +215,8 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
 void LorrisAnalyzer::onTabShow(const QString& filename)
 {
+    sWorkTabMgr.addChildTab(sWidgetFactory.getWidget(WIDGET_CIRCLE, this), "circle", m_id);
+
     if(!filename.isEmpty())
         openFile(filename);
 
@@ -338,7 +337,14 @@ bool LorrisAnalyzer::onTabClose()
         return true;
 
     QMessageBox box(this);
-    box.setText(tr("Data has been modified."));
+    if(m_storage->getFilename().isEmpty())
+        box.setText(tr("Data has been modified."));
+    else
+    {
+        box.setText(tr("Data has been modified.\n\n%1").arg(m_storage->getFilename()));
+        box.setToolTip(m_storage->getFilename());
+    }
+
     box.setInformativeText(tr("Do you want to save your changes?"));
     box.setIcon(QMessageBox::Question);
     box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -573,6 +579,7 @@ void LorrisAnalyzer::clearAllButton()
     m_packet = NULL;
 
     resetDevAndStorage();
+    m_storage->clearFilename();
 
     m_curIndex = 0;
     ui->timeSlider->setMaximum(0);
@@ -618,7 +625,7 @@ void LorrisAnalyzer::resetDevAndStorage(analyzer_packet *packet)
 void LorrisAnalyzer::openFile(const QString& filename)
 {
     if(load((QString&)filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS)))
-        sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
+        sConfig.set(CFG_STRING_ANALYZER_FOLDER, m_storage->getFilename());
 }
 
 void LorrisAnalyzer::openFile()
@@ -697,4 +704,25 @@ void LorrisAnalyzer::updateForWidget()
 
     if(m_curIndex && (quint32)m_curIndex < m_storage->getSize())
         ((DataWidget*)sender())->newData(m_storage->get(m_curIndex), m_curIndex);
+}
+
+QString LorrisAnalyzer::GetIdString()
+{
+    return "LorrisAnalyzer";
+}
+
+void LorrisAnalyzer::saveData(DataFileParser *file)
+{
+    PortConnWorkTab::saveData(file);
+
+    file->writeBlockIdentifier("LorrAnalyzerFile");
+    file->writeString(m_storage->getFilename());
+}
+
+void LorrisAnalyzer::loadData(DataFileParser *file)
+{
+    PortConnWorkTab::loadData(file);
+
+    if(file->seekToNextBlock("LorrAnalyzerFile", BLOCK_WORKTAB))
+        openFile(file->readString());
 }

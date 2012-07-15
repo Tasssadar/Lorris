@@ -9,7 +9,7 @@
 #include <QTimer>
 
 #include "avr232boot.h"
-#include "../utils.h"
+#include "../misc/utils.h"
 #include "../connection/connection.h"
 #include "../shared/defmgr.h"
 
@@ -50,7 +50,7 @@ bool avr232boot::dataRead(const QByteArray &data)
     return false;
 }
 
-bool avr232boot::waitForRec()
+bool avr232boot::waitForRec(int timeout)
 {
     QEventLoop ev(this);
     QTimer t(this);
@@ -59,17 +59,17 @@ bool avr232boot::waitForRec()
     connect(this, SIGNAL(received()),  &ev, SLOT(quit()));
 
     t.setSingleShot(true);
-    t.start(1000);
+    t.start(timeout);
 
     ev.exec();
 
     return t.isActive();
 }
 
-bool avr232boot::waitForAck()
+bool avr232boot::waitForAck(int timeout)
 {
     m_state |= STATE_WAIT_ACK;
-    bool res = waitForRec();
+    bool res = waitForRec(timeout);
     m_state &= ~(STATE_WAIT_ACK);
     return res;
 }
@@ -85,20 +85,26 @@ bool avr232boot::startStop()
     }
     else
     {
-        static const char stopCmd[4] = { 0x74, 0x7E, 0x7A, 0x33 };
-
-        m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
-        // FIXME: first sequence restarts chip to bootloader,
-        // but I won't get the ack byte. Correct?
-        //if(!waitForAck())
-        //    return false;
-        Utils::msleep(50);
-
-        m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
-        if(!waitForAck())
+        if(!stopSequence())
             return false;
     }
     m_state ^= STATE_STOPPED;
+    return true;
+}
+
+bool avr232boot::stopSequence()
+{
+    static const char stopCmd[4] = { 0x74, 0x7E, 0x7A, 0x33 };
+
+    m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
+    // First sequence restarts chip to bootloader,
+    // but I won't get the ack byte. But when chip is already stopped,
+    // the first ack is sent, so we have to enter event loop to receive it
+    waitForAck(100);
+
+    m_con->SendData(QByteArray::fromRawData(stopCmd, 4));
+    if(!waitForAck())
+        return false;
     return true;
 }
 
@@ -118,10 +124,11 @@ bool avr232boot::getChipId()
         Utils::ThrowException(tr("Can't read chip ID!"));
         return false;
     }
+
     return true;
 }
 
-void avr232boot::flash(Ui::LorrisTerminal *ui)
+bool avr232boot::flash(Ui::LorrisTerminal *ui)
 {
     QString deviceId(m_dev_id);
 
@@ -129,21 +136,22 @@ void avr232boot::flash(Ui::LorrisTerminal *ui)
     if(cd.getName().isEmpty())
     {
         Utils::ThrowException(tr("Unsupported chip: ") + deviceId);
-        return;
+        ui->flashText->setText(tr("Chip: %1").arg(tr("<unknown>")));
+        return false;
     }
+
+    ui->flashText->setText(tr("Chip: %1").arg(cd.getName()));
 
     std::vector<page> pages;
     try {
         m_hex.makePages(pages, MEM_FLASH, cd, NULL);
     } catch(QString ex) {
         Utils::ThrowException(tr("Error making pages: ") + ex);
-        return;
+        return false;
     }
 
     ui->progressBar->show();
     ui->progressBar->setMaximum(pages.size());
-
-    ui->flashText->setText(tr("Flashing into ") + cd.getName() + "...");
 
     quint32 cur_page = 0;
     do
@@ -171,7 +179,8 @@ void avr232boot::flash(Ui::LorrisTerminal *ui)
 exit:
     ui->progressBar->setValue(0);
     ui->progressBar->hide();
-    ui->flashText->setText("");
+
+    return cur_page >= pages.size();
 }
 
 void avr232boot::readEEPROM(Ui::LorrisTerminal *ui)
@@ -265,4 +274,12 @@ void avr232boot::writeEEPROM(Ui::LorrisTerminal *ui)
 exit:
     ui->progressBar->setValue(0);
     ui->progressBar->hide();
+}
+
+void avr232boot::setStopStatus(bool stopped)
+{
+    if(stopped)
+        m_state |= STATE_STOPPED;
+    else
+        m_state &= ~(STATE_STOPPED);
 }

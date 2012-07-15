@@ -12,14 +12,23 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QMessageBox>
+#include <QTimer>
+#include <QCryptographicHash>
 
 #include "scripteditor.h"
 #include "../../../common.h"
 #include "engines/scriptengine.h"
 #include "engines/pythonhighlighter.h"
 
+#define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
 
-ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widgetName) :
+static const QString filters[ENGINE_MAX] =
+{
+    ScriptEditor::tr("JavaScript file (*.js);;Any file (*.*)"),
+    ScriptEditor::tr("Python file (*.py);;Any file (*.*)"),
+};
+
+ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int type, const QString &widgetName) :
     QDialog(NULL, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint),
     ui(new Ui::ScriptEditor)
 {
@@ -28,8 +37,14 @@ ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widge
     m_line_num = new LineNumber(this);
     ui->editLayout->insertWidget(0, m_line_num);
 
+    ui->resizeLine->setOrientation(false);
+    ui->resizeLine->setResizeLayout(ui->mainLayout);
+    ui->resizeLine->updateStretch();
+
     m_highlighter = NULL;
     m_errors = 0;
+    m_ignoreNextFocus = false;
+    m_ignoreFocus = false;
 
 #ifdef Q_OS_MAC
     ui->sourceEdit->setFont(Utils::getMonospaceFont(12));
@@ -51,9 +66,24 @@ ScriptEditor::ScriptEditor(const QString& source, int type, const QString &widge
 
     ui->langBox->addItems(ScriptEngine::getEngineList());
     ui->langBox->setCurrentIndex(type);
-    ui->errorEdit->hide();
+
+    QAction *saveAs = new QAction(tr("Save as..."), this);
+    ui->saveBtn->addAction(saveAs);
+
+    connect(&m_status_timer, SIGNAL(timeout()), SLOT(clearStatus()));
+    connect(saveAs, SIGNAL(triggered()), SLOT(saveAs()));
+    connect(qApp,   SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 
     updateExampleList();
+
+    ui->errorBtn->setChecked(sConfig.get(CFG_BOOL_SHOW_SCRIPT_ERROR));
+    on_errorBtn_toggled(ui->errorBtn->isChecked());
+
+    setFilename(filename);
+    m_contentChanged = false;
+    checkChange();
+
+    Utils::loadWindowParams(this, sConfig.get(CFG_STRING_SCRIPT_WND_PARAMS));
 }
 
 ScriptEditor::~ScriptEditor()
@@ -73,11 +103,38 @@ int ScriptEditor::getEngine()
 
 void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
 {
+    sConfig.set(CFG_STRING_SCRIPT_WND_PARAMS, Utils::saveWindowParams(this));
+
     switch(ui->buttonBox->buttonRole(btn))
     {
         case QDialogButtonBox::ApplyRole:  emit applySource(false); break;
         case QDialogButtonBox::AcceptRole: emit applySource(true);  break;
-        default: break;
+        default: return;
+    }
+    m_contentChanged = false;
+
+    if(!m_filename.isEmpty())
+        save(m_filename);
+}
+
+void ScriptEditor::reject()
+{
+    if(!m_contentChanged)
+        return QDialog::reject();
+
+    QMessageBox box(QMessageBox::Question, tr("Script changed"), tr("Script was changed, but not applied."),
+                    QMessageBox::Cancel | QMessageBox::Close | QMessageBox::Apply, this);
+    box.setInformativeText(tr("Do you really want to close editor?"));
+    switch(box.exec())
+    {
+        case QMessageBox::Close:
+            return QDialog::reject();
+        case QMessageBox::Cancel:
+            return;
+        case QMessageBox::Apply:
+            applySource(true);
+            m_contentChanged = false;
+            return;
     }
 }
 
@@ -91,6 +148,7 @@ void ScriptEditor::contentsChange(int /*position*/, int charsRemoved, int charsA
     if(charsRemoved != charsAdded)
     {
         m_changed = true;
+        m_contentChanged = true;
         ui->exampleBox->setCurrentIndex(0);
     }
 }
@@ -107,12 +165,6 @@ void ScriptEditor::rangeChanged(int, int)
 
 void ScriptEditor::on_loadBtn_clicked()
 {
-    static const QString filters[ENGINE_MAX] =
-    {
-        tr("JavaScript file (*.js);;Any file (*.*)"),
-        tr("Python file (*.py);;Any file (*.*)"),
-    };
-
     QString filename = QFileDialog::getOpenFileName(this, tr("Load file"),
                                                     sConfig.get(CFG_STRING_ANALYZER_JS),
                                                     filters[ui->langBox->currentIndex()]);
@@ -120,14 +172,30 @@ void ScriptEditor::on_loadBtn_clicked()
         return;
 
     QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly))
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return Utils::ThrowException(tr("Failed to open \"%1!\"").arg(filename));
 
     ui->sourceEdit->clear();
-    ui->sourceEdit->setPlainText(QString(file.readAll()));
+    ui->sourceEdit->setPlainText(QString::fromUtf8(file.readAll()));
     file.close();
 
     sConfig.set(CFG_STRING_ANALYZER_JS, filename);
+    setFilename(filename);
+}
+
+void ScriptEditor::setFilename(const QString& filename)
+{
+    m_filename = filename;
+    if(!m_filename.isEmpty())
+    {
+        ui->nameLabel->setText(filename.split("/").last());
+        setWindowTitle(tr("%1 - Script").arg(ui->nameLabel->text()));
+    }
+    else
+    {
+        ui->nameLabel->setText(QString());
+        setWindowTitle(tr("Script"));
+    }
 }
 
 void ScriptEditor::on_langBox_currentIndexChanged(int idx)
@@ -180,11 +248,14 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
             break;
     }
     updateExampleList();
+    setFilename(QString());
 }
 
 void ScriptEditor::on_errorBtn_toggled(bool checked)
 {
     ui->errorEdit->setShown(checked);
+    ui->resizeLine->setShown(checked);
+    sConfig.set(CFG_BOOL_SHOW_SCRIPT_ERROR, checked);
 }
 
 void ScriptEditor::on_exampleBox_activated(int index)
@@ -240,6 +311,105 @@ void ScriptEditor::updateExampleList()
 
     QDir dir(":/examples");
     ui->exampleBox->addItems(dir.entryList(filters[ui->langBox->currentIndex()], QDir::NoFilter, QDir::Name));
+}
+
+void ScriptEditor::on_saveBtn_clicked()
+{
+    if(m_filename.isEmpty())
+        saveAs();
+    else
+        save(m_filename);
+}
+
+bool ScriptEditor::save(const QString& file)
+{
+    QFile f(file);
+    if(!f.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    {
+        Utils::ThrowException(tr("Can't open file %1 for writing!").arg(file));
+        return false;
+    }
+
+    f.write(ui->sourceEdit->toPlainText().toUtf8());
+
+    setStatus(tr("File %1 was saved").arg(f.fileName().split("/").last()));
+    return true;
+}
+
+void ScriptEditor::saveAs()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
+                                                    sConfig.get(CFG_STRING_ANALYZER_JS),
+                                                    filters[ui->langBox->currentIndex()]);
+
+    if(filename.isEmpty())
+        return;
+
+    sConfig.set(CFG_STRING_ANALYZER_JS, filename);
+
+    if(save(filename))
+        setFilename(filename);
+}
+
+void ScriptEditor::setStatus(const QString &status)
+{
+    ui->statusLabel->setText(status);
+
+    m_status_timer.start(3000);
+}
+
+void ScriptEditor::checkChange()
+{
+    if(m_contentChanged || m_filename.isEmpty())
+        return;
+
+    QFile f(m_filename);
+    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QByteArray disk = MD5(f.readAll());
+    QByteArray here = MD5(ui->sourceEdit->toPlainText().toUtf8());
+    f.close();
+
+    if(disk != here)
+    {
+        m_ignoreFocus = true;
+        QMessageBox box(QMessageBox::Question, tr("File on disk was changed"),
+                        tr("File on disk was changed. What do you want to do?"), QMessageBox::NoButton, this);
+        box.setInformativeText(m_filename);
+        box.setToolTip(m_filename);
+
+        box.addButton(tr("Reload from disk"), QMessageBox::AcceptRole);
+        box.addButton(tr("Ignore"), QMessageBox::RejectRole);
+        box.addButton(QMessageBox::Close);
+
+        switch(box.exec())
+        {
+            case QMessageBox::Close:
+                setFilename(QString());
+                break;
+            case QMessageBox::AcceptRole:
+                if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
+                    Utils::ThrowException(tr("Can't open file %1 for reading!").arg(m_filename));
+                ui->sourceEdit->setPlainText(QString::fromUtf8(f.readAll()));
+                break;
+            case QMessageBox::RejectRole:
+                m_ignoreNextFocus = true;
+                break;
+        }
+        m_ignoreFocus = false;
+    }
+}
+
+void ScriptEditor::focusChanged(QWidget *prev, QWidget *now)
+{
+    if(!prev && now && !m_ignoreFocus)
+    {
+        if(m_ignoreNextFocus)
+            m_ignoreNextFocus = false;
+        else
+            checkChange();
+    }
 }
 
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)

@@ -40,21 +40,24 @@ public:
 
     bool dataRead(const QByteArray& data);
     bool startStop();
+    bool stopSequence();
     void setCon(PortConnection *con)
     {
         m_con = con;
     }
 
     bool getChipId();
-    void flash(Ui::LorrisTerminal *ui);
+    bool flash(Ui::LorrisTerminal *ui);
     void readEEPROM(Ui::LorrisTerminal *ui);
     void writeEEPROM(Ui::LorrisTerminal *ui);
 
     HexFile *getHex() { return &m_hex; }
 
+    void setStopStatus(bool stopped);
+
 private:
-    bool waitForAck();
-    bool waitForRec();
+    bool waitForAck(int timeout = 1000);
+    bool waitForRec(int timeout = 1000);
 
     quint8 m_state;
     PortConnection *m_con;

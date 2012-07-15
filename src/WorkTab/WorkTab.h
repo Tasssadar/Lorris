@@ -15,13 +15,16 @@
 #include "../common.h"
 #include "../connection/connection.h"
 #include "WorkTabInfo.h"
+#include "../misc/datafileparser.h"
+#include "tab.h"
 
-class WorkTab : public QWidget
+class WorkTab : public Tab
 {
     Q_OBJECT
 
 Q_SIGNALS:
     void statusBarMsg(const QString& message, int timeout = 0);
+    void setConnId(const QString& str, bool hadConn);
 
 public:
     virtual ~WorkTab();
@@ -38,6 +41,12 @@ public:
 
     WorkTabInfo *getInfo() const { return m_info; }
     void setInfo(WorkTabInfo *info) { m_info = info; }
+
+    virtual void saveData(DataFileParser *file);
+    virtual void loadData(DataFileParser *file);
+    virtual QString GetIdString() = 0;
+
+    virtual void childClosed(QWidget *child);
 
 protected:
     WorkTab();
@@ -58,6 +67,9 @@ class PortConnWorkTab : public WorkTab
 public:
     PortConnWorkTab();
     ~PortConnWorkTab();
+
+    virtual void saveData(DataFileParser *file);
+    virtual void loadData(DataFileParser *file);
 
 public slots:
     virtual void setConnection(ConnectionPointer<Connection> const & con);

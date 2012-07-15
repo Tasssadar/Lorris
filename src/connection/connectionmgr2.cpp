@@ -9,8 +9,8 @@
 #include "../connection/serialport.h"
 #include "../connection/tcpsocket.h"
 #include <qextserialenumerator.h>
-#include "../config.h"
 #include <QStringBuilder>
+#include "../misc/config.h"
 
 #ifdef HAVE_LIBUSBY
 #include "usbshupitoconn.h"
@@ -509,4 +509,47 @@ void ConnectionManager2::autoShupitoDestroyed()
     m_autoShupitos.remove(port);
     m_autoShupitosRev.remove(conn);
     port->release();
+}
+
+ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type, const QHash<QString, QVariant> &cfg)
+{
+    this->refresh();
+
+    PortConnection *enumCon = NULL;
+    for(int i = 0; i < m_conns.size(); ++i)
+    {
+        if(m_conns[i]->getType() != type)
+            continue;
+
+        switch(type)
+        {
+            case CONNECTION_SERIAL_PORT:
+            {
+                SerialPort *sp = (SerialPort*)m_conns[i];
+                if(sp->deviceName() == cfg["device_name"])
+                {
+                    if(!sp->removable())
+                        enumCon = sp;
+                    else if(sp->baudRate() == cfg["baud_rate"])
+                        return ConnectionPointer<Connection>::fromPtr(sp);
+                }
+                break;
+            }
+            case CONNECTION_TCP_SOCKET:
+            {
+                TcpSocket *socket = (TcpSocket*)m_conns[i];
+                if(socket->host() == cfg["host"] && socket->port() == cfg["port"])
+                    return ConnectionPointer<Connection>::fromPtr(socket);
+                break;
+            }
+        }
+    }
+
+    if(enumCon)
+    {
+        enumCon->applyConfig(cfg);
+        return ConnectionPointer<Connection>::fromPtr(enumCon);
+    }
+
+    return ConnectionPointer<Connection>();
 }

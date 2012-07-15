@@ -44,7 +44,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     LorrisAnalyzer/lorrisanalyzer.cpp \
     LorrisAnalyzer/sourcedialog.cpp \
-    utils.cpp \
     LorrisAnalyzer/labellayout.cpp \
     LorrisAnalyzer/packet.cpp \
     LorrisAnalyzer/devicetabwidget.cpp \
@@ -57,13 +56,11 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/lorrisshupitoinfo.cpp \
     LorrisShupito/shupito.cpp \
     LorrisShupito/shupitodesc.cpp \
-    LorrisAnalyzer/datafileparser.cpp \
     LorrisAnalyzer/DataWidgets/colorwidget.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp \
     connection/shupitotunnel.cpp \
-    config.cpp \
     ../dep/qhexedit2/src/xbytearray.cpp \
     ../dep/qhexedit2/src/qhexedit_p.cpp \
     ../dep/qhexedit2/src/qhexedit.cpp \
@@ -86,11 +83,9 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/progressdialog.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp \
-    shared/terminal.cpp \
     ../dep/qscriptsyntaxhighlighter.cpp \
     LorrisAnalyzer/playback.cpp \
     LorrisAnalyzer/DataWidgets/inputwidget.cpp \
-    shared/rotatebutton.cpp \
     joystick/joymgr.cpp \
     joystick/joystick.cpp \
     LorrisAnalyzer/DataWidgets/terminalwidget.cpp \
@@ -111,7 +106,6 @@ SOURCES += ui/mainwindow.cpp \
     shared/fuse_desc.cpp \
     shared/defmgr.cpp \
     ../dep/ecwin7/ecwin7.cpp \
-    shared/terminalsettings.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.cpp \
@@ -122,7 +116,22 @@ SOURCES += ui/mainwindow.cpp \
     ui/tooltipwarn.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp \
     LorrisTerminal/avr232boot.cpp \
-    connection/shupitoconn.cpp
+    connection/shupitoconn.cpp \
+    misc/utils.cpp \
+    misc/config.cpp \
+    ui/rotatebutton.cpp \
+    ui/terminalsettings.cpp \
+    ui/terminal.cpp \
+    misc/sessionmgr.cpp \
+    misc/datafileparser.cpp \
+    LorrisAnalyzer/DataWidgets/sliderwidget.cpp \
+    ui/settingsdialog.cpp \
+    ui/shortcutinputbox.cpp \
+    LorrisAnalyzer/DataWidgets/canvaswidget.cpp \
+    LorrisAnalyzer/widgetfactory.cpp \
+    ui/resizeline.cpp \
+    WorkTab/childtab.cpp \
+    WorkTab/tab.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -130,7 +139,6 @@ HEADERS += ui/mainwindow.h \
     WorkTab/WorkTab.h \
     WorkTab/WorkTabMgr.h \
     WorkTab/WorkTabInfo.h \
-    singleton.h \
     LorrisTerminal/lorristerminal.h \
     LorrisTerminal/lorristerminalinfo.h \
     connection/connection.h \
@@ -140,7 +148,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/lorrisanalyzerinfo.h \
     common.h \
     LorrisAnalyzer/sourcedialog.h \
-    utils.h \
     LorrisAnalyzer/labellayout.h \
     LorrisAnalyzer/packet.h \
     LorrisAnalyzer/devicetabwidget.h \
@@ -153,13 +160,11 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/lorrisshupitoinfo.h \
     LorrisShupito/shupito.h \
     LorrisShupito/shupitodesc.h \
-    LorrisAnalyzer/datafileparser.h \
     LorrisAnalyzer/DataWidgets/colorwidget.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.h \
     connection/shupitotunnel.h \
-    config.h \
     ../dep/qhexedit2/src/xbytearray.h \
     ../dep/qhexedit2/src/qhexedit_p.h \
     ../dep/qhexedit2/src/qhexedit.h \
@@ -182,11 +187,9 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/progressdialog.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.h \
-    shared/terminal.h \
     ../dep/qscriptsyntaxhighlighter_p.h \
     LorrisAnalyzer/playback.h \
     LorrisAnalyzer/DataWidgets/inputwidget.h \
-    shared/rotatebutton.h \
     joystick/joymgr.h \
     joystick/joystick.h \
     LorrisAnalyzer/DataWidgets/terminalwidget.h \
@@ -208,7 +211,6 @@ HEADERS += ui/mainwindow.h \
     shared/fuse_desc.h \
     shared/defmgr.h \
     ../dep/ecwin7/ecwin7.h \
-    shared/terminalsettings.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.h \
@@ -219,7 +221,23 @@ HEADERS += ui/mainwindow.h \
     ui/tooltipwarn.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.h \
     LorrisTerminal/avr232boot.h \
-    connection/shupitoconn.h
+    connection/shupitoconn.h \
+    misc/utils.h \
+    misc/singleton.h \
+    misc/config.h \
+    ui/rotatebutton.h \
+    ui/terminalsettings.h \
+    ui/terminal.h \
+    misc/sessionmgr.h \
+    misc/datafileparser.h \
+    LorrisAnalyzer/DataWidgets/sliderwidget.h \
+    ui/settingsdialog.h \
+    ui/shortcutinputbox.h \
+    LorrisAnalyzer/DataWidgets/canvaswidget.h \
+    LorrisAnalyzer/widgetfactory.h \
+    ui/resizeline.h \
+    WorkTab/childtab.h \
+    WorkTab/tab.h
 
 win32 {
     CONFIG -= flat
@@ -248,21 +266,27 @@ win32 {
         ../dep/qextserialport/src/qextserialport.h \
         ../dep/qextserialport/src/qextserialenumerator_p.h \
         ../dep/qextserialport/src/qextserialenumerator.h \
-        updater.h
+        misc/updater.h
     SOURCES += \
         ../dep/qextserialport/src/qextserialenumerator_win.cpp \
         ../dep/qextserialport/src/qextwineventnotifier_p.cpp \
         ../dep/qextserialport/src/qextserialport_win.cpp \
         ../dep/qextserialport/src/qextserialport.cpp \
         ../dep/qextserialport/src/qextserialenumerator.cpp \
-        updater.cpp
+        misc/updater.cpp
 
     LIBS += -lsdl -lsetupapi -lwinmm -lole32
 }
 unix:!macx:!symbian {
     CONFIG += libusby
+    LIBS += -ludev -lSDL -lqextserialport
 
-    LIBS += -lqwt_lorris -ludev -lSDL -lqextserialport
+    system_qwt {
+        LIBS += -lqwt
+    } else {
+        LIBS += -lqwt_lorris
+    }
+
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" 2> /dev/null \
         ; \
@@ -301,10 +325,14 @@ FORMS += \
     LorrisAnalyzer/playback.ui \
     ui/chooseconnectiondlg.ui \
     LorrisShupito/overvccdialog.ui \
-    shared/terminalsettings.ui \
     ui/rangeselectdialog.ui \
     updatecheck.ui \
-    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
+    ui/terminalsettings.ui \
+    misc/sessiondialog.ui \
+    ui/settingsdialog.ui \
+    LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui \
+    LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
@@ -323,7 +351,13 @@ OTHER_FILES += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.py \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.js \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.py
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {
@@ -333,8 +367,8 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 python:unix {
     LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt
     DEFINES += WITH_PYTHON
-    LIBS += $$system(python2.7-config --libs)
-    QMAKE_CXXFLAGS += $$system(python2.7-config --includes)
+    LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
+    QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 }

@@ -96,6 +96,9 @@ public:
     QVariant config() const;
     bool applyConfig(QVariant const & config);
 
+    ConnectionPointer<Connection> getConnWithConfig(quint8 type, const QHash<QString, QVariant>& cfg);
+
+
 Q_SIGNALS:
     void connAdded(Connection * conn);
     void connRemoved(Connection * conn);

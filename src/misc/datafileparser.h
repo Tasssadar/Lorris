@@ -24,7 +24,10 @@ enum DataBlocks
     BLOCK_DATA,
     BLOCK_WIDGETS,
     BLOCK_WIDGET,
-    BLOCK_DATA_INDEX
+    BLOCK_DATA_INDEX,
+
+    BLOCK_TABWIDGET,
+    BLOCK_WORKTAB
 };
 
 class DataFileParser : public QBuffer
@@ -43,16 +46,41 @@ public:
 
     void writeBlockIdentifier(DataBlocks block);
     void writeBlockIdentifier(const char* block);
-    
+
     char* getBlockName(DataBlocks block);
 
     void writeString(const QString& str);
     QString readString();
+
+    template <typename T> void readVal(T& val);
+    template <typename T> T readVal();
+    template <typename T> void writeVal(T val);
 
 private:
     char *getBlockWithFormat(const char *block, quint8& lenght);
 
     int m_last_block;
 };
+
+template <typename T>
+void DataFileParser::readVal(T& val)
+{
+    read((char*)&val, sizeof(T));
+}
+
+template <typename T>
+T DataFileParser::readVal()
+{
+    T t;
+    read((char*)&t, sizeof(t));
+    return t;
+}
+
+template <typename T>
+void DataFileParser::writeVal(T val)
+{
+    write((char*)&val, sizeof(T));
+}
+
 
 #endif // DATAFILEPARSER_H

@@ -14,6 +14,8 @@
 
 static const double pi = 3.1415926535897932384626433832795;
 
+REGISTER_DATAWIDGET(WIDGET_CIRCLE, Circle)
+
 CircleWidget::CircleWidget(QWidget *parent) :
     DataWidget(parent)
 {
@@ -25,7 +27,6 @@ CircleWidget::CircleWidget(QWidget *parent) :
     m_circle = new CircleDraw(this);
     layout->addWidget(m_circle, 1);
     resize(150, 150);
-    this->setMinimumSize(10, 10);
 }
 
 CircleWidget::~CircleWidget()
@@ -181,9 +182,8 @@ void CircleWidget::angTypeChanged(int i)
 {
     if(i == ANG_RANGE)
     {
-        RangeSelectDialog dialog(m_range_min, m_range_max, INT_MAX, INT_MIN, this);
-        dialog.exec();
-        if(dialog.getRes())
+        RangeSelectDialog dialog(m_range_min, m_range_max, true, this);
+        if(dialog.exec())
         {
             m_range_min = dialog.getMin();
             m_range_max = dialog.getMax();

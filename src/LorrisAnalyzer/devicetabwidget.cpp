@@ -18,7 +18,7 @@
 #include "../common.h"
 #include "DataWidgets/datawidget.h"
 #include "lorrisanalyzer.h"
-#include "datafileparser.h"
+#include "../misc/datafileparser.h"
 #include "../ui/plustabbar.h"
 
 DeviceTabWidget::DeviceTabWidget(QWidget *parent) :

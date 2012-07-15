@@ -10,7 +10,9 @@
 #include "scriptwidget.h"
 #include "scripteditor.h"
 #include "engines/qtscriptengine.h"
-#include "../../../shared/terminal.h"
+#include "../../../ui/terminal.h"
+
+REGISTER_DATAWIDGET(WIDGET_SCRIPT, Script)
 
 ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -21,13 +23,17 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
     m_editor = NULL;
 
     m_terminal = new Terminal(this);
-    layout->setContentsMargins(5, 0, 5, 5);
     layout->addWidget(m_terminal, 4);
 
     resize(120, 100);
 
     m_engine = NULL;
     m_engine_type = ENGINE_QTSCRIPT;
+    m_error_label = new QLabel(this);
+    m_error_label->setPixmap(QIcon(":/actions/red-cross").pixmap(16, 16));
+    m_error_label->hide();
+
+    ((QHBoxLayout*)layout->itemAt(0)->layout())->insertWidget(2, m_error_label);
 }
 
 ScriptWidget::~ScriptWidget()
@@ -40,7 +46,8 @@ void ScriptWidget::setUp(Storage *storage)
     DataWidget::setUp(storage);
 
     QAction *src_act = contextMenu->addAction(tr("Set source..."));
-    connect(src_act,    SIGNAL(triggered()),                 this,       SLOT(setSourceTriggered()));
+    connect(src_act,              SIGNAL(triggered()), SLOT(setSourceTriggered()));
+    connect(&m_error_blink_timer, SIGNAL(timeout()),   SLOT(blinkError()));
 
     createEngine();
 }
@@ -66,6 +73,7 @@ void ScriptWidget::createEngine()
     connect(m_engine,      SIGNAL(appendTerm(QString)),         m_terminal, SLOT(appendText(QString)));
     connect(m_engine,      SIGNAL(appendTermRaw(QByteArray)),   m_terminal, SLOT(appendText(QByteArray)));
     connect(m_engine,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
+    connect(m_engine,      SIGNAL(error(QString)),              this,       SLOT(blinkError()));
 }
 
 void ScriptWidget::newData(analyzer_data *data, quint32 index)
@@ -108,6 +116,10 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
     // storage data
     m_engine->onSave();
     m_engine->getStorage()->saveToFile(file);
+
+    // scripts filename
+    file->writeBlockIdentifier("scriptWFilename");
+    file->writeString(m_filename);
 }
 
 void ScriptWidget::loadWidgetInfo(DataFileParser *file)
@@ -147,6 +159,10 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     // storage data
     m_engine->getStorage()->loadFromFile(file);
 
+    // Filename
+    if(file->seekToNextBlock("scriptWFilename", BLOCK_WIDGET))
+        m_filename = file->readString();
+
     try
     {
         m_engine->setSource(source);
@@ -155,12 +171,17 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
 
 void ScriptWidget::setSourceTriggered()
 {
-    delete m_editor;
+    if(m_editor)
+    {
+        m_editor->activateWindow();
+        return;
+    }
 
-    m_editor = new ScriptEditor(m_engine->getSource(), m_engine_type, getTitle());
+    m_editor = new ScriptEditor(m_engine->getSource(), m_filename, m_engine_type, getTitle());
     m_editor->show();
 
     connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
+    connect(m_editor, SIGNAL(rejected()),        SLOT(editorRejected()));
     connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
 }
 
@@ -179,7 +200,11 @@ void ScriptWidget::sourceSet(bool close)
         }
         m_editor->clearErrors();
 
+        m_error_blink_timer.stop();
+        m_error_label->hide();
+
         m_engine->setSource(m_editor->getSource());
+        m_filename = m_editor->getFilename();
 
         if(close)
         {
@@ -192,6 +217,12 @@ void ScriptWidget::sourceSet(bool close)
     {
         Utils::ThrowException(text, m_editor);
     }
+}
+
+void ScriptWidget::editorRejected()
+{
+    m_editor->deleteLater();
+    m_editor = NULL;
 }
 
 void ScriptWidget::moveEvent(QMoveEvent *)
@@ -222,6 +253,12 @@ void ScriptWidget::onScriptEvent(const QString& eventId)
 {
     if(m_engine)
         m_engine->callEventHandler(eventId);
+}
+
+void ScriptWidget::blinkError()
+{
+    m_error_label->setVisible(!m_error_label->isVisible());
+    m_error_blink_timer.start(500);
 }
 
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

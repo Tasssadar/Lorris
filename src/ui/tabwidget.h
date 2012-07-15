@@ -18,6 +18,8 @@ class QHBoxLayout;
 class QMenu;
 class TabBar;
 class WorkTab;
+class DataFileParser;
+class Tab;
 
 class TabWidget : public QTabWidget
 {
@@ -41,7 +43,7 @@ public:
         return QTabWidget::addTab(widget, name);
     }
 
-    int addTab(WorkTab *widget, const QString& name, quint32 tabId);
+    int addTab(Tab *widget, const QString& name, quint32 tabId);
     QWidget* unregisterTab(int index);
 
     virtual QSize sizeHint() const
@@ -54,26 +56,41 @@ public:
         return QSize(0, 0);
     }
 
+    bool isEmpty()
+    {
+        return m_tab_ids.empty();
+    }
+
+    bool containsTab(quint32 id) const;
+
     void changeMenu(int idx);
     void clearMenu();
     void checkEmpty();
 
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
+    void addChildTab(QWidget *widget, const QString &name);
+    void removeChildTab(QWidget *widget);
+
 public slots:
     int pullTab(int index, TabWidget *origin);
     void pullTab(int index, TabWidget *origin, int to);
+    void closeTab(int index);
 
 protected:
     void mousePressEvent(QMouseEvent *ev);
     void mouseDoubleClickEvent(QMouseEvent *event);
 
 private slots:
-    void closeTab(int index);
     void tabMoved(int from, int to);
     void newTabBtn();
     void currentIndexChanged(int idx);
+    void setConnString(const QString& str, bool hadConn);
 
 private:
     bool checkEvent(QMouseEvent *event);
+    void setTabNameAndTooltip(int idx, QString name);
 
     quint32 m_id;
     std::vector<quint32> m_tab_ids;
@@ -121,6 +138,7 @@ private:
     QMenu *m_menu;
     QAction *m_newTopBottom;
     QAction *m_newLeftRight;
+    QPoint m_startDragPos;
 };
 
 #endif // MAINTABWIDGET_H

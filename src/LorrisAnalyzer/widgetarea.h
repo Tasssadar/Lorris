@@ -49,7 +49,6 @@ public:
     void SaveSettings(DataFileParser *file);
     void LoadSettings(DataFileParser *file);
 
-    static DataWidget *newWidget(quint8 type, QWidget *parent);
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void moveWidgets(QPoint diff);
 
@@ -62,6 +61,8 @@ public:
     const QPoint& getGridOffset() const { return m_grid_offset; }
     quint32 getGrid() const { return m_grid; }
     void setGrid(quint32 grid) { m_grid = grid; }
+
+    Storage *getStorage() const { return m_storage; }
 
 public slots:
     void removeWidget(quint32 id);

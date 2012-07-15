@@ -124,3 +124,86 @@ void Utils::playErrorSound()
     qApp->beep();
 }
 #endif
+
+QString Utils::getFontSaveString(const QFont &font)
+{
+    QStringList vals;
+    vals << font.family() << QString::number(font.pointSize())
+         << QString::number((int)font.styleHint()) << QString::number(font.weight());
+    return vals.join(";");
+}
+
+QFont Utils::getFontFromString(const QString &str)
+{
+    QStringList vals = str.split(';', QString::SkipEmptyParts);
+    if(vals.size() != 4)
+        return QFont();
+
+    QFont fnt;
+
+    for(quint8 i = 0; i < 4; ++i)
+    {
+        if(i == 0)
+        {
+            fnt.setFamily(vals[i]);
+            continue;
+        }
+
+        bool ok = false;
+        int val = vals[i].toInt(&ok);
+        if(!ok)
+            return QFont();
+
+        switch(i)
+        {
+            case 1: // point size
+                fnt.setPointSize(val);
+                break;
+            case 2: // style hint
+                fnt.setStyleHint(QFont::StyleHint(val));
+                break;
+            case 3: // weight
+                fnt.setWeight(val);
+                break;
+        }
+    }
+    return fnt;
+}
+
+QString Utils::saveWindowParams(QWidget *w)
+{
+    QStringList params;
+    params << QString::number(w->isMaximized())
+           << QString::number(w->width()) << QString::number(w->height())
+           << QString::number(w->x()) << QString::number(w->y());
+    return params.join(";");
+}
+
+void Utils::loadWindowParams(QWidget *w, const QString &param)
+{
+    QStringList params = param.split(';', QString::SkipEmptyParts);
+    if(params.size() < 5)
+        return;
+
+    QRect s;
+    for(int i = 0; i < params.size(); ++i)
+    {
+        int val = params[i].toInt();
+        switch(i)
+        {
+            case 0:
+                if(val != 0)
+                {
+                    w->setWindowState(Qt::WindowMaximized);
+                    return;
+                }
+                break;
+            case 1: s.setWidth(val); break;
+            case 2: s.setHeight(val);break;
+            case 3: s.setX(val); break;
+            case 4: s.setY(val); break;
+        }
+    }
+    w->resize(s.size());
+    w->move(s.topLeft());
+}

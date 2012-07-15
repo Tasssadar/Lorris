@@ -13,12 +13,13 @@
 
 #include "revision.h"
 #include "ui/mainwindow.h"
-#include "config.h"
+#include "misc/config.h"
 #include "connection/connectionmgr2.h"
 #include "WorkTab/WorkTabMgr.h"
+#include "ui/settingsdialog.h"
 
 #ifdef Q_OS_WIN
- #include "updater.h"
+ #include "misc/updater.h"
 #endif
 
 static bool checkArgs(int argc, char** argv, QStringList& openFiles)
