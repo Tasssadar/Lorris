@@ -352,8 +352,8 @@ QVariant ConnectionManager2::config() const
             "shupito_tunnel",  // CONNECTION_SHUPITO_TUNNEL
             "shupito",         // CONNECTION_PORT_SHUPITO
             "tcp_client",      // CONNECTION_TCP_SOCKET
-            "shupito_usb",     // CONNECTION_TCP_SOCKET
-            "shupito_acm"      // CONNECTION_TCP_SOCKET
+            "usb_shupito",     // CONNECTION_USB_SHUPITO
+            "usb_acm"          // CONNECTION_USB_ACM
         };
 
         Q_ASSERT(sizeof connTypes / sizeof connTypes[0] == MAX_CON_TYPE);
