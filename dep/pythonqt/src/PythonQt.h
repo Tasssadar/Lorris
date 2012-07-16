@@ -260,7 +260,7 @@ public:
   QVariant evalCode(PyObject* object, PyObject* pycode);
 
   //! evaluates the given script code and returns the result value
-  QVariant evalScript(PyObject* object, const QString& script, int start = Py_file_input);
+  QVariant evalScript(PyObject* object, const QString& script, const QString& filename, int start = Py_file_input);
 
   //! evaluates the given script code from file
   void evalFile(PyObject* object, const QString& filename);

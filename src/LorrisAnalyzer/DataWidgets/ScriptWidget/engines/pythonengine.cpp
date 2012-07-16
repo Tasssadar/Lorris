@@ -36,7 +36,8 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, Q
         PythonQt::self()->registerClass(&GraphCurve::staticMetaObject);
         initialized = true;
     }
-    connect(PythonQt::self(), SIGNAL(pythonStdErr(QString)), SIGNAL(error(QString)));
+    connect(PythonQt::self(), SIGNAL(pythonStdErr(QString)), SLOT(errorFilter(QString)));
+    connect(&m_sendError,     SIGNAL(timeout()),             SLOT(sendError()));
     m_evaluating = false;
 }
 
@@ -59,12 +60,12 @@ void PythonEngine::setSource(const QString &source)
     m_evaluating = true;
     m_source = source;
 
-    QString name = getNewModuleName();
+    m_name = getNewModuleName();
     static const QString predefSource = "from PythonQt.Qt import *\n"
                                         "from PythonQt.QtGui import *\n"
                                         "from PythonQt import *\n";
 
-    m_module = PythonQt::self()->createModuleFromScript(name, predefSource);
+    m_module = PythonQt::self()->createModuleFromScript(m_name, predefSource);
 
     // remove script created widgets and timer from previous script
     while(!m_widgets.empty())
@@ -103,7 +104,7 @@ void PythonEngine::setSource(const QString &source)
 
     emit stopUsingJoy(this);
 
-    m_module.evalScript(source);
+    m_module.evalScript(source, m_name, 257);
     m_evaluating = false;
 }
 
@@ -191,6 +192,19 @@ void PythonEngine::keyPressed(const QString &key)
     m_module.call("onKeyPress", (QVariantList() << key));
 }
 
+void PythonEngine::errorFilter(const QString &error)
+{
+    m_sendError.start(50);
+    m_errorBuffer.append(error);
+}
+
+void PythonEngine::sendError()
+{
+    m_sendError.stop();
+    if(m_errorBuffer.contains(QString("File \"%1\"").arg(m_name)))
+        emit error(m_errorBuffer);
+    m_errorBuffer.clear();
+}
 
 PythonFunctions::PythonFunctions(PythonEngine *engine, QObject *parent) :
     QObject(parent)

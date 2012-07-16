@@ -8,6 +8,8 @@
 #ifndef PYTHONENGINE_H
 #define PYTHONENGINE_H
 
+#include <QTimer>
+
 #include "../../../../../dep/pythonqt/src/PythonQt.h"
 
 #include "scriptengine.h"
@@ -71,6 +73,8 @@ public slots:
 private slots:
     void onTitleChange(const QString& newTitle);
     void widgetDestroyed(QObject *widget);
+    void errorFilter(const QString& error);
+    void sendError();
 
 private:
     static QString getNewModuleName();
@@ -78,6 +82,9 @@ private:
     PythonQtObjectPtr m_module;
     bool m_evaluating;
     PythonFunctions m_functions;
+    QString m_name;
+    QString m_errorBuffer;
+    QTimer m_sendError;
 };
 
 #endif // PYTHONENGINE_H
