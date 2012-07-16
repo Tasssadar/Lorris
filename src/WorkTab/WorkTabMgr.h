@@ -89,7 +89,7 @@ public:
     TabWidget *getTabWidgetWithTab(quint32 tabId);
 
     MainWindow *getWindow(quint32 id);
-    bool canCloseWindow() const { return m_windows.size() > 1; }
+    bool canCloseWindow() const { return !m_disable_window_close && m_windows.size() > 1; }
     void removeWindow(quint32 id);
 
     void saveData(DataFileParser *file);
@@ -103,6 +103,7 @@ public slots:
 private slots:
     void windowDestroyed(QObject *window);
     void tabWidgetDestroyed(QObject *widget);
+    void workTabDestroyed(QObject *tab);
 
 private:
     InfoList m_workTabInfos;
@@ -116,6 +117,7 @@ private:
     quint32 tabIdCounter;
     quint32 windowIdCounter;
 
+    bool m_disable_window_close;
     SessionMgr *m_session_mgr;
 };
 

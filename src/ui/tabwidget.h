@@ -67,7 +67,7 @@ public:
 
     void changeMenu(int idx);
     void clearMenu();
-    void checkEmpty();
+
 
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
@@ -79,6 +79,7 @@ public slots:
     int pullTab(int index, TabWidget *origin);
     void pullTab(int index, TabWidget *origin, int to);
     void closeTab(int index);
+    void checkEmpty();
 
 protected:
     void mousePressEvent(QMouseEvent *ev);

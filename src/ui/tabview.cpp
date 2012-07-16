@@ -393,7 +393,7 @@ void TabView::loadData(DataFileParser *file)
     QHash<quint32, TabWidget*> tabs = m_tab_widgets;
     for(QHash<quint32, TabWidget*>::iterator itr = tabs.begin(); itr != tabs.end(); ++itr)
     {
-        while(!(*itr)->isEmpty())
+        while((*itr)->tabsClosable())
             (*itr)->closeTab((*itr)->count()-1);
     }
 

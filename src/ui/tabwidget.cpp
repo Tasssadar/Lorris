@@ -75,6 +75,7 @@ int TabWidget::addTab(Tab *widget, const QString &name, quint32 tabId)
     else if(widget->isChild())
         connect((ChildTab*)widget, SIGNAL(tabText(QString)), SLOT(setTabNameAndTooltip(QString)));
     connect(widget, SIGNAL(activateMe()), SLOT(activateTab()));
+    connect(widget, SIGNAL(destroyed()), SLOT(checkEmpty()), Qt::QueuedConnection);
 
     setTabNameAndTooltip(idx, name);
     setTabsClosable(true);

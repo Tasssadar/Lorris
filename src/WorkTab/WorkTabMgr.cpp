@@ -19,6 +19,7 @@ WorkTabMgr::WorkTabMgr() : QObject()
     tabWidgetCounter = 0;
     windowIdCounter = 0;
     m_session_mgr = NULL;
+    m_disable_window_close = false;
 }
 
 WorkTabMgr::~WorkTabMgr()
@@ -67,7 +68,14 @@ WorkTab *WorkTabMgr::GetNewTab(WorkTabInfo *info)
     QScopedPointer<WorkTab> tab(info->GetNewTab());
     tab->setInfo(info);
     tab->setId(generateNewTabId());
+    connect(tab.data(), SIGNAL(destroyed(QObject*)), SLOT(workTabDestroyed(QObject*)));
     return tab.take();
+}
+
+void WorkTabMgr::workTabDestroyed(QObject *tab)
+{
+    m_workTabs.remove(((WorkTab*)tab)->getId());
+    m_children.remove(((WorkTab*)tab)->getId());
 }
 
 void WorkTabMgr::AddWorkTab(WorkTab *tab, MainWindow *window, QString label)
@@ -256,7 +264,7 @@ void WorkTabMgr::loadData(DataFileParser *file)
     if(!file->seekToNextBlock("windowsInfo", 0))
         return;
 
-    qApp->setQuitOnLastWindowClosed(false);
+    m_disable_window_close = true;
 
     QList<quint32> keys = m_windows.keys();
 
@@ -264,7 +272,10 @@ void WorkTabMgr::loadData(DataFileParser *file)
     while(count != m_windows.size())
     {
         if(count < m_windows.size())
-            m_windows[keys.takeLast()]->close();
+        {
+            m_windows[keys.back()]->close();
+            m_windows.remove(keys.takeLast());
+        }
         else
             newWindow();
     }
@@ -272,7 +283,7 @@ void WorkTabMgr::loadData(DataFileParser *file)
     for(WindowMap::iterator itr = m_windows.begin(); itr != m_windows.end(); ++itr)
         (*itr)->loadData(file);
 
-    qApp->setQuitOnLastWindowClosed(true);
+    m_disable_window_close = false;
 }
 
 void WorkTabMgr::printToAllStatusBars(const QString &text, int timeout)
