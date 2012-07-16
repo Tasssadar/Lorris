@@ -11,7 +11,7 @@
 #include "progressdialog.h"
 #include "../misc/utils.h"
 
-ProgressDialog::ProgressDialog(const QString &text, QWidget *parent) :
+ProgressDialog::ProgressDialog(WId id, const QString &text, QWidget *parent) :
     QProgressDialog(parent, Qt::CustomizeWindowHint)
 {
     setWindowTitle(tr("Progress"));
@@ -27,7 +27,7 @@ ProgressDialog::ProgressDialog(const QString &text, QWidget *parent) :
     connect(m_cancel_btn, SIGNAL(clicked()), SLOT(cancel()));
     connect(m_cancel_btn, SIGNAL(clicked()), SIGNAL(canceled()));
 
-    m_win7.init(winId());
+    m_win7.init(id);
 }
 
 void ProgressDialog::cancel()
@@ -49,9 +49,4 @@ void ProgressDialog::setValue(int progress)
     QProgressDialog::setValue(progress);
     m_win7.setProgressState(EcWin7::Normal);
     m_win7.setProgressValue(progress, 100);
-}
-
-bool ProgressDialog::winEvent(MSG *message, long *result)
-{
-    return m_win7.winEvent(message, result);
 }

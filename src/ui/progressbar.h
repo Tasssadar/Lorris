@@ -18,12 +18,13 @@ class ProgressBar : public QProgressBar
 public:
     explicit ProgressBar(QWidget *parent = 0);
 
+    void setWindowId(WId id) {
+        m_win7.init(id);
+    }
+
 public slots:
     void setValue(int value);
     void hide();
-
-protected:
-    bool winEvent(MSG *message, long *result);
 
 private:
     EcWin7 m_win7;

@@ -16,7 +16,7 @@ class ProgressDialog : public QProgressDialog
 {
     Q_OBJECT
 public:
-    explicit ProgressDialog(const QString& text, QWidget *parent = 0);
+    explicit ProgressDialog(WId id, const QString& text, QWidget *parent = 0);
 
 public slots:
     void cancel();
@@ -24,7 +24,6 @@ public slots:
 
 protected:
     void hideEvent(QHideEvent *event);
-    bool winEvent(MSG *message, long *result);
 
 private:
     QPushButton *m_cancel_btn;

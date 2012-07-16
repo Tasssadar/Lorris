@@ -31,6 +31,9 @@ EcWin7::EcWin7()
 #ifdef Q_WS_WIN
     mTaskbar = NULL;
     mOverlayIcon = NULL;
+
+    CoCreateInstance(CLSID_TaskbarList, 0,CLSCTX_INPROC_SERVER,
+                     IID_ITaskbarList3, reinterpret_cast<void**> (&(mTaskbar)));
 #endif
 }
 
@@ -38,28 +41,6 @@ EcWin7::EcWin7()
 void EcWin7::init(WId wid)
 {
     mWindowId = wid;
-#ifdef Q_WS_WIN
-    mTaskbarMessageId = RegisterWindowMessage(L"TaskbarButtonCreated");
-#endif
-}
-
-// Windows event handler callback function
-// (handles taskbar communication initial message)
-bool EcWin7::winEvent(MSG * message, long * result)
-{
-#ifdef Q_WS_WIN
-    if (message->message == mTaskbarMessageId)
-    {
-        HRESULT hr = CoCreateInstance(CLSID_TaskbarList,
-                                      0,
-                                      CLSCTX_INPROC_SERVER,
-                                      IID_ITaskbarList3,
-                                      reinterpret_cast<void**> (&(mTaskbar)));
-        *result = hr;
-        return true;
-    }
-#endif
-    return false;
 }
 
 // Set progress bar current value

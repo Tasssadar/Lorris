@@ -151,6 +151,7 @@ int TabWidget::pullTab(int index, TabWidget *origin)
     Tab *tab = (Tab*)origin->unregisterTab(index);
     int idx = addTab(tab, name, tab->isWorkTab() ? ((WorkTab*)tab)->getId() : UINT_MAX);
     origin->checkEmpty();
+    tab->setWindowId(tabView()->getWindowId());
     return idx;
 }
 

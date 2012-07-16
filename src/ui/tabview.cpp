@@ -491,12 +491,12 @@ void TabView::showSettings()
 void TabView::checkForUpdate()
 {
 #ifdef Q_OS_WIN
-     Utils::printToStatusBar(tr("Checking for update..."), 0);
+    emit statusBarMsg(tr("Checking for update..."), 0);
     if(Updater::doUpdate(false))
-        emit closeLorris();
+        qApp->closeAllWindows();
     else
     {
-        Utils::printToStatusBar(tr("No update available"));
+        emit statusBarMsg(tr("No update available"), 3000);
         new ToolTipWarn(tr("No update available"), (QWidget*)sender(), this);
     }
 #else

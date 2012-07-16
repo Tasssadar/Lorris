@@ -31,6 +31,7 @@
 #include "../connection/shupitoconn.h"
 #include "overvccdialog.h"
 #include "../ui/tooltipwarn.h"
+#include "../WorkTab/WorkTabMgr.h"
 
 #include "ui_lorrisshupito.h"
 
@@ -675,9 +676,8 @@ void LorrisShupito::showProgressDialog(const QString& text, QObject *sender)
 {
     Q_ASSERT(!m_progress_dialog);
 
-    m_progress_dialog = new ProgressDialog(text, this);
+    m_progress_dialog = new ProgressDialog(sWorkTabMgr.getWindow(getWindowId())->winId(), text, this);
     m_progress_dialog->open();
-
 
     if(sender)
     {

@@ -20,6 +20,7 @@
 #include "lorristerminal.h"
 #include "../ui/terminal.h"
 #include "eeprom.h"
+#include "../WorkTab/WorkTabMgr.h"
 #include "../shared/hexfile.h"
 #include "../shared/defmgr.h"
 #include "../ui/ui_lorristerminal.h"
@@ -114,6 +115,7 @@ void LorrisTerminal::initUI()
     setHexName(sConfig.get(CFG_STRING_HEX_FOLDER));
     ui->terminal->loadSettings(sConfig.get(CFG_STRING_TERMINAL_SETTINGS));
     ui->progressBar->hide();
+    ui->progressBar->setWindowId(sWorkTabMgr.getWindow(getWindowId())->winId());
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
