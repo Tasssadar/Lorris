@@ -401,7 +401,8 @@ void TabView::loadData(DataFileParser *file)
         return;
 
     sWorkTabMgr.getWindow(m_windowId)->closeHomeTab();
-    delete m_tab_widgets[0];
+    for(QList<quint32> keys = m_tab_widgets.keys(); !keys.isEmpty();)
+        delete m_tab_widgets.take(keys.takeLast());
 
     quint8 type = 0;
     file->readVal(type);

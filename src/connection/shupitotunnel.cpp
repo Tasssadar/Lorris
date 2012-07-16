@@ -70,7 +70,7 @@ void ShupitoTunnel::setShupito(Shupito* s)
         connect(s, SIGNAL(tunnelData(QByteArray)),     SIGNAL(dataRead(QByteArray)));
         dataSigConnected = true;
     }
-    else if(!this->isOpen())
+    else if(this->isOpen())
         Close();
 
     m_shupito = s;

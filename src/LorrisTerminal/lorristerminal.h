@@ -55,6 +55,8 @@ public:
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
 
+    void setWindowId(quint32 id);
+
 private slots:
     //Buttons
     void browseForHex();

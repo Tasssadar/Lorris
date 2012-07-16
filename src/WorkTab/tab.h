@@ -35,7 +35,7 @@ public:
     bool isHometab() const { return m_type == TABTYPE_HOME; }
 
     quint32 getWindowId() const { return m_windowId; }
-    void setWindowId(quint32 id) { m_windowId = id; }
+    virtual void setWindowId(quint32 id) { m_windowId = id; }
 
     void activateTab()
     {

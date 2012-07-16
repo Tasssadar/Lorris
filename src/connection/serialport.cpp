@@ -146,6 +146,9 @@ bool SerialPort::openPort()
 
 void SerialPort::readyRead()
 {
+    if(!isOpen())
+        return;
+
     lockMutex();
     QByteArray data = m_port->readAll();
     unlockMutex();

@@ -115,7 +115,6 @@ void LorrisTerminal::initUI()
     setHexName(sConfig.get(CFG_STRING_HEX_FOLDER));
     ui->terminal->loadSettings(sConfig.get(CFG_STRING_TERMINAL_SETTINGS));
     ui->progressBar->hide();
-    ui->progressBar->setWindowId(sWorkTabMgr.getWindow(getWindowId())->winId());
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
     connect(fmtMap,            SIGNAL(mapped(int)),                 SLOT(fmtAction(int)));
@@ -572,4 +571,10 @@ void LorrisTerminal::sendButton()
         m_con->SendData(data);
 
     lastText = text;
+}
+
+void LorrisTerminal::setWindowId(quint32 id)
+{
+    WorkTab::setWindowId(id);
+    ui->progressBar->setWindowId(sWorkTabMgr.getWindow(id)->winId());
 }

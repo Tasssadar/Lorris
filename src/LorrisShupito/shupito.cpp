@@ -35,6 +35,8 @@ Shupito::Shupito(QObject *parent) :
 
 Shupito::~Shupito()
 {
+    if(m_tunnel_conn != NULL)
+        m_tunnel_conn->setShupito(NULL);
 }
 
 void Shupito::init(ShupitoConnection *con, ShupitoDesc *desc)
