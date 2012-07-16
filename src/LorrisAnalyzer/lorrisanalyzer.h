@@ -76,6 +76,9 @@ class LorrisAnalyzer : public PortConnWorkTab
         void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);
         void setDataChanged(bool changed = true) { m_data_changed = changed; }
 
+        void addChildTab(ChildTab *tab, const QString& name);
+        void removeChildTab(ChildTab *tab);
+
     private slots:
         void doNewSource();
 

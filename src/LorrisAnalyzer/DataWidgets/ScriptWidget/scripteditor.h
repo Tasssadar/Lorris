@@ -10,18 +10,21 @@
 
 #include <QDialog>
 #include <QTimer>
+#include "../../../WorkTab/childtab.h"
+
 #include "ui_scripteditor.h"
 
 class QAbstractButton;
 class LineNumber;
 class QSyntaxHighlighter;
 
-class ScriptEditor : public QDialog, private Ui::ScriptEditor
+class ScriptEditor : public ChildTab, private Ui::ScriptEditor
 {
     Q_OBJECT
 
 Q_SIGNALS:
     void applySource(bool close);
+    void rejected();
     
 public:
     ScriptEditor(const QString& source, const QString& filename, int type, const QString &widgetName = 0);

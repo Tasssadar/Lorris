@@ -21,6 +21,9 @@ enum tabTypes
 class Tab : public QWidget
 {
     Q_OBJECT
+Q_SIGNALS:
+    void activateMe();
+
 public:
     explicit Tab(quint8 type, QWidget *parent = 0);
     virtual ~Tab();
@@ -28,6 +31,11 @@ public:
     quint8 getType() const { return m_type; }
     bool isWorkTab() const { return m_type == TABTYPE_WORKTAB; }
     bool isChild() const { return m_type == TABTYPE_CHILD; }
+
+    void activateTab()
+    {
+        emit activateMe();
+    }
 
 private:
     quint8 m_type;

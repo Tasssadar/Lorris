@@ -17,6 +17,7 @@
 
 class WorkTabInfo;
 class HomeTab;
+class ChildTab;
 
 class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 {
@@ -24,7 +25,7 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 
     public:
         typedef QHash<quint32, WorkTab*> WorkTabMap;
-        typedef QHash<quint32, std::set<QWidget*> > ChildrenMap;
+        typedef QHash<quint32, std::set<ChildTab*> > ChildrenMap;
         typedef QList<WorkTabInfo*> InfoList;
 
         WorkTabMgr();
@@ -56,8 +57,8 @@ class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 
         void removeTab(WorkTab *tab);
 
-        void addChildTab(QWidget *child, const QString& name, quint32 workTabId);
-        void removeChildTab(QWidget *child);
+        void addChildTab(ChildTab *child, const QString& name, quint32 workTabId);
+        void removeChildTab(ChildTab *child);
 
         TabView *getWi() { return tabView; }
         TabView *CreateWidget(QWidget *parent);

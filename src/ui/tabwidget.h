@@ -20,6 +20,7 @@ class TabBar;
 class WorkTab;
 class DataFileParser;
 class Tab;
+class ChildTab;
 
 class TabWidget : public QTabWidget
 {
@@ -70,8 +71,8 @@ public:
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
 
-    void addChildTab(QWidget *widget, const QString &name);
-    void removeChildTab(QWidget *widget);
+    void addChildTab(ChildTab *widget, const QString &name);
+    void removeChildTab(ChildTab *widget);
 
 public slots:
     int pullTab(int index, TabWidget *origin);
@@ -87,6 +88,8 @@ private slots:
     void newTabBtn();
     void currentIndexChanged(int idx);
     void setConnString(const QString& str, bool hadConn);
+    void activateTab();
+    void setTabNameAndTooltip(QString name);
 
 private:
     bool checkEvent(QMouseEvent *event);

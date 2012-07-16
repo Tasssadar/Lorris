@@ -215,8 +215,6 @@ void LorrisAnalyzer::readData(const QByteArray& data)
 
 void LorrisAnalyzer::onTabShow(const QString& filename)
 {
-    sWorkTabMgr.addChildTab(sWidgetFactory.getWidget(WIDGET_CIRCLE, this), "circle", m_id);
-
     if(!filename.isEmpty())
         openFile(filename);
 
@@ -725,4 +723,14 @@ void LorrisAnalyzer::loadData(DataFileParser *file)
 
     if(file->seekToNextBlock("LorrAnalyzerFile", BLOCK_WORKTAB))
         openFile(file->readString());
+}
+
+void LorrisAnalyzer::addChildTab(ChildTab *tab, const QString &name)
+{
+    sWorkTabMgr.addChildTab(tab, name, getId());
+}
+
+void LorrisAnalyzer::removeChildTab(ChildTab *tab)
+{
+    sWorkTabMgr.removeChildTab(tab);
 }

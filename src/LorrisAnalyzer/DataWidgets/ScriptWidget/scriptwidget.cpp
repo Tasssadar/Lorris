@@ -173,15 +173,16 @@ void ScriptWidget::setSourceTriggered()
 {
     if(m_editor)
     {
-        m_editor->activateWindow();
+        m_editor->activateTab();
         return;
     }
 
     m_editor = new ScriptEditor(m_engine->getSource(), m_filename, m_engine_type, getTitle());
-    m_editor->show();
+    emit addChildTab(m_editor, tr("Script source"));
+    m_editor->activateTab();
 
     connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
-    connect(m_editor, SIGNAL(rejected()),        SLOT(editorRejected()));
+    connect(m_editor, SIGNAL(rejected()),        SLOT(editorRejected()), Qt::QueuedConnection);
     connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
 }
 
@@ -221,8 +222,7 @@ void ScriptWidget::sourceSet(bool close)
 
 void ScriptWidget::editorRejected()
 {
-    m_editor->deleteLater();
-    m_editor = NULL;
+    emit removeChildTab(m_editor);
 }
 
 void ScriptWidget::moveEvent(QMoveEvent *)

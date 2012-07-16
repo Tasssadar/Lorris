@@ -20,6 +20,7 @@
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
 #include "../misc/datafileparser.h"
+#include "../WorkTab/childtab.h"
 
 TabWidget::TabWidget(quint32 id, QWidget *parent) :
     QTabWidget(parent)
@@ -68,6 +69,9 @@ int TabWidget::addTab(Tab *widget, const QString &name, quint32 tabId)
         connect(widget, SIGNAL(statusBarMsg(QString,int)),     SIGNAL(statusBarMsg(QString,int)));
         connect(widget, SIGNAL(setConnId(QString,bool)),       SLOT(setConnString(QString,bool)));
     }
+    else if(widget->isChild())
+        connect((ChildTab*)widget, SIGNAL(tabText(QString)), SLOT(setTabNameAndTooltip(QString)));
+    connect(widget, SIGNAL(activateMe()), SLOT(activateTab()));
 
     setTabNameAndTooltip(idx, name);
     setTabsClosable(true);
@@ -102,7 +106,7 @@ void TabWidget::closeTab(int index)
     quint32 id = m_tab_ids[index];
 
     if(id == UINT_MAX)
-        sWorkTabMgr.removeChildTab(widget(index));
+        sWorkTabMgr.removeChildTab((ChildTab*)widget(index));
     else
     {
         WorkTab *tab = sWorkTabMgr.getWorkTab(id);
@@ -336,14 +340,27 @@ void TabWidget::setTabNameAndTooltip(int idx, QString name)
     setTabText(idx, name);
 }
 
-void TabWidget::addChildTab(QWidget *widget, const QString& name)
+void TabWidget::setTabNameAndTooltip(QString name)
 {
-    int idx = addTab(widget, name);
+    Q_ASSERT(sender());
+    if(!sender())
+        return;
+
+    int idx = indexOf((QWidget*)sender());
+    if(idx == -1)
+        return;
+
+    setTabNameAndTooltip(idx, name);
+}
+
+void TabWidget::addChildTab(ChildTab *widget, const QString& name)
+{
+    int idx = addTab(widget, name, UINT_MAX);
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
     m_tab_ids.insert(itr, UINT_MAX);
 }
 
-void TabWidget::removeChildTab(QWidget *widget)
+void TabWidget::removeChildTab(ChildTab *widget)
 {
     int idx = indexOf(widget);
     if(idx == -1)
@@ -361,6 +378,19 @@ void TabWidget::removeChildTab(QWidget *widget)
 bool TabWidget::containsTab(quint32 id) const
 {
     return std::find(m_tab_ids.begin(), m_tab_ids.end(), id) != m_tab_ids.end();
+}
+
+void TabWidget::activateTab()
+{
+    Q_ASSERT(sender());
+    Q_ASSERT(sender()->inherits("QWidget"));
+    if(!sender() || !sender()->inherits("QWidget"))
+        return;
+
+    int idx = indexOf((QWidget*)sender());
+    if(idx == -1)
+        return;
+    setCurrentIndex(idx);
 }
 
 TabBar::TabBar(quint32 id, QWidget *parent) :

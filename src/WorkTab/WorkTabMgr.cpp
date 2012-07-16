@@ -9,6 +9,7 @@
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
 #include "../ui/HomeTab.h"
+#include "childtab.h"
 #include <algorithm>
 
 WorkTabMgr::WorkTabMgr() : QObject()
@@ -91,7 +92,7 @@ void WorkTabMgr::removeTab(WorkTab *tab)
     ChildrenMap::iterator itr = m_children.find(tab->getId());
     if(itr != m_children.end())
     {
-        for(std::set<QWidget*>::const_iterator w_itr = (*itr).begin(); w_itr != (*itr).end(); ++w_itr)
+        for(std::set<ChildTab*>::const_iterator w_itr = (*itr).begin(); w_itr != (*itr).end(); ++w_itr)
         {
             TabWidget *tabW = tabView->getWidgetWithWidget(*w_itr);
             tabW->removeChildTab(*w_itr);
@@ -173,22 +174,23 @@ void WorkTabMgr::openTabWithFile(const QString &filename)
     }
 }
 
-void WorkTabMgr::addChildTab(QWidget *child, const QString &name, quint32 workTabId)
+void WorkTabMgr::addChildTab(ChildTab *child, const QString &name, quint32 workTabId)
 {
     TabWidget *tabW = tabView->getWidgetWithTab(workTabId);
     if(!tabW)
         return;
 
+    child->setParentId(workTabId);
     tabW->addChildTab(child, name);
     m_children[workTabId].insert(child);
 }
 
-void WorkTabMgr::removeChildTab(QWidget *child)
+void WorkTabMgr::removeChildTab(ChildTab *child)
 {
     quint32 tabId = 0;
     for(ChildrenMap::iterator itr = m_children.begin(); itr != m_children.end(); ++itr)
     {
-        std::set<QWidget*>::iterator w_itr = (*itr).find(child);
+        std::set<ChildTab*>::iterator w_itr = (*itr).find(child);
         if(w_itr == (*itr).end())
             continue;
 

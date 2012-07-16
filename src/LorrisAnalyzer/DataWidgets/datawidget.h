@@ -88,6 +88,7 @@ struct data_widget_info
 class CloseLabel;
 class DataFileParser;
 class Storage;
+class ChildTab;
 
 class DataWidget : public QFrame
 {
@@ -105,6 +106,9 @@ Q_SIGNALS:
 
     void titleChanged(const QString& newTitle);
     void scriptEvent(const QString& eventId);
+
+    void addChildTab(ChildTab *tab, const QString& name);
+    void removeChildTab(ChildTab *tab);
 
 public:
     explicit DataWidget(QWidget *parent = 0);

@@ -9,6 +9,7 @@
 #define SCRIPTWIDGET_H
 
 #include <QTimer>
+#include <QPointer>
 
 #include "../datawidget.h"
 
@@ -46,7 +47,7 @@ protected:
 
      void createEngine();
 
-     ScriptEditor *m_editor;
+     QPointer<ScriptEditor> m_editor;
      ScriptEngine *m_engine;
      int m_engine_type;
      Terminal *m_terminal;

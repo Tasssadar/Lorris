@@ -29,8 +29,7 @@ static const QString filters[ENGINE_MAX] =
 };
 
 ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int type, const QString &widgetName) :
-    QDialog(NULL, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint),
-    ui(new Ui::ScriptEditor)
+    ChildTab(NULL), ui(new Ui::ScriptEditor)
 {
     ui->setupUi(this);
 
@@ -109,6 +108,7 @@ void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
     {
         case QDialogButtonBox::ApplyRole:  emit applySource(false); break;
         case QDialogButtonBox::AcceptRole: emit applySource(true);  break;
+        case QDialogButtonBox::RejectRole: emit rejected(); return;
         default: return;
     }
     m_contentChanged = false;
@@ -120,7 +120,7 @@ void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
 void ScriptEditor::reject()
 {
     if(!m_contentChanged)
-        return QDialog::reject();
+        return emit rejected();
 
     QMessageBox box(QMessageBox::Question, tr("Script changed"), tr("Script was changed, but not applied."),
                     QMessageBox::Cancel | QMessageBox::Close | QMessageBox::Apply, this);
@@ -128,7 +128,7 @@ void ScriptEditor::reject()
     switch(box.exec())
     {
         case QMessageBox::Close:
-            return QDialog::reject();
+            return emit rejected();
         case QMessageBox::Cancel:
             return;
         case QMessageBox::Apply:
@@ -189,12 +189,12 @@ void ScriptEditor::setFilename(const QString& filename)
     if(!m_filename.isEmpty())
     {
         ui->nameLabel->setText(filename.split("/").last());
-        setWindowTitle(tr("%1 - Script").arg(ui->nameLabel->text()));
+        setTabText(tr("%1 - Script").arg(ui->nameLabel->text()));
     }
     else
     {
         ui->nameLabel->setText(QString());
-        setWindowTitle(tr("Script"));
+        setTabText(tr("Script"));
     }
 }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>ScriptEditor</class>
- <widget class="QDialog" name="ScriptEditor">
+ <widget class="QWidget" name="ScriptEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -351,22 +351,5 @@
   <include location="../../../actions.qrc"/>
   <include location="../../../icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>ScriptEditor</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -16,6 +16,7 @@
 class DataFileParser;
 class Storage;
 class LorrisAnalyzer;
+class ChildTab;
 
 class WidgetArea : public QFrame
 {

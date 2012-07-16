@@ -7,7 +7,7 @@
 
 #include "childtab.h"
 
-ChildTab::ChildTab(quint32 parentId, QWidget *parent) : Tab(TABTYPE_CHILD, parent)
+ChildTab::ChildTab(QWidget *parent) : Tab(TABTYPE_CHILD, parent)
 {
-    m_parentId = parentId;
+    m_parentId = 0;
 }
