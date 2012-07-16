@@ -24,8 +24,6 @@ static const char CLDTA_DATA_MAGIC[] = { (char)0xFF, (char)0x80, 0x68 };
 
 SessionMgr::SessionMgr(QObject *parent) : QObject(parent)
 {
-    m_menu = NULL;
-
     m_sig_map = new QSignalMapper(this);
     connect(m_sig_map, SIGNAL(mapped(QString)), SLOT(loadSession(QString)));
 
@@ -60,7 +58,7 @@ QByteArray SessionMgr::openSessionFile(const QString& name)
 
 void SessionMgr::initMenu(QMenu *menu)
 {
-    m_menu = menu;
+    m_menus.insert(menu);
 
     if(m_sessions.empty())
     {
@@ -84,6 +82,7 @@ void SessionMgr::initMenu(QMenu *menu)
 
     connect(saveAct,    SIGNAL(triggered()), SLOT(saveSessionAct()));
     connect(managerAct, SIGNAL(triggered()), SLOT(openManager()));
+    connect(menu, SIGNAL(destroyed(QObject*)), SLOT(removeMenu(QObject*)));
 }
 
 void SessionMgr::openManager()
@@ -106,7 +105,7 @@ void SessionMgr::saveSession(QString name)
     DataFileParser parser(&data);
     parser.open(QIODevice::WriteOnly);
 
-    ((TabView*)parent())->saveData(&parser);
+    sWorkTabMgr.saveData(&parser);
 
     parser.close();
 
@@ -129,7 +128,7 @@ void SessionMgr::saveSessionAct()
 
     try {
         saveSession(name);
-        Utils::printToStatusBar(tr("Session %1 saved.").arg(name));
+        sWorkTabMgr.printToAllStatusBars(tr("Session %1 saved.").arg(name));
     } catch(const QString& ex) {
         Utils::ThrowException(ex);
     }
@@ -158,7 +157,7 @@ void SessionMgr::loadSession(QString name)
     DataFileParser parser(&data);
     parser.open(QIODevice::ReadOnly);
 
-    ((TabView*)parent())->loadData(&parser);
+    sWorkTabMgr.loadData(&parser);
 }
 
 void SessionMgr::updateSessions()
@@ -166,35 +165,37 @@ void SessionMgr::updateSessions()
     QDir dir(getFolder());
     m_sessions = dir.entryList((QStringList() << "*.cldta"));
 
-    if(!m_menu)
-        return;
-
-    QAction *separator = NULL;
-    QList<QAction*> actions = m_menu->actions();
-    for(int i = 0; i < actions.size(); ++i)
+    for(std::set<QMenu*>::iterator itr = m_menus.begin(); itr != m_menus.end(); ++itr)
     {
-        if(actions[i]->isSeparator())
+        QMenu *menu = *itr;
+
+        QAction *separator = NULL;
+        QList<QAction*> actions = menu->actions();
+        for(int i = 0; i < actions.size(); ++i)
         {
-            separator = actions[i];
-            break;
+            if(actions[i]->isSeparator())
+            {
+                separator = actions[i];
+                break;
+            }
+            delete actions[i];
         }
-        delete actions[i];
-    }
 
-    if(m_sessions.empty())
-    {
-        QAction *empty = new QAction(tr("No saved sessions"), this);
-        m_menu->insertAction(separator, empty);
-        empty->setEnabled(false);
-    }
-    else
-    {
-        for(int i = 0; i < m_sessions.size(); ++i)
+        if(m_sessions.empty())
         {
-            QAction *act = new QAction(m_sessions[i].remove(".cldta"), this);
-            m_menu->insertAction(separator, act);
-            m_sig_map->setMapping(act, act->text());
-            connect(act, SIGNAL(triggered()), m_sig_map, SLOT(map()));
+            QAction *empty = new QAction(tr("No saved sessions"), this);
+            menu->insertAction(separator, empty);
+            empty->setEnabled(false);
+        }
+        else
+        {
+            for(int i = 0; i < m_sessions.size(); ++i)
+            {
+                QAction *act = new QAction(m_sessions[i].remove(".cldta"), this);
+                menu->insertAction(separator, act);
+                m_sig_map->setMapping(act, act->text());
+                connect(act, SIGNAL(triggered()), m_sig_map, SLOT(map()));
+            }
         }
     }
 }
@@ -206,6 +207,11 @@ void SessionMgr::removeSession(QString name)
 
     QFile::remove(getFolder() + name);
     updateSessions();
+}
+
+void SessionMgr::removeMenu(QObject *menu)
+{
+    m_menus.erase((QMenu*)menu);
 }
 
 SessionDialog::SessionDialog(SessionMgr *mgr, QWidget *parent) :

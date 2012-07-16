@@ -100,7 +100,6 @@ int main(int argc, char *argv[])
         return 0;
 #endif
 
-    MainWindow w;
-    w.show(openFiles);
+    sWorkTabMgr.initialize(openFiles);
     return a.exec();
 }

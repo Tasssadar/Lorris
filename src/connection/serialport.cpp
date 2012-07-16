@@ -183,7 +183,7 @@ void SerialPort::socketError(SocketError err)
 {
     if(err == ERR_IOCTL_FAILED && isOpen())
     {
-        Utils::printToStatusBar(tr("Connection to %1 lost!").arg(m_deviceName));
+        sWorkTabMgr.printToAllStatusBars(tr("Connection to %1 lost!").arg(m_deviceName));
         Close();
     }
 }

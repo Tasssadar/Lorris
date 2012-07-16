@@ -17,6 +17,7 @@
 #include "tcpsocket.h"
 #include "../WorkTab/WorkTabInfo.h"
 #include "../WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTabMgr.h"
 
 static const int CONNECT_TIMEOUT = 10000 / 50; // 10s
 
@@ -118,7 +119,7 @@ void TcpSocket::stateChanged()
 {
     if(this->isOpen() && m_socket->state() != QAbstractSocket::ConnectedState)
     {
-        Utils::printToStatusBar(tr("Connection to %1:%2 lost!").arg(m_address).arg(m_port));
+        sWorkTabMgr.printToAllStatusBars(tr("Connection to %1:%2 lost!").arg(m_address).arg(m_port));
         Close();
     }
 }

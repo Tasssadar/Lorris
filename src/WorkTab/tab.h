@@ -14,6 +14,7 @@ enum tabTypes
 {
     TABTYPE_WORKTAB = 0,
     TABTYPE_CHILD,
+    TABTYPE_HOME,
 
     TABTYPE_MAX
 };
@@ -31,6 +32,10 @@ public:
     quint8 getType() const { return m_type; }
     bool isWorkTab() const { return m_type == TABTYPE_WORKTAB; }
     bool isChild() const { return m_type == TABTYPE_CHILD; }
+    bool isHometab() const { return m_type == TABTYPE_HOME; }
+
+    quint32 getWindowId() const { return m_windowId; }
+    void setWindowId(quint32 id) { m_windowId = id; }
 
     void activateTab()
     {
@@ -39,6 +44,7 @@ public:
 
 private:
     quint8 m_type;
+    quint32 m_windowId;
 };
 
 #endif // TAB_H

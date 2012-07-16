@@ -11,13 +11,15 @@
 #include <QWidget>
 #include <QHash>
 
+#include "../WorkTab/tab.h"
+
 class WorkTabInfo;
 
 namespace Ui {
     class HomeTab;
 }
 
-class HomeTab : public QWidget {
+class HomeTab : public Tab {
     Q_OBJECT
 
 Q_SIGNALS:

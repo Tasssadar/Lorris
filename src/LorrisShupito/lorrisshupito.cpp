@@ -1411,7 +1411,7 @@ void LorrisShupito::shutdownVcc()
         if(m_vdd_setup[0].drives[i] == "<hiz>")
         {
             vddIndexChanged(i);
-            Utils::printToStatusBar(tr("VCC was turned off due to overvoltage!"));
+            emit statusBarMsg(tr("VCC was turned off due to overvoltage!"));
             return;
         }
     }

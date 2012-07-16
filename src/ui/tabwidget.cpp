@@ -44,14 +44,17 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
     connect(m_tab_bar, SIGNAL(pullTab(int,TabWidget*,int)),
                        SLOT(pullTab(int,TabWidget*,int)), Qt::QueuedConnection);
+    connect(m_tab_bar, SIGNAL(newWindow(int)),         SLOT(newWindow(int)), Qt::QueuedConnection);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    sWorkTabMgr.registerTabWidget(this);
 }
 
 int TabWidget::addTab(Tab *widget, const QString &name, quint32 tabId)
 {
-    if(m_id == 0)
-        sWorkTabMgr.CloseHomeTab();
+    if(!widget->isHometab())
+        emit closeHomeTab();
 
     int idx = QTabWidget::addTab(widget, name);
 
@@ -86,13 +89,7 @@ void TabWidget::checkEmpty()
     if(count() != 0)
         return;
 
-    if(m_id == 0) // check if we are the first tabWidget
-    {
-        emit openHomeTab(m_id);
-        setTabsClosable(false);
-    }
-    else
-        emit removeWidget(m_id);
+    emit removeWidget(m_id);
 }
 
 void TabWidget::closeTab(int index)
@@ -232,7 +229,7 @@ void TabWidget::clearMenu()
 {
     m_menu->clear();
 
-    const std::vector<QAction*>& menus = sWorkTabMgr.getWi()->getMenus();
+    const std::vector<QAction*>& menus = tabView()->getMenus();
     for(quint32 i = 0; i < menus.size(); ++i)
         m_menu->addAction(menus[i]);
 
@@ -288,6 +285,8 @@ void TabWidget::loadData(DataFileParser *file)
         if(!tab)
             continue;
 
+        tab->setParent(this);
+        tab->setWindowId(((TabView*)parent())->getWindowId());
         tab->loadData(file);
 
         sWorkTabMgr.registerTab(tab);
@@ -393,6 +392,12 @@ void TabWidget::activateTab()
     setCurrentIndex(idx);
 }
 
+void TabWidget::newWindow(int idx)
+{
+    MainWindow *window = sWorkTabMgr.newWindow();
+    window->getTabView()->getActiveWidget()->pullTab(idx, this);
+}
+
 TabBar::TabBar(quint32 id, QWidget *parent) :
     PlusTabBar(parent)
 {
@@ -407,6 +412,8 @@ TabBar::TabBar(quint32 id, QWidget *parent) :
     m_newTopBottom->setIcon(QIcon(":/icons/split_top.png"));
     m_newLeftRight->setIcon(QIcon(":/icons/split_left.png"));
 
+    QAction *newWindow = m_menu->addAction(tr("To new window"));
+
     m_menu->addSeparator();
 
     QAction *rename = m_menu->addAction(tr("Rename..."));
@@ -416,6 +423,7 @@ TabBar::TabBar(quint32 id, QWidget *parent) :
     connect(rename,         SIGNAL(triggered()), SLOT(renameTab()));
     connect(m_newTopBottom, SIGNAL(triggered()), SLOT(splitTop()));
     connect(m_newLeftRight, SIGNAL(triggered()), SLOT(splitLeft()));
+    connect(newWindow,      SIGNAL(triggered()), SLOT(toNewWindow()));
 }
 
 void TabBar::mousePressEvent(QMouseEvent *event)
@@ -467,8 +475,7 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
 
     QDrag *drag = new QDrag(this);
 
-    if(count() > 1)
-        sWorkTabMgr.getWi()->createSplitOverlay(m_id, drag);
+    tabView()->createSplitOverlay(m_id, drag);
 
     QStyleOptionTabV3 tab;
     initStyleOption(&tab, idx);
@@ -496,7 +503,7 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
     p.end();
 
     QMimeData *mime = new QMimeData();
-    mime->setText(QString("%1 %2").arg(m_id).arg(idx));
+    mime->setText(QString("%1 %2 %3").arg(m_id).arg(idx).arg(tabView()->getWindowId()));
     mime->setData("data/tabinfo", QByteArray(1, ' '));
 
     drag->setPixmap(map);
@@ -528,7 +535,10 @@ void TabBar::dropEvent(QDropEvent *event)
 
     if(event->source() != this)
     {
-        TabWidget *source = sWorkTabMgr.getWi()->getWidget(lst[0].toUInt());
+        MainWindow *window = sWorkTabMgr.getWindow(lst[2].toUInt());
+        if(!window)
+            return;
+        TabWidget *source = window->getTabView()->getWidget(lst[0].toUInt());
         emit pullTab(tabId, source, m_drag_idx);
     }
     else
@@ -629,4 +639,9 @@ void TabBar::enableSplit(bool enable)
 {
     m_newTopBottom->setEnabled(enable);
     m_newLeftRight->setEnabled(enable);
+}
+
+void TabBar::toNewWindow()
+{
+    emit newWindow(m_cur_menu_tab);
 }

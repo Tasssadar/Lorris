@@ -5,23 +5,36 @@
 **    See README and COPYING
 ***********************************************/
 
+#include <algorithm>
+#include <QStatusBar>
 
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
 #include "../ui/HomeTab.h"
 #include "childtab.h"
-#include <algorithm>
 
 WorkTabMgr::WorkTabMgr() : QObject()
 {
     tabIdCounter = 0;
     tabWidgetCounter = 0;
-    tabView = NULL;
-    hometab = NULL;
+    windowIdCounter = 0;
+    m_session_mgr = NULL;
 }
 
 WorkTabMgr::~WorkTabMgr()
 {
+}
+
+void WorkTabMgr::initialize(const QStringList &openFiles)
+{
+    m_session_mgr = new SessionMgr(this);
+    newWindow(openFiles);
+
+    if(openFiles.isEmpty() && sConfig.get(CFG_BOOL_LOAD_LAST_SESSION))
+    {
+        m_session_mgr->loadSession();
+        return;
+    }
 }
 
 void WorkTabMgr::RegisterTabInfo(WorkTabInfo *info)
@@ -57,15 +70,16 @@ WorkTab *WorkTabMgr::GetNewTab(WorkTabInfo *info)
     return tab.take();
 }
 
-void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
+void WorkTabMgr::AddWorkTab(WorkTab *tab, MainWindow *window, QString label)
 {
-    CloseHomeTab();
+    window->closeHomeTab();
 
     m_workTabs.insert(tab->getId(), tab);
 
-    TabWidget *activeWidget = tabView->getActiveWidget();
+    TabWidget *activeWidget = window->getTabView()->getActiveWidget();
 
     tab->setParent(activeWidget);
+    tab->setWindowId(window->getId());
     activeWidget->addTab(tab, label, tab->getId());
     activeWidget->setTabsClosable(true);
     return;
@@ -73,18 +87,24 @@ void WorkTabMgr::AddWorkTab(WorkTab *tab, QString label)
 
 void WorkTabMgr::registerTab(WorkTab *tab)
 {
-    CloseHomeTab();
+    m_windows[tab->getWindowId()]->closeHomeTab();
     m_workTabs.insert(tab->getId(), tab);
 }
 
-WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info, QString filename)
+WorkTab * WorkTabMgr::AddWorkTab(WorkTabInfo * info, MainWindow *window, QString filename)
 {
     QScopedPointer<WorkTab> tab(this->GetNewTab(info));
-    this->AddWorkTab(tab.data(), info->GetName());
+    this->AddWorkTab(tab.data(), window, info->GetName());
 
     WorkTab * tabp = tab.take();
     tabp->onTabShow(filename);
     return tabp;
+}
+
+WorkTab *WorkTabMgr::AddWorkTab(WorkTabInfo *info, quint32 windowId, QString filename)
+{
+    Q_ASSERT(m_windows.contains(windowId));
+    return AddWorkTab(info, m_windows[windowId], filename);
 }
 
 void WorkTabMgr::removeTab(WorkTab *tab)
@@ -94,7 +114,7 @@ void WorkTabMgr::removeTab(WorkTab *tab)
     {
         for(std::set<ChildTab*>::const_iterator w_itr = (*itr).begin(); w_itr != (*itr).end(); ++w_itr)
         {
-            TabWidget *tabW = tabView->getWidgetWithWidget(*w_itr);
+            TabWidget *tabW = getTabWidgetWithWidget(*w_itr);
             tabW->removeChildTab(*w_itr);
         }
         m_children.erase(itr);
@@ -102,66 +122,24 @@ void WorkTabMgr::removeTab(WorkTab *tab)
     m_workTabs.remove(tab->getId());
     delete tab;
 }
-
-void WorkTabMgr::OpenHomeTab(quint32 id)
+bool WorkTabMgr::onTabsClose(quint32 windowId)
 {
-    Q_ASSERT(!hometab);
-
-    TabWidget *tabWidget = tabView->getWidget(id);
-    if(!tabWidget)
-        return;
-
-    hometab = new HomeTab(tabWidget);
-    tabWidget->addTab(hometab, QObject::tr("Home"));
-}
-
-void WorkTabMgr::OpenHomeTab()
-{
-    TabWidget *activeWidget = tabView->getActiveWidget();
-
-    hometab = new HomeTab(activeWidget);
-    activeWidget->addTab(hometab, QObject::tr("Home"));
-}
-
-void WorkTabMgr::CloseHomeTab()
-{
-    if(!hometab)
-        return;
-
-    TabWidget *activeWidget = tabView->getActiveWidget();
-    if(!activeWidget)
-    {
-        Q_ASSERT(false);
-        return;
-    }
-    activeWidget->removeTab(activeWidget->indexOf(hometab));
-    delete hometab;
-    hometab = NULL;
-}
-
-TabView *WorkTabMgr::CreateWidget(QWidget *parent)
-{
-    tabView = new TabView(parent);
-
-    connect(tabView, SIGNAL(openHomeTab(quint32)), SLOT(OpenHomeTab(quint32)));
-    return tabView;
-}
-
-bool WorkTabMgr::onTabsClose()
-{
-    try {
-        tabView->getSessionMgr()->saveSession();
-    } catch(const QString&) { }
-
     for(WorkTabMap::iterator itr = m_workTabs.begin(); itr != m_workTabs.end(); ++itr)
     {
-        if(!(*itr)->onTabClose())
+        if((*itr)->getWindowId() == windowId && !(*itr)->onTabClose())
             return false;
+    }
+
+    if(m_windows.size() == 1)
+    {
+        try {
+            m_session_mgr->saveSession();
+        } catch(const QString&) { }
     }
     return true;
 }
 
-void WorkTabMgr::openTabWithFile(const QString &filename)
+void WorkTabMgr::openTabWithFile(const QString &filename, MainWindow *window)
 {
     QString suffix = filename.split(".", QString::SkipEmptyParts).back();
     for(InfoList::Iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
@@ -169,14 +147,14 @@ void WorkTabMgr::openTabWithFile(const QString &filename)
         if(!(*itr)->GetHandledFiles().contains(suffix))
             continue;
 
-        AddWorkTab(*itr, filename);
+        AddWorkTab(*itr, window, filename);
         return;
     }
 }
 
 void WorkTabMgr::addChildTab(ChildTab *child, const QString &name, quint32 workTabId)
 {
-    TabWidget *tabW = tabView->getWidgetWithTab(workTabId);
+    TabWidget *tabW = getTabWidgetWithTab(workTabId);
     if(!tabW)
         return;
 
@@ -207,8 +185,103 @@ void WorkTabMgr::removeChildTab(ChildTab *child)
     if(!tab)
         return;
 
-    TabWidget *tabW = tabView->getWidgetWithWidget(child);
+    TabWidget *tabW = getTabWidgetWithWidget(child);
     tabW->removeChildTab(child);
 
     tab->childClosed(child);
+}
+
+MainWindow *WorkTabMgr::newWindow(QStringList openFiles)
+{
+    quint32 id = generateNewWindowId();
+    MainWindow *w = new MainWindow(id);
+    w->show(openFiles);
+    m_windows.insert(id, w);
+
+    connect(w, SIGNAL(destroyed(QObject*)), SLOT(windowDestroyed(QObject*)));
+    return w;
+}
+
+void WorkTabMgr::windowDestroyed(QObject *window)
+{
+    m_windows.remove(((MainWindow*)window)->getId());
+}
+
+void WorkTabMgr::registerTabWidget(TabWidget *widget)
+{
+    m_tab_widgets.insert(widget->getId(), widget);
+    connect(widget, SIGNAL(destroyed(QObject*)), SLOT(tabWidgetDestroyed(QObject*)));
+}
+
+void WorkTabMgr::tabWidgetDestroyed(QObject *widget)
+{
+    m_tab_widgets.remove(((TabWidget*)widget)->getId());
+}
+
+TabWidget *WorkTabMgr::getTabWidgetWithWidget(QWidget *widget)
+{
+    for(TabWidgetMap::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); ++itr)
+        if((*itr)->indexOf(widget) != -1)
+            return *itr;
+    return NULL;
+}
+
+TabWidget *WorkTabMgr::getTabWidgetWithTab(quint32 tabId)
+{
+    for(TabWidgetMap::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); ++itr)
+        if((*itr)->containsTab(tabId))
+            return *itr;
+    return NULL;
+}
+
+MainWindow *WorkTabMgr::getWindow(quint32 id)
+{
+    WindowMap::iterator itr = m_windows.find(id);
+    if(itr == m_windows.end())
+        return NULL;
+    return *itr;
+}
+
+void WorkTabMgr::saveData(DataFileParser *file)
+{
+    file->writeBlockIdentifier("windowsInfo");
+    file->writeVal(m_windows.size());
+
+    for(WindowMap::iterator itr = m_windows.begin(); itr != m_windows.end(); ++itr)
+        (*itr)->saveData(file);
+}
+
+void WorkTabMgr::loadData(DataFileParser *file)
+{
+    if(!file->seekToNextBlock("windowsInfo", 0))
+        return;
+
+    qApp->setQuitOnLastWindowClosed(false);
+
+    QList<quint32> keys = m_windows.keys();
+
+    int count = file->readVal<int>();
+    while(count != m_windows.size())
+    {
+        if(count < m_windows.size())
+            m_windows[keys.takeLast()]->close();
+        else
+            newWindow();
+    }
+
+    for(WindowMap::iterator itr = m_windows.begin(); itr != m_windows.end(); ++itr)
+        (*itr)->loadData(file);
+
+    qApp->setQuitOnLastWindowClosed(true);
+}
+
+void WorkTabMgr::printToAllStatusBars(const QString &text, int timeout)
+{
+    for(WindowMap::iterator itr = m_windows.begin(); itr != m_windows.end(); ++itr)
+        (*itr)->statusBar()->showMessage(text, timeout);
+}
+
+void WorkTabMgr::removeWindow(quint32 id)
+{
+    m_windows.remove(id);
 }

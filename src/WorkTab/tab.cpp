@@ -11,6 +11,7 @@ Tab::Tab(quint8 type, QWidget *parent) :
     QWidget(parent)
 {
     m_type = type;
+    m_windowId = 0;
 }
 
 Tab::~Tab()

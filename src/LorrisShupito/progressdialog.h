@@ -10,6 +10,8 @@
 
 #include <QProgressDialog>
 
+#include "../dep/ecwin7/ecwin7.h"
+
 class ProgressDialog : public QProgressDialog
 {
     Q_OBJECT
@@ -22,9 +24,11 @@ public slots:
 
 protected:
     void hideEvent(QHideEvent *event);
+    bool winEvent(MSG *message, long *result);
 
 private:
     QPushButton *m_cancel_btn;
+    EcWin7 m_win7;
 };
 
 #endif // PROGRESSDIALOG_H

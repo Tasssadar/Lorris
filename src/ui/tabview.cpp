@@ -23,6 +23,7 @@
 #include "../misc/datafileparser.h"
 #include "tooltipwarn.h"
 #include "settingsdialog.h"
+#include "mainwindow.h"
 
 #ifdef Q_OS_WIN
  #include "../misc/updater.h"
@@ -30,9 +31,11 @@
 
 #define LAYOUT_MARGIN 4
 
-TabView::TabView(QWidget *parent) :
-    QWidget(parent), m_active_widget(NULL), m_session_mgr(this)
+TabView::TabView(MainWindow *parent) :
+    QWidget(parent), m_active_widget(NULL)
 {
+    m_windowId = parent->getId();
+
     QHBoxLayout *layout = new QHBoxLayout(this);
     m_layouts.insert(layout);
     layout->setMargin(LAYOUT_MARGIN);
@@ -60,11 +63,12 @@ TabView::TabView(QWidget *parent) :
         }
     }
 
+    QAction *newW = file_menu->addAction(tr("New window"));
     QAction* actionConnectionManager = file_menu->addAction(tr("Connection &manager..."));
-    QAction* actionQuit = file_menu->addAction(tr("&Quit"));
+    QAction* actionQuit = file_menu->addAction(tr("&Close"));
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
-    m_session_mgr.initMenu(session_menu);
+    sWorkTabMgr.getSessionMgr()->initMenu(session_menu);
 
     QAction *settingsAct = opt_menu->addAction(tr("&Settings"));
     QAction *updateAct = opt_menu->addAction(tr("Check for update..."));
@@ -72,14 +76,13 @@ TabView::TabView(QWidget *parent) :
     connect(actionConnectionManager, SIGNAL(triggered()), SLOT(OpenConnectionManager()));
     connect(settingsAct,             SIGNAL(triggered()), SLOT(showSettings()));
     connect(updateAct,               SIGNAL(triggered()), SLOT(checkForUpdate()));
-    connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeLorris()));
+    connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeWindow()));
+    connect(newW,                    SIGNAL(triggered()), &sWorkTabMgr, SLOT(newWindow()));
 }
 
 TabWidget *TabView::newTabWidget(QBoxLayout *l)
 {
     quint32 id = sWorkTabMgr.generateNewWidgetId();
-    if(m_tab_widgets.empty())
-        id = 0;
 
     TabWidget *tabW = new TabWidget(id, this);
     m_tab_widgets.insert(id, tabW);
@@ -90,8 +93,8 @@ TabWidget *TabView::newTabWidget(QBoxLayout *l)
         m_active_widget = tabW;
 
     connect(tabW, SIGNAL(newTab()),                       SLOT(newTab()));
-    connect(tabW, SIGNAL(openHomeTab(quint32)),           SIGNAL(openHomeTab(quint32)));
     connect(tabW, SIGNAL(statusBarMsg(QString,int)),      SIGNAL(statusBarMsg(QString,int)));
+    connect(tabW, SIGNAL(closeHomeTab()),                 SIGNAL(closeHomeTab()));
     connect(tabW, SIGNAL(split(bool,int)),                SLOT(split(bool,int)));
     connect(tabW, SIGNAL(removeWidget(quint32)),          SLOT(removeWidget(quint32)));
     connect(tabW, SIGNAL(changeActiveWidget(TabWidget*)), SLOT(changeActiveWidget(TabWidget*)));
@@ -110,6 +113,21 @@ void TabView::removeWidget(quint32 id)
     QHash<quint32, TabWidget*>::iterator wid = m_tab_widgets.find(id);
     if(wid == m_tab_widgets.end())
         return;
+
+    if(m_tab_widgets.size() == 1)
+    {
+        if(sWorkTabMgr.canCloseWindow())
+        {
+            emit closeWindow();
+            sWorkTabMgr.removeWindow(m_windowId);
+        }
+        else
+        {
+            emit openHomeTab();
+            (*wid)->setTabsClosable(false);
+        }
+        return;
+    }
 
     if(m_active_widget == *wid)
         m_active_widget = m_tab_widgets[0];
@@ -248,11 +266,24 @@ void TabView::createSplitOverlay(quint32 id, QDrag *drag)
 
     TabWidget *tab = *itr;
 
-    SplitOverlay *overlay = new SplitOverlay(SplitOverlay::POS_RIGHT, this);
-    connect(overlay, SIGNAL(split(bool,int)), tab, SIGNAL(split(bool,int)));
+    SplitOverlay *overlay = new SplitOverlay(SplitOverlay::POS_CENTER, this);
+    connect(overlay, SIGNAL(newWindow(int)), tab, SLOT(newWindow(int)), Qt::QueuedConnection);
     connect(drag,    SIGNAL(destroyed()), overlay, SLOT(deleteLater()));
 
     QPoint pos;
+    pos.rx() = tab->x() + (tab->width() - overlay->width())/2;
+    pos.ry() = tab->y() + (tab->height() - overlay->height())/2;
+
+    overlay->move(pos);
+    overlay->show();
+
+    if(tab->count() < 2)
+        return;
+
+    overlay = new SplitOverlay(SplitOverlay::POS_RIGHT, this);
+    connect(overlay, SIGNAL(split(bool,int)), tab, SIGNAL(split(bool,int)));
+    connect(drag,    SIGNAL(destroyed()), overlay, SLOT(deleteLater()));
+
     pos.rx() = (tab->x() + tab->width()) - overlay->width() - 15;
     pos.ry() = tab->y() + (tab->height() - overlay->height())/2;
 
@@ -306,7 +337,7 @@ void TabView::NewSpecificTab()
 {
     WorkTabInfo * info = m_actionTabInfoMap.value(this->sender());
     if (info)
-        sWorkTabMgr.AddWorkTab(info);
+        sWorkTabMgr.AddWorkTab(info, m_windowId);
 }
 
 void TabView::OpenConnectionManager()
@@ -317,7 +348,7 @@ void TabView::OpenConnectionManager()
 
 void TabView::newTab()
 {
-    HomeDialog dialog(this);
+    HomeDialog dialog(getWindowId(), this);
     dialog.exec();
 }
 
@@ -369,7 +400,7 @@ void TabView::loadData(DataFileParser *file)
     if(!file->seekToNextBlock("tabViewLayouts", 0))
         return;
 
-    sWorkTabMgr.CloseHomeTab();
+    sWorkTabMgr.getWindow(m_windowId)->closeHomeTab();
     delete m_tab_widgets[0];
 
     quint8 type = 0;
@@ -535,6 +566,10 @@ void SplitOverlay::paintEvent(QPaintEvent *)
         {
             QPoint(0, 0), QPoint(OVERLAY_2, 0), QPoint(OVERLAY_2, OVERLAY_1/2),
             QPoint(OVERLAY_2/2, OVERLAY_1), QPoint(0, OVERLAY_1/2)
+        },
+        {
+            QPoint(0, 0), QPoint(OVERLAY_2, 0), QPoint(OVERLAY_2, OVERLAY_1),
+            QPoint(OVERLAY_2, OVERLAY_1), QPoint(0, OVERLAY_1)
         }
     };
 
@@ -544,14 +579,21 @@ void SplitOverlay::paintEvent(QPaintEvent *)
     p.drawPolygon(poly[m_pos], 5);
 
     p.setPen(Qt::black);
-    if(m_pos == POS_RIGHT)
+    switch(m_pos)
     {
-        p.rotate(-90);
-        p.translate(-height(), 0);
-        p.drawText(0, 0, height(), width(), Qt::AlignCenter, tr("Split"));
+        case POS_RIGHT:
+            p.rotate(-90);
+            p.translate(-height(), 0);
+            p.drawText(0, 0, height(), width(), Qt::AlignCenter, tr("Split"));
+            break;
+        case POS_BOTTOM:
+            p.drawText(0, 0, width(), height(), Qt::AlignCenter, tr("Split"));
+            break;
+        case POS_CENTER:
+            p.drawText(0, 0, width(), height(), Qt::AlignCenter, tr("New window"));
+            break;
+        default: break;
     }
-    else
-        p.drawText(0, 0, width(), height(), Qt::AlignCenter, tr("Split"));
 }
 
 void SplitOverlay::dragEnterEvent(QDragEnterEvent *event)
@@ -577,5 +619,13 @@ void SplitOverlay::dropEvent(QDropEvent *event)
     event->accept();
 
     QStringList lst = event->mimeData()->text().split(' ');
-    emit split(m_pos == POS_BOTTOM, lst[1].toInt());
+    switch(m_pos)
+    {
+        case POS_RIGHT:
+        case POS_BOTTOM:
+            return emit split(m_pos == POS_BOTTOM, lst[1].toInt());
+        case POS_CENTER:
+            return emit newWindow(lst[1].toInt());
+        default: break;
+    }
 }

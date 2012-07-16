@@ -25,6 +25,7 @@ class WorkTab : public Tab
 Q_SIGNALS:
     void statusBarMsg(const QString& message, int timeout = 0);
     void setConnId(const QString& str, bool hadConn);
+    void setWindowProgress(int progress);
 
 public:
     virtual ~WorkTab();

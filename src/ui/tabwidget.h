@@ -21,6 +21,7 @@ class WorkTab;
 class DataFileParser;
 class Tab;
 class ChildTab;
+class TabView;
 
 class TabWidget : public QTabWidget
 {
@@ -28,11 +29,11 @@ class TabWidget : public QTabWidget
 
 Q_SIGNALS:
     void newTab();
-    void openHomeTab(quint32 id);
     void removeWidget(quint32 id);
     void split(bool horizontal, int index);
     void changeActiveWidget(TabWidget *widget);
     void statusBarMsg(const QString& message, int timeout = 0);
+    void closeHomeTab();
 
 public:
     explicit TabWidget(quint32 id, QWidget *parent = 0);
@@ -90,8 +91,11 @@ private slots:
     void setConnString(const QString& str, bool hadConn);
     void activateTab();
     void setTabNameAndTooltip(QString name);
+    void newWindow(int idx);
 
 private:
+    inline TabView* tabView() const { return (TabView*)parent(); }
+
     bool checkEvent(QMouseEvent *event);
     void setTabNameAndTooltip(int idx, QString name);
 
@@ -110,6 +114,7 @@ class TabBar : public PlusTabBar
 Q_SIGNALS:
     void split(bool horizontal, int index);
     void pullTab(int idx, TabWidget *origin, int to);
+    void newWindow(int idx);
 
 public:
     explicit TabBar(quint32 id, QWidget * parent = 0);
@@ -129,9 +134,11 @@ private slots:
     void renameTab();
     void splitTop();
     void splitLeft();
+    void toNewWindow();
 
 private:
     void updateDropMarker(const QPoint& pos);
+    inline TabView* tabView() const { return (TabView*)(parent()->parent()); }
 
     int m_cur_menu_tab;
     QRect m_drag_insert;

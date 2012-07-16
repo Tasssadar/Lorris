@@ -25,6 +25,7 @@ class QDrag;
 class WorkTabInfo;
 class DataFileParser;
 class QLabel;
+class MainWindow;
 
 enum saveLayoutItem
 {
@@ -40,12 +41,13 @@ class TabView : public QWidget
     Q_OBJECT
 
 Q_SIGNALS:
-    void openHomeTab(quint32 id);
+    void openHomeTab();
     void statusBarMsg(const QString& message, int timeout = 0);
-    void closeLorris();
+    void closeWindow();
+    void closeHomeTab();
 
 public:
-    explicit TabView(QWidget *parent = 0);
+    explicit TabView(MainWindow *parent);
 
     TabWidget *getActiveWidget() const
     {
@@ -75,10 +77,7 @@ public:
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
 
-    SessionMgr *getSessionMgr()
-    {
-        return &m_session_mgr;
-    }
+    quint32 getWindowId() const { return m_windowId; }
 
 private slots:
     void split(bool horizontal, int index);
@@ -111,10 +110,9 @@ private:
 
     TabWidget *m_active_widget;
     std::vector<QAction*> m_lang_menu;
-
     std::vector<QAction*> m_menus;
 
-    SessionMgr m_session_mgr;
+    quint32 m_windowId;
 
     QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };
@@ -140,12 +138,14 @@ class SplitOverlay : public QWidget
 
 Q_SIGNALS:
     void split(bool horizontal, int index);
+    void newWindow(int index);
 
 public:
     enum position
     {
         POS_RIGHT = 0,
         POS_BOTTOM,
+        POS_CENTER,
 
         POS_MAX
     };

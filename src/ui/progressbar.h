@@ -10,6 +10,8 @@
 
 #include <QProgressBar>
 
+#include "../../dep/ecwin7/ecwin7.h"
+
 class ProgressBar : public QProgressBar
 {
     Q_OBJECT
@@ -19,6 +21,12 @@ public:
 public slots:
     void setValue(int value);
     void hide();
+
+protected:
+    bool winEvent(MSG *message, long *result);
+
+private:
+    EcWin7 m_win7;
 };
 
 #endif // PROGRESSBAR_H

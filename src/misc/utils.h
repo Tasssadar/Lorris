@@ -35,23 +35,14 @@ public:
     static QFont getMonospaceFont(quint8 size = 9);
 
     static void ThrowException(const QString& text, QWidget* parent = 0);
-    static void printToStatusBar(const QString& msg, int timeout = 5000);
-    static void setStatusBar(QStatusBar *bar);
 
     static void playErrorSound();
-
-    static void setWin7(EcWin7 *win7);
-    static void setProgress(int val);
 
     static QString getFontSaveString(const QFont& font);
     static QFont getFontFromString(const QString& str);
 
     static QString saveWindowParams(QWidget *w);
     static void loadWindowParams(QWidget *w, const QString& param);
-
-private:
-    static QStatusBar* m_status_bar;
-    static EcWin7* m_win7;
 };
 
 template <typename T>

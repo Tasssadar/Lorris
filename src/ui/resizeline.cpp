@@ -18,7 +18,7 @@ ResizeLine::ResizeLine(QWidget *parent) : QFrame(parent)
     setOrientation(true);
 }
 
-ResizeLine::ResizeLine(bool vertical, QWidget *parent)
+ResizeLine::ResizeLine(bool vertical, QWidget *parent) : QFrame(parent)
 {
     m_cur_stretch = 50;
     m_resize_layout = NULL;
