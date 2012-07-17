@@ -30,6 +30,7 @@ WidgetArea::WidgetArea(QWidget *parent) :
 {
     m_widgetIdCounter = 0;
     m_skipNextMove = false;
+    m_prev = NULL;
     m_show_grid = sConfig.get(CFG_BOOL_ANALYZER_SHOW_GRID);
     m_grid = sConfig.get(CFG_BOOL_ANALYZER_ENABLE_GRID) ? sConfig.get(CFG_QUINT32_ANALYZER_GRID_SIZE) : 1;
 
@@ -255,6 +256,7 @@ void WidgetArea::mousePressEvent(QMouseEvent *event)
         case Qt::LeftButton:
             m_mouse_orig = event->globalPos();
             setCursor(Qt::ClosedHandCursor);
+            m_prev = new WidgetAreaPreview(this, (QWidget*)parent());
             break;
         case Qt::RightButton:
             m_menu->exec(event->globalPos());
@@ -267,7 +269,11 @@ void WidgetArea::mousePressEvent(QMouseEvent *event)
 void WidgetArea::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
+    {
+        delete m_prev;
+        m_prev = NULL;
         setCursor(Qt::OpenHandCursor);
+    }
 }
 
 void WidgetArea::paintEvent(QPaintEvent *event)
@@ -307,6 +313,7 @@ void WidgetArea::mouseMoveEvent(QMouseEvent *event)
     QPoint n = event->globalPos() - m_mouse_orig;
     moveWidgets(n);
 
+    m_prev->prepareRender();
     m_mouse_orig = event->globalPos();
 }
 
@@ -416,4 +423,67 @@ void WidgetArea::alignWidgets()
 {
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         (*itr)->align();
+}
+
+QRegion WidgetArea::getRegionWithWidgets()
+{
+    QPoint p;
+    QSize s = size();
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+    {
+        DataWidget *w = *itr;
+        p.rx() = std::min(w->x(), p.x());
+        p.ry() = std::min(w->y(), p.y());
+
+        s.rwidth() = std::max(s.width(), w->x() + w->width());
+        s.rheight() = std::max(s.height(), w->y() + w->height());
+    }
+    s.rwidth() += abs(p.x());
+    s.rheight() += abs(p.y());
+    return QRegion(QRect(p, s));
+}
+
+WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)
+{
+    m_widgetArea = area;
+
+    move(area->pos());
+    resize(area->width()/3, area->height()/3);
+    prepareRender();
+    show();
+}
+
+void WidgetAreaPreview::prepareRender()
+{
+    m_region = m_widgetArea->getRegionWithWidgets();
+    m_render = QPixmap(m_region.boundingRect().size());
+    m_widgetArea->render(&m_render, QPoint(), m_region);
+    m_render = m_render.scaled(size(), Qt::KeepAspectRatio);
+
+    // TODO: do not update region size?
+    //if(m_visible.isNull())
+    {
+        float scale = float(m_render.width())/m_region.boundingRect().width();
+        m_visible = m_widgetArea->rect();
+        m_visible.setX(float(abs(m_region.boundingRect().x()))*scale);
+        m_visible.setY(float(abs(m_region.boundingRect().y()))*scale);
+        m_visible.setWidth(float(m_widgetArea->width())*scale);
+        m_visible.setHeight(float(m_widgetArea->height())*scale);
+    }
+    update();
+}
+
+void WidgetAreaPreview::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+    p.setBackgroundMode(Qt::TransparentMode);
+    p.setBackground(QBrush(Qt::transparent));
+    p.setOpacity(0.8);
+
+    p.drawPixmap(QPoint(), m_render);
+
+    QPen pen(Qt::black);
+    pen.setWidth(2);
+    p.setPen(pen);
+    p.drawRect(m_visible);
 }

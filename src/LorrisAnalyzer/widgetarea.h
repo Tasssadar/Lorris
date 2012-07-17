@@ -17,6 +17,7 @@ class DataFileParser;
 class Storage;
 class LorrisAnalyzer;
 class ChildTab;
+class WidgetAreaPreview;
 
 class WidgetArea : public QFrame
 {
@@ -65,6 +66,8 @@ public:
 
     Storage *getStorage() const { return m_storage; }
 
+    QRegion getRegionWithWidgets();
+
 public slots:
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
@@ -103,6 +106,25 @@ private:
     bool m_show_grid;
 
     QMenu *m_menu;
+    WidgetAreaPreview *m_prev;
+};
+
+class WidgetAreaPreview : public QWidget
+{
+    Q_OBJECT
+public:
+    WidgetAreaPreview(WidgetArea *area, QWidget *parent);
+
+    void prepareRender();
+
+protected:
+    void paintEvent(QPaintEvent *);
+
+private:
+    WidgetArea *m_widgetArea;
+    QPixmap m_render;
+    QRegion m_region;
+    QRect m_visible;
 };
 
 #endif // WIDGETAREA_H
