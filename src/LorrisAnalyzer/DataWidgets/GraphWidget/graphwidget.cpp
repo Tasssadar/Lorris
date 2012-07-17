@@ -419,7 +419,7 @@ void GraphWidget::tryReplot()
 {
     if(m_doReplot)
     {
-        if(m_enableAutoScroll)
+        if(m_enableAutoScroll && !m_curves.empty())
         {
             qint32 size = 0;
 
@@ -517,6 +517,8 @@ void GraphWidget::removeCurve(QString name)
 
     m_editCurve->setEnabled(!m_curves.empty());
     m_deleteCurve->setEnabled(!m_curves.empty());
+
+    updateRemoveMapping();
 }
 
 void GraphWidget::removeAllCurves()
