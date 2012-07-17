@@ -173,6 +173,8 @@ protected:
     void childEvent(QChildEvent *event);
     bool eventFilter(QObject *, QEvent *ev);
 
+    virtual void titleDoubleClick();
+
     virtual void processData(analyzer_data *data);
 
     void setIcon(QString path);

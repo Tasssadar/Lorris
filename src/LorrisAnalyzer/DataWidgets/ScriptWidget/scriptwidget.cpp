@@ -261,6 +261,12 @@ void ScriptWidget::blinkError()
     m_error_blink_timer.start(500);
 }
 
+
+void ScriptWidget::titleDoubleClick()
+{
+    setSourceTriggered();
+}
+
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText(tr("Script"));

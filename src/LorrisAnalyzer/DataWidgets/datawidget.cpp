@@ -161,7 +161,7 @@ bool DataWidget::eventFilter(QObject *, QEvent *ev)
 void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton && m_title_label->rect().contains(e->pos()))
-        setTitleTriggered();
+        titleDoubleClick();
     else
         QFrame::mouseDoubleClickEvent(e);
 }
@@ -519,6 +519,13 @@ void DataWidget::copyWidget(QMouseEvent *ev)
 
     m_copy_widget = sWidgetFactory.copy(this);
     m_copy_widget->move(mapToParent(ev->pos()));
+}
+
+void DataWidget::titleDoubleClick()
+{
+    if(m_locked)
+        return;
+    setTitleTriggered();
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
