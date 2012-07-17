@@ -151,6 +151,11 @@ void ScriptEditor::contentsChange(int /*position*/, int charsRemoved, int charsA
 {
     if(charsRemoved != charsAdded)
     {
+        if(!m_filename.isEmpty() && !ui->nameLabel->text().startsWith('*'))
+        {
+            ui->nameLabel->setText(ui->nameLabel->text().prepend('*'));
+            setTabText(tr("%1 - Script").arg(ui->nameLabel->text()));
+        }
         m_changed = true;
         m_contentChanged = true;
         ui->exampleBox->setCurrentIndex(0);
@@ -337,6 +342,7 @@ bool ScriptEditor::save(const QString& file)
     f.write(ui->sourceEdit->toPlainText().toUtf8());
 
     setStatus(tr("File %1 was saved").arg(f.fileName().split("/").last()));
+    setFilename(file);
     return true;
 }
 
