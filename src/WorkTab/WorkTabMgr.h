@@ -20,6 +20,8 @@ class WorkTabInfo;
 class HomeTab;
 class ChildTab;
 
+#define IDMASK_CHILD 0x01000000
+
 class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 {
     Q_OBJECT
@@ -66,8 +68,9 @@ public:
     void removeChildTab(ChildTab *child);
 
     quint32 generateNewWidgetId() { return tabWidgetCounter++; }
-    quint32 generateNewTabId() { return tabIdCounter++; }
     quint32 generateNewWindowId() { return windowIdCounter++; }
+    quint32 generateNewTabId();
+    quint32 generateNewChildId();
 
     bool isFileHandled(const QString& extension) const
     {

@@ -296,3 +296,23 @@ void WorkTabMgr::removeWindow(quint32 id)
 {
     m_windows.remove(id);
 }
+
+quint32 WorkTabMgr::generateNewTabId()
+{
+    if(tabIdCounter >= 0x00FFFFFF)
+    {
+        qWarning("Tab guid overflow");
+        tabIdCounter = 0;
+    }
+    return tabIdCounter++;
+}
+
+quint32 WorkTabMgr::generateNewChildId()
+{
+    if(tabIdCounter >= 0x00FFFFFF)
+    {
+        qWarning("Tab guid overflow");
+        tabIdCounter = 0;
+    }
+    return (IDMASK_CHILD | tabIdCounter++);
+}

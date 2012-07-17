@@ -22,11 +22,14 @@
 #include "../misc/datafileparser.h"
 #include "../WorkTab/childtab.h"
 
+#include "ui_tabswitchwidget.h"
+
 TabWidget::TabWidget(quint32 id, QWidget *parent) :
     QTabWidget(parent)
 {
     m_id = id;
     m_menu = new QMenu(this);
+    m_switchWidget = NULL;
 
     m_tab_bar = new TabBar(m_id, this);
     setTabBar(m_tab_bar);
@@ -103,7 +106,7 @@ void TabWidget::closeTab(int index)
 
     quint32 id = m_tab_ids[index];
 
-    if(id == UINT_MAX)
+    if(id & IDMASK_CHILD)
         sWorkTabMgr.removeChildTab((ChildTab*)widget(index));
     else
     {
@@ -115,6 +118,7 @@ void TabWidget::closeTab(int index)
 
         sWorkTabMgr.removeTab(tab);
         m_tab_ids.erase(std::find(m_tab_ids.begin(), m_tab_ids.end(), id));
+        m_tabHistory.removeOne(id);
     }
 
     changeMenu(currentIndex());
@@ -149,7 +153,7 @@ int TabWidget::pullTab(int index, TabWidget *origin)
     QString name = origin->tabText(index);
 
     Tab *tab = (Tab*)origin->unregisterTab(index);
-    int idx = addTab(tab, name, tab->isWorkTab() ? ((WorkTab*)tab)->getId() : UINT_MAX);
+    int idx = addTab(tab, name, tab->isWorkTab() ? ((WorkTab*)tab)->getId() : ((ChildTab*)tab)->getId());
     origin->checkEmpty();
     tab->setWindowId(tabView()->getWindowId());
     return idx;
@@ -173,6 +177,7 @@ QWidget *TabWidget::unregisterTab(int index)
         disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
 
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
+    m_tabHistory.removeOne(*itr);
     m_tab_ids.erase(itr);
 
     changeMenu(currentIndex());
@@ -181,6 +186,11 @@ QWidget *TabWidget::unregisterTab(int index)
 
 void TabWidget::currentIndexChanged(int idx)
 {
+    if(idx != -1 && idx < m_tab_ids.size())
+    {
+        m_tabHistory.removeOne(m_tab_ids[idx]);
+        m_tabHistory.push_back(m_tab_ids[idx]);
+    }
     changeMenu(idx);
 }
 
@@ -356,9 +366,9 @@ void TabWidget::setTabNameAndTooltip(QString name)
 
 void TabWidget::addChildTab(ChildTab *widget, const QString& name)
 {
-    int idx = addTab(widget, name, UINT_MAX);
-    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
-    m_tab_ids.insert(itr, UINT_MAX);
+    quint32 id = sWorkTabMgr.generateNewChildId();
+    widget->setId(id);
+    addTab(widget, name, id);
 }
 
 void TabWidget::removeChildTab(ChildTab *widget)
@@ -398,6 +408,31 @@ void TabWidget::newWindow(int idx)
 {
     MainWindow *window = sWorkTabMgr.newWindow();
     window->getTabView()->getActiveWidget()->pullTab(idx, this);
+}
+
+void TabWidget::keyPressEvent(QKeyEvent *event)
+{
+    if(!(event->modifiers() & Qt::ControlModifier) || event->key() != Qt::Key_Tab)
+        return QTabWidget::keyPressEvent(event);
+
+    if(!m_switchWidget)
+    {
+        m_switchWidget = new TabSwitchWidget(this);
+        m_switchWidget->move(width()/2 - m_switchWidget->width()/2,
+                             height()/2 - m_switchWidget->height()/2);
+        m_switchWidget->show();
+        connect(m_switchWidget, SIGNAL(setIndex(int)), SLOT(setCurrentIndex(int)));
+    }
+    m_switchWidget->next();
+}
+
+void TabWidget::keyReleaseEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Control)
+    {
+        delete m_switchWidget;
+        m_switchWidget = NULL;
+    }
 }
 
 TabBar::TabBar(quint32 id, QWidget *parent) :
@@ -646,4 +681,67 @@ void TabBar::enableSplit(bool enable)
 void TabBar::toNewWindow()
 {
     emit newWindow(m_cur_menu_tab);
+}
+
+TabSwitchWidget::TabSwitchWidget(QWidget *parent) : QFrame(parent), ui(new Ui::TabSwitchWidget)
+{
+    ui->setupUi(this);
+    m_active = 0;
+
+    const std::vector<quint32>& tab_ids = tabWidget()->getTabIds();
+    for(int i = 0; i < tab_ids.size(); ++i)
+        m_id_pair[tab_ids[i]] = i;
+
+    m_buttons.reserve(tab_ids.size());
+
+    const QList<quint32>& history = tabWidget()->getHistory();
+    for(int i = history.size()-1; i >= 0; --i)
+        createButton(m_id_pair[history[i]]);
+
+    for(int i = 0; i < tab_ids.size(); ++i)
+        if(!history.contains(tab_ids[i]))
+            createButton(i);
+}
+
+TabSwitchWidget::~TabSwitchWidget()
+{
+    delete ui;
+}
+
+void TabSwitchWidget::next()
+{
+    if(m_buttons.empty())
+        return;
+
+    m_buttons[m_active++]->setChecked(false);
+
+    if(m_active >= m_buttons.size())
+        m_active = 0;
+
+    m_buttons[m_active]->setChecked(true);
+    ui->scrollArea->ensureWidgetVisible(m_buttons[m_active]);
+
+    int idx = m_buttons[m_active]->property("tabIndex").toInt();
+    generatePreview(idx);
+    emit setIndex(idx);
+}
+
+void TabSwitchWidget::createButton(int idx)
+{
+    QPushButton *btn = new QPushButton(tabWidget()->tabText(idx), this);
+    btn->setFlat(true);
+    btn->setCheckable(true);
+    btn->setProperty("tabIndex", idx);
+    ui->scrollLayout->insertWidget(ui->scrollLayout->count()-1, btn);
+
+    m_buttons.push_back(btn);
+}
+
+void TabSwitchWidget::generatePreview(int idx)
+{
+    QWidget *w = tabWidget()->widget(idx);
+    QPixmap pixmap(w->size());
+    w->render(&pixmap);
+    pixmap = pixmap.scaled(ui->prevLabel->size(), Qt::KeepAspectRatio);
+    ui->prevLabel->setPixmap(pixmap);
 }

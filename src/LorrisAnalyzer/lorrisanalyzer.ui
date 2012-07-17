@@ -25,6 +25,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
+  </property>
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
@@ -251,8 +254,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>76</width>
-            <height>236</height>
+            <width>90</width>
+            <height>249</height>
            </rect>
           </property>
          </widget>

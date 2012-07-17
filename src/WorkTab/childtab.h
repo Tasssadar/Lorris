@@ -23,6 +23,9 @@ public:
     quint32 getParentId() const { return m_parentId; }
     void setParentId(quint32 id) { m_parentId = id; }
 
+    quint32 getId() const { return m_id; }
+    void setId(quint32 id) { m_id = id; }
+
     void setTabText(const QString &text)
     {
         emit tabText(text);
@@ -30,6 +33,7 @@ public:
 
 protected:
     quint32 m_parentId;
+    quint32 m_id;
 
 private:
 };

@@ -11,6 +11,8 @@
 #include <QTabWidget>
 #include <QTabBar>
 #include <QHash>
+#include <QFrame>
+
 #include "plustabbar.h"
 
 class QPushButton;
@@ -22,6 +24,7 @@ class DataFileParser;
 class Tab;
 class ChildTab;
 class TabView;
+class TabSwitchWidget;
 
 class TabWidget : public QTabWidget
 {
@@ -75,6 +78,9 @@ public:
     void addChildTab(ChildTab *widget, const QString &name);
     void removeChildTab(ChildTab *widget);
 
+    const QList<quint32>& getHistory() const { return m_tabHistory; }
+    const std::vector<quint32>& getTabIds() const { return m_tab_ids; }
+
 public slots:
     int pullTab(int index, TabWidget *origin);
     void pullTab(int index, TabWidget *origin, int to);
@@ -84,6 +90,8 @@ public slots:
 protected:
     void mousePressEvent(QMouseEvent *ev);
     void mouseDoubleClickEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 private slots:
     void tabMoved(int from, int to);
@@ -103,9 +111,12 @@ private:
     quint32 m_id;
     std::vector<quint32> m_tab_ids;
     TabBar *m_tab_bar;
+    QList<quint32> m_tabHistory;
 
     QPushButton *m_menuBtn;
     QMenu *m_menu;
+
+    TabSwitchWidget *m_switchWidget;
 };
 
 class TabBar : public PlusTabBar
@@ -150,6 +161,33 @@ private:
     QAction *m_newTopBottom;
     QAction *m_newLeftRight;
     QPoint m_startDragPos;
+};
+
+namespace Ui {
+    class TabSwitchWidget;
+}
+
+class TabSwitchWidget : public QFrame
+{
+    Q_OBJECT
+Q_SIGNALS:
+    void setIndex(int idx);
+
+public:
+    TabSwitchWidget(QWidget *parent);
+    ~TabSwitchWidget();
+
+    void next();
+
+private:
+    TabWidget *tabWidget() const { return (TabWidget*)parent(); }
+    void createButton(int idx);
+    void generatePreview(int idx);
+
+    Ui::TabSwitchWidget *ui;
+    QHash<quint32, int> m_id_pair;
+    std::vector<QPushButton*> m_buttons;
+    int m_active;
 };
 
 #endif // MAINTABWIDGET_H

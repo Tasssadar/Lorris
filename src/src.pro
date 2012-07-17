@@ -332,7 +332,8 @@ FORMS += \
     misc/sessiondialog.ui \
     ui/settingsdialog.ui \
     LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui \
-    LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui
+    LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui \
+    ui/tabswitchwidget.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

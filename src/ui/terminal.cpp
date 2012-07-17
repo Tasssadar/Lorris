@@ -393,6 +393,12 @@ void Terminal::keyPressEvent(QKeyEvent *event)
             m_command.chop(1);
             return;
         }
+        case Qt::Key_Tab:
+        {
+            if(event->modifiers() & Qt::ControlModifier)
+                return QAbstractScrollArea::keyPressEvent(event);
+            break;
+        }
     }
 
     if(key.isEmpty())
