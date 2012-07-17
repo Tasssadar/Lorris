@@ -174,14 +174,15 @@ void DataWidget::mousePressEvent( QMouseEvent* e )
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
 {
-    if(m_locked)
-        return;
-
     switch(e->buttons())
     {
         case Qt::NoButton:
         {
-            switch(getDragAction(e))
+            quint8 act = getDragAction(e);
+            if(m_locked && act != DRAG_NONE && act != (DRAG_MOVE | DRAG_COPY))
+                return;
+
+            switch(act)
             {
                 case DRAG_NONE:
                     setCursor(Qt::ArrowCursor);
@@ -214,13 +215,17 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
             {
                 case DRAG_NONE: break;
                 case DRAG_MOVE:
-                    dragMove(e, this);
+                    if(!m_locked)
+                        dragMove(e, this);
                     break;
                 case (DRAG_MOVE | DRAG_COPY):
                     if(m_copy_widget) dragMove(e, m_copy_widget);
                     else              copyWidget(e);
                     break;
-                default: dragResize(e); break;
+                default:
+                    if(!m_locked)
+                        dragResize(e);
+                    break;
             }
             break;
         }
