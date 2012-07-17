@@ -94,6 +94,8 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
     m_updateTimer.start(100);
     viewport()->setAutoFillBackground(true);
+
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 Terminal::~Terminal()
@@ -420,6 +422,20 @@ void Terminal::handleInput(const QString &data, int key)
             m_command.clear();
         }
     }
+}
+
+bool Terminal::event(QEvent *event)
+{
+    if(event->type() != QEvent::ShortcutOverride)
+        return QAbstractScrollArea::event(event);
+
+    QKeyEvent *ke = (QKeyEvent*)event;
+    if(ke->modifiers() == Qt::NoModifier)
+    {
+        ke->accept();
+        return true;
+    }
+    return QAbstractScrollArea::event(event);
 }
 
 void Terminal::copyToClipboard()

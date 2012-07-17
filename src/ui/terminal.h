@@ -152,6 +152,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void focusInEvent(QFocusEvent *);
     void focusOutEvent(QFocusEvent *);
+    bool event(QEvent *event);
 
 private slots:
     void copyToClipboard();
