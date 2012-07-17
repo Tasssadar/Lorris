@@ -17,7 +17,7 @@
    <iconset resource="../../../icons.qrc">
     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="mainLayout" stretch="0,70,0,40,0">
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,60,0,40,0">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>

@@ -30,6 +30,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "shupito/terminal_format",   // CFG_QUITN32_SHUPITO_TERM_FMT
     "analyzer/grid_size",        // CFG_QUINT32_ANALYZER_GRID_SIZE
     "general/last_update_check", // CFG_QUINT32_LAST_UPDATE_CHECK
+    "analyzer/script_error_str", // CFG_QUINT32_SCRIPTEDITOR_STR
 };
 
 static const quint32 def_quint32[CFG_QUINT32_NUM] =
@@ -49,6 +50,7 @@ static const quint32 def_quint32[CFG_QUINT32_NUM] =
     0,                           // CFG_QUITN32_SHUPITO_TERM_FMT
     10,                          // CFG_QUINT32_ANALYZER_GRID_SIZE
     0,                           // CFG_QUINT32_LAST_UPDATE_CHECK
+    40,                          // CFG_QUINT32_SCRIPTEDITOR_STR
 };
 
 static const QString keys_string[CFG_STRING_NUM] =

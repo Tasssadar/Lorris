@@ -38,6 +38,8 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     ui->resizeLine->setOrientation(false);
     ui->resizeLine->setResizeLayout(ui->mainLayout);
+    ui->mainLayout->setStretch(ui->mainLayout->indexOf(ui->errorEdit), sConfig.get(CFG_QUINT32_SCRIPTEDITOR_STR));
+    ui->mainLayout->setStretch(ui->mainLayout->indexOf(ui->errorEdit)-2, 100 - sConfig.get(CFG_QUINT32_SCRIPTEDITOR_STR));
     ui->resizeLine->updateStretch();
 
     m_highlighter = NULL;
@@ -87,6 +89,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
 ScriptEditor::~ScriptEditor()
 {
+    sConfig.set(CFG_QUINT32_SCRIPTEDITOR_STR, ui->mainLayout->stretch(ui->mainLayout->indexOf(ui->errorEdit)));
     delete ui;
 }
 
@@ -103,6 +106,7 @@ int ScriptEditor::getEngine()
 void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
 {
     sConfig.set(CFG_STRING_SCRIPT_WND_PARAMS, Utils::saveWindowParams(this));
+    sConfig.set(CFG_QUINT32_SCRIPTEDITOR_STR, ui->mainLayout->stretch(ui->mainLayout->indexOf(ui->errorEdit)));
 
     switch(ui->buttonBox->buttonRole(btn))
     {
