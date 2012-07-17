@@ -443,6 +443,20 @@ QRegion WidgetArea::getRegionWithWidgets()
     return QRegion(QRect(p, s));
 }
 
+void WidgetArea::correctWidgetName(QString &name, DataWidget *widget)
+{
+    int add = 1;
+    QString original = name;
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+    {
+        if(widget != *itr && name == (*itr)->getTitle())
+        {
+            name = original + QString("_%1").arg(add++);
+            itr = m_widgets.begin();
+        }
+    }
+}
+
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)
 {
     m_widgetArea = area;

@@ -150,7 +150,7 @@ public:
 
 public slots:
     virtual void newData(analyzer_data *data, quint32);
-    void setTitle(const QString& title);
+    void setTitle(QString title);
     void lockTriggered();
     void remove();
     void setTitleVisibility(bool visible);

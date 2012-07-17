@@ -118,10 +118,12 @@ void DataWidget::setTitleVisibility(bool visible)
     m_icon_widget->setVisible(visible);
 }
 
-void DataWidget::setTitle(const QString &title)
+void DataWidget::setTitle(QString title)
 {
-    emit titleChanged(title);
+    if(parent()->inherits("WidgetArea"))
+        ((WidgetArea*)parent())->correctWidgetName(title, this);
 
+    emit titleChanged(title);
     m_title_label->setText(title);
 }
 

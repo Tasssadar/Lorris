@@ -53,6 +53,7 @@ public:
 
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void moveWidgets(QPoint diff);
+    void correctWidgetName(QString& name, DataWidget *widget);
 
     void skipNextMove() { m_skipNextMove = true; }
 
