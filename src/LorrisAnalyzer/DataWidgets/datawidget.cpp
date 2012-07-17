@@ -384,7 +384,8 @@ void DataWidget::lockTriggered()
 
 void DataWidget::setTitleTriggered()
 {
-    QString title = QInputDialog::getText(this, tr("Set widget title"), tr("Enter title:"));
+    QString title = QInputDialog::getText(this, tr("Set widget title"), tr("Enter title:"),
+                                          QLineEdit::Normal, getTitle());
     if(title.length() == 0)
         return;
     setTitle(title);
