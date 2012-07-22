@@ -688,6 +688,8 @@ TabSwitchWidget::TabSwitchWidget(QWidget *parent) : QFrame(parent), ui(new Ui::T
     ui->setupUi(this);
     m_active = 0;
 
+    setStyleSheet("background-color: white");
+
     const std::vector<quint32>& tab_ids = tabWidget()->getTabIds();
     for(int i = 0; i < tab_ids.size(); ++i)
         m_id_pair[tab_ids[i]] = i;
@@ -705,6 +707,11 @@ TabSwitchWidget::TabSwitchWidget(QWidget *parent) : QFrame(parent), ui(new Ui::T
 
 TabSwitchWidget::~TabSwitchWidget()
 {
+    if(!m_buttons.empty())
+    {
+        int idx = m_buttons[m_active]->property("tabIndex").toInt();
+        emit setIndex(idx);
+    }
     delete ui;
 }
 
@@ -723,7 +730,6 @@ void TabSwitchWidget::next()
 
     int idx = m_buttons[m_active]->property("tabIndex").toInt();
     generatePreview(idx);
-    emit setIndex(idx);
 }
 
 void TabSwitchWidget::createButton(int idx)
