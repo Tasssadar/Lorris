@@ -257,7 +257,7 @@ void DataWidget::leaveEvent(QEvent *)
 
 void DataWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(m_locked || !event->source() || event->mimeData()->text().at(0) == 'w')
+    if(m_locked || !event->source() || !event->mimeData()->hasText() || event->mimeData()->text().at(0) == 'w')
     {
         QFrame::dragEnterEvent(event);
         return;

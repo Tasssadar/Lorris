@@ -619,7 +619,7 @@ void SplitOverlay::dropEvent(QDropEvent *event)
 {
     event->accept();
 
-    QStringList lst = event->mimeData()->text().split(' ');
+    QStringList lst = QString::fromAscii(event->mimeData()->data("data/tabinfo")).split(' ');
     switch(m_pos)
     {
         case POS_RIGHT:

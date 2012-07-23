@@ -522,7 +522,8 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
     tabWidget->render(&wMap);
 
     if(wMap.width() > 400 || wMap.height() > 400)
-        wMap = wMap.scaled(400, 400, Qt::KeepAspectRatio);
+        wMap = wMap.scaled(400, 400, Qt::KeepAspectRatio,
+                           sConfig.get(CFG_BOOL_SMOOTH_SCALING) ? Qt::SmoothTransformation : Qt::FastTransformation);
 
     QSize size = tabRect(idx).size();
     size.rwidth() = std::max(wMap.width(), size.width());
@@ -540,8 +541,7 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
     p.end();
 
     QMimeData *mime = new QMimeData();
-    mime->setText(QString("%1 %2 %3").arg(m_id).arg(idx).arg(tabView()->getWindowId()));
-    mime->setData("data/tabinfo", QByteArray(1, ' '));
+    mime->setData("data/tabinfo", QString("%1 %2 %3").arg(m_id).arg(idx).arg(tabView()->getWindowId()).toAscii());
 
     drag->setPixmap(map);
     drag->setMimeData(mime);
@@ -567,7 +567,7 @@ void TabBar::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
 
-    QStringList lst = event->mimeData()->text().split(' ');
+    QStringList lst = QString::fromAscii(event->mimeData()->data("data/tabinfo")).split(' ');
     int tabId = lst[1].toInt();
 
     if(event->source() != this)
