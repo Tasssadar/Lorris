@@ -28,6 +28,11 @@ void ScriptStorage::clear()
     m_data.clear();
 }
 
+bool ScriptStorage::exists(const QString &key)
+{
+    return (m_data.find(key) != m_data.end());
+}
+
 ScriptData *ScriptStorage::findKey(const QString &key)
 {
     DataHash::iterator itr = m_data.find(key);

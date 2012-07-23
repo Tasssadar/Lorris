@@ -41,6 +41,7 @@ public:
 
 public slots:
     void clear();
+    bool exists(const QString& key);
 
     void setBool                 (const QString& key, bool val);
     void setUInt32               (const QString& key, quint32 val);
