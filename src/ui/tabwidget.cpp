@@ -748,6 +748,7 @@ void TabSwitchWidget::generatePreview(int idx)
     QWidget *w = tabWidget()->widget(idx);
     QPixmap pixmap(w->size());
     w->render(&pixmap);
-    pixmap = pixmap.scaled(ui->prevLabel->size(), Qt::KeepAspectRatio);
+    pixmap = pixmap.scaled(ui->prevLabel->size(), Qt::KeepAspectRatio,
+                           sConfig.get(CFG_BOOL_SMOOTH_SCALING) ? Qt::SmoothTransformation : Qt::FastTransformation);
     ui->prevLabel->setPixmap(pixmap);
 }

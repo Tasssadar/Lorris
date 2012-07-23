@@ -485,7 +485,7 @@ void TabView::loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHas
 void TabView::showSettings()
 {
     SettingsDialog d(this);
-    connect(&d, SIGNAL(closeLorris()), SIGNAL(closeLorris()));
+    connect(&d, SIGNAL(closeLorris()), qApp, SLOT(closeAllWindows()));
     d.exec();
 }
 

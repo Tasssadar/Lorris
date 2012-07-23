@@ -116,6 +116,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "general/session_connect",    // CFG_BOOL_SESSION_CONNECT
     "general/portable",           // CFG_BOOL_PORTABLE
     "analyzer/script_show_errors",// CFG_BOOL_SHOW_SCRIPT_ERROR
+    "general/smooth_scaling",     // CFG_BOOL_SMOOTH_SCALING
 };
 
 static const bool def_bool[CFG_BOOL_NUM] =
@@ -139,6 +140,7 @@ static const bool def_bool[CFG_BOOL_NUM] =
     true,                         // CFG_BOOL_SESSION_CONNECT
     false,                        // CFG_BOOL_PORTABLE
     false,                        // CFG_BOOL_SHOW_SCRIPT_ERROR
+    true,                         // CFG_BOOL_SMOOTH_SCALING
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =

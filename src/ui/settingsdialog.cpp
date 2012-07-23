@@ -51,6 +51,8 @@ void SettingsDialog::loadSettings()
     ui->sizeBox->setValue(fnt.pointSize());
 
     ui->portableBox->setChecked(sConfig.get(CFG_BOOL_PORTABLE));
+
+    ui->scaleBox->setChecked(sConfig.get(CFG_BOOL_SMOOTH_SCALING));
 }
 
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *btn)
@@ -74,6 +76,8 @@ void SettingsDialog::applySettings()
         setPortable(ui->portableBox->isChecked());
         sConfig.set(CFG_BOOL_PORTABLE, ui->portableBox->isChecked());
     }
+
+    sConfig.set(CFG_BOOL_SMOOTH_SCALING, ui->scaleBox->isChecked());
 }
 
 void SettingsDialog::setPortable(bool portable)

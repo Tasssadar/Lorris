@@ -472,7 +472,8 @@ void WidgetAreaPreview::prepareRender()
     m_region = m_widgetArea->getRegionWithWidgets();
     m_render = QPixmap(m_region.boundingRect().size());
     m_widgetArea->render(&m_render, QPoint(), m_region);
-    m_render = m_render.scaled(size(), Qt::KeepAspectRatio);
+    m_render = m_render.scaled(size(), Qt::KeepAspectRatio,
+                       sConfig.get(CFG_BOOL_SMOOTH_SCALING) ? Qt::SmoothTransformation : Qt::FastTransformation);
 
     // TODO: do not update region size?
     //if(m_visible.isNull())
