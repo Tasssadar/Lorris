@@ -38,7 +38,8 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 
 ScriptWidget::~ScriptWidget()
 {
-    delete m_editor;
+    if(m_editor)
+        emit removeChildTab(m_editor);
 }
 
 void ScriptWidget::setUp(Storage *storage)
