@@ -105,6 +105,7 @@ enum editors
 {
     EDITOR_INTERNAL = 0,
     EDITOR_KATE,
+    EDITOR_QSCINTILLA,
 
     EDITOR_MAX
 };
@@ -118,7 +119,7 @@ Q_SIGNALS:
 
 public:
     static EditorWidget *getEditor(int type, QWidget *parent);
-    static QStringList getEditorNames();
+    static void fillEditorBox(QComboBox *box);
 
     virtual void setText(const QString& text) = 0;
     virtual QString getText() const = 0;
@@ -211,6 +212,35 @@ private:
 };
 
 #endif // USE_KATE
+
+#ifdef USE_QSCI
+
+class QsciScintilla;
+
+class EditorWidgetQSci : public EditorWidget
+{
+    Q_OBJECT
+public:
+    EditorWidgetQSci(QWidget *parent = 0);
+    ~EditorWidgetQSci();
+
+    void setText(const QString& text);
+    QString getText() const;
+
+    void setEngine(int idx);
+
+    QWidget *getWidget();
+    bool hasSettings() { return false; }
+    int getType() const { return EDITOR_QSCINTILLA; }
+
+private slots:
+    void modified(bool mod);
+
+private:
+    QsciScintilla *m_editor;
+};
+
+#endif // USE QSCI
 
 #endif // SCRIPTEDITOR_H
 

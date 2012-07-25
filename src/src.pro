@@ -398,6 +398,8 @@ kate_editor:unix {
     LIBS += -lktexteditor -lkdecore
 }
 
-kate_editor:win32 {
-    warning("Kate editor is only available on Linux")
+qsci_editor:win32 {
+    DEFINES += USE_QSCI
+    LIBS += -L"$$PWD/../dep/qscintilla2/" -lqscintilla2
+    INCLUDEPATH += "$$PWD/../dep/qscintilla2/"
 }

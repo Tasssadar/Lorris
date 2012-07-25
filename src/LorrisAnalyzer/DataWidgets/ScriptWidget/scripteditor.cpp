@@ -40,9 +40,9 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     ui->resizeLine->updateStretch();
 
     quint32 editor_cfg = sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE);
-    ui->editorBox->addItems(EditorWidget::getEditorNames());
+    EditorWidget::fillEditorBox(ui->editorBox);
 
-#ifdef USE_KATE
+#if defined(USE_KATE) || defined(USE_QSCI)
     ui->editorBox->setCurrentIndex(1);
 #else
     ui->editorBox->setCurrentIndex(0);
@@ -396,10 +396,11 @@ void ScriptEditor::on_editorBox_currentIndexChanged(int idx)
     if(idx == -1)
         return;
 
-    if(m_editor && m_editor->getType() == idx)
+    int editorType = ui->editorBox->itemData(idx).toInt();
+    if(m_editor && m_editor->getType() == editorType)
         return;
 
-    EditorWidget *w = EditorWidget::getEditor(idx, this);
+    EditorWidget *w = EditorWidget::getEditor(editorType, this);
     if(!w)
         return;
 
@@ -484,19 +485,24 @@ EditorWidget *EditorWidget::getEditor(int type, QWidget *parent)
 #ifdef USE_KATE
         case EDITOR_KATE: return new EditorWidgetKate(parent);
 #endif
+#ifdef USE_QSCI
+        case EDITOR_QSCINTILLA: return new EditorWidgetQSci(parent);
+#endif
     }
     return NULL;
 }
 
-QStringList EditorWidget::getEditorNames()
+void EditorWidget::fillEditorBox(QComboBox *box)
 {
+    box->addItem(tr("Internal (basic)"), QVariant(EDITOR_INTERNAL));
+
 #ifdef USE_KATE
-    static const QStringList names = (QStringList() << tr("Internal (basic)")
-                                                    << tr("Kate (advanced)"));
-#else
-    static const QStringList names = (QStringList() << tr("Internal (basic)"));
+    box->addItem(tr("Kate (advanced)"), QVariant(EDITOR_KATE));
 #endif
-    return names;
+
+#ifdef USE_QSCI
+    box->addItem(tr("QScintilla (advanced)"), QVariant(EDITOR_QSCINTILLA));
+#endif
 }
 
 EditorWidgetLorris::EditorWidgetLorris(QWidget *parent) : EditorWidget(parent)
@@ -674,3 +680,75 @@ void EditorWidgetKate::loadSettings(KTextEditor::ConfigInterface *iface, cfg_var
 }
 
 #endif // USE_KATE
+
+#ifdef USE_QSCI
+
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexerjavascript.h>
+#include <Qsci/qscilexerpython.h>
+
+EditorWidgetQSci::EditorWidgetQSci(QWidget *parent) : EditorWidget(parent)
+{
+    m_editor = new QsciScintilla(this);
+    m_editor->setMarginLineNumbers(QsciScintilla::NumberMargin, true);
+    m_editor->setMarginWidth(QsciScintilla::NumberMargin, "12322");
+    m_editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+
+    connect(m_editor, SIGNAL(modificationChanged(bool)), SLOT(modified(bool)));
+}
+
+EditorWidgetQSci::~EditorWidgetQSci()
+{
+    QsciLexer *lex = m_editor->lexer();
+    m_editor->setLexer(NULL);
+    delete lex;
+
+    delete m_editor;
+}
+
+QString EditorWidgetQSci::getText() const
+{
+    return m_editor->text();
+}
+
+void EditorWidgetQSci::setText(const QString &text)
+{
+    m_editor->setText(text);
+}
+
+void EditorWidgetQSci::setEngine(int idx)
+{
+    QsciLexer *lex = m_editor->lexer();
+    m_editor->setLexer(NULL);
+    delete lex;
+
+    switch(idx)
+    {
+        case ENGINE_QTSCRIPT:
+            m_editor->setLexer(new QsciLexerJavaScript);
+            m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerJavaScript::Comment);
+            m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerJavaScript::CommentLine);
+            break;
+        case ENGINE_PYTHON:
+            m_editor->setLexer(new QsciLexerPython);
+            m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerPython::Comment);
+            m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerPython::CommentBlock);
+            break;
+        default:
+            m_editor->setLexer(NULL);
+            return;
+    }
+}
+
+QWidget *EditorWidgetQSci::getWidget()
+{
+    return m_editor;
+}
+
+void EditorWidgetQSci::modified(bool mod)
+{
+    if(mod)
+        emit textChangedByUser();
+}
+
+#endif // USE_QSCI
