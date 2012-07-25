@@ -17,6 +17,7 @@
 class QAbstractButton;
 class LineNumber;
 class QSyntaxHighlighter;
+class EditorWidget;
 
 class ScriptEditor : public ChildTab, private Ui::ScriptEditor
 {
@@ -27,7 +28,7 @@ Q_SIGNALS:
     void rejected();
     
 public:
-    ScriptEditor(const QString& source, const QString& filename, int type, const QString &widgetName = 0);
+    ScriptEditor(const QString& source, const QString& filename, int type);
     ~ScriptEditor();
 
     QString getSource();
@@ -44,18 +45,15 @@ public slots:
     void reject();
 
 private slots:
-    void sliderMoved(int val = -1);
-    void rangeChanged(int, int);
-
     void on_buttonBox_clicked(QAbstractButton *btn);
-    void on_sourceEdit_textChanged();
     void on_loadBtn_clicked();
     void on_langBox_currentIndexChanged(int idx);
     void on_errorBtn_toggled(bool checked);
     void on_exampleBox_activated(int index);
     void on_saveBtn_clicked();
+    void on_editorBox_currentIndexChanged(int idx);
 
-    void contentsChange(int position, int charsRemoved, int charsAdded);
+    void textChanged();
     void saveAs();
     void clearStatus() { ui->statusLabel->setText(QString()); }
     void checkChange();
@@ -75,18 +73,21 @@ private:
     bool m_ignoreFocus;
     quint32 m_errors;
 
-    QSyntaxHighlighter *m_highlighter;
-
     QString m_filename;
     QTimer m_status_timer;
+
+    EditorWidget *m_editor;
 };
 
 class LineNumber : public QWidget
 {
+    Q_OBJECT
 public:
     LineNumber(QWidget *parent = 0);
 
     void setLineNum(int lineNum);
+
+public slots:
     void setScroll(int line);
 
 protected:
@@ -99,4 +100,117 @@ private:
     quint8 m_last_w;
 };
 
+
+enum editors
+{
+    EDITOR_INTERNAL = 0,
+    EDITOR_KATE,
+
+    EDITOR_MAX
+};
+
+class EditorWidget : public QWidget
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void textChangedByUser();
+
+public:
+    static EditorWidget *getEditor(int type, QWidget *parent);
+    static QStringList getEditorNames();
+
+    virtual void setText(const QString& text) = 0;
+    virtual QString getText() const = 0;
+
+    virtual void setEngine(int idx) = 0;
+
+    virtual QWidget *getWidget() = 0;
+
+    virtual bool hasSettings() = 0;
+
+    virtual int getType() const = 0;
+
+public slots:
+    virtual void settingsBtn() { }
+
+protected:
+    EditorWidget(QWidget *parent = 0);
+};
+
+class EditorWidgetLorris : public EditorWidget
+{
+    Q_OBJECT
+public:
+    EditorWidgetLorris(QWidget *parent = 0);
+
+    QWidget *getWidget() { return this; }
+
+    void setText(const QString& text)
+    {
+        m_edit->setPlainText(text);
+    }
+
+    QString getText() const
+    {
+        return m_edit->toPlainText();
+    }
+
+    void setEngine(int idx);
+
+    bool hasSettings() { return false; }
+    int getType() const { return EDITOR_INTERNAL; }
+
+private slots:
+    void rangeChanged(int, int);
+    void contentsChange(int /*position*/, int charsRemoved, int charsAdded);
+
+private:
+    LineNumber *m_lineNumber;
+    QPlainTextEdit *m_edit;
+    QSyntaxHighlighter *m_highlighter;
+};
+
+#ifdef USE_KATE
+
+namespace KTextEditor {
+    class Document;
+    class View;
+    class ConfigInterface;
+}
+
+enum cfg_variant;
+
+class EditorWidgetKate : public EditorWidget
+{
+    Q_OBJECT
+public:
+    EditorWidgetKate(QWidget *parent);
+    ~EditorWidgetKate();
+
+    QWidget *getWidget();
+
+    void setEngine(int idx);
+
+    QString getText() const;
+    void setText(const QString &text);
+
+    bool hasSettings();
+    int getType() const { return EDITOR_KATE; }
+
+public slots:
+    void settingsBtn();
+
+private:
+    void save();
+    void saveSettings(KTextEditor::ConfigInterface *iface, cfg_variant cfg);
+    void loadSettings(KTextEditor::ConfigInterface *iface, cfg_variant cfg);
+
+    KTextEditor::Document *m_doc;
+    KTextEditor::View *m_view;
+};
+
+#endif // USE_KATE
+
 #endif // SCRIPTEDITOR_H
+

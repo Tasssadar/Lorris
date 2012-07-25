@@ -178,7 +178,7 @@ void ScriptWidget::setSourceTriggered()
         return;
     }
 
-    m_editor = new ScriptEditor(m_engine->getSource(), m_filename, m_engine_type, getTitle());
+    m_editor = new ScriptEditor(m_engine->getSource(), m_filename, m_engine_type);
     emit addChildTab(m_editor, tr("Script source"));
     m_editor->activateTab();
 
@@ -261,7 +261,6 @@ void ScriptWidget::blinkError()
     m_error_label->setVisible(!m_error_label->isVisible());
     m_error_blink_timer.start(500);
 }
-
 
 void ScriptWidget::titleDoubleClick()
 {

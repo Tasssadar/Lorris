@@ -31,6 +31,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "analyzer/grid_size",        // CFG_QUINT32_ANALYZER_GRID_SIZE
     "general/last_update_check", // CFG_QUINT32_LAST_UPDATE_CHECK
     "analyzer/script_error_str", // CFG_QUINT32_SCRIPTEDITOR_STR
+    "analyzer/script_edit_type", // CFG_QUINT32_SCRIPTEDITOR_TYPE
 };
 
 static const quint32 def_quint32[CFG_QUINT32_NUM] =
@@ -51,6 +52,7 @@ static const quint32 def_quint32[CFG_QUINT32_NUM] =
     10,                          // CFG_QUINT32_ANALYZER_GRID_SIZE
     0,                           // CFG_QUINT32_LAST_UPDATE_CHECK
     40,                          // CFG_QUINT32_SCRIPTEDITOR_STR
+    UINT_MAX,                    // CFG_QUINT32_SCRIPTEDITOR_TYPE
 };
 
 static const QString keys_string[CFG_STRING_NUM] =
@@ -147,6 +149,8 @@ static const QString keys_variant[CFG_VARIANT_NUM] =
 {
     "general/connections",        // CFG_VARIANT_CONNECTIONS
     "general/usb_enumerator",     // CFG_VARIANT_USB_ENUMERATOR
+    "kate/kate_sett_doc",         // CFG_VARIANT_KATE_SETTINGS_DOC
+    "kate/kate_sett_view",        // CFG_VARIANT_KATE_SETTINGS_VIEW
 };
 
 static const QString keys_float[CFG_FLOAT_NUM] =

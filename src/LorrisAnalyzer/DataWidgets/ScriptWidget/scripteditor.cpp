@@ -28,13 +28,10 @@ static const QString filters[ENGINE_MAX] =
     ScriptEditor::tr("Python file (*.py);;Any file (*.*)"),
 };
 
-ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int type, const QString &widgetName) :
-    ChildTab(NULL), ui(new Ui::ScriptEditor)
+ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int type) :
+    ChildTab(NULL), ui(new Ui::ScriptEditor), m_editor(NULL)
 {
     ui->setupUi(this);
-
-    m_line_num = new LineNumber(this);
-    ui->editLayout->insertWidget(0, m_line_num);
 
     ui->resizeLine->setOrientation(false);
     ui->resizeLine->setResizeLayout(ui->mainLayout);
@@ -42,27 +39,23 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     ui->mainLayout->setStretch(ui->mainLayout->indexOf(ui->errorEdit)-2, 100 - sConfig.get(CFG_QUINT32_SCRIPTEDITOR_STR));
     ui->resizeLine->updateStretch();
 
-    m_highlighter = NULL;
+    quint32 editor_cfg = sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE);
+    ui->editorBox->addItems(EditorWidget::getEditorNames());
+
+#ifdef USE_KATE
+    ui->editorBox->setCurrentIndex(1);
+#else
+    ui->editorBox->setCurrentIndex(0);
+#endif
+
+    if(editor_cfg != UINT_MAX)
+        ui->editorBox->setCurrentIndex(editor_cfg);
+
     m_errors = 0;
     m_ignoreNextFocus = false;
     m_ignoreFocus = false;
 
-#ifdef Q_OS_MAC
-    ui->sourceEdit->setFont(Utils::getMonospaceFont(12));
-#else
-    ui->sourceEdit->setFont(Utils::getMonospaceFont());
-#endif
-    setWindowTitle(windowTitle() + widgetName);
-
-    QScrollBar *bar = ui->sourceEdit->verticalScrollBar();
-    connect(bar,            SIGNAL(rangeChanged(int,int)),     SLOT(rangeChanged(int,int)));
-    connect(bar,            SIGNAL(valueChanged(int)),         SLOT(sliderMoved(int)));
-    connect(ui->sourceEdit->document(), SIGNAL(contentsChange(int,int,int)),
-                                        SLOT(contentsChange(int,int,int)));
-
-    ui->sourceEdit->setPlainText(source);
-    ui->sourceEdit->setTabStopWidth(ui->sourceEdit->fontMetrics().width(' ') * 4);
-
+    m_editor->setText(source);
     m_changed = !source.isNull();
 
     ui->langBox->addItems(ScriptEngine::getEngineList());
@@ -95,7 +88,7 @@ ScriptEditor::~ScriptEditor()
 
 QString ScriptEditor::getSource()
 {
-    return ui->sourceEdit->toPlainText();
+    return m_editor->getText();
 }
 
 int ScriptEditor::getEngine()
@@ -142,34 +135,16 @@ void ScriptEditor::reject()
     }
 }
 
-void ScriptEditor::on_sourceEdit_textChanged()
+void ScriptEditor::textChanged()
 {
-    m_line_num->setLineNum(ui->sourceEdit->document()->lineCount());
-}
-
-void ScriptEditor::contentsChange(int /*position*/, int charsRemoved, int charsAdded)
-{
-    if(charsRemoved != charsAdded)
+    if(!m_filename.isEmpty() && !ui->nameLabel->text().startsWith('*'))
     {
-        if(!m_filename.isEmpty() && !ui->nameLabel->text().startsWith('*'))
-        {
-            ui->nameLabel->setText(ui->nameLabel->text().prepend('*'));
-            setTabText(tr("%1 - Script").arg(ui->nameLabel->text()));
-        }
-        m_changed = true;
-        m_contentChanged = true;
-        ui->exampleBox->setCurrentIndex(0);
+        ui->nameLabel->setText(ui->nameLabel->text().prepend('*'));
+        setTabText(tr("%1 - Script").arg(ui->nameLabel->text()));
     }
-}
-
-void ScriptEditor::sliderMoved(int val)
-{
-    m_line_num->setScroll(val);
-}
-
-void ScriptEditor::rangeChanged(int, int)
-{
-    m_line_num->setScroll(ui->sourceEdit->verticalScrollBar()->value());
+    m_changed = true;
+    m_contentChanged = true;
+    ui->exampleBox->setCurrentIndex(0);
 }
 
 void ScriptEditor::on_loadBtn_clicked()
@@ -184,8 +159,7 @@ void ScriptEditor::on_loadBtn_clicked()
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return Utils::ThrowException(tr("Failed to open \"%1!\"").arg(filename));
 
-    ui->sourceEdit->clear();
-    ui->sourceEdit->setPlainText(QString::fromUtf8(file.readAll()));
+    m_editor->setText(QString::fromUtf8(file.readAll()));
     file.close();
 
     sConfig.set(CFG_STRING_ANALYZER_JS, filename);
@@ -239,23 +213,12 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
             "\treturn;\n")
         };
 
-        ui->sourceEdit->setPlainText(defaultCode[idx]);
+        m_editor->setText(defaultCode[idx]);
         m_changed = false;
     }
 
-    delete m_highlighter;
-    switch(idx)
-    {
-        case ENGINE_QTSCRIPT:
-            m_highlighter = new QScriptSyntaxHighlighter(ui->sourceEdit->document());
-            break;
-        case ENGINE_PYTHON:
-            m_highlighter = new PythonHighlighter(ui->sourceEdit->document());
-            break;
-        default:
-            m_highlighter = NULL;
-            break;
-    }
+    m_editor->setEngine(idx);
+
     updateExampleList();
     setFilename(QString());
 }
@@ -288,7 +251,7 @@ void ScriptEditor::on_exampleBox_activated(int index)
     if(!file.open(QIODevice::ReadOnly))
         return;
 
-    ui->sourceEdit->setPlainText(file.readAll());
+    m_editor->setText(QString::fromUtf8(file.readAll()));
     ui->exampleBox->setCurrentIndex(index);
     m_changed = false;
 }
@@ -339,7 +302,7 @@ bool ScriptEditor::save(const QString& file)
         return false;
     }
 
-    f.write(ui->sourceEdit->toPlainText().toUtf8());
+    f.write(m_editor->getText().toUtf8());
 
     setStatus(tr("File %1 was saved").arg(f.fileName().split("/").last()));
     setFilename(file);
@@ -378,7 +341,7 @@ void ScriptEditor::checkChange()
         return;
 
     QByteArray disk = MD5(f.readAll());
-    QByteArray here = MD5(ui->sourceEdit->toPlainText().toUtf8());
+    QByteArray here = MD5(m_editor->getText().toUtf8());
     f.close();
 
     if(disk != here)
@@ -401,7 +364,7 @@ void ScriptEditor::checkChange()
             case QMessageBox::AcceptRole:
                 if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
                     Utils::ThrowException(tr("Can't open file %1 for reading!").arg(m_filename));
-                ui->sourceEdit->setPlainText(QString::fromUtf8(f.readAll()));
+                m_editor->setText(QString::fromUtf8(f.readAll()));
                 break;
             case QMessageBox::RejectRole:
                 m_ignoreNextFocus = true;
@@ -420,6 +383,36 @@ void ScriptEditor::focusChanged(QWidget *prev, QWidget *now)
         else
             checkChange();
     }
+}
+
+void ScriptEditor::on_editorBox_currentIndexChanged(int idx)
+{
+    if(idx == -1)
+        return;
+
+    if(m_editor && m_editor->getType() == idx)
+        return;
+
+    EditorWidget *w = EditorWidget::getEditor(idx, this);
+    if(!w)
+        return;
+
+    if(m_editor)
+    {
+        w->setText(m_editor->getText());
+        delete m_editor;
+    }
+    w->setEngine(ui->langBox->currentIndex());
+
+    m_editor = w;
+    ui->mainLayout->insertWidget(1, m_editor->getWidget(),
+                                 100 - ui->mainLayout->stretch(ui->mainLayout->indexOf(ui->errorEdit)));
+    ui->editSettBtn->setVisible(m_editor->hasSettings());
+
+    connect(m_editor, SIGNAL(textChangedByUser()), SLOT(textChanged()));
+    connect(ui->editSettBtn, SIGNAL(clicked()), m_editor, SLOT(settingsBtn()));
+
+    sConfig.set(CFG_QUINT32_SCRIPTEDITOR_TYPE, idx);
 }
 
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)
@@ -471,3 +464,206 @@ void LineNumber::paintEvent(QPaintEvent */*event*/)
         h += m_char_h;
     }
 }
+
+EditorWidget::EditorWidget(QWidget *parent) : QWidget(parent)
+{
+
+}
+
+EditorWidget *EditorWidget::getEditor(int type, QWidget *parent)
+{
+    switch(type)
+    {
+        case EDITOR_INTERNAL: return new EditorWidgetLorris(parent);
+#ifdef USE_KATE
+        case EDITOR_KATE: return new EditorWidgetKate(parent);
+#endif
+    }
+    return NULL;
+}
+
+QStringList EditorWidget::getEditorNames()
+{
+#ifdef USE_KATE
+    static const QStringList names = (QStringList() << tr("Internal (basic)")
+                                                    << tr("Kate (advanced)"));
+#else
+    static const QStringList names = (QStringList() << tr("Internal (basic)"));
+#endif
+    return names;
+}
+
+EditorWidgetLorris::EditorWidgetLorris(QWidget *parent) : EditorWidget(parent)
+{
+    QHBoxLayout *l = new QHBoxLayout(this);
+
+    m_lineNumber = new LineNumber(this);
+    m_edit = new QPlainTextEdit(this);
+
+    l->addWidget(m_lineNumber);
+    l->addWidget(m_edit, 1);
+
+    m_highlighter = NULL;
+
+    m_edit->setTabStopWidth(m_edit->fontMetrics().width(' ') * 4);
+
+#ifdef Q_OS_MAC
+    m_edit->setFont(Utils::getMonospaceFont(12));
+#else
+    m_edit->setFont(Utils::getMonospaceFont());
+#endif
+
+    QScrollBar *bar = m_edit->verticalScrollBar();
+    connect(bar,    SIGNAL(rangeChanged(int,int)),           SLOT(rangeChanged(int,int)));
+    connect(bar,    SIGNAL(valueChanged(int)), m_lineNumber, SLOT(setScroll(int)));
+    connect(m_edit->document(), SIGNAL(contentsChange(int,int,int)), SLOT(contentsChange(int,int,int)));
+}
+
+void EditorWidgetLorris::rangeChanged(int, int)
+{
+    m_lineNumber->setScroll(m_edit->verticalScrollBar()->value());
+}
+
+void EditorWidgetLorris::contentsChange(int /*position*/, int charsRemoved, int charsAdded)
+{
+    if(charsRemoved != charsAdded)
+        emit textChangedByUser();
+    m_lineNumber->setLineNum(m_edit->document()->lineCount());
+}
+
+void EditorWidgetLorris::setEngine(int idx)
+{
+    delete m_highlighter;
+    switch(idx)
+    {
+        case ENGINE_QTSCRIPT:
+            m_highlighter = new QScriptSyntaxHighlighter(m_edit->document());
+            break;
+        case ENGINE_PYTHON:
+            m_highlighter = new PythonHighlighter(m_edit->document());
+            break;
+        default:
+            m_highlighter = NULL;
+            break;
+    }
+}
+
+#ifdef USE_KATE
+
+#include <ktexteditor/document.h>
+#include <ktexteditor/view.h>
+#include <ktexteditor/editor.h>
+#include <ktexteditor/editorchooser.h>
+#include <ktexteditor/configinterface.h>
+#include <kconfig.h>
+
+EditorWidgetKate::EditorWidgetKate(QWidget *parent) : EditorWidget(parent)
+{
+    KTextEditor::Editor *editor = KTextEditor::EditorChooser::editor();
+    m_doc = editor->createDocument(this);
+    m_view = m_doc->createView(this);
+
+    KTextEditor::ConfigInterface *iface = qobject_cast<KTextEditor::ConfigInterface*>(m_doc);
+    loadSettings(iface, CFG_VARIANT_KATE_SETTINGS_DOC);
+
+    iface = qobject_cast<KTextEditor::ConfigInterface*>(m_view);
+    iface->setConfigValue("line-numbers", true);
+    loadSettings(iface, CFG_VARIANT_KATE_SETTINGS_VIEW);
+
+    // FIXME: Two config files. Great.
+    KConfig config("lorrisrc");
+    m_doc->editor()->readConfig(&config);
+}
+
+EditorWidgetKate::~EditorWidgetKate()
+{
+    save();
+}
+
+bool EditorWidgetKate::hasSettings()
+{
+    return m_doc->editor()->configDialogSupported();
+}
+
+QWidget *EditorWidgetKate::getWidget()
+{
+    return m_view;
+}
+
+void EditorWidgetKate::setText(const QString &text)
+{
+    m_doc->setText(text);
+}
+
+QString EditorWidgetKate::getText() const
+{
+    return m_doc->text();
+}
+
+void EditorWidgetKate::setEngine(int idx)
+{
+    switch(idx)
+    {
+        case ENGINE_QTSCRIPT:
+            m_doc->setMode("JavaScript");
+            break;
+        case ENGINE_PYTHON:
+            m_doc->setMode("Python");
+            break;
+        default:
+            m_doc->setMode("");
+            break;
+    }
+}
+
+void EditorWidgetKate::settingsBtn()
+{
+    m_doc->editor()->configDialog((QWidget*)parent());
+
+    KConfig config("lorrisrc");
+    m_doc->editor()->writeConfig(&config);
+
+    save();
+}
+
+void EditorWidgetKate::save()
+{
+    KTextEditor::ConfigInterface *iface = qobject_cast<KTextEditor::ConfigInterface*>(m_doc);
+    saveSettings(iface, CFG_VARIANT_KATE_SETTINGS_DOC);
+
+    iface = qobject_cast<KTextEditor::ConfigInterface*>(m_view);
+    saveSettings(iface, CFG_VARIANT_KATE_SETTINGS_VIEW);
+}
+
+void EditorWidgetKate::saveSettings(KTextEditor::ConfigInterface *iface, cfg_variant cfg)
+{
+    if(!iface)
+        return;
+
+    QStringList keys = iface->configKeys();
+    QHash<QString, QVariant> values;
+    for(int i = 0; i < keys.size(); ++i)
+    {
+        // FIXME: QColor breaks whole config entry on linux. Qt bug?
+        // "QVariant::load: unable to load type 67."
+        // "QVariant::save: unable to save type 67."
+        if(iface->configValue(keys[i]).type() == QVariant::Color)
+            continue;
+
+        values[keys[i]] = iface->configValue(keys[i]);
+    }
+
+    sConfig.set(cfg, values);
+}
+
+void EditorWidgetKate::loadSettings(KTextEditor::ConfigInterface *iface, cfg_variant cfg)
+{
+    if(!iface)
+        return;
+
+    QHash<QString, QVariant> values = sConfig.get(cfg).toHash();
+    for(QHash<QString, QVariant>::iterator itr = values.begin(); itr != values.end(); ++itr)
+        iface->setConfigValue(itr.key(), *itr);
+}
+
+#endif // USE_KATE

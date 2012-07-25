@@ -14,3 +14,6 @@ unix {
     # You must have version >= 6.0.0 installed
     #CONFIG += system_qwt
 }
+
+# Comment out following line if you want to disable Kate editor for ScriptWidget in analyzer
+CONFIG += kate_editor

@@ -392,3 +392,8 @@ libusby {
     HEADERS += \
         connection/usbshupitoconn.h
 }
+
+kate_editor {
+    DEFINES += USE_KATE
+    LIBS += -lktexteditor -lkdecore
+}
