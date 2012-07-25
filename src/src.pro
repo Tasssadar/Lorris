@@ -403,3 +403,8 @@ qsci_editor:win32 {
     LIBS += -L"$$PWD/../dep/qscintilla2/" -lqscintilla2
     INCLUDEPATH += "$$PWD/../dep/qscintilla2/"
 }
+
+qsci_editor:unix {
+    DEFINES += USE_QSCI
+    LIBS += -lqscintilla2
+}

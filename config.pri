@@ -18,7 +18,6 @@ unix {
     CONFIG += kate_editor
 }
 
-win32 {
-    # Comment out following line if you want to disable QScintilla editor for ScriptWidget
-    CONFIG += qsci_editor
-}
+# Comment out following line if you want to disable QScintilla editor for ScriptWidget
+CONFIG += qsci_editor
+
