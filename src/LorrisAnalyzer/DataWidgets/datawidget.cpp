@@ -320,32 +320,26 @@ void DataWidget::dragResize(QMouseEvent* e)
     int x = pos().x();
     int y = pos().y();
 
-    QPoint m_pos = e->pos();
-    mapXYToGrid(m_pos);
-    int gx = x + m_pos.x();
+    QPoint p = e->pos();
+    mapXYToGrid(p);
+    p -= ((WidgetArea*)parent())->getGridOffset();
 
     if(m_dragAction & DRAG_RES_LEFT)
     {
+        int gx = x + e->pos().x();
+        mapToGrid(gx);
+
         w += x - gx;
         x = gx;
     }
     else if(m_dragAction & DRAG_RES_RIGHT)
-        w = m_pos.x();
+        w = p.x();
 
     if(m_dragAction & DRAG_RES_BOTTOM)
-        h = m_pos.y();
+        h = p.y();
 
     if(w < minimumWidth())
-    {
-        w = width();
         x = pos().x();
-    }
-
-    if(h < minimumHeight())
-    {
-        h = height();
-        y = pos().y();
-    }
 
     resize(w, h);
     move(x, y);

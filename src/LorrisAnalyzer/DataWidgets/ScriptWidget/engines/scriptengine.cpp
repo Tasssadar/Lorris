@@ -33,7 +33,6 @@ ScriptEngine::~ScriptEngine()
     delete m_storage;
 }
 
-
 QStringList ScriptEngine::getEngineList()
 {
 #ifdef WITH_PYTHON
