@@ -121,6 +121,10 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
     // scripts filename
     file->writeBlockIdentifier("scriptWFilename");
     file->writeString(m_filename);
+
+    // script editor
+    file->writeBlockIdentifier("scriptWEditor");
+    file->writeVal(!m_editor.isNull());
 }
 
 void ScriptWidget::loadWidgetInfo(DataFileParser *file)
@@ -168,6 +172,11 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     {
         m_engine->setSource(source);
     } catch(const QString&) { }
+
+    // Editor settings
+    if(file->seekToNextBlock("scriptWEditor", BLOCK_WIDGET))
+        if(file->readVal<bool>())
+            setSourceTriggered();
 }
 
 void ScriptWidget::setSourceTriggered()

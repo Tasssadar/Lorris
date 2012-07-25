@@ -299,10 +299,11 @@ void TabWidget::loadData(DataFileParser *file)
 
         tab->setParent(this);
         tab->setWindowId(((TabView*)parent())->getWindowId());
-        tab->loadData(file);
 
         sWorkTabMgr.registerTab(tab);
         addTab(tab, name, tab->getId());
+
+        tab->loadData(file);
     }
 
     if(file->seekToNextBlock("tabWidgetIdx", "tabWidget"))
