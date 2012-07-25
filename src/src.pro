@@ -239,6 +239,60 @@ HEADERS += ui/mainwindow.h \
     WorkTab/childtab.h \
     WorkTab/tab.h
 
+FORMS += \
+    LorrisAnalyzer/sourcedialog.ui \
+    LorrisAnalyzer/lorrisanalyzer.ui \
+    LorrisAnalyzer/sourceselectdialog.ui \
+    LorrisShupito/lorrisshupito.ui \
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui \
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui \
+    LorrisTerminal/lorristerminal.ui \
+    ui/hometab.ui \
+    LorrisProxy/lorrisproxy.ui \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
+    LorrisAnalyzer/playback.ui \
+    ui/chooseconnectiondlg.ui \
+    LorrisShupito/overvccdialog.ui \
+    ui/rangeselectdialog.ui \
+    updatecheck.ui \
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
+    ui/terminalsettings.ui \
+    misc/sessiondialog.ui \
+    ui/settingsdialog.ui \
+    LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui \
+    LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui \
+    ui/tabswitchwidget.ui
+
+RESOURCES += \
+    LorrisAnalyzer/DataWidgetIcons.qrc \
+    LorrisShupito/shupitoicons.qrc \
+    icons.qrc \
+    actions.qrc \
+    shared/definitions.qrc \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc
+
+RC_FILE = winicon.rc
+
+OTHER_FILES += \
+    ../dep/qextserialport/qextserialport.pri \
+    shared/fusedesc.txt \
+    shared/chipdefs.txt \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.py
+
+PRECOMPILED_HEADER  = pch.h
+precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+    DEFINES += USING_PCH
+}
+
 win32 {
     CONFIG -= flat
     CONFIG += libusby
@@ -311,60 +365,6 @@ macx {
     INSTALLS += target translations qext
 }
 
-FORMS += \
-    LorrisAnalyzer/sourcedialog.ui \
-    LorrisAnalyzer/lorrisanalyzer.ui \
-    LorrisAnalyzer/sourceselectdialog.ui \
-    LorrisShupito/lorrisshupito.ui \
-    LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui \
-    LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui \
-    LorrisTerminal/lorristerminal.ui \
-    ui/hometab.ui \
-    LorrisProxy/lorrisproxy.ui \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
-    LorrisAnalyzer/playback.ui \
-    ui/chooseconnectiondlg.ui \
-    LorrisShupito/overvccdialog.ui \
-    ui/rangeselectdialog.ui \
-    updatecheck.ui \
-    LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
-    ui/terminalsettings.ui \
-    misc/sessiondialog.ui \
-    ui/settingsdialog.ui \
-    LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui \
-    LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui \
-    ui/tabswitchwidget.ui
-
-RESOURCES += \
-    LorrisAnalyzer/DataWidgetIcons.qrc \
-    LorrisShupito/shupitoicons.qrc \
-    icons.qrc \
-    actions.qrc \
-    shared/definitions.qrc \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc
-
-RC_FILE = winicon.rc
-
-OTHER_FILES += \
-    ../dep/qextserialport/qextserialport.pri \
-    shared/fusedesc.txt \
-    shared/chipdefs.txt \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.py \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/default.py \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/slider.py \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.py \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.py
-
-PRECOMPILED_HEADER  = pch.h
-precompile_header:!isEmpty(PRECOMPILED_HEADER) {
-    DEFINES += USING_PCH
-}
-
 python:unix {
     LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt
     DEFINES += WITH_PYTHON
@@ -393,7 +393,11 @@ libusby {
         connection/usbshupitoconn.h
 }
 
-kate_editor {
+kate_editor:unix {
     DEFINES += USE_KATE
     LIBS += -lktexteditor -lkdecore
+}
+
+kate_editor:win32 {
+    warning("Kate editor is only available on Linux")
 }

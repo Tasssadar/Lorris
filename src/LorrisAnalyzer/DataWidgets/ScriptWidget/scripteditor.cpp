@@ -51,6 +51,12 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     if(editor_cfg != UINT_MAX)
         ui->editorBox->setCurrentIndex(editor_cfg);
 
+    if(ui->editorBox->count() == 1)
+    {
+        ui->editorLabel->hide();
+        ui->editorBox->hide();
+    }
+
     m_errors = 0;
     m_ignoreNextFocus = false;
     m_ignoreFocus = false;
@@ -496,6 +502,7 @@ QStringList EditorWidget::getEditorNames()
 EditorWidgetLorris::EditorWidgetLorris(QWidget *parent) : EditorWidget(parent)
 {
     QHBoxLayout *l = new QHBoxLayout(this);
+    this->setStyleSheet("margin: 0px; padding: 0px");
 
     m_lineNumber = new LineNumber(this);
     m_edit = new QPlainTextEdit(this);
