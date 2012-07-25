@@ -126,6 +126,7 @@ private:
     QPixmap m_render;
     QRegion m_region;
     QRect m_visible;
+    bool m_smooth;
 };
 
 #endif // WIDGETAREA_H

@@ -172,6 +172,7 @@ protected:
     void leaveEvent(QEvent *);
     void childEvent(QChildEvent *event);
     bool eventFilter(QObject *, QEvent *ev);
+    void focusInEvent(QFocusEvent *event);
 
     virtual void titleDoubleClick();
 

@@ -460,6 +460,7 @@ void WidgetArea::correctWidgetName(QString &name, DataWidget *widget)
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)
 {
     m_widgetArea = area;
+    m_smooth = sConfig.get(CFG_BOOL_SMOOTH_SCALING);
 
     move(area->pos());
     resize(area->width()/3, area->height()/3);
@@ -473,17 +474,17 @@ void WidgetAreaPreview::prepareRender()
     m_render = QPixmap(m_region.boundingRect().size());
     m_widgetArea->render(&m_render, QPoint(), m_region);
     m_render = m_render.scaled(size(), Qt::KeepAspectRatio,
-                       sConfig.get(CFG_BOOL_SMOOTH_SCALING) ? Qt::SmoothTransformation : Qt::FastTransformation);
+                       m_smooth ? Qt::SmoothTransformation : Qt::FastTransformation);
 
     // TODO: do not update region size?
     //if(m_visible.isNull())
     {
         float scale = float(m_render.width())/m_region.boundingRect().width();
         m_visible = m_widgetArea->rect();
-        m_visible.setX(float(abs(m_region.boundingRect().x()))*scale);
-        m_visible.setY(float(abs(m_region.boundingRect().y()))*scale);
-        m_visible.setWidth(float(m_widgetArea->width())*scale);
-        m_visible.setHeight(float(m_widgetArea->height())*scale);
+        m_visible.setX(abs(m_region.boundingRect().x())*scale);
+        m_visible.setY(abs(m_region.boundingRect().y())*scale);
+        m_visible.setWidth(m_widgetArea->width()*scale);
+        m_visible.setHeight(m_widgetArea->height()*scale);
     }
     update();
 }

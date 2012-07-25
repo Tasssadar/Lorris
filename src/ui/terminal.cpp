@@ -720,14 +720,16 @@ void Terminal::mouseMoveEvent(QMouseEvent *event)
     viewport()->update();
 }
 
-void Terminal::focusInEvent(QFocusEvent *)
+void Terminal::focusInEvent(QFocusEvent *event)
 {
     viewport()->update();
+    QAbstractScrollArea::focusInEvent(event);
 }
 
-void Terminal::focusOutEvent(QFocusEvent *)
+void Terminal::focusOutEvent(QFocusEvent *event)
 {
     viewport()->update();
+    QAbstractScrollArea::focusOutEvent(event);
 }
 
 void Terminal::setFmt(int fmt)

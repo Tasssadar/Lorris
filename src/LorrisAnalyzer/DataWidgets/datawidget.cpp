@@ -54,6 +54,7 @@ DataWidget::DataWidget(QWidget *parent) :
     setLineWidth(1);
     setMidLineWidth(2);
     setAutoFillBackground(true);
+    setFocusPolicy(Qt::StrongFocus);
 
     QPalette p = palette();
     p.setColor(QPalette::Window, QColor("#F5F5F5"));
@@ -153,8 +154,17 @@ void DataWidget::childEvent(QChildEvent *event)
 
 bool DataWidget::eventFilter(QObject *, QEvent *ev)
 {
-    if(ev->type() == QEvent::Enter)
-        setCursor(Qt::ArrowCursor);
+    switch(ev->type())
+    {
+        case QEvent::Enter:
+            setCursor(Qt::ArrowCursor);
+            break;
+        case QEvent::FocusIn:
+            raise();
+            break;
+        default:
+            break;
+    }
     return false;
 }
 
@@ -532,6 +542,12 @@ void DataWidget::titleDoubleClick()
     if(m_locked)
         return;
     setTitleTriggered();
+}
+
+void DataWidget::focusInEvent(QFocusEvent *event)
+{
+    QFrame::focusInEvent(event);
+    this->raise();
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
