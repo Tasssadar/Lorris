@@ -117,8 +117,6 @@ void TabWidget::closeTab(int index)
         disconnect(tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
 
         sWorkTabMgr.removeTab(tab);
-        m_tab_ids.erase(std::find(m_tab_ids.begin(), m_tab_ids.end(), id));
-        m_tabHistory.removeOne(id);
     }
 
     changeMenu(currentIndex());
@@ -175,10 +173,6 @@ QWidget *TabWidget::unregisterTab(int index)
 
     if(tab->isWorkTab())
         disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
-
-    std::vector<quint32>::iterator itr = m_tab_ids.begin() + index;
-    m_tabHistory.removeOne(*itr);
-    m_tab_ids.erase(itr);
 
     changeMenu(currentIndex());
     return tab;
@@ -380,9 +374,6 @@ void TabWidget::removeChildTab(ChildTab *widget)
 
     removeTab(idx);
 
-    std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
-    m_tab_ids.erase(itr);
-
     changeMenu(currentIndex());
     checkEmpty();
 }
@@ -433,6 +424,15 @@ void TabWidget::keyReleaseEvent(QKeyEvent *event)
     {
         delete m_switchWidget;
         m_switchWidget = NULL;
+    }
+}
+
+void TabWidget::tabRemoved(int index)
+{
+    if(m_tab_ids.size() != count())
+    {
+        m_tabHistory.removeOne(m_tab_ids[index]);
+        m_tab_ids.erase(m_tab_ids.begin() + index);
     }
 }
 

@@ -65,7 +65,6 @@ QString MainWindow::getVersionString()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-
     if(!sWorkTabMgr.onTabsClose(getId()))
         event->ignore();
     else

@@ -101,6 +101,7 @@ private slots:
     void activateTab();
     void setTabNameAndTooltip(QString name);
     void newWindow(int idx);
+    void tabRemoved(int index);
 
 private:
     inline TabView* tabView() const { return (TabView*)parent(); }

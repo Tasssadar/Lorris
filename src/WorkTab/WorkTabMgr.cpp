@@ -74,8 +74,16 @@ WorkTab *WorkTabMgr::GetNewTab(WorkTabInfo *info)
 
 void WorkTabMgr::workTabDestroyed(QObject *tab)
 {
-    m_workTabs.remove(((WorkTab*)tab)->getId());
-    m_children.remove(((WorkTab*)tab)->getId());
+    WorkTab *w_tab = (WorkTab*)tab;
+    m_workTabs.remove(w_tab->getId());
+
+    if(m_children.contains(w_tab->getId()))
+    {
+        const std::set<ChildTab*>& children = m_children[w_tab->getId()];
+        for(std::set<ChildTab*>::const_iterator itr = children.begin(); itr != children.end(); ++itr)
+            delete *itr;
+        m_children.remove(w_tab->getId());
+    }
 }
 
 void WorkTabMgr::AddWorkTab(WorkTab *tab, MainWindow *window, QString label)
@@ -130,6 +138,7 @@ void WorkTabMgr::removeTab(WorkTab *tab)
     m_workTabs.remove(tab->getId());
     delete tab;
 }
+
 bool WorkTabMgr::onTabsClose(quint32 windowId)
 {
     for(WorkTabMap::iterator itr = m_workTabs.begin(); itr != m_workTabs.end(); ++itr)
