@@ -201,6 +201,7 @@ public:
 
 public slots:
     void settingsBtn();
+    void modified(KTextEditor::Document*);
 
 private:
     void save();

@@ -586,6 +586,8 @@ EditorWidgetKate::EditorWidgetKate(QWidget *parent) : EditorWidget(parent)
     // FIXME: Two config files. Great.
     KConfig config("lorrisrc");
     m_doc->editor()->readConfig(&config);
+
+    connect(m_doc, SIGNAL(textChanged(KTextEditor::Document*)), SLOT(modified(KTextEditor::Document*)));
 }
 
 EditorWidgetKate::~EditorWidgetKate()
@@ -677,6 +679,11 @@ void EditorWidgetKate::loadSettings(KTextEditor::ConfigInterface *iface, cfg_var
     QHash<QString, QVariant> values = sConfig.get(cfg).toHash();
     for(QHash<QString, QVariant>::iterator itr = values.begin(); itr != values.end(); ++itr)
         iface->setConfigValue(itr.key(), *itr);
+}
+
+void EditorWidgetKate::modified(KTextEditor::Document *)
+{
+    emit textChangedByUser();
 }
 
 #endif // USE_KATE
