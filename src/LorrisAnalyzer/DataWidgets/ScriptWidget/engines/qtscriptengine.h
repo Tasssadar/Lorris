@@ -26,6 +26,9 @@ class QtScriptEngine_private : public QScriptEngine
     Q_OBJECT
 
     friend class QtScriptEngine;
+Q_SIGNALS:
+    void stopUsingJoy(QObject *object);
+
 private:
     QtScriptEngine_private(QtScriptEngine *base, QObject *parent);
 

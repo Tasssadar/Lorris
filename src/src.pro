@@ -286,7 +286,9 @@ OTHER_FILES += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.js \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/canvas.py \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.py
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/graph.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/joystick.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/joystick.js
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {

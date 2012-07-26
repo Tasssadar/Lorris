@@ -34,6 +34,7 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, Q
         PythonQt::init();
         PythonQt::self()->registerClass(&QTimer::staticMetaObject);
         PythonQt::self()->registerClass(&GraphCurve::staticMetaObject);
+        PythonQt::self()->registerClass(&Joystick::staticMetaObject);
         initialized = true;
     }
     connect(PythonQt::self(), SIGNAL(pythonStdErr(QString)), SLOT(errorFilter(QString)));

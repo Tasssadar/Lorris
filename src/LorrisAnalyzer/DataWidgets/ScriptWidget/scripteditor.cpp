@@ -185,6 +185,7 @@ void ScriptEditor::setFilename(const QString& filename)
         ui->nameLabel->setText(QString());
         setTabText(tr("Script"));
     }
+    m_editor->setModified(false);
 }
 
 void ScriptEditor::on_langBox_currentIndexChanged(int idx)
@@ -346,8 +347,8 @@ void ScriptEditor::checkChange()
     if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    QByteArray disk = MD5(f.readAll());
-    QByteArray here = MD5(m_editor->getText().toUtf8());
+    QByteArray disk = MD5(f.readAll().replace('\r', ""));
+    QByteArray here = MD5(m_editor->getText().toUtf8().replace('\r', ""));
     f.close();
 
     if(disk != here)
@@ -721,6 +722,7 @@ QString EditorWidgetQSci::getText() const
 void EditorWidgetQSci::setText(const QString &text)
 {
     m_editor->setText(text);
+    m_editor->setModified(false);
 }
 
 void EditorWidgetQSci::setEngine(int idx)
@@ -756,6 +758,11 @@ void EditorWidgetQSci::modified(bool mod)
 {
     if(mod)
         emit textChangedByUser();
+}
+
+void EditorWidgetQSci::setModified(bool modded)
+{
+    m_editor->setModified(modded);
 }
 
 #endif // USE_QSCI

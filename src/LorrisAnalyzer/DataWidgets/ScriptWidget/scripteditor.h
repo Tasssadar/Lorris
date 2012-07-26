@@ -125,12 +125,11 @@ public:
     virtual QString getText() const = 0;
 
     virtual void setEngine(int idx) = 0;
-
     virtual QWidget *getWidget() = 0;
-
     virtual bool hasSettings() = 0;
-
     virtual int getType() const = 0;
+
+    virtual void setModified(bool modded) { }
 
 public slots:
     virtual void settingsBtn() { }
@@ -233,6 +232,7 @@ public:
     QWidget *getWidget();
     bool hasSettings() { return false; }
     int getType() const { return EDITOR_QSCINTILLA; }
+    void setModified(bool modded);
 
 private slots:
     void modified(bool mod);

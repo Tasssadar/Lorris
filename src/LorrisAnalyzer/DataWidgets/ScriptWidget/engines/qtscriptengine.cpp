@@ -45,6 +45,8 @@ QtScriptEngine::QtScriptEngine(WidgetArea* area, quint32 w_id, Terminal *termina
 {
     m_engine.pushContext();
     m_global = &m_engine.m_global;
+
+    connect(this, SIGNAL(stopUsingJoy(QObject*)), &m_engine,SIGNAL(stopUsingJoy(QObject*)));
 }
 
 QtScriptEngine::~QtScriptEngine()
