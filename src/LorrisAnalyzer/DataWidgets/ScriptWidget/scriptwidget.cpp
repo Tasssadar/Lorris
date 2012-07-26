@@ -49,6 +49,7 @@ void ScriptWidget::setUp(Storage *storage)
     QAction *src_act = contextMenu->addAction(tr("Set source..."));
     connect(src_act,              SIGNAL(triggered()), SLOT(setSourceTriggered()));
     connect(&m_error_blink_timer, SIGNAL(timeout()),   SLOT(blinkError()));
+    connect(this, SIGNAL(closeEdit()), SLOT(closeEditor()), Qt::QueuedConnection);
 
     createEngine();
 }
@@ -192,7 +193,7 @@ void ScriptWidget::setSourceTriggered()
     m_editor->activateTab();
 
     connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
-    connect(m_editor, SIGNAL(rejected()),        SLOT(editorRejected()), Qt::QueuedConnection);
+    connect(m_editor, SIGNAL(rejected()),        SLOT(closeEditor()), Qt::QueuedConnection);
     connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
 }
 
@@ -218,19 +219,16 @@ void ScriptWidget::sourceSet(bool close)
         m_filename = m_editor->getFilename();
 
         if(close)
-        {
-            m_editor->deleteLater();
-            m_editor = NULL;
-        }
+            emit closeEdit();
         emit updateForMe();
     }
     catch(const QString& text)
     {
-        Utils::ThrowException(text, m_editor);
+        Utils::ThrowException(text);
     }
 }
 
-void ScriptWidget::editorRejected()
+void ScriptWidget::closeEditor()
 {
     emit removeChildTab(m_editor);
 }

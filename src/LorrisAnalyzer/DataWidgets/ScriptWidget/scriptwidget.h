@@ -21,6 +21,10 @@ class Terminal;
 class ScriptWidget : public DataWidget
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void closeEdit();
+
 public:
     ScriptWidget(QWidget *parent = 0);
     ~ScriptWidget();
@@ -37,7 +41,7 @@ public slots:
 protected slots:
      void setSourceTriggered();
      void sourceSet(bool close);
-     void editorRejected();
+     void closeEditor();
      void blinkError();
 
 protected:
