@@ -76,14 +76,7 @@ void WorkTabMgr::workTabDestroyed(QObject *tab)
 {
     WorkTab *w_tab = (WorkTab*)tab;
     m_workTabs.remove(w_tab->getId());
-
-    if(m_children.contains(w_tab->getId()))
-    {
-        const std::set<ChildTab*>& children = m_children[w_tab->getId()];
-        for(std::set<ChildTab*>::const_iterator itr = children.begin(); itr != children.end(); ++itr)
-            delete *itr;
-        m_children.remove(w_tab->getId());
-    }
+    m_children.remove(w_tab->getId());
 }
 
 void WorkTabMgr::AddWorkTab(WorkTab *tab, MainWindow *window, QString label)
@@ -132,6 +125,7 @@ void WorkTabMgr::removeTab(WorkTab *tab)
         {
             TabWidget *tabW = getTabWidgetWithWidget(*w_itr);
             tabW->removeChildTab(*w_itr);
+            tab->childClosed(*w_itr);
         }
         m_children.erase(itr);
     }

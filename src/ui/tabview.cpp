@@ -129,8 +129,8 @@ void TabView::removeWidget(quint32 id)
         return;
     }
 
-    if(m_active_widget == *wid)
-        m_active_widget = m_tab_widgets[0];
+    for(QHash<quint32, TabWidget*>::iterator i = m_tab_widgets.begin(); m_active_widget == *wid && i != m_tab_widgets.end(); ++i)
+        m_active_widget = *i;
 
     if(QBoxLayout *l = getLayoutForWidget(*wid))
         l->removeWidget(*wid);
