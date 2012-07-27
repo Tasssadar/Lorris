@@ -701,6 +701,7 @@ EditorWidgetQSci::EditorWidgetQSci(QWidget *parent) : EditorWidget(parent)
     m_editor->setMarginLineNumbers(QsciScintilla::NumberMargin, true);
     m_editor->setMarginWidth(QsciScintilla::NumberMargin, "12322");
     m_editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+    m_editor->setUtf8(true);
 
     connect(m_editor, SIGNAL(modificationChanged(bool)), SLOT(modified(bool)));
 }
