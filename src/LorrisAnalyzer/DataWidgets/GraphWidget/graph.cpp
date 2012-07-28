@@ -21,6 +21,9 @@
 #include <qwt_legend_item.h>
 #include <qwt_plot_layout.h>
 #include <qwt_scale_widget.h>
+#include <qwt_plot_picker.h>
+#include <qwt_plot_zoomer.h>
+#include <qwt_event_pattern.h>
 
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -32,7 +35,7 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
 {
     // zoom in/out with the wheel
     QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( canvas() );
-    magnifier->setMouseButton(Qt::MiddleButton);
+    magnifier->setMouseButton(Qt::NoButton);
 
     // panning with the left mouse button
     QwtPlotPanner *panner =  new QwtPlotPanner( canvas() );
@@ -63,6 +66,14 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
 
     setAxisScale(QwtPlot::xBottom, -20, 20);
     setAxisScale(QwtPlot::yLeft, -20, 20);
+
+    QwtPlotZoomer *zoomer = new QwtPlotZoomer(canvas());
+    {
+        QVector<QwtEventPattern::MousePattern> pattern(6);
+        pattern[0].button = Qt::MiddleButton;
+        zoomer->setMousePattern(pattern);
+    }
+
     // to show graph appearance while dragging from add button to widget area
     replot();
 }
