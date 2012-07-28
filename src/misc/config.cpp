@@ -32,6 +32,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "general/last_update_check", // CFG_QUINT32_LAST_UPDATE_CHECK
     "analyzer/script_error_str", // CFG_QUINT32_SCRIPTEDITOR_STR
     "analyzer/script_edit_type", // CFG_QUINT32_SCRIPTEDITOR_TYPE
+    "analyzer/script_engine",    // CFG_QUINT32_ANALYZER_SCRIPT_ENG
 };
 
 static const quint32 def_quint32[CFG_QUINT32_NUM] =
@@ -53,6 +54,7 @@ static const quint32 def_quint32[CFG_QUINT32_NUM] =
     0,                           // CFG_QUINT32_LAST_UPDATE_CHECK
     40,                          // CFG_QUINT32_SCRIPTEDITOR_STR
     UINT_MAX,                    // CFG_QUINT32_SCRIPTEDITOR_TYPE
+    0,                           // CFG_QUINT32_ANALYZER_SCRIPT_ENG
 };
 
 static const QString keys_string[CFG_STRING_NUM] =

@@ -51,6 +51,7 @@ void ScriptWidget::setUp(Storage *storage)
     connect(&m_error_blink_timer, SIGNAL(timeout()),   SLOT(blinkError()));
     connect(this, SIGNAL(closeEdit()), SLOT(closeEditor()), Qt::QueuedConnection);
 
+    m_engine_type = sConfig.get(CFG_QUINT32_ANALYZER_SCRIPT_ENG);
     createEngine();
 }
 
@@ -205,6 +206,7 @@ void ScriptWidget::sourceSet(bool close)
 
         if(type != m_engine_type)
         {
+            sConfig.set(CFG_QUINT32_ANALYZER_SCRIPT_ENG, type);
             m_engine_type = type;
             delete m_engine;
             createEngine();

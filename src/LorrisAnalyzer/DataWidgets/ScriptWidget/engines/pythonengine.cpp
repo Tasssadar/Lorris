@@ -40,6 +40,9 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, Q
     connect(PythonQt::self(), SIGNAL(pythonStdErr(QString)), SLOT(errorFilter(QString)));
     connect(&m_sendError,     SIGNAL(timeout()),             SLOT(sendError()));
     m_evaluating = false;
+
+    // Create m_module object
+    setSource(QString());
 }
 
 PythonEngine::~PythonEngine()
