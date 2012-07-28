@@ -242,7 +242,7 @@ ShupitoPacket ShupitoCC25XX::execute_cmd(char const *cmd, std::size_t len, quint
     pkt.insert(pkt.end(), cmd, cmd + len);
 
     pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 2);
-    if(pkt.size() != read_count + 2 || pkt[1+read_count] != 0)
+    if(pkt.size() != size_t(read_count + 2) || pkt[1+read_count] != 0)
         throw QString(QObject::tr("Invalid response from the device."));
 
     return pkt;

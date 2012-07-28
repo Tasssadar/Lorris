@@ -230,7 +230,7 @@ void Shupito::handleVccPacket(ShupitoPacket const & p)
             vdd_point vp;
             vp.current_drive = 0;
             quint8 len = p[i];
-            if(i + 1 + len > p.size())
+            if(size_t(i + 1 + len) > p.size())
                return;
             vp.name = QString::fromUtf8((char const *)p.data() + i+1, len);
             i += len + 1;
@@ -250,7 +250,7 @@ void Shupito::handleVccPacket(ShupitoPacket const & p)
 
         for(quint8 i = 3; i < p.size();)
         {
-            if(i + 4 <= p.size())
+            if(size_t(i + 4) <= p.size())
             {
                 double voltage = (p[i] | (p[i+1] << 8)) / 1000.0;
                 quint16 amps = p[i+2]| (p[i+3] << 8);
@@ -295,7 +295,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket const & p)
             {
                 for(quint8 i = 3; i < p.size(); ++i)
                 {
-                    if (i + 1 + p[i] > p.size())
+                    if (size_t(i + 1 + p[i]) > p.size())
                         return Utils::ThrowException("Invalid response while enumerating pipes.");
                     i += 1 + p[i];
                 }

@@ -8,10 +8,8 @@
 #ifndef PYTHONENGINE_H
 #define PYTHONENGINE_H
 
-#include <QTimer>
-
 #include "../../../../../dep/pythonqt/src/PythonQt.h"
-
+#include <QTimer>
 #include "scriptengine.h"
 
 class PythonEngine;

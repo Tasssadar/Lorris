@@ -241,7 +241,7 @@ void ShupitoMode::readFuses(std::vector<quint8> &data, chip_definition &chip)
 
 //void write_fuses(std::vector<boost::uint8_t> const & data, avrflash::chip_definition const & chip, bool verify)
 //device.hpp
-void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, quint8 verifyMode)
+void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, quint8 /*verifyMode*/)
 {
     HexFile file;
     file.addRegion(0, &data[0], &data[0] + data.size(), 0);

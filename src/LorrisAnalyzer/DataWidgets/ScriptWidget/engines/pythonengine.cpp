@@ -5,11 +5,12 @@
 **    See README and COPYING
 ***********************************************/
 
+#include "pythonengine.h"
+
 #include <QVariant>
 #include <QByteArray>
 #include <QComboBox>
 
-#include "pythonengine.h"
 #include "../../../../ui/terminal.h"
 #include "../../../packet.h"
 #include "../scriptstorage.h"

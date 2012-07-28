@@ -180,7 +180,7 @@ QWidget *TabWidget::unregisterTab(int index)
 
 void TabWidget::currentIndexChanged(int idx)
 {
-    if(idx != -1 && idx < m_tab_ids.size())
+    if(idx != -1 && (size_t)idx < m_tab_ids.size())
     {
         m_tabHistory.removeOne(m_tab_ids[idx]);
         m_tabHistory.push_back(m_tab_ids[idx]);
@@ -429,7 +429,7 @@ void TabWidget::keyReleaseEvent(QKeyEvent *event)
 
 void TabWidget::tabRemoved(int index)
 {
-    if(m_tab_ids.size() != count())
+    if(m_tab_ids.size() != (size_t)count())
     {
         m_tabHistory.removeOne(m_tab_ids[index]);
         m_tab_ids.erase(m_tab_ids.begin() + index);
@@ -692,7 +692,7 @@ TabSwitchWidget::TabSwitchWidget(QWidget *parent) : QFrame(parent), ui(new Ui::T
     setStyleSheet("background-color: white");
 
     const std::vector<quint32>& tab_ids = tabWidget()->getTabIds();
-    for(int i = 0; i < tab_ids.size(); ++i)
+    for(size_t i = 0; i < tab_ids.size(); ++i)
         m_id_pair[tab_ids[i]] = i;
 
     m_buttons.reserve(tab_ids.size());
@@ -701,7 +701,7 @@ TabSwitchWidget::TabSwitchWidget(QWidget *parent) : QFrame(parent), ui(new Ui::T
     for(int i = history.size()-1; i >= 0; --i)
         createButton(m_id_pair[history[i]]);
 
-    for(int i = 0; i < tab_ids.size(); ++i)
+    for(size_t i = 0; i < tab_ids.size(); ++i)
         if(!history.contains(tab_ids[i]))
             createButton(i);
 }
@@ -723,7 +723,7 @@ void TabSwitchWidget::next()
 
     m_buttons[m_active++]->setChecked(false);
 
-    if(m_active >= m_buttons.size())
+    if((size_t)m_active >= m_buttons.size())
         m_active = 0;
 
     m_buttons[m_active]->setChecked(true);

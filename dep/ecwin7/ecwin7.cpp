@@ -44,28 +44,32 @@ void EcWin7::init(WId wid)
 }
 
 // Set progress bar current value
+#ifdef Q_WS_WIN
 void EcWin7::setProgressValue(int value, int max)
 {
-#ifdef Q_WS_WIN
     if(mTaskbar)
         mTaskbar->SetProgressValue(mWindowId, value, max);
-#endif
 }
+#else
+void EcWin7::setProgressValue(int, int) { }
+#endif
 
 // Set progress bar current state (active, error, pause, ecc...)
+#ifdef Q_WS_WIN
 void EcWin7::setProgressState(ToolBarProgressState state)
 {
-#ifdef Q_WS_WIN
     if(mTaskbar)
         mTaskbar->SetProgressState(mWindowId, (TBPFLAG)state);
-#endif
 }
+#else
+void EcWin7::setProgressState(ToolBarProgressState) { }
+#endif
 
 // Set new overlay icon and corresponding description (for accessibility)
 // (call with iconName == "" and description == "" to remove any previous overlay icon)
+#ifdef Q_WS_WIN
 void EcWin7::setOverlayIcon(QString iconName, QString description)
 {
-#ifdef Q_WS_WIN
     if(!mTaskbar)
         return;
 
@@ -90,5 +94,7 @@ void EcWin7::setOverlayIcon(QString iconName, QString description)
     {
         DestroyIcon(oldIcon);
     }
-#endif
 }
+#else
+void EcWin7::setOverlayIcon(QString, QString) { }
+#endif

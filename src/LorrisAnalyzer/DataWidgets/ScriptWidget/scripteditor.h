@@ -129,7 +129,7 @@ public:
     virtual bool hasSettings() = 0;
     virtual int getType() const = 0;
 
-    virtual void setModified(bool modded) { }
+    virtual void setModified(bool /*modded*/) { }
 
 public slots:
     virtual void settingsBtn() { }

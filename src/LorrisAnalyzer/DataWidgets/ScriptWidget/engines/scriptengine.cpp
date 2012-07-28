@@ -5,6 +5,10 @@
 **    See README and COPYING
 ***********************************************/
 
+#ifdef WITH_PYTHON
+    #include "pythonengine.h"
+#endif
+
 #include <QTimer>
 
 #include "../../../widgetarea.h"
@@ -13,10 +17,6 @@
 #include "../scriptstorage.h"
 
 #include "qtscriptengine.h"
-
-#ifdef WITH_PYTHON
-    #include "pythonengine.h"
-#endif
 
 ScriptEngine::ScriptEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent) :
     QObject(parent)

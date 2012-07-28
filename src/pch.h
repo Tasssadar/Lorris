@@ -7,6 +7,10 @@
 
 #ifdef __cplusplus
 
+#ifdef WITH_PYTHON
+    #include <Python.h>
+#endif
+
 #include <vector>
 #include <set>
 #include <QLabel>
