@@ -17,6 +17,7 @@
 class QwtPlotGrid;
 class QwtPlotCanvas;
 class QwtPlotMarker;
+class DataFileParser;
 
 class Graph : public QwtPlot
 {
@@ -37,6 +38,13 @@ public:
 
     void setBgColor(const QColor& c);
     QColor getBgColor();
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
+    void saveMarkers(DataFileParser *file, int axis);
+    void loadMarkers(DataFileParser *file, int axis);
+
 
 protected:
     void mousePressEvent(QMouseEvent * event);

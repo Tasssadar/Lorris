@@ -138,7 +138,10 @@ void Graph::mouseDoubleClickEvent(QMouseEvent *event)
 
     GraphMarkerDialog d(this);
     if(d.exec() == QDialog::Accepted)
+    {
         addMarker(d.getValue(), d.getColorVal(), axis);
+        replot();
+    }
 }
 
 void Graph::wheelEvent(QWheelEvent *event)
@@ -231,8 +234,6 @@ void Graph::addMarker(double val, const QColor &color, int axis)
         m->setLabelAlignment(Qt::AlignTop | Qt::AlignHCenter);
 
     getMarkers(axis).push_back(m);
-
-    replot();
 }
 
 double Graph::XupperBound()
@@ -274,6 +275,59 @@ void Graph::setBgColor(const QColor &c)
 QColor Graph::getBgColor()
 {
     return canvas()->palette().color(QPalette::Window);
+}
+
+void Graph::saveData(DataFileParser *file)
+{
+    // background color
+    file->writeBlockIdentifier("graphWBgColor");
+    file->writeString(getBgColor().name());
+
+    // markers
+    file->writeBlockIdentifier("graphWMarkersX");
+    saveMarkers(file, QwtPlot::xBottom);
+
+    file->writeBlockIdentifier("graphWMarkersY");
+    saveMarkers(file, QwtPlot::yLeft);
+}
+
+void Graph::saveMarkers(DataFileParser *file, int axis)
+{
+    std::vector<QwtPlotMarker*>& markers = getMarkers(axis);
+    file->writeVal((quint32)markers.size());
+
+    for(quint32 i = 0; i < markers.size(); ++i)
+    {
+        file->writeVal(markers[i]->value().x());
+        file->writeString(markers[i]->linePen().color().name());
+    }
+}
+
+void Graph::loadData(DataFileParser *file)
+{
+    // background color
+    if(file->seekToNextBlock("graphWBgColor", BLOCK_WIDGET))
+        setBgColor(QColor(file->readString()));
+
+    // markers
+    if(file->seekToNextBlock("graphWMarkersX", BLOCK_WIDGET))
+        loadMarkers(file, QwtPlot::xBottom);
+
+    if(file->seekToNextBlock("graphWMarkersY", BLOCK_WIDGET))
+        loadMarkers(file, QwtPlot::yLeft);
+
+    replot();
+}
+
+void Graph::loadMarkers(DataFileParser *file, int axis)
+{
+    quint32 count = file->readVal<quint32>();
+    for(quint32 i = 0; i < count; ++i)
+    {
+        double val = file->readVal<double>();
+        QColor color(file->readString());
+        addMarker(val, color, axis);
+    }
 }
 
 Panner::Panner(QwtPlotCanvas *canvas) : QwtPlotPanner(canvas)

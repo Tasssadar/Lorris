@@ -175,11 +175,8 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         file->write((char*)&m_enableAutoScroll, sizeof(bool));
     }
 
-    // background color
-    file->writeBlockIdentifier("graphWBgColor");
-    {
-        file->writeString(m_graph->getBgColor().name());
-    }
+    // Graph data
+    m_graph->saveData(file);
 
     // curves
     file->writeBlockIdentifier("graphWCurveCount");
@@ -262,12 +259,8 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         toggleAutoScroll(enable);
     }
 
-    // background color
-    if(file->seekToNextBlock("graphWBgColor", BLOCK_WIDGET))
-    {
-        QString color = file->readString();
-        m_graph->setBgColor(QColor(color));
-    }
+    // Graph data
+    m_graph->loadData(file);
 
     if(!file->seekToNextBlock("graphWCurveCount", BLOCK_WIDGET))
         return;
