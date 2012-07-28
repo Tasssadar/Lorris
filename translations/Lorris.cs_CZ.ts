@@ -718,6 +718,25 @@
     </message>
 </context>
 <context>
+    <name>Graph</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="79"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="80"/>
+        <source>Double-click to add marker</source>
+        <translation>Dvojklikem přidáte značku</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="184"/>
+        <source>Remove markers</source>
+        <translation>Odstranit značky</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="191"/>
+        <source>No markers</source>
+        <translation>Žádné značky</translation>
+    </message>
+</context>
+<context>
     <name>GraphCurveAddDialog</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui" line="14"/>
@@ -1023,6 +1042,24 @@
     </message>
 </context>
 <context>
+    <name>GraphMarkerDialog</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui" line="14"/>
+        <source>Add marker</source>
+        <translation>Přidat značku</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui" line="35"/>
+        <source>Value:</source>
+        <translation>Hodnota:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui" line="58"/>
+        <source>Color:</source>
+        <translation>Barva:</translation>
+    </message>
+</context>
+<context>
     <name>GraphWidget</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="34"/>
@@ -1171,10 +1208,6 @@
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="55"/>
         <source>Connect</source>
         <translation>Připojit</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open connection!</source>
-        <translation type="obsolete">Nemůžu se připojit!</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="205"/>
@@ -1355,10 +1388,6 @@
         <location filename="../src/LorrisProxy/lorrisproxy.ui" line="170"/>
         <source>IP address</source>
         <translation>IP adresa</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open connection!</source>
-        <translation type="obsolete">Nemůžu se připojit!</translation>
     </message>
     <message>
         <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="87"/>
@@ -1788,10 +1817,6 @@ stejného souboru vícekrát:</translation>
         <translation>Shupito neodpovídá, zkuste ho odpojit a znovu připojit!</translation>
     </message>
     <message>
-        <source>Can&apos;t open connection!</source>
-        <translation type="obsolete">Nemůžu se připojit!</translation>
-    </message>
-    <message>
         <location filename="../src/LorrisShupito/lorrisshupito.cpp" line="526"/>
         <source>Can&apos;t set output VCC, voltage detected!</source>
         <translation>Nemůžu nastavit výstupní napětí, na pinech už nějáké bylo detekováno!</translation>
@@ -2034,10 +2059,6 @@ stejného souboru vícekrát:</translation>
         <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="106"/>
         <source>Show warn when flashing the same file twice</source>
         <translation>Zobrazit varování při flashování stejného souboru vícekrát</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open serial port!</source>
-        <translation type="obsolete">Nemůžu otevřít sériový port!</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="275"/>
@@ -3027,12 +3048,12 @@ def onKeyPress(key):
         <translation>Zdrojový kód scriptu...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="62"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="63"/>
         <source>Script engine %1 is not available, using QtScript!</source>
         <translation>Script engine %1 není k dispozici, používám QtScript!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="191"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="192"/>
         <source>Script source</source>
         <translation></translation>
     </message>
@@ -3040,7 +3061,7 @@ def onKeyPress(key):
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="281"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="279"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -3796,10 +3817,6 @@ ke změně uspořádání</translation>
         <location filename="../src/ui/tabview.cpp" line="68"/>
         <source>&amp;Close</source>
         <translation>&amp;Zavřít</translation>
-    </message>
-    <message>
-        <source>&amp;Quit</source>
-        <translation type="obsolete">&amp;Ukončit</translation>
     </message>
     <message>
         <location filename="../src/ui/tabview.cpp" line="73"/>

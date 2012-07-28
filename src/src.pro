@@ -261,7 +261,8 @@ FORMS += \
     ui/settingsdialog.ui \
     LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui \
     LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui \
-    ui/tabswitchwidget.ui
+    ui/tabswitchwidget.ui \
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
