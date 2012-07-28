@@ -38,7 +38,7 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
     magnifier->setMouseButton(Qt::NoButton);
 
     // panning with the left mouse button
-    QwtPlotPanner *panner =  new QwtPlotPanner( canvas() );
+    Panner *panner =  new Panner( canvas() );
     panner->setMouseButton(Qt::LeftButton);
 
 #if defined(Q_WS_X11)
@@ -185,4 +185,27 @@ void Graph::setBgColor(const QColor &c)
 QColor Graph::getBgColor()
 {
     return canvas()->palette().color(QPalette::Window);
+}
+
+Panner::Panner(QwtPlotCanvas *canvas) : QwtPlotPanner(canvas)
+{
+    m_lastX = 0;
+    m_lastY = 0;
+
+    disconnect(this, SIGNAL(panned(int,int)), this, SLOT(moveCanvas(int,int)));
+    connect(this, SIGNAL(moved(int,int)), SLOT(moveAxes(int,int)));
+    connect(this, SIGNAL(panned(int,int)), SLOT(finished(int,int)));
+}
+
+void Panner::finished(int dx, int dy)
+{
+    moveCanvas(dx - m_lastX, dy - m_lastY);
+    m_lastX = m_lastY = 0;
+}
+
+void Panner::moveAxes(int dx, int dy)
+{
+    moveCanvas(dx - m_lastX, dy - m_lastY);
+    m_lastX = dx;
+    m_lastY = dy;
 }

@@ -10,8 +10,10 @@
 
 #include <QColor>
 #include <qwt_plot.h>
+#include <qwt_plot_panner.h>
 
 class QwtPlotGrid;
+class QwtPlotCanvas;
 
 class Graph : public QwtPlot
 {
@@ -42,6 +44,21 @@ public slots:
 
 private:
     QwtPlotGrid *m_grid;
+};
+
+class Panner : public QwtPlotPanner
+{
+    Q_OBJECT
+public:
+    Panner(QwtPlotCanvas *canvas);
+
+private slots:
+    void moveAxes(int dx, int dy);
+    void finished(int dx, int dy);
+
+private:
+    int m_lastX;
+    int m_lastY;
 };
 
 #endif // GRAPH_H
