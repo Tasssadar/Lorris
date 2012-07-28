@@ -191,6 +191,11 @@ void ShupitoMode::readMemRange(quint8 memid, QByteArray& memory, quint32 address
                      (quint8)size, (quint8)(size >> 8));
 
     QByteArray p = m_shupito->waitForStream(pkt, m_prog_cmd_base + 3);
+
+    // Workaround: shupito (at least 2.0) has bug, fuse read always returns 4 bytes
+    if(memid == MEM_FUSES && size < 4 && p.size() == 4)
+        p.resize(size);
+
     if((quint32)p.size() != size)
         throw QString(QObject::tr("The read returned wrong-sized stream."));
 
@@ -235,20 +240,17 @@ void ShupitoMode::readFuses(std::vector<quint8> &data, chip_definition &chip)
     if(memdef->size != 0)
         readMemRange(memdef->memid, memory, 0, memdef->size);
 
-    for(quint16 i = 0; i < memory.size(); ++i)
+    for(quint16 i = 0; i < data.size() && i < memory.size(); ++i)
         data[i] = (quint8)memory[i];
 }
 
 //void write_fuses(std::vector<boost::uint8_t> const & data, avrflash::chip_definition const & chip, bool verify)
 //device.hpp
-void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, quint8 /*verifyMode*/)
+void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, quint8 verifyMode)
 {
     HexFile file;
     file.addRegion(0, &data[0], &data[0] + data.size(), 0);
-    // FIXME: verifyMode - some chips (atmega16) has only 3 lock/fuse bytes,
-    // and the 4th byte changes during fuse programming and breaks verification.
-    // How to handle it?
-    flashRaw(file, MEM_FUSES, chip, VERIFY_NONE);
+    flashRaw(file, MEM_FUSES, chip, verifyMode);
 }
 
 //void flash_raw(avrflash::memory const & mem, std::string const & memid, avrflash::chip_definition const & chip, bool verify)
