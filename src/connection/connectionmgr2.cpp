@@ -134,8 +134,9 @@ UsbShupitoEnumerator::~UsbShupitoEnumerator()
             it->second->releaseAll();
     }
 
-    QHash<QString, UsbShupitoConnection *> stand_by_conns;
-    stand_by_conns.swap(m_stand_by_conns);
+    // FIXME: replace with .swap() when Qt 4.8 will become broader
+    QHash<QString, UsbShupitoConnection *> stand_by_conns = m_stand_by_conns;
+    m_stand_by_conns.clear();
 
     for (QHash<QString, UsbShupitoConnection *>::const_iterator it = stand_by_conns.begin(); it != stand_by_conns.end(); ++it)
         it.value()->releaseAll();

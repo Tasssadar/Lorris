@@ -16,6 +16,7 @@
 #include <QHBoxLayout>
 #include <QStyleOption>
 #include <QStylePainter>
+#include <algorithm>
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
