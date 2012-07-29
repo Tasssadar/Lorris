@@ -144,7 +144,7 @@ static const bool def_bool[CFG_BOOL_NUM] =
     true,                         // CFG_BOOL_SESSION_CONNECT
     false,                        // CFG_BOOL_PORTABLE
     false,                        // CFG_BOOL_SHOW_SCRIPT_ERROR
-    true,                         // CFG_BOOL_SMOOTH_SCALING
+    false,                        // CFG_BOOL_SMOOTH_SCALING
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =
