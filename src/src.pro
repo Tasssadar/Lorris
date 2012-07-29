@@ -403,7 +403,13 @@ kate_editor:unix {
 
 qsci_editor:win32 {
     DEFINES += USE_QSCI
-    LIBS += -L"$$PWD/../dep/qscintilla2/" -lqscintilla2
+    win32-msvc* {
+        LIBS += -L"$$PWD/../dep/qscintilla2/msvc"
+        CONFIG(debug, debug|release):LIBS += -lqscintilla2d
+        else:LIBS += -lqscintilla2
+    } else {
+        LIBS += -L"$$PWD/../dep/qscintilla2/" -lqscintilla2
+    }
     INCLUDEPATH += "$$PWD/../dep/qscintilla2/"
 }
 
