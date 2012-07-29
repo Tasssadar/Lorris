@@ -28,7 +28,7 @@ win32 {
     # Enable debug_and_release + build_all if you want to build both.
 
     CONFIG           += release
-    CONFIG           += build_all
+#   CONFIG           += build_all
 }
 else {
 
