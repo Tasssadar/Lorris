@@ -230,19 +230,21 @@ Supported programming interfaces
       - make, g++<br>
       - libudev-dev<br>
       - libsdl-dev</b> (not sure about version, probably >= 1.2)<b><br>
-      - python-dev == 2.7.x</b> (Only if you want python support in LorrisAnalyzer)
+      - python-dev == 2.7.x</b> (Only if you want python support in LorrisAnalyzer - see config.pri)<b><br>
+      - libkdecore5, kate, kdelibs5-dev </b> (For kate editor in ScriptWidget - see config.pri)<b><br>
+      - libqscintilla2-dev </b> (For QScintilla editor in ScriptWidget - see config.pri)<br>
     </p>
     <p style="margin-left: 30px">
     So, apt-get line for Debian Testing would look like this:
     </p>
     <pre style="margin-left: 30px">
-    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libsdl1.2-dev libudev-dev python2.7-dev</pre>
+    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libsdl1.2-dev libudev-dev python2.7-dev libkdecore5 kate kdelibs5-dev libqscintilla2-dev</pre>
     <p style="margin-left: 30px">
     Lorris also needs libqwt >= 6.0.0, but it will build it by itself since
     <a href="https://github.com/Tasssadar/Lorris/commit/664209866876d439e4e9b02bf156e42c62b04c76">664209866876d439e4e9b02bf156e42c62b04c76</a>.
     </p>
     <p style="margin-left: 30px">
-    If you do not want python support or if it is causing you any problems, comment out line "DEFINES += WITH_PYTHON" in config.pri
+    <b>See config.pri for available build options.</b>
     </p>
 <p style="margin-left: 30px">
     Now you can build Lorris with QtCreator or go to Lorris folder and execute these commands:
