@@ -726,12 +726,12 @@
         <translation>Dvojklikem přidáte značku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="184"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="187"/>
         <source>Remove markers</source>
         <translation>Odstranit značky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="191"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="194"/>
         <source>No markers</source>
         <translation>Žádné značky</translation>
     </message>
@@ -1122,12 +1122,12 @@
         <translation>Automaticky posouvat graf</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="452"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="445"/>
         <source>Set sample size</source>
         <translation>Nastavení velikosti vzorku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="452"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="445"/>
         <source>Sample size:</source>
         <translation>Velikost vzorku</translation>
     </message>
@@ -1135,7 +1135,7 @@
 <context>
     <name>GraphWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="618"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="611"/>
         <source>Graph</source>
         <translation>Graf</translation>
     </message>
@@ -2457,50 +2457,50 @@ stejného souboru vícekrát:</translation>
         <translation>Neznámá paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="195"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="200"/>
         <source>The read returned wrong-sized stream.</source>
         <translation>Čtení paměti vrátilo data o špatné velikosti.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="215"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="220"/>
         <source>Failed to erase chip&apos;s memory</source>
         <translation>Chyba při mazání čipu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="230"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="235"/>
         <source>Can&apos;t read fuses</source>
         <translation>Nemůžu přečíst pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="262"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="264"/>
         <source>Chip does not have mem id %1</source>
         <translation>Čip nemá paměť %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="287"/>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="332"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="289"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="334"/>
         <source>Flashing interruped!</source>
         <translation>Programování přerušeno!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="294"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="296"/>
         <source>Verifying data</source>
         <translation>Kontroluji data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="317"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="319"/>
         <source>Verification failed!</source>
         <translation>Chyba při kontrole - data nesedí!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="348"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="350"/>
         <source>Failed to prepare chip&apos;s memory for writing</source>
         <translation>Nemůžu připravit paměť čipu pro programování</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="369"/>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="391"/>
-        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="402"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="371"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="393"/>
+        <location filename="../src/LorrisShupito/modes/shupitomode.cpp" line="404"/>
         <source>Failed to flash a page</source>
         <translation>Nemůžu naprogramovat stránku</translation>
     </message>
@@ -2653,11 +2653,21 @@ stejného souboru vícekrát:</translation>
         <translation>Importovat binární data</translation>
     </message>
     <message>
-        <location filename="../src/misc/updater.cpp" line="86"/>
+        <location filename="../src/misc/updater.cpp" line="108"/>
         <source>Could not start updater.exe, you have to download new version manually!
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Nemůžu spustit updater.exe, musíte provést aktualizaci ručně.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/misc/updater.cpp" line="117"/>
+        <source>New update for Lorris is available</source>
+        <translation>Nová aktualizace Lorris je dostupná</translation>
+    </message>
+    <message>
+        <location filename="../src/misc/updater.cpp" line="119"/>
+        <source>Download</source>
+        <translation>Stáhnout</translation>
     </message>
     <message>
         <location filename="../src/ui/chooseconnectiondlg.cpp" line="27"/>
@@ -3048,12 +3058,12 @@ def onKeyPress(key):
         <translation>Zdrojový kód scriptu...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="63"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="64"/>
         <source>Script engine %1 is not available, using QtScript!</source>
         <translation>Script engine %1 není k dispozici, používám QtScript!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="192"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="193"/>
         <source>Script source</source>
         <translation></translation>
     </message>
@@ -3061,7 +3071,7 @@ def onKeyPress(key):
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="279"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="281"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
