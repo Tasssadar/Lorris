@@ -8,13 +8,17 @@
 #ifndef TOOLTIPWARN_H
 #define TOOLTIPWARN_H
 
-#include <QWidget>
+#include <QFrame>
 
-class ToolTipWarn : public QWidget
+class QPushButton;
+
+class ToolTipWarn : public QFrame
 {
     Q_OBJECT
 public:
-    explicit ToolTipWarn(const QString& text, QWidget *posTo = NULL, QWidget *parent = NULL, int delay = 3000);
+    ToolTipWarn(const QString& text, QWidget *posTo = NULL, QWidget *parent = NULL, int delay = 3000, QString icon = QString());
+
+    void setButton(QPushButton *btn);
 };
 
 #endif // TOOLTIPWARN_H

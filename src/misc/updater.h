@@ -17,11 +17,13 @@ class Updater
 {
 public:
     static bool doUpdate(bool autoCheck);
+    static bool startUpdater();
 
 private:
     static bool checkForUpdate(bool autoCheck);
     static bool askForUpdate();
     static bool copyUpdater();
+    static void showNotification();
 };
 
 class UpdaterDialog : public QDialog, private Ui::UpdateCheck
@@ -37,6 +39,18 @@ private slots:
 
 private:
     Ui::UpdateCheck *ui;
+};
+
+class UpdateBtnHandler : public QObject
+{
+    Q_OBJECT
+
+    friend class Updater;
+protected:
+    UpdateBtnHandler(QObject *parent);
+
+protected slots:
+    void updateBtn();
 };
 
 #endif // UPDATER_H

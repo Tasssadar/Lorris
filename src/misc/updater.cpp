@@ -13,11 +13,14 @@
 #include <QApplication>
 #include <QDateTime>
 #include <QFile>
+#include <QPushButton>
+#include <QDesktopWidget>
 
 #include "updater.h"
 #include "../revision.h"
 #include "utils.h"
 #include "config.h"
+#include "../ui/tooltipwarn.h"
 
 #define MANIFEST_URL "http://dl.dropbox.com/u/54372958/lorris.txt"
 
@@ -42,16 +45,20 @@ bool Updater::checkForUpdate(bool autoCheck)
         for(QString s = rep->readLine(); !s.isNull(); s = rep->readLine())
         {
             QStringList parts = s.split(' ', QString::SkipEmptyParts);
-            if(parts.size() < 3)
+            if(parts.size() < 3 || !ver.contains(parts[0]))
                 continue;
 
-            if(!ver.contains(parts[0]))
-                continue;
-
-            if(REVISION < parts[1].toInt())
-                return (autoCheck && sConfig.get(CFG_BOOL_AUTO_UPDATE)) || askForUpdate();
-            else
+            if(REVISION >= parts[1].toInt())
                 return false;
+
+            if(!autoCheck)
+                return askForUpdate();
+
+            if(sConfig.get(CFG_BOOL_AUTO_UPDATE))
+                return true;
+
+            showNotification();
+            return false;
         }
     }
     return false;
@@ -71,7 +78,7 @@ bool Updater::doUpdate(bool autoCheck)
         if(!sConfig.get(CFG_BOOL_CHECK_FOR_UPDATE))
             return false;
 
-        if(time < sConfig.get(CFG_QUINT32_LAST_UPDATE_CHECK)+3600)
+        if(time < sConfig.get(CFG_QUINT32_LAST_UPDATE_CHECK)+300)
             return false;
     }
 
@@ -80,14 +87,7 @@ bool Updater::doUpdate(bool autoCheck)
 
     sConfig.set(CFG_QUINT32_LAST_UPDATE_CHECK, time);
 
-    if(!copyUpdater() ||
-       !QProcess::startDetached("tmp_updater.exe", (QStringList() << VERSION << QString::number(REVISION))))
-    {
-        Utils::ThrowException(QObject::tr("Could not start updater.exe, you have to download new version manually!\n"
-                                 "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
-        return false;
-    }
-    return true;
+    return startUpdater();
 }
 
 bool Updater::copyUpdater()
@@ -98,6 +98,36 @@ bool Updater::copyUpdater()
     if(!QFile::copy("updater.exe", "tmp_updater.exe"))
         return false;
     return true;
+}
+
+bool Updater::startUpdater()
+{
+    if(!copyUpdater() ||
+       !QProcess::startDetached("tmp_updater.exe", (QStringList() << VERSION << QString::number(REVISION))))
+    {
+        Utils::ThrowException(QObject::tr("Could not start updater.exe, you have to download new version manually!\n"
+                                 "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
+        return false;
+    }
+    return true;
+}
+
+void Updater::showNotification()
+{
+    ToolTipWarn *w = new ToolTipWarn(QObject::tr("New update for Lorris is available"),
+                                     NULL, NULL, -1, ":/actions/update");
+    QPushButton *btn = new QPushButton(QObject::tr("Download"));
+    w->setButton(btn);
+
+    if(QDesktopWidget *desktop = qApp->desktop())
+    {
+        QRect rect = desktop->availableGeometry();
+        w->move(rect.width() - w->width() - 90, rect.height() - w->height() - 15);
+    }
+
+    UpdateBtnHandler *h = new UpdateBtnHandler(w);
+    QObject::connect(btn, SIGNAL(clicked()), h, SLOT(updateBtn()));
+    QObject::connect(btn, SIGNAL(clicked()), w, SLOT(deleteLater()));
 }
 
 UpdaterDialog::UpdaterDialog(QWidget *parent) :
@@ -122,4 +152,15 @@ void UpdaterDialog::on_noAskBox_clicked(bool checked)
 void UpdaterDialog::on_noCheckBox_clicked(bool checked)
 {
     sConfig.set(CFG_BOOL_CHECK_FOR_UPDATE, !checked);
+}
+
+UpdateBtnHandler::UpdateBtnHandler(QObject *parent) : QObject(parent)
+{
+
+}
+
+void UpdateBtnHandler::updateBtn()
+{
+    if(Updater::startUpdater())
+        qApp->closeAllWindows();
 }
