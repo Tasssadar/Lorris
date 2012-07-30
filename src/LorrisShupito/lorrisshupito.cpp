@@ -35,6 +35,10 @@
 
 #include "ui_lorrisshupito.h"
 
+// When no packet from shupito is received for TIMEOUT_INTERVAL ms,
+// warning will appear
+#define TIMEOUT_INTERVAL 3000
+
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
 static const QString colorSavedToFile= "#FFE0E0";
@@ -52,7 +56,7 @@ LorrisShupito::LorrisShupito()
     m_overvcc = 0.0;
     m_enable_overvcc = false;
 
-    m_timout_timer.setInterval(1000);
+    m_timeout_timer.setInterval(TIMEOUT_INTERVAL);
 
     m_fuse_widget = new FuseWidget(this);
     ui->mainLayout->addWidget(m_fuse_widget);
@@ -90,7 +94,7 @@ LorrisShupito::LorrisShupito()
     connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
     connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
     connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
-    connect(&m_timout_timer,     SIGNAL(timeout()),                SLOT(timeout()));
+    connect(&m_timeout_timer,    SIGNAL(timeout()),                SLOT(timeout()));
 
     int w = ui->hideFusesBtn->fontMetrics().height()+10;
     ui->hideLogBtn->setFixedHeight(w);
@@ -313,7 +317,7 @@ void LorrisShupito::connectedStatus(bool connected)
     {
         m_state |= STATE_DISCONNECTED;
         updateStartStopUi(false);
-        m_timout_timer.stop();
+        m_timeout_timer.stop();
     }
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
@@ -433,7 +437,9 @@ void LorrisShupito::descRead(bool correct)
 
 void LorrisShupito::vccValueChanged(quint8 id, double value)
 {
-    m_timout_timer.start();
+    m_timeout_timer.start();
+    if(m_timeout_warn)
+        delete m_timeout_warn;
 
     if(id == 0 && !ui->engineLabel->text().isEmpty() && m_vcc != value)
     {
@@ -1430,8 +1436,9 @@ void LorrisShupito::flashWarnBox(bool checked)
 
 void LorrisShupito::timeout()
 {
-    m_timout_timer.stop();
-    Utils::showErrorBox(tr("Shupito is not responding, try to re-plug it into computer!"));
+    m_timeout_timer.stop();
+    if(!m_timeout_warn)
+        m_timeout_warn = new ToolTipWarn(tr("Shupito is not responding, try to re-plug it into computer!"), ui->connectButton, this, -1);
 }
 
 QString LorrisShupito::GetIdString()

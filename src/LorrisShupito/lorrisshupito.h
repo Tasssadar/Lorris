@@ -62,6 +62,7 @@ class chip_definition;
 class FuseWidget;
 class ProgressDialog;
 class OverVccDialog;
+class ToolTipWarn;
 
 class LorrisShupito : public WorkTab
 {
@@ -233,7 +234,8 @@ private:
 
     ConnectButton * m_connectButton;
 
-    QTimer m_timout_timer;
+    QTimer m_timeout_timer;
+    QPointer<ToolTipWarn> m_timeout_warn;
 };
 
 #endif // LORRISSHUPITO_H
