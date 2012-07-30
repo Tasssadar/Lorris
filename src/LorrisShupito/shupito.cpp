@@ -296,7 +296,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket const & p)
                 for(quint8 i = 3; i < p.size(); ++i)
                 {
                     if (size_t(i + 1 + p[i]) > p.size())
-                        return Utils::ThrowException("Invalid response while enumerating pipes.");
+                        return Utils::showErrorBox("Invalid response while enumerating pipes.");
                     i += 1 + p[i];
                 }
 

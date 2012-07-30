@@ -37,7 +37,7 @@ void SourceSelectDialog::on_contButton_clicked()
     if(ui->loadRadio->isChecked() && !ui->structBox->isChecked() &&
        !ui->dataBox->isChecked() && !ui->widgetBox->isChecked())
     {
-        return Utils::ThrowException(tr("You have to select at least one thing to load."), this);
+        return Utils::showErrorBox(tr("You have to select at least one thing to load."), this);
     }
     accept();
 }

@@ -308,7 +308,7 @@ void LorrisAnalyzer::importBinary(const QString& filename, bool reset)
 
     QFile f(filename);
     if(!f.open(QIODevice::ReadOnly))
-        return Utils::ThrowException(tr("Could not open file %1 for reading!").arg(filename));
+        return Utils::showErrorBox(tr("Could not open file %1 for reading!").arg(filename));
 
     QMessageBox box(QMessageBox::Information, tr("Importing..."), tr("Importing your data..."));
     box.setStandardButtons(QMessageBox::NoButton);
@@ -455,7 +455,7 @@ void LorrisAnalyzer::exportBin()
     try {
         m_storage->ExportToBin(filename);
     } catch(const QString& ex) {
-        return Utils::ThrowException(ex);
+        return Utils::showErrorBox(ex);
     }
 
     QString name = filename.split(QRegExp("[\\/]"), QString::SkipEmptyParts).last();

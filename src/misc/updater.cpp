@@ -105,7 +105,7 @@ bool Updater::startUpdater()
     if(!copyUpdater() ||
        !QProcess::startDetached("tmp_updater.exe", (QStringList() << VERSION << QString::number(REVISION))))
     {
-        Utils::ThrowException(QObject::tr("Could not start updater.exe, you have to download new version manually!\n"
+        Utils::showErrorBox(QObject::tr("Could not start updater.exe, you have to download new version manually!\n"
                                  "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
         return false;
     }

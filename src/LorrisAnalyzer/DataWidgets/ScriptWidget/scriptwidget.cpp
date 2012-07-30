@@ -61,7 +61,7 @@ void ScriptWidget::createEngine()
 
     if(!m_engine && m_engine_type != ENGINE_QTSCRIPT)
     {
-        Utils::ThrowException(tr("Script engine %1 is not available, using QtScript!").arg(m_engine_type));
+        Utils::showErrorBox(tr("Script engine %1 is not available, using QtScript!").arg(m_engine_type));
         m_engine_type = ENGINE_QTSCRIPT;
         return createEngine();
     }
@@ -226,7 +226,7 @@ void ScriptWidget::sourceSet(bool close)
     }
     catch(const QString& text)
     {
-        Utils::ThrowException(text);
+        Utils::showErrorBox(text);
     }
 }
 

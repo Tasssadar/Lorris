@@ -514,7 +514,7 @@ QScriptValue QtScriptEngine_private::__throwException(QScriptContext *context, Q
     if(context->argumentCount() != 1)
         return QScriptValue();
 
-    Utils::ThrowException(context->argument(0).toString());
+    Utils::showErrorBox(context->argument(0).toString());
 
     return QScriptValue();
 }

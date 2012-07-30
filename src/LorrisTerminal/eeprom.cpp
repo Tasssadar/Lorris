@@ -61,7 +61,7 @@ void EEPROM::Export()
     }
 
     if(!error.isEmpty())
-        Utils::ThrowException(error);
+        Utils::showErrorBox(error);
 }
 
 bool EEPROM::Import()
@@ -106,7 +106,7 @@ bool EEPROM::Import()
 
     if(!error.isEmpty())
     {
-        Utils::ThrowException(error);
+        Utils::showErrorBox(error);
         return false;
     }
     pageItr = 0;

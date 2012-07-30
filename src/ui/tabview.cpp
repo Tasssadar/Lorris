@@ -501,7 +501,7 @@ void TabView::checkForUpdate()
         new ToolTipWarn(tr("No update available"), (QWidget*)sender(), this, 3000, ":/actions/info");
     }
 #else
-    Utils::ThrowException(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
+    Utils::showErrorBox(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                              "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
 #endif
 }

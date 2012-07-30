@@ -121,7 +121,7 @@ fail:
     for(int i = 0; i < list.size(); ++i)
         QFile::remove(to + list[i]);
 
-    Utils::ThrowException(tr("Unable to copy settings files!"));
+    Utils::showErrorBox(tr("Unable to copy settings files!"));
 }
 
 void SettingsDialog::on_updateBtn_clicked()
@@ -133,7 +133,7 @@ void SettingsDialog::on_updateBtn_clicked()
     else
         ui->updateBtn->setText(tr("No update available"));
 #else
-    Utils::ThrowException(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
+    Utils::showErrorBox(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                              "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
 #endif
 }

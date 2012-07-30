@@ -234,7 +234,7 @@ int PythonFunctions::getHeight()
 
 void PythonFunctions::throwException(const QString &text)
 {
-    Utils::ThrowException(text);
+    Utils::showErrorBox(text);
 }
 
 Joystick *PythonFunctions::getJoystick(int id)

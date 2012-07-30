@@ -34,7 +34,7 @@ public:
 
     static QFont getMonospaceFont(quint8 size = 9);
 
-    static void ThrowException(const QString& text, QWidget* parent = 0);
+    static void showErrorBox(const QString& text, QWidget* parent = 0);
 
     static void playErrorSound();
 

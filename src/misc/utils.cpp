@@ -62,7 +62,7 @@ QFont Utils::getMonospaceFont(quint8 size)
     return QFont("Courier New", size);
 }
 
-void Utils::ThrowException(const QString& text, QWidget* parent)
+void Utils::showErrorBox(const QString& text, QWidget* parent)
 {
     QMessageBox box(parent);
     box.setIcon(QMessageBox::Critical);

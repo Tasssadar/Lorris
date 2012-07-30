@@ -265,7 +265,7 @@ void LorrisTerminal::stopButton()
 
     if(!res)
     {
-        Utils::ThrowException(tr("Timeout on stopping chip!"));
+        Utils::showErrorBox(tr("Timeout on stopping chip!"));
         return;
     }
 
@@ -299,7 +299,7 @@ void LorrisTerminal::flashButton()
     }
     catch(QString ex)
     {
-        Utils::ThrowException(tr("Error loading hex file: ") + ex);
+        Utils::showErrorBox(tr("Error loading hex file: ") + ex);
         return;
     }
 
@@ -369,7 +369,7 @@ void LorrisTerminal::loadText()
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        Utils::ThrowException(tr("Can't open file \"%1\"!").arg(filename), this);
+        Utils::showErrorBox(tr("Can't open file \"%1\"!").arg(filename), this);
         return;
     }
 
@@ -391,7 +391,7 @@ void LorrisTerminal::saveText()
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        Utils::ThrowException(tr("Can't open/create file \"%1\"!").arg(filename), this);
+        Utils::showErrorBox(tr("Can't open/create file \"%1\"!").arg(filename), this);
         return;
     }
 
@@ -413,7 +413,7 @@ void LorrisTerminal::saveBin()
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly))
     {
-        Utils::ThrowException(tr("Can't open/create file \"%1\"!").arg(filename), this);
+        Utils::showErrorBox(tr("Can't open/create file \"%1\"!").arg(filename), this);
         return;
     }
     file.write(ui->terminal->getData());

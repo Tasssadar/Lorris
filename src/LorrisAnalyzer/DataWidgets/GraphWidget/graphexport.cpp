@@ -217,7 +217,7 @@ void GraphExport::accept()
     if(exportData())
         QDialog::accept();
     else
-        Utils::ThrowException(tr("Failed to open output file!"), this);
+        Utils::showErrorBox(tr("Failed to open output file!"), this);
 
     ui->buttonBox->setEnabled(true);
 }

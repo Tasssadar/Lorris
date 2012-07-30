@@ -382,7 +382,7 @@ void LorrisShupito::descRead(bool correct)
     if(!correct)
     {
         log("Failed to read info from shupito!");
-        return Utils::ThrowException(tr("Failed to read info from Shupito. If you're sure "
+        return Utils::showErrorBox(tr("Failed to read info from Shupito. If you're sure "
                         "you're connected to shupito, try to disconnect and "
                         "connect again"));
     }
@@ -523,7 +523,7 @@ void LorrisShupito::vddIndexChanged(int index)
     if(lastVccIndex == 0 && index > 0 && m_vcc != 0)
     {
         m_vdd_radios[0]->setChecked(true);
-        Utils::ThrowException(tr("Can't set output VCC, voltage detected!"));
+        Utils::showErrorBox(tr("Can't set output VCC, voltage detected!"));
         return;
     }
 
@@ -547,7 +547,7 @@ void LorrisShupito::tunnelToggled(bool enable)
     if(!m_tunnel_config)
     {
         if(enable)
-            Utils::ThrowException(tr("It looks like your Shupito does not support RS232 tunnel!"));
+            Utils::showErrorBox(tr("It looks like your Shupito does not support RS232 tunnel!"));
         return;
     }
 
@@ -595,7 +595,7 @@ void LorrisShupito::setTunnelName()
 void LorrisShupito::modeSelected(int idx)
 {
     if(!m_modes[idx])
-        Utils::ThrowException(tr("This mode is unsupported by Lorris, for now."));
+        Utils::showErrorBox(tr("This mode is unsupported by Lorris, for now."));
     else
     {
         m_cur_mode = idx;
@@ -637,9 +637,9 @@ bool LorrisShupito::checkVoltage(bool active)
     if(error)
     {
         if(active)
-            Utils::ThrowException(tr("No voltage present"));
+            Utils::showErrorBox(tr("No voltage present"));
         else
-            Utils::ThrowException(tr("Output voltage detected!"));
+            Utils::showErrorBox(tr("Output voltage detected!"));
     }
     return !error;
 }
@@ -798,7 +798,7 @@ void LorrisShupito::startChip()
     }
     catch(QString ex)
     {
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 
     updateStartStopUi(false);
@@ -820,7 +820,7 @@ void LorrisShupito::stopChip()
     }
     catch(QString ex)
     {
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
 
         // The chip has not been stopped.
         return;
@@ -876,7 +876,7 @@ void LorrisShupito::loadFromFile(int memId)
     }
     catch(QString ex)
     {
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 }
 
@@ -926,7 +926,7 @@ void LorrisShupito::openFile(const QString &filename)
     }
     catch(QString ex)
     {
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 }
 
@@ -959,7 +959,7 @@ void LorrisShupito::saveToFile(int memId)
     }
     catch(QString ex)
     {
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 }
 
@@ -990,7 +990,7 @@ void LorrisShupito::readAll()
     catch(QString ex)
     {
         updateProgressDialog(-1);
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 }
 
@@ -1018,7 +1018,7 @@ void LorrisShupito::readMemInFlash(quint8 memId)
     {
         updateProgressDialog(-1);
 
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 }
 
@@ -1045,7 +1045,7 @@ void LorrisShupito::readFusesInFlash()
     }
     catch(QString ex)
     {
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 }
 
@@ -1107,7 +1107,7 @@ void LorrisShupito::writeAll()
     catch(QString ex)
     {
         updateProgressDialog(-1);
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 }
 
@@ -1138,7 +1138,7 @@ void LorrisShupito::writeMemInFlash(quint8 memId)
     catch(QString ex)
     {
         updateProgressDialog(-1);
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 }
 
@@ -1151,13 +1151,13 @@ void LorrisShupito::writeFusesInFlash()
 
     if(!m_fuse_widget->isLoaded())
     {
-        Utils::ThrowException(tr("Fuses had not been read yet"));
+        Utils::showErrorBox(tr("Fuses had not been read yet"));
         return;
     }
 
     if(m_fuse_widget->isChanged())
     {
-        Utils::ThrowException(tr("You have to \"Remember\" fuses prior to writing"));
+        Utils::showErrorBox(tr("You have to \"Remember\" fuses prior to writing"));
         return;
     }
 
@@ -1180,7 +1180,7 @@ void LorrisShupito::writeFusesInFlash()
     }
     catch(QString ex)
     {
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 }
 
@@ -1259,7 +1259,7 @@ void LorrisShupito::eraseDevice()
     catch(QString ex)
     {
         updateProgressDialog(-1);
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
         return;
     }
 
@@ -1431,7 +1431,7 @@ void LorrisShupito::flashWarnBox(bool checked)
 void LorrisShupito::timeout()
 {
     m_timout_timer.stop();
-    Utils::ThrowException(tr("Shupito is not responding, try to re-plug it into computer!"));
+    Utils::showErrorBox(tr("Shupito is not responding, try to re-plug it into computer!"));
 }
 
 QString LorrisShupito::GetIdString()

@@ -113,7 +113,7 @@ void DefMgr::parseChipdefs(QTextStream &ss)
             {
                 int sep_pos = tokens[i].indexOf('=');
                 if(sep_pos == -1)
-                    return Utils::ThrowException("Invalid syntax in the chip definition file.");
+                    return Utils::showErrorBox("Invalid syntax in the chip definition file.");
                 def.getOptions()[tokens[i].mid(1, sep_pos - 1)] = tokens[i].mid(sep_pos + 1);
             }
             else

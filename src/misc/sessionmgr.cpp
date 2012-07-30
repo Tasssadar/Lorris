@@ -130,7 +130,7 @@ void SessionMgr::saveSessionAct()
         saveSession(name);
         sWorkTabMgr.printToAllStatusBars(tr("Session %1 saved.").arg(name));
     } catch(const QString& ex) {
-        Utils::ThrowException(ex);
+        Utils::showErrorBox(ex);
     }
 
     updateSessions();

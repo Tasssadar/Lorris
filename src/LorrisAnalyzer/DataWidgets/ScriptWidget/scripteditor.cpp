@@ -163,7 +163,7 @@ void ScriptEditor::on_loadBtn_clicked()
 
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return Utils::ThrowException(tr("Failed to open \"%1!\"").arg(filename));
+        return Utils::showErrorBox(tr("Failed to open \"%1!\"").arg(filename));
 
     m_editor->setText(QString::fromUtf8(file.readAll()));
     file.close();
@@ -305,7 +305,7 @@ bool ScriptEditor::save(const QString& file)
     QFile f(file);
     if(!f.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
     {
-        Utils::ThrowException(tr("Can't open file %1 for writing!").arg(file));
+        Utils::showErrorBox(tr("Can't open file %1 for writing!").arg(file));
         return false;
     }
 
@@ -370,7 +370,7 @@ void ScriptEditor::checkChange()
                 break;
             case QMessageBox::AcceptRole:
                 if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
-                    Utils::ThrowException(tr("Can't open file %1 for reading!").arg(m_filename));
+                    Utils::showErrorBox(tr("Can't open file %1 for reading!").arg(m_filename));
                 m_editor->setText(QString::fromUtf8(f.readAll()));
                 break;
             case QMessageBox::RejectRole:

@@ -69,7 +69,7 @@ void Storage::SaveToFile(WidgetArea *area, DeviceTabWidget *devices)
     QFile file(m_filename);
     if(!file.open(QIODevice::ReadOnly))
     {
-        Utils::ThrowException(QObject::tr("Can't create/open file!"));
+        Utils::showErrorBox(QObject::tr("Can't create/open file!"));
         return;
     }
 
@@ -111,7 +111,7 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        Utils::ThrowException(QObject::tr("Can't create/open file!"));
+        Utils::showErrorBox(QObject::tr("Can't create/open file!"));
         return;
     }
     m_filename = filename;
@@ -215,7 +215,7 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
         if(!file.open(QIODevice::ReadOnly))
         {
             if(filename != "")
-                Utils::ThrowException(QObject::tr("Can't open file!"));
+                Utils::showErrorBox(QObject::tr("Can't open file!"));
             return NULL;
         }
 
@@ -266,7 +266,7 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
     {
         delete loading_box;
 
-        Utils::ThrowException(QObject::tr("Data file has wrong magic!"));
+        Utils::showErrorBox(QObject::tr("Data file has wrong magic!"));
 
         buffer->close();
         delete buffer;
