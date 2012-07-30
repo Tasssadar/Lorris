@@ -47,8 +47,7 @@ DataWidget *WidgetFactory::copy(DataWidget *w)
     DataWidget *res = ((WidgetArea*)w->parent())->addWidget(w->pos(), w->getWidgetType());
 
     QByteArray data;
-    DataFileParser p(&data);
-    p.open(QIODevice::ReadWrite);
+    DataFileParser p(&data, QIODevice::ReadWrite);
 
     w->saveWidgetInfo(&p);
     p.seek(0);

@@ -30,11 +30,40 @@ enum DataBlocks
     BLOCK_WORKTAB
 };
 
+enum DataFileFlags
+{
+    DATAFLAG_COMPRESSED = 0x01
+};
+
+enum DataFileTypes
+{
+    DATAFILE_NONE         = 0,
+    DATAFILE_ANALYZER     = 1,
+    DATAFILE_SESSION      = 2,
+
+    DATAFILE_MAX
+};
+
+struct DataFileHeader
+{
+    DataFileHeader(quint8 data_type = DATAFILE_NONE);
+    DataFileHeader(const DataFileHeader& other);
+
+    char str[4];        // must be "LDTA" without null end
+    quint16 version;
+    quint32 flags;      // enum DataFileFlags
+    quint8 data_type;   // enum DataFileTypes
+    char md5[16];       // md5 hash of data which follows the header
+
+    // SEE: align to 64 bytes
+    char unused[37];
+};
+
 class DataFileParser : public QBuffer
 {
     Q_OBJECT
 public:
-    explicit DataFileParser(QByteArray *data, QObject *parent = 0);
+    explicit DataFileParser(QByteArray *data, QIODevice::OpenMode openMode, QObject *parent = 0);
     ~DataFileParser();
 
     bool seekToNextBlock(DataBlocks block, qint32 maxDist);
@@ -62,6 +91,19 @@ private:
     int m_last_block;
 };
 
+class DataFileBuilder
+{
+public:
+    static QByteArray readAndCheck(QFile& file, DataFileTypes expectedType, bool *legacy = NULL);
+
+    // Returns MD5 of written data
+    static QByteArray writeWithHeader(QFile& file, QByteArray data, bool compress, DataFileTypes type);
+
+private:
+    static void readHeader(QFile& file, DataFileHeader *header);
+    static void writeHeader(QIODevice &file, DataFileHeader *header);
+};
+
 template <typename T>
 void DataFileParser::readVal(T& val)
 {
@@ -81,6 +123,5 @@ void DataFileParser::writeVal(T val)
 {
     write((char*)&val, sizeof(T));
 }
-
 
 #endif // DATAFILEPARSER_H

@@ -5,12 +5,39 @@
 **    See README and COPYING
 ***********************************************/
 
+#include <QScopedPointer>
+#include <QCryptographicHash>
+#include <QMessageBox>
+
 #include "datafileparser.h"
 
-DataFileParser::DataFileParser(QByteArray *data, QObject *parent) :
+#define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
+
+DataFileHeader::DataFileHeader(quint8 data_type)
+{
+    str[0] = 'L'; str[1] = 'D'; str[2] = 'T'; str[3] = 'A';
+    version = 1;
+    flags = 0;
+    this->data_type = data_type;
+    std::fill(md5, md5 + sizeof(md5), 0);
+    std::fill(unused, unused + sizeof(unused), 0xFF);
+}
+
+DataFileHeader::DataFileHeader(const DataFileHeader& other)
+{
+    std::copy(other.str, other.str+sizeof(str), str);
+    version = other.version;
+    flags = other.flags;
+    data_type = other.data_type;
+    std::copy(other.md5, other.md5 + sizeof(md5), md5);
+    std::copy(other.unused, other.unused + sizeof(unused), unused);
+}
+
+DataFileParser::DataFileParser(QByteArray *data, OpenMode openMode, QObject *parent) :
     QBuffer(data, parent)
 {
     m_last_block = 0;
+    open(openMode);
 }
 
 DataFileParser::~DataFileParser()
@@ -187,4 +214,104 @@ QString DataFileParser::readString()
 
     QByteArray raw = read(size);
     return QString::fromUtf8(raw.data(), size);
+}
+
+QByteArray DataFileBuilder::readAndCheck(QFile &file, DataFileTypes expectedType, bool *legacy)
+{
+    if(!file.isOpen() && !file.open(QIODevice::ReadOnly))
+        throw QObject::tr("Cannot open file \"%1\"!").arg(file.fileName());
+
+    char str[5] = { 0, 0, 0, 0, 0 };
+    if(file.read(str, 4) != 4)
+        throw QObject::tr("Corrupted data file");
+
+    file.seek(0);
+
+    bool compressed = file.fileName().contains(".cldta", Qt::CaseInsensitive);
+    QScopedPointer<DataFileHeader> header;
+
+    // with header
+    if(strcmp(str, "LDTA") == 0)
+    {
+        if(file.size() < (qint64)sizeof(DataFileHeader))
+            throw QObject::tr("Corrupted data file");
+
+        header.reset(new DataFileHeader);
+        readHeader(file, header.data());
+
+        if(header->data_type != expectedType)
+            throw QObject::tr("This file is not of expected content type");
+
+        compressed = (header->flags & DATAFLAG_COMPRESSED);
+    }
+
+    if(legacy)
+        *legacy = header.isNull();
+
+    QByteArray data = file.read(file.size());
+
+    if(header && QByteArray::fromRawData(header->md5, sizeof(header->md5)) != MD5(data))
+    {
+        QMessageBox box(QMessageBox::Question, QObject::tr("Error"),
+                        QObject::tr("Corrupted data file - MD5 checksum does not match"),
+                        QMessageBox::Yes | QMessageBox::No);
+        box.setInformativeText(QObject::tr("Load anyway?"));
+
+        if(box.exec() == QMessageBox::No)
+            throw QObject::tr("Corrupted data file - MD5 checksum does not match");
+    }
+
+    if(compressed)
+        data = qUncompress(data);
+
+    return data;
+}
+
+QByteArray DataFileBuilder::writeWithHeader(QFile &file, QByteArray data, bool compress, DataFileTypes type)
+{
+    if(!file.isOpen() && !file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        throw QObject::tr("Cannot open file \"%1\"!").arg(file.fileName());
+
+    DataFileHeader header(type);
+    if(compress)
+    {
+        header.flags |= DATAFLAG_COMPRESSED;
+        data = qCompress(data);
+    }
+
+    QByteArray md5 = MD5(data);
+    std::copy(md5.data(), md5.data()+sizeof(header.md5), header.md5);
+
+    QBuffer buff;
+    buff.open(QIODevice::WriteOnly);
+    writeHeader(buff, &header);
+    buff.write(data);
+
+    file.write(buff.data());
+
+    return MD5(buff.data());
+}
+
+void DataFileBuilder::readHeader(QFile &file, DataFileHeader *header)
+{
+    file.seek(0);
+
+    file.read(header->str, 4);
+    file.read((char*)&header->version, sizeof(header->version));
+    file.read((char*)&header->flags, sizeof(header->flags));
+    file.read((char*)&header->data_type, sizeof(header->data_type));
+    file.read(header->md5, sizeof(header->md5));
+    file.read(header->unused, sizeof(header->unused));
+}
+
+void DataFileBuilder::writeHeader(QIODevice &file, DataFileHeader *header)
+{
+    file.seek(0);
+
+    file.write(header->str, 4);
+    file.write((char*)&header->version, sizeof(header->version));
+    file.write((char*)&header->flags, sizeof(header->flags));
+    file.write((char*)&header->data_type, sizeof(header->data_type));
+    file.write(header->md5, sizeof(header->md5));
+    file.write(header->unused, sizeof(header->unused));
 }

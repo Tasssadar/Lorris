@@ -58,6 +58,7 @@ public slots:
 
 private:
     bool checkMagic(DataFileParser *file);
+    void readLegacyStructure(DataFileParser *file, analyzer_packet *packet);
 
     std::vector<analyzer_data*> m_data;
     analyzer_packet *m_packet;

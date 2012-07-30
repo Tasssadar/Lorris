@@ -44,16 +44,35 @@ QByteArray SessionMgr::openSessionFile(const QString& name)
     if(!file.open(QIODevice::ReadOnly))
         return QByteArray();
 
-    // check magic
-    QByteArray magic = file.read(sizeof(CLDTA_DATA_MAGIC));
-    if(magic.size() != sizeof(CLDTA_DATA_MAGIC))
-        return QByteArray();
+    QByteArray data;
+    QByteArray str = file.read(4);
+    file.seek(0);
 
-    for(quint8 i = 0; i < sizeof(CLDTA_DATA_MAGIC); ++i)
-        if(magic[i] != CLDTA_DATA_MAGIC[i])
+    if(str == QByteArray::fromRawData("LDTA", 4))
+    {
+        try {
+            data = DataFileBuilder::readAndCheck(file, DATAFILE_SESSION);
+        }
+        catch(const QString& ex) {
+            Utils::showErrorBox(tr("Error loading session file: %1").arg(ex));
+            return data;
+        }
+    }
+    // Legacy
+    else
+    {
+        QByteArray magic = file.read(sizeof(CLDTA_DATA_MAGIC));
+        if(magic.size() != sizeof(CLDTA_DATA_MAGIC))
             return QByteArray();
 
-    return file.readAll();
+        for(quint8 i = 0; i < sizeof(CLDTA_DATA_MAGIC); ++i)
+            if(magic[i] != CLDTA_DATA_MAGIC[i])
+                return QByteArray();
+
+        data = qUncompress(file.readAll());
+    }
+
+    return data;
 }
 
 void SessionMgr::initMenu(QMenu *menu)
@@ -102,17 +121,13 @@ void SessionMgr::saveSession(QString name)
         return throw tr("Could not open session data file!");
 
     QByteArray data;
-    DataFileParser parser(&data);
-    parser.open(QIODevice::WriteOnly);
+    DataFileParser parser(&data, QIODevice::WriteOnly);
 
     sWorkTabMgr.saveData(&parser);
 
     parser.close();
 
-    data = qCompress(data);
-
-    file.write(CLDTA_DATA_MAGIC, sizeof(CLDTA_DATA_MAGIC));
-    file.write(data);
+    DataFileBuilder::writeWithHeader(file, data, true, DATAFILE_SESSION);
 }
 
 void SessionMgr::saveSessionAct()
@@ -153,11 +168,8 @@ void SessionMgr::loadSession(QString name)
     QByteArray data = openSessionFile(name);
     if(data.isEmpty())
         return;
-    data = qUncompress(data);
-    DataFileParser parser(&data);
-    parser.open(QIODevice::ReadOnly);
 
-    sWorkTabMgr.loadData(&parser);
+    sWorkTabMgr.loadData(new DataFileParser(&data, QIODevice::ReadOnly));
 }
 
 void SessionMgr::updateSessions()
