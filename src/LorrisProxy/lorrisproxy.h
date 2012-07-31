@@ -10,12 +10,12 @@
 
 #include "../WorkTab/WorkTab.h"
 #include "../ui/connectbutton.h"
+#include "tcpserver.h"
 
 namespace Ui {
     class LorrisProxy;
 }
 
-class TcpServer;
 class QTcpSocket;
 
 class LorrisProxy : public PortConnWorkTab
@@ -43,7 +43,7 @@ private slots:
 
 private:
     Ui::LorrisProxy *ui;
-    TcpServer *m_server;
+    TcpServer m_server;
     ConnectButton * m_connectButton;
 };
 

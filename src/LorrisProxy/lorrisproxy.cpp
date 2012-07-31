@@ -15,17 +15,15 @@
 #include "ui_lorrisproxy.h"
 
 LorrisProxy::LorrisProxy()
-    : ui(new Ui::LorrisProxy)
+    : ui(new Ui::LorrisProxy), m_server(this)
 {
-    m_server = new TcpServer();
-
     ui->setupUi(this);
 
     connect(ui->addressEdit,   SIGNAL(textChanged(QString)), SLOT(updateAddressText()));
     connect(ui->portBox,       SIGNAL(valueChanged(int)),    SLOT(updateAddressText()));
     connect(ui->listenButon,   SIGNAL(clicked()),            SLOT(listenChanged()));
-    connect(m_server,          SIGNAL(newConnection(QTcpSocket*,quint32)), SLOT(addConnection(QTcpSocket*,quint32)));
-    connect(m_server,          SIGNAL(removeConnection(quint32)), SLOT(removeConnection(quint32)));
+    connect(&m_server,         SIGNAL(newConnection(QTcpSocket*,quint32)), SLOT(addConnection(QTcpSocket*,quint32)));
+    connect(&m_server,         SIGNAL(removeConnection(quint32)), SLOT(removeConnection(quint32)));
 
     ui->addressEdit->setText(sConfig.get(CFG_STRING_PROXY_ADDR));
     ui->portBox->setValue(sConfig.get(CFG_QUINT32_PROXY_PORT));
@@ -36,7 +34,6 @@ LorrisProxy::LorrisProxy()
 
 LorrisProxy::~LorrisProxy()
 {
-    delete m_server;
     delete ui;
 }
 
@@ -44,18 +41,18 @@ void LorrisProxy::setPortConnection(ConnectionPointer<PortConnection> const & co
 {
     this->PortConnWorkTab::setPortConnection(con);
     m_connectButton->setConn(con);
-    connect(m_con.data(),    SIGNAL(dataRead(QByteArray)), m_server, SLOT(SendData(QByteArray)));
-    connect(m_server, SIGNAL(newData(QByteArray)),  m_con.data(),    SLOT(SendData(QByteArray)));
+    connect(m_con.data(),     SIGNAL(dataRead(QByteArray)), &m_server, SLOT(SendData(QByteArray)));
+    connect(&m_server, SIGNAL(newData(QByteArray)),   m_con.data(),    SLOT(SendData(QByteArray)));
 }
 
 void LorrisProxy::updateAddressText()
 {
     QString color = "color :";
     QString address;
-    if(m_server->isListening())
+    if(m_server.isListening())
     {
         color += "green";
-        address = m_server->getAddress();
+        address = m_server.getAddress();
     }
     else
     {
@@ -70,9 +67,9 @@ void LorrisProxy::updateAddressText()
 
 void LorrisProxy::listenChanged()
 {
-    if(m_server->isListening())
+    if(m_server.isListening())
     {
-        m_server->stopListening();
+        m_server.stopListening();
         ui->listenButon->setText(tr("Start listening"));
         ui->addressEdit->setEnabled(true);
         ui->portBox->setEnabled(true);
@@ -82,7 +79,7 @@ void LorrisProxy::listenChanged()
         sConfig.set(CFG_STRING_PROXY_ADDR, ui->addressEdit->text());
         sConfig.set(CFG_QUINT32_PROXY_PORT, ui->portBox->value());
 
-        if(m_server->listen(ui->addressEdit->text(), ui->portBox->value()))
+        if(m_server.listen(ui->addressEdit->text(), ui->portBox->value()))
         {
             ui->listenButon->setText(tr("Stop listening"));
             ui->addressEdit->setEnabled(false);
@@ -93,7 +90,7 @@ void LorrisProxy::listenChanged()
             QMessageBox box(this);
             box.setIcon(QMessageBox::Critical);
             box.setWindowTitle(tr("Error!"));
-            box.setText(tr("Failed to start listening (%1)!").arg(m_server->getLastErr()));
+            box.setText(tr("Failed to start listening (%1)!").arg(m_server.errorString()));
             box.exec();
         }
     }
@@ -139,7 +136,7 @@ void LorrisProxy::saveData(DataFileParser *file)
     file->writeVal(ui->portBox->value());
 
     file->writeBlockIdentifier("LorrProxyStatus");
-    file->writeVal(m_server->isListening());
+    file->writeVal(m_server.isListening());
 }
 
 void LorrisProxy::loadData(DataFileParser *file)
