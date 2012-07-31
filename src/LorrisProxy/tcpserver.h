@@ -32,6 +32,7 @@ public:
 
     bool listen(const QString& address, quint16 port);
     void stopListening();
+    void closeConnection(quint32 id);
 
     QString getAddress();
 

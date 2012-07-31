@@ -22,6 +22,7 @@ LorrisProxy::LorrisProxy()
     connect(ui->addressEdit,   SIGNAL(textChanged(QString)), SLOT(updateAddressText()));
     connect(ui->portBox,       SIGNAL(valueChanged(int)),    SLOT(updateAddressText()));
     connect(ui->listenButon,   SIGNAL(clicked()),            SLOT(listenChanged()));
+    connect(ui->connections,   SIGNAL(customContextMenuRequested(QPoint)), SLOT(connectionMenu(QPoint)));
     connect(&m_server,         SIGNAL(newConnection(QTcpSocket*,quint32)), SLOT(addConnection(QTcpSocket*,quint32)));
     connect(&m_server,         SIGNAL(removeConnection(quint32)), SLOT(removeConnection(quint32)));
 
@@ -152,4 +153,19 @@ void LorrisProxy::loadData(DataFileParser *file)
     if(file->seekToNextBlock("LorrProxyStatus", BLOCK_WORKTAB))
         if(file->readVal<bool>())
             listenChanged();
+}
+
+void LorrisProxy::connectionMenu(const QPoint &pos)
+{
+    QTreeWidgetItem *item = ui->connections->itemAt(pos);
+    if(!item)
+        return;
+
+    QMenu menu;
+    QAction *act = menu.addAction(tr("Disconnect"));
+
+    if(menu.exec(ui->connections->mapToGlobal(pos)) != act)
+        return;
+
+    m_server.closeConnection(item->text(0).toUInt());
 }

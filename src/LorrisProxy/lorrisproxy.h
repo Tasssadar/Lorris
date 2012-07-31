@@ -40,6 +40,7 @@ private slots:
     void listenChanged();
     void addConnection(QTcpSocket *connection, quint32 id);
     void removeConnection(quint32 id);
+    void connectionMenu(const QPoint& pos);
 
 private:
     Ui::LorrisProxy *ui;

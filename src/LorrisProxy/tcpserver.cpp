@@ -114,3 +114,11 @@ QString TcpServer::getAddress()
         return serverAddress().toString();
 }
 
+void TcpServer::closeConnection(quint32 id)
+{
+    socketMap::iterator itr = m_socket_map.find(id);
+    if(itr == m_socket_map.end())
+        return;
+
+    (*itr)->close();
+}
