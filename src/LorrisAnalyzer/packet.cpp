@@ -8,15 +8,16 @@
 #include "packet.h"
 #include "../common.h"
 
-analyzer_data::analyzer_data(analyzer_packet *packet)
+analyzer_data::analyzer_data(QByteArray *data)
 {
-    m_packet = packet;
-    clear();
+    m_packet = NULL;
+    m_data = data;
 }
 
 void analyzer_data::clear()
 {
-    m_data.clear();
+    if(m_data)
+        m_data->clear();
 }
 
 quint32 analyzer_data::addData(char *d_itr, char *d_end, quint32 &itr)
@@ -31,7 +32,7 @@ quint32 analyzer_data::addData(char *d_itr, char *d_end, quint32 &itr)
     {
         if(*(d_itr+read) != static_data[itr])
             return read;
-        m_data[itr++] = *(d_itr+read++);
+        (*m_data)[itr++] = *(d_itr+read++);
     }
 
     bool readFromHeader = false;
@@ -48,7 +49,7 @@ quint32 analyzer_data::addData(char *d_itr, char *d_end, quint32 &itr)
             lenRead = 0;
         }
 
-        m_data[itr++] = *(d_itr+read++);
+        (*m_data)[itr++] = *(d_itr+read++);
     }
     return read;
 }
@@ -82,13 +83,13 @@ bool analyzer_data::isValid(quint32 itr)
 
     QByteArray static_data = m_packet->getStaticData();
 
-    if(m_data.isEmpty() || itr < (quint32)static_data.length())
+    if(m_data->isEmpty() || itr < (quint32)static_data.length())
         return false;
 
     quint32 static_pos = getHeaderDataPos(DATA_STATIC);
     for(quint8 i = 0; i < static_data.length(); ++i)
     {
-        if(m_data[static_pos++] != static_data[i])
+        if((*m_data)[static_pos++] != static_data[i])
             return false;
     }
 
@@ -102,7 +103,7 @@ bool analyzer_data::getDeviceId(quint8& id)
     if(!(m_packet->header->data_mask & DATA_DEVICE_ID))
         return false;
 
-    id = (quint8)m_data[getHeaderDataPos(DATA_DEVICE_ID)];
+    id = (quint8)m_data->at(getHeaderDataPos(DATA_DEVICE_ID));
     return true;
 }
 
@@ -111,7 +112,7 @@ bool analyzer_data::getCmd(quint8 &cmd)
     if(!(m_packet->header->data_mask & DATA_OPCODE))
         return false;
 
-    cmd = (quint8)m_data[getHeaderDataPos(DATA_OPCODE)];
+    cmd = (quint8)m_data->at(getHeaderDataPos(DATA_OPCODE));
     return true;
 }
 
@@ -168,9 +169,9 @@ quint16 analyzer_data::getHeaderDataPos(quint8 type)
 QString analyzer_data::getString(quint32 pos)
 {
     QString str = "";
-    if(pos >= (quint32)m_data.length())
+    if(pos >= (quint32)m_data->length())
         return str;
-    for(; pos < (quint32)m_data.length() && m_data[pos] != '\0'; ++pos)
-        str.append(QChar(m_data[pos]));
+    for(; pos < (quint32)m_data->length() && m_data->at(pos) != '\0'; ++pos)
+        str.append(QChar(m_data->at(pos)));
     return str;
 }

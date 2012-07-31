@@ -16,6 +16,7 @@
 #include "DataWidgets/datawidget.h"
 #include "../ui/connectbutton.h"
 #include "storage.h"
+#include "packetparser.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -26,8 +27,6 @@ class DeviceTabWidget;
 class WidgetArea;
 class QSpinBox;
 class QScrollArea;
-class PacketParser;
-struct analyzer_packet;
 
 enum hideable_areas
 {
@@ -106,13 +105,15 @@ class LorrisAnalyzer : public PortConnWorkTab
         bool load(QString& name, quint8 mask);
         void importBinary(const QString& filename, bool reset = true);
         void resetDevAndStorage(analyzer_packet *packet = NULL);
+        void setPacket(analyzer_packet *packet);
+
 
         bool highlightInfoNotNull;
         data_widget_info highlightInfo;
         Ui::LorrisAnalyzer *ui;
-        Storage *m_storage;
+        Storage m_storage;
         analyzer_packet *m_packet;
-        PacketParser *m_parser;
+        PacketParser m_parser;
 
         QAction *m_title_action;
 
@@ -120,6 +121,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         qint32 m_curIndex;
 
         ConnectButton * m_connectButton;
+        analyzer_data m_curData;
 };
 
 #endif // LORRISANALYZER_H

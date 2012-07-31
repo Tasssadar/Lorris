@@ -169,20 +169,20 @@ struct analyzer_packet
 class analyzer_data
 {
 public:
-    analyzer_data(analyzer_packet *packet = NULL);
+    analyzer_data(QByteArray *data = NULL);
     void clear();
 
     void setPacket(analyzer_packet *packet) { m_packet = packet; }
     analyzer_packet *getPacket() const { return m_packet; }
 
-    void setData(QByteArray data)
+    void setData(QByteArray *data)
     {
         m_data = data;
     }
 
     quint32 addData(char *d_itr, char *d_end, quint32& itr);
 
-    const QByteArray& getData() { return m_data; }
+    const QByteArray& getData() { return *m_data; }
 
     bool isValid(quint32 itr);
 
@@ -209,16 +209,16 @@ public:
 
 private:
     analyzer_packet *m_packet;
-    QByteArray m_data;
+    QByteArray *m_data;
 };
 
 template <typename T>
 T analyzer_data::read(quint32 pos)
 {
-    if(pos+sizeof(T) > (quint32)m_data.length())
+    if(pos+sizeof(T) > (quint32)m_data->length())
         throw "Cannot read beyond data size!";
 
-    T val = *((T const*)&m_data.data()[pos]);
+    T val = *((T const*)&m_data->data()[pos]);
     if(m_packet->big_endian)
         Utils::swapEndian<T>((char*)&val);
     return val;

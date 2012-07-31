@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QCryptographicHash>
 #include <QCoreApplication>
+
 #include "storage.h"
 #include "widgetarea.h"
 #include "devicetabwidget.h"
@@ -38,9 +39,6 @@ void Storage::setPacket(analyzer_packet *packet)
 
     if(m_data.empty())
         return;
-
-    for(DataVector::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
-        (*itr).setPacket(packet);
 }
 
 void Storage::Clear()
@@ -49,7 +47,7 @@ void Storage::Clear()
     m_data.clear();
 }
 
-void Storage::addData(const analyzer_data& data)
+void Storage::addData(const QByteArray& data)
 {
     if(!m_packet)
         return;
@@ -152,9 +150,9 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
 
         for(quint32 i = 0; i < m_data.size(); ++i)
         {
-            quint32 len = m_data[i].getData().length();
+            quint32 len = m_data[i].length();
             buffer.write((char*)&len, sizeof(len));
-            buffer.write(m_data[i].getData());
+            buffer.write(m_data[i]);
         }
 
         //Widgets
@@ -345,11 +343,7 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
             data = buffer.read(len);
 
             if(load & STORAGE_DATA)
-            {
-                analyzer_data a_data(m_packet);
-                a_data.setData(data);
-                addData(a_data);
-            }
+                addData(data);
         }
     }
 
@@ -398,7 +392,7 @@ void Storage::ExportToBin(const QString &filename)
         throw tr("Unable to open file %1 for writing!").arg(filename);
 
     for(DataVector::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
-        f.write((*itr).getData());
+        f.write((*itr));
 
     f.close();
 }
