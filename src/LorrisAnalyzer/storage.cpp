@@ -39,19 +39,17 @@ void Storage::setPacket(analyzer_packet *packet)
     if(m_data.empty())
         return;
 
-    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
-        (*itr)->setPacket(packet);
+    for(DataVector::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+        (*itr).setPacket(packet);
 }
 
 void Storage::Clear()
 {
     m_size = 0;
-    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
-        delete *itr;
     m_data.clear();
 }
 
-void Storage::addData(analyzer_data *data)
+void Storage::addData(const analyzer_data& data)
 {
     if(!m_packet)
         return;
@@ -154,9 +152,9 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
 
         for(quint32 i = 0; i < m_data.size(); ++i)
         {
-            quint32 len = m_data[i]->getData().length();
+            quint32 len = m_data[i].getData().length();
             buffer.write((char*)&len, sizeof(len));
-            buffer.write(m_data[i]->getData());
+            buffer.write(m_data[i].getData());
         }
 
         //Widgets
@@ -348,8 +346,8 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
 
             if(load & STORAGE_DATA)
             {
-                analyzer_data *a_data = new analyzer_data(m_packet);
-                a_data->setData(data);
+                analyzer_data a_data(m_packet);
+                a_data.setData(data);
                 addData(a_data);
             }
         }
@@ -399,8 +397,8 @@ void Storage::ExportToBin(const QString &filename)
     if(!f.open(QIODevice::Truncate | QIODevice::WriteOnly))
         throw tr("Unable to open file %1 for writing!").arg(filename);
 
-    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
-        f.write((*itr)->getData());
+    for(DataVector::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+        f.write((*itr).getData());
 
     f.close();
 }
