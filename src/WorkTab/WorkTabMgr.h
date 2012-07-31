@@ -104,7 +104,6 @@ public slots:
     MainWindow *newWindow(QStringList openFiles = QStringList());
 
 private slots:
-    void windowDestroyed(QObject *window);
     void tabWidgetDestroyed(QObject *widget);
     void workTabDestroyed(QObject *tab);
 

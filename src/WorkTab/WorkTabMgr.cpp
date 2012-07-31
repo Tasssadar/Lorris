@@ -208,14 +208,7 @@ MainWindow *WorkTabMgr::newWindow(QStringList openFiles)
     MainWindow *w = new MainWindow(id);
     w->show(openFiles);
     m_windows.insert(id, w);
-
-    connect(w, SIGNAL(destroyed(QObject*)), SLOT(windowDestroyed(QObject*)));
     return w;
-}
-
-void WorkTabMgr::windowDestroyed(QObject *window)
-{
-    m_windows.remove(((MainWindow*)window)->getId());
 }
 
 void WorkTabMgr::registerTabWidget(TabWidget *widget)

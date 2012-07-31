@@ -46,7 +46,7 @@ MainWindow::MainWindow(quint32 id, QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-
+    sWorkTabMgr.removeWindow(m_id);
 }
 
 void MainWindow::show(const QStringList& openFiles)
