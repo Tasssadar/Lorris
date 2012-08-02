@@ -78,6 +78,7 @@ static const QString keys_string[CFG_STRING_NUM] =
     "analyzer/graph_export_path", // CFG_STRING_GRAPH_EXPORT
     "general/font",               // CFG_STRING_APP_FONT
     "analyzer/script_wnd_params", // CFG_STRING_SCRIPT_WND_PARAMS
+    "proxy/tunnel_name",          // CFG_STRING_PROXY_TUNNEL_NAME
 };
 
 static const QString def_string[CFG_STRING_NUM] =
@@ -99,6 +100,7 @@ static const QString def_string[CFG_STRING_NUM] =
     "",                           // CFG_STRING_GRAPH_EXPORT
     "",                           // CFG_STRING_APP_FONT
     "",                           // CFG_STRING_SCRIPT_WND_PARAMS
+    "Proxy tunnel",               // CFG_STRING_PROXY_TUNNEL_NAME
 };
 
 static const QString keys_bool[CFG_BOOL_NUM] =
@@ -123,6 +125,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "general/portable",           // CFG_BOOL_PORTABLE
     "analyzer/script_show_errors",// CFG_BOOL_SHOW_SCRIPT_ERROR
     "general/smooth_scaling",     // CFG_BOOL_SMOOTH_SCALING
+    "proxy/enable_tunnel",        // CFG_BOOL_PROXY_TUNNEL
 };
 
 static const bool def_bool[CFG_BOOL_NUM] =
@@ -147,6 +150,7 @@ static const bool def_bool[CFG_BOOL_NUM] =
     false,                        // CFG_BOOL_PORTABLE
     false,                        // CFG_BOOL_SHOW_SCRIPT_ERROR
     false,                        // CFG_BOOL_SMOOTH_SCALING
+    false,                        // CFG_BOOL_PROXY_TUNNEL
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =

@@ -13,6 +13,8 @@
 #include <QTcpServer>
 #include <QSignalMapper>
 
+#include "../connection/proxytunnel.h"
+
 class QTcpSocket;
 
 class TcpServer : public QTcpServer
@@ -36,6 +38,9 @@ public:
 
     QString getAddress();
 
+    void createProxyTunnel(const QString& name);
+    void destroyProxyTunnel();
+
 public slots:
     void SendData(const QByteArray& data);
 
@@ -50,6 +55,8 @@ private:
     socketMap m_socket_map;
 
     quint32 m_con_counter;
+
+    ConnectionPointer<ProxyTunnel> m_tunnel_conn;
 };
 
 #endif // TCPSERVER_H

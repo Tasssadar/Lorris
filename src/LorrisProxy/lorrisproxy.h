@@ -41,6 +41,9 @@ private slots:
     void addConnection(QTcpSocket *connection, quint32 id);
     void removeConnection(quint32 id);
     void connectionMenu(const QPoint& pos);
+    void tunnelNameEditFinished();
+    void tunnelNameEdited(const QString& text);
+    void tunnelToggled(bool enable);
 
 private:
     Ui::LorrisProxy *ui;

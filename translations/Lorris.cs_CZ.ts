@@ -1354,58 +1354,110 @@
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="74"/>
-        <source>Server address (0 means any):</source>
-        <translation>Adresa serveru(0 znamená jakákoliv):</translation>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="70"/>
+        <source>Server settings</source>
+        <translation>Nastavení serveru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="91"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="76"/>
+        <source>Address (0 = any):</source>
+        <translation>Adresa (0 = jakákoliv):</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="93"/>
         <source>Port:</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProxy/lorrisproxy.ui" line="107"/>
-        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="74"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="80"/>
         <source>Start listening</source>
         <translation>Spustit server</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="141"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="123"/>
+        <source>Proxy Tunnel</source>
+        <translation>Proxy tunel</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="131"/>
+        <source>Status:</source>
+        <translation>Stav:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="138"/>
+        <source>Enable</source>
+        <translation>Zapnout</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="145"/>
+        <source>Name:</source>
+        <translation>Jméno:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="155"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="193"/>
+        <source>Proxy tunnel</source>
+        <translation>Proxy tunel</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="165"/>
+        <source>Apply</source>
+        <translation>Použít</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="174"/>
+        <source>Proxy tunnels is new connection type - you can
+connect to it in Lorris and send data to clients
+connected to proxy via TCP or watch what
+clients send to the proxy.</source>
+        <translation>Proxy tunel je nový typ připojení - můžete se
+na něj připojit z ostatních modulů v Lorris
+a posílat data do clientů připojených na proxy
+a nebo sledovat co clienti do proxy posílají.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="193"/>
+        <source>Current IP address</source>
+        <translation>IP adresa</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="215"/>
         <source>:0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="154"/>
-        <source>Connections:</source>
-        <translation>Přípojení:</translation>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="233"/>
+        <source>Connections</source>
+        <translation>Aktivní připojení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="168"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="246"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="173"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.ui" line="251"/>
         <source>IP address</source>
         <translation>IP adresa</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="85"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="91"/>
         <source>Stop listening</source>
         <translation>Vypnout server</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="93"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="99"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="94"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="100"/>
         <source>Failed to start listening (%1)!</source>
         <translation>Nemůžu spustit server (%1)!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="165"/>
+        <location filename="../src/LorrisProxy/lorrisproxy.cpp" line="182"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>

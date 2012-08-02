@@ -31,7 +31,9 @@ enum ConnectionType
     CONNECTION_TCP_SOCKET  = 3,
     CONNECTION_USB_SHUPITO = 4,
     CONNECTION_USB_ACM     = 5,
-    MAX_CON_TYPE           = 6
+    CONNECTION_PROXY_TUNNEL= 6,
+
+    MAX_CON_TYPE           = 7
 };
 
 enum PrimaryConnectionType {
@@ -85,6 +87,8 @@ public:
 
     virtual QHash<QString, QVariant> config() const;
     virtual bool applyConfig(QHash<QString, QVariant> const & config);
+
+    virtual bool canSaveToSession() const { return false; }
 
 signals:
     // XXX: remove

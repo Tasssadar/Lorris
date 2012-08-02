@@ -127,7 +127,7 @@ void PortConnWorkTab::saveData(DataFileParser *file)
 {
     WorkTab::saveData(file);
 
-    if(m_con && (m_con->getType() == CONNECTION_SERIAL_PORT || m_con->getType() == CONNECTION_TCP_SOCKET))
+    if(m_con && m_con->canSaveToSession())
     {
         file->writeBlockIdentifier("portTabCon");
         file->writeVal(m_con->getType());

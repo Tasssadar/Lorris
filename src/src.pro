@@ -131,7 +131,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/widgetfactory.cpp \
     ui/resizeline.cpp \
     WorkTab/childtab.cpp \
-    WorkTab/tab.cpp
+    WorkTab/tab.cpp \
+    connection/proxytunnel.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -237,7 +238,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/widgetfactory.h \
     ui/resizeline.h \
     WorkTab/childtab.h \
-    WorkTab/tab.h
+    WorkTab/tab.h \
+    connection/proxytunnel.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

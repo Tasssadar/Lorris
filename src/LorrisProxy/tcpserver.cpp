@@ -10,6 +10,8 @@
 #include <QNetworkInterface>
 #include <QSignalMapper>
 
+#include "../connection/connectionmgr2.h"
+
 #include "tcpserver.h"
 
 TcpServer::TcpServer(QObject *parent) : QTcpServer(parent)
@@ -23,6 +25,8 @@ TcpServer::TcpServer(QObject *parent) : QTcpServer(parent)
 
 TcpServer::~TcpServer()
 {
+    if(m_tunnel_conn)
+        m_tunnel_conn->setTcpServer(NULL);
     stopListening();
 }
 
@@ -43,7 +47,7 @@ void TcpServer::newConnection()
 
 void TcpServer::SendData(const QByteArray& data)
 {
-    if(isListening())
+    if(!isListening())
         return;
 
     for(socketMap::iterator itr = m_socket_map.begin(); itr != m_socket_map.end(); ++itr)
@@ -121,4 +125,25 @@ void TcpServer::closeConnection(quint32 id)
         return;
 
     (*itr)->close();
+}
+
+void TcpServer::createProxyTunnel(const QString &name)
+{
+    if(!m_tunnel_conn)
+    {
+        m_tunnel_conn.reset(new ProxyTunnel);
+        m_tunnel_conn->setTcpServer(this);
+        m_tunnel_conn->setRemovable(false);
+        sConMgr2.addConnection(m_tunnel_conn.data());
+    }
+    m_tunnel_conn->setName(name);
+}
+
+void TcpServer::destroyProxyTunnel()
+{
+    if(!m_tunnel_conn)
+        return;
+
+    m_tunnel_conn->setTcpServer(NULL);
+    m_tunnel_conn.reset();
 }

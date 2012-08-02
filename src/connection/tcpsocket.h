@@ -43,6 +43,7 @@ public:
 
     QHash<QString, QVariant> config() const;
     bool applyConfig(QHash<QString, QVariant> const & config);
+    bool canSaveToSession() const { return true; }
 
 public slots:
     void connectResultSer(bool opened);

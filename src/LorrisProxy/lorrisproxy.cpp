@@ -23,11 +23,17 @@ LorrisProxy::LorrisProxy()
     connect(ui->portBox,       SIGNAL(valueChanged(int)),    SLOT(updateAddressText()));
     connect(ui->listenButon,   SIGNAL(clicked()),            SLOT(listenChanged()));
     connect(ui->connections,   SIGNAL(customContextMenuRequested(QPoint)), SLOT(connectionMenu(QPoint)));
+    connect(ui->tunnelName,    SIGNAL(editingFinished()),    SLOT(tunnelNameEditFinished()));
+    connect(ui->tunnelName,    SIGNAL(textEdited(QString)),  SLOT(tunnelNameEdited(QString)));
+    connect(ui->tunnelBox,     SIGNAL(toggled(bool)),        SLOT(tunnelToggled(bool)));
     connect(&m_server,         SIGNAL(newConnection(QTcpSocket*,quint32)), SLOT(addConnection(QTcpSocket*,quint32)));
     connect(&m_server,         SIGNAL(removeConnection(quint32)), SLOT(removeConnection(quint32)));
 
     ui->addressEdit->setText(sConfig.get(CFG_STRING_PROXY_ADDR));
     ui->portBox->setValue(sConfig.get(CFG_QUINT32_PROXY_PORT));
+
+    ui->tunnelName->setText(sConfig.get(CFG_STRING_PROXY_TUNNEL_NAME));
+    ui->tunnelBox->setChecked(sConfig.get(CFG_BOOL_PROXY_TUNNEL));
 
     m_connectButton = new ConnectButton(ui->connectButton);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
@@ -138,6 +144,10 @@ void LorrisProxy::saveData(DataFileParser *file)
 
     file->writeBlockIdentifier("LorrProxyStatus");
     file->writeVal(m_server.isListening());
+
+    file->writeBlockIdentifier("LorrProxyTunnel");
+    file->writeString(ui->tunnelName->text());
+    file->writeVal(ui->tunnelBox->isChecked());
 }
 
 void LorrisProxy::loadData(DataFileParser *file)
@@ -153,6 +163,13 @@ void LorrisProxy::loadData(DataFileParser *file)
     if(file->seekToNextBlock("LorrProxyStatus", BLOCK_WORKTAB))
         if(file->readVal<bool>())
             listenChanged();
+
+    if(file->seekToNextBlock("LorrProxyTunnel", BLOCK_WORKTAB))
+    {
+        ui->tunnelName->setText(file->readString());
+        ui->tunnelBox->setChecked(file->readVal<bool>());
+        tunnelToggled(ui->tunnelBox->isChecked());
+    }
 }
 
 void LorrisProxy::connectionMenu(const QPoint &pos)
@@ -168,4 +185,33 @@ void LorrisProxy::connectionMenu(const QPoint &pos)
         return;
 
     m_server.closeConnection(item->text(0).toUInt());
+}
+
+void LorrisProxy::tunnelNameEditFinished()
+{
+    if(ui->tunnelName->text().isEmpty())
+        ui->tunnelName->setText(tr("Proxy tunnel"));
+
+    m_server.createProxyTunnel(ui->tunnelName->text());
+    ui->setNameBtn->setEnabled(false);
+
+    sConfig.set(CFG_STRING_PROXY_TUNNEL_NAME, ui->tunnelName->text());
+}
+
+void LorrisProxy::tunnelToggled(bool enable)
+{
+    ui->tunnelName->setEnabled(enable);
+    ui->setNameBtn->setEnabled(false);
+
+    if(!enable)
+        m_server.destroyProxyTunnel();
+    else
+        tunnelNameEditFinished();
+
+    sConfig.set(CFG_BOOL_PROXY_TUNNEL, enable);
+}
+
+void LorrisProxy::tunnelNameEdited(const QString &/*text*/)
+{
+    ui->setNameBtn->setEnabled(ui->tunnelBox->isChecked());
 }

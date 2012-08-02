@@ -5,11 +5,13 @@
 **    See README and COPYING
 ***********************************************/
 
-#include "connectionmgr2.h"
-#include "../connection/serialport.h"
-#include "../connection/tcpsocket.h"
 #include <qextserialenumerator.h>
 #include <QStringBuilder>
+
+#include "connectionmgr2.h"
+#include "serialport.h"
+#include "tcpsocket.h"
+#include "proxytunnel.h"
 #include "../misc/config.h"
 
 #ifdef HAVE_LIBUSBY
@@ -348,16 +350,16 @@ QVariant ConnectionManager2::config() const
         Connection * conn = *it;
         Q_ASSERT(conn);
 
-        static char const * connTypes[] = {
+        static char const * connTypes[MAX_CON_TYPE] = {
             "serial_port",     // CONNECTION_SERIAL_PORT
             "shupito_tunnel",  // CONNECTION_SHUPITO_TUNNEL
             "shupito",         // CONNECTION_PORT_SHUPITO
             "tcp_client",      // CONNECTION_TCP_SOCKET
             "usb_shupito",     // CONNECTION_USB_SHUPITO
-            "usb_acm"          // CONNECTION_USB_ACM
+            "usb_acm",         // CONNECTION_USB_ACM
+            "proxy_tunnel",    // CONNECTION_PROXY_TUNNEL
         };
 
-        Q_ASSERT(sizeof connTypes / sizeof connTypes[0] == MAX_CON_TYPE);
         Q_ASSERT(conn->getType() < MAX_CON_TYPE);
 
         QHash<QString, QVariant> connConfig;
@@ -546,6 +548,15 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
                     return ConnectionPointer<Connection>::fromPtr(socket);
                 break;
             }
+            case CONNECTION_PROXY_TUNNEL:
+            {
+                ProxyTunnel *tunnel = (ProxyTunnel*)m_conns[i];
+                if(tunnel->name() == cfg["name"])
+                    return ConnectionPointer<Connection>::fromPtr(tunnel);
+                break;
+            }
+            default:
+                return ConnectionPointer<Connection>();
         }
     }
 
