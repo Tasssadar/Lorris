@@ -103,12 +103,6 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
             return;
     }
 
-    QFile file(filename);
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
-    {
-        Utils::showErrorBox(QObject::tr("Can't create/open file!"));
-        return;
-    }
     m_filename = filename;
 
     sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
@@ -170,7 +164,11 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
         buffer.close();
     }
 
-    m_file_md5 = DataFileBuilder::writeWithHeader(file, data, filename.contains(".cldta"), DATAFILE_ANALYZER);
+    try {
+        m_file_md5 = DataFileBuilder::writeWithHeader(filename, data, filename.contains(".cldta"), DATAFILE_ANALYZER);
+    } catch(const QString& ex) {
+        Utils::showErrorBox(ex);
+    }
 
     if(!m_packet)
     {

@@ -11,6 +11,11 @@
 #include <QFile>
 #include <QBuffer>
 #include <vector>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QTimer>
+
+class QEventLoop;
 
 enum DataBlocks
 {
@@ -32,7 +37,8 @@ enum DataBlocks
 
 enum DataFileFlags
 {
-    DATAFLAG_COMPRESSED = 0x01
+    DATAFLAG_COMPRESSED_OBSOLETE     = 0x01, // Obsolete
+    DATAFLAG_COMPRESSED              = 0x02
 };
 
 enum DataFileTypes
@@ -49,14 +55,16 @@ struct DataFileHeader
     DataFileHeader(quint8 data_type = DATAFILE_NONE);
     DataFileHeader(const DataFileHeader& other);
 
-    char str[4];        // must be "LDTA" without null end
+    char str[4];             // must be "LDTA" without null end
     quint16 version;
-    quint32 flags;      // enum DataFileFlags
-    quint8 data_type;   // enum DataFileTypes
-    char md5[16];       // md5 hash of data which follows the header
+    quint32 flags;           // enum DataFileFlags
+    quint8 data_type;        // enum DataFileTypes
+    char md5[16];            // md5 hash of data which follows the header
+    quint16 header_size;     // header size, for compatibility. Should be 64 for version >= 2
+    quint32 compressed_block;
 
     // SEE: align to 64 bytes
-    char unused[37];
+    char unused[31];
 };
 
 class DataFileParser : public QBuffer
@@ -96,13 +104,35 @@ class DataFileBuilder
 public:
     static QByteArray readAndCheck(QFile& file, DataFileTypes expectedType, bool *legacy = NULL);
 
-    // Returns MD5 of written data
-    static QByteArray writeWithHeader(QFile& file, QByteArray data, bool compress, DataFileTypes type);
+    // Returns MD5 of written data. data is cleared!
+    static QByteArray writeWithHeader(const QString& filename, QByteArray& data, bool compress, DataFileTypes type);
 
 private:
     static void readHeader(QFile& file, DataFileHeader *header);
     static void writeHeader(QIODevice &file, DataFileHeader *header);
+
+    static QByteArray writeWithHeader_private(const QString& filename, QByteArray& data, bool compress, DataFileTypes type);
+
+    static QFuture<QByteArray> m_future;
+    static QFutureWatcher<QByteArray> *m_watcher;
 };
+
+class ProgressReporter : public QObject
+{
+    Q_OBJECT
+
+    friend class DataFileBuilder;
+
+protected:
+    ProgressReporter();
+
+private slots:
+    void showSavingNotice();
+
+private:
+    QTimer m_timer;
+};
+
 
 template <typename T>
 void DataFileParser::readVal(T& val)

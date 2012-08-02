@@ -116,10 +116,6 @@ void SessionMgr::saveSession(QString name)
     if(!dir.exists())
         dir.mkpath(dir.absolutePath());
 
-    QFile file(getFolder() + name + ".cldta");
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
-        return throw tr("Could not open session data file!");
-
     QByteArray data;
     DataFileParser parser(&data, QIODevice::WriteOnly);
 
@@ -127,7 +123,7 @@ void SessionMgr::saveSession(QString name)
 
     parser.close();
 
-    DataFileBuilder::writeWithHeader(file, data, true, DATAFILE_SESSION);
+    DataFileBuilder::writeWithHeader(getFolder() + name + ".cldta", data, true, DATAFILE_SESSION);
 }
 
 void SessionMgr::saveSessionAct()
@@ -169,7 +165,8 @@ void SessionMgr::loadSession(QString name)
     if(data.isEmpty())
         return;
 
-    sWorkTabMgr.loadData(new DataFileParser(&data, QIODevice::ReadOnly));
+    DataFileParser parser(&data, QIODevice::ReadOnly);
+    sWorkTabMgr.loadData(&parser);
 }
 
 void SessionMgr::updateSessions()

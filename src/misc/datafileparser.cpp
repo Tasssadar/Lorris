@@ -8,18 +8,27 @@
 #include <QScopedPointer>
 #include <QCryptographicHash>
 #include <QMessageBox>
+#include <QEventLoop>
+#include <QtConcurrentRun>
+#include <QTimer>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include "datafileparser.h"
+#include "config.h"
+#include "../ui/tooltipwarn.h"
 
 #define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
 
 DataFileHeader::DataFileHeader(quint8 data_type)
 {
     str[0] = 'L'; str[1] = 'D'; str[2] = 'T'; str[3] = 'A';
-    version = 1;
+    version = 2;
     flags = 0;
     this->data_type = data_type;
     std::fill(md5, md5 + sizeof(md5), 0);
+    header_size = 64;
+    compressed_block = UINT_MAX;
     std::fill(unused, unused + sizeof(unused), 0xFF);
 }
 
@@ -30,6 +39,8 @@ DataFileHeader::DataFileHeader(const DataFileHeader& other)
     flags = other.flags;
     data_type = other.data_type;
     std::copy(other.md5, other.md5 + sizeof(md5), md5);
+    header_size = other.header_size;
+    compressed_block = other.compressed_block;
     std::copy(other.unused, other.unused + sizeof(unused), unused);
 }
 
@@ -216,6 +227,9 @@ QString DataFileParser::readString()
     return QString::fromUtf8(raw.data(), size);
 }
 
+QFuture<QByteArray> DataFileBuilder::m_future;
+QFutureWatcher<QByteArray> *DataFileBuilder::m_watcher = NULL;
+
 QByteArray DataFileBuilder::readAndCheck(QFile &file, DataFileTypes expectedType, bool *legacy)
 {
     if(!file.isOpen() && !file.open(QIODevice::ReadOnly))
@@ -261,35 +275,125 @@ QByteArray DataFileBuilder::readAndCheck(QFile &file, DataFileTypes expectedType
             throw QObject::tr("Corrupted data file - MD5 checksum does not match");
     }
 
-    if(compressed)
+
+    if(compressed && header && (header->flags & DATAFLAG_COMPRESSED))
+    {
+        char *end = data.data() + data.size();
+        quint32 blocks = *( (quint32*) (end-sizeof(quint32)) );
+        data.chop(sizeof(blocks));
+        end = data.data() + data.size();
+
+        std::vector<QByteArray> uncompressed(blocks);
+        quint32 resSize = 0;
+        for(quint32 i = 0; i < blocks; ++i)
+        {
+            end -= sizeof(quint32);
+            quint32 size = *((quint32*)end);
+
+            uncompressed[i] = qUncompress((const uchar*)(end-size), size);
+            resSize += uncompressed[i].size();
+
+            data.chop(size + sizeof(quint32));
+            end = data.data() + data.size();
+        }
+
+        data.clear();
+        data.reserve(resSize);
+        while(!uncompressed.empty())
+        {
+            data.append(uncompressed.back());
+            uncompressed.pop_back();
+        }
+    }
+    else if(compressed) // Obsolete
         data = qUncompress(data);
 
     return data;
 }
 
-QByteArray DataFileBuilder::writeWithHeader(QFile &file, QByteArray data, bool compress, DataFileTypes type)
+QByteArray DataFileBuilder::writeWithHeader(const QString& filename, QByteArray &data, bool compress, DataFileTypes type)
 {
-    if(!file.isOpen() && !file.open(QIODevice::WriteOnly | QIODevice::Truncate))
-        throw QObject::tr("Cannot open file \"%1\"!").arg(file.fileName());
+    QFile testFile(filename);
+    if(!testFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        throw QObject::tr("Cannot open file \"%1\"!").arg(filename);
+    testFile.close();
+
+    // wait for last save to finish
+    if(m_watcher)
+        throw QObject::tr("Another file is currently saving!");
+
+    m_watcher = new QFutureWatcher<QByteArray>();
+    m_future = QtConcurrent::run(&DataFileBuilder::writeWithHeader_private, filename, data, compress, type);
+    m_watcher->setFuture(m_future);
+
+    QEventLoop ev;
+    QObject::connect(m_watcher, SIGNAL(finished()), &ev, SLOT(quit()));
+    ProgressReporter reporter;
+    ev.exec();
+
+    QByteArray res = m_watcher->result();
+    delete m_watcher;
+    m_watcher = NULL;
+    return res;
+}
+
+QByteArray DataFileBuilder::writeWithHeader_private(const QString& filename, QByteArray& data, bool compress, DataFileTypes type)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        return QByteArray();
 
     DataFileHeader header(type);
     if(compress)
     {
         header.flags |= DATAFLAG_COMPRESSED;
-        data = qCompress(data);
+        header.compressed_block = sConfig.get(CFG_QUINT32_COMPRESS_BLOCK);
+
+        std::vector<QByteArray> compressed(data.size()/header.compressed_block + 1);
+
+        quint32 chunk = (std::min)(header.compressed_block, (quint32)data.size());
+        char *end = data.data() + data.size();
+        quint32 size = 0;
+        for(quint32 i = 0; !data.isEmpty(); ++i)
+        {
+            compressed[i] = qCompress((const uchar*)(end-chunk), chunk);
+            data.chop(chunk);
+            data.squeeze();
+
+            size += compressed[i].size() + 4;
+
+            chunk = (std::min)(header.compressed_block, (quint32)data.size());
+            end = data.data() + data.size();
+        }
+
+        data.reserve(size + 4);
+        quint32 blocks = compressed.size();
+        while(!compressed.empty())
+        {
+            const QByteArray& ar = compressed.back();
+            data.append(ar);
+
+            size = ar.size();
+            data.append((char*)&size, sizeof(size));
+
+            compressed.pop_back();
+        }
+        data.append((char*)&blocks, sizeof(blocks));
     }
 
     QByteArray md5 = MD5(data);
     std::copy(md5.data(), md5.data()+sizeof(header.md5), header.md5);
 
-    QBuffer buff;
-    buff.open(QIODevice::WriteOnly);
-    writeHeader(buff, &header);
-    buff.write(data);
+    {
+        QBuffer buff;
+        buff.open(QIODevice::WriteOnly);
+        writeHeader(buff, &header);
+        data.prepend(buff.data());
+    }
 
-    file.write(buff.data());
-
-    return MD5(buff.data());
+    file.write(data);
+    data = MD5(data);
+    return data;
 }
 
 void DataFileBuilder::readHeader(QFile &file, DataFileHeader *header)
@@ -301,7 +405,12 @@ void DataFileBuilder::readHeader(QFile &file, DataFileHeader *header)
     file.read((char*)&header->flags, sizeof(header->flags));
     file.read((char*)&header->data_type, sizeof(header->data_type));
     file.read(header->md5, sizeof(header->md5));
+    file.read((char*)&header->header_size, sizeof(header->header_size));
+    file.read((char*)&header->compressed_block, sizeof(header->compressed_block));
     file.read(header->unused, sizeof(header->unused));
+
+    if(header->version >= 2)
+        file.seek(header->header_size);
 }
 
 void DataFileBuilder::writeHeader(QIODevice &file, DataFileHeader *header)
@@ -313,5 +422,30 @@ void DataFileBuilder::writeHeader(QIODevice &file, DataFileHeader *header)
     file.write((char*)&header->flags, sizeof(header->flags));
     file.write((char*)&header->data_type, sizeof(header->data_type));
     file.write(header->md5, sizeof(header->md5));
+    file.write((char*)&header->header_size, sizeof(header->header_size));
+    file.write((char*)&header->compressed_block, sizeof(header->compressed_block));
     file.write(header->unused, sizeof(header->unused));
+
+    file.seek(header->header_size);
+}
+
+ProgressReporter::ProgressReporter() : QObject()
+{
+    m_timer.start(500);
+    m_timer.setSingleShot(true);
+    connect(&m_timer, SIGNAL(timeout()), SLOT(showSavingNotice()));
+}
+
+void ProgressReporter::showSavingNotice()
+{
+    ToolTipWarn *w = new ToolTipWarn(tr("Saving data file..."), NULL, NULL, -1);
+    connect(this, SIGNAL(destroyed()), w, SLOT(deleteLater()));
+
+    w->showSpinner();
+
+    if(QDesktopWidget *desktop = qApp->desktop())
+    {
+        QRect rect = desktop->availableGeometry();
+        w->move(rect.width() - w->width() - 15, rect.height() - w->height() - 15);
+    }
 }

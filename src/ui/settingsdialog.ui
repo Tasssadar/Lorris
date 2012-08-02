@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -333,13 +333,13 @@ Handy for USB flash drives.</string>
      </widget>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
-       <string>User interface</string>
+       <string>Performance</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
         <widget class="QGroupBox" name="groupBox_5">
          <property name="title">
-          <string/>
+          <string>Visual</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_8">
           <item>
@@ -351,6 +351,58 @@ Handy for USB flash drives.</string>
              <string>Smooth scaling of previews</string>
             </property>
            </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="title">
+          <string>Data files</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="toolTip">
+               <string>When saving compressed data files, data will be split to X mb blocks so that compression uses less memory.</string>
+              </property>
+              <property name="text">
+               <string>Compress block size: </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="cmprBlock">
+              <property name="toolTip">
+               <string>When saving compressed data files, data will be split to X mb blocks so that compression uses less memory.</string>
+              </property>
+              <property name="suffix">
+               <string> MB</string>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>2048</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>

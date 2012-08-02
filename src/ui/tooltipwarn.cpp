@@ -12,6 +12,7 @@
 #include <QPalette>
 #include <QPushButton>
 #include <QToolButton>
+#include <QMovie>
 
 #include "tooltipwarn.h"
 
@@ -60,4 +61,13 @@ void ToolTipWarn::setButton(QPushButton *btn)
 {
     btn->setParent(this);
     ((QHBoxLayout*)layout())->insertWidget(layout()->count()-1, btn);
+}
+
+void ToolTipWarn::showSpinner()
+{
+    QLabel *l = (QLabel*)(((QBoxLayout*)layout())->itemAt(0)->widget());
+
+    QMovie *movie = new QMovie(":/actions/spinner", QByteArray(), this);
+    l->setMovie(movie);
+    movie->start();
 }
