@@ -92,6 +92,7 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    bool eventFilter(QObject *obj, QEvent *ev);
 
 private slots:
     void tabMoved(int from, int to);
@@ -108,6 +109,8 @@ private:
 
     bool checkEvent(QMouseEvent *event);
     void setTabNameAndTooltip(int idx, QString name);
+    void installEventFilterToChildren(QObject *object);
+    void removeEventFilterFromChildren(QObject *object);
 
     quint32 m_id;
     std::vector<quint32> m_tab_ids;

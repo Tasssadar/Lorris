@@ -62,6 +62,8 @@ int TabWidget::addTab(Tab *widget, const QString &name, quint32 tabId)
 
     int idx = QTabWidget::addTab(widget, name);
 
+    installEventFilterToChildren(widget);
+
     std::vector<quint32>::iterator itr = m_tab_ids.begin() + idx;
     m_tab_ids.insert(itr, tabId);
 
@@ -171,6 +173,7 @@ QWidget *TabWidget::unregisterTab(int index)
     Q_ASSERT(tab);
 
     removeTab(index);
+    removeEventFilterFromChildren(tab);
 
     if(tab->isWorkTab())
         disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
@@ -435,6 +438,53 @@ void TabWidget::tabRemoved(int index)
         m_tabHistory.removeOne(m_tab_ids[index]);
         m_tab_ids.erase(m_tab_ids.begin() + index);
     }
+}
+
+bool TabWidget::eventFilter(QObject *obj, QEvent *ev)
+{
+    switch(ev->type())
+    {
+        case QEvent::ChildAdded:
+            installEventFilterToChildren(((QChildEvent*)ev)->child());
+            return false;
+        case QEvent::ChildRemoved:
+            removeEventFilterFromChildren(((QChildEvent*)ev)->child());
+            return false;
+        case QEvent::KeyPress:
+        {
+            QKeyEvent *keyEv = (QKeyEvent*)ev;
+            if(!(keyEv->modifiers() & Qt::ControlModifier) || keyEv->key() != Qt::Key_Tab)
+                return false;
+
+            keyPressEvent(keyEv);
+            return true;
+        }
+        case QEvent::KeyRelease:
+        {
+            QKeyEvent *keyEv = (QKeyEvent*)ev;
+            if(keyEv->key() == Qt::Key_Control)
+                keyReleaseEvent(keyEv);
+            return false;
+        }
+        default:break;
+    }
+    return QTabWidget::eventFilter(obj, ev);
+}
+
+void TabWidget::installEventFilterToChildren(QObject *object)
+{
+    object->installEventFilter(this);
+    const QObjectList &children = object->children();
+    for(int i = 0; i < children.size(); ++i)
+        installEventFilterToChildren(children[i]);
+}
+
+void TabWidget::removeEventFilterFromChildren(QObject *object)
+{
+    object->removeEventFilter(this);
+    const QObjectList &children = object->children();
+    for(int i = 0; i < children.size(); ++i)
+        removeEventFilterFromChildren(children[i]);
 }
 
 TabBar::TabBar(quint32 id, QWidget *parent) :
@@ -739,6 +789,7 @@ void TabSwitchWidget::createButton(int idx)
     QPushButton *btn = new QPushButton(tabWidget()->tabText(idx), this);
     btn->setFlat(true);
     btn->setCheckable(true);
+    btn->setEnabled(false);
     btn->setProperty("tabIndex", idx);
     ui->scrollLayout->insertWidget(ui->scrollLayout->count()-1, btn);
 
