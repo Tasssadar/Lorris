@@ -3,14 +3,13 @@ CONFIG += ordered
 
 include(../config.pri)
 
-SUBDIRS = qextserialport
-
-!system_qwt {
+win32|!system_qwt {
     SUBDIRS += qwt
 }
 
-python:unix {
-    SUBDIRS += pythonqt
+!win32 {
+    SUBDIRS += qextserialport
+    python: SUBDIRS += pythonqt
 }
 
 
