@@ -57,6 +57,7 @@ void ScriptWidget::setUp(Storage *storage)
 
 void ScriptWidget::createEngine()
 {
+    delete m_engine;
     m_engine = ScriptEngine::getEngine(m_engine_type, (WidgetArea*)parent(), getId(), m_terminal, this);
 
     if(!m_engine && m_engine_type != ENGINE_QTSCRIPT)
@@ -208,7 +209,6 @@ void ScriptWidget::sourceSet(bool close)
         {
             sConfig.set(CFG_QUINT32_ANALYZER_SCRIPT_ENG, type);
             m_engine_type = type;
-            delete m_engine;
             createEngine();
             connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
         }
