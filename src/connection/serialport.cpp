@@ -32,7 +32,6 @@ SerialPort::SerialPort()
 
 #ifdef Q_OS_WIN
     m_thread = new SerialPortThread(this);
-    m_thread->start();
 #endif
 }
 
@@ -70,10 +69,6 @@ void SerialPort::Close()
     if(m_port)
         emit disconnecting();
 
-#ifdef Q_OS_WIN
-    m_thread->setPort(NULL);
-#endif
-
     // port is currently opening
     if(m_openThread)
     {
@@ -97,6 +92,9 @@ void SerialPort::Close()
     else
     {
         QMutexLocker l(&m_port_mutex);
+#ifdef Q_OS_WIN
+        m_thread->setPort(NULL);
+#endif
         if(m_port)
         {
             m_port->close();
@@ -157,7 +155,9 @@ void SerialPort::openResult()
     }
 
 #ifdef Q_OS_WIN
+    m_port_mutex.lock();
     m_thread->setPort(m_port);
+    m_port_mutex.unlock();
 #endif
     connectResultSer(m_port != NULL);
 }
@@ -258,8 +258,6 @@ SerialPortThread::SerialPortThread(SerialPort *con) : QThread(con)
 
 void SerialPortThread::setPort(QextSerialPort *port)
 {
-    m_con->lockMutex();
-
     if(!m_port && port)
     {
         m_run = true;
@@ -272,8 +270,6 @@ void SerialPortThread::setPort(QextSerialPort *port)
         m_port = port;
         wait(500);
     }
-
-    m_con->unlockMutex();
 }
 
 void SerialPortThread::run()
