@@ -15,6 +15,7 @@
 #include "connection.h"
 
 class QComboBox;
+class SerialPortOpenThread;
 #ifdef Q_OS_WIN
     class SerialPortThread;
 #endif
@@ -73,16 +74,11 @@ private slots:
     void socketError(SocketError err);
 
 private:
-    bool openPort();
-
     QString m_deviceName;
     QString m_friendlyName;
 
     QextSerialPort *m_port;
     int m_rate;
-
-    QFuture<bool> m_future;
-    QFutureWatcher<bool> m_watcher;
 
     QMutex m_port_mutex;
     bool m_devNameEditable;
@@ -90,6 +86,31 @@ private:
 #ifdef Q_OS_WIN
     SerialPortThread *m_thread;
 #endif
+    SerialPortOpenThread *m_openThread;
+};
+
+class SerialPortOpenThread : public QThread
+{
+    Q_OBJECT
+public:
+    SerialPortOpenThread(SerialPort *conn);
+
+    QextSerialPort *claimPort()
+    {
+        QextSerialPort *res = m_port;
+        m_port = NULL;
+        return res;
+    }
+
+    void stop() { m_run = false; }
+
+protected:
+    void run();
+
+private:
+    QextSerialPort *m_port;
+    SerialPort *m_conn;
+    volatile bool m_run;
 };
 
 #ifdef Q_OS_WIN
