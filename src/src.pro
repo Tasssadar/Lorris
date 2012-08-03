@@ -304,16 +304,13 @@ win32 {
 
     INCLUDEPATH += ../dep/SDL/include
 
-    win32-msvc* {
-        CONFIG(debug, debug|release):LIBS += -lqwtd
-        else:LIBS += -lqwt
+    LIBS += -L"$$PWD/../dep/SDL/lib"
+    CONFIG(debug, debug|release):LIBS += -lqwtd
+    else:LIBS += -lqwt
 
-        LIBS += -L"$$PWD/../dep/SDL/lib/msvc"
+    win32-msvc* {
         QMAKE_CXXFLAGS += /wd4138
         QMAKE_CXXFLAGS_DEBUG += /Od
-    } else {
-        LIBS += -L"$$PWD/../dep/SDL/lib" -lqwt
-        QMAKE_LFLAGS = -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
     }
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
