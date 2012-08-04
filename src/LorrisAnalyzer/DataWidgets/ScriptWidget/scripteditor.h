@@ -199,6 +199,8 @@ public:
     bool hasSettings();
     int getType() const { return EDITOR_KATE; }
 
+    void setModified(bool modded);
+
 public slots:
     void settingsBtn();
     void modified(KTextEditor::Document*);

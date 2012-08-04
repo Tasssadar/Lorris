@@ -713,6 +713,11 @@ bool EditorWidgetKate::eventFilter(QObject *, QEvent *ev)
     return false;
 }
 
+void EditorWidgetKate::setModified(bool modded)
+{
+    m_doc->setModified(modded);
+}
+
 #endif // USE_KATE
 
 #ifdef USE_QSCI
