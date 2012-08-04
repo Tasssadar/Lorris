@@ -57,6 +57,8 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
         ui->editorBox->hide();
     }
 
+    ui->buttonBox->button(QDialogButtonBox::Apply)->setShortcut(QKeySequence("F5"));
+
     m_errors = 0;
     m_ignoreNextFocus = false;
     m_ignoreFocus = false;
@@ -418,6 +420,7 @@ void ScriptEditor::on_editorBox_currentIndexChanged(int idx)
     ui->editSettBtn->setVisible(m_editor->hasSettings());
 
     connect(m_editor, SIGNAL(textChangedByUser()), SLOT(textChanged()));
+    connect(m_editor, SIGNAL(applyShortcutPressed()), ui->buttonBox->button(QDialogButtonBox::Apply), SLOT(animateClick()));
     connect(ui->editSettBtn, SIGNAL(clicked()), m_editor, SLOT(settingsBtn()));
 
     sConfig.set(CFG_QUINT32_SCRIPTEDITOR_TYPE, idx);
@@ -584,9 +587,12 @@ EditorWidgetKate::EditorWidgetKate(QWidget *parent) : EditorWidget(parent)
     iface->setConfigValue("line-numbers", true);
     loadSettings(iface, CFG_VARIANT_KATE_SETTINGS_VIEW);
 
+    m_view->installEventFilter(this);
+
     // FIXME: Two config files. Great.
     KConfig config("lorrisrc");
     m_doc->editor()->readConfig(&config);
+
 
     connect(m_doc, SIGNAL(textChanged(KTextEditor::Document*)), SLOT(modified(KTextEditor::Document*)));
 }
@@ -685,6 +691,26 @@ void EditorWidgetKate::loadSettings(KTextEditor::ConfigInterface *iface, cfg_var
 void EditorWidgetKate::modified(KTextEditor::Document *)
 {
     emit textChangedByUser();
+}
+
+bool EditorWidgetKate::eventFilter(QObject *, QEvent *ev)
+{
+    switch(ev->type())
+    {
+        case QEvent::ShortcutOverride:
+        {
+            QKeyEvent *kev = (QKeyEvent*)ev;
+            if(kev->key() == Qt::Key_F5)
+            {
+                kev->accept();
+                emit applyShortcutPressed();
+                return true;
+            }
+            break;
+        }
+        default: break;
+    }
+    return false;
 }
 
 #endif // USE_KATE

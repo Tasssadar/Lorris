@@ -116,6 +116,7 @@ class EditorWidget : public QWidget
 
 Q_SIGNALS:
     void textChangedByUser();
+    void applyShortcutPressed();
 
 public:
     static EditorWidget *getEditor(int type, QWidget *parent);
@@ -201,6 +202,9 @@ public:
 public slots:
     void settingsBtn();
     void modified(KTextEditor::Document*);
+
+protected:
+    bool eventFilter(QObject *, QEvent *ev);
 
 private:
     void save();
