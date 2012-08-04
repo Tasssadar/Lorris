@@ -263,7 +263,13 @@ void TabWidget::saveData(DataFileParser *file)
         if(tab->isWorkTab())
         {
             file->writeBlockIdentifier("tabWidgetTab");
-            file->writeString(tabToolTip(i));
+
+            QString name = tabToolTip(i);
+            int idx = name.lastIndexOf(" - ");
+            if(idx != -1)
+                name = name.left(idx);
+            file->writeString(name);
+
             ((WorkTab*)tab)->saveData(file);
         }
     }
