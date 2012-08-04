@@ -14,11 +14,7 @@ UI_DIR = $$PWD/../ui
 RCC_DIR = $$PWD/../qrc
 CONFIG += qwt
 
-win32-msvc* {
-    LIBS += -L"$$PWD/../dep/qwt/lib/msvc"
-} else {
-    LIBS += -L"$$PWD/../dep/qwt/lib"
-}
+LIBS += -L"$$PWD/../dep/qwt/lib"
 LIBS += -L"$$PWD/../dep/qextserialport/lib"
 TRANSLATIONS = ../translations/Lorris.cs_CZ.ts
 TEMPLATE = app
@@ -304,13 +300,15 @@ win32 {
 
     INCLUDEPATH += ../dep/SDL/include
 
-    LIBS += -L"$$PWD/../dep/SDL/lib"
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 
     win32-msvc* {
+        LIBS += -L"$$PWD/../dep/SDL/lib/msvc"
         QMAKE_CXXFLAGS += /wd4138
         QMAKE_CXXFLAGS_DEBUG += /Od
+    } else {
+        LIBS += -L"$$PWD/../dep/SDL/lib"
     }
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
