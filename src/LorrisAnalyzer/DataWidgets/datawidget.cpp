@@ -57,7 +57,7 @@ DataWidget::DataWidget(QWidget *parent) :
     setFocusPolicy(Qt::StrongFocus);
 
     QPalette p = palette();
-    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    p.setColor(QPalette::Window, QColor("#FFFFFF"));
     setPalette(p);
 
     contextMenu = NULL;
