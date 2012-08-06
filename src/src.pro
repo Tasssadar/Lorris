@@ -2,7 +2,6 @@
 # Project created by QtCreator 2011-05-30T19:16:22
 # -------------------------------------------------
 include(../config.pri)
-include(../python.pri)
 
 QT += gui core network script
 TARGET = Lorris
@@ -381,6 +380,9 @@ python:win32 {
 
     QMAKE_POST_LINK = copy \""$$PWD\\..\\dep\\pythonqt\\win\\PythonQt.dll\"" \""$$PWD\\..\\bin\\release\\PythonQt.dll\""
 }
+
+# must be after lPythonQt, else it will not link properly on some compilers
+include(../python.pri)
 
 libusby {
     include(../dep/libusby/libusby.pri)
