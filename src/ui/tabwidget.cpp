@@ -175,8 +175,8 @@ QWidget *TabWidget::unregisterTab(int index)
     removeTab(index);
     removeEventFilterFromChildren(tab);
 
-    if(tab->isWorkTab())
-        disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
+    tab->disconnect(this);
+    this->disconnect(tab);
 
     changeMenu(currentIndex());
     return tab;
