@@ -563,7 +563,7 @@ void Terminal::paintEvent(QPaintEvent *)
         if(m_sel_stop.y() == m_sel_start.y())
             w *= m_sel_stop.x() - m_sel_start.x();
         else
-            w *= width - m_sel_start.x();
+            w *= width - (m_sel_start.x() - startX);
 
         painter.setPen(Qt::NoPen);
         painter.setBrush(this->palette().color(QPalette::Highlight));
@@ -606,10 +606,11 @@ void Terminal::paintEvent(QPaintEvent *)
 
 void Terminal::adjustSelectionWidth(int &w, quint32 i, quint32 max, int len)
 {
-    if(i == 0 && m_sel_start.x()*m_char_width > len)
+    int startX = horizontalScrollBar()->value();
+    if(i == 0 && (m_sel_start.x() - startX)*m_char_width > len)
         w = 0;
-    else if(i == 0)   w = std::min(w, (len - m_sel_start.x()*m_char_width));
-    else if(i == max) w = std::min(len, m_sel_stop.x()*m_char_width);
+    else if(i == 0)   w = std::min(w, (len - (m_sel_start.x() - startX)*m_char_width));
+    else if(i == max) w = std::min(len, (m_sel_stop.x() - startX)*m_char_width);
     else              w = len;
 }
 
