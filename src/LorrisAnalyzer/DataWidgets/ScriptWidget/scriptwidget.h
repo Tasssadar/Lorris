@@ -8,16 +8,23 @@
 #ifndef SCRIPTWIDGET_H
 #define SCRIPTWIDGET_H
 
+#include <QTimer>
+#include <QPointer>
+
 #include "../datawidget.h"
 
 class QLabel;
 class ScriptEditor;
-class ScriptEnv;
+class ScriptEngine;
 class Terminal;
 
 class ScriptWidget : public DataWidget
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void closeEdit();
+
 public:
     ScriptWidget(QWidget *parent = 0);
     ~ScriptWidget();
@@ -31,19 +38,27 @@ public slots:
     void onWidgetRemove(DataWidget *w);
     void onScriptEvent(const QString& eventId);
 
-protected:
-    void newData(analyzer_data *data, quint32 index);
-    void moveEvent(QMoveEvent *);
-    void resizeEvent(QResizeEvent *);
-
 protected slots:
      void setSourceTriggered();
      void sourceSet(bool close);
+     void closeEditor();
+     void blinkError();
 
 protected:
-     ScriptEditor *m_editor;
-     ScriptEnv *m_env;
+     void newData(analyzer_data *data, quint32 index);
+     void moveEvent(QMoveEvent *);
+     void resizeEvent(QResizeEvent *);
+     void titleDoubleClick();
+
+     void createEngine();
+
+     QPointer<ScriptEditor> m_editor;
+     ScriptEngine *m_engine;
+     int m_engine_type;
      Terminal *m_terminal;
+     QString m_filename;
+     QLabel *m_error_label;
+     QTimer m_error_blink_timer;
 };
 
 class ScriptWidgetAddBtn : public DataWidgetAddBtn

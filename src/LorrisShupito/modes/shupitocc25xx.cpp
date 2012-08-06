@@ -82,7 +82,7 @@ void ShupitoCC25XX::prepareMemForWriting(chip_definition::memorydef */*memdef*/,
     quint8 read_config[] = { 0x20 };
     ShupitoPacket pkt = execute_cmd(read_config, 1);
 
-    quint8 write_config[] = { 0x18, pkt[0] & ~(1<<2) };
+    quint8 write_config[] = { 0x18, quint8(pkt[0] & ~(1<<2)) };
     execute_cmd(write_config, 1);
 }
 
@@ -104,7 +104,7 @@ void ShupitoCC25XX::readMemRange(quint8 /*memid*/, QByteArray &memory, quint32 a
     {
         write_sfr(0xC7, bank & 7); // MEMCTR
 
-        quint8 load_dptr_instr[] = { 0x90, offset >> 8, offset }; // mov DPTR, offset
+        quint8 load_dptr_instr[] = { 0x90, quint8(offset >> 8), (quint8)offset }; // mov DPTR, offset
         execute_instr(load_dptr_instr);
 
         quint32 chunk = 0x10000 - offset;
@@ -112,7 +112,7 @@ void ShupitoCC25XX::readMemRange(quint8 /*memid*/, QByteArray &memory, quint32 a
             chunk = size;
         size -= chunk;
 
-        ShupitoPacket pkt(m_prog_cmd_base + 3, 0x02, (quint8)chunk, (quint8)(chunk >> 8));
+        ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base + 3, 0x02, (quint8)chunk, (quint8)(chunk >> 8));
 
         QByteArray data = m_shupito->waitForStream(pkt, m_prog_cmd_base + 3);
 
@@ -148,24 +148,23 @@ void ShupitoCC25XX::flashPage(chip_definition::memorydef */*memdef*/, std::vecto
     // Transfer all data into the DATA memory 0--127
     Q_ASSERT(size == 128);
 
-    QByteArray pkt;
-    pkt[0] = 0x80;
+    ShupitoPacket pkt;
 
-    char *mem = (char*)memory.data();
+    quint8 const * mem = memory.data();
     while(size > 0)
     {
         quint8 chunk = 14;
-        if(chunk > size)
+        if (chunk > size)
             chunk = size;
         size -= chunk;
 
-        pkt[1] = ((m_prog_cmd_base + 4) << 4) | (chunk + 1);
-        pkt[2] = (address & 0x7F);
-        pkt.replace(3, 100, mem, chunk);
+        pkt.push_back(m_prog_cmd_base + 4);
+        pkt.push_back(address & 0x7F);
+        pkt.insert(pkt.end(), mem, mem + chunk);
         mem += chunk;
 
         ShupitoPacket res = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 4);
-        if(res.getLen() != 1 || res[0] != 0)
+        if(res.size() != 2 || res[1] != 0)
             throw QString(QObject::tr("Failed to write data into the chip."));
     }
     address -= 128;
@@ -188,7 +187,7 @@ void ShupitoCC25XX::flashPage(chip_definition::memorydef */*memdef*/, std::vecto
 }
 quint8 ShupitoCC25XX::read_xdata(quint16 addr)
 {
-    quint8 instr1[] = { 0x90, (addr >> 8), addr }; // mov DPTR, addr
+    quint8 instr1[] = { 0x90, quint8(addr >> 8), (quint8)addr }; // mov DPTR, addr
     execute_instr(instr1);
 
     const quint8 instr2[] = { 0xE0 }; // movx A,@DPTR
@@ -197,7 +196,7 @@ quint8 ShupitoCC25XX::read_xdata(quint16 addr)
 
 void ShupitoCC25XX::write_xdata(quint16 addr, quint8 data)
 {
-    quint8 instr1[] = { 0x90, addr >> 8, addr }; // mov DPTR, addr
+    quint8 instr1[] = { 0x90, quint8(addr >> 8), (quint8)addr }; // mov DPTR, addr
     execute_instr(instr1);
 
     quint8 load_acc_instr[] = { 0x74, data }; // mov A,#data
@@ -222,28 +221,28 @@ void ShupitoCC25XX::write_sfr(quint8 addr, quint8 data)
 quint8 ShupitoCC25XX::execute_instr(const char *inst, std::size_t len)
 {
     ShupitoPacket pkt;
-    pkt.set(false, m_prog_cmd_base + 2, len+2);
-    pkt.getDataRef()[2] = 1;
-    pkt.getDataRef()[3] = 0x50 | quint8(len);
-    pkt.getDataRef().append(inst, len);
+    pkt.push_back(m_prog_cmd_base + 2);
+    pkt.push_back(1);
+    pkt.push_back(0x50 | quint8(len));
+    pkt.insert(pkt.end(), inst, inst + len);
 
     pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 2);
 
-    if(pkt.getLen() != 2 || pkt[1] != 0)
+    if(pkt.size() != 3 || pkt[2] != 0)
         throw QString(QObject::tr("Invalid response from the device."));
 
-    return pkt[0];
+    return pkt[1];
 }
 
 ShupitoPacket ShupitoCC25XX::execute_cmd(char const *cmd, std::size_t len, quint8 read_count)
 {
     ShupitoPacket pkt;
-    pkt.set(false, m_prog_cmd_base + 2, len + 1);
-    pkt.getDataRef()[2] = read_count;
-    pkt.getDataRef().append(cmd, len);
+    pkt.push_back(m_prog_cmd_base + 2);
+    pkt.push_back(read_count);
+    pkt.insert(pkt.end(), cmd, cmd + len);
 
     pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base + 2);
-    if(pkt.getLen() != read_count + 1 || pkt[read_count] != 0)
+    if(pkt.size() != size_t(read_count + 2) || pkt[1+read_count] != 0)
         throw QString(QObject::tr("Invalid response from the device."));
 
     return pkt;

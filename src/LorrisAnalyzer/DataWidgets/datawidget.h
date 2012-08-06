@@ -16,7 +16,8 @@
 #include <QMenu>
 
 #include "../packet.h"
-#include "../datafileparser.h"
+#include "../../misc/datafileparser.h"
+#include "../widgetfactory.h"
 
 enum WidgetTypes
 {
@@ -28,15 +29,17 @@ enum WidgetTypes
     WIDGET_INPUT,
     WIDGET_TERMINAL,
     WIDGET_BUTTON,
+    WIDGET_CIRCLE,
+    WIDGET_SLIDER,
+    WIDGET_CANVAS,
 
     WIDGET_MAX
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
-
 };
 
 enum NumberTypes
 {
-    NUM_UINT8,
+    NUM_UINT8 = 0,
     NUM_UINT16,
     NUM_UINT32,
     NUM_UINT64,
@@ -54,11 +57,13 @@ enum NumberTypes
 
 enum DragActions
 {
+    DRAG_NONE       = 0x00,
     DRAG_MOVE       = 0x01,
     DRAG_RES_LEFT   = 0x02,
     DRAG_RES_RIGHT  = 0x04,
     //DRAG_RES_TOP    = 0x08, // Unused
-    DRAG_RES_BOTTOM = 0x10
+    DRAG_RES_BOTTOM = 0x10,
+    DRAG_COPY       = 0x20
 };
 
 #define RESIZE_BORDER 15 // number of pixels from every side which counts as resize drag
@@ -83,6 +88,7 @@ struct data_widget_info
 class CloseLabel;
 class DataFileParser;
 class Storage;
+class ChildTab;
 
 class DataWidget : public QFrame
 {
@@ -92,6 +98,7 @@ class DataWidget : public QFrame
 
 Q_SIGNALS:
     void updateData();
+    void updateForMe();
     void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
@@ -99,6 +106,9 @@ Q_SIGNALS:
 
     void titleChanged(const QString& newTitle);
     void scriptEvent(const QString& eventId);
+
+    void addChildTab(ChildTab *tab, const QString& name);
+    void removeChildTab(ChildTab *tab);
 
 public:
     explicit DataWidget(QWidget *parent = 0);
@@ -136,10 +146,11 @@ public:
 
     quint8 getWidgetType() const { return m_widgetType; }
 
+    void align();
+
 public slots:
     virtual void newData(analyzer_data *data, quint32);
-    void setTitle(const QString& title);
-    virtual void setValue(const QVariant &var);
+    void setTitle(QString title);
     void lockTriggered();
     void remove();
     void setTitleVisibility(bool visible);
@@ -152,11 +163,18 @@ public slots:
 protected:
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent *ev);
+    void mouseDoubleClickEvent(QMouseEvent *e);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void contextMenuEvent ( QContextMenuEvent * event );
     void enterEvent(QEvent *);
     void leaveEvent(QEvent *);
+    void childEvent(QChildEvent *event);
+    bool eventFilter(QObject *, QEvent *ev);
+    void focusInEvent(QFocusEvent *event);
+
+    virtual void titleDoubleClick();
 
     virtual void processData(analyzer_data *data);
 
@@ -175,33 +193,19 @@ private slots:
     void setTitleTriggered();
 
 private:
-    inline bool iw(int w) { return w + width() > ((QWidget*)parent())->width(); }
-    inline bool ih(int h) { return h + height() > ((QWidget*)parent())->height(); }
+    inline void mapToGrid(int &val);
+    void mapXYToGrid(QPoint& point);
+    void mapXYToGrid(int& x, int& y);
 
-    inline int getWPosInside(int w)
-    {
-        if(ih(w))
-            return ((QWidget*)parent())->width() - width();
-        else if(w < 0)
-            return 0;
-        return w;
-    }
-
-    inline int getHPosInside(int h)
-    {
-        if(ih(h))
-            return ((QWidget*)parent())->height() - height();
-        else if(h < 0)
-            return 0;
-        return h;
-    }
-
-    quint8 getDragAction(const QPoint& clickPos);
+    quint8 getDragAction(QMouseEvent* ev);
     void dragResize(QMouseEvent* e);
-    void dragMove(QMouseEvent* e);
+    void dragMove(QMouseEvent* e, DataWidget *widget);
+
+    void copyWidget(QMouseEvent *ev);
 
     QPoint mOrigin;
     quint8 m_dragAction;
+    DataWidget *m_copy_widget;
     bool m_locked;
     bool m_mouseIn;
 

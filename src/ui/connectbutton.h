@@ -13,6 +13,7 @@
 #include <QAction>
 #include <QToolButton>
 #include "../connection/connection.h"
+#include "../connection/shupitoconn.h"
 
 class ConnectButton : public QObject
 {
@@ -20,18 +21,19 @@ class ConnectButton : public QObject
 
 public:
     ConnectButton(QToolButton * btn);
-    void setConn(Connection * conn);
+    void setConn(ConnectionPointer<Connection> const & conn);
+    void setConnectionType(PrimaryConnectionType type);
 
 public slots:
-    Connection * choose();
+    ConnectionPointer<Connection> choose();
 
 Q_SIGNALS:
-    void connectionChosen(PortConnection * newConnection);
+    void connectionChosen(ConnectionPointer<Connection> const & newConnection);
 
 private slots:
     void connectTriggered();
     void connectionStateChanged(ConnectionState state);
-    void connectionDestroyed();
+    void connectionBeingDestroyed();
 
 private:
     QMenu m_menu;
@@ -39,7 +41,8 @@ private:
     QAction * m_chooseAction;
 
     QToolButton * m_btn;
-    Connection * m_conn;
+    ConnectionPointer<Connection> m_conn;
+    PrimaryConnectionType m_connType;
 };
 
 #endif // UI_CONNECTBUTTON_H

@@ -11,10 +11,9 @@
 #include "eeprom.h"
 #include "../common.h"
 
-EEPROM::EEPROM(QWidget *parent, chip_definition& chip)
+EEPROM::EEPROM()
 {
-    m_chip = chip;
-    m_parent = parent;
+    pageItr = 0;
 }
 
 EEPROM::~EEPROM()
@@ -22,10 +21,18 @@ EEPROM::~EEPROM()
 
 }
 
+void EEPROM::reset(chip_definition &chip)
+{
+    data.clear();
+    m_chip = chip;
+    pageItr = 0;
+    pages.clear();
+}
+
 void EEPROM::Export()
 {
     static const QString filters = QObject::tr("Intel hex file (*.hex);;Data file (*.dta)");
-    QString filename = QFileDialog::getSaveFileName(m_parent, QObject::tr("Export EEPROM"), "", filters);
+    QString filename = QFileDialog::getSaveFileName(NULL, QObject::tr("Export EEPROM"), "", filters);
 
     QString error;
     if(filename.endsWith(".hex", Qt::CaseInsensitive))
@@ -54,19 +61,13 @@ void EEPROM::Export()
     }
 
     if(!error.isEmpty())
-    {
-        QMessageBox box(m_parent);
-        box.setWindowTitle(QObject::tr("Error!"));
-        box.setText(error);
-        box.setIcon(QMessageBox::Critical);
-        box.exec();
-    }
+        Utils::showErrorBox(error);
 }
 
 bool EEPROM::Import()
 {
     QString filters = QObject::tr("Intel hex file (*.hex);;Data file (*.dta)");
-    QString filename = QFileDialog::getOpenFileName(m_parent, QObject::tr("Import EEPROM"), "", filters);
+    QString filename = QFileDialog::getOpenFileName(NULL, QObject::tr("Import EEPROM"), "", filters);
 
     QString error;
     if(filename.endsWith(".hex", Qt::CaseInsensitive))
@@ -105,15 +106,9 @@ bool EEPROM::Import()
 
     if(!error.isEmpty())
     {
-        QMessageBox box(m_parent);
-        box.setWindowTitle(QObject::tr("Error!"));
-        box.setText(error);
-        box.setIcon(QMessageBox::Critical);
-        box.exec();
+        Utils::showErrorBox(error);
         return false;
     }
     pageItr = 0;
     return true;
 }
-
-

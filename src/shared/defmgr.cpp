@@ -7,6 +7,8 @@
 
 #include <QDesktopServices>
 #include <QFile>
+#include <QStringList>
+#include "../misc/utils.h"
 
 #include "defmgr.h"
 
@@ -111,7 +113,7 @@ void DefMgr::parseChipdefs(QTextStream &ss)
             {
                 int sep_pos = tokens[i].indexOf('=');
                 if(sep_pos == -1)
-                    return Utils::ThrowException("Invalid syntax in the chip definition file.");
+                    return Utils::showErrorBox("Invalid syntax in the chip definition file.");
                 def.getOptions()[tokens[i].mid(1, sep_pos - 1)] = tokens[i].mid(sep_pos + 1);
             }
             else
@@ -164,6 +166,17 @@ void DefMgr::parseFusedesc(QTextStream &ss)
 
         if(chipSign.isEmpty())
             continue;
+
+        while(line.endsWith("||"))
+        {
+            line.data()[line.size()-1] = ' ';
+
+            QString nextLine = ss.readLine().trimmed();
+            if(nextLine.isNull())
+                return;
+
+            line += nextLine;
+        }
 
         QStringList tokens = line.split(" | ", QString::SkipEmptyParts);
         if(tokens.size() < 2)

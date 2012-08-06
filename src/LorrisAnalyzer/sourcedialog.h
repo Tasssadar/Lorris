@@ -24,19 +24,17 @@ class QLabel;
 class QAbstractButton;
 class PacketParser;
 class QListWidgetItem;
+class PortConnection;
 
 class SourceDialog : public QDialog
 {
     Q_OBJECT
 
-Q_SIGNALS:
-    void readData(const QByteArray& data);
-
 public:
-    explicit SourceDialog(analyzer_packet *pkt, QWidget *parent = 0);
+    SourceDialog(analyzer_packet *pkt, PortConnection *con, const QString &importFile = QString());
     ~SourceDialog();
 
-    analyzer_packet *getStructure();
+    static analyzer_packet *getStructure(analyzer_packet *pkt, PortConnection *con, const QString &importFile = QString());
 
 public slots:
     void headerLenToggled(bool checked);

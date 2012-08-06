@@ -8,7 +8,7 @@
 #ifndef LORRISAVR_H
 #define LORRISAVR_H
 
-#include "WorkTab/WorkTab.h"
+#include "../WorkTab/WorkTab.h"
 #include "mcu.h"
 #include "ui_lorrisavr.h"
 
@@ -20,6 +20,8 @@ class LorrisAVR : public WorkTab, private Ui::LorrisAVR
 public:
     explicit LorrisAVR();
     ~LorrisAVR();
+
+    QString GetIdString();
 
 private slots:
     void on_browseBtn_clicked();

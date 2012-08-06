@@ -15,15 +15,15 @@
 #include "../WorkTab/WorkTabInfo.h"
 
 ShupitoTunnel::ShupitoTunnel()
+    : PortConnection(CONNECTION_SHUPITO_TUNNEL)
 {
     m_shupito = NULL;
     dataSigConnected = false;
-
-    m_type = CONNECTION_SHUPITO_TUNNEL;
 }
 
 ShupitoTunnel::~ShupitoTunnel()
 {
+    Close();
 }
 
 bool ShupitoTunnel::Open()
@@ -70,7 +70,7 @@ void ShupitoTunnel::setShupito(Shupito* s)
         connect(s, SIGNAL(tunnelData(QByteArray)),     SIGNAL(dataRead(QByteArray)));
         dataSigConnected = true;
     }
-    else if(!this->isOpen())
+    else if(this->isOpen())
         Close();
 
     m_shupito = s;

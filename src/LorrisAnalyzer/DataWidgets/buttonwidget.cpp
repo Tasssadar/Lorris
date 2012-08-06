@@ -6,8 +6,12 @@
 ***********************************************/
 
 #include <QInputDialog>
+#include <QDialogButtonBox>
 
 #include "buttonwidget.h"
+#include "../../ui/shortcutinputbox.h"
+
+REGISTER_DATAWIDGET(WIDGET_BUTTON, Button)
 
 ButtonWidget::ButtonWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -19,7 +23,6 @@ ButtonWidget::ButtonWidget(QWidget *parent) : DataWidget(parent)
     m_button = new QPushButton(tr("Button"), this);
     m_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    layout->setContentsMargins(5, 0, 5, 5);
     layout->addWidget(m_button, 4);
 
     adjustSize();
@@ -30,9 +33,11 @@ void ButtonWidget::setUp(Storage *storage)
     DataWidget::setUp(storage);
 
     QAction *btnText = contextMenu->addAction(tr("Set button text..."));
+    QAction *btnShortcut = contextMenu->addAction(tr("Set shortcut..."));
 
-    connect(btnText,  SIGNAL(triggered()), SLOT(setButtonName()));
-    connect(m_button, SIGNAL(clicked()),   SLOT(buttonClicked()));
+    connect(btnText,     SIGNAL(triggered()), SLOT(setButtonName()));
+    connect(btnShortcut, SIGNAL(triggered()), SLOT(setShortcut()));
+    connect(m_button,    SIGNAL(clicked()),   SLOT(buttonClicked()));
 }
 
 void ButtonWidget::buttonClicked()
@@ -53,18 +58,41 @@ void ButtonWidget::setButtonName(const QString &name)
     m_button->setText(name);
 }
 
+void ButtonWidget::setShortcut()
+{
+    QDialog d(this);
+    d.setWindowFlags(d.windowFlags() & ~(Qt::WindowMaximizeButtonHint | Qt::WindowContextHelpButtonHint));
+    d.setWindowTitle(tr("Set button shortcut"));
+
+    QVBoxLayout *l = new QVBoxLayout(&d);
+
+    ShortcutInputBox *box = new ShortcutInputBox(m_button->shortcut(), &d);
+    QDialogButtonBox *btn = new QDialogButtonBox((QDialogButtonBox::Ok |QDialogButtonBox::Cancel), Qt::Horizontal, &d);
+
+    l->addWidget(box);
+    l->addWidget(btn);
+
+    connect(btn, SIGNAL(accepted()), &d, SLOT(accept()));
+    connect(btn, SIGNAL(rejected()), &d, SLOT(reject()));
+
+    if(d.exec() == QDialog::Accepted)
+        m_button->setShortcut(box->getKeySequence());
+}
+
+void ButtonWidget::setShortcut(const QString &shortcut)
+{
+    m_button->setShortcut(QKeySequence(shortcut));
+}
+
 void ButtonWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
 
     file->writeBlockIdentifier("buttonWText");
-    {
-        QByteArray text = m_button->text().toUtf8();
-        quint32 len = text.length();
+    file->writeString(m_button->text());
 
-        file->write((char*)&len, sizeof(quint32));
-        file->write(text.data(), len);
-    }
+    file->writeBlockIdentifier("buttonWShortcut");
+    file->writeString(m_button->shortcut().toString());
 }
 
 void ButtonWidget::loadWidgetInfo(DataFileParser *file)
@@ -72,13 +100,10 @@ void ButtonWidget::loadWidgetInfo(DataFileParser *file)
     DataWidget::loadWidgetInfo(file);
 
     if(file->seekToNextBlock("buttonWText", BLOCK_WIDGET))
-    {
-        quint32 size = 0;
-        file->read((char*)&size, sizeof(quint32));
+        m_button->setText(file->readString());
 
-        QString text = QString::fromUtf8(file->read(size), size);
-        m_button->setText(text);
-    }
+    if(file->seekToNextBlock("buttonWShortcut", BLOCK_WIDGET))
+        m_button->setShortcut(QKeySequence(file->readString()));
 }
 
 ButtonWidgetAddBtn::ButtonWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

@@ -13,6 +13,8 @@
 #include "../../WorkTab/WorkTab.h"
 #include "colorwidget.h"
 
+REGISTER_DATAWIDGET(WIDGET_COLOR, Color)
+
 ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle(tr("Color"));
@@ -24,7 +26,6 @@ ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
     m_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_widget->setStyleSheet("background-color: black");
 
-    layout->setContentsMargins(3, 0, 3, 3);
     layout->addWidget(m_widget, 1);
 
     resize(150, 100);

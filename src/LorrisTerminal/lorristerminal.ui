@@ -6,17 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1080</width>
-    <height>342</height>
+    <width>737</width>
+    <height>411</height>
    </rect>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::ActionsContextMenu</enum>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="mainLayout" stretch="0,4">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,3,0,0,0,0">
-     <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
       <widget class="QToolButton" name="connectButton2">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -41,44 +44,71 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="4" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QComboBox" name="fmtBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToContents</enum>
+         </property>
+         <item>
+          <property name="text">
+           <string>Text</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Hex dump</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="7">
+      <widget class="QLabel" name="flashText">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
       <widget class="QPushButton" name="stopButton">
        <property name="text">
         <string>Stop</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="1">
       <widget class="QPushButton" name="flashButton">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>Flash</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLineEdit" name="hexFile">
+     <item row="1" column="2">
+      <widget class="QPushButton" name="browseBtn">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="browseBtn">
        <property name="text">
         <string>Browse...</string>
        </property>
@@ -87,34 +117,83 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="flashText">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>0</height>
-        </size>
+     <item row="1" column="3" colspan="2">
+      <widget class="QLabel" name="fileName">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true"/>
+        <string>&lt;No file loaded&gt;</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="5" colspan="3">
+      <widget class="QLabel" name="fileDate">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="clearButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Clear</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
       <widget class="QPushButton" name="pauseButton">
        <property name="text">
         <string>Pause</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="clearButton">
+     <item row="0" column="1">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>80</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="6">
+      <widget class="QPushButton" name="sendBtn">
        <property name="text">
-        <string>Clear</string>
+        <string>Send bytes...</string>
        </property>
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="ProgressBar" name="progressBar">
+     <property name="value">
+      <number>100</number>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="Terminal" name="terminal">
@@ -132,8 +211,13 @@
   <customwidget>
    <class>Terminal</class>
    <extends>QFrame</extends>
-   <header>../src/shared/terminal.h</header>
+   <header location="global">src/ui/terminal.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ProgressBar</class>
+   <extends>QProgressBar</extends>
+   <header>../src/ui/progressbar.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

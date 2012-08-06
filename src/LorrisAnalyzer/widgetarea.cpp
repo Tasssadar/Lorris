@@ -8,26 +8,49 @@
 #include <QDropEvent>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QVarLengthArray>
+#include <QMenu>
+#include <QInputDialog>
 
 #include "widgetarea.h"
 #include "lorrisanalyzer.h"
-#include "datafileparser.h"
+#include "../misc/datafileparser.h"
 #include "storage.h"
+#include "widgetfactory.h"
 
-#include "DataWidgets/numberwidget.h"
-#include "DataWidgets/barwidget.h"
-#include "DataWidgets/colorwidget.h"
-#include "DataWidgets/GraphWidget/graphwidget.h"
-#include "DataWidgets/ScriptWidget/scriptwidget.h"
-#include "DataWidgets/inputwidget.h"
-#include "DataWidgets/terminalwidget.h"
-#include "DataWidgets/buttonwidget.h"
+QPoint& operator %=(QPoint& a, const int& b)
+{
+    a.rx() %= b;
+    a.ry() %= b;
+    return a;
+}
 
 WidgetArea::WidgetArea(QWidget *parent) :
-    QFrame(parent)
+    QFrame(parent), m_menu(new QMenu(this))
 {
     m_widgetIdCounter = 0;
     m_skipNextMove = false;
+    m_prev = NULL;
+    m_show_grid = sConfig.get(CFG_BOOL_ANALYZER_SHOW_GRID);
+    m_grid = sConfig.get(CFG_BOOL_ANALYZER_ENABLE_GRID) ? sConfig.get(CFG_QUINT32_ANALYZER_GRID_SIZE) : 1;
+
+    setCursor(Qt::OpenHandCursor);
+
+    QAction *enableGrid = m_menu->addAction(tr("Enable grid"));
+    QAction *showGrid = m_menu->addAction(tr("Show grid"));
+    QAction *gridSize = m_menu->addAction(tr("Set grid size..."));
+    QAction *align = m_menu->addAction(tr("Align widgets to the grid"));
+    enableGrid->setCheckable(true);
+    enableGrid->setChecked(m_grid != 1);
+    showGrid->setCheckable(true);
+    showGrid->setChecked(m_show_grid);
+
+    connect(enableGrid, SIGNAL(toggled(bool)),           SLOT(enableGrid(bool)));
+    connect(enableGrid, SIGNAL(toggled(bool)), showGrid, SLOT(setEnabled(bool)));
+    connect(enableGrid, SIGNAL(toggled(bool)), gridSize, SLOT(setEnabled(bool)));
+    connect(showGrid,   SIGNAL(toggled(bool)),           SLOT(showGrid(bool)));
+    connect(gridSize,   SIGNAL(triggered()),             SLOT(setGridSize()));
+    connect(align,      SIGNAL(triggered()),             SLOT(alignWidgets()));
 }
 
 WidgetArea::~WidgetArea()
@@ -53,12 +76,14 @@ void WidgetArea::dropEvent(QDropEvent *event)
 
     event->acceptProposedAction();
 
-    addWidget(event->pos(), type);
+    DataWidget *w = addWidget(event->pos(), type);
+    if(m_grid != 1)
+        w->align();
 }
 
 DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
 {
-    DataWidget *w = newWidget(type, this);
+    DataWidget *w = sWidgetFactory.getWidget(type, this);
     if(!w)
         return NULL;
 
@@ -76,10 +101,13 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(m_analyzer, SIGNAL(newData(analyzer_data*,quint32)), w, SLOT(newData(analyzer_data*,quint32)));
     connect(w,          SIGNAL(removeWidget(quint32)),              SLOT(removeWidget(quint32)));
     connect(w,          SIGNAL(updateMarker(DataWidget*)),          SLOT(updateMarker(DataWidget*)));
+    connect(w,          SIGNAL(updateForMe()),          m_analyzer, SLOT(updateForWidget()));
     connect(w,          SIGNAL(updateData()),                       SIGNAL(updateData()));
     connect(w,   SIGNAL(mouseStatus(bool,data_widget_info,qint32)), SIGNAL(mouseStatus(bool,data_widget_info,qint32)));
     connect(w,          SIGNAL(SendData(QByteArray)),   m_analyzer, SIGNAL(SendData(QByteArray)));
     connect(m_analyzer, SIGNAL(setTitleVisibility(bool)),        w, SLOT(setTitleVisibility(bool)));
+    connect(w,  SIGNAL(addChildTab(ChildTab*,QString)), m_analyzer, SLOT(addChildTab(ChildTab*,QString)));
+    connect(w,  SIGNAL(removeChildTab(ChildTab*)),      m_analyzer, SLOT(removeChildTab(ChildTab*)));
 
     //events
     connect(this,       SIGNAL(onWidgetAdd(DataWidget*)),        w, SLOT(onWidgetAdd(DataWidget*)));
@@ -95,26 +123,10 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
 
 void WidgetArea::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(event->source() && event->mimeData()->text().at(0) == 'w')
+    if(event->source() && event->mimeData()->hasText() && event->mimeData()->text().at(0) == 'w')
         event->acceptProposedAction();
     else
         QFrame::dragEnterEvent(event);
-}
-
-DataWidget *WidgetArea::newWidget(quint8 type, QWidget *parent)
-{
-    switch(type)
-    {
-        case WIDGET_NUMBERS: return new NumberWidget(parent);
-        case WIDGET_BAR:     return new BarWidget(parent);
-        case WIDGET_COLOR:   return new ColorWidget(parent);
-        case WIDGET_GRAPH:   return new GraphWidget(parent);
-        case WIDGET_SCRIPT:  return new ScriptWidget(parent);
-        case WIDGET_INPUT:   return new InputWidget(parent);
-        case WIDGET_TERMINAL:return new TerminalWidget(parent);
-        case WIDGET_BUTTON:  return new ButtonWidget(parent);
-    }
-    return NULL;
 }
 
 void WidgetArea::removeWidget(quint32 id)
@@ -201,37 +213,96 @@ void WidgetArea::LoadWidgets(DataFileParser *file, bool skip)
     update();
 }
 
+void WidgetArea::SaveSettings(DataFileParser *file)
+{
+    file->writeBlockIdentifier("areaGridSettings");
+    file->write((char*)&m_grid, sizeof(m_grid));
+    file->write((char*)&m_show_grid, sizeof(m_show_grid));
+
+    file->writeBlockIdentifier("areaGridOffset");
+    {
+        int x = m_grid_offset.x();
+        int y = m_grid_offset.y();
+        file->write((char*)&x, sizeof(x));
+        file->write((char*)&y, sizeof(y));
+    }
+}
+
+void WidgetArea::LoadSettings(DataFileParser *file)
+{
+    if(file->seekToNextBlock("areaGridSettings", BLOCK_DATA_INDEX))
+    {
+        file->read((char*)&m_grid, sizeof(m_grid));
+        file->read((char*)&m_show_grid, sizeof(m_show_grid));
+
+        m_menu->actions()[0]->setChecked(m_grid != 1);
+        m_menu->actions()[1]->setChecked(m_show_grid);
+    }
+
+    if(file->seekToNextBlock("areaGridOffset", BLOCK_DATA_INDEX))
+    {
+        int x, y;
+        file->read((char*)&x, sizeof(x));
+        file->read((char*)&y, sizeof(y));
+        m_grid_offset = QPoint(x, y);
+        update();
+    }
+}
+
 void WidgetArea::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
+    switch(event->button())
     {
-        m_mouse_orig = event->globalPos();
-        setCursor(Qt::SizeAllCursor);
+        case Qt::LeftButton:
+            m_mouse_orig = event->globalPos();
+            setCursor(Qt::ClosedHandCursor);
+            m_prev = new WidgetAreaPreview(this, (QWidget*)parent());
+            break;
+        case Qt::RightButton:
+            m_menu->exec(event->globalPos());
+            break;
+        default:
+            break;
     }
 }
 
 void WidgetArea::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
-        setCursor(Qt::ArrowCursor);
+    {
+        delete m_prev;
+        m_prev = NULL;
+        setCursor(Qt::OpenHandCursor);
+    }
 }
 
 void WidgetArea::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
 
-    event->accept();
-
-    if(m_marks.empty())
+    if(!m_show_grid && m_grid == 1 && m_marks.empty())
         return;
 
     QPainter painter(this);
 
-    painter.setPen(Qt::red);
-    painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+    if(m_show_grid && m_grid > 1)
+    {
+        QVarLengthArray<QPoint, 8000> points((width()/m_grid)*(height()/m_grid));
+        for(QPoint p; p.y() < height(); p.ry() += m_grid)
+            for(p.rx() = 0; p.x() < width(); p.rx() += m_grid)
+                points.append(p + m_grid_offset);
 
-    for(mark_map::iterator itr = m_marks.begin(); itr != m_marks.end(); ++itr)
-        painter.drawRect(*itr);
+        painter.drawPoints(points.data(), points.size());
+    }
+
+    if(!m_marks.empty())
+    {
+        painter.setPen(Qt::red);
+        painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+
+        for(mark_map::iterator itr = m_marks.begin(); itr != m_marks.end(); ++itr)
+            painter.drawRect(*itr);
+    }
 }
 
 void WidgetArea::mouseMoveEvent(QMouseEvent *event)
@@ -240,14 +311,17 @@ void WidgetArea::mouseMoveEvent(QMouseEvent *event)
         return;
 
     QPoint n = event->globalPos() - m_mouse_orig;
-
     moveWidgets(n);
 
+    m_prev->prepareRender();
     m_mouse_orig = event->globalPos();
 }
 
 void WidgetArea::moveWidgets(QPoint diff)
 {
+    m_grid_offset += diff;
+    m_grid_offset %= m_grid;
+
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
     {
         QPoint pos = (*itr)->pos() + diff;
@@ -318,4 +392,114 @@ void WidgetArea::resizeEvent(QResizeEvent *)
 {
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         updateMarker(*itr);
+}
+
+void WidgetArea::enableGrid(bool enable)
+{
+    if(enable) m_grid = sConfig.get(CFG_QUINT32_ANALYZER_GRID_SIZE);
+    else       m_grid = 1;
+
+    sConfig.set(CFG_BOOL_ANALYZER_ENABLE_GRID, enable);
+
+    update();
+}
+
+void WidgetArea::showGrid(bool show)
+{
+    m_show_grid = show;
+    sConfig.set(CFG_BOOL_ANALYZER_SHOW_GRID, show);
+
+    update();
+}
+
+void WidgetArea::setGridSize()
+{
+    m_grid = QInputDialog::getInt(this, tr("Grid size"), tr("Enter grid size in pixels"), m_grid, 2);
+    sConfig.set(CFG_QUINT32_ANALYZER_GRID_SIZE, m_grid);
+    update();
+}
+
+void WidgetArea::alignWidgets()
+{
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+        (*itr)->align();
+}
+
+QRegion WidgetArea::getRegionWithWidgets()
+{
+    QPoint p;
+    QSize s = size();
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+    {
+        DataWidget *w = *itr;
+        p.rx() = std::min(w->x(), p.x());
+        p.ry() = std::min(w->y(), p.y());
+
+        s.rwidth() = std::max(s.width(), w->x() + w->width());
+        s.rheight() = std::max(s.height(), w->y() + w->height());
+    }
+    s.rwidth() += abs(p.x());
+    s.rheight() += abs(p.y());
+    return QRegion(QRect(p, s));
+}
+
+void WidgetArea::correctWidgetName(QString &name, DataWidget *widget)
+{
+    int add = 1;
+    QString original = name;
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+    {
+        if(widget != *itr && name == (*itr)->getTitle())
+        {
+            name = original + QString("_%1").arg(add++);
+            itr = m_widgets.begin();
+        }
+    }
+}
+
+WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)
+{
+    m_widgetArea = area;
+    m_smooth = sConfig.get(CFG_BOOL_SMOOTH_SCALING);
+
+    move(area->pos());
+    resize(area->width()/3, area->height()/3);
+    prepareRender();
+    show();
+}
+
+void WidgetAreaPreview::prepareRender()
+{
+    m_region = m_widgetArea->getRegionWithWidgets();
+    m_render = QPixmap(m_region.boundingRect().size());
+    m_widgetArea->render(&m_render, QPoint(), m_region);
+    m_render = m_render.scaled(size(), Qt::KeepAspectRatio,
+                       m_smooth ? Qt::SmoothTransformation : Qt::FastTransformation);
+
+    // TODO: do not update region size?
+    //if(m_visible.isNull())
+    {
+        float scale = float(m_render.width())/m_region.boundingRect().width();
+        m_visible = m_widgetArea->rect();
+        m_visible.setX(abs(m_region.boundingRect().x())*scale);
+        m_visible.setY(abs(m_region.boundingRect().y())*scale);
+        m_visible.setWidth(m_widgetArea->width()*scale);
+        m_visible.setHeight(m_widgetArea->height()*scale);
+    }
+    update();
+}
+
+void WidgetAreaPreview::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+    p.setBackgroundMode(Qt::TransparentMode);
+    p.setBackground(QBrush(Qt::transparent));
+    p.setOpacity(0.8);
+
+    p.drawPixmap(QPoint(), m_render);
+
+    QPen pen(Qt::black);
+    pen.setWidth(2);
+    p.setPen(pen);
+    p.drawRect(m_visible);
 }

@@ -13,10 +13,14 @@
 
 #include "revision.h"
 #include "ui/mainwindow.h"
-#include "config.h"
-
+#include "misc/config.h"
 #include "connection/connectionmgr2.h"
 #include "WorkTab/WorkTabMgr.h"
+#include "ui/settingsdialog.h"
+
+#ifdef Q_OS_WIN
+ #include "misc/updater.h"
+#endif
 
 static bool checkArgs(int argc, char** argv, QStringList& openFiles)
 {
@@ -88,10 +92,14 @@ int main(int argc, char *argv[])
         return 0;
 
     QApplication a(argc, argv);
-    psConMgr2 = new ConnectionManager2(&a);
+    ConnectionManager2 conmgr(&a);
     installTranslator(a);
 
-    MainWindow w;
-    w.show(openFiles);
+#ifdef Q_OS_WIN
+    if(Updater::doUpdate(true))
+        return 0;
+#endif
+
+    sWorkTabMgr.initialize(openFiles);
     return a.exec();
 }

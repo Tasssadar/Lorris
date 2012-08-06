@@ -33,7 +33,7 @@ public:
     ~FuseWidget();
 
     void setFuses(chip_definition& chip);
-    void clear(bool addButton = false);
+    void clear(bool addButton = false, bool widgetsOnly = false);
 
     std::vector<quint8>& getFuseData() { return m_fuse_data; }
 
@@ -48,6 +48,8 @@ protected:
 private slots:
     void changed(int index);
     void rememberFuses();
+    void translateFuses(bool checked);
+    void hideReserved(bool checked);
 
 private:
     struct fuse_line
@@ -58,7 +60,7 @@ private:
     };
 
     void translateFuseName(fuse_line *line);
-    void addFuseOpt(fuse_line *line, const QString& bin);
+    bool addFuseOpt(fuse_line *line, const QString& bin, std::vector<std::pair<QString, QVariant> > &list);
 
     QVBoxLayout *m_layout;
     QFormLayout *m_fuse_layout;
@@ -72,6 +74,8 @@ private:
     QMenu *contextMenu;
     QAction *rememberAct;
     QAction *writeAct;
+    QAction *translateFuseAct;
+    QAction *hideReservedAct;
 
     bool m_changed;
 };

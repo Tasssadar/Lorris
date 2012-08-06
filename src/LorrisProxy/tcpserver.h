@@ -9,13 +9,15 @@
 #define TCPSERVER_H
 
 #include <QObject>
-#include <map>
+#include <QHash>
+#include <QTcpServer>
+#include <QSignalMapper>
 
-class QTcpServer;
+#include "../connection/proxytunnel.h"
+
 class QTcpSocket;
-class QSignalMapper;
 
-class TcpServer : public QObject
+class TcpServer : public QTcpServer
 {
     Q_OBJECT
 
@@ -25,17 +27,19 @@ Q_SIGNALS:
     void removeConnection(quint32 id);
 
 public:
-    typedef std::map<quint32, QTcpSocket*> socketMap;
+    typedef QHash<quint32, QTcpSocket*> socketMap;
 
-    TcpServer();
+    TcpServer(QObject *parent = NULL);
     ~TcpServer();
 
     bool listen(const QString& address, quint16 port);
     void stopListening();
+    void closeConnection(quint32 id);
 
-    QString getLastErr();
-    bool isListening();
     QString getAddress();
+
+    void createProxyTunnel(const QString& name);
+    void destroyProxyTunnel();
 
 public slots:
     void SendData(const QByteArray& data);
@@ -46,12 +50,13 @@ private slots:
     void readyRead(int con);
 
 private:
-    QTcpServer *m_server;
-    QSignalMapper *m_disconnect_map;
-    QSignalMapper *m_ready_map;
+    QSignalMapper m_disconnect_map;
+    QSignalMapper m_ready_map;
     socketMap m_socket_map;
 
     quint32 m_con_counter;
+
+    ConnectionPointer<ProxyTunnel> m_tunnel_conn;
 };
 
 #endif // TCPSERVER_H

@@ -8,20 +8,19 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <QEventLoop>
-#include <QCoreApplication>
 
 #include "shupito.h"
 #include "lorrisshupito.h"
 #include "shupitodesc.h"
 #include "../connection/shupitotunnel.h"
 #include "../connection/connectionmgr2.h"
+#include "../connection/shupitoconn.h"
 
 Shupito::Shupito(QObject *parent) :
     QObject(parent)
 {
     m_con = NULL;
     m_desc = NULL;
-    m_packet = NULL;
 
     m_vdd_config = m_tunnel_config = NULL;
     m_tunnel_pipe = 0;
@@ -36,18 +35,16 @@ Shupito::Shupito(QObject *parent) :
 
 Shupito::~Shupito()
 {
-    delete m_packet;
+    if(m_tunnel_conn != NULL)
+        m_tunnel_conn->setShupito(NULL);
 }
 
-void Shupito::init(PortConnection *con, ShupitoDesc *desc)
+void Shupito::init(ShupitoConnection *con, ShupitoDesc *desc)
 {
     m_con = con;
     m_desc = desc;
 
-    delete m_packet;
-    m_packet = new ShupitoPacket();
-
-    ShupitoPacket getInfo(MSG_INFO, 1, 0x00);
+    ShupitoPacket getInfo = makeShupitoPacket(MSG_INFO, 1, 0x00);
     QByteArray data = waitForStream(getInfo, MSG_INFO);
     if(!data.isEmpty())
         m_desc->AddData(data);
@@ -55,182 +52,51 @@ void Shupito::init(PortConnection *con, ShupitoDesc *desc)
     emit descRead(!data.isEmpty());
 }
 
-void Shupito::readData(const QByteArray &data)
+void Shupito::sendPacket(const ShupitoPacket& data)
 {
-    if(!m_packet)
-        return;
-
-    mutex.lock();
-
-    std::vector<ShupitoPacket*> packets;
-    ShupitoPacket *packet = m_packet;
-
-    char *d_start = (char*)data.data();
-    char *d_itr = d_start;
-    char *d_end = d_start + data.size();
-
-    quint8 curRead = 1;
-    while(d_itr != d_end)
-    {
-        if(packet->isFresh() || curRead == 0)
-        {
-            int index = data.indexOf(char(0x80), d_itr - d_start);
-            if(index == -1)
-                break;
-            d_itr = d_start+index;
-            packet->Clear();
-        }
-
-        curRead = packet->addData(d_itr, d_end);
-        d_itr += curRead;
-
-        if(packet->isValid())
-        {
-            packets.push_back(packet);
-            packet = new ShupitoPacket();
-        }
-    }
-    m_packet = packet;
-    mutex.unlock();
-
-    for(quint32 i = 0; i < packets.size(); ++i)
-    {
-        handlePacket(*packets[i]);
-        delete packets[i];
-    }
+    m_con->sendPacket(data);
 }
 
-ShupitoPacket Shupito::waitForPacket(const QByteArray& data, quint8 cmd)
+void Shupito::readPacket(const ShupitoPacket & p)
 {
-    Q_ASSERT(responseTimer == NULL);
-
-    responseTimer = new QTimer;
-    responseTimer->start(1000);
-    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReceived()));
-
-    m_wait_cmd = cmd;
-    m_wait_packet = ShupitoPacket();
-    m_wait_type = WAIT_PACKET;
-
-    QEventLoop loop;
-    loop.connect(this, SIGNAL(packetReceived()), SLOT(quit()));
-
-    m_con->SendData(data);
-
-    loop.exec();
-
-    delete responseTimer;
-    responseTimer = NULL;
-    m_wait_cmd = 0xFF;
-    m_wait_type = WAIT_NONE;
-
-    return m_wait_packet;
-}
-
-QByteArray Shupito::waitForStream(const QByteArray& data, quint8 cmd, quint16 max_packets)
-{
-    Q_ASSERT(responseTimer == NULL);
-
-    responseTimer = new QTimer;
-    responseTimer->start(1000);
-    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReceived()));
-
-    m_wait_cmd = cmd;
-    m_wait_data.clear();
-    m_wait_type = WAIT_STREAM;
-    m_wait_max_packets = max_packets;
-
-    QEventLoop loop;
-    loop.connect(this, SIGNAL(packetReceived()), SLOT(quit()));
-
-    m_con->SendData(data);
-
-    loop.exec();
-
-    delete responseTimer;
-    responseTimer = NULL;
-    m_wait_cmd = 0xFF;
-    m_wait_type = WAIT_NONE;
-
-    return m_wait_data;
-}
-
-void Shupito::sendPacket(ShupitoPacket packet)
-{
-    m_con->SendData(packet.getData(false));
-}
-
-void Shupito::sendPacket(const QByteArray& packet)
-{
-    m_con->SendData(packet);
-}
-
-void Shupito::sendTunnelData(const QByteArray &data)
-{
-    if(!m_tunnel_pipe)
-        return;
-
-    int sent = 0;
-    const int data_len = data.length();
-
-    ShupitoPacket packet;
-    quint8 cmd = getTunnelCmd();
-    char pipe = getTunnelId();
-
-    while(sent != data_len)
-    {
-        int chunk = data_len - sent;
-        if(chunk > 14)
-            chunk = 14;
-
-        packet.set(false, cmd, chunk+1);
-        packet.getDataRef().append(pipe);
-        packet.getDataRef().append(data.mid(sent, chunk));
-
-        sendPacket(packet);
-
-        sent += chunk;
-    }
-}
-
-void Shupito::handlePacket(ShupitoPacket& p)
-{
+    Q_ASSERT(!p.empty());
     switch(m_wait_type)
     {
         case WAIT_NONE: break;
         case WAIT_PACKET:
         {
-            if(p.getOpcode() == m_wait_cmd)
+            if(p[0] == m_wait_cmd)
             {
                 m_wait_packet = p;
                 m_wait_type = WAIT_NONE;
-                emit packetReceived();
+                emit packetReveived();
             }
             break;
         }
         case WAIT_STREAM:
         {
-            if(p.getOpcode() != m_wait_cmd)
+            if(p[0] != m_wait_cmd)
             {
                 if(--m_wait_max_packets == 0)
-                    emit packetReceived();
+                    emit packetReveived();
             }
             else
             {
                 responseTimer->start(1000);
-                m_wait_data.append(p.getData());
-                if(p.getLen() < 15)
+                m_wait_data.append((char const *)(p.data() + 1), p.size() - 1);
+                if(p.size() < 16)
                 {
                     m_wait_max_packets = 0;
                     m_wait_type = WAIT_NONE;
-                    emit packetReceived();
+                    emit packetReveived();
                 }
             }
             break;
         }
     }
 
-    switch(p.getOpcode())
+    // FIXME: commands are offset based on the descriptor
+    switch(p[0])
     {
         case MSG_VCC:
         {
@@ -245,11 +111,96 @@ void Shupito::handlePacket(ShupitoPacket& p)
     }
 }
 
-void Shupito::handleVccPacket(ShupitoPacket &p)
+ShupitoPacket Shupito::waitForPacket(const ShupitoPacket & data, quint8 cmd)
+{
+    Q_ASSERT(responseTimer == NULL);
+
+    responseTimer = new QTimer;
+    responseTimer->start(1000);
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+
+    m_wait_cmd = cmd;
+    m_wait_packet.clear();
+    m_wait_type = WAIT_PACKET;
+
+    QEventLoop loop;
+    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+
+    m_con->sendPacket(data);
+
+    loop.exec();
+
+    delete responseTimer;
+    responseTimer = NULL;
+    m_wait_cmd = 0xFF;
+    m_wait_type = WAIT_NONE;
+
+    return m_wait_packet;
+}
+
+QByteArray Shupito::waitForStream(const ShupitoPacket& data, quint8 cmd, quint16 max_packets)
+{
+    Q_ASSERT(responseTimer == NULL);
+
+    responseTimer = new QTimer;
+    responseTimer->start(1000);
+    connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
+
+    m_wait_cmd = cmd;
+    m_wait_data.clear();
+    m_wait_type = WAIT_STREAM;
+    m_wait_max_packets = max_packets;
+
+    QEventLoop loop;
+    loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
+
+    m_con->sendPacket(data);
+
+    loop.exec();
+
+    delete responseTimer;
+    responseTimer = NULL;
+    m_wait_cmd = 0xFF;
+    m_wait_type = WAIT_NONE;
+
+    return m_wait_data;
+}
+
+void Shupito::sendTunnelData(const QByteArray &data)
+{
+    if(!m_tunnel_pipe)
+        return;
+
+    int sent = 0;
+    const int data_len = data.length();
+
+    quint8 cmd = getTunnelCmd();
+    char pipe = getTunnelId();
+
+    while(sent != data_len)
+    {
+        int chunk = data_len - sent;
+        if(chunk > 14)
+            chunk = 14;
+
+        ShupitoPacket packet;
+        packet.push_back(cmd);
+        packet.push_back(pipe);
+
+        quint8 const * d = (quint8 const *)data.constData();
+        packet.insert(packet.end(), d + sent, d + sent + chunk);
+
+        m_con->sendPacket(packet);
+
+        sent += chunk;
+    }
+}
+
+void Shupito::handleVccPacket(ShupitoPacket const & p)
 {
     //void handle_packet(yb_packet const & p)
     //vcc value
-    if(p.getLen() == 4 && p[0] == 0x01 && p[1] == 0x03)
+    if(p.size() == 5 && p[1] == 0x01 && p[2] == 0x03)
     {
         if(!m_vdd_config)
             return;
@@ -261,27 +212,27 @@ void Shupito::handleVccPacket(ShupitoPacket &p)
             millivolts_per_unit = mpu_16_16 / 65536.0;
         }
 
-        qint32 vdd = (qint8)p[p.getLen()-1];
-        for (int i = p.getLen() - 1; i > 2; --i)
+        qint32 vdd =(qint8) p.back();
+        for (int i = p.size() - 1; i > 3; --i)
             vdd = (vdd << 8) | p[i-1];
 
         double value = vdd * (millivolts_per_unit / 1000.0);
 
-        emit vccValueChanged(p[0] - 1, value);
+        emit vccValueChanged(p[1] - 1, value);
     }
 
     // bool handle_vdd_desc(yb_packet const & p)
-    else if(p.getLen() >= 3 && p[0] == 0 && p[1] == 0 && p[2] == 0)
+    else if(p.size() >= 4 && p[1] == 0 && p[2] == 0 && p[3] == 0)
     {
         m_vdd_setup.clear();
-        for(quint8 i = 3; i < p.getLen(); ++i)
+        for(quint8 i = 4; i < p.size(); ++i)
         {
             vdd_point vp;
             vp.current_drive = 0;
             quint8 len = p[i];
-            if(i + 1 + len > p.getLen())
+            if(size_t(i + 1 + len) > p.size())
                return;
-            vp.name.append(p.getData().mid(i+1, len));
+            vp.name = QString::fromUtf8((char const *)p.data() + i+1, len);
             i += len + 1;
             m_vdd_setup.push_back(vp);
         }
@@ -289,17 +240,17 @@ void Shupito::handleVccPacket(ShupitoPacket &p)
     }
 
     //bool handle_vdd_point_desc(yb_packet const & p)
-    else if(p.getLen() >= 2 && p[0] == 0)
+    else if(p.size() >= 3 && p[1] == 0)
     {
-        if(p[1] == 0 || p[1] > m_vdd_setup.size())
+        if(p[2] == 0 || p[2] > m_vdd_setup.size())
             return;
 
-        vdd_point & vp = m_vdd_setup[p[1] - 1];
+        vdd_point & vp = m_vdd_setup[p[2] - 1];
         vp.drives.clear();
 
-        for(quint8 i = 2; i < p.getLen();)
+        for(quint8 i = 3; i < p.size();)
         {
-            if(i + 4 <= p.getLen())
+            if(size_t(i + 4) <= p.size())
             {
                 double voltage = (p[i] | (p[i+1] << 8)) / 1000.0;
                 quint16 amps = p[i+2]| (p[i+3] << 8);
@@ -318,34 +269,34 @@ void Shupito::handleVccPacket(ShupitoPacket &p)
     }
 
     //bool handle_vdd_drive_state(yb_packet const & p)
-    else if(p.getLen() == 3 && p[1] == 1)
+    else if(p.size() == 4 && p[2] == 1)
     {
-        if(p[0]== 0 || p[0] > m_vdd_setup.size())
+        if(p[1]== 0 || p[1] > m_vdd_setup.size())
             return;
 
         vdd_point & vp = m_vdd_setup[p[1] - 1];
-        vp.current_drive = p[2];
+        vp.current_drive = p[3];
 
         emit vddDesc(m_vdd_setup);
     }
 }
 
-void Shupito::handleTunnelPacket(ShupitoPacket &p)
+void Shupito::handleTunnelPacket(ShupitoPacket const & p)
 {
-    if(!m_tunnel_config || p.getOpcode() != m_tunnel_config->cmd)
+    if(!m_tunnel_config || p[0] != m_tunnel_config->cmd)
         return;
 
-    if(p.getLen() >= 2 && p[0] == 0)
+    if(p.size() >= 3 && p[1] == 0)
     {
-        switch(p[1])
+        switch(p[2])
         {
             // Tunnel list
             case 0:
             {
-                for(quint8 i = 2; i < p.getLen(); ++i)
+                for(quint8 i = 3; i < p.size(); ++i)
                 {
-                    if (i + 1 + p[i] > p.getLen())
-                        return Utils::ThrowException("Invalid response while enumerating pipes.");
+                    if (size_t(i + 1 + p[i]) > p.size())
+                        return Utils::showErrorBox("Invalid response while enumerating pipes.");
                     i += 1 + p[i];
                 }
 
@@ -355,16 +306,16 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
             // App tunnel activated
             case 1:
             {
-                if(p.getLen() == 3)
+                if(p.size() == 4)
                 {
-                    m_tunnel_pipe = p[2];
+                    m_tunnel_pipe = p[3];
                     if(!m_tunnel_pipe)
                         return;
 
                     SendSetComSpeed();
 
                     m_tunnel_conn.reset(new ShupitoTunnel());
-                    m_tunnel_conn->setName("Shupito at " + m_con->GetIDString());
+                    m_tunnel_conn->setName("Tunnel at " + m_con->GetIDString());
                     m_tunnel_conn->setRemovable(false);
                     m_tunnel_conn->setShupito(this);
                     m_tunnel_conn->Open();
@@ -382,7 +333,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
             //App tunnel disabled
             case 2:
             {
-                if(p.getLen() == 3 && p[2] == m_tunnel_pipe)
+                if(p.size() == 4 && p[3] == m_tunnel_pipe)
                 {
                     m_tunnel_pipe = 0;
 
@@ -398,10 +349,9 @@ void Shupito::handleTunnelPacket(ShupitoPacket &p)
         }
     }
     // Tunnel incoming data
-    if (m_tunnel_pipe && p[0] == m_tunnel_pipe)
+    if (m_tunnel_pipe && p[1] == m_tunnel_pipe)
     {
-        QByteArray data = p.getData();
-        m_tunnel_data.append(data.remove(0, 1));
+        m_tunnel_data.append((char const *)p.data() + 2, p.size() - 2);
     }
 }
 
@@ -427,9 +377,9 @@ void Shupito::SendSetComSpeed()
     quint16 res = (quint16)(bsel + 0.5);
     res |= bscale << 12;
 
-    ShupitoPacket pkt = ShupitoPacket(m_tunnel_config->cmd, 5, 0, 3, m_tunnel_pipe,
+    ShupitoPacket pkt = makeShupitoPacket(m_tunnel_config->cmd, 5, 0, 3, m_tunnel_pipe,
                                       (quint8)res, (quint8)(res >> 8));
-    sendPacket(pkt);
+    m_con->sendPacket(pkt);
 }
 
 void Shupito::setTunnelSpeed(quint32 speed, bool send)
@@ -464,26 +414,24 @@ void Shupito::setTunnelState(bool enable, bool wait)
     if(enable && m_tunnel_pipe == 0)
     {
         QString name = sConfig.get(CFG_STRING_SHUPITO_TUNNEL);
+        QByteArray name8 = name.toUtf8();
+        quint8 const * d = (quint8 const *)name8.constData();
 
-        QByteArray pkt_data;
-        pkt_data[0] = 0x80;
-        pkt_data[1] = (m_tunnel_config->cmd << 4) | (0x02 + name.length());
-        pkt_data[2] = 0x00;
-        pkt_data[3] = 0x01;
-        pkt_data.append(name);
+        ShupitoPacket pkt_data = makeShupitoPacket(m_tunnel_config->cmd, 2, 0, 1);
+        pkt_data.insert(pkt_data.end(), d, d + name8.size());
 
         if(wait)
             waitForPacket(pkt_data, m_tunnel_config->cmd);
         else
-            m_con->SendData(pkt_data);
+            m_con->sendPacket(pkt_data);
     }
     else if(!enable && m_tunnel_pipe != 0)
     {
-        ShupitoPacket packet(m_tunnel_config->cmd, 3, 0, 2, m_tunnel_pipe);
+        ShupitoPacket packet = makeShupitoPacket(m_tunnel_config->cmd, 3, 0, 2, m_tunnel_pipe);
         if(wait)
-            waitForPacket(packet.getData(false), m_tunnel_config->cmd);
+            waitForPacket(packet, m_tunnel_config->cmd);
         else
-            sendPacket(packet);
+            m_con->sendPacket(packet);
     }
 }
 

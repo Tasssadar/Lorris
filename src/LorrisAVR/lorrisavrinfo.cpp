@@ -30,3 +30,7 @@ QString LorrisAVRInfo::GetDescription()
     return QObject::tr("This is an emulator of AVR ATmega 328p.");
 }
 
+QString LorrisAVRInfo::GetIdString()
+{
+    return "LorrisAVR";
+}

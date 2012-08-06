@@ -18,6 +18,7 @@ public:
     WorkTab *GetNewTab();
     QString GetName();
     QString GetDescription();
+    QString GetIdString();
 };
 
 #endif // LORRISTERMINALINFO_H

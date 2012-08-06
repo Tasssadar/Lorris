@@ -20,6 +20,7 @@ public:
     virtual QString GetName() = 0;
     virtual QString GetDescription() = 0;
     virtual QStringList GetHandledFiles();
+    virtual QString GetIdString() = 0;
 
 protected:
     explicit WorkTabInfo();

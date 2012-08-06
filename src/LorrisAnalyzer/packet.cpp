@@ -8,28 +8,31 @@
 #include "packet.h"
 #include "../common.h"
 
-analyzer_data::analyzer_data(analyzer_packet *packet)
+analyzer_data::analyzer_data(QByteArray *data)
 {
-    m_packet = packet;
-    clear();
+    m_packet = NULL;
+    m_data = data;
 }
 
 void analyzer_data::clear()
 {
-    m_data.clear();
-    m_static_data = QByteArray((char*)m_packet->static_data.data(), m_packet->header->static_len);
-    itr = 0;
-    m_forceValid = false;
+    if(m_data)
+        m_data->clear();
 }
 
-quint32 analyzer_data::addData(char *d_itr, char *d_end)
+quint32 analyzer_data::addData(char *d_itr, char *d_end, quint32 &itr)
 {
+    if(!m_packet)
+        return 0;
+
+    QByteArray static_data = m_packet->getStaticData();
+
     quint32 read = 0;
-    for(; itr < (quint32)m_static_data.length() && d_itr+read != d_end;)
+    for(; itr < (quint32)static_data.length() && d_itr+read != d_end;)
     {
-        if(*(d_itr+read) != m_static_data[itr])
+        if(*(d_itr+read) != static_data[itr])
             return read;
-        m_data[itr++] = *(d_itr+read++);
+        (*m_data)[itr++] = *(d_itr+read++);
     }
 
     bool readFromHeader = false;
@@ -46,7 +49,7 @@ quint32 analyzer_data::addData(char *d_itr, char *d_end)
             lenRead = 0;
         }
 
-        m_data[itr++] = *(d_itr+read++);
+        (*m_data)[itr++] = *(d_itr+read++);
     }
     return read;
 }
@@ -73,17 +76,20 @@ quint32 analyzer_data::getLenght(bool *readFromHeader)
         return m_packet->header->packet_length;
 }
 
-bool analyzer_data::isValid()
+bool analyzer_data::isValid(quint32 itr)
 {
-    if(m_forceValid)
-        return true;
-
-    if(m_data.isEmpty() || itr < (quint32)m_static_data.length())
+    if(!m_packet)
         return false;
 
-    for(quint8 i = 0; i < m_static_data.length(); ++i)
+    QByteArray static_data = m_packet->getStaticData();
+
+    if(m_data->isEmpty() || itr < (quint32)static_data.length())
+        return false;
+
+    quint32 static_pos = getHeaderDataPos(DATA_STATIC);
+    for(quint8 i = 0; i < static_data.length(); ++i)
     {
-        if(m_data[i] != m_static_data[i])
+        if((*m_data)[static_pos++] != static_data[i])
             return false;
     }
 
@@ -97,7 +103,7 @@ bool analyzer_data::getDeviceId(quint8& id)
     if(!(m_packet->header->data_mask & DATA_DEVICE_ID))
         return false;
 
-    id = (quint8)m_data[getHeaderDataPos(DATA_DEVICE_ID)];
+    id = (quint8)m_data->at(getHeaderDataPos(DATA_DEVICE_ID));
     return true;
 }
 
@@ -106,7 +112,7 @@ bool analyzer_data::getCmd(quint8 &cmd)
     if(!(m_packet->header->data_mask & DATA_OPCODE))
         return false;
 
-    cmd = (quint8)m_data[getHeaderDataPos(DATA_OPCODE)];
+    cmd = (quint8)m_data->at(getHeaderDataPos(DATA_OPCODE));
     return true;
 }
 
@@ -163,9 +169,9 @@ quint16 analyzer_data::getHeaderDataPos(quint8 type)
 QString analyzer_data::getString(quint32 pos)
 {
     QString str = "";
-    if(pos >= (quint32)m_data.length())
+    if(pos >= (quint32)m_data->length())
         return str;
-    for(; pos < (quint32)m_data.length() && m_data[pos] != '\0'; ++pos)
-        str.append(QChar(m_data[pos]));
+    for(; pos < (quint32)m_data->length() && m_data->at(pos) != '\0'; ++pos)
+        str.append(QChar(m_data->at(pos)));
     return str;
 }

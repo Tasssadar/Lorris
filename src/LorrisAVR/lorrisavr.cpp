@@ -31,6 +31,11 @@ LorrisAVR::~LorrisAVR()
     delete ui;
 }
 
+QString LorrisAVR::GetIdString()
+{
+    return "LorrisAVR";
+}
+
 void LorrisAVR::on_browseBtn_clicked()
 {
     static const QString filter = tr("Intel HEX file (*.hex)");
@@ -61,7 +66,7 @@ void LorrisAVR::on_startBtn_clicked()
         }
         catch(const QString& text)
         {
-            Utils::ThrowException(text, this);
+            Utils::showErrorBox(text, this);
         }
     }
     else

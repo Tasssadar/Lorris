@@ -5,8 +5,10 @@
 **    See README and COPYING
 ***********************************************/
 
-#include "ScriptWidget/scriptenv.h"
+#include "ScriptWidget/engines/qtscriptengine.h"
 #include "terminalwidget.h"
+
+REGISTER_DATAWIDGET(WIDGET_TERMINAL, Terminal)
 
 TerminalWidget::TerminalWidget(QWidget *parent) : ScriptWidget(parent)
 {
@@ -20,7 +22,7 @@ void TerminalWidget::setUp(Storage *storage)
 {
     ScriptWidget::setUp(storage);
 
-    m_env->setSource("function onDataChanged(data, dev, cmd, index) {\n"
+    m_engine->setSource("function onDataChanged(data, dev, cmd, index) {\n"
                      "    appendTerm(data);\n"
                      "}\n"
                      "\n"

@@ -9,50 +9,43 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <map>
-#include <vector>
-#include <QLocale>
-#include <QHash>
-
-#include "../dep/ecwin7/ecwin7.h"
-
-extern QLocale::Language langs[];
 
 class WorkTabInfo;
+class TabView;
+class HomeTab;
+class DataFileParser;
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(quint32 id, QWidget *parent = 0);
     ~MainWindow();
+
+    quint32 getId() const { return m_id; }
+    TabView *getTabView() const { return m_tabView; }
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
 
 public slots:
     void show(const QStringList &openFiles);
+    void closeHomeTab();
 
 protected:
     void closeEvent(QCloseEvent *event);
-    bool winEvent(MSG *message, long *result);
 
 private slots:
-    void NewSpecificTab();
-    void newTab();
-    void About();
-    void OpenConnectionManager();
-
-    void langChanged(int idx);
+    void openHomeTab();
 
 private:
+    void saveWindowParams();
+    void loadWindowParams();
     QString getVersionString();
 
-    std::vector<QMenu*> m_tab_menu;
-    QMenuBar* menuBar;
-    QMenu* menuFile;
-    QMenu* menuHelp;
-
-    EcWin7 m_win7;
-
-    std::vector<QAction*> m_lang_menu;
-    QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
+    quint32 m_id;
+    TabView *m_tabView;
+    HomeTab *m_hometab;
 };
 
 #endif // MAINWINDOW_H

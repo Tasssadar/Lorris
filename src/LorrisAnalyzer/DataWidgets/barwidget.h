@@ -9,11 +9,10 @@
 #define BARWIDGET_H
 
 #include <QDialog>
-
 #include "datawidget.h"
 
-class QProgressBar;
 class QSpinBox;
+class QwtThermo;
 
 class BarWidget : public DataWidget
 {
@@ -27,25 +26,47 @@ public:
     void loadWidgetInfo(DataFileParser *file);
 
 public slots:
-    void setValue(const QVariant &var);
-    void setRange(int min, int max);
+    void setValue(const QVariant &var)
+    {
+        setValue(var.toDouble());
+    }
+
+    void setRange(double min, double max);
     void rotationSelected(int i);
     void setDataType(int i);
+    double getValue() const;
+    double getMin() const;
+    double getMax() const;
+    void setAlarmEnabled(bool enable);
+    void setAlarmLevel(double val);
+    bool isAlarmEnabled() const;
+    double getAlarmLevel() const;
 
 private slots:
     void rangeSelected();
+    void showScale(bool show);
+    void showVal(bool show);
+    void alarmLevelAct();
+    void showColorsDialog();
 
 private:
+    void setValuePrivate(double value);
     void rotate(int i);
+    int getScalePos();
 
-    QProgressBar *m_bar;
+    QwtThermo *m_bar;
+    QLabel *m_label;
     qint64 m_min;
     qint64 m_max;
     quint8 m_numberType;
 
-    QAction *bitsAction[NUM_COUNT];
-    QAction *rotAction[4];
-    QAction *rangeAction;
+    QAction *m_bitsAct[NUM_COUNT];
+    QAction *m_rotAct[2];
+    QAction *m_rangeAct;
+    QAction *m_showScaleAct;
+    QAction *m_showValAct;
+    QAction *m_alarmEnable;
+    QAction *m_alarmLevel;
     quint8 m_rotation;
 };
 
@@ -56,31 +77,25 @@ public:
     BarWidgetAddBtn(QWidget *parent);
 };
 
-namespace Ui {
-  class RangeSelectDialog;
-}
+#define COLOR_COUNT 3
 
-class RangeSelectDialog : public QDialog
+class BarWidgetClrDialog : public QDialog
 {
     Q_OBJECT
 public:
-    RangeSelectDialog(int val_min, int val_max, int max, int min, QWidget *parent);
-    ~RangeSelectDialog();
+    BarWidgetClrDialog(const QPalette& curPalette, QWidget *parent);
 
-    int getMax() { return m_maxRes; }
-    int getMin() { return m_minRes; }
-    bool getRes() { return m_res; }
+    void updatePalette(QPalette& p);
 
 private slots:
-    void maxChanged(int value);
-    void minChanged(int value);
-    void boxClicked(QAbstractButton* b);
+    void btnClicked(int role);
 
 private:
-    Ui::RangeSelectDialog *ui;
-    int m_minRes;
-    int m_maxRes;
-    bool m_res;
+    void setColor(int role, const QColor& clr);
+
+    QColor m_colors[COLOR_COUNT];
+    QPushButton *m_colorBtns[COLOR_COUNT];
+    QwtThermo *m_bar;
 };
 
 #endif // BARWIDGET_H

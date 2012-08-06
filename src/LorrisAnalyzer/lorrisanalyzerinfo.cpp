@@ -36,3 +36,8 @@ QStringList LorrisAnalyzerInfo::GetHandledFiles()
 {
     return (QStringList() << "cldta" << "ldta");
 }
+
+QString LorrisAnalyzerInfo::GetIdString()
+{
+    return "LorrisAnalyzer";
+}

@@ -11,26 +11,43 @@
 #include <QFrame>
 #include <set>
 #include <QHash>
+#include <QLocale>
 
+#include "../misc/sessionmgr.h"
 #include "tabwidget.h"
+#include "resizeline.h"
 
 class QLayoutItem;
 class QBoxLayout;
-class ResizeLine;
+class TabViewResLine;
 class SplitOverlay;
 class QDrag;
+class WorkTabInfo;
+class DataFileParser;
+class QLabel;
+class MainWindow;
+
+enum saveLayoutItem
+{
+    ITEM_WIDGET = 0, // used in old session files
+    ITEM_LAYOUT_H,
+    ITEM_LAYOUT_V,
+    ITEM_SKIP,
+    ITEM_WIDGET_WITH_PCT
+};
 
 class TabView : public QWidget
 {
     Q_OBJECT
 
 Q_SIGNALS:
-    void newTab();
-    void openHomeTab(quint32 id);
+    void openHomeTab();
     void statusBarMsg(const QString& message, int timeout = 0);
+    void closeWindow();
+    void closeHomeTab();
 
 public:
-    explicit TabView(QWidget *parent = 0);
+    explicit TabView(MainWindow *parent);
 
     TabWidget *getActiveWidget() const
     {
@@ -45,13 +62,32 @@ public:
         return NULL;
     }
 
-    QBoxLayout *getLayoutForLine(ResizeLine *line);
+    TabWidget *getWidgetWithTab(quint32 tabId);
+    TabWidget *getWidgetWithWidget(QWidget *widget);
+
+    QBoxLayout *getLayoutForLine(TabViewResLine *line);
+
     void createSplitOverlay(quint32 id, QDrag *drag);
+
+    const std::vector<QAction*>& getMenus() const
+    {
+        return m_menus;
+    }
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
+    quint32 getWindowId() const { return m_windowId; }
 
 private slots:
     void split(bool horizontal, int index);
     void removeWidget(quint32 id);
     void changeActiveWidget(TabWidget *widget);
+    void NewSpecificTab();
+    void OpenConnectionManager();
+    void newTab();
+    void showSettings();
+    void checkForUpdate();
 
 private:
     TabWidget *newTabWidget(QBoxLayout *l);
@@ -62,37 +98,38 @@ private:
 
     inline QBoxLayout *getLayoutForWidget(QWidget *widget);
     inline void removeEmptyLayouts();
-    inline QBoxLayout *newLayout(bool hor);
+    inline QBoxLayout *newLayout(bool ver);
+
+    void writeLayoutStructure(DataFileParser *file, QLayout *l);
+    void loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHash<quint32, quint32>& id_pair);
 
     QHash<quint32, TabWidget*> m_tab_widgets;
-    QHash<ResizeLine*, QBoxLayout*> m_resize_lines;
+    QHash<TabViewResLine*, QBoxLayout*> m_resize_lines;
 
     std::set<QBoxLayout*> m_layouts;
 
     TabWidget *m_active_widget;
+    std::vector<QAction*> m_lang_menu;
+    std::vector<QAction*> m_menus;
+
+    quint32 m_windowId;
+
+    QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };
 
-class ResizeLine : public QFrame
+class TabViewResLine : public ResizeLine
 {
     Q_OBJECT
 public:
-    ResizeLine(bool vertical, TabView *parent);
+    TabViewResLine(bool vertical, TabView *parent);
 
-    void updateStretch();
+    void setResizeLayout(QBoxLayout *) { }
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    QBoxLayout *getLayout();
 
 private:
-    bool m_vertical;
-    float m_cur_stretch;
     TabView *m_tab_view;
-    QBoxLayout *m_resize_layout;
-    QPoint m_resize_pos[2];
-    QPoint m_mouse_pos;
-    int m_resize_index;
 };
 
 class SplitOverlay : public QWidget
@@ -101,12 +138,14 @@ class SplitOverlay : public QWidget
 
 Q_SIGNALS:
     void split(bool horizontal, int index);
+    void newWindow(int index);
 
 public:
     enum position
     {
         POS_RIGHT = 0,
         POS_BOTTOM,
+        POS_CENTER,
 
         POS_MAX
     };

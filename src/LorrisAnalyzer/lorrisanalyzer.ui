@@ -25,6 +25,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
+  </property>
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
@@ -203,11 +206,75 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="Base">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>255</red>
+             <green>255</green>
+             <blue>255</blue>
+            </color>
+           </brush>
+          </colorrole>
+          <colorrole role="Window">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>179</red>
+             <green>176</green>
+             <blue>174</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="Base">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>255</red>
+             <green>255</green>
+             <blue>255</blue>
+            </color>
+           </brush>
+          </colorrole>
+          <colorrole role="Window">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>179</red>
+             <green>176</green>
+             <blue>174</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="Base">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>179</red>
+             <green>176</green>
+             <blue>174</blue>
+            </color>
+           </brush>
+          </colorrole>
+          <colorrole role="Window">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>179</red>
+             <green>176</green>
+             <blue>174</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
        <property name="acceptDrops">
         <bool>true</bool>
        </property>
        <property name="autoFillBackground">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="frameShape">
         <enum>QFrame::Panel</enum>
@@ -251,8 +318,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>76</width>
-            <height>236</height>
+            <width>90</width>
+            <height>249</height>
            </rect>
           </property>
          </widget>
@@ -268,18 +335,18 @@
   <customwidget>
    <class>Playback</class>
    <extends>QFrame</extends>
-   <header>../src/LorrisAnalyzer/playback.h</header>
+   <header location="global">src/LorrisAnalyzer/playback.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RotateButton</class>
    <extends>QPushButton</extends>
-   <header>../src/shared/rotatebutton.h</header>
+   <header location="global">src/ui/rotatebutton.h</header>
   </customwidget>
   <customwidget>
    <class>DeviceTabWidget</class>
    <extends>QTabWidget</extends>
-   <header>../src/LorrisAnalyzer/devicetabwidget.h</header>
+   <header location="global">src/LorrisAnalyzer/devicetabwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

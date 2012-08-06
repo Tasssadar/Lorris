@@ -12,29 +12,143 @@
 #include "../connection/tcpsocket.h"
 #include <QMenu>
 #include <QPushButton>
+#include <QStyledItemDelegate>
+#include <QPainter>
+
+#ifdef Q_WS_WIN
+#include <QWindowsVistaStyle>
+#endif
+
+static QString connectionStateString(ConnectionState state)
+{
+    switch (state)
+    {
+    case st_connecting:
+        return QObject::tr("(Connecting...)");
+    case st_connected:
+        return QObject::tr("(Connected)");
+    default:
+        return QString();
+    }
+}
+
+namespace {
+
+class ConnectionListItemDelegate
+        : public QStyledItemDelegate
+{
+public:
+    explicit ConnectionListItemDelegate(QObject * parent = 0)
+        : QStyledItemDelegate(parent)
+    {
+    }
+
+    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index ) const
+    {
+        Q_ASSERT(index.isValid());
+        Connection * conn = index.data(Qt::UserRole).value<Connection *>();
+
+        QStyleOptionViewItemV4 const & opt = static_cast<QStyleOptionViewItemV4 const &>(option);
+
+        QSize res;
+
+        QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+        int vmargin = style->pixelMetric(QStyle::PM_FocusFrameVMargin, &opt, opt.widget);
+        res.setHeight(2 * opt.fontMetrics.lineSpacing()+2*vmargin);
+
+        int namew = opt.fontMetrics.width(index.data(Qt::DisplayRole).toString());
+        int statew = opt.fontMetrics.width(connectionStateString(conn->state()));
+
+        int margin = style->pixelMetric(QStyle::PM_FocusFrameHMargin, &opt, opt.widget);
+        int line1w = namew + margin + statew;
+        int line2w = opt.fontMetrics.width(conn->details());
+
+        res.setWidth(2*opt.fontMetrics.lineSpacing() + 3*margin + (std::max)(line1w, line2w));
+
+        return res;
+    }
+
+    void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+    {
+        Q_ASSERT(index.isValid());
+        Connection * conn = index.data(Qt::UserRole).value<Connection *>();
+
+        QStyleOptionViewItemV4 const & opt = static_cast<QStyleOptionViewItemV4 const &>(option);
+        QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+
+        // background
+        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
+
+        int vmargin = style->pixelMetric(QStyle::PM_FocusFrameVMargin, &opt, opt.widget);
+        int margin = style->pixelMetric(QStyle::PM_FocusFrameHMargin, &opt, opt.widget);
+
+        QRect iconRect;
+        iconRect.setLeft(opt.rect.left() + margin);
+        iconRect.setTop(opt.rect.top() + vmargin);
+        iconRect.setHeight(opt.rect.height() - 2*vmargin);
+        iconRect.setWidth(opt.rect.height() - 2*vmargin);
+
+        QIcon::Mode mode = QIcon::Normal;
+        if (!(opt.state & QStyle::State_Enabled))
+            mode = QIcon::Disabled;
+        else if (opt.state & QStyle::State_Selected)
+            mode = QIcon::Selected;
+        QIcon::State state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
+
+        painter->setOpacity(index.data(Qt::UserRole+3).value<bool>()? 1: 0.5);
+        index.data(Qt::DecorationRole).value<QIcon>().paint(painter, iconRect, opt.decorationAlignment, mode, state);
+
+        QPalette::ColorGroup cg = opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
+        if (cg == QPalette::Normal && !(opt.state & QStyle::State_Active))
+            cg = QPalette::Inactive;
+
+        QColor textColor;
+        if (opt.state & QStyle::State_Selected)
+        {
+#ifdef Q_WS_WIN
+            if (dynamic_cast<QWindowsVistaStyle *>(style))
+                textColor = opt.palette.color(QPalette::Active, QPalette::Text);
+            else
+#endif
+                textColor = opt.palette.color(cg, QPalette::HighlightedText);
+        }
+        else
+        {
+            textColor = opt.palette.color(cg, QPalette::Text);
+        }
+        painter->setPen(textColor);
+
+        QRect textRect = opt.rect;
+        textRect.setLeft(iconRect.right() + 1 + margin);
+        textRect.setTop(textRect.top() + vmargin);
+
+        QRect nameBr;
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, index.data(Qt::DisplayRole).toString(), &nameBr);
+
+        textColor.setAlpha(128);
+        painter->setPen(textColor);
+
+        textRect.setLeft(nameBr.right() + 1 + margin);
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, connectionStateString(conn->state()));
+
+        textRect.setLeft(iconRect.right() + 1 + margin);
+        textRect.setTop(textRect.top() + opt.fontMetrics.lineSpacing());
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop, conn->details());
+    }
+};
+
+}
 
 ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ChooseConnectionDlg),
-    m_current(0)
-{
-    this->init(0);
-}
-
-ChooseConnectionDlg::ChooseConnectionDlg(Connection * preselectedConn, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ChooseConnectionDlg),
-    m_current(0)
-{
-    this->init(preselectedConn);
-}
-
-void ChooseConnectionDlg::init(Connection * preselectedConn)
+    m_allowedConns(0)
 {
     ui->setupUi(this);
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     ui->removeConnectionBtn->setDefaultAction(ui->actionRemoveConnection);
+    ui->spBaudRateEdit->setValidator(new QIntValidator(1, INT_MAX, this));
 
     QMenu * menu = new QMenu(this);
     menu->addAction(ui->actionCreateSerialPort);
@@ -47,10 +161,10 @@ void ChooseConnectionDlg::init(Connection * preselectedConn)
         this->connAdded(conns[i]);
     ui->connectionsList->sortItems();
 
-    // Note that the preselected connection may be handled by a different manager
-    // and as such may be missing in the map.
-    if (m_connectionItemMap.contains(preselectedConn))
-        m_connectionItemMap[preselectedConn]->setSelected(true);
+    ui->connectionsList->insertAction(0, ui->actionConnect);
+    ui->connectionsList->insertAction(0, ui->actionDisconnect);
+
+    ui->connectionsList->setItemDelegate(new ConnectionListItemDelegate(this));
 
     connect(&sConMgr2, SIGNAL(connAdded(Connection *)), this, SLOT(connAdded(Connection *)));
     connect(&sConMgr2, SIGNAL(connRemoved(Connection *)), this, SLOT(connRemoved(Connection *)));
@@ -58,12 +172,54 @@ void ChooseConnectionDlg::init(Connection * preselectedConn)
     this->on_connectionsList_itemSelectionChanged();
 }
 
+ConnectionPointer<PortConnection> ChooseConnectionDlg::choosePort(ConnectionPointer<Connection> const & preselectedConn)
+{
+    this->selectConn(preselectedConn.data());
+    m_allowedConns = pct_port;
+    if (this->exec() != QDialog::Accepted)
+        return ConnectionPointer<PortConnection>();
+    return m_current.dynamicCast<PortConnection>();
+}
+
+ConnectionPointer<ShupitoConnection> ChooseConnectionDlg::chooseShupito(ConnectionPointer<Connection> const & preselectedConn)
+{
+    this->selectConn(preselectedConn.data());
+    m_allowedConns = pct_port | pct_shupito;
+    if (this->exec() != QDialog::Accepted)
+        return ConnectionPointer<ShupitoConnection>();
+
+    if (PortConnection * pc = dynamic_cast<PortConnection *>(m_current.data()))
+    {
+        ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
+        m_current = sc;
+    }
+
+    return m_current.dynamicCast<ShupitoConnection>();
+}
+
+void ChooseConnectionDlg::selectConn(Connection * conn)
+{
+    // Note that the preselected connection may be handled by a different manager
+    // and as such may be missing in the map.
+    if (m_connectionItemMap.contains(conn))
+        m_connectionItemMap[conn]->setSelected(true);
+}
+
 void ChooseConnectionDlg::connAdded(Connection * conn)
 {
     QListWidgetItem * item = new QListWidgetItem(conn->name(), ui->connectionsList);
+
+    // TODO: set icon based on the connection type
+    item->setIcon(QIcon(":/icons/icons/network-wired.png"));
+
     item->setData(Qt::UserRole, QVariant::fromValue(conn));
+    item->setData(Qt::UserRole+1, conn->details());
+    item->setData(Qt::UserRole+2, (int)conn->state());
+    item->setData(Qt::UserRole+3, (bool)conn->present());
+
     m_connectionItemMap[conn] = item;
     connect(conn, SIGNAL(changed()), this, SLOT(connChanged()));
+    connect(conn, SIGNAL(stateChanged(ConnectionState)), this, SLOT(connChanged()));
 }
 
 void ChooseConnectionDlg::connRemoved(Connection * conn)
@@ -77,7 +233,10 @@ void ChooseConnectionDlg::connChanged()
     Connection * conn = static_cast<Connection *>(this->sender());
     QListWidgetItem * item = m_connectionItemMap[conn];
     item->setText(conn->name());
-    if (conn == m_current)
+    item->setData(Qt::UserRole+1, conn->details());
+    item->setData(Qt::UserRole+2, (int)conn->state());
+    item->setData(Qt::UserRole+3, (bool)conn->present());
+    if (conn == m_current.data())
         this->updateDetailsUi(conn);
 }
 
@@ -91,6 +250,8 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
 {
     updateEditText(ui->connectionNameEdit, conn->name());
     ui->actionRemoveConnection->setEnabled(conn->removable());
+    ui->actionConnect->setEnabled(conn->state() == st_disconnected);
+    ui->actionDisconnect->setEnabled(conn->state() == st_connected);
 
     switch (conn->getType())
     {
@@ -151,14 +312,13 @@ void ChooseConnectionDlg::on_actionRemoveConnection_triggered()
     Q_ASSERT(selected.size() <= 1);
 
     for (int i = 0; i < selected.size(); ++i)
-        delete selected[i]->data(Qt::UserRole).value<Connection *>();
+        selected[i]->data(Qt::UserRole).value<Connection *>()->releaseAll();
 }
 
 void ChooseConnectionDlg::on_connectionNameEdit_textChanged(const QString &arg1)
 {
-    if (!m_current)
-        return;
-    m_current->setName(arg1);
+    if (m_current)
+        m_current->setName(arg1);
 }
 
 void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
@@ -166,10 +326,13 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
     QList<QListWidgetItem *> selected = ui->connectionsList->selectedItems();
     Q_ASSERT(selected.size() <= 1);
 
-    m_current = 0;
+    m_current.reset();
 
     if (selected.empty())
     {
+        ui->actionConnect->setEnabled(false);
+        ui->actionDisconnect->setEnabled(false);
+
         ui->settingsStack->setCurrentWidget(ui->homePage);
         ui->actionRemoveConnection->setEnabled(false);
         ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(false);
@@ -180,13 +343,18 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
 
     QListWidgetItem * item = selected[0];
     Connection * conn = item->data(Qt::UserRole).value<Connection *>();
+    Q_ASSERT(conn);
 
-    ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(true);
+    bool enabled = ((m_allowedConns & pct_port) && dynamic_cast<PortConnection *>(conn))
+            || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn));
+    ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(enabled);
+
     ui->connectionNameEdit->setEnabled(true);
 
     this->updateDetailsUi(conn);
 
-    m_current = conn;
+    m_current.reset(conn);
+    m_current->addRef();
 }
 
 void ChooseConnectionDlg::on_spDeviceNameEdit_textChanged(const QString &arg1)
@@ -194,12 +362,12 @@ void ChooseConnectionDlg::on_spDeviceNameEdit_textChanged(const QString &arg1)
     if (!m_current)
         return;
     Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT);
-    static_cast<SerialPort *>(m_current)->setDeviceName(arg1);
+    static_cast<SerialPort *>(m_current.data())->setDeviceName(arg1);
 }
 
 void ChooseConnectionDlg::on_connectionsList_doubleClicked(const QModelIndex &index)
 {
-    if (index.isValid())
+    if (index.isValid() && ui->confirmBox->button(QDialogButtonBox::Ok)->isEnabled())
         this->accept();
 }
 
@@ -214,7 +382,7 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
     if (!ok)
         return;
 
-    static_cast<SerialPort *>(m_current)->setBaudRate(BaudRateType(editValue));
+    static_cast<SerialPort *>(m_current.data())->setBaudRate(editValue);
 }
 
 void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)
@@ -222,7 +390,7 @@ void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)
     if (!m_current)
         return;
     Q_ASSERT(m_current->getType() == CONNECTION_TCP_SOCKET);
-    static_cast<TcpSocket *>(m_current)->setHost(arg1);
+    static_cast<TcpSocket *>(m_current.data())->setHost(arg1);
 }
 
 void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
@@ -230,5 +398,19 @@ void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
     if (!m_current)
         return;
     Q_ASSERT(m_current->getType() == CONNECTION_TCP_SOCKET);
-    static_cast<TcpSocket *>(m_current)->setPort(arg1);
+    static_cast<TcpSocket *>(m_current.data())->setPort(arg1);
+}
+
+void ChooseConnectionDlg::on_actionConnect_triggered()
+{
+    if (!m_current)
+        return;
+    m_current->OpenConcurrent();
+}
+
+void ChooseConnectionDlg::on_actionDisconnect_triggered()
+{
+    if (!m_current)
+        return;
+    m_current->Close();
 }

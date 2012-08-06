@@ -15,9 +15,10 @@
 #include <QToolButton>
 
 #include "../WorkTab/WorkTab.h"
-#include "../shared/terminal.h"
+#include "../ui/terminal.h"
 #include "../ui/chooseconnectiondlg.h"
 #include "../ui/connectbutton.h"
+#include "avr232boot.h"
 
 class QVBoxLayout;
 class QTextEdit;
@@ -25,19 +26,6 @@ class HexFile;
 class EEPROM;
 class chip_definition;
 struct page;
-
-enum states_
-{
-    STATE_STOPPING1    = 0x01,
-    STATE_STOPPING2    = 0x02,
-    STATE_STOPPED      = 0x04,
-    STATE_AWAITING_ID  = 0x08,
-    STATE_FLASHING     = 0x10,
-    STATE_PAUSED       = 0x20,
-    STATE_DISCONNECTED = 0x40,
-    STATE_EEPROM_READ  = 0x80,
-    STATE_EEPROM_WRITE = 0x100
-};
 
 enum buttons_
 {
@@ -58,63 +46,63 @@ public:
     explicit LorrisTerminal();
     virtual ~LorrisTerminal();
 
-    void onTabShow();
-    virtual void setConnection(PortConnection *con);
+    virtual void setPortConnection(ConnectionPointer<PortConnection> const & con);
+
+    QString GetIdString();
+
+    void onTabShow(const QString& filename);
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
+    void setWindowId(quint32 id);
 
 private slots:
     //Buttons
     void browseForHex();
-    void clearButton();
     void stopButton();
     void flashButton();
     void pauseButton();
-    void eepromButton();
+    void setPauseBtnText(bool pause);
+    void eepromExportButton();
     void eepromImportButton();
     void fmtAction(int act);
+    void checkFmtAct(int act);
     void loadText();
     void saveText();
+    void saveBin();
     void inputAct(int act);
+    void sendButton();
 
     void readData(const QByteArray& data);
     void sendKeyEvent(const QString& key);
-    void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);
-    void saveTermFont(const QString& fontData);
+    void saveTermSettings();
+    void showBootloader(bool show);
+    void showWarn(bool show);
 
-    //Timers
-    void stopTimerSig();
-    void flashTimeout();
-    void deviceIdTimeout();
+    void focusChanged(QWidget *prev, QWidget *curr);
 
 private:
-    void flash_prepare(QString deviceId);
-    void eeprom_read(QString id);
-    void eeprom_write(QString id);
-    bool eeprom_send_page();
-    void eeprom_read_block(QByteArray data);
-    bool SendNextPage();
+    void setHexName(QString name = QString());
     void EnableButtons(quint16 buttons, bool enable);
     void initUI();
 
-    QTimer *stopTimer;
-    QTimer *flashTimeoutTimer;
-    QByteArray stopCmd;
-    HexFile *hex;
+    QString m_filename;
+    QDateTime m_filedate;
+    QDateTime m_flashdate;
 
     QAction *m_export_eeprom;
     QAction *m_import_eeprom;
     QAction *m_fmt_act[FMT_MAX];
     QAction *m_input[INPUT_MAX];
 
-    quint16 m_state;
-    quint16 m_eepromItr;
-    EEPROM *m_eeprom;
-
-    std::vector<page> m_pages;
-    quint32 m_cur_page;
+    bool m_stopped;
 
     ConnectButton * m_connectButton;
     Ui::LorrisTerminal *ui;
+
+    avr232boot m_bootloader;
 };
 
 #endif // LORRISTERMINAL_H

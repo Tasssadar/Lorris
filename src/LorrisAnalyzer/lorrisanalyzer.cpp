@@ -34,19 +34,19 @@
 #include "widgetarea.h"
 #include "sourceselectdialog.h"
 #include "packetparser.h"
+#include "../WorkTab/WorkTabMgr.h"
 
 #include "DataWidgets/datawidget.h"
-#include "DataWidgets/numberwidget.h"
-#include "DataWidgets/barwidget.h"
-#include "DataWidgets/colorwidget.h"
-#include "DataWidgets/GraphWidget/graphwidget.h"
-#include "DataWidgets/ScriptWidget/scriptwidget.h"
-#include "DataWidgets/terminalwidget.h"
-#include "DataWidgets/buttonwidget.h"
+#include "widgetfactory.h"
+
+static bool sortDataWidget(DataWidgetAddBtn *a, DataWidgetAddBtn *b)
+{
+    return a->text().localeAwareCompare(a->text(), b->text()) < 0;
+}
 
 LorrisAnalyzer::LorrisAnalyzer()
     : ui(new Ui::LorrisAnalyzer),
-      m_connectButton(0)
+     m_storage(this), m_parser(&m_storage, this), m_connectButton(0)
 {
     ui->setupUi(this);
 
@@ -62,6 +62,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
     connect(ui->dataArea,        SIGNAL(updateData()),      SLOT(updateData()));
     connect(ui->devTabs,         SIGNAL(updateData()),      SLOT(updateData()));
+    connect(&m_parser,           SIGNAL(packetReceived(analyzer_data*,quint32)), SIGNAL(newData(analyzer_data*,quint32)));
     connect(ui->dataArea,        SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
                                  SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
     connect(this,                SIGNAL(newData(analyzer_data*,quint32)), ui->devTabs,
@@ -83,6 +84,9 @@ LorrisAnalyzer::LorrisAnalyzer()
     QAction* saveAct = menuData->addAction(QIcon(":/actions/save"), tr("Save"));
     QAction* saveAsAct = menuData->addAction(QIcon(":/actions/save-as"), tr("Save as..."));
     menuData->addSeparator();
+    QAction* importAct = menuData->addAction(tr("Import binary data"));
+    QAction* exportAct = menuData->addAction(tr("Export binary data"));
+    menuData->addSeparator();
     QAction* clearAct = menuData->addAction(QIcon(":/actions/clear"), tr("Clear received data"));
     QAction* clearAllAct = menuData->addAction(tr("Clear everything"));
 
@@ -98,7 +102,10 @@ LorrisAnalyzer::LorrisAnalyzer()
     addTopMenu(menuData);
     addTopMenu(menuWidgets);
 
-    QAction *structAct = new QAction(QIcon(":/actions/system"), tr("Change packet structure"), this);
+    QAction *structAct = new QAction(QIcon(":/actions/system"), tr("Change structure"), this);
+
+    exportAct->setStatusTip(tr("Export received bytes as binary file"));
+    structAct->setStatusTip(tr("Change structure of incoming data"));
 
     QToolBar *bar = new QToolBar(this);
     bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -122,6 +129,8 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(clearAllAct,    SIGNAL(triggered()),     SLOT(clearAllButton()));
     connect(m_title_action, SIGNAL(triggered(bool)), SLOT(showTitleTriggered(bool)));
     connect(structAct,      SIGNAL(triggered()),     SLOT(editStruture()));
+    connect(exportAct,      SIGNAL(triggered()),     SLOT(exportBin()));
+    connect(importAct,      SIGNAL(triggered()),     SLOT(importBinAct()));
 
     // Time box update consumes hilarious CPU time on X11,
     // this makes it better
@@ -130,23 +139,17 @@ LorrisAnalyzer::LorrisAnalyzer()
     ui->timeBox->setAttribute(Qt::WA_PaintOnScreen, true);
 #endif
 
-    m_storage = new Storage(this);
-    ui->dataArea->setAnalyzerAndStorage(this, m_storage);
-
-    m_parser = new PacketParser(m_storage, this);
-    connect(m_parser, SIGNAL(packetReceived(analyzer_data*,quint32)), SIGNAL(newData(analyzer_data*,quint32)));
-
+    ui->dataArea->setAnalyzerAndStorage(this, &m_storage);
     ui->devTabs->addDevice();
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
-    widgetBtnL->addWidget(new NumberWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new BarWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new ColorWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new GraphWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new ScriptWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new TerminalWidgetAddBtn(tmp));
-    widgetBtnL->addWidget(new ButtonWidgetAddBtn(tmp));
+
+    std::vector<DataWidgetAddBtn*> buttons = sWidgetFactory.getButtons(tmp);
+    std::sort(buttons.begin(), buttons.end(), sortDataWidget);
+
+    for(quint32 i = 0; i < buttons.size(); ++i)
+        widgetBtnL->addWidget(buttons[i]);
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);
@@ -162,13 +165,11 @@ LorrisAnalyzer::LorrisAnalyzer()
     m_data_changed = false;
 
     m_connectButton = new ConnectButton(ui->connectButton);
-    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
 {
-    delete m_parser;
-    delete m_storage;
     if(m_packet)
     {
         delete m_packet->header;
@@ -176,15 +177,6 @@ LorrisAnalyzer::~LorrisAnalyzer()
     }
     delete ui->devTabs;
     delete ui;
-}
-
-void LorrisAnalyzer::connectionResult(Connection */*con*/,bool result)
-{
-    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-    if(!result)
-    {
-        Utils::ThrowException(tr("Can't open connection!"));
-    }
 }
 
 void LorrisAnalyzer::connectedStatus(bool)
@@ -195,17 +187,17 @@ void LorrisAnalyzer::connectedStatus(bool)
 void LorrisAnalyzer::readData(const QByteArray& data)
 {
     bool update = m_curIndex == ui->timeSlider->maximum();
-    if(!m_parser->newData(data, update))
+    if(!m_parser.newData(data, update))
         return;
 
     m_data_changed = true;
-    int size = m_storage->getSize();
+    int size = m_storage.getMaxIdx();
 
     ui->timeSlider->setMaximum(size);
     ui->timeBox->setMaximum(size);
 
     static const QString ofString = tr(" of ");
-    ui->timeBox->setSuffix(ofString % QString::number(size));
+    ui->timeBox->setSuffix(ofString % QString::number(size+1));
 
     if(update)
     {
@@ -215,8 +207,11 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     }
 }
 
-void LorrisAnalyzer::onTabShow()
+void LorrisAnalyzer::onTabShow(const QString& filename)
 {
+    if(!filename.isEmpty())
+        openFile(filename);
+
     if (!m_con)
     {
         m_connectButton->choose();
@@ -224,41 +219,28 @@ void LorrisAnalyzer::onTabShow()
             m_con->OpenConcurrent();
     }
 
-    if (m_con)
+    if(filename.isEmpty())
         this->doNewSource();
 }
 
 void LorrisAnalyzer::doNewSource()
 {
-    m_parser->setPaused(true);
-    SourceSelectDialog *s = new SourceSelectDialog(this);
+    m_parser.setPaused(true);
+    SourceSelectDialog s(this);
 
     if(!m_con)
-        s->DisableNew();
+        s.DisableNew();
 
-    switch(s->get())
+    switch(s.get())
     {
         case -1:
-            m_parser->setPaused(false);
+            m_parser.setPaused(false);
             break;
         case 0:
         {
-            QString file = s->getFileName();
-            quint8 mask = s->getDataMask();
-            load(file, mask);
-            m_data_changed = false;
-            break;
-        }
-        case 1:
-        {
-            SourceDialog *d = new SourceDialog(NULL, this);
-            if (m_con)
-                connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
+            analyzer_packet *packet = SourceDialog::getStructure(NULL, m_con.data());
 
-            analyzer_packet *packet = d->getStructure();
-            delete d;
-
-            m_parser->setPaused(false);
+            m_parser.setPaused(false);
             if(!packet)
                 break;
 
@@ -267,20 +249,77 @@ void LorrisAnalyzer::doNewSource()
                 delete m_packet->header;
                 delete m_packet;
             }
-            ui->dataArea->clear();
-            m_storage->Clear();
-            ui->devTabs->removeAll();
-            ui->devTabs->setHeader(packet->header);
-            ui->devTabs->addDevice();
 
-            m_storage->setPacket(packet);
-            m_parser->setPacket(packet);
-            m_packet = packet;
+            resetDevAndStorage(packet);
+            setPacket(packet);
             m_data_changed = true;
             break;
         }
+        case 1:
+        {
+            QString file = s.getFileName();
+            quint8 mask = s.getDataMask();
+            load(file, mask);
+            m_data_changed = false;
+            break;
+        }
+        case 2:
+        {
+            importBinary(s.getFileName());
+            break;
+        }
     }
-    delete s;
+}
+
+void LorrisAnalyzer::importBinary(const QString& filename, bool reset)
+{
+    analyzer_packet *packet = SourceDialog::getStructure(reset ? NULL : m_packet, NULL, filename);
+    if(!packet)
+    {
+        m_parser.setPaused(false);
+        return;
+    }
+
+    if(m_packet)
+    {
+        delete m_packet->header;
+        delete m_packet;
+    }
+
+    setPacket(packet);
+
+    if(reset)
+        resetDevAndStorage(packet);
+    else
+    {
+        ui->devTabs->setHeader(packet->header);
+        m_parser.setPacket(packet);
+        m_storage.setPacket(packet);
+    }
+
+    m_parser.setPaused(false);
+
+    QFile f(filename);
+    if(!f.open(QIODevice::ReadOnly))
+        return Utils::showErrorBox(tr("Could not open file %1 for reading!").arg(filename));
+
+    QMessageBox box(QMessageBox::Information, tr("Importing..."), tr("Importing your data..."));
+    box.setStandardButtons(QMessageBox::NoButton);
+    box.setWindowModality(Qt::ApplicationModal);
+    box.open();
+
+    QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 100);
+
+    m_parser.newData(f.readAll(), false);
+    f.close();
+
+    quint32 max = m_storage.getMaxIdx();
+    ui->timeSlider->setMaximum(max);
+    ui->timeSlider->setValue(max);
+    ui->timeBox->setMaximum(max);
+    ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage.getSize()));
+    ui->timeBox->setValue(max);
+    updateData();
 }
 
 bool LorrisAnalyzer::onTabClose()
@@ -289,7 +328,14 @@ bool LorrisAnalyzer::onTabClose()
         return true;
 
     QMessageBox box(this);
-    box.setText(tr("Data has been modified."));
+    if(m_storage.getFilename().isEmpty())
+        box.setText(tr("Data has been modified."));
+    else
+    {
+        box.setText(tr("Data has been modified.\n\n%1").arg(m_storage.getFilename()));
+        box.setToolTip(m_storage.getFilename());
+    }
+
     box.setInformativeText(tr("Do you want to save your changes?"));
     box.setIcon(QMessageBox::Question);
     box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -324,47 +370,47 @@ void LorrisAnalyzer::updateData()
     ui->timeBox->setValue(m_curIndex);
     ui->timeSlider->setValue(m_curIndex);
 
-    if(m_curIndex && (quint32)m_curIndex <= m_storage->getSize())
-        emit newData(m_storage->get(m_curIndex-1), m_curIndex-1);
+    if(m_curIndex && (quint32)m_curIndex < m_storage.getSize())
+    {
+        m_curData.setData(m_storage.get(m_curIndex));
+        emit newData(&m_curData, m_curIndex);
+    }
 }
 
 analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
 {
-    if(!m_storage->getSize())
+    if(!m_storage.getSize())
         return NULL;
 
-    idx = m_curIndex-1;
-    return m_storage->get(m_curIndex-1);
+    idx = m_curIndex;
+    m_curData.setData(m_storage.get(m_curIndex));
+    return &m_curData;
 }
 
 bool LorrisAnalyzer::load(QString &name, quint8 mask)
 {
     quint32 idx = 0;
-    analyzer_packet *packet = m_storage->loadFromFile(&name, mask, ui->dataArea, ui->devTabs, idx);
+    analyzer_packet *packet = m_storage.loadFromFile(&name, mask, ui->dataArea, ui->devTabs, idx);
     if(!packet)
         return false;
 
     // old packet deleted in Storage::loadFromFile()
-    m_packet = packet;
-    m_parser->setPacket(packet);
+    setPacket(packet);
+    m_parser.setPacket(packet);
 
     if(!ui->devTabs->count())
-    {
-        ui->devTabs->removeAll();
-        ui->devTabs->setHeader(packet->header);
-        ui->devTabs->addDevice();
-    }
+        ui->devTabs->reset(packet->header);
 
     if(!idx)
-        idx = m_storage->getSize();
+        idx = m_storage.getMaxIdx();
 
     m_curIndex = idx;
-    ui->timeSlider->setMaximum(m_storage->getSize());
+    ui->timeSlider->setMaximum(m_storage.getMaxIdx());
     ui->timeSlider->setValue(idx);
-    ui->timeBox->setMaximum(m_storage->getSize());
-    ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage->getSize()));
+    ui->timeBox->setMaximum(m_storage.getMaxIdx());
+    ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage.getSize()));
     ui->timeBox->setValue(idx);
-    m_parser->setPaused(false);
+    m_parser.setPaused(false);
 
     updateData();
     m_data_changed = false;
@@ -373,25 +419,59 @@ bool LorrisAnalyzer::load(QString &name, quint8 mask)
 
 void LorrisAnalyzer::saveButton()
 {
-    m_storage->SaveToFile(ui->dataArea, ui->devTabs);
+    m_storage.SaveToFile(ui->dataArea, ui->devTabs);
 
-    if(m_storage->getFilename().isEmpty())
+    if(m_storage.getFilename().isEmpty())
         return;
 
-    QStringList name = m_storage->getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
+    QStringList name = m_storage.getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
     emit statusBarMsg(tr("File \"%1\" was saved").arg(name.last()), 5000);
     m_data_changed = false;
 }
 
 void LorrisAnalyzer::saveAsButton()
 {
-    m_storage->SaveToFile("", ui->dataArea, ui->devTabs);
-    if(m_storage->getFilename().isEmpty())
+    m_storage.SaveToFile("", ui->dataArea, ui->devTabs);
+    if(m_storage.getFilename().isEmpty())
         return;
 
-    QStringList name = m_storage->getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
+    QStringList name = m_storage.getFilename().split(QRegExp("[\\/]"), QString::SkipEmptyParts);
     emit statusBarMsg(tr("File \"%1\" was saved").arg(name.last()), 5000);
     m_data_changed = false;
+}
+
+void LorrisAnalyzer::exportBin()
+{
+    static const QString filters = QObject::tr("Any file (*.*)");
+    QString filename = QFileDialog::getSaveFileName(NULL, tr("Export binary data"),
+                                                sConfig.get(CFG_STRING_ANALYZER_IMPORT),
+                                                filters);
+    if(filename.isEmpty())
+        return;
+
+    try {
+        m_storage.ExportToBin(filename);
+    } catch(const QString& ex) {
+        return Utils::showErrorBox(ex);
+    }
+
+    QString name = filename.split(QRegExp("[\\/]"), QString::SkipEmptyParts).last();
+    emit statusBarMsg(tr("Binary data were exported to file \"%1\"").arg(name), 5000);
+
+    sConfig.set(CFG_STRING_ANALYZER_IMPORT, filename);
+}
+
+void LorrisAnalyzer::importBinAct()
+{
+    static const QString filters = QObject::tr("Any file (*.*)");
+    QString filename = QFileDialog::getOpenFileName(NULL, tr("Import binary data"),
+                                                sConfig.get(CFG_STRING_ANALYZER_IMPORT),
+                                                filters);
+    if(filename.isEmpty())
+        return;
+
+    sConfig.set(CFG_STRING_ANALYZER_IMPORT, filename);
+    importBinary(filename, false);
 }
 
 void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
@@ -491,17 +571,10 @@ void LorrisAnalyzer::clearAllButton()
         return;
 
     analyzer_packet *packet = m_packet;
-    m_packet = NULL;
+    setPacket(NULL);
 
-    ui->devTabs->removeAll();
-    ui->devTabs->setHeader(NULL);
-    ui->devTabs->addDevice();
-
-    ui->dataArea->clear();
-
-    m_parser->setPacket(NULL);
-    m_storage->Clear();
-    m_storage->setPacket(NULL);
+    resetDevAndStorage();
+    m_storage.clearFilename();
 
     m_curIndex = 0;
     ui->timeSlider->setMaximum(0);
@@ -522,7 +595,8 @@ void LorrisAnalyzer::clearAllButton()
 
 void LorrisAnalyzer::clearDataButton()
 {
-    m_storage->Clear();
+    m_parser.resetCurPacket();
+    m_storage.Clear();
 
     m_curIndex = 0;
     ui->timeSlider->setMaximum(0);
@@ -532,10 +606,21 @@ void LorrisAnalyzer::clearDataButton()
     updateData();
 }
 
+void LorrisAnalyzer::resetDevAndStorage(analyzer_packet *packet)
+{
+    ui->devTabs->reset(packet ? packet->header : NULL);
+
+    ui->dataArea->clear();
+
+    m_parser.setPacket(packet);
+    m_storage.Clear();
+    m_storage.setPacket(packet);
+}
+
 void LorrisAnalyzer::openFile(const QString& filename)
 {
     if(load((QString&)filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS)))
-        sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
+        sConfig.set(CFG_STRING_ANALYZER_FOLDER, m_storage.getFilename());
 }
 
 void LorrisAnalyzer::openFile()
@@ -555,17 +640,12 @@ void LorrisAnalyzer::openFile()
 
 void LorrisAnalyzer::editStruture()
 {
-    SourceDialog *d = new SourceDialog(m_packet, this);
-    m_parser->setPaused(true);
-    if (m_con)
-        connect(this->m_con, SIGNAL(dataRead(QByteArray)), d, SIGNAL(readData(QByteArray)));
-
-    analyzer_packet *packet = d->getStructure();
-    delete d;
+    m_parser.setPaused(true);
+    analyzer_packet *packet = SourceDialog::getStructure(m_packet, m_con.data());
 
     if(packet)
     {
-        m_parser->setPacket(packet);
+        m_parser.setPacket(packet);
 
         if(m_packet)
         {
@@ -580,12 +660,12 @@ void LorrisAnalyzer::editStruture()
             ui->devTabs->addDevice();
         }
 
-        m_storage->setPacket(packet);
-        m_packet = packet;
+        m_storage.setPacket(packet);
+        setPacket(packet);
 
         updateData();
     }
-    m_parser->setPaused(false);
+    m_parser.setPaused(false);
 }
 
 quint32 LorrisAnalyzer::getCurrentIndex()
@@ -600,11 +680,63 @@ void LorrisAnalyzer::showTitleTriggered(bool checked)
     emit setTitleVisibility(checked);
 }
 
-void LorrisAnalyzer::setConnection(PortConnection *con)
+void LorrisAnalyzer::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
-    this->PortConnWorkTab::setConnection(con);
-    m_connectButton->setConn(con);
+    if(con && m_con != con)
+        connect(this, SIGNAL(SendData(QByteArray)), con.data(), SLOT(SendData(QByteArray)));
 
-    if(con)
-        connect(this, SIGNAL(SendData(QByteArray)), con, SLOT(SendData(QByteArray)));
+    this->PortConnWorkTab::setPortConnection(con);
+    m_connectButton->setConn(con);
+}
+
+void LorrisAnalyzer::updateForWidget()
+{
+    Q_ASSERT(sender());
+    if(!sender())
+        return;
+
+    m_data_changed = true;
+
+    if(m_curIndex && (quint32)m_curIndex < m_storage.getSize())
+    {
+        m_curData.setData(m_storage.get(m_curIndex));
+        ((DataWidget*)sender())->newData(&m_curData, m_curIndex);
+    }
+}
+
+QString LorrisAnalyzer::GetIdString()
+{
+    return "LorrisAnalyzer";
+}
+
+void LorrisAnalyzer::saveData(DataFileParser *file)
+{
+    PortConnWorkTab::saveData(file);
+
+    file->writeBlockIdentifier("LorrAnalyzerFile");
+    file->writeString(m_storage.getFilename());
+}
+
+void LorrisAnalyzer::loadData(DataFileParser *file)
+{
+    PortConnWorkTab::loadData(file);
+
+    if(file->seekToNextBlock("LorrAnalyzerFile", BLOCK_WORKTAB))
+        openFile(file->readString());
+}
+
+void LorrisAnalyzer::addChildTab(ChildTab *tab, const QString &name)
+{
+    sWorkTabMgr.addChildTab(tab, name, getId());
+}
+
+void LorrisAnalyzer::removeChildTab(ChildTab *tab)
+{
+    sWorkTabMgr.removeChildTab(tab);
+}
+
+void LorrisAnalyzer::setPacket(analyzer_packet *packet)
+{
+    m_packet = packet;
+    m_curData.setPacket(packet);
 }

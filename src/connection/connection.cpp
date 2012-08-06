@@ -7,18 +7,25 @@
 
 #include "connection.h"
 #include "../WorkTab/WorkTab.h"
+#include <QStringBuilder>
 
-Connection::Connection()
-    : m_type(0), m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_removable(true)
+Connection::Connection(ConnectionType type)
+    : m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_removable(true), m_persistent(false), m_type(type)
 {
 }
 
 Connection::~Connection()
 {
     // Note that m_refcount need not be 0 here. We allow connections
-    // to be destroyed explicitly and clients must listen to destroyed()
-    // signal.
+    // to be destroyed explicitly via releaseAll() and clients must
+    // listen to either destroying() or destroyed() signal.
 }
+
+QString Connection::details() const
+{
+    return QString();
+}
+
 
 void Connection::SetState(ConnectionState state)
 {
@@ -50,7 +57,10 @@ void Connection::addRef()
 void Connection::release()
 {
     if (--m_refcount == 0)
+    {
+        emit destroying();
         delete this;
+    }
 }
 
 void Connection::addTabRef()
@@ -77,4 +87,22 @@ bool Connection::applyConfig(QHash<QString, QVariant> const & config)
 {
     this->setName(config.value("name").toString());
     return true;
+}
+
+void Connection::releaseAll()
+{
+    emit destroying();
+    delete this;
+}
+
+void Connection::setPersistent(bool value)
+{
+    if (m_persistent != value)
+    {
+        m_persistent = value;
+        if (value)
+            this->addRef();
+        else
+            this->release();
+    }
 }

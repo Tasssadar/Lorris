@@ -30,3 +30,9 @@ QString LorrisTerminalInfo::GetDescription()
     return QObject::tr("Terminal can show input data from connections, send key strokes "
            "and flash new programs to devices with a bootloader.");
 }
+
+QString LorrisTerminalInfo::GetIdString()
+{
+    return "LorrisTerminal";
+}
+

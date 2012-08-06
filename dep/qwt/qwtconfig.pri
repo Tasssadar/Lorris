@@ -57,7 +57,7 @@ QWT_INSTALL_FEATURES  = $${QWT_INSTALL_PREFIX}/features
 # it will be a static library.
 ######################################################################
 
-#QWT_CONFIG           += QwtDll
+win32:QWT_CONFIG           += QwtDll
 
 ######################################################################
 # QwtPlot enables all classes, that are needed to use the QwtPlot 
@@ -78,7 +78,7 @@ QWT_CONFIG     += QwtWidgets
 # export a plot to a SVG document
 ######################################################################
 
-QWT_CONFIG     += QwtSvg
+#QWT_CONFIG     += QwtSvg
 
 ######################################################################
 # You can use the MathML renderer of the Qt solutions package to 
@@ -89,7 +89,7 @@ QWT_CONFIG     += QwtSvg
 # to your qmake project file.
 ######################################################################
 
-QWT_CONFIG     += QwtMathML
+#QWT_CONFIG     += QwtMathML
 
 ######################################################################
 # If you want to build the Qwt designer plugin, 

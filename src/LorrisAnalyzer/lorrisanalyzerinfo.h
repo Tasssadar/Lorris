@@ -19,6 +19,7 @@ public:
     QString GetName();
     QString GetDescription();
     QStringList GetHandledFiles();
+    QString GetIdString();
 };
 
 #endif // LORRISANALYZERINFO_H

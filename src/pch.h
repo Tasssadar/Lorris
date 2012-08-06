@@ -5,6 +5,12 @@
 **    See README and COPYING
 ***********************************************/
 
+#ifdef __cplusplus
+
+#ifdef WITH_PYTHON
+    #include <Python.h>
+#endif
+
 #include <vector>
 #include <set>
 #include <QLabel>
@@ -20,3 +26,5 @@
 #endif
 #include "common.h"
 #include "shared/hexfile.h"
+
+#endif // __cplusplus

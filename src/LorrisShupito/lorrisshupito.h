@@ -12,7 +12,7 @@
 #include "shupito.h"
 #include "shupitodesc.h"
 #include "../shared/hexfile.h"
-#include "../shared/terminal.h"
+#include "../ui/terminal.h"
 #include "../ui/connectbutton.h"
 
 #include <QDateTime>
@@ -41,9 +41,9 @@ enum VddColor
 
 enum TabIndex
 {
-    TAB_FLASH = 0,
+    TAB_TERMINAL = 0,
+    TAB_FLASH,
     TAB_EEPROM,
-    TAB_TERMINAL,
     TAB_MAX
 };
 
@@ -62,8 +62,9 @@ class chip_definition;
 class FuseWidget;
 class ProgressDialog;
 class OverVccDialog;
+class ToolTipWarn;
 
-class LorrisShupito : public PortConnWorkTab
+class LorrisShupito : public WorkTab
 {
     Q_OBJECT
 Q_SIGNALS:
@@ -73,16 +74,25 @@ public:
     LorrisShupito();
     ~LorrisShupito();
 
-    void setConnection(PortConnection *con);
     void stopAll(bool wait);
 
+public slots:
+    void setConnection(ConnectionPointer<Connection> const & con);
+
+protected:
+    ConnectionPointer<ShupitoConnection> m_con;
+
+    QString GetIdString();
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
 private slots:
-    void onTabShow();
+    void onTabShow(const QString& filename);
     void connDisconnecting();
 
-    void connectionResult(Connection*,bool);
     void connectedStatus(bool connected);
-    void readData(const QByteArray& data);
+    void readPacket(const ShupitoPacket & data);
     void descRead(bool correct);
 
     void vccValueChanged(quint8 id, double value);
@@ -95,8 +105,9 @@ private slots:
     void setTunnelName();
     void verifyChanged(int mode);
 
-    void hideLogBtn();
-    void hideFusesBtn();
+    void hideLogBtn(bool checked);
+    void hideFusesBtn(bool checked);
+    void hideSettingsBtn(bool checked);
 
     void readMemButton()
     {
@@ -144,11 +155,14 @@ private slots:
     void loadFromFile(int memId, const QString& filename);
     void saveToFile(int memId);
     void focusChanged(QWidget *prev, QWidget *curr);
-    void saveTermFont(const QString& fontData);
+    void saveTermSettings();
+    void flashWarnBox(bool checked);
 
     void overvoltageSwitched(bool enabled);
     void overvoltageChanged(double val);
     void overvoltageTurnOffVcc(bool enabled);
+
+    void timeout();
 
 private:
     void log(const QString& text);
@@ -159,7 +173,6 @@ private:
     void writeMem(quint8 memId, chip_definition& chip);
     void readFuses(chip_definition& chip);
     void writeFuses(chip_definition& chip);
-    void hideFuses(bool hide);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     bool showContinueBox(const QString& title, const QString& text);
     void postFlashSwitchCheck(chip_definition &chip);
@@ -194,9 +207,9 @@ private:
     quint8 m_verify_mode;
 
     QHexEdit *m_hexAreas[MEM_FUSES];
-    Terminal *m_terminal;
     QString m_hexFilenames[MEM_FUSES];
     QDateTime m_hexWriteTimes[MEM_FUSES];
+    QDateTime m_hexFlashTimes[MEM_FUSES];
     ShupitoMode *m_modes[MODE_COUNT];
     quint8 m_cur_mode;
 
@@ -220,6 +233,9 @@ private:
     chip_definition m_cur_def;
 
     ConnectButton * m_connectButton;
+
+    QTimer m_timeout_timer;
+    QPointer<ToolTipWarn> m_timeout_warn;
 };
 
 #endif // LORRISSHUPITO_H

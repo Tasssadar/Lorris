@@ -16,6 +16,8 @@
 class DataFileParser;
 class Storage;
 class LorrisAnalyzer;
+class ChildTab;
+class WidgetAreaPreview;
 
 class WidgetArea : public QFrame
 {
@@ -46,18 +48,26 @@ public:
 
     void SaveWidgets(DataFileParser *file);
     void LoadWidgets(DataFileParser *file, bool skip);
-    static DataWidget *newWidget(quint8 type, QWidget *parent);
+    void SaveSettings(DataFileParser *file);
+    void LoadSettings(DataFileParser *file);
+
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void moveWidgets(QPoint diff);
+    void correctWidgetName(QString& name, DataWidget *widget);
 
     void skipNextMove() { m_skipNextMove = true; }
 
     DataWidget *getWidget(quint32 id);
+    const w_map& getWidgets() const { return m_widgets; }
 
-    const w_map& getWidgets()
-    {
-        return m_widgets;
-    }
+    void setGridOffset(int x, int y) { m_grid_offset = QPoint(x, y); }
+    const QPoint& getGridOffset() const { return m_grid_offset; }
+    quint32 getGrid() const { return m_grid; }
+    void setGrid(quint32 grid) { m_grid = grid; }
+
+    Storage *getStorage() const { return m_storage; }
+
+    QRegion getRegionWithWidgets();
 
 public slots:
     void removeWidget(quint32 id);
@@ -73,6 +83,12 @@ protected:
     void moveEvent(QMoveEvent *event);
     void resizeEvent(QResizeEvent *);
 
+private slots:
+    void enableGrid(bool enable);
+    void showGrid(bool show);
+    void setGridSize();
+    void alignWidgets();
+
 private:
     void getMarkPos(int &x, int &y, QSize &size);
     quint32 getNewId() { return m_widgetIdCounter++; }
@@ -86,6 +102,31 @@ private:
     QPoint m_mouse_orig;
 
     bool m_skipNextMove;
+    QPoint m_grid_offset;
+    quint32 m_grid;
+    bool m_show_grid;
+
+    QMenu *m_menu;
+    WidgetAreaPreview *m_prev;
+};
+
+class WidgetAreaPreview : public QWidget
+{
+    Q_OBJECT
+public:
+    WidgetAreaPreview(WidgetArea *area, QWidget *parent);
+
+    void prepareRender();
+
+protected:
+    void paintEvent(QPaintEvent *);
+
+private:
+    WidgetArea *m_widgetArea;
+    QPixmap m_render;
+    QRegion m_region;
+    QRect m_visible;
+    bool m_smooth;
 };
 
 #endif // WIDGETAREA_H

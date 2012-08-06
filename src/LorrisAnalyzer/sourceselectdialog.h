@@ -10,11 +10,9 @@
 
 #include <QDialog>
 
-namespace Ui {
-class SourceSelectDialog;
-}
+#include "ui_sourceselectdialog.h"
 
-class SourceSelectDialog : public QDialog
+class SourceSelectDialog : public QDialog, private Ui::SourceSelectDialog
 {
     Q_OBJECT
     
@@ -29,9 +27,13 @@ public:
     QString getFileName();
 
 private slots:
-    void contButton();
-    void browse();
-    void loadRadioToggled(bool toggle);
+    void on_newRadio_toggled(bool toggle);
+    void on_loadRadio_toggled(bool toggle);
+    void on_binRadio_toggled(bool toggle);
+
+    void on_contButton_clicked();
+    void on_loadBrowse_clicked();
+    void on_importBrowse_clicked();
     
 private:
     Ui::SourceSelectDialog *ui;

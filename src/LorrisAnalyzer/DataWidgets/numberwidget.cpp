@@ -16,6 +16,7 @@
 
 #include "numberwidget.h"
 
+REGISTER_DATAWIDGET(WIDGET_NUMBERS, Number)
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -180,7 +181,7 @@ void NumberWidget::fmtSelected(int i)
     for(quint8 y = 0; y < FMT_COUNT; ++y)
         fmtAction[y]->setChecked(y == i);
     format = i;
-    emit updateData();
+    emit updateForMe();
 }
 
 void NumberWidget::setDataType(int i)
@@ -191,27 +192,32 @@ void NumberWidget::setDataType(int i)
     if(i >= NUM_INT8 && numberType < NUM_FLOAT)
         fmtSelected(FMT_DECIMAL);
 
+    if(numberType == i)
+        return;
+
     numberType = i;
 
     fmtAction[FMT_HEX]->setEnabled(i < NUM_INT8);
     fmtAction[FMT_BINARY]->setEnabled(i < NUM_INT8);
     fmtAction[FMT_EXPONENT]->setEnabled(i >= NUM_FLOAT);
-    emit updateData();
+    emit updateForMe();
 }
 
 void NumberWidget::levelSelected()
 {
     level = !level;
     levelAction->setChecked(level);
-    emit updateData();
+    emit updateForMe();
 }
 
 void NumberWidget::resizeEvent(QResizeEvent *event)
 {
+    QSize old = event->oldSize();
     if(event->oldSize().height() < minimumHeight())
-        return;
+        old = minimumSize();
+
     QFont f = num->font();
-    f.setPointSize(f.pointSize() + event->size().height() - event->oldSize().height());
+    f.setPointSize(f.pointSize() + event->size().height() - old.height());
     num->setFont(f);
     DataWidget::resizeEvent(event);
 }
