@@ -184,12 +184,18 @@ QWidget *TabWidget::unregisterTab(int index)
 
 void TabWidget::currentIndexChanged(int idx)
 {
-    if(idx != -1 && (size_t)idx < m_tab_ids.size())
+    changeMenu(idx);
+
+    if(idx == -1)
+        return;
+
+    emit changeWindowTitle(tabToolTip(idx));
+
+    if((size_t)idx < m_tab_ids.size())
     {
         m_tabHistory.removeOne(m_tab_ids[idx]);
         m_tabHistory.push_back(m_tab_ids[idx]);
     }
-    changeMenu(idx);
 }
 
 void TabWidget::mousePressEvent(QMouseEvent *event)
@@ -347,6 +353,9 @@ void TabWidget::setTabNameAndTooltip(int idx, QString name)
 {
     setTabToolTip(idx, name);
 
+    if(idx == currentIndex())
+        emit changeWindowTitle(name);
+
     if(name.size() > 25)
     {
         name.resize(28);
@@ -470,6 +479,11 @@ bool TabWidget::eventFilter(QObject *obj, QEvent *ev)
             QKeyEvent *keyEv = (QKeyEvent*)ev;
             if(keyEv->key() == Qt::Key_Control)
                 keyReleaseEvent(keyEv);
+            return false;
+        }
+        case QEvent::FocusIn:
+        {
+            emit changeActiveWidget(this);
             return false;
         }
         default:break;

@@ -18,13 +18,14 @@
 #include "HomeTab.h"
 #include "../misc/datafileparser.h"
 
+static const QString titleString = QString("Lorris v%1").arg(REVISION);
 MainWindow::MainWindow(quint32 id, QWidget *parent) :
     QMainWindow(parent)
 {
     m_id = id;
     m_hometab = NULL;
 
-    setWindowTitle(getVersionString());
+    setWindowTitle(titleString);
     setMinimumSize(600, 500);
     setWindowIcon(QIcon(":/icons/icon.png"));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -39,6 +40,7 @@ MainWindow::MainWindow(quint32 id, QWidget *parent) :
     connect(m_tabView, SIGNAL(closeWindow()),                          SLOT(close()));
     connect(m_tabView, SIGNAL(openHomeTab()),                          SLOT(openHomeTab()));
     connect(m_tabView, SIGNAL(closeHomeTab()),                         SLOT(closeHomeTab()));
+    connect(m_tabView, SIGNAL(changeWindowTitle(QString)),             SLOT(changeWindowTitle(QString)));
 
     setCentralWidget(m_tabView);
     openHomeTab();
@@ -55,12 +57,6 @@ void MainWindow::show(const QStringList& openFiles)
 
     for(QStringList::const_iterator itr = openFiles.begin(); itr != openFiles.end(); ++itr)
         sWorkTabMgr.openTabWithFile(*itr, this);
-}
-
-QString MainWindow::getVersionString()
-{
-    QString ver = "Lorris v" + QString::number(REVISION);
-    return ver;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -118,4 +114,12 @@ void MainWindow::loadData(DataFileParser *file)
 
     Utils::loadWindowParams(this, file->readString());
     m_tabView->loadData(file);
+}
+
+void MainWindow::changeWindowTitle(const QString &title)
+{
+    if(!title.isEmpty())
+        setWindowTitle(title + " - " + titleString);
+    else
+        setWindowTitle(titleString);
 }

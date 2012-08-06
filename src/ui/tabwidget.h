@@ -37,6 +37,8 @@ Q_SIGNALS:
     void changeActiveWidget(TabWidget *widget);
     void statusBarMsg(const QString& message, int timeout = 0);
     void closeHomeTab();
+    void focusedIntoTab();
+    void changeWindowTitle(const QString& title);
 
 public:
     explicit TabWidget(quint32 id, QWidget *parent = 0);
@@ -70,7 +72,6 @@ public:
 
     void changeMenu(int idx);
     void clearMenu();
-
 
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);

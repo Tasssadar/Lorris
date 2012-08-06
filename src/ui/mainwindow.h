@@ -37,11 +37,11 @@ protected:
 
 private slots:
     void openHomeTab();
+    void changeWindowTitle(const QString &title);
 
 private:
     void saveWindowParams();
     void loadWindowParams();
-    QString getVersionString();
 
     quint32 m_id;
     TabView *m_tabView;

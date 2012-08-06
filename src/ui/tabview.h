@@ -45,6 +45,7 @@ Q_SIGNALS:
     void statusBarMsg(const QString& message, int timeout = 0);
     void closeWindow();
     void closeHomeTab();
+    void changeWindowTitle(const QString &title);
 
 public:
     explicit TabView(MainWindow *parent);
@@ -88,6 +89,7 @@ private slots:
     void newTab();
     void showSettings();
     void checkForUpdate();
+    void checkChangeWindowTitle(const QString& title);
 
 private:
     TabWidget *newTabWidget(QBoxLayout *l);

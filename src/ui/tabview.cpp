@@ -98,6 +98,7 @@ TabWidget *TabView::newTabWidget(QBoxLayout *l)
     connect(tabW, SIGNAL(split(bool,int)),                SLOT(split(bool,int)));
     connect(tabW, SIGNAL(removeWidget(quint32)),          SLOT(removeWidget(quint32)));
     connect(tabW, SIGNAL(changeActiveWidget(TabWidget*)), SLOT(changeActiveWidget(TabWidget*)));
+    connect(tabW, SIGNAL(changeWindowTitle(QString)),     SLOT(checkChangeWindowTitle(QString)));
 
     updateResizeLines((QBoxLayout*)layout());
     return tabW;
@@ -106,6 +107,8 @@ TabWidget *TabView::newTabWidget(QBoxLayout *l)
 void TabView::changeActiveWidget(TabWidget *widget)
 {
     m_active_widget = widget;
+    if(widget && !widget->isEmpty())
+        emit changeWindowTitle(widget->tabToolTip(widget->currentIndex()));
 }
 
 void TabView::removeWidget(quint32 id)
@@ -522,6 +525,18 @@ TabWidget *TabView::getWidgetWithWidget(QWidget *widget)
         if((*itr)->indexOf(widget) != -1)
             return *itr;
     return NULL;
+}
+
+void TabView::checkChangeWindowTitle(const QString &title)
+{
+    Q_ASSERT(sender());
+    if(!sender())
+        return;
+
+    if((TabWidget*)sender() != m_active_widget)
+        return;
+
+    emit changeWindowTitle(title);
 }
 
 TabViewResLine::TabViewResLine(bool vertical, TabView *parent) : ResizeLine(vertical, parent)
