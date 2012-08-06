@@ -97,7 +97,8 @@ void PortConnWorkTab::setPortConnection(ConnectionPointer<PortConnection> const 
 {
     if (m_con)
     {
-        disconnect(m_con.data(), 0, this, 0);
+        m_con->disconnect(this);
+        this->disconnect(m_con.data());
         m_con->releaseTab();
     }
 
