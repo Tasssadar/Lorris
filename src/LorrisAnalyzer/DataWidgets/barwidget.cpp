@@ -6,17 +6,24 @@
 ***********************************************/
 
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QSignalMapper>
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <qwt_thermo.h>
 #include <float.h>
+#include <QInputDialog>
+#include <QGridLayout>
+#include <QDialogButtonBox>
+#include <QColorDialog>
 
 #include "barwidget.h"
 #include "../../ui/rangeselectdialog.h"
 #include "../../misc/datafileparser.h"
 
 REGISTER_DATAWIDGET(WIDGET_BAR, Bar)
+
+static const QPalette::ColorRole roles[COLOR_COUNT] = { QPalette::Base, QPalette::Highlight, QPalette::ButtonText };
 
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -32,6 +39,11 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     m_bar->setOrientation(Qt::Vertical, QwtThermo::RightScale);
     m_bar->setRangeFlags(QwtInterval::IncludeBorders);
     m_bar->setRange(0, 1000);
+
+    QPalette p(m_bar->palette());
+    p.setColor(QPalette::ButtonText, Qt::blue);
+    p.setColor(QPalette::Highlight, Qt::red);
+    m_bar->setPalette(p);
 
     m_label = new QLabel("0", this);
     m_label->setAlignment(Qt::AlignCenter);
@@ -102,6 +114,13 @@ void BarWidget::setUp(Storage *storage)
     rotationSelected(0);
     connect(signalMapRot, SIGNAL(mapped(int)), SLOT(rotationSelected(int)));
 
+
+    QMenu *alarmMenu = contextMenu->addMenu(tr("Alarm"));
+    m_alarmEnable = alarmMenu->addAction(tr("Enable alarm"));
+    m_alarmEnable->setCheckable(true);
+    m_alarmLevel = alarmMenu->addAction(tr("Set alarm level..."));
+    m_alarmLevel->setEnabled(false);
+
     m_rangeAct = contextMenu->addAction(tr("Set range..."));
     m_showScaleAct = contextMenu->addAction(tr("Show scale"));
     m_showValAct = contextMenu->addAction(tr("Show value"));
@@ -110,10 +129,14 @@ void BarWidget::setUp(Storage *storage)
     m_showScaleAct->setChecked(true);
     m_showValAct->setChecked(true);
 
+    QAction *colorAct = contextMenu->addAction(tr("Set colors"));
 
     connect(m_rangeAct,     SIGNAL(triggered()),     SLOT(rangeSelected()));
     connect(m_showScaleAct, SIGNAL(triggered(bool)), SLOT(showScale(bool)));
     connect(m_showValAct,   SIGNAL(triggered(bool)), SLOT(showVal(bool)));
+    connect(m_alarmEnable,  SIGNAL(triggered(bool)), SLOT(setAlarmEnabled(bool)));
+    connect(m_alarmLevel,   SIGNAL(triggered()),     SLOT(alarmLevelAct()));
+    connect(colorAct,       SIGNAL(triggered()),     SLOT(showColorsDialog()));
 }
 
 void BarWidget::processData(analyzer_data *data)
@@ -127,19 +150,65 @@ void BarWidget::processData(analyzer_data *data)
     {
         return;
     }
-    m_bar->setValue(value);
-    m_label->setText(QString::number(value));
+    setValuePrivate(value);
 }
 
-void BarWidget::setValue(const QVariant &var)
+void BarWidget::setValuePrivate(double val)
 {
-    m_bar->setValue(var.toDouble());
-    m_label->setText(QString::number(var.toDouble()));
+    m_bar->setValue(val);
+    m_label->setText(QString::number(val));
+
+    emit scriptEvent(getTitle() + "_valueChanged");
+
+    if(m_bar->alarmEnabled() && val >= m_bar->alarmLevel())
+        emit scriptEvent(getTitle() + "_alarm");
 }
 
 void BarWidget::setRange(double min, double max)
 {
     m_bar->setRange(min, max);
+
+    emit scriptEvent(getTitle() + "_rangeChanged");
+}
+
+double BarWidget::getValue() const
+{
+    return m_bar->value();
+}
+
+double BarWidget::getMin() const
+{
+    return m_bar->minValue();
+}
+
+double BarWidget::getMax() const
+{
+    return m_bar->maxValue();
+}
+
+void BarWidget::setAlarmEnabled(bool enable)
+{
+    m_bar->setAlarmEnabled(enable);
+    m_alarmEnable->setChecked(enable);
+    m_alarmLevel->setEnabled(enable);
+    emit scriptEvent(getTitle() + "_alarmEnabled");
+}
+
+void BarWidget::setAlarmLevel(double val)
+{
+    m_bar->setAlarmLevel(val);
+
+    emit scriptEvent(getTitle() + "_alarmLevelChanged");
+}
+
+bool BarWidget::isAlarmEnabled() const
+{
+    return m_bar->alarmEnabled();
+}
+
+double BarWidget::getAlarmLevel() const
+{
+    return m_bar->alarmLevel();
 }
 
 void BarWidget::setDataType(int i)
@@ -200,6 +269,20 @@ void BarWidget::saveWidgetInfo(DataFileParser *file)
     file->writeBlockIdentifier("barWVisibility");
     file->writeVal(m_showScaleAct->isChecked());
     file->writeVal(m_showValAct->isChecked());
+
+    // colors
+    file->writeBlockIdentifier("barWColors");
+    {
+        QPalette p = m_bar->palette();
+        Q_ASSERT(COLOR_COUNT == 3);
+        for(int i = 0; i < COLOR_COUNT; ++i)
+            file->writeString(p.color(roles[i]).name());
+    }
+
+    // alarm
+    file->writeBlockIdentifier("barWAlarm");
+    file->writeVal(m_bar->alarmEnabled());
+    file->writeVal(m_bar->alarmLevel());
 }
 
 void BarWidget::loadWidgetInfo(DataFileParser *file)
@@ -240,6 +323,26 @@ void BarWidget::loadWidgetInfo(DataFileParser *file)
         showScale(file->readVal<bool>());
         showVal(file->readVal<bool>());
     }
+
+    // colors
+    if(file->seekToNextBlock("barWColors", BLOCK_WIDGET))
+    {
+        QPalette p = m_bar->palette();
+        Q_ASSERT(COLOR_COUNT == 3);
+        for(int i = 0; i < COLOR_COUNT; ++i)
+            p.setColor(roles[i], QColor(file->readString()));
+        m_bar->setPalette(p);
+    }
+
+    // alarm
+    if(file->seekToNextBlock("barWAlarm", BLOCK_WIDGET))
+    {
+        m_bar->setAlarmEnabled(file->readVal<bool>());
+        m_alarmEnable->setChecked(m_bar->alarmEnabled());
+        m_alarmLevel->setEnabled(m_bar->alarmEnabled());
+
+        m_bar->setAlarmLevel(file->readVal<double>());
+    }
 }
 
 void BarWidget::showScale(bool show)
@@ -265,6 +368,28 @@ void BarWidget::showVal(bool show)
     m_label->setVisible(show);
 }
 
+void BarWidget::alarmLevelAct()
+{
+    bool ok;
+    double val = QInputDialog::getDouble(this, tr("Alarm level"), tr("Enter alarm level"), m_bar->alarmLevel(),
+                                         INT_MIN, INT_MAX, 4, &ok);
+    if(!ok)
+        return;
+
+    setAlarmLevel(val);
+}
+
+void BarWidget::showColorsDialog()
+{
+    BarWidgetClrDialog d(m_bar->palette(), this);
+    if(d.exec() != QDialog::Accepted)
+        return;
+
+    QPalette p = m_bar->palette();
+    d.updatePalette(p);
+    m_bar->setPalette(p);
+}
+
 BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText(tr("Bar"));
@@ -272,4 +397,78 @@ BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
     setIcon(QIcon(":/dataWidgetIcons/bar.png"));
 
     m_widgetType = WIDGET_BAR;
+}
+
+BarWidgetClrDialog::BarWidgetClrDialog(const QPalette &curPalette, QWidget *parent) : QDialog(parent)
+{
+    QGridLayout *l = new QGridLayout;
+    QHBoxLayout *layoutHor = new QHBoxLayout;
+
+    m_bar = new QwtThermo(this);
+    m_bar->setRange(0, 100);
+    m_bar->setValue(66);
+    m_bar->setAlarmEnabled(true);
+    m_bar->setAlarmLevel(33);
+
+    layoutHor->addWidget(m_bar, 1);
+    layoutHor->addLayout(l, 3);
+
+    QLabel *label1 = new QLabel(tr("Background:"), this);
+    QLabel *label2 = new QLabel(tr("Above alarm:"), this);
+    QLabel *label3 = new QLabel(tr("Fill color:"), this);
+
+    l->addWidget(label1, 0, 0);
+    l->addWidget(label2, 1, 0);
+    l->addWidget(label3, 2, 0);
+
+    QSignalMapper *map = new QSignalMapper(this);
+    for(int i = 0; i < COLOR_COUNT; ++i)
+    {
+        m_colorBtns[i] = new QPushButton(this);
+        m_colorBtns[i]->setIconSize(QSize(32, 16));
+        m_colorBtns[i]->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        setColor(i, curPalette.color(roles[i]));
+        map->setMapping(m_colorBtns[i], i);
+        l->addWidget(m_colorBtns[i], i, 1);
+
+        connect(m_colorBtns[i], SIGNAL(clicked()), map, SLOT(map()));
+    }
+
+    QDialogButtonBox *box = new QDialogButtonBox((QDialogButtonBox::Ok | QDialogButtonBox::Cancel), Qt::Horizontal, this);
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->addLayout(layoutHor);
+    mainLayout->addWidget(box);
+
+    connect(map, SIGNAL(mapped(int)), SLOT(btnClicked(int)));
+    connect(box, SIGNAL(accepted()),  SLOT(accept()));
+    connect(box, SIGNAL(rejected()),  SLOT(reject()));
+
+    resize(250, 200);
+}
+
+void BarWidgetClrDialog::btnClicked(int role)
+{
+    QColor color = QColorDialog::getColor(m_colors[role], this);
+    if(!color.isValid())
+        return;
+
+    setColor(role, color);
+}
+
+void BarWidgetClrDialog::setColor(int role, const QColor &clr)
+{
+    QPixmap map(50, 25);
+    map.fill(clr);
+    m_colors[role] = clr;
+    m_colorBtns[role]->setIcon(QIcon(map));
+
+    QPalette p = m_bar->palette();
+    p.setColor(roles[role], clr);
+    m_bar->setPalette(p);
+}
+
+void BarWidgetClrDialog::updatePalette(QPalette &p)
+{
+    for(int i = 0; i < COLOR_COUNT; ++i)
+        p.setColor(roles[i], m_colors[i]);
 }
