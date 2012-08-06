@@ -21,7 +21,7 @@ class ConnectButton : public QObject
 
 public:
     ConnectButton(QToolButton * btn);
-    void setConn(ConnectionPointer<Connection> const & conn);
+    void setConn(ConnectionPointer<Connection> const & conn, bool emitConnChosen = true);
     void setConnectionType(PrimaryConnectionType type);
 
 public slots:

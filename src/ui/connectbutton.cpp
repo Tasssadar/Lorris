@@ -65,7 +65,7 @@ void ConnectButton::setConnectionType(PrimaryConnectionType type)
     m_connType = type;
 }
 
-void ConnectButton::setConn(ConnectionPointer<Connection> const & conn)
+void ConnectButton::setConn(ConnectionPointer<Connection> const & conn, bool emitConnChosen)
 {
     if (m_conn != conn)
     {
@@ -85,7 +85,8 @@ void ConnectButton::setConn(ConnectionPointer<Connection> const & conn)
             this->connectionStateChanged(st_disconnected);
         }
 
-        emit connectionChosen(m_conn);
+        if(emitConnChosen)
+            emit connectionChosen(m_conn);
     }
 }
 

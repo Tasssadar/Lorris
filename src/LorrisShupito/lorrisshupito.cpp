@@ -1340,7 +1340,7 @@ void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
     connect(m_con.data(), SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
     m_con->addTabRef();
 
-    m_connectButton->setConn(sc);
+    m_connectButton->setConn(sc, false);
     if (m_con)
         connect(m_con.data(), SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
 }

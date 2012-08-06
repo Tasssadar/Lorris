@@ -683,7 +683,7 @@ void LorrisAnalyzer::showTitleTriggered(bool checked)
 void LorrisAnalyzer::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
     this->PortConnWorkTab::setPortConnection(con);
-    m_connectButton->setConn(con);
+    m_connectButton->setConn(con, false);
 
     if(con)
         connect(this, SIGNAL(SendData(QByteArray)), con.data(), SLOT(SendData(QByteArray)));

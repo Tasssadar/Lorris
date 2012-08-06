@@ -47,7 +47,7 @@ LorrisProxy::~LorrisProxy()
 void LorrisProxy::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
     this->PortConnWorkTab::setPortConnection(con);
-    m_connectButton->setConn(con);
+    m_connectButton->setConn(con, false);
     connect(m_con.data(),     SIGNAL(dataRead(QByteArray)), &m_server, SLOT(SendData(QByteArray)));
     connect(&m_server, SIGNAL(newData(QByteArray)),   m_con.data(),    SLOT(SendData(QByteArray)));
 }

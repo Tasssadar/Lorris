@@ -434,7 +434,7 @@ void LorrisTerminal::inputAct(int act)
 void LorrisTerminal::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
     this->PortConnWorkTab::setPortConnection(con);
-    m_connectButton->setConn(con);
+    m_connectButton->setConn(con, false);
     m_bootloader.setCon(con.data());
     connectedStatus(con && con->isOpen());
 }
