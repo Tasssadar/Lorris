@@ -26,13 +26,15 @@ macx {
     DEBUG_EXT = 
   }
 
-  win32:INCLUDEPATH += $(PYTHON_PATH)/PC $(PYTHON_PATH)/include
+  #win32:INCLUDEPATH += $(PYTHON_PATH)/PC $(PYTHON_PATH)/include
+  include(../../../python.pri)
   win32:LIBS += c:/python27/libs/libpython27.a
 
 } else:unix {
   # on linux, python-config is used to autodetect Python.
   # make sure that you have installed a matching python-dev package.
   
-  unix:LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
-  unix:QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
+  include(../../../python.pri)
+  #unix:LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
+  #unix:QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
 }

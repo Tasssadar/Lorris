@@ -2,6 +2,7 @@
 # Project created by QtCreator 2011-05-30T19:16:22
 # -------------------------------------------------
 include(../config.pri)
+include(../python.pri)
 
 QT += gui core network script
 TARGET = Lorris
@@ -368,8 +369,6 @@ macx {
 python:unix {
     LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt
     DEFINES += WITH_PYTHON
-    LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
-    QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 }
@@ -377,7 +376,6 @@ python:unix {
 python:win32 {
     LIBS += -L"$$PWD/../dep/pythonqt/win/" -lPythonQt
     DEFINES += WITH_PYTHON
-    INCLUDEPATH += ../dep/python2.7/
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 
