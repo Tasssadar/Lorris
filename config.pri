@@ -1,7 +1,6 @@
 # comment out following line to disable python in Lorris
-!win32-msvc* {
-    CONFIG += python
-}
+# There is no debug python library on widnows, so do not compile it in debug mode
+!win32|CONFIG(release, debug|release): CONFIG += python
 
 python {
     # Change this variable to your python version (2.5, 2.6, 2.7)

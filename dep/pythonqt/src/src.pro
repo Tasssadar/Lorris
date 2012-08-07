@@ -8,17 +8,12 @@ TARGET   = PythonQt
 TEMPLATE = lib
 
 
-DESTDIR    = ../
+DESTDIR    = "$$PWD/../"
 
-CONFIG += qt dll static
+CONFIG += qt
+win32:CONFIG += dll
+else:CONFIG+= static
 CONFIG -= flat
-
-win32 {
-    INCLUDEPATH += "../../python2.7/win/"
-}
-unix {
-    INCLUDEPATH += "../../python2.7/linux/"
-}
 
 include ( ../build/common.prf )  
 include ( ../build/python.prf )  

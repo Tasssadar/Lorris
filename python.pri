@@ -5,5 +5,6 @@ python {
     }
     win32 {
         INCLUDEPATH += "$$PWD/dep/python2.7/"
+        LIBS += -L"$$PWD/dep/python2.7/lib/" -lpython27
     }
 }

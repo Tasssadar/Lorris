@@ -306,11 +306,11 @@ win32 {
     else:LIBS += -lqwt
 
     win32-msvc* {
-        LIBS += -L"$$PWD/../dep/SDL/lib/msvc"
+        LIBS += -L"$$PWD/../dep/SDL/lib/msvc" -lsdl -luser32 -ladvapi32
         QMAKE_CXXFLAGS += /wd4138
         QMAKE_CXXFLAGS_DEBUG += /Od
     } else {
-        LIBS += -L"$$PWD/../dep/SDL/lib"
+        LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl
     }
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
@@ -331,7 +331,7 @@ win32 {
         ../dep/qextserialport/src/qextserialenumerator.cpp \
         misc/updater.cpp
 
-    LIBS += -lsdl -lsetupapi -lwinmm -lole32
+    LIBS += -lsetupapi -lwinmm -lole32
 }
 unix:!macx:!symbian {
     CONFIG += libusby
@@ -367,20 +367,15 @@ macx {
     INSTALLS += target translations qext
 }
 
-python:unix {
+python {
     LIBS += -L"$$PWD/../dep/pythonqt" -lPythonQt
     DEFINES += WITH_PYTHON
     SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
-}
 
-python:win32 {
-    LIBS += -L"$$PWD/../dep/pythonqt/win/" -lPythonQt
-    DEFINES += WITH_PYTHON
-    SOURCES += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.cpp
-    HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
-
-    QMAKE_POST_LINK = copy \""$$PWD\\..\\dep\\pythonqt\\win\\PythonQt.dll\"" \""$$PWD\\..\\bin\\release\\PythonQt.dll\""
+    win32 {
+        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\pythonqt\\PythonQt.dll\"" \""$$DESTDIR\\PythonQt.dll\"" &
+    }
 }
 
 # must be after lPythonQt, else it will not link properly on some compilers
@@ -406,8 +401,11 @@ qsci_editor:win32 {
         LIBS += -L"$$PWD/../dep/qscintilla2/msvc"
         CONFIG(debug, debug|release):LIBS += -lqscintilla2d
         else:LIBS += -lqscintilla2
+
+        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\msvc\\qscintilla2.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
     } else {
         LIBS += -L"$$PWD/../dep/qscintilla2/" -lqscintilla2
+        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\qscintilla2.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
     }
     INCLUDEPATH += "$$PWD/../dep/qscintilla2/"
 }
