@@ -76,8 +76,6 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     connect(saveAs, SIGNAL(triggered()), SLOT(saveAs()));
     connect(qApp,   SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 
-    updateExampleList();
-
     ui->errorBtn->setChecked(sConfig.get(CFG_BOOL_SHOW_SCRIPT_ERROR));
     on_errorBtn_toggled(ui->errorBtn->isChecked());
 
@@ -152,7 +150,6 @@ void ScriptEditor::textChanged()
     }
     m_changed = true;
     m_contentChanged = true;
-    ui->exampleBox->setCurrentIndex(0);
 }
 
 void ScriptEditor::on_loadBtn_clicked()
@@ -228,7 +225,6 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
 
     m_editor->setEngine(idx);
 
-    updateExampleList();
     setFilename(QString());
 }
 
@@ -239,29 +235,22 @@ void ScriptEditor::on_errorBtn_toggled(bool checked)
     sConfig.set(CFG_BOOL_SHOW_SCRIPT_ERROR, checked);
 }
 
-void ScriptEditor::on_exampleBox_activated(int index)
+void ScriptEditor::loadExample(const QString& name)
 {
-    if(index == 0)
-        return;
-
     if(m_changed)
     {
         QMessageBox box(QMessageBox::Question, tr("Load example"), tr("Script was changed, do you really want to load an example?"),
                        (QMessageBox::Yes | QMessageBox::No), this);
 
         if(box.exec() == QMessageBox::No)
-        {
-            ui->exampleBox->setCurrentIndex(0);
             return;
-        }
     }
 
-    QFile file(":/examples/" + ui->exampleBox->currentText());
+    QFile file(":/examples/" + name);
     if(!file.open(QIODevice::ReadOnly))
         return;
 
     m_editor->setText(QString::fromUtf8(file.readAll()));
-    ui->exampleBox->setCurrentIndex(index);
     m_changed = false;
 }
 
@@ -277,21 +266,6 @@ void ScriptEditor::clearErrors()
     ui->errorEdit->clear();
     m_errors = 0;
     ui->errorBtn->setText(tr("Show errors (%1)").arg(m_errors));
-}
-
-void ScriptEditor::updateExampleList()
-{
-    static const QStringList filters[ENGINE_MAX] =
-    {
-        (QStringList() << "*.js"),
-        (QStringList() << "*.py")
-    };
-
-    while(ui->exampleBox->count() > 1)
-        ui->exampleBox->removeItem(1);
-
-    QDir dir(":/examples");
-    ui->exampleBox->addItems(dir.entryList(filters[ui->langBox->currentIndex()], QDir::NoFilter, QDir::Name));
 }
 
 void ScriptEditor::on_saveBtn_clicked()
@@ -426,6 +400,29 @@ void ScriptEditor::on_editorBox_currentIndexChanged(int idx)
     sConfig.set(CFG_QUINT32_SCRIPTEDITOR_TYPE, idx);
 }
 
+void ScriptEditor::on_exampleBtn_clicked()
+{
+    if(m_examples)
+    {
+        delete m_examples.data();
+        return;
+    }
+
+    m_examples = new ExamplesPreview(ui->langBox->currentIndex(), this);
+    m_examples->move(ui->exampleBtn->mapToGlobal(QPoint(0, 0)) + QPoint(0, ui->exampleBtn->height()));
+    m_examples->show();
+    m_examples->setFocus();
+
+    connect(m_examples.data(), SIGNAL(destroyed()), SLOT(examplePreviewDestroyed()));
+    connect(m_examples.data(), SIGNAL(openInEditor(QString)), SLOT(loadExample(QString)));
+    connect(m_examples.data(), SIGNAL(openPreview(QString)), SIGNAL(openPreview(QString)));
+}
+
+void ScriptEditor::examplePreviewDestroyed()
+{
+    ui->exampleBtn->setChecked(false);
+}
+
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)
 {
 #ifdef Q_OS_MAC
@@ -474,6 +471,136 @@ void LineNumber::paintEvent(QPaintEvent */*event*/)
         painter.drawText(0, h, m_last_w, m_char_h, Qt::AlignRight, text);
         h += m_char_h;
     }
+}
+
+ExamplesPreview::ExamplesPreview(int engine, QWidget *parent) : QScrollArea(parent)
+{
+    setWindowFlags(windowFlags() | Qt::ToolTip);
+    setAutoFillBackground(true);
+
+    setFrameStyle(QFrame::Box | QFrame::Plain);
+    setFixedSize(300, 300);
+    setWidgetResizable(true);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    QWidget *widget = new QWidget(this);
+    widget->setFixedWidth(280);
+    QVBoxLayout *l = new QVBoxLayout(widget);
+    l->setSpacing(0);
+
+    QPalette p(palette());
+    p.setColor(QPalette::Window, QColor("#c0daff"));
+    setPalette(p);
+
+    static const QStringList filters[ENGINE_MAX] =
+    {
+        (QStringList() << "*.js"),
+        (QStringList() << "*.py")
+    };
+
+    QDir dir(":/examples");
+    QStringList files = dir.entryList(filters[engine], QDir::NoFilter, QDir::Name);
+    QFile f;
+    for(int i = 0; i < files.size(); ++i)
+    {
+        f.setFileName(":/examples/" + files[i]);
+        if(!f.open(QIODevice::ReadOnly))
+            continue;
+
+        ExamplePreviewItem *prev = new ExamplePreviewItem(files[i], f.readLine(), this);
+        connect(prev, SIGNAL(openInEditor(QString)), SIGNAL(openInEditor(QString)));
+        connect(prev, SIGNAL(openPreview(QString)),  SIGNAL(openPreview(QString)));
+
+        l->addWidget(prev);
+        l->addWidget(getSeparator());
+
+        f.close();
+    }
+    setWidget(widget);
+
+    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*, QWidget*)));
+}
+
+QFrame *ExamplesPreview::getSeparator()
+{
+    QFrame *res = new QFrame(this);
+    res->setFrameStyle(QFrame::HLine | QFrame::Plain);
+    return res;
+}
+
+void ExamplesPreview::focusChanged(QWidget *, QWidget *to)
+{
+    if(to != this)
+        deleteLater();
+}
+
+ExamplePreviewItem::ExamplePreviewItem(const QString& name, QString line, QWidget *parent) : QFrame(parent)
+{
+    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+
+    QFont f;
+    QVBoxLayout *l = new QVBoxLayout(this);
+
+    QLabel *nameLabel = new QLabel(name.left(name.lastIndexOf('.')), this);
+    f.setBold(true);
+    f.setPointSize(12);
+    nameLabel->setFont(f);
+
+    line.chop(1);
+    QLabel *lineLabel = new QLabel(line, this);
+    f.setPointSize(9);
+    f.setBold(false);
+    lineLabel->setFont(f);
+    lineLabel->setStyleSheet("color: green;");
+    lineLabel->setWordWrap(true);
+
+    QHBoxLayout *linkLayout = new QHBoxLayout;
+    QLabel *linkToEditor = new QLabel(tr("<a href=\"%1\">Load to editor</a>").arg(name), this);
+    QLabel *linkPreview = new QLabel(tr("<a href=\"%1\">Show preview</a>").arg(name), this);
+
+    linkLayout->addStretch();
+    linkLayout->addWidget(linkToEditor);
+    linkLayout->addWidget(linkPreview);
+
+    l->addWidget(nameLabel);
+    l->addWidget(lineLabel);
+    l->addLayout(linkLayout);
+
+    connect(linkToEditor, SIGNAL(linkActivated(QString)), SIGNAL(openInEditor(QString)));
+    connect(linkPreview,  SIGNAL(linkActivated(QString)), SIGNAL(openPreview(QString)));
+}
+
+ExamplePreviewTab::ExamplePreviewTab(const QString &name)
+{
+    QHBoxLayout *l = new QHBoxLayout(this);
+
+    m_editor = EditorWidget::getEditor(sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE), this);
+    if(!m_editor)
+        m_editor = EditorWidget::getEditor(EDITOR_INTERNAL, this);
+
+    m_editor->setReadOnly(true);
+    l->addWidget(m_editor->getWidget());
+
+    loadExample(name);
+}
+
+void ExamplePreviewTab::loadExample(const QString &name)
+{
+    setTabText(name + tr(" - example"));
+
+    QFile f(":/examples/" + name);
+    if(!f.open(QIODevice::ReadOnly))
+    {
+        m_editor->setText(tr("Could not load example!"));
+        return;
+    }
+
+    if(name.endsWith(".py"))
+        m_editor->setEngine(ENGINE_PYTHON);
+    else
+        m_editor->setEngine(ENGINE_QTSCRIPT);
+
+    m_editor->setText(QString::fromUtf8(f.readAll()));
 }
 
 EditorWidget::EditorWidget(QWidget *parent) : QWidget(parent)
@@ -565,6 +692,11 @@ void EditorWidgetLorris::setEngine(int idx)
     }
 }
 
+void EditorWidgetLorris::setReadOnly(bool readOnly)
+{
+    m_edit->setReadOnly(readOnly);
+}
+
 #ifdef USE_KATE
 
 #include <ktexteditor/document.h>
@@ -593,6 +725,7 @@ EditorWidgetKate::EditorWidgetKate(QWidget *parent) : EditorWidget(parent)
     KConfig config("lorrisrc");
     m_doc->editor()->readConfig(&config);
 
+    m_readOnly = false;
 
     connect(m_doc, SIGNAL(textChanged(KTextEditor::Document*)), SLOT(modified(KTextEditor::Document*)));
 }
@@ -614,7 +747,9 @@ QWidget *EditorWidgetKate::getWidget()
 
 void EditorWidgetKate::setText(const QString &text)
 {
+    m_doc->setReadWrite(true);
     m_doc->setText(text);
+    m_doc->setReadWrite(!m_readOnly);
 }
 
 QString EditorWidgetKate::getText() const
@@ -718,6 +853,12 @@ void EditorWidgetKate::setModified(bool modded)
     m_doc->setModified(modded);
 }
 
+void EditorWidgetKate::setReadOnly(bool readOnly)
+{
+    m_readOnly = readOnly;
+    m_doc->setReadWrite(!readOnly);
+}
+
 #endif // USE_KATE
 
 #ifdef USE_QSCI
@@ -795,6 +936,11 @@ void EditorWidgetQSci::modified(bool mod)
 void EditorWidgetQSci::setModified(bool modded)
 {
     m_editor->setModified(modded);
+}
+
+void EditorWidgetQSci::setReadOnly(bool readOnly)
+{
+    m_editor->setReadOnly(readOnly);
 }
 
 #endif // USE_QSCI

@@ -10,6 +10,8 @@
 
 #include <QDialog>
 #include <QTimer>
+#include <QScrollArea>
+#include <QPointer>
 #include "../../../WorkTab/childtab.h"
 
 #include "ui_scripteditor.h"
@@ -18,6 +20,7 @@ class QAbstractButton;
 class LineNumber;
 class QSyntaxHighlighter;
 class EditorWidget;
+class ExamplesPreview;
 
 class ScriptEditor : public ChildTab, private Ui::ScriptEditor
 {
@@ -26,6 +29,7 @@ class ScriptEditor : public ChildTab, private Ui::ScriptEditor
 Q_SIGNALS:
     void applySource(bool close);
     void rejected();
+    void openPreview(const QString& name);
     
 public:
     ScriptEditor(const QString& source, const QString& filename, int type);
@@ -49,19 +53,20 @@ private slots:
     void on_loadBtn_clicked();
     void on_langBox_currentIndexChanged(int idx);
     void on_errorBtn_toggled(bool checked);
-    void on_exampleBox_activated(int index);
-    void on_saveBtn_clicked();
     void on_editorBox_currentIndexChanged(int idx);
+    void on_saveBtn_clicked();
+    void on_exampleBtn_clicked();
 
     void textChanged();
     void saveAs();
     void clearStatus() { ui->statusLabel->setText(QString()); }
     void checkChange();
     void focusChanged(QWidget *prev, QWidget *now);
+    void examplePreviewDestroyed();
+    void loadExample(const QString& name);
 
 private:
     bool save(const QString& file);
-    void updateExampleList();
     void setStatus(const QString& status);
     void setFilename(const QString& filename);
 
@@ -77,6 +82,7 @@ private:
     QTimer m_status_timer;
 
     EditorWidget *m_editor;
+    QPointer<ExamplesPreview> m_examples;
 };
 
 class LineNumber : public QWidget
@@ -100,6 +106,47 @@ private:
     quint8 m_last_w;
 };
 
+class ExamplesPreview : public QScrollArea
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void openInEditor(const QString& file);
+    void openPreview(const QString& file);
+
+public:
+    ExamplesPreview(int engine, QWidget *parent);
+
+private slots:
+    void focusChanged(QWidget *, QWidget *to);
+
+private:
+    QFrame *getSeparator();
+};
+
+class ExamplePreviewItem : public QFrame
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void openInEditor(const QString& file);
+    void openPreview(const QString& file);
+
+public:
+    ExamplePreviewItem(const QString& name, QString line, QWidget *parent);
+};
+
+class ExamplePreviewTab : public ChildTab
+{
+    Q_OBJECT
+public:
+    ExamplePreviewTab(const QString& name);
+
+    void loadExample(const QString& name);
+
+private:
+    EditorWidget *m_editor;
+};
 
 enum editors
 {
@@ -131,6 +178,7 @@ public:
     virtual int getType() const = 0;
 
     virtual void setModified(bool /*modded*/) { }
+    virtual void setReadOnly(bool readOnly) = 0;
 
 public slots:
     virtual void settingsBtn() { }
@@ -161,6 +209,7 @@ public:
 
     bool hasSettings() { return false; }
     int getType() const { return EDITOR_INTERNAL; }
+    void setReadOnly(bool readOnly);
 
 private slots:
     void rangeChanged(int, int);
@@ -200,6 +249,7 @@ public:
     int getType() const { return EDITOR_KATE; }
 
     void setModified(bool modded);
+    void setReadOnly(bool readOnly);
 
 public slots:
     void settingsBtn();
@@ -215,6 +265,7 @@ private:
 
     KTextEditor::Document *m_doc;
     KTextEditor::View *m_view;
+    bool m_readOnly;
 };
 
 #endif // USE_KATE
@@ -239,6 +290,7 @@ public:
     bool hasSettings() { return false; }
     int getType() const { return EDITOR_QSCINTILLA; }
     void setModified(bool modded);
+    void setReadOnly(bool readOnly);
 
 private slots:
     void modified(bool mod);

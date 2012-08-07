@@ -40,6 +40,9 @@ ScriptWidget::~ScriptWidget()
 {
     if(m_editor)
         emit removeChildTab(m_editor);
+
+    if(m_examplePreview)
+        emit removeChildTab(m_examplePreview);
 }
 
 void ScriptWidget::setUp(Storage *storage)
@@ -197,6 +200,7 @@ void ScriptWidget::setSourceTriggered()
     connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
     connect(m_editor, SIGNAL(rejected()),        SLOT(closeEditor()), Qt::QueuedConnection);
     connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
+    connect(m_editor, SIGNAL(openPreview(QString)), SLOT(addExampleTab(QString)));
 }
 
 void ScriptWidget::sourceSet(bool close)
@@ -274,6 +278,18 @@ void ScriptWidget::blinkError()
 void ScriptWidget::titleDoubleClick()
 {
     setSourceTriggered();
+}
+
+void ScriptWidget::addExampleTab(const QString &name)
+{
+    if(m_examplePreview)
+        m_examplePreview->loadExample(name);
+    else
+    {
+        m_examplePreview = new ExamplePreviewTab(name);
+        addChildTab(m_examplePreview, name + tr(" - example"));
+    }
+    m_examplePreview->activateTab();
 }
 
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

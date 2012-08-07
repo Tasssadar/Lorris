@@ -17,6 +17,7 @@ class QLabel;
 class ScriptEditor;
 class ScriptEngine;
 class Terminal;
+class ExamplePreviewTab;
 
 class ScriptWidget : public DataWidget
 {
@@ -43,6 +44,7 @@ protected slots:
      void sourceSet(bool close);
      void closeEditor();
      void blinkError();
+     void addExampleTab(const QString& name);
 
 protected:
      void newData(analyzer_data *data, quint32 index);
@@ -53,6 +55,7 @@ protected:
      void createEngine();
 
      QPointer<ScriptEditor> m_editor;
+     QPointer<ExamplePreviewTab> m_examplePreview;
      ScriptEngine *m_engine;
      int m_engine_type;
      Terminal *m_terminal;
