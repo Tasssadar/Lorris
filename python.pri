@@ -4,6 +4,6 @@ python {
         QMAKE_CXXFLAGS += $$system(pkg-config --cflags python-$${PYTHON_VERSION} --silence-errors)
     }
     win32 {
-        INCLUDEPATH += ./dep/python2.7/
+        INCLUDEPATH += "$$PWD/dep/python2.7/"
     }
 }

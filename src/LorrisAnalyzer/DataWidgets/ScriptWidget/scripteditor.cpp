@@ -518,6 +518,8 @@ ExamplePreviewItem::ExamplePreviewItem(const QString& name, QString line, QWidge
 
     connect(linkToEditor, SIGNAL(linkActivated(QString)), SIGNAL(openInEditor(QString)));
     connect(linkPreview,  SIGNAL(linkActivated(QString)), SIGNAL(openPreview(QString)));
+    connect(linkToEditor, SIGNAL(linkActivated(QString)), parent, SLOT(deleteLater()));
+    connect(linkPreview,  SIGNAL(linkActivated(QString)), parent, SLOT(deleteLater()));
 }
 
 ExamplePreviewTab::ExamplePreviewTab(const QString &name)
