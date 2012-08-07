@@ -333,7 +333,7 @@ win32 {
 }
 unix:!macx:!symbian {
     CONFIG += libusby
-    LIBS += -ludev -lSDL -lqextserialport
+    LIBS += -ludev -lSDL -lqextserialport_lorris
 
     system_qwt {
         LIBS += -lqwt
@@ -355,12 +355,12 @@ unix:!macx:!symbian {
 }
 macx {
     INCLUDEPATH += ../dep/SDL/include
-    LIBS += -lqwt_lorris -lqextserialport -lSDL -lqextserialport
+    LIBS += -lqwt_lorris -lqextserialport -lSDL -lqextserialport_lorris
 
     translations.path = /usr/share/lorris/
     translations.files = ../translations/Lorris.*.qm
     qext.path = /usr/lib/
-    qext.files = ../dep/qextserialport/lib/libqextserialport.*
+    qext.files = ../dep/qextserialport/lib/libqextserialport_lorris.*
     target.path = /Applications/
     INSTALLS += target translations qext
 }
