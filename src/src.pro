@@ -105,7 +105,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.cpp \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.cpp \
     LorrisAnalyzer/DataWidgets/circlewidget.cpp \
     ui/rangeselectdialog.cpp \
     ui/progressbar.cpp \
@@ -129,7 +128,8 @@ SOURCES += ui/mainwindow.cpp \
     WorkTab/childtab.cpp \
     WorkTab/tab.cpp \
     connection/proxytunnel.cpp \
-    ui/editorwidget.cpp
+    ui/editorwidget.cpp \
+    ui/pythonhighlighter.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -212,7 +212,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.h \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.h \
     LorrisAnalyzer/DataWidgets/circlewidget.h \
     ui/rangeselectdialog.h \
     ui/progressbar.h \
@@ -237,7 +236,8 @@ HEADERS += ui/mainwindow.h \
     WorkTab/childtab.h \
     WorkTab/tab.h \
     connection/proxytunnel.h \
-    ui/editorwidget.h
+    ui/editorwidget.h \
+    ui/pythonhighlighter.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

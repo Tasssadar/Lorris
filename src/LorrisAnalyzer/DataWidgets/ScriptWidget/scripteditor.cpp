@@ -17,7 +17,6 @@
 #include "scripteditor.h"
 #include "../../../common.h"
 #include "engines/scriptengine.h"
-#include "engines/pythonhighlighter.h"
 #include "../../../ui/editorwidget.h"
 
 #define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
@@ -223,7 +222,7 @@ void ScriptEditor::on_langBox_currentIndexChanged(int idx)
         m_changed = false;
     }
 
-    m_editor->setEngine(idx);
+    m_editor->setHighlighter((EditorHighlight)idx);
 
     setFilename(QString());
 }
@@ -386,7 +385,7 @@ void ScriptEditor::on_editorBox_currentIndexChanged(int idx)
         w->setText(m_editor->getText());
         delete m_editor;
     }
-    w->setEngine(ui->langBox->currentIndex());
+    w->setHighlighter((EditorHighlight)ui->langBox->currentIndex());
 
     m_editor = w;
     ui->mainLayout->insertWidget(1, m_editor->getWidget(),
@@ -548,9 +547,9 @@ void ExamplePreviewTab::loadExample(const QString &name)
     }
 
     if(name.endsWith(".py"))
-        m_editor->setEngine(ENGINE_PYTHON);
+        m_editor->setHighlighter(HIGHLIGHT_PYTHON);
     else
-        m_editor->setEngine(ENGINE_QTSCRIPT);
+        m_editor->setHighlighter(HIGHLIGHT_JSCRIPT);
 
     m_editor->setText(QString::fromUtf8(f.readAll()));
 }

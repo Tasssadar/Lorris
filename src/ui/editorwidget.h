@@ -24,6 +24,12 @@ enum editors
     EDITOR_MAX
 };
 
+enum EditorHighlight
+{
+    HIGHLIGHT_JSCRIPT  = 0,
+    HIGHLIGHT_PYTHON
+};
+
 class EditorWidget : public QWidget
 {
     Q_OBJECT
@@ -39,7 +45,7 @@ public:
     virtual void setText(const QString& text) = 0;
     virtual QString getText() const = 0;
 
-    virtual void setEngine(int idx) = 0;
+    virtual void setHighlighter(EditorHighlight lang) = 0;
     virtual QWidget *getWidget() = 0;
     virtual bool hasSettings() = 0;
     virtual int getType() const = 0;
@@ -65,7 +71,7 @@ public:
     void setText(const QString& text);
     QString getText() const;
 
-    void setEngine(int idx);
+    void setHighlighter(EditorHighlight lang);
 
     bool hasSettings() { return false; }
     int getType() const { return EDITOR_INTERNAL; }
@@ -121,7 +127,7 @@ public:
 
     QWidget *getWidget();
 
-    void setEngine(int idx);
+    void setHighlighter(EditorHighlight lang);
 
     QString getText() const;
     void setText(const QString &text);
@@ -165,7 +171,7 @@ public:
     void setText(const QString& text);
     QString getText() const;
 
-    void setEngine(int idx);
+    void setHighlighter(EditorHighlight lang);
 
     QWidget *getWidget();
     bool hasSettings() { return false; }

@@ -11,8 +11,7 @@
 #include <qscriptsyntaxhighlighter_p.h>
 #include <QPainter>
 
-#include "../LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonhighlighter.h"
-#include "../LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptengine.h"
+#include "pythonhighlighter.h"
 #include "editorwidget.h"
 
 EditorWidget::EditorWidget(QWidget *parent) : QWidget(parent)
@@ -98,15 +97,15 @@ void EditorWidgetLorris::contentsChange(int /*position*/, int charsRemoved, int 
     m_lineNumber->setLineNum(m_edit->document()->lineCount());
 }
 
-void EditorWidgetLorris::setEngine(int idx)
+void EditorWidgetLorris::setHighlighter(EditorHighlight lang)
 {
     delete m_highlighter;
-    switch(idx)
+    switch(lang)
     {
-        case ENGINE_QTSCRIPT:
+        case HIGHLIGHT_JSCRIPT:
             m_highlighter = new QScriptSyntaxHighlighter(m_edit->document());
             break;
-        case ENGINE_PYTHON:
+        case HIGHLIGHT_PYTHON:
             m_highlighter = new PythonHighlighter(m_edit->document());
             break;
         default:
@@ -230,14 +229,14 @@ QString EditorWidgetKate::getText() const
     return m_doc->text();
 }
 
-void EditorWidgetKate::setEngine(int idx)
+void EditorWidgetKate::setHighlighter(EditorHighlight lang)
 {
-    switch(idx)
+    switch(lang)
     {
-        case ENGINE_QTSCRIPT:
+        case HIGHLIGHT_JSCRIPT:
             m_doc->setMode("JavaScript");
             break;
-        case ENGINE_PYTHON:
+        case HIGHLIGHT_PYTHON:
             m_doc->setMode("Python");
             break;
         default:
@@ -371,20 +370,20 @@ void EditorWidgetQSci::setText(const QString &text)
     m_editor->setModified(false);
 }
 
-void EditorWidgetQSci::setEngine(int idx)
+void EditorWidgetQSci::setHighlighter(EditorHighlight lang)
 {
     QsciLexer *lex = m_editor->lexer();
     m_editor->setLexer(NULL);
     delete lex;
 
-    switch(idx)
+    switch(lang)
     {
-        case ENGINE_QTSCRIPT:
+        case HIGHLIGHT_JSCRIPT:
             m_editor->setLexer(new QsciLexerJavaScript);
             m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerJavaScript::Comment);
             m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerJavaScript::CommentLine);
             break;
-        case ENGINE_PYTHON:
+        case HIGHLIGHT_PYTHON:
             m_editor->setLexer(new QsciLexerPython);
             m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerPython::Comment);
             m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerPython::CommentBlock);
