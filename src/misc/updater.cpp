@@ -15,6 +15,9 @@
 #include <QFile>
 #include <QPushButton>
 #include <QDesktopWidget>
+#include <QtConcurrentRun>
+#include <QFuture>
+#include <QFutureWatcher>
 
 #include "updater.h"
 #include "../revision.h"
@@ -48,16 +51,8 @@ bool Updater::checkForUpdate(bool autoCheck)
             if(parts.size() < 3 || !ver.contains(parts[0]))
                 continue;
 
-            if(REVISION >= parts[1].toInt())
-                return false;
-
-            if(!autoCheck)
-                return askForUpdate();
-
-            if(sConfig.get(CFG_BOOL_AUTO_UPDATE))
+            if(REVISION < parts[1].toInt())
                 return true;
-
-            showNotification();
             return false;
         }
     }
@@ -82,12 +77,28 @@ bool Updater::doUpdate(bool autoCheck)
             return false;
     }
 
-    if(!checkForUpdate(autoCheck))
-        return false;
-
     sConfig.set(CFG_QUINT32_LAST_UPDATE_CHECK, time);
 
-    return startUpdater();
+    bool update = false;
+    if(autoCheck && !sConfig.get(CFG_BOOL_AUTO_UPDATE))
+    {
+        QFuture<bool> f = QtConcurrent::run(&Updater::checkForUpdate, autoCheck);
+        UpdateHandler *h = new UpdateHandler(NULL);
+        h->createWatcher(f);
+        return false;
+    }
+    else
+    {
+        if(!checkForUpdate(autoCheck))
+            return false;
+
+        if(!autoCheck)
+            update = askForUpdate();
+        else
+            update = sConfig.get(CFG_BOOL_AUTO_UPDATE);
+    }
+
+    return update && startUpdater();
 }
 
 bool Updater::copyUpdater()
@@ -125,7 +136,7 @@ void Updater::showNotification()
         w->move(rect.width() - w->width() - 90, rect.height() - w->height() - 15);
     }
 
-    UpdateBtnHandler *h = new UpdateBtnHandler(w);
+    UpdateHandler *h = new UpdateHandler(w);
     QObject::connect(btn, SIGNAL(clicked()), h, SLOT(updateBtn()));
     QObject::connect(btn, SIGNAL(clicked()), w, SLOT(deleteLater()));
 }
@@ -154,13 +165,28 @@ void UpdaterDialog::on_noCheckBox_clicked(bool checked)
     sConfig.set(CFG_BOOL_CHECK_FOR_UPDATE, !checked);
 }
 
-UpdateBtnHandler::UpdateBtnHandler(QObject *parent) : QObject(parent)
+UpdateHandler::UpdateHandler(QObject *parent) : QObject(parent)
 {
 
 }
 
-void UpdateBtnHandler::updateBtn()
+void UpdateHandler::updateBtn()
 {
     if(Updater::startUpdater())
         qApp->closeAllWindows();
+}
+
+void UpdateHandler::createWatcher(const QFuture<bool> &f)
+{
+    m_watcher = new QFutureWatcher<bool>(this);
+    m_watcher->setFuture(f);
+
+    connect(m_watcher, SIGNAL(finished()), SLOT(updateCheckResult()));
+}
+
+void UpdateHandler::updateCheckResult()
+{
+    if(m_watcher->result())
+        Updater::showNotification();
+    deleteLater();
 }

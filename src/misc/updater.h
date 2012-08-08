@@ -10,11 +10,14 @@
 
 #include <QObject>
 #include <QDialog>
+#include <QFuture>
+#include <QFutureWatcher>
 
 #include "ui_updatecheck.h"
 
 class Updater
 {
+    friend class UpdateHandler;
 public:
     static bool doUpdate(bool autoCheck);
     static bool startUpdater();
@@ -41,16 +44,22 @@ private:
     Ui::UpdateCheck *ui;
 };
 
-class UpdateBtnHandler : public QObject
+class UpdateHandler : public QObject
 {
     Q_OBJECT
 
     friend class Updater;
 protected:
-    UpdateBtnHandler(QObject *parent);
+    UpdateHandler(QObject *parent);
+
+    void createWatcher(const QFuture<bool>& f);
 
 protected slots:
     void updateBtn();
+    void updateCheckResult();
+
+private:
+    QFutureWatcher<bool> *m_watcher;
 };
 
 #endif // UPDATER_H
