@@ -25,6 +25,8 @@
 class JoyMgr : public QObject, public Singleton<JoyMgr>
 {
     Q_OBJECT
+
+    friend class JoyThread;
 public:
     JoyMgr();
     ~JoyMgr();
@@ -46,10 +48,13 @@ public:
     }
 
 public slots:
-    void removeJoystick(Joystick *joy);
+    void removeJoystick(JoystickPrivate *joy);
+
+protected:
+    JoystickPrivate *getJoystickPrivate(int id);
 
 private:
-    QHash<int, Joystick*> m_joysticks;
+    QHash<int, JoystickPrivate*> m_joysticks;
     QHash<int, QString> m_names;
 
     QMutex m_joy_lock;

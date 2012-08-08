@@ -60,7 +60,10 @@ PythonEngine::~PythonEngine()
 void PythonEngine::setSource(const QString &source)
 {
     if(!m_module.isNull())
+    {
+        PythonQt::self()->disconnectAllSlots(m_name);
         m_module.call("onScriptExit");
+    }
 
     m_evaluating = true;
     m_source = source;
@@ -250,8 +253,11 @@ Joystick *PythonFunctions::getJoystick(int id)
 
 void PythonFunctions::closeJoystick(Joystick *joy)
 {
-    disconnect(m_engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
-    joy->stopUsing(m_engine);
+    if(!joy)
+        return;
+
+    if(!joy->stopUsing(m_engine))
+        delete joy;
 }
 
 QStringList PythonFunctions::getJoystickNames()

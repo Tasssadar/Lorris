@@ -442,6 +442,9 @@ public:
   //! @return new reference
   PythonQtObjectPtr lookupObject(PyObject* module, const QString& name);
 
+  void disconnectAllSlots(const QString& module);
+  void disconnectSlots(const QString& module, QObject *object);
+
   //@}
 
 signals:
@@ -575,6 +578,25 @@ public:
   //! get access to the PythonQt module
   PythonQtObjectPtr pythonQtModule() const { return _pythonQtModule; }
 
+  void addSlot(const QString& module, PyObject *callable)
+  {
+      if(module.isEmpty())
+          return;
+
+      if(!_slots[module].contains(callable))
+        _slots[module].push_back(callable);
+  }
+
+  const QList<PyObject*>& getSlots(const QString& module)
+  {
+      return _slots[module];
+  }
+
+  void clearSlots(const QString& module)
+  {
+      _slots.remove(module);
+  }
+
 private:
   //! Setup the shared library suffixes by getting them from the "imp" module.
   void setupSharedLibrarySuffixes();
@@ -622,6 +644,8 @@ private:
   QList<PythonQtCppWrapperFactory*> _cppWrapperFactories;
 
   QHash<QByteArray, PyObject*> _packages;
+
+  QHash<QString, QList<PyObject*> > _slots;
 
   PythonQtClassInfo* _currentClassInfoForClassWrapperCreation;
 

@@ -65,6 +65,8 @@ public:
     void callEventHandler(const QString& eventId);
     void onSave();
 
+    const QString& getName() const { return m_name; }
+
 public slots:
     void keyPressed(const QString &key);
 

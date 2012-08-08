@@ -41,110 +41,111 @@ void GraphCurveFromScriptValue(const QScriptValue &object, GraphCurve* &out)
 { out = qobject_cast<GraphCurve*>(object.toQObject()); }
 
 QtScriptEngine::QtScriptEngine(WidgetArea* area, quint32 w_id, Terminal *terminal, QObject *parent) :
-    ScriptEngine(area, w_id, terminal, parent), m_engine(this, parent)
+    ScriptEngine(area, w_id, terminal, parent)
 {
-    m_engine.pushContext();
-    m_global = &m_engine.m_global;
-
-    connect(this, SIGNAL(stopUsingJoy(QObject*)), &m_engine,SIGNAL(stopUsingJoy(QObject*)));
+    m_engine = NULL;
+    setSource(QString());
 }
 
 QtScriptEngine::~QtScriptEngine()
 {
-    if(m_on_script_exit.isFunction())
-        m_on_script_exit.call();
+    if(m_engine)
+    {
+        if(m_on_script_exit.isFunction())
+            m_on_script_exit.call();
 
-    while(!m_widgets.empty())
-        m_area->removeWidget((*m_widgets.begin())->getId());
+        while(!m_widgets.empty())
+            m_area->removeWidget((*m_widgets.begin())->getId());
 
-    emit stopUsingJoy(&m_engine);
+        emit stopUsingJoy(m_engine);
+
+        delete m_engine;
+    }
 }
 
 void QtScriptEngine::prepareNewContext()
 {
-    QScriptContext *context = m_engine.pushContext();
-
-    *m_global = context->activationObject();
+    m_global = m_engine->currentContext()->activationObject();
 
     // Functions
-    QScriptValue clearTerm = m_engine.newFunction(&QtScriptEngine_private::__clearTerm);
-    QScriptValue appendTerm = m_engine.newFunction(&QtScriptEngine_private::__appendTerm);
-    QScriptValue sendData = m_engine.newFunction(&QtScriptEngine_private::__sendData);
-    QScriptValue getW = m_engine.newFunction(&QtScriptEngine_private::__getWidth);
-    QScriptValue getH = m_engine.newFunction(&QtScriptEngine_private::__getHeight);
-    QScriptValue throwEx = m_engine.newFunction(&QtScriptEngine_private::__throwException);
-    QScriptValue getJoy = m_engine.newFunction(&QtScriptEngine_private::__getJoystick);
-    QScriptValue closeJoy = m_engine.newFunction(&QtScriptEngine_private::__closeJoystick);
-    QScriptValue getJoyName = m_engine.newFunction(&QtScriptEngine_private::__getJoystickNames);
-    QScriptValue newTimer = m_engine.newFunction(&QtScriptEngine_private::__newTimer);
-    QScriptValue addComboItems = m_engine.newFunction(&QtScriptEngine_private::__addComboBoxItems);
-    QScriptValue moveW = m_engine.newFunction(&QtScriptEngine_private::__moveWidget);
-    QScriptValue resizeW = m_engine.newFunction(&QtScriptEngine_private::__resizeWidget);
+    QScriptValue clearTerm = m_engine->newFunction(&QtScriptEngine_private::__clearTerm);
+    QScriptValue appendTerm = m_engine->newFunction(&QtScriptEngine_private::__appendTerm);
+    QScriptValue sendData = m_engine->newFunction(&QtScriptEngine_private::__sendData);
+    QScriptValue getW = m_engine->newFunction(&QtScriptEngine_private::__getWidth);
+    QScriptValue getH = m_engine->newFunction(&QtScriptEngine_private::__getHeight);
+    QScriptValue throwEx = m_engine->newFunction(&QtScriptEngine_private::__throwException);
+    QScriptValue getJoy = m_engine->newFunction(&QtScriptEngine_private::__getJoystick);
+    QScriptValue closeJoy = m_engine->newFunction(&QtScriptEngine_private::__closeJoystick);
+    QScriptValue getJoyName = m_engine->newFunction(&QtScriptEngine_private::__getJoystickNames);
+    QScriptValue newTimer = m_engine->newFunction(&QtScriptEngine_private::__newTimer);
+    QScriptValue addComboItems = m_engine->newFunction(&QtScriptEngine_private::__addComboBoxItems);
+    QScriptValue moveW = m_engine->newFunction(&QtScriptEngine_private::__moveWidget);
+    QScriptValue resizeW = m_engine->newFunction(&QtScriptEngine_private::__resizeWidget);
 
-    QScriptValue numberW = m_engine.newFunction(&QtScriptEngine_private::__newNumberWidget);
-    QScriptValue barW = m_engine.newFunction(&QtScriptEngine_private::__newBarWidget);
-    QScriptValue colorW = m_engine.newFunction(&QtScriptEngine_private::__newColorWidget);
-    QScriptValue graphW = m_engine.newFunction(&QtScriptEngine_private::__newGraphWidget);
-    QScriptValue inputW = m_engine.newFunction(&QtScriptEngine_private::__newInputWidget);
-    QScriptValue circleW = m_engine.newFunction(&QtScriptEngine_private::__newCircleWidget);
-    QScriptValue sliderW = m_engine.newFunction(&QtScriptEngine_private::__newSliderWidget);
-    QScriptValue canvasW = m_engine.newFunction(&QtScriptEngine_private::__newCanvasWidget);
-    QScriptValue newW = m_engine.newFunction(&QtScriptEngine_private::__newWidget);
+    QScriptValue numberW = m_engine->newFunction(&QtScriptEngine_private::__newNumberWidget);
+    QScriptValue barW = m_engine->newFunction(&QtScriptEngine_private::__newBarWidget);
+    QScriptValue colorW = m_engine->newFunction(&QtScriptEngine_private::__newColorWidget);
+    QScriptValue graphW = m_engine->newFunction(&QtScriptEngine_private::__newGraphWidget);
+    QScriptValue inputW = m_engine->newFunction(&QtScriptEngine_private::__newInputWidget);
+    QScriptValue circleW = m_engine->newFunction(&QtScriptEngine_private::__newCircleWidget);
+    QScriptValue sliderW = m_engine->newFunction(&QtScriptEngine_private::__newSliderWidget);
+    QScriptValue canvasW = m_engine->newFunction(&QtScriptEngine_private::__newCanvasWidget);
+    QScriptValue newW = m_engine->newFunction(&QtScriptEngine_private::__newWidget);
 
-    m_global->setProperty("clearTerm", clearTerm);
-    m_global->setProperty("appendTerm", appendTerm);
-    m_global->setProperty("sendData", sendData);
-    m_global->setProperty("getWidth", getW);
-    m_global->setProperty("getHeight", getH);
-    m_global->setProperty("throwException", throwEx);
-    m_global->setProperty("getJoystick", getJoy);
-    m_global->setProperty("closeJoystick", closeJoy);
-    m_global->setProperty("getJoystickNames", getJoyName);
-    m_global->setProperty("newTimer", newTimer);
-    m_global->setProperty("addComboBoxItems", addComboItems);
-    m_global->setProperty("moveWidget", moveW);
-    m_global->setProperty("resizeWidget", resizeW);
+    m_global.setProperty("clearTerm", clearTerm);
+    m_global.setProperty("appendTerm", appendTerm);
+    m_global.setProperty("sendData", sendData);
+    m_global.setProperty("getWidth", getW);
+    m_global.setProperty("getHeight", getH);
+    m_global.setProperty("throwException", throwEx);
+    m_global.setProperty("getJoystick", getJoy);
+    m_global.setProperty("closeJoystick", closeJoy);
+    m_global.setProperty("getJoystickNames", getJoyName);
+    m_global.setProperty("newTimer", newTimer);
+    m_global.setProperty("addComboBoxItems", addComboItems);
+    m_global.setProperty("moveWidget", moveW);
+    m_global.setProperty("resizeWidget", resizeW);
 
-    m_global->setProperty("newNumberWidget", numberW);
-    m_global->setProperty("newBarWidget", barW);
-    m_global->setProperty("newColorWidget", colorW);
-    m_global->setProperty("newGraphWidget", graphW);
-    m_global->setProperty("newInputWidget", inputW);
-    m_global->setProperty("newCircleWidget", circleW);
-    m_global->setProperty("newSliderWidget", sliderW);
-    m_global->setProperty("newCanvasWidget", canvasW);
-    m_global->setProperty("newWidget", newW);
+    m_global.setProperty("newNumberWidget", numberW);
+    m_global.setProperty("newBarWidget", barW);
+    m_global.setProperty("newColorWidget", colorW);
+    m_global.setProperty("newGraphWidget", graphW);
+    m_global.setProperty("newInputWidget", inputW);
+    m_global.setProperty("newCircleWidget", circleW);
+    m_global.setProperty("newSliderWidget", sliderW);
+    m_global.setProperty("newCanvasWidget", canvasW);
+    m_global.setProperty("newWidget", newW);
 
     // defines
-    m_global->setProperty("WIDGET_NUMBER", QScriptValue(&m_engine, WIDGET_NUMBERS));
-    m_global->setProperty("WIDGET_BAR",    QScriptValue(&m_engine, WIDGET_BAR));
-    m_global->setProperty("WIDGET_COLOR",  QScriptValue(&m_engine, WIDGET_COLOR));
-    m_global->setProperty("WIDGET_GRAPH",  QScriptValue(&m_engine, WIDGET_GRAPH));
-    m_global->setProperty("WIDGET_INPUT",  QScriptValue(&m_engine, WIDGET_INPUT));
-    m_global->setProperty("WIDGET_CIRCLE", QScriptValue(&m_engine, WIDGET_CIRCLE));
+    m_global.setProperty("WIDGET_NUMBER", QScriptValue(m_engine, WIDGET_NUMBERS));
+    m_global.setProperty("WIDGET_BAR",    QScriptValue(m_engine, WIDGET_BAR));
+    m_global.setProperty("WIDGET_COLOR",  QScriptValue(m_engine, WIDGET_COLOR));
+    m_global.setProperty("WIDGET_GRAPH",  QScriptValue(m_engine, WIDGET_GRAPH));
+    m_global.setProperty("WIDGET_INPUT",  QScriptValue(m_engine, WIDGET_INPUT));
+    m_global.setProperty("WIDGET_CIRCLE", QScriptValue(m_engine, WIDGET_CIRCLE));
 
-    m_global->setProperty("NUM_UINT8",  QScriptValue(&m_engine, NUM_UINT8));
-    m_global->setProperty("NUM_UINT16", QScriptValue(&m_engine, NUM_UINT16));
-    m_global->setProperty("NUM_UINT32", QScriptValue(&m_engine, NUM_UINT32));
-    m_global->setProperty("NUM_UINT64", QScriptValue(&m_engine, NUM_UINT64));
-    m_global->setProperty("NUM_INT8",   QScriptValue(&m_engine, NUM_INT8));
-    m_global->setProperty("NUM_INT16",  QScriptValue(&m_engine, NUM_INT16));
-    m_global->setProperty("NUM_INT32",  QScriptValue(&m_engine, NUM_INT32));
-    m_global->setProperty("NUM_INT64",  QScriptValue(&m_engine, NUM_INT64));
-    m_global->setProperty("NUM_FLOAT",  QScriptValue(&m_engine, NUM_FLOAT));
-    m_global->setProperty("NUM_DOUBLE", QScriptValue(&m_engine, NUM_DOUBLE));
+    m_global.setProperty("NUM_UINT8",  QScriptValue(m_engine, NUM_UINT8));
+    m_global.setProperty("NUM_UINT16", QScriptValue(m_engine, NUM_UINT16));
+    m_global.setProperty("NUM_UINT32", QScriptValue(m_engine, NUM_UINT32));
+    m_global.setProperty("NUM_UINT64", QScriptValue(m_engine, NUM_UINT64));
+    m_global.setProperty("NUM_INT8",   QScriptValue(m_engine, NUM_INT8));
+    m_global.setProperty("NUM_INT16",  QScriptValue(m_engine, NUM_INT16));
+    m_global.setProperty("NUM_INT32",  QScriptValue(m_engine, NUM_INT32));
+    m_global.setProperty("NUM_INT64",  QScriptValue(m_engine, NUM_INT64));
+    m_global.setProperty("NUM_FLOAT",  QScriptValue(m_engine, NUM_FLOAT));
+    m_global.setProperty("NUM_DOUBLE", QScriptValue(m_engine, NUM_DOUBLE));
 
     // objects
-    m_global->setProperty("script", m_engine.newQObject(parent()));
-    m_global->setProperty("area", m_engine.newQObject(m_area));
-    m_global->setProperty("storage", m_engine.newQObject(m_storage));
+    m_global.setProperty("script", m_engine->newQObject(parent()));
+    m_global.setProperty("area", m_engine->newQObject(m_area));
+    m_global.setProperty("storage", m_engine->newQObject(m_storage));
 
     const WidgetArea::w_map& widgets = m_area->getWidgets();
     for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
     {
         QString name = sanitizeWidgetName((*itr)->getTitle());
         if(!name.isEmpty())
-            m_global->setProperty(name, m_engine.newQObject(*itr));
+            m_global.setProperty(name, m_engine->newQObject(*itr));
     }
 
     // remove script created widgets and timer from previous script
@@ -155,9 +156,9 @@ void QtScriptEngine::prepareNewContext()
         delete *itr;
     m_timers.clear();
 
-    emit stopUsingJoy(&m_engine);
+    emit stopUsingJoy(m_engine);
 
-    qScriptRegisterMetaType(&m_engine, GraphCurveToScriptValue, GraphCurveFromScriptValue);
+    qScriptRegisterMetaType(m_engine, GraphCurveToScriptValue, GraphCurveFromScriptValue);
 }
 
 void QtScriptEngine::widgetDestroyed(QObject *widget)
@@ -173,35 +174,36 @@ void QtScriptEngine::setSource(const QString &source)
     if(m_on_script_exit.isFunction())
         m_on_script_exit.call();
 
-    m_engine.popContext();
+    delete m_engine;
+    m_engine = new QtScriptEngine_private(this, parent());
+
     prepareNewContext();
-    m_engine.setAgent(NULL);
-    m_engine.evaluate(classImplement + source);
+    m_engine->evaluate(classImplement + source);
 
-    if(m_engine.hasUncaughtException())
-        emit error(tr("%1 on line %2").arg(m_engine.uncaughtException().toString()).arg(m_engine.uncaughtExceptionLineNumber()));
+    if(m_engine->hasUncaughtException())
+        emit error(tr("%1 on line %2").arg(m_engine->uncaughtException().toString()).arg(m_engine->uncaughtExceptionLineNumber()));
 
-    m_on_data = m_global->property("onDataChanged");
-    m_on_key = m_global->property("onKeyPress");
-    m_on_widget_add = m_global->property("onWidgetAdd");
-    m_on_widget_remove = m_global->property("onWidgetRemove");
-    m_on_script_exit = m_global->property("onScriptExit");
-    m_on_save = m_global->property("onSave");
+    m_on_data = m_global.property("onDataChanged");
+    m_on_key = m_global.property("onKeyPress");
+    m_on_widget_add = m_global.property("onWidgetAdd");
+    m_on_widget_remove = m_global.property("onWidgetRemove");
+    m_on_script_exit = m_global.property("onScriptExit");
+    m_on_save = m_global.property("onSave");
 
-    m_engine.setAgent(new ScriptAgent(this, &m_engine));
+    m_engine->setAgent(new ScriptAgent(this, m_engine));
 }
 
 QString QtScriptEngine::dataChanged(analyzer_data *data, quint32 index)
 {
     // do not execute when setting source - agent() == NULL
-    if(!m_on_data.isFunction() || !m_engine.agent())
+    if(!m_on_data.isFunction() || !m_engine->agent())
         return "";
 
     const QByteArray& pkt_data = data->getData();
 
-    QScriptValue jsData = m_engine.newArray(pkt_data.size());
+    QScriptValue jsData = m_engine->newArray(pkt_data.size());
     for(qint32 i = 0; i < pkt_data.size(); ++i)
-        jsData.setProperty(i, QScriptValue(&m_engine, (quint8)pkt_data[i]));
+        jsData.setProperty(i, QScriptValue(m_engine, (quint8)pkt_data[i]));
 
     QScriptValueList args;
     args.push_back(jsData);
@@ -274,21 +276,21 @@ QScriptValue QtScriptEngine::newTimer()
 {
     QTimer *t = new QTimer(this);
     m_timers.push_back(t);
-    return m_engine.newQObject(t);
+    return m_engine->newQObject(t);
 }
 
 void QtScriptEngine::onWidgetAdd(DataWidget *w)
 {
     QString name = sanitizeWidgetName(w->getTitle());
     if(!name.isEmpty())
-        m_global->setProperty(name, m_engine.newQObject(w));
+        m_global.setProperty(name, m_engine->newQObject(w));
 
     connect(w, SIGNAL(titleChanged(QString)), SLOT(onTitleChange(QString)));
 
     if(!m_on_widget_add.isFunction())
         return;
     QScriptValueList args;
-    args << m_engine.newQObject(w) << name;
+    args << m_engine->newQObject(w) << name;
     m_on_widget_add.call(QScriptValue(), args);
 }
 
@@ -296,14 +298,14 @@ void QtScriptEngine::onWidgetRemove(DataWidget *w)
 {
     QString name = sanitizeWidgetName(w->getTitle());
     if(!name.isEmpty())
-        m_global->setProperty(name, m_engine.undefinedValue());
+        m_global.setProperty(name, m_engine->undefinedValue());
     disconnect(w, SIGNAL(titleChanged(QString)), this, SLOT(onTitleChange(QString)));
 
     if(!m_on_widget_remove.isFunction())
         return;
 
     QScriptValueList args;
-    args << m_engine.newQObject(w) << name;
+    args << m_engine->newQObject(w) << name;
     m_on_widget_remove.call(QScriptValue(), args);
 }
 
@@ -313,16 +315,16 @@ void QtScriptEngine::onTitleChange(const QString& newTitle)
     QString name = sanitizeWidgetName(w->getTitle());
 
     if(!name.isEmpty())
-        m_global->setProperty(name, m_engine.undefinedValue());
+        m_global.setProperty(name, m_engine->undefinedValue());
 
     name = sanitizeWidgetName(newTitle);
     if(!name.isEmpty())
-        m_global->setProperty(name, m_engine.newQObject(w));
+        m_global.setProperty(name, m_engine->newQObject(w));
 }
 
 void QtScriptEngine::callEventHandler(const QString& eventId)
 {
-    QScriptValue handler = m_global->property(eventId);
+    QScriptValue handler = m_global.property(eventId);
 
     if(!handler.isFunction())
         return;
@@ -529,7 +531,6 @@ QScriptValue QtScriptEngine_private::__getJoystick(QScriptContext *context, QScr
         return QScriptValue();
 
     joy->startUsing(engine);
-
     connect((QtScriptEngine_private*)engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
     return engine->newQObject(joy);
 }
@@ -539,9 +540,10 @@ QScriptValue QtScriptEngine_private::__closeJoystick(QScriptContext *context, QS
     if(context->argumentCount() != 1 || context->argument(0).isNull())
         return QScriptValue();
 
-    Joystick *joy = (Joystick*)context->argument(0).toQObject();
-    disconnect((QtScriptEngine_private*)engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
-    joy->stopUsing(engine);
+    Joystick* joy = (Joystick*)context->argument(0).toQObject();
+    if(!joy->stopUsing(engine))
+        delete joy;
+
     return QScriptValue();
 }
 

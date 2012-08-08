@@ -24,7 +24,7 @@ JoyMgr::~JoyMgr()
     m_thread->stop();
     delete m_thread;
 
-    for(QHash<int, Joystick*>::iterator itr = m_joysticks.begin(); itr != m_joysticks.end(); ++itr)
+    for(QHash<int, JoystickPrivate*>::iterator itr = m_joysticks.begin(); itr != m_joysticks.end(); ++itr)
         delete *itr;
 
     SDL_Quit();
@@ -59,7 +59,8 @@ Joystick *JoyMgr::getJoystick(int id, bool create)
         return NULL;
 
     if(m_joysticks.contains(id))
-        return m_joysticks[id];
+        return new Joystick(m_joysticks[id]);
+
     else if(!create)
         return NULL;
 
@@ -67,11 +68,11 @@ Joystick *JoyMgr::getJoystick(int id, bool create)
     if(!sdl_joy)
         return NULL;
 
-    Joystick *joy = new Joystick(id, sdl_joy);
-    connect(joy, SIGNAL(removeJoystick(Joystick*)), SLOT(removeJoystick(Joystick*)));
+    JoystickPrivate *joy = new JoystickPrivate(id, sdl_joy);
+    connect(joy, SIGNAL(removeJoystick(JoystickPrivate*)), SLOT(removeJoystick(JoystickPrivate*)));
 
     m_joysticks[id] = joy;
-    return joy;
+    return new Joystick(joy);
 }
 
 QStringList JoyMgr::getNamesList()
@@ -82,11 +83,22 @@ QStringList JoyMgr::getNamesList()
     return list;
 }
 
-void JoyMgr::removeJoystick(Joystick *joy)
+void JoyMgr::removeJoystick(JoystickPrivate *joy)
 {
     if(joy->isUsed())
         return;
 
     m_joysticks.remove(joy->getId());
     delete joy;
+}
+
+JoystickPrivate *JoyMgr::getJoystickPrivate(int id)
+{
+    QMutexLocker locker(&m_joy_lock);
+
+    QHash<int, JoystickPrivate*>::iterator itr = m_joysticks.find(id);
+    if(itr != m_joysticks.end())
+        return *itr;
+
+    return NULL;
 }

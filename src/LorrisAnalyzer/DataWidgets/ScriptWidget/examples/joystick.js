@@ -20,17 +20,6 @@ var joystick = null;
     addComboBoxItems(joySelect, getJoystickNames());
 })();
 
-// This function is called when script is destroyed. You should unhook any signals from joystick in it!
-function onScriptExit()
-{
-    if(joystick == null)
-        return;
-
-    joystick.axesChanged.disconnect(axesChanged);
-    joystick.buttonChanged.disconnect(buttonChanged);
-    closeJoystick(joystick);
-}
-
 function joystick_selected(idx)
 {
     if(idx == -1)
@@ -39,11 +28,7 @@ function joystick_selected(idx)
     appendTerm("Joystick \"" + joySelect.currentText + "\" selected\n");
 
     if(joystick != null)
-    {
-        joystick["axesChanged(QList<int>)"].disconnect(axesChanged);
-        joystick["buttonChanged(int, quint8)"].dicconnect(buttonChanged);
         closeJoystick(joystick);
-    }
 
     joystick = getJoystick(idx);
     if(joystick)

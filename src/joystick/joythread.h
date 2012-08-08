@@ -19,6 +19,7 @@
 class JoyThread : public QThread
 {
     Q_OBJECT
+
 public:
     explicit JoyThread(QObject *parent = 0);
     

@@ -9,7 +9,7 @@
 
 #define DEFAULT_SIGNAL_TIME 50
 
-Joystick::Joystick(int id, SDL_Joystick *joy, QObject *parent) :
+JoystickPrivate::JoystickPrivate(int id, SDL_Joystick *joy, QObject *parent) :
     QObject(parent)
 {
     m_id = id;
@@ -20,13 +20,13 @@ Joystick::Joystick(int id, SDL_Joystick *joy, QObject *parent) :
     connect(&m_timer, SIGNAL(timeout()), SLOT(timeout()));
 }
 
-Joystick::~Joystick()
+JoystickPrivate::~JoystickPrivate()
 {
     if(m_joy)
         SDL_JoystickClose(m_joy);
 }
 
-void Joystick::init()
+void JoystickPrivate::init()
 {
     m_num_axes = SDL_JoystickNumAxes(m_joy);
     m_num_hats = SDL_JoystickNumHats(m_joy);
@@ -37,7 +37,7 @@ void Joystick::init()
     m_buttons.resize(m_num_buttons, 0);
 }
 
-void Joystick::timeout()
+void JoystickPrivate::timeout()
 {
     QList<int> axes;
     std::list<btn_event> btns;
@@ -59,19 +59,19 @@ void Joystick::timeout()
         emit buttonChanged((*itr).id, (*itr).status);
 }
 
-void Joystick::setSignalTimer(int periodMS)
+void JoystickPrivate::setSignalTimer(int periodMS)
 {
     m_timer.start(periodMS);
 }
 
-void Joystick::axisEvent(int id, qint16 val)
+void JoystickPrivate::axisEvent(int id, qint16 val)
 {
     QMutexLocker l(&m_lock);
     m_axes[id] = val;
     m_changed_axes.insert(id);
 }
 
-void Joystick::buttonEvent(int id, quint8 state)
+void JoystickPrivate::buttonEvent(int id, quint8 state)
 {
     QMutexLocker l(&m_lock);
     m_buttons[id] = state;
@@ -80,12 +80,12 @@ void Joystick::buttonEvent(int id, quint8 state)
     m_changed_btns.push_back(ev);
 }
 
-void Joystick::ballEvent(int /*id*/, qint16 /*x*/, qint16 /*y*/)
+void JoystickPrivate::ballEvent(int /*id*/, qint16 /*x*/, qint16 /*y*/)
 {
     // NYI
 }
 
-void Joystick::hatEvent(int /*id*/, quint8 /*val*/)
+void JoystickPrivate::hatEvent(int /*id*/, quint8 /*val*/)
 {
     // NYI
 }

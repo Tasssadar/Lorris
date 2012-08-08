@@ -107,7 +107,7 @@ private slots:
 private:
     void prepareNewContext();
 
-    QScriptValue *m_global;
+    QScriptValue  m_global;
     QScriptValue  m_on_data;
     QScriptValue  m_on_key;
     QScriptValue  m_on_widget_add;
@@ -115,7 +115,7 @@ private:
     QScriptValue  m_on_script_exit;
     QScriptValue  m_on_save;
 
-    QtScriptEngine_private m_engine;
+    QtScriptEngine_private *m_engine;
 };
 
 #endif // QTSCRIPTENGINE_H

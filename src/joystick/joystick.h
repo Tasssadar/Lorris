@@ -26,18 +26,22 @@ struct btn_event
     quint8 status;
 };
 
-class Joystick : public QObject
+class JoystickPrivate : public QObject
 {
     Q_OBJECT
 
+    friend class Joystick;
+    friend class JoyMgr;
+    friend class JoyThread;
+
 Q_SIGNALS:
-    void removeJoystick(Joystick *joy);
+    void removeJoystick(JoystickPrivate *joy);
     void buttonChanged(int id, quint8 status);
     void axesChanged(const QList<int>& axes);
 
-public:
-    Joystick(int id, SDL_Joystick *joy, QObject *parent = 0);
-    ~Joystick();
+protected:
+    JoystickPrivate(int id, SDL_Joystick *joy, QObject *parent = 0);
+    ~JoystickPrivate();
 
     void axisEvent(int id, qint16 val);
     void ballEvent(int id, qint16 x, qint16 y);
@@ -46,7 +50,7 @@ public:
 
     bool isUsed() const { return !m_used.empty(); }
 
-public slots:
+protected slots:
     int getId() const { return m_id; }
     int getNumAxes() const { return m_num_axes; }
     int getNumBalls() const { return m_num_balls; }
@@ -70,12 +74,16 @@ public slots:
         m_used.insert(object);
     }
 
-    void stopUsing(QObject *object)
+    bool stopUsing(QObject *object)
     {
         m_used.erase(object);
 
         if(m_used.empty())
+        {
             emit removeJoystick(this);
+            return true;
+        }
+        return false;
     }
 
     void setSignalTimer(int periodMS);
@@ -103,6 +111,40 @@ private:
     std::set<QObject*> m_used;
 
     QMutex m_lock;
+};
+
+class Joystick : public QObject
+{
+    Q_OBJECT
+
+public:
+    Joystick(JoystickPrivate *joy) : QObject(joy)
+    {
+        this->joy = joy;
+        connect(joy, SIGNAL(buttonChanged(int,quint8)), SIGNAL(buttonChanged(int,quint8)));
+        connect(joy, SIGNAL(axesChanged(QList<int>)), SIGNAL(axesChanged(QList<int>)));
+    }
+
+Q_SIGNALS:
+    void buttonChanged(int id, quint8 status);
+    void axesChanged(const QList<int>& axes);
+
+public slots:
+    int getId() const { return joy->getId(); }
+    int getNumAxes() const { return joy->getNumAxes(); }
+    int getNumBalls() const { return joy->getNumBalls(); }
+    int getNumHats() const { return joy->getNumHats(); }
+    int getNumButtons() const { return joy->getNumButtons(); }
+
+    int getAxisVal(int id) { return joy->getAxisVal(id); }
+    quint8 getButtonVal(int id) { return joy->getButtonVal(id); }
+
+    void startUsing(QObject *object) { joy->startUsing(object); }
+    bool stopUsing(QObject *object) { return joy->stopUsing(object); }
+    void setSignalTimer(int periodMS) { joy->setSignalTimer(periodMS); }
+
+private:
+    JoystickPrivate *joy;
 };
 
 #endif // JOYSTICK_H

@@ -33,8 +33,6 @@ def joystick_selected(idx):
     terminal.appendText("Joystick \"" + joySelect.currentText + "\" selected\n");
 
     if joystick != None:
-        joystick.disconnect("axesChanged(QList<int>)", axesChanged);
-        joystick.disconnect("buttonChanged(int, quint8)", buttonChanged);
         lorris.closeJoystick(joystick);
 
     joystick = lorris.getJoystick(idx);
@@ -64,14 +62,3 @@ def init():
     # Add joystick names
     lorris.AddComboBoxItems(joySelect, lorris.getJoystickNames());
 init()
-
-# This function is called when script is destroyed. You should unhook any signals from joystick in it!
-def onScriptExit():
-    global joystick
-
-    if(joystick == None):
-        return;
-
-    joystick.disconnect("axesChanged(QList<int>)", axesChanged);
-    joystick.disconnect("buttonChanged(int, quint8)", buttonChanged);
-    lorris.closeJoystick(joystick);
