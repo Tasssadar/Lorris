@@ -17,6 +17,15 @@ function CHECK_EXECUTABLE {
     fi
 }
 
+function REPORT_GIT_FAIL {
+    echo ""
+    echo "git submodule resulted in following output:"
+    echo $1
+    echo ""
+    echo "That may not be actually an error, try to run this script once again"
+    exit 1
+}
+
 function CHECK_SUBMODULE {
     IFS=$' '
     parts=($1)
@@ -25,15 +34,13 @@ function CHECK_SUBMODULE {
     if [ ${#parts[@]} -eq 2 ] ; then
         res=$(git submodule --quiet init "${parts[1]}" 2>&1)
         if [ -n "$res" ] ; then
-            echo $res
-            exit 1
+            REPORT_GIT_FAIL "$res"
         fi
     fi
     #res=$(git submodule update "${parts[1]}")
     res=$(git submodule --quiet update "${parts[1]}" 2>&1)
     if [ -n "$res" ] ; then
-        echo $res
-        exit 1
+        REPORT_GIT_FAIL "$res"
     fi
     unset $IFS
 }
