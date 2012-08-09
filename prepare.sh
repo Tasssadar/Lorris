@@ -176,7 +176,7 @@ if [ -z $use_kate_user ] || [ $use_kate_user == "y" ] || [ $use_kate_user == "Y"
 #include <kconfig.h>
 int main() { KTextEditor::Editor *editor = KTextEditor::EditorChooser::editor(); return 0; }
 EOF
-    c++ /tmp/test.cpp -o /tmp/test -I"$(qmake -query QT_INSTALL_HEADERS)" -lktexteditor -lkdecore &> /dev/null
+    c++ /tmp/test.cpp -o /tmp/test -I"$(qmake -query QT_INSTALL_HEADERS)" -I"$(qmake -query QT_INSTALL_HEADERS)/QtCore" -I"$(qmake -query QT_INSTALL_HEADERS)/QtGui" -lktexteditor -lkdecore -lQtCore -lQtGui &> /dev/null
     if [ $? -eq 0 ] ; then
         echo "ok"
         rm /tmp/test.cpp
@@ -203,7 +203,7 @@ if [ "$use_qsci_user" == "y" ] || [ "$use_qsci_user" == "Y" ]; then
 #include <Qsci/qscilexerpython.h>
 int main() { QsciScintilla *s = new QsciScintilla; delete s; return 0; }
 EOF
-    c++ /tmp/test.cpp -o /tmp/test -I"$(qmake -query QT_INSTALL_HEADERS)" -I"$(qmake -query QT_INSTALL_HEADERS)/QtCore" -I"$(qmake -query QT_INSTALL_HEADERS)/QtGui" -lqscintilla2
+    c++ /tmp/test.cpp -o /tmp/test -I"$(qmake -query QT_INSTALL_HEADERS)" -I"$(qmake -query QT_INSTALL_HEADERS)/QtCore" -I"$(qmake -query QT_INSTALL_HEADERS)/QtGui" -lqscintilla2 -lQtGui -lQtCore &> /dev/null
     if [ $? -eq 0 ] ; then
         echo "ok"
         rm /tmp/test.cpp
