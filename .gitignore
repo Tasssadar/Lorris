@@ -28,6 +28,7 @@ INSTALL
 !.gitignore
 Makefile
 Makefile.*
+config.pri
 
 # Git stuff
 #

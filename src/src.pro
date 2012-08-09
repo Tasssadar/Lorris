@@ -335,7 +335,7 @@ win32 {
 }
 unix:!macx:!symbian {
     CONFIG += libusby
-    LIBS += -ludev -lSDL -lqextserialport_lorris
+    LIBS += -lSDL -lqextserialport_lorris
 
     system_qwt {
         LIBS += -lqwt
