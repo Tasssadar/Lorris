@@ -17,6 +17,7 @@
 #include <QStyleOption>
 #include <QStylePainter>
 #include <algorithm>
+#include <QShortcut>
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
@@ -29,17 +30,20 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     QTabWidget(parent)
 {
     m_id = id;
-    m_menu = new QMenu(this);
+    m_menu = new AltClosableMenu(this);
     m_switchWidget = NULL;
+    m_altEventValid = false;
 
     m_tab_bar = new TabBar(m_id, this);
     setTabBar(m_tab_bar);
     m_menuBtn = new QPushButton(tr("&Menu"), this);
     m_menuBtn->setMenu(m_menu);
     m_menuBtn->setFlat(true);
+    m_menuBtn->installEventFilter(this);
 
-    m_menuBtn->setShortcut(QKeySequence("Alt"));
     setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
+
+    new QShortcut(QKeySequence("Ctrl+T"), this, SLOT(newTabBtn()), NULL, Qt::WidgetWithChildrenShortcut);
 
     connect(this,      SIGNAL(tabCloseRequested(int)), SLOT(closeTab(int)));
     connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
@@ -468,6 +472,9 @@ bool TabWidget::eventFilter(QObject *obj, QEvent *ev)
         case QEvent::KeyPress:
         {
             QKeyEvent *keyEv = (QKeyEvent*)ev;
+
+            m_altEventValid = (keyEv->key() == Qt::Key_Alt && keyEv->modifiers() == Qt::AltModifier);
+
             if(!(keyEv->modifiers() & Qt::ControlModifier) || keyEv->key() != Qt::Key_Tab)
                 return false;
 
@@ -477,6 +484,14 @@ bool TabWidget::eventFilter(QObject *obj, QEvent *ev)
         case QEvent::KeyRelease:
         {
             QKeyEvent *keyEv = (QKeyEvent*)ev;
+
+            if(m_altEventValid && keyEv->key() == Qt::Key_Alt && keyEv->modifiers() == Qt::NoModifier)
+            {
+                m_menuBtn->animateClick();
+                m_altEventValid = false;
+                return false;
+            }
+
             if(keyEv->key() == Qt::Key_Control)
                 keyReleaseEvent(keyEv);
             return false;
@@ -824,4 +839,20 @@ void TabSwitchWidget::generatePreview(int idx)
     pixmap = pixmap.scaled(ui->prevLabel->size(), Qt::KeepAspectRatio,
                            sConfig.get(CFG_BOOL_SMOOTH_SCALING) ? Qt::SmoothTransformation : Qt::FastTransformation);
     ui->prevLabel->setPixmap(pixmap);
+}
+
+AltClosableMenu::AltClosableMenu(QWidget *parent) : QMenu(parent)
+{
+
+}
+
+void AltClosableMenu::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Alt)
+    {
+        close();
+        event->accept();
+        return;
+    }
+    QMenu::keyPressEvent(event);
 }

@@ -12,12 +12,12 @@
 #include <QTabBar>
 #include <QHash>
 #include <QFrame>
+#include <QMenu>
 
 #include "plustabbar.h"
 
 class QPushButton;
 class QHBoxLayout;
-class QMenu;
 class TabBar;
 class WorkTab;
 class DataFileParser;
@@ -121,6 +121,8 @@ private:
     QPushButton *m_menuBtn;
     QMenu *m_menu;
 
+    bool m_altEventValid;
+
     TabSwitchWidget *m_switchWidget;
 };
 
@@ -193,6 +195,16 @@ private:
     QHash<quint32, int> m_id_pair;
     std::vector<QPushButton*> m_buttons;
     int m_active;
+};
+
+class AltClosableMenu : public QMenu
+{
+    Q_OBJECT
+public:
+    AltClosableMenu(QWidget *parent);
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // MAINTABWIDGET_H
