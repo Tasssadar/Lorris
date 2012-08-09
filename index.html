@@ -245,14 +245,11 @@ Supported programming interfaces
     Lorris also needs libqwt >= 6.0.0, but it will build it by itself since
     <a href="https://github.com/Tasssadar/Lorris/commit/664209866876d439e4e9b02bf156e42c62b04c76">664209866876d439e4e9b02bf156e42c62b04c76</a>.
     </p>
-    <p style="margin-left: 30px">
-    <b>See config.pri for available build options.</b>
-    </p>
 <p style="margin-left: 30px">
     Now you can build Lorris with QtCreator or go to Lorris folder and execute these commands:
 </p>
 <pre style="margin-left: 30px">
-    qmake Lorris.pro CONFIG+=release
+    ./prepare.sh
     make
     sudo make install
 </pre>
