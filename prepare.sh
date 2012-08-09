@@ -23,13 +23,16 @@ function CHECK_SUBMODULE {
     echo "  Synchronizing ${parts[1]}..."
 
     if [ ${#parts[@]} -eq 2 ] ; then
-        if [ -n "$(git submodule init -q "${parts[1]}" 2>&1)" ] ; then
+        res=$(git submodule --quiet init "${parts[1]}" 2>&1)
+        if [ -n "$res" ] ; then
+            echo $res
             exit 1
         fi
     fi
     #res=$(git submodule update "${parts[1]}")
-    
-    if [ -n "$(git submodule update -q "${parts[1]}" 2>&1)" ] ; then
+    res=$(git submodule --quiet update "${parts[1]}" 2>&1)
+    if [ -n "$res" ] ; then
+        echo $res
         exit 1
     fi
     unset $IFS
