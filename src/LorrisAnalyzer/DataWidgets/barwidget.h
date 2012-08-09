@@ -28,7 +28,7 @@ public:
 public slots:
     void setValue(const QVariant &var)
     {
-        setValue(var.toDouble());
+        setValuePrivate(var.toDouble());
     }
 
     void setRange(double min, double max);
