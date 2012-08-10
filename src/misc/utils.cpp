@@ -189,9 +189,11 @@ void Utils::deleteLayoutMembers(QLayout *layout)
             continue;
         }
         else if(item->widget())
+        {
             delete item->widget();
+            delete item;
+        }
         else if(item->spacerItem())
             delete item->spacerItem();
-        delete item;
     }
 }
