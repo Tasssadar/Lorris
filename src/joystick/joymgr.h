@@ -9,7 +9,7 @@
 #define JOYMGR_H
 
 #include <QHash>
-#include <QMutex>
+#include <QReadWriteLock>
 #include <QStringList>
 
 #if defined Q_OS_WIN || defined Q_OS_MAC 
@@ -33,16 +33,16 @@ public:
 
     void updateJoystickNames();
 
-    bool isEmpty() { return m_names.isEmpty(); }
-    const QHash<int, QString>& getNames() { return m_names; }
+    bool isEmpty() const { return m_names.empty(); }
+    const std::vector<QString>& getNames() const { return m_names; }
     QStringList getNamesList();
 
-    Joystick *getJoystick(int id, bool create = true);
+    Joystick *getJoystick(int id);
 
     bool hasJoystick(int id)
     {
-        m_joy_lock.lock();
-        bool res = m_joysticks.contains(id);
+        m_joy_lock.lockForRead();
+        bool res = (m_joysticks[id] != NULL);
         m_joy_lock.unlock();
         return res;
     }
@@ -54,12 +54,12 @@ protected:
     JoystickPrivate *getJoystickPrivate(int id);
 
 private:
-    QHash<int, JoystickPrivate*> m_joysticks;
-    QHash<int, QString> m_names;
+    std::vector<JoystickPrivate*> m_joysticks;
+    std::vector<QString> m_names;
 
-    QMutex m_joy_lock;
+    QReadWriteLock m_joy_lock;
 
-    JoyThread *m_thread;
+    JoyThread m_thread;
 };
 
 #define sJoyMgr JoyMgr::GetSingleton()

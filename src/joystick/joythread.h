@@ -23,7 +23,7 @@ class JoyThread : public QThread
 public:
     explicit JoyThread(QObject *parent = 0);
     
-    void stop();
+    void setStopped(bool stop, bool waitForIt = false);
 
 protected:
     void run();

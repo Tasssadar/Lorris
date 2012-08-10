@@ -14,24 +14,22 @@ JoyMgr::JoyMgr() : QObject()
     SDL_Init(SDL_INIT_VIDEO);
 
     updateJoystickNames();
-
-    m_thread = new JoyThread();
-    m_thread->start();
 }
 
 JoyMgr::~JoyMgr()
 {
-    m_thread->stop();
-    delete m_thread;
+    m_thread.setStopped(true, true);
 
-    for(QHash<int, JoystickPrivate*>::iterator itr = m_joysticks.begin(); itr != m_joysticks.end(); ++itr)
-        delete *itr;
+    for(size_t i = 0; i < m_joysticks.size(); ++i)
+        delete m_joysticks[i];
 
     SDL_Quit();
 }
 
 void JoyMgr::updateJoystickNames()
 {
+    QWriteLocker locker(&m_joy_lock);
+
     // Reinit joystick system to load newly connected joysticks
     if(m_joysticks.empty())
     {
@@ -41,45 +39,54 @@ void JoyMgr::updateJoystickNames()
     }
 
     int cnt = SDL_NumJoysticks();
-    qDebug() << "Joystick count: " << cnt;
 
-    m_names.clear();
+    // Maybe if(m_joystick.size() > cnt) then delete the joysticks above cnt?
+    // I think SDL keeps joystick id alive no mater what, as long as it is open.
+    // I only have one joystick, so can't test it. Assert it is.
+    for(size_t i = cnt; i < m_joysticks.size(); ++i)
+        Q_ASSERT(!m_joysticks[i]);
+
+    m_joysticks.resize(cnt, NULL);
+
+    m_names.resize(cnt);
     for(int i = 0; i < cnt; ++i)
-    {
-        m_names.insert(i, SDL_JoystickName(i));
-        qDebug() << i << ": " << m_names[i];
-    }
+        m_names[i] = SDL_JoystickName(i);
+
+    m_thread.setStopped(cnt == 0);
 }
 
-Joystick *JoyMgr::getJoystick(int id, bool create)
+Joystick *JoyMgr::getJoystick(int id)
 {
-    QMutexLocker locker(&m_joy_lock);
+    {
+        QReadLocker locker(&m_joy_lock);
 
-    if(!m_names.contains(id))
-        return NULL;
+        if(m_names.size() <= (size_t)id)
+            return NULL;
 
-    if(m_joysticks.contains(id))
-        return new Joystick(m_joysticks[id]);
+        if(m_joysticks[id])
+            return new Joystick(m_joysticks[id]);
+    }
 
-    else if(!create)
-        return NULL;
+    {
+        QWriteLocker locker(&m_joy_lock);
 
-    SDL_Joystick *sdl_joy = SDL_JoystickOpen(id);
-    if(!sdl_joy)
-        return NULL;
+        SDL_Joystick *sdl_joy = SDL_JoystickOpen(id);
+        if(!sdl_joy)
+            return NULL;
 
-    JoystickPrivate *joy = new JoystickPrivate(id, sdl_joy);
-    connect(joy, SIGNAL(removeJoystick(JoystickPrivate*)), SLOT(removeJoystick(JoystickPrivate*)));
+        JoystickPrivate *joy = new JoystickPrivate(id, sdl_joy);
+        connect(joy, SIGNAL(removeJoystick(JoystickPrivate*)), SLOT(removeJoystick(JoystickPrivate*)));
 
-    m_joysticks[id] = joy;
-    return new Joystick(joy);
+        m_joysticks[id] = joy;
+        return new Joystick(joy);
+    }
 }
 
 QStringList JoyMgr::getNamesList()
 {
     QStringList list;
-    for(QHash<int, QString>::iterator itr = m_names.begin(); itr != m_names.end(); ++itr)
-        list << *itr;
+    for(size_t i = 0; i < m_names.size(); ++i)
+        list << m_names[i];
     return list;
 }
 
@@ -88,17 +95,14 @@ void JoyMgr::removeJoystick(JoystickPrivate *joy)
     if(joy->isUsed())
         return;
 
-    m_joysticks.remove(joy->getId());
+    QWriteLocker locker(&m_joy_lock);
+
+    m_joysticks[joy->getId()] = NULL;
     delete joy;
 }
 
 JoystickPrivate *JoyMgr::getJoystickPrivate(int id)
 {
-    QMutexLocker locker(&m_joy_lock);
-
-    QHash<int, JoystickPrivate*>::iterator itr = m_joysticks.find(id);
-    if(itr != m_joysticks.end())
-        return *itr;
-
-    return NULL;
+    QReadLocker locker(&m_joy_lock);
+    return m_joysticks[id];
 }

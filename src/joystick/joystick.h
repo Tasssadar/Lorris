@@ -9,7 +9,7 @@
 #define JOYSTICK_H
 
 #include <QObject>
-#include <QMutex>
+#include <QReadWriteLock>
 #include <set>
 #include <vector>
 #include <QTimer>
@@ -59,13 +59,13 @@ protected slots:
 
     int getAxisVal(int id)
     {
-        QMutexLocker locker(&m_lock);
+        QReadLocker locker(&m_lock);
         return m_axes[id];
     }
 
     quint8 getButtonVal(int id)
     {
-        QMutexLocker locker(&m_lock);
+        QReadLocker locker(&m_lock);
         return m_buttons[id];
     }
 
@@ -105,12 +105,12 @@ private:
 
     std::vector<int> m_axes;
     std::vector<quint8> m_buttons;
-    std::set<int> m_changed_axes;
-    std::list<btn_event> m_changed_btns;
+    std::vector<bool> m_changed_axes;
+    std::vector<btn_event> m_changed_btns;
 
     std::set<QObject*> m_used;
 
-    QMutex m_lock;
+    QReadWriteLock m_lock;
 };
 
 class Joystick : public QObject

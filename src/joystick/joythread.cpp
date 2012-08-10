@@ -12,7 +12,7 @@
 JoyThread::JoyThread(QObject *parent) :
     QThread(parent)
 {
-    m_run = true;
+    m_run = false;
 }
 
 void JoyThread::run()
@@ -60,12 +60,16 @@ void JoyThread::run()
                 default: continue;
             }
         }
-        msleep(50);
+        msleep(1);
     }
 }
 
-void JoyThread::stop()
+void JoyThread::setStopped(bool stop, bool waitForIt)
 {
-    m_run = false;
-    wait(500);
+    if(stop == !m_run)
+        return;
+
+    m_run = !stop;
+    if(m_run)          start();
+    else if(waitForIt) wait(500);
 }

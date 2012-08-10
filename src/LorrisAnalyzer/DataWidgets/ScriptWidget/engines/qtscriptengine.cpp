@@ -556,10 +556,10 @@ QScriptValue QtScriptEngine_private::__getJoystickNames(QScriptContext */*contex
 {
     sJoyMgr.updateJoystickNames();
 
-    const QHash<int, QString>& names = sJoyMgr.getNames();
+    const std::vector<QString>& names = sJoyMgr.getNames();
     QScriptValue val = engine->newArray(names.size());
 
-    for(int i = 0; i < names.size(); ++i)
+    for(size_t i = 0; i < names.size(); ++i)
         val.setProperty(i, names[i]);
 
     return val;
