@@ -77,7 +77,7 @@ DataWidget::~DataWidget()
     if(m_mouseIn)
         emit mouseStatus(false, m_info, m_widgetControlled);
 
-    WorkTab::DeleteAllMembers(layout);
+    Utils::deleteLayoutMembers(layout);
     delete layout;
 }
 

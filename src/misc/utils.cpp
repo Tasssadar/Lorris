@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QApplication>
+#include <QLayout>
 
 #include "utils.h"
 #include "../dep/ecwin7/ecwin7.h"
@@ -173,4 +174,24 @@ void Utils::loadWindowParams(QWidget *w, const QString &param)
     }
     w->resize(s.size());
     w->move(s.topLeft());
+}
+
+void Utils::deleteLayoutMembers(QLayout *layout)
+{
+    while(layout->count())
+    {
+        QLayoutItem *item = layout->itemAt(0);
+        layout->removeItem(item);
+        if(item->layout())
+        {
+            Utils::deleteLayoutMembers(item->layout());
+            delete item->layout();
+            continue;
+        }
+        else if(item->widget())
+            delete item->widget();
+        else if(item->spacerItem())
+            delete item->spacerItem();
+        delete item;
+    }
 }

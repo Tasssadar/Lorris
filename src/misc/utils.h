@@ -12,8 +12,7 @@
 #include <QThread>
 #include <QFont>
 
-class QStatusBar;
-class EcWin7;
+class QLayout;
 
 class Utils : public QThread
 {
@@ -43,6 +42,8 @@ public:
 
     static QString saveWindowParams(QWidget *w);
     static void loadWindowParams(QWidget *w, const QString& param);
+
+    static void deleteLayoutMembers(QLayout *layout);
 };
 
 template <typename T>

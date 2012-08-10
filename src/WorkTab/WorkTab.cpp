@@ -24,24 +24,6 @@ WorkTab::~WorkTab()
 {
 }
 
-void WorkTab::DeleteAllMembers(QLayout *layout)
-{
-    while(layout->count())
-    {
-        QLayoutItem *item = layout->itemAt(0);
-        layout->removeItem(item);
-        if(item->layout())
-        {
-            WorkTab::DeleteAllMembers(item->layout());
-            delete item->layout();
-            continue;
-        }
-        else if(item->widget())
-            delete item->widget();
-        delete item;
-    }
-}
-
 void WorkTab::onTabShow(const QString &)
 {
 

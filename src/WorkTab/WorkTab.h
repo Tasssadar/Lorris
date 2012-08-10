@@ -33,8 +33,6 @@ public:
     void setId(quint32 id) { m_id = id; }
     quint32 getId() { return m_id; }
 
-    static void DeleteAllMembers(QLayout *layout);
-
     virtual void onTabShow(const QString& filename);
     virtual bool onTabClose();
     virtual void openFile(const QString& filename);
