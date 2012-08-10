@@ -19,24 +19,6 @@
 #include "../../misc/datafileparser.h"
 #include "../widgetfactory.h"
 
-enum WidgetTypes
-{
-    WIDGET_NUMBERS,
-    WIDGET_BAR,
-    WIDGET_COLOR,
-    WIDGET_GRAPH,
-    WIDGET_SCRIPT,
-    WIDGET_INPUT,
-    WIDGET_TERMINAL,
-    WIDGET_BUTTON,
-    WIDGET_CIRCLE,
-    WIDGET_SLIDER,
-    WIDGET_CANVAS,
-
-    WIDGET_MAX
-    //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
-};
-
 enum NumberTypes
 {
     NUM_UINT8 = 0,

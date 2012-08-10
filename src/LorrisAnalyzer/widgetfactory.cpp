@@ -5,17 +5,20 @@
 **    See README and COPYING
 ***********************************************/
 
+#include <algorithm>
 #include "widgetfactory.h"
 #include "DataWidgets/datawidget.h"
 #include "widgetarea.h"
 
 WidgetFactory::WidgetFactory()
 {
+    std::fill_n(m_widgetInits, WIDGET_MAX, (widgetInit)NULL);
 }
 
 void WidgetFactory::addWidgetInit(quint32 type, widgetInit init)
 {
-    m_widgetInits.insert(type, init);
+    Q_ASSERT(type < WIDGET_MAX);
+    m_widgetInits[type] = init;
 }
 
 void WidgetFactory::addBtnInit(btnInit init)
@@ -25,7 +28,7 @@ void WidgetFactory::addBtnInit(btnInit init)
 
 DataWidget *WidgetFactory::getWidget(quint32 type, QWidget *parent)
 {
-    if(!m_widgetInits.contains(type))
+    if(!m_widgetInits[type])
         return NULL;
     return m_widgetInits[type](parent);
 }
