@@ -14,11 +14,7 @@
 #include <vector>
 #include <QTimer>
 
-#ifdef Q_OS_WIN
-    #include <SDL.h>
-#else // use lib from OS on other systems
-    #include <SDL/SDL.h>
-#endif
+#include <libenjoy.h>
 
 struct btn_event
 {
@@ -40,24 +36,20 @@ Q_SIGNALS:
     void axesChanged(const QList<int>& axes);
 
 protected:
-    JoystickPrivate(int id, SDL_Joystick *joy, QObject *parent = 0);
+    JoystickPrivate(libenjoy_joystick *joy, QObject *parent = 0);
     ~JoystickPrivate();
 
     void axisEvent(int id, qint16 val);
-    void ballEvent(int id, qint16 x, qint16 y);
-    void hatEvent(int id, quint8 val);
     void buttonEvent(int id, quint8 state);
 
     bool isUsed() const { return !m_used.empty(); }
 
 protected slots:
-    int getId() const { return m_id; }
+    quint32 getId() const { return m_id; }
     int getNumAxes() const { return m_num_axes; }
-    int getNumBalls() const { return m_num_balls; }
-    int getNumHats() const { return m_num_hats; }
     int getNumButtons() const { return m_num_buttons; }
 
-    int getAxisVal(int id)
+    qint16 getAxisVal(int id)
     {
         QReadLocker locker(&m_lock);
         return m_axes[id];
@@ -94,16 +86,14 @@ private slots:
 private:
     void init();
 
-    int m_id;
-    SDL_Joystick *m_joy;
+    quint32 m_id;
+    libenjoy_joystick *m_joy;
     QTimer m_timer;
 
     int m_num_axes;
-    int m_num_balls;
-    int m_num_hats;
     int m_num_buttons;
 
-    std::vector<int> m_axes;
+    std::vector<qint16> m_axes;
     std::vector<quint8> m_buttons;
     std::vector<bool> m_changed_axes;
     std::vector<btn_event> m_changed_btns;
@@ -130,13 +120,11 @@ Q_SIGNALS:
     void axesChanged(const QList<int>& axes);
 
 public slots:
-    int getId() const { return joy->getId(); }
+    quint32 getId() const { return joy->getId(); }
     int getNumAxes() const { return joy->getNumAxes(); }
-    int getNumBalls() const { return joy->getNumBalls(); }
-    int getNumHats() const { return joy->getNumHats(); }
     int getNumButtons() const { return joy->getNumButtons(); }
 
-    int getAxisVal(int id) { return joy->getAxisVal(id); }
+    qint16 getAxisVal(int id) { return joy->getAxisVal(id); }
     quint8 getButtonVal(int id) { return joy->getButtonVal(id); }
 
     void startUsing(QObject *object) { joy->startUsing(object); }

@@ -12,12 +12,6 @@
 #include <QReadWriteLock>
 #include <QStringList>
 
-#if defined Q_OS_WIN || defined Q_OS_MAC 
-    #include <SDL.h>
-#else // use lib from OS on other systems
-    #include <SDL/SDL.h>
-#endif
-
 #include "../misc/singleton.h"
 #include "joystick.h"
 #include "joythread.h"
@@ -33,16 +27,15 @@ public:
 
     void updateJoystickNames();
 
-    bool isEmpty() const { return m_names.empty(); }
-    const std::vector<QString>& getNames() const { return m_names; }
+    bool isEmpty() const { return m_names.isEmpty(); }
     QStringList getNamesList();
 
-    Joystick *getJoystick(int id);
+    Joystick *getJoystick(quint32 id);
 
-    bool hasJoystick(int id)
+    bool hasJoystick(quint32 id)
     {
         m_joy_lock.lockForRead();
-        bool res = (m_joysticks[id] != NULL);
+        bool res = m_joysticks.contains(id);
         m_joy_lock.unlock();
         return res;
     }
@@ -53,13 +46,17 @@ public slots:
 protected:
     JoystickPrivate *getJoystickPrivate(int id);
 
+private slots:
+    void enumerate();
+
 private:
-    std::vector<JoystickPrivate*> m_joysticks;
-    std::vector<QString> m_names;
+    QHash<quint32, JoystickPrivate*> m_joysticks;
+    QHash<quint32, QString> m_names;
 
     QReadWriteLock m_joy_lock;
 
     JoyThread m_thread;
+    QTimer m_enum_timer;
 };
 
 #define sJoyMgr JoyMgr::GetSingleton()

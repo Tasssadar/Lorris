@@ -305,14 +305,6 @@ win32 {
     CONFIG(debug, debug|release):LIBS += -lqwtd
     else:LIBS += -lqwt
 
-    win32-msvc* {
-        LIBS += -L"$$PWD/../dep/SDL/lib/msvc" -lsdl -luser32 -ladvapi32
-        QMAKE_CXXFLAGS += /wd4138
-        QMAKE_CXXFLAGS_DEBUG += /Od
-    } else {
-        LIBS += -L"$$PWD/../dep/SDL/lib" -lsdl
-    }
-
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
 
     HEADERS += \
@@ -335,7 +327,8 @@ win32 {
 }
 unix:!macx:!symbian {
     CONFIG += libusby
-    LIBS += -lSDL -lqextserialport_lorris
+    CONFIG += libenjoy
+    LIBS += -lqextserialport_lorris
 
     system_qwt {
         LIBS += -lqwt
@@ -357,7 +350,7 @@ unix:!macx:!symbian {
 }
 macx {
     INCLUDEPATH += ../dep/SDL/include
-    LIBS += -lqwt_lorris -lqextserialport -lSDL -lqextserialport_lorris
+    LIBS += -lqwt_lorris -lqextserialport -lqextserialport_lorris
 
     translations.path = /usr/share/lorris/
     translations.files = ../translations/Lorris.*.qm
@@ -413,4 +406,9 @@ qsci_editor:win32 {
 qsci_editor:unix {
     DEFINES += USE_QSCI
     LIBS += -lqscintilla2
+}
+
+libenjoy {
+    include(../dep/libenjoy/libenjoy.pri)
+    DEFINES += HAVE_LIBENJOY
 }

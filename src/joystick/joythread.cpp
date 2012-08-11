@@ -5,6 +5,8 @@
 **    See README and COPYING
 ***********************************************/
 
+#include <libenjoy.h>
+
 #include "joythread.h"
 #include "joymgr.h"
 #include "joystick.h"
@@ -17,50 +19,31 @@ JoyThread::JoyThread(QObject *parent) :
 
 void JoyThread::run()
 {
-    SDL_Event event;
+    libenjoy_event ev;
     while(m_run)
     {
-        while(SDL_PollEvent(&event))
+        while(libenjoy_poll(&ev) == 0)
         {
-            switch(event.type)
+            JoystickPrivate *joy = sJoyMgr.getJoystickPrivate(ev.joy_id);
+            if(!joy)
+                continue;
+
+            switch(ev.type)
             {
-                case SDL_JOYAXISMOTION:
+                case LIBENJOY_EV_AXIS:
                 {
-                    JoystickPrivate *joy = sJoyMgr.getJoystickPrivate(event.jaxis.which);
-                    if(!joy)
-                        continue;
-                    joy->axisEvent(event.jaxis.axis, event.jaxis.value);
+                    joy->axisEvent(ev.part_id, ev.data);
                     break;
                 }
-                case SDL_JOYHATMOTION:
+                case LIBENJOY_EV_BUTTON:
                 {
-                    JoystickPrivate *joy = sJoyMgr.getJoystickPrivate(event.jhat.which);
-                    if(!joy)
-                        continue;
-                    joy->hatEvent(event.jhat.hat, event.jhat.value);
-                    break;
-                }
-                case SDL_JOYBALLMOTION:
-                {
-                    JoystickPrivate *joy = sJoyMgr.getJoystickPrivate(event.jball.which);
-                    if(!joy)
-                        continue;
-                    joy->ballEvent(event.jball.ball, event.jball.xrel, event.jball.yrel);
-                    break;
-                }
-                case SDL_JOYBUTTONDOWN:
-                case SDL_JOYBUTTONUP:
-                {
-                    JoystickPrivate *joy = sJoyMgr.getJoystickPrivate(event.jbutton.which);
-                    if(!joy)
-                        continue;
-                    joy->buttonEvent(event.jbutton.button, event.jbutton.state);
+                    joy->buttonEvent(ev.part_id, ev.data);
                     break;
                 }
                 default: continue;
             }
         }
-        msleep(1);
+        msleep(10);
     }
 }
 

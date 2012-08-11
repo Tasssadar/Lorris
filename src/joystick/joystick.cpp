@@ -9,10 +9,10 @@
 
 #define DEFAULT_SIGNAL_TIME 50
 
-JoystickPrivate::JoystickPrivate(int id, SDL_Joystick *joy, QObject *parent) :
+JoystickPrivate::JoystickPrivate(libenjoy_joystick *joy, QObject *parent) :
     QObject(parent)
 {
-    m_id = id;
+    m_id = joy->id;
     m_joy = joy;
     init();
 
@@ -23,15 +23,13 @@ JoystickPrivate::JoystickPrivate(int id, SDL_Joystick *joy, QObject *parent) :
 JoystickPrivate::~JoystickPrivate()
 {
     if(m_joy)
-        SDL_JoystickClose(m_joy);
+        libenjoy_close_joystick(m_joy);
 }
 
 void JoystickPrivate::init()
 {
-    m_num_axes = SDL_JoystickNumAxes(m_joy);
-    m_num_hats = SDL_JoystickNumHats(m_joy);
-    m_num_balls = SDL_JoystickNumBalls(m_joy);
-    m_num_buttons = SDL_JoystickNumButtons(m_joy);
+    m_num_axes = libenjoy_get_axes_num(m_joy);
+    m_num_buttons = libenjoy_get_buttons_num(m_joy);
 
     m_axes.resize(m_num_axes, 0);
     m_buttons.resize(m_num_buttons, 0);
@@ -85,15 +83,3 @@ void JoystickPrivate::buttonEvent(int id, quint8 state)
     btn_event ev = { id, state };
     m_changed_btns.push_back(ev);
 }
-
-void JoystickPrivate::ballEvent(int /*id*/, qint16 /*x*/, qint16 /*y*/)
-{
-    // NYI
-}
-
-void JoystickPrivate::hatEvent(int /*id*/, quint8 /*val*/)
-{
-    // NYI
-}
-
-

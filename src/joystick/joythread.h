@@ -10,12 +10,6 @@
 
 #include <QThread>
 
-#ifdef Q_OS_WIN
-    #include <SDL.h>
-#else // use lib from OS on other systems
-    #include <SDL/SDL.h>
-#endif
-
 class JoyThread : public QThread
 {
     Q_OBJECT
