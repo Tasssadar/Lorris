@@ -174,8 +174,8 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
 
 ConnectionPointer<PortConnection> ChooseConnectionDlg::choosePort(ConnectionPointer<Connection> const & preselectedConn)
 {
-    this->selectConn(preselectedConn.data());
     m_allowedConns = pct_port;
+    this->selectConn(preselectedConn.data());
     if (this->exec() != QDialog::Accepted)
         return ConnectionPointer<PortConnection>();
     return m_current.dynamicCast<PortConnection>();
@@ -183,8 +183,8 @@ ConnectionPointer<PortConnection> ChooseConnectionDlg::choosePort(ConnectionPoin
 
 ConnectionPointer<ShupitoConnection> ChooseConnectionDlg::chooseShupito(ConnectionPointer<Connection> const & preselectedConn)
 {
-    this->selectConn(preselectedConn.data());
     m_allowedConns = pct_port | pct_shupito;
+    this->selectConn(preselectedConn.data());
     if (this->exec() != QDialog::Accepted)
         return ConnectionPointer<ShupitoConnection>();
 
