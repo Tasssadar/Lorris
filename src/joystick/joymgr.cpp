@@ -6,8 +6,12 @@
 ***********************************************/
 
 #include <QDebug>
-#include <libenjoy.h>
+
 #include "joymgr.h"
+
+#ifdef HAVE_LIBENJOY
+
+#include <libenjoy.h>
 
 JoyMgr::JoyMgr() : QObject()
 {
@@ -107,3 +111,17 @@ JoystickPrivate *JoyMgr::getJoystickPrivate(int id)
     QReadLocker locker(&m_joy_lock);
     return m_joysticks[id];
 }
+
+#else // HAVE_LIBENJOY
+
+JoyMgr::JoyMgr() : QObject(NULL)
+{
+
+}
+
+JoyMgr::~JoyMgr()
+{
+
+}
+
+#endif // HAVE_LIBENJOY

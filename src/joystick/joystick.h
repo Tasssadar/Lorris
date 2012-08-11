@@ -14,6 +14,7 @@
 #include <vector>
 #include <QTimer>
 
+#ifdef HAVE_LIBENJOY
 #include <libenjoy.h>
 
 struct btn_event
@@ -134,5 +135,36 @@ public slots:
 private:
     JoystickPrivate *joy;
 };
+
+#else // HAVE_LIBENJOY
+
+class Joystick : public QObject
+{
+    Q_OBJECT
+
+public:
+    Joystick(QObject *joy) : QObject(joy)
+    {
+
+    }
+
+Q_SIGNALS:
+    void buttonChanged(int id, quint8 status);
+    void axesChanged(const QList<int>& axes);
+
+public slots:
+    quint32 getId() const { return 0; }
+    int getNumAxes() const { return 0; }
+    int getNumButtons() const { return 0; }
+
+    qint16 getAxisVal(int) { return 0; }
+    quint8 getButtonVal(int) { return 0; }
+
+    void startUsing(QObject *) {  }
+    bool stopUsing(QObject *) { return false; }
+    void setSignalTimer() {  }
+};
+
+#endif // HAVE_LIBENJOY
 
 #endif // JOYSTICK_H

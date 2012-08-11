@@ -8,12 +8,15 @@
 #ifndef JOYMGR_H
 #define JOYMGR_H
 
+#include "joystick.h"
+
+#ifdef HAVE_LIBENJOY
+
 #include <QHash>
 #include <QReadWriteLock>
 #include <QStringList>
 
 #include "../misc/singleton.h"
-#include "joystick.h"
 #include "joythread.h"
 
 class JoyMgr : public QObject, public Singleton<JoyMgr>
@@ -58,6 +61,30 @@ private:
     JoyThread m_thread;
     QTimer m_enum_timer;
 };
+
+#else // HAVE_LIBENJOY
+
+class JoyMgr : public QObject, public Singleton<JoyMgr>
+{
+    Q_OBJECT
+public:
+    JoyMgr();
+    ~JoyMgr();
+
+    void updateJoystickNames() { }
+
+    bool isEmpty() const { return true; }
+    QStringList getNamesList() { return QStringList(); }
+
+    Joystick *getJoystick(quint32) { return NULL; }
+
+    bool hasJoystick(quint32)
+    {
+        return false;
+    }
+};
+
+#endif //HAVE_LIBENJOY
 
 #define sJoyMgr JoyMgr::GetSingleton()
 

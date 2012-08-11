@@ -3,6 +3,7 @@ LIBUSBY_REPO="git://github.com/avakar/libusby.git"
 GOT_PYTHON=0
 GOT_KATE=0
 GOT_QSCI=0
+GOT_JOYSTICK=0
 
 function CHECK_EXECUTABLE {
     echo -n "Checking for $1..."
@@ -218,6 +219,14 @@ else
     echo "Not using QScintilla"
 fi
 
+echo ""
+echo -n "Do you want joystick support? [Y/n]: "
+read use_joy_user
+echo ""
+if [ -z $use_joy_user ] || [ "$use_joy_user" == "y" ] || [ $use_joy_user == "Y" ] ; then
+    GOT_JOYSTICK=1
+fi
+
 # CONFIGURATION COMPLETE, GENERATE FILES
 echo ""
 echo -n "Generating config.pri.."
@@ -234,6 +243,10 @@ fi
 
 if [ $GOT_QSCI -eq 1 ] ; then 
     echo "CONFIG += qsci_editor" >> config.pri
+fi
+
+if [ $GOT_JOYSTICK -eq 1 ] ; then
+    echo "CONFIG += joystick" >> config.pri
 fi
 
 echo "done"

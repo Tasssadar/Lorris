@@ -20,3 +20,5 @@ unix {
 # Comment out following line if you want to disable QScintilla editor for ScriptWidget
 CONFIG += qsci_editor
 
+# Comment out following line if you do not want joystick support
+CONFIG += joystick

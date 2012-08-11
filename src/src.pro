@@ -83,9 +83,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/playback.cpp \
     LorrisAnalyzer/DataWidgets/inputwidget.cpp \
     joystick/joymgr.cpp \
-    joystick/joystick.cpp \
     LorrisAnalyzer/DataWidgets/terminalwidget.cpp \
-    joystick/joythread.cpp \
     LorrisAnalyzer/DataWidgets/buttonwidget.cpp \
     ui/tabview.cpp \
     ui/tabwidget.cpp \
@@ -191,7 +189,6 @@ HEADERS += ui/mainwindow.h \
     joystick/joymgr.h \
     joystick/joystick.h \
     LorrisAnalyzer/DataWidgets/terminalwidget.h \
-    joystick/joythread.h \
     LorrisAnalyzer/DataWidgets/buttonwidget.h \
     ui/tabview.h \
     ui/tabwidget.h \
@@ -326,8 +323,7 @@ win32 {
     LIBS += -lsetupapi -lwinmm -lole32
 }
 unix:!macx:!symbian {
-    CONFIG += libusby
-    CONFIG += libenjoy
+    CONFIG += libusby libenjoy
     LIBS += -lqextserialport_lorris
 
     system_qwt {
@@ -408,7 +404,11 @@ qsci_editor:unix {
     LIBS += -lqscintilla2
 }
 
-libenjoy {
+joystick:libenjoy {
     include(../dep/libenjoy/libenjoy.pri)
     DEFINES += HAVE_LIBENJOY
+
+    SOURCES += joystick/joystick.cpp \
+        joystick/joythread.cpp
+    HEADERS += joystick/joythread.h
 }
