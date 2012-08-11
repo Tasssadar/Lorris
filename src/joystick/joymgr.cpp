@@ -16,7 +16,7 @@ JoyMgr::JoyMgr() : QObject()
 
     updateJoystickNames();
 
-    m_enum_timer.start(100);
+    m_enum_timer.start(1000);
     connect(&m_enum_timer, SIGNAL(timeout()), SLOT(enumerate()));
 }
 
