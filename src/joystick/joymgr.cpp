@@ -88,9 +88,14 @@ Joystick *JoyMgr::getJoystick(quint32 id)
 QStringList JoyMgr::getNamesList()
 {
     QStringList list;
-    for(int i = 0; i < m_names.size(); ++i)
-        list << m_names[i];
+    for(QMap<quint32, QString>::iterator itr = m_names.begin(); itr != m_names.end(); ++itr)
+        list << QString("%1: %2").arg(itr.key()).arg(itr.value());
     return list;
+}
+
+QList<quint32> JoyMgr::getIdList()
+{
+    return m_names.keys();
 }
 
 void JoyMgr::removeJoystick(JoystickPrivate *joy)

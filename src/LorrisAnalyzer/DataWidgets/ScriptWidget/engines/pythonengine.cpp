@@ -266,6 +266,11 @@ QStringList PythonFunctions::getJoystickNames()
     return sJoyMgr.getNamesList();
 }
 
+QList<quint32> PythonFunctions::getJoystickIds()
+{
+    return sJoyMgr.getIdList();
+}
+
 QTimer *PythonFunctions::newTimer()
 {
     QTimer *timer = new QTimer(this);

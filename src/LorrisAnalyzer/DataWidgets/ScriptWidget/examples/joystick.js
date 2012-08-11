@@ -30,7 +30,8 @@ function joystick_selected(idx)
     if(joystick != null)
         closeJoystick(joystick);
 
-    joystick = getJoystick(idx);
+    var id_list = getJoystickIds();
+    joystick = getJoystick(id_list[idx]);
     if(joystick)
     {
         // connect to signals

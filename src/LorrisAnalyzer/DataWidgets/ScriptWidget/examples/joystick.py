@@ -35,7 +35,8 @@ def joystick_selected(idx):
     if joystick != None:
         lorris.closeJoystick(joystick);
 
-    joystick = lorris.getJoystick(idx);
+    id_list = lorris.getJoystickIds();
+    joystick = lorris.getJoystick(id_list[idx]);
     if joystick != None:
         # connect to signals
         joystick.connect("axesChanged(QList<int>)", axesChanged);

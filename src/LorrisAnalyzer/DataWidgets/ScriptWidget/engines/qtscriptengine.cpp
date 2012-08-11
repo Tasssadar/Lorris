@@ -77,6 +77,7 @@ void QtScriptEngine::prepareNewContext()
     QScriptValue getJoy = m_engine->newFunction(&QtScriptEngine_private::__getJoystick);
     QScriptValue closeJoy = m_engine->newFunction(&QtScriptEngine_private::__closeJoystick);
     QScriptValue getJoyName = m_engine->newFunction(&QtScriptEngine_private::__getJoystickNames);
+    QScriptValue getJoyIds = m_engine->newFunction(&QtScriptEngine_private::__getJoystickIds);
     QScriptValue newTimer = m_engine->newFunction(&QtScriptEngine_private::__newTimer);
     QScriptValue addComboItems = m_engine->newFunction(&QtScriptEngine_private::__addComboBoxItems);
     QScriptValue moveW = m_engine->newFunction(&QtScriptEngine_private::__moveWidget);
@@ -101,6 +102,7 @@ void QtScriptEngine::prepareNewContext()
     m_global.setProperty("getJoystick", getJoy);
     m_global.setProperty("closeJoystick", closeJoy);
     m_global.setProperty("getJoystickNames", getJoyName);
+    m_global.setProperty("getJoystickIds", getJoyIds);
     m_global.setProperty("newTimer", newTimer);
     m_global.setProperty("addComboBoxItems", addComboItems);
     m_global.setProperty("moveWidget", moveW);
@@ -562,6 +564,16 @@ QScriptValue QtScriptEngine_private::__getJoystickNames(QScriptContext */*contex
     for(int i = 0; i < names.size(); ++i)
         val.setProperty(i, names[i]);
 
+    return val;
+}
+
+QScriptValue QtScriptEngine_private::__getJoystickIds(QScriptContext */*context*/, QScriptEngine *engine)
+{
+    QList<quint32> ids = sJoyMgr.getIdList();
+    QScriptValue val = engine->newArray(ids.size());
+
+    for(int i = 0; i < ids.size(); ++i)
+        val.setProperty(i, ids[i]);
     return val;
 }
 

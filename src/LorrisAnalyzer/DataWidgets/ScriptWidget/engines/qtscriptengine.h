@@ -50,6 +50,7 @@ private:
     static QScriptValue __getJoystick(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __closeJoystick(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getJoystickNames(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getJoystickIds(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newTimer(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __addComboBoxItems(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __moveWidget(QScriptContext *context, QScriptEngine *engine);

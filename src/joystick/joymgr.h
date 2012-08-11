@@ -31,7 +31,9 @@ public:
     void updateJoystickNames();
 
     bool isEmpty() const { return m_names.isEmpty(); }
+
     QStringList getNamesList();
+    QList<quint32> getIdList();
 
     Joystick *getJoystick(quint32 id);
 
@@ -54,7 +56,7 @@ private slots:
 
 private:
     QHash<quint32, JoystickPrivate*> m_joysticks;
-    QHash<quint32, QString> m_names;
+    QMap<quint32, QString> m_names;
 
     QReadWriteLock m_joy_lock;
 
@@ -75,6 +77,7 @@ public:
 
     bool isEmpty() const { return true; }
     QStringList getNamesList() { return QStringList(); }
+    QList<quint32> getIdList() { return QList<quint32>(); }
 
     Joystick *getJoystick(quint32) { return NULL; }
 

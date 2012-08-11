@@ -30,6 +30,7 @@ public slots:
     Joystick *getJoystick(int id);
     void closeJoystick(Joystick *joy);
     QStringList getJoystickNames();
+    QList<quint32> getJoystickIds();
     QTimer *newTimer();
     void AddComboBoxItems(QComboBox *box, QStringList items);
     void moveWidget(QWidget *w, int x, int y);

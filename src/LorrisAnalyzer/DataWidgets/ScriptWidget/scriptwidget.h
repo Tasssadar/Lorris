@@ -71,4 +71,5 @@ public:
     ScriptWidgetAddBtn(QWidget *parent = 0);
 
 };
+
 #endif // SCRIPTWIDGET_H
