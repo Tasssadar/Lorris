@@ -298,7 +298,7 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 
 win32 {
     CONFIG -= flat
-    CONFIG += libusby
+    CONFIG += libusby libenjoy
 
     INCLUDEPATH += ../dep/SDL/include
 

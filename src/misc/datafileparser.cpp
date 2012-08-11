@@ -323,11 +323,12 @@ QByteArray DataFileBuilder::writeWithHeader(const QString& filename, QByteArray 
         throw QObject::tr("Another file is currently saving!");
 
     m_watcher = new QFutureWatcher<QByteArray>();
+    QEventLoop ev;
+    QObject::connect(m_watcher, SIGNAL(finished()), &ev, SLOT(quit()));
+
     m_future = QtConcurrent::run(&DataFileBuilder::writeWithHeader_private, filename, data, compress, type);
     m_watcher->setFuture(m_future);
 
-    QEventLoop ev;
-    QObject::connect(m_watcher, SIGNAL(finished()), &ev, SLOT(quit()));
     ProgressReporter reporter;
     ev.exec();
 

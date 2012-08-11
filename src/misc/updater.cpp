@@ -179,9 +179,9 @@ void UpdateHandler::updateBtn()
 void UpdateHandler::createWatcher(const QFuture<bool> &f)
 {
     m_watcher = new QFutureWatcher<bool>(this);
-    m_watcher->setFuture(f);
 
     connect(m_watcher, SIGNAL(finished()), SLOT(updateCheckResult()));
+    m_watcher->setFuture(f);
 }
 
 void UpdateHandler::updateCheckResult()

@@ -12,7 +12,8 @@
 
 WidgetFactory::WidgetFactory()
 {
-    std::fill_n(m_widgetInits, WIDGET_MAX, (widgetInit)NULL);
+    for(int i = 0; i < WIDGET_MAX; ++i)
+        m_widgetInits[i] = NULL;
 }
 
 void WidgetFactory::addWidgetInit(quint32 type, widgetInit init)
