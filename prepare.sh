@@ -84,11 +84,10 @@ fi
 if [ $IS_GIT -eq 0 ] ; then
     echo "Configuring submodules..."
     IFS=$'\n'
-    submodules=$(git submodule status)
-    unset $IFS
-    for module in ${submodules[@]} ; do
-        CHECK_SUBMODULE $module
+    for module in $(git submodule status) ; do
+        CHECK_SUBMODULE "$module"
     done
+    unset $IFS
 else
     echo -n "Checking libusby..."
     if [ -e "dep/libusby/libusby.pri" ] ; then
