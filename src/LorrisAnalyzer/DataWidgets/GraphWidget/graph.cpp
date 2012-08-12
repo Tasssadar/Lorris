@@ -64,7 +64,7 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
     m_grid->enableX(true);
     m_grid->enableXMin(true);
     m_grid->enableY(true);
-    m_grid->enableYMin(false);
+    m_grid->enableYMin(true);
     m_grid->attach(this);
 
     QwtLegend *legend = new QwtLegend;
