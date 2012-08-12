@@ -99,26 +99,6 @@ else
     fi
 fi
 
-# Check for SDL
-echo ""
-echo -n "Checking for lSDL..."
-cat > /tmp/test.cpp << EOF
-#include <SDL/SDL.h>
-int main () { SDL_Init(SDL_INIT_VIDEO); return 0; }
-EOF
-
-c++ /tmp/test.cpp -o /tmp/test -lSDL&> /dev/null
-if [ $? -eq 0 ] ; then
-    echo "ok"
-    rm /tmp/test.cpp
-    rm /tmp/test
-else
-    echo "failed"
-    echo "Install libSDL developement files!"
-    rm /tmp/test.cpp
-    exit 1
-fi
-
 # Check for python
 echo ""
 echo "Python support configuration"
