@@ -24,6 +24,7 @@ public:
 
 public slots:
     void sendData(const QByteArray& data);
+    void sendData(const QString& str);
     int getWidth();
     int getHeight();
     void throwException(const QString& text);
@@ -56,7 +57,7 @@ class PythonEngine : public ScriptEngine
     friend class PythonFunctions;
 
 public:
-    PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent = 0);
+    PythonEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent);
     ~PythonEngine();
     
     void setSource(const QString& source);

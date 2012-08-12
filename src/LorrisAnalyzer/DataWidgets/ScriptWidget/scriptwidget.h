@@ -18,6 +18,7 @@ class ScriptEditor;
 class ScriptEngine;
 class Terminal;
 class ExamplePreviewTab;
+class QLineEdit;
 
 class ScriptWidget : public DataWidget
 {
@@ -34,6 +35,9 @@ public:
     void saveWidgetInfo(DataFileParser *file);
     void loadWidgetInfo(DataFileParser *file);
 
+    Terminal *getTerminal() const { return m_terminal; }
+    QLineEdit *getInputEdit() const { return m_inputEdit; }
+
 public slots:
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
@@ -45,6 +49,7 @@ protected slots:
      void closeEditor();
      void blinkError();
      void addExampleTab(const QString& name);
+     void inputShowAct(bool show);
 
 protected:
      void newData(analyzer_data *data, quint32 index);
@@ -59,6 +64,8 @@ protected:
      ScriptEngine *m_engine;
      int m_engine_type;
      Terminal *m_terminal;
+     QLineEdit *m_inputEdit;
+     QAction *m_inputAct;
      QString m_filename;
      QLabel *m_error_label;
      QTimer m_error_blink_timer;

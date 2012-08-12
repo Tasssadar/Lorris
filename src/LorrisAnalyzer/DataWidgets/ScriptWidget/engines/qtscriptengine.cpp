@@ -20,6 +20,8 @@
 #include "qtscriptengine.h"
 #include "scriptagent.h"
 #include "../../../../joystick/joymgr.h"
+#include "../scriptwidget.h"
+#include "../../../../ui/terminal.h"
 
 /* Simple JavaScript Inheritance
  * By John Resig http://ejohn.org/
@@ -40,8 +42,8 @@ QScriptValue GraphCurveToScriptValue(QScriptEngine *engine, GraphCurve* const &i
 void GraphCurveFromScriptValue(const QScriptValue &object, GraphCurve* &out)
 { out = qobject_cast<GraphCurve*>(object.toQObject()); }
 
-QtScriptEngine::QtScriptEngine(WidgetArea* area, quint32 w_id, Terminal *terminal, QObject *parent) :
-    ScriptEngine(area, w_id, terminal, parent)
+QtScriptEngine::QtScriptEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent) :
+    ScriptEngine(area, w_id, parent)
 {
     m_engine = NULL;
     setSource(QString());
@@ -141,6 +143,8 @@ void QtScriptEngine::prepareNewContext()
     m_global.setProperty("script", m_engine->newQObject(parent()));
     m_global.setProperty("area", m_engine->newQObject(m_area));
     m_global.setProperty("storage", m_engine->newQObject(m_storage));
+    m_global.setProperty("terminal", m_engine->newQObject(scriptWidget()->getTerminal()));
+    m_global.setProperty("inputLine", m_engine->newQObject(scriptWidget()->getInputEdit()));
 
     const WidgetArea::w_map& widgets = m_area->getWidgets();
     for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
@@ -422,20 +426,26 @@ QScriptValue QtScriptEngine_private::__sendData(QScriptContext *context, QScript
         return QScriptValue();
 
     QScriptValue data = context->argument(0);
-    if(!data.isArray())
+    QByteArray sendData;
+    if(data.isArray())
+    {
+        QScriptValueIterator itr(data);
+        while(itr.hasNext())
+        {
+            itr.next();
+            if(itr.value().isNumber() && itr.name() != "length")
+                sendData.push_back(itr.value().toUInt16());
+        }
+    }
+    else if(data.isString())
+    {
+        sendData = data.toString().toUtf8();
+    }
+    else
         return QScriptValue();
 
-    QByteArray sendData;
-
-    QScriptValueIterator itr(data);
-    while(itr.hasNext())
-    {
-        itr.next();
-        if(itr.value().isNumber() && itr.name() != "length")
-            sendData.push_back(itr.value().toUInt16());
-    }
-
-    ((QtScriptEngine_private*)engine)->SendData(sendData);
+    if(!sendData.isEmpty())
+        ((QtScriptEngine_private*)engine)->SendData(sendData);
     return QScriptValue();
 }
 

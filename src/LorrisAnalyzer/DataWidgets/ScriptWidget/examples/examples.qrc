@@ -12,5 +12,7 @@
         <file>graph.py</file>
         <file>joystick.js</file>
         <file>joystick.py</file>
+        <file>terminal.js</file>
+        <file>terminal.py</file>
     </qresource>
 </RCC>

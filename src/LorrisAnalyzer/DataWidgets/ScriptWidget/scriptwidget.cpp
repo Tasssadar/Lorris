@@ -6,6 +6,7 @@
 ***********************************************/
 
 #include <QLabel>
+#include <QLineEdit>
 
 #include "scriptwidget.h"
 #include "scripteditor.h"
@@ -24,6 +25,11 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 
     m_terminal = new Terminal(this);
     layout->addWidget(m_terminal, 4);
+
+    m_inputEdit = new QLineEdit(this);
+    m_inputEdit->setToolTip(tr("Interactive input.\nAvailable in script as \"inputLine\" (class QLineEdit) object."));
+    m_inputEdit->hide();
+    layout->addWidget(m_inputEdit);
 
     resize(120, 100);
 
@@ -50,9 +56,15 @@ void ScriptWidget::setUp(Storage *storage)
     DataWidget::setUp(storage);
 
     QAction *src_act = contextMenu->addAction(tr("Set source..."));
+    m_inputAct = contextMenu->addAction(tr("Show input line"));
+    m_inputAct->setCheckable(true);
+
+    connect(m_inputAct,           SIGNAL(triggered(bool)), SLOT(inputShowAct(bool)));
     connect(src_act,              SIGNAL(triggered()), SLOT(setSourceTriggered()));
     connect(&m_error_blink_timer, SIGNAL(timeout()),   SLOT(blinkError()));
     connect(this, SIGNAL(closeEdit()), SLOT(closeEditor()), Qt::QueuedConnection);
+
+    inputShowAct(sConfig.get(CFG_BOOL_SCRIPT_SHOW_INPUT));
 
     m_engine_type = sConfig.get(CFG_QUINT32_ANALYZER_SCRIPT_ENG);
     createEngine();
@@ -61,7 +73,7 @@ void ScriptWidget::setUp(Storage *storage)
 void ScriptWidget::createEngine()
 {
     delete m_engine;
-    m_engine = ScriptEngine::getEngine(m_engine_type, (WidgetArea*)parent(), getId(), m_terminal, this);
+    m_engine = ScriptEngine::getEngine(m_engine_type, (WidgetArea*)parent(), getId(), this);
 
     if(!m_engine && m_engine_type != ENGINE_QTSCRIPT)
     {
@@ -290,6 +302,13 @@ void ScriptWidget::addExampleTab(const QString &name)
         addChildTab(m_examplePreview, name + tr(" - example"));
     }
     m_examplePreview->activateTab();
+}
+
+void ScriptWidget::inputShowAct(bool show)
+{
+    m_inputAct->setChecked(show);
+    m_inputEdit->setVisible(show);
+    sConfig.set(CFG_BOOL_SCRIPT_SHOW_INPUT, show);
 }
 
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

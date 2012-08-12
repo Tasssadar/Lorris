@@ -10,6 +10,7 @@
 #include <QVariant>
 #include <QByteArray>
 #include <QComboBox>
+#include <QLineEdit>
 
 #include "../../../../ui/terminal.h"
 #include "../../../packet.h"
@@ -17,6 +18,7 @@
 #include "../../../widgetarea.h"
 #include "../../../../joystick/joymgr.h"
 #include "../../GraphWidget/graphcurve.h"
+#include "../scriptwidget.h"
 
 QString PythonEngine::getNewModuleName()
 {
@@ -24,8 +26,8 @@ QString PythonEngine::getNewModuleName()
     return QString::number(i++).repeated(3);
 }
 
-PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent) :
-    ScriptEngine(area, w_id, terminal, parent), m_functions(this, parent)
+PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent) :
+    ScriptEngine(area, w_id, parent), m_functions(this, parent)
 {
     static bool initialized = false;
     if(!initialized)
@@ -79,11 +81,12 @@ void PythonEngine::setSource(const QString &source)
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
 
-    m_module.addObject("terminal", m_terminal);
+    m_module.addObject("terminal", scriptWidget()->getTerminal());
     m_module.addObject("script", parent());
     m_module.addObject("area", m_area);
     m_module.addObject("storage", m_storage);
     m_module.addObject("lorris", &m_functions);
+    m_module.addObject("inputLine", scriptWidget()->getInputEdit());
 
     // FIXMEWTF: lorris.newWidget fails on every second setSource
     // with "AttributeError: *widgetTitle*" if this is not. What?
@@ -223,6 +226,11 @@ PythonFunctions::PythonFunctions(PythonEngine *engine, QObject *parent) :
 void PythonFunctions::sendData(const QByteArray &data)
 {
     emit m_engine->SendData(data);
+}
+
+void PythonFunctions::sendData(const QString& str)
+{
+    emit m_engine->SendData(str.toUtf8());
 }
 
 int PythonFunctions::getWidth()

@@ -15,17 +15,17 @@
 #include "../../datawidget.h"
 #include "scriptengine.h"
 #include "../scriptstorage.h"
+#include "../scriptwidget.h"
 
 #include "qtscriptengine.h"
 
-ScriptEngine::ScriptEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent) :
+ScriptEngine::ScriptEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent) :
     QObject(parent)
 {
     m_x = m_y = 0;
     m_storage = new ScriptStorage(this);
     m_area = area;
     m_widget_id = w_id;
-    m_terminal = terminal;
 }
 
 ScriptEngine::~ScriptEngine()
@@ -43,13 +43,13 @@ QStringList ScriptEngine::getEngineList()
     return list;
 }
 
-ScriptEngine *ScriptEngine::getEngine(int idx, WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent)
+ScriptEngine *ScriptEngine::getEngine(int idx, WidgetArea *area, quint32 w_id, ScriptWidget *parent)
 {
     switch(idx)
     {
-        case ENGINE_QTSCRIPT: return new QtScriptEngine(area, w_id, terminal, parent);
+        case ENGINE_QTSCRIPT: return new QtScriptEngine(area, w_id, parent);
 #ifdef WITH_PYTHON
-        case ENGINE_PYTHON: return new PythonEngine(area, w_id, terminal, parent);
+        case ENGINE_PYTHON: return new PythonEngine(area, w_id, parent);
 #endif
     }
     return NULL;

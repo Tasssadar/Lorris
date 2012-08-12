@@ -126,6 +126,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "analyzer/script_show_errors",// CFG_BOOL_SHOW_SCRIPT_ERROR
     "general/smooth_scaling",     // CFG_BOOL_SMOOTH_SCALING
     "proxy/enable_tunnel",        // CFG_BOOL_PROXY_TUNNEL
+    "analyzer/script_input",      // CFG_BOOL_SCRIPT_SHOW_INPUT
 };
 
 static const bool def_bool[CFG_BOOL_NUM] =
@@ -151,6 +152,7 @@ static const bool def_bool[CFG_BOOL_NUM] =
     false,                        // CFG_BOOL_SHOW_SCRIPT_ERROR
     false,                        // CFG_BOOL_SMOOTH_SCALING
     false,                        // CFG_BOOL_PROXY_TUNNEL
+    false,                        // CFG_BOOL_SCRIPT_SHOW_INPUT
 };
 
 static const QString keys_variant[CFG_VARIANT_NUM] =

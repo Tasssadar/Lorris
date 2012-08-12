@@ -41,6 +41,7 @@ LorrisProxy::LorrisProxy()
 
 LorrisProxy::~LorrisProxy()
 {
+    m_server.stopListening();
     delete ui;
 }
 

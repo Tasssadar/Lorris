@@ -77,7 +77,7 @@ class QtScriptEngine : public ScriptEngine
 friend class QtScriptEngine_private;
 
 public:
-    QtScriptEngine(WidgetArea *area , quint32 w_id, Terminal *terminal, QObject *parent = 0);
+    QtScriptEngine(WidgetArea *area , quint32 w_id, ScriptWidget *parent);
     ~QtScriptEngine();
 
     void setSource(const QString& source);
