@@ -327,6 +327,8 @@ bool LorrisAnalyzer::onTabClose()
     if(!m_data_changed)
         return true;
 
+    emit activateMe();
+
     QMessageBox box(this);
     if(m_storage.getFilename().isEmpty())
         box.setText(tr("Data has been modified."));
