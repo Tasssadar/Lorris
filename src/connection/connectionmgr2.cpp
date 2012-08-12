@@ -13,6 +13,7 @@
 #include "tcpsocket.h"
 #include "proxytunnel.h"
 #include "../misc/config.h"
+#include "../misc/utils.h"
 
 #ifdef HAVE_LIBUSBY
 #include "usbshupitoconn.h"
@@ -350,7 +351,7 @@ QVariant ConnectionManager2::config() const
         Connection * conn = *it;
         Q_ASSERT(conn);
 
-        static char const * connTypes[MAX_CON_TYPE] = {
+        static char const * connTypes[] = {
             "serial_port",     // CONNECTION_SERIAL_PORT
             "shupito_tunnel",  // CONNECTION_SHUPITO_TUNNEL
             "shupito",         // CONNECTION_PORT_SHUPITO
@@ -360,6 +361,7 @@ QVariant ConnectionManager2::config() const
             "proxy_tunnel",    // CONNECTION_PROXY_TUNNEL
         };
 
+        Q_ASSERT(sizeof_array(connTypes) == MAX_CON_TYPE);
         Q_ASSERT(conn->getType() < MAX_CON_TYPE);
 
         QHash<QString, QVariant> connConfig;

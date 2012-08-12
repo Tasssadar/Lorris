@@ -14,6 +14,8 @@
 
 class QLayout;
 
+#define sizeof_array(a) (sizeof(a)/sizeof(a[0]))
+
 class Utils : public QThread
 {
     Q_OBJECT

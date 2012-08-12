@@ -12,8 +12,9 @@
 
 #include "../connection/connection.h"
 #include "config.h"
+#include "utils.h"
 
-static const QString keys_quint32[CFG_QUINT32_NUM] =
+static const QString keys_quint32[] =
 {
     "general/connection_type",   // CFG_QUINT32_CONNECTION_TYPE
     "general/tab_type",          // CFG_QUINT32_TAB_TYPE
@@ -36,7 +37,7 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "general/compress_block",    // CFG_QUINT32_COMPRESS_BLOCK
 };
 
-static const quint32 def_quint32[CFG_QUINT32_NUM] =
+static const quint32 def_quint32[] =
 {
     MAX_CON_TYPE,                // CFG_QUINT32_CONNECTION_TYPE
     0,                           // CFG_QUINT32_TAB_TYPE
@@ -59,7 +60,7 @@ static const quint32 def_quint32[CFG_QUINT32_NUM] =
     10*1024*1024,                // CFG_QUINT32_COMPRESS_BLOCK
 };
 
-static const QString keys_string[CFG_STRING_NUM] =
+static const QString keys_string[] =
 {
     "serial_port/port",           // CFG_STRING_SERIAL_PORT
     "shupito/port",               // CFG_STRING_SHUPITO_PORT
@@ -81,7 +82,7 @@ static const QString keys_string[CFG_STRING_NUM] =
     "proxy/tunnel_name",          // CFG_STRING_PROXY_TUNNEL_NAME
 };
 
-static const QString def_string[CFG_STRING_NUM] =
+static const QString def_string[] =
 {
     "",                           // CFG_STRING_SERIAL_PORT
     "",                           // CFG_STRING_SHUPITO_PORT
@@ -103,7 +104,7 @@ static const QString def_string[CFG_STRING_NUM] =
     "Proxy tunnel",               // CFG_STRING_PROXY_TUNNEL_NAME
 };
 
-static const QString keys_bool[CFG_BOOL_NUM] =
+static const QString keys_bool[] =
 {
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
     "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
@@ -129,7 +130,7 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "analyzer/script_input",      // CFG_BOOL_SCRIPT_SHOW_INPUT
 };
 
-static const bool def_bool[CFG_BOOL_NUM] =
+static const bool def_bool[] =
 {
     true,                         // CFG_BOOL_SHUPITO_TUNNEL
     false,                        // CFG_BOOL_SHUPITO_SHOW_LOG
@@ -155,7 +156,7 @@ static const bool def_bool[CFG_BOOL_NUM] =
     false,                        // CFG_BOOL_SCRIPT_SHOW_INPUT
 };
 
-static const QString keys_variant[CFG_VARIANT_NUM] =
+static const QString keys_variant[] =
 {
     "general/connections",        // CFG_VARIANT_CONNECTIONS
     "general/usb_enumerator",     // CFG_VARIANT_USB_ENUMERATOR
@@ -163,18 +164,29 @@ static const QString keys_variant[CFG_VARIANT_NUM] =
     "kate/kate_sett_view",        // CFG_VARIANT_KATE_SETTINGS_VIEW
 };
 
-static const QString keys_float[CFG_FLOAT_NUM] =
+static const QString keys_float[] =
 {
     "shupito/overvoltage_val",    // CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL
 };
 
-static const float def_float[CFG_FLOAT_NUM] =
+static const float def_float[] =
 {
     5.5f,                         // CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL
 };
 
 Config::Config()
 {
+    // Check defaults
+    Q_ASSERT(sizeof_array(keys_quint32)   == CFG_QUINT32_NUM);
+    Q_ASSERT(sizeof_array(def_quint32)    == CFG_QUINT32_NUM);
+    Q_ASSERT(sizeof_array(keys_string)    == CFG_STRING_NUM);
+    Q_ASSERT(sizeof_array(def_string)     == CFG_STRING_NUM);
+    Q_ASSERT(sizeof_array(keys_bool)      == CFG_BOOL_NUM);
+    Q_ASSERT(sizeof_array(def_bool)       == CFG_BOOL_NUM);
+    Q_ASSERT(sizeof_array(keys_variant)   == CFG_VARIANT_NUM);
+    Q_ASSERT(sizeof_array(def_float)      == CFG_FLOAT_NUM);
+    Q_ASSERT(sizeof_array(keys_float)     == CFG_FLOAT_NUM);
+
     openSettings();
 }
 
