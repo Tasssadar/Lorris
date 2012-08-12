@@ -269,6 +269,8 @@ RESOURCES += \
     shared/definitions.qrc \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc
 
+include(../dep/qtsingleapplication/qtsingleapplication.pri)
+
 RC_FILE = winicon.rc
 
 OTHER_FILES += \

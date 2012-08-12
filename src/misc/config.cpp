@@ -128,6 +128,7 @@ static const QString keys_bool[] =
     "general/smooth_scaling",     // CFG_BOOL_SMOOTH_SCALING
     "proxy/enable_tunnel",        // CFG_BOOL_PROXY_TUNNEL
     "analyzer/script_input",      // CFG_BOOL_SCRIPT_SHOW_INPUT
+    "general/one_instance",       // CFG_BOOL_ONE_INSTANCE
 };
 
 static const bool def_bool[] =
@@ -154,6 +155,7 @@ static const bool def_bool[] =
     false,                        // CFG_BOOL_SMOOTH_SCALING
     false,                        // CFG_BOOL_PROXY_TUNNEL
     false,                        // CFG_BOOL_SCRIPT_SHOW_INPUT
+    true,                         // CFG_BOOL_ONE_INSTANCE
 };
 
 static const QString keys_variant[] =

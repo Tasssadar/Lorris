@@ -102,6 +102,7 @@ public:
 
 public slots:
     MainWindow *newWindow(QStringList openFiles = QStringList());
+    void instanceMessage(const QString& message);
 
 private slots:
     void tabWidgetDestroyed(QObject *widget);

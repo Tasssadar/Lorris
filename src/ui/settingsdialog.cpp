@@ -54,6 +54,8 @@ void SettingsDialog::loadSettings()
 
     ui->scaleBox->setChecked(sConfig.get(CFG_BOOL_SMOOTH_SCALING));
     ui->cmprBlock->setValue(sConfig.get(CFG_QUINT32_COMPRESS_BLOCK)/1024/1024);
+
+    ui->instanceBox->setChecked(sConfig.get(CFG_BOOL_ONE_INSTANCE));
 }
 
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *btn)
@@ -80,6 +82,8 @@ void SettingsDialog::applySettings()
 
     sConfig.set(CFG_BOOL_SMOOTH_SCALING, ui->scaleBox->isChecked());
     sConfig.set(CFG_QUINT32_COMPRESS_BLOCK, ui->cmprBlock->value()*1024*1024);
+
+    sConfig.set(CFG_BOOL_ONE_INSTANCE, ui->instanceBox->isChecked());
 }
 
 void SettingsDialog::setPortable(bool portable)

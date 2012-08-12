@@ -152,6 +152,9 @@ bool WorkTabMgr::onTabsClose(quint32 windowId)
 
 void WorkTabMgr::openTabWithFile(const QString &filename, MainWindow *window)
 {
+    if(!filename.contains("."))
+        return;
+
     QString suffix = filename.split(".", QString::SkipEmptyParts).back();
     for(InfoList::Iterator itr = m_workTabInfos.begin(); itr != m_workTabInfos.end(); ++itr)
     {
@@ -311,4 +314,18 @@ quint32 WorkTabMgr::generateNewChildId()
         tabIdCounter = 0;
     }
     return (IDMASK_CHILD | tabIdCounter++);
+}
+
+void WorkTabMgr::instanceMessage(const QString &message)
+{
+    QStringList parts = message.split("|");
+    if(parts.size() < 2)
+        return;
+
+    if(parts[0] == "newWindow")
+    {
+        MainWindow *w = newWindow(parts[1].split(";"));
+        w->activateWindow();
+        w->raise();
+    }
 }
