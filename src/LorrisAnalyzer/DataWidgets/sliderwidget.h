@@ -101,4 +101,5 @@ public:
     SliderWidgetAddBtn(QWidget *parent = 0);
 
 };
+
 #endif // SLIDERWIDGET_H

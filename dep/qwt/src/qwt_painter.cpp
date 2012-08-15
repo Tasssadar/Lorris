@@ -479,6 +479,8 @@ void QwtPainter::drawFocusRect( QPainter *painter, QWidget *widget )
 void QwtPainter::drawFocusRect( QPainter *painter, QWidget *widget,
     const QRect &rect )
 {
+    // Lorris change - the original code does nothing on Windows 7
+    /*
     QStyleOptionFocusRect opt;
     opt.init( widget );
     opt.rect = rect;
@@ -486,6 +488,12 @@ void QwtPainter::drawFocusRect( QPainter *painter, QWidget *widget,
 
     widget->style()->drawPrimitive( QStyle::PE_FrameFocusRect,
         &opt, painter, widget );
+    */
+
+    painter->save();
+    painter->setPen(QPen(Qt::black, 2, Qt::DotLine, Qt::RoundCap));
+    painter->drawRect(rect);
+    painter->restore();
 }
 
 /*!
