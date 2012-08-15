@@ -19,6 +19,8 @@
 #include "../misc/singleton.h"
 #include "joythread.h"
 
+struct libenjoy_context;
+
 class JoyMgr : public QObject, public Singleton<JoyMgr>
 {
     Q_OBJECT
@@ -62,6 +64,7 @@ private:
 
     JoyThread m_thread;
     QTimer m_enum_timer;
+    libenjoy_context *m_context;
 };
 
 #else // HAVE_LIBENJOY

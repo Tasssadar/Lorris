@@ -15,8 +15,10 @@
 
 JoyMgr::JoyMgr() : QObject()
 {
-    libenjoy_init();
-    libenjoy_enumerate();
+    m_context = libenjoy_init();
+    libenjoy_enumerate(m_context);
+
+    m_thread.setContext(m_context);
 
     updateJoystickNames();
 
@@ -31,19 +33,19 @@ JoyMgr::~JoyMgr()
     for(int i = 0; i < m_joysticks.size(); ++i)
         delete m_joysticks[i];
 
-    libenjoy_close();
+    libenjoy_close(m_context);
 }
 
 void JoyMgr::enumerate()
 {
-    libenjoy_enumerate();
+    libenjoy_enumerate(m_context);
 }
 
 void JoyMgr::updateJoystickNames()
 {
     QWriteLocker locker(&m_joy_lock);
 
-    libenjoy_joy_info_list *info = libenjoy_get_info_list();
+    libenjoy_joy_info_list *info = libenjoy_get_info_list(m_context);
 
     m_names.clear();
     for(quint32 i = 0; i < info->count; ++i)
@@ -71,7 +73,7 @@ Joystick *JoyMgr::getJoystick(quint32 id)
     {
         QWriteLocker locker(&m_joy_lock);
 
-        libenjoy_joystick *joy = libenjoy_open_joystick(id);
+        libenjoy_joystick *joy = libenjoy_open_joystick(m_context, id);
         if(!joy)
             return NULL;
 

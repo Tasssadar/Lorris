@@ -22,7 +22,7 @@ void JoyThread::run()
     libenjoy_event ev;
     while(m_run)
     {
-        while(libenjoy_poll(&ev) == 0)
+        while(libenjoy_poll(m_context, &ev))
         {
             JoystickPrivate *joy = sJoyMgr.getJoystickPrivate(ev.joy_id);
             if(!joy)
@@ -55,4 +55,9 @@ void JoyThread::setStopped(bool stop, bool waitForIt)
     m_run = !stop;
     if(m_run)          start();
     else if(waitForIt) wait(500);
+}
+
+void JoyThread::setContext(libenjoy_context *context)
+{
+    m_context = context;
 }
