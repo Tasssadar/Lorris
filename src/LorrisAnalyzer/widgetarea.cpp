@@ -464,6 +464,11 @@ void WidgetArea::correctWidgetName(QString &name, DataWidget *widget)
 {
     int add = 1;
     QString original = name;
+
+    static const QRegExp regexp(".*_\\d*");
+    if(regexp.exactMatch(original))
+        original = original.left(original.lastIndexOf('_'));
+
     for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
     {
         if(widget != *itr && name == (*itr)->getTitle())
