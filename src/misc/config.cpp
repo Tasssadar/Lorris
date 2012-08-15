@@ -129,6 +129,7 @@ static const QString keys_bool[] =
     "proxy/enable_tunnel",        // CFG_BOOL_PROXY_TUNNEL
     "analyzer/script_input",      // CFG_BOOL_SCRIPT_SHOW_INPUT
     "general/one_instance",       // CFG_BOOL_ONE_INSTANCE
+    "analyzer/placement_lines",   // CFG_BOOL_ANALYZER_PLACEMENT_LINES
 };
 
 static const bool def_bool[] =
@@ -156,6 +157,7 @@ static const bool def_bool[] =
     false,                        // CFG_BOOL_PROXY_TUNNEL
     false,                        // CFG_BOOL_SCRIPT_SHOW_INPUT
     true,                         // CFG_BOOL_ONE_INSTANCE
+    true,                         // CFG_BOOL_ANALYZER_PLACEMENT_LINES
 };
 
 static const QString keys_variant[] =

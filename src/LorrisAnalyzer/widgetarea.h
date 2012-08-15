@@ -19,6 +19,20 @@ class LorrisAnalyzer;
 class ChildTab;
 class WidgetAreaPreview;
 
+#define PLACEMENT_SHOW 20
+#define PLACEMENT_STICK 7
+
+enum AreaMenuActions
+{
+    ACT_ENABLE_GRID = 0,
+    ACT_SHOW_GRID,
+    ACT_ENABLE_LINES,
+    ACT_GRID_SIZE,
+    ACT_ALIGN,
+
+    ACT_MAX
+};
+
 class WidgetArea : public QFrame
 {
     Q_OBJECT
@@ -69,6 +83,9 @@ public:
 
     QRegion getRegionWithWidgets();
 
+    void updatePlacement(int x, int y, int w, int h, DataWidget *widget);
+    const QVector<QLine>& getPlacementLines() const { return m_placementLines; }
+
 public slots:
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
@@ -88,10 +105,13 @@ private slots:
     void showGrid(bool show);
     void setGridSize();
     void alignWidgets();
+    void clearPlacementLines();
+    void enableLines(bool enable);
 
 private:
     void getMarkPos(int &x, int &y, QSize &size);
     quint32 getNewId() { return m_widgetIdCounter++; }
+    void addPlacementLine(int val, bool vertical, bool &changed);
 
     w_map m_widgets;
     mark_map m_marks;
@@ -108,6 +128,9 @@ private:
 
     QMenu *m_menu;
     WidgetAreaPreview *m_prev;
+
+    QVector<QLine> m_placementLines;
+    bool m_enablePlacementLines;
 };
 
 class WidgetAreaPreview : public QWidget

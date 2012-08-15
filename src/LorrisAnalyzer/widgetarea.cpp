@@ -33,17 +33,24 @@ WidgetArea::WidgetArea(QWidget *parent) :
     m_prev = NULL;
     m_show_grid = sConfig.get(CFG_BOOL_ANALYZER_SHOW_GRID);
     m_grid = sConfig.get(CFG_BOOL_ANALYZER_ENABLE_GRID) ? sConfig.get(CFG_QUINT32_ANALYZER_GRID_SIZE) : 1;
+    m_enablePlacementLines = sConfig.get(CFG_BOOL_ANALYZER_PLACEMENT_LINES);
 
     setCursor(Qt::OpenHandCursor);
 
+    // update enum AreaMenuActions when changing these
     QAction *enableGrid = m_menu->addAction(tr("Enable grid"));
     QAction *showGrid = m_menu->addAction(tr("Show grid"));
+    QAction *linesAct = m_menu->addAction(tr("Enable placement lines"));
     QAction *gridSize = m_menu->addAction(tr("Set grid size..."));
     QAction *align = m_menu->addAction(tr("Align widgets to the grid"));
     enableGrid->setCheckable(true);
     enableGrid->setChecked(m_grid != 1);
     showGrid->setCheckable(true);
     showGrid->setChecked(m_show_grid);
+    linesAct->setCheckable(true);
+    linesAct->setChecked(m_enablePlacementLines);
+
+    Q_ASSERT(ACT_MAX == m_menu->actions().size());
 
     connect(enableGrid, SIGNAL(toggled(bool)),           SLOT(enableGrid(bool)));
     connect(enableGrid, SIGNAL(toggled(bool)), showGrid, SLOT(setEnabled(bool)));
@@ -51,6 +58,7 @@ WidgetArea::WidgetArea(QWidget *parent) :
     connect(showGrid,   SIGNAL(toggled(bool)),           SLOT(showGrid(bool)));
     connect(gridSize,   SIGNAL(triggered()),             SLOT(setGridSize()));
     connect(align,      SIGNAL(triggered()),             SLOT(alignWidgets()));
+    connect(linesAct,   SIGNAL(toggled(bool)),           SLOT(enableLines(bool)));
 }
 
 WidgetArea::~WidgetArea()
@@ -101,6 +109,7 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(m_analyzer, SIGNAL(newData(analyzer_data*,quint32)), w, SLOT(newData(analyzer_data*,quint32)));
     connect(w,          SIGNAL(removeWidget(quint32)),              SLOT(removeWidget(quint32)));
     connect(w,          SIGNAL(updateMarker(DataWidget*)),          SLOT(updateMarker(DataWidget*)));
+    connect(w,          SIGNAL(clearPlacementLines()),              SLOT(clearPlacementLines()));
     connect(w,          SIGNAL(updateForMe()),          m_analyzer, SLOT(updateForWidget()));
     connect(w,          SIGNAL(updateData()),                       SIGNAL(updateData()));
     connect(w,   SIGNAL(mouseStatus(bool,data_widget_info,qint32)), SIGNAL(mouseStatus(bool,data_widget_info,qint32)));
@@ -235,8 +244,8 @@ void WidgetArea::LoadSettings(DataFileParser *file)
         file->read((char*)&m_grid, sizeof(m_grid));
         file->read((char*)&m_show_grid, sizeof(m_show_grid));
 
-        m_menu->actions()[0]->setChecked(m_grid != 1);
-        m_menu->actions()[1]->setChecked(m_show_grid);
+        m_menu->actions()[ACT_ENABLE_GRID]->setChecked(m_grid != 1);
+        m_menu->actions()[ACT_SHOW_GRID]->setChecked(m_show_grid);
     }
 
     if(file->seekToNextBlock("areaGridOffset", BLOCK_DATA_INDEX))
@@ -280,7 +289,7 @@ void WidgetArea::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
 
-    if(!m_show_grid && m_grid == 1 && m_marks.empty())
+    if(!m_show_grid && m_grid == 1 && m_marks.empty() && m_placementLines.isEmpty())
         return;
 
     QPainter painter(this);
@@ -302,6 +311,14 @@ void WidgetArea::paintEvent(QPaintEvent *event)
 
         for(mark_map::iterator itr = m_marks.begin(); itr != m_marks.end(); ++itr)
             painter.drawRect(*itr);
+    }
+
+    if(!m_placementLines.isEmpty())
+    {
+        painter.setPen(Qt::blue);
+        painter.setBrush(QBrush(Qt::blue, Qt::SolidPattern));
+
+        painter.drawLines(m_placementLines);
     }
 }
 
@@ -455,6 +472,86 @@ void WidgetArea::correctWidgetName(QString &name, DataWidget *widget)
             itr = m_widgets.begin();
         }
     }
+}
+
+void WidgetArea::updatePlacement(int x, int y, int w, int h, DataWidget *widget)
+{
+    if(!m_enablePlacementLines)
+        return;
+
+    int wx, wy;
+    int sx = x + w;
+    int sy = y + h;
+    bool changed = false;
+
+    for(QVector<QLine>::iterator itr = m_placementLines.begin(); itr != m_placementLines.end();)
+    {
+        wx = (*itr).x1();
+        wy = (*itr).y1();
+
+        if(abs(wx - x) > PLACEMENT_SHOW && abs(wx - sx) > PLACEMENT_SHOW &&
+           abs(wy - y) > PLACEMENT_SHOW && abs(wy - sy) > PLACEMENT_SHOW)
+        {
+            itr = m_placementLines.erase(itr);
+            changed = true;
+            continue;
+        }
+        ++itr;
+    }
+
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+    {
+        if(*itr == widget)
+            continue;
+
+        wx = (*itr)->x();
+        wy = (*itr)->y();
+
+        if(abs(wx - x) < PLACEMENT_SHOW || abs(wx - sx) < PLACEMENT_SHOW)
+            addPlacementLine(wx, true, changed);
+
+        if(abs(wy - y) < PLACEMENT_SHOW || abs(wy - sy) < PLACEMENT_SHOW)
+            addPlacementLine(wy, false, changed);
+
+        wx += (*itr)->width();
+        wy += (*itr)->height();
+
+        if(abs(wx - x) < PLACEMENT_SHOW || abs(wx - sx) < PLACEMENT_SHOW)
+            addPlacementLine(wx, true, changed);
+
+        if(abs(wy - y) < PLACEMENT_SHOW || abs(wy - sy) < PLACEMENT_SHOW)
+            addPlacementLine(wy, false, changed);
+    }
+
+    if(changed)
+        update();
+}
+
+void WidgetArea::addPlacementLine(int val, bool vertical, bool& changed)
+{
+    QLine l;
+    if(vertical)
+        l.setLine(val, -PLACEMENT_SHOW, val, height()+PLACEMENT_SHOW);
+    else
+        l.setLine(-PLACEMENT_SHOW, val, width()+PLACEMENT_SHOW, val);
+
+    if(m_placementLines.contains(l))
+        return;
+
+    m_placementLines.push_back(l);
+    changed = true;
+}
+
+void WidgetArea::clearPlacementLines()
+{
+    m_placementLines.clear();
+    update();
+}
+
+void WidgetArea::enableLines(bool enable)
+{
+    sConfig.set(CFG_BOOL_ANALYZER_PLACEMENT_LINES, enable);
+    m_enablePlacementLines = enable;
 }
 
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)

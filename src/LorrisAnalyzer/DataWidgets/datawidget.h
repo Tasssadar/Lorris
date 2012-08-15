@@ -19,6 +19,8 @@
 #include "../../misc/datafileparser.h"
 #include "../widgetfactory.h"
 
+class WidgetArea;
+
 enum NumberTypes
 {
     NUM_UINT8 = 0,
@@ -84,6 +86,7 @@ Q_SIGNALS:
     void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
+    void clearPlacementLines();
     void SendData(const QByteArray& data);
 
     void titleChanged(const QString& newTitle);
@@ -162,6 +165,12 @@ protected:
 
     void setIcon(QString path);
 
+    inline WidgetArea *widgetArea() const
+    {
+        Q_ASSERT(parent()->inherits("WidgetArea"));
+        return (WidgetArea*)parent();
+    }
+
     quint8 m_widgetType;
     data_widget_info m_info;
     bool m_assigned;
@@ -186,6 +195,7 @@ private:
     void copyWidget(QMouseEvent *ev);
 
     QPoint mOrigin;
+    QPoint m_clickPos;
     quint8 m_dragAction;
     DataWidget *m_copy_widget;
     bool m_locked;
