@@ -112,18 +112,24 @@ void TabWidget::closeTab(int index)
     }
 
     quint32 id = m_tab_ids[index];
+    Tab *tab = dynamic_cast<Tab*>(widget(index));
+    if(!tab)
+    {
+        Q_ASSERT(false);
+        return;
+    }
+
+    if(!tab->onTabClose())
+        return;
 
     if(id & IDMASK_CHILD)
-        sWorkTabMgr.removeChildTab((ChildTab*)widget(index));
+    {
+        sWorkTabMgr.removeChildTab((ChildTab*)tab);
+    }
     else
     {
-        WorkTab *tab = sWorkTabMgr.getWorkTab(id);
-        if(!tab->onTabClose())
-             return;
-
-        disconnect(tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
-
-        sWorkTabMgr.removeTab(tab);
+        disconnect((WorkTab*)tab, SIGNAL(statusBarMsg(QString,int)), this, SIGNAL(statusBarMsg(QString,int)));
+        sWorkTabMgr.removeTab((WorkTab*)tab);
     }
 
     changeMenu(currentIndex());

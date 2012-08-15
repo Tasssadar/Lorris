@@ -34,7 +34,6 @@ public:
     quint32 getId() { return m_id; }
 
     virtual void onTabShow(const QString& filename);
-    virtual bool onTabClose();
     virtual void openFile(const QString& filename);
     virtual std::vector<QMenu*>& getMenu() { return m_menus; }
 

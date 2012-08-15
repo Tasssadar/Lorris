@@ -42,6 +42,8 @@ public:
         emit activateMe();
     }
 
+    virtual bool onTabClose();
+
 private:
     quint8 m_type;
     quint32 m_windowId;

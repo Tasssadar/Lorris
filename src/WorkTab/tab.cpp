@@ -18,3 +18,8 @@ Tab::~Tab()
 {
 
 }
+
+bool Tab::onTabClose()
+{
+    return true;
+}

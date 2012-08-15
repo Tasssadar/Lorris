@@ -29,11 +29,6 @@ void WorkTab::onTabShow(const QString &)
 
 }
 
-bool WorkTab::onTabClose()
-{
-    return true;
-}
-
 void WorkTab::addTopMenu(QMenu *menu)
 {
     m_menus.push_back(menu);

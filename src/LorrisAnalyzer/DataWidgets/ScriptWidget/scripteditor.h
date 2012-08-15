@@ -43,6 +43,8 @@ public:
         return m_filename;
     }
 
+    bool onTabClose();
+
 public slots:
     void addError(const QString& error);
     void clearErrors();
@@ -74,6 +76,7 @@ private:
     LineNumber *m_line_num;
     bool m_changed;
     bool m_contentChanged;
+    bool m_fileChanged;
     bool m_ignoreNextFocus;
     bool m_ignoreFocus;
     quint32 m_errors;

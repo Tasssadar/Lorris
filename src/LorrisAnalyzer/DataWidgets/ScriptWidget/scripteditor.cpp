@@ -80,6 +80,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     setFilename(filename);
     m_contentChanged = false;
+    m_fileChanged = false;
     checkChange();
 
     Utils::loadWindowParams(this, sConfig.get(CFG_STRING_SCRIPT_WND_PARAMS));
@@ -110,7 +111,10 @@ void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
     {
         case QDialogButtonBox::ApplyRole:  emit applySource(false); break;
         case QDialogButtonBox::AcceptRole: emit applySource(true);  break;
-        case QDialogButtonBox::RejectRole: emit rejected(); return;
+        case QDialogButtonBox::RejectRole:
+            if(onTabClose())
+                emit rejected();
+            return;
         default: return;
     }
     m_contentChanged = false;
@@ -149,6 +153,7 @@ void ScriptEditor::textChanged()
     }
     m_changed = true;
     m_contentChanged = true;
+    m_fileChanged = true;
 }
 
 void ScriptEditor::on_loadBtn_clicked()
@@ -168,6 +173,7 @@ void ScriptEditor::on_loadBtn_clicked()
 
     sConfig.set(CFG_STRING_ANALYZER_JS, filename);
     setFilename(filename);
+    m_fileChanged = false;
 }
 
 void ScriptEditor::setFilename(const QString& filename)
@@ -177,11 +183,13 @@ void ScriptEditor::setFilename(const QString& filename)
     {
         ui->nameLabel->setText(filename.split("/").last());
         setTabText(tr("%1 - Script").arg(ui->nameLabel->text()));
+        setWindowTitle(tr("%1 - Script").arg(ui->nameLabel->text()));
     }
     else
     {
         ui->nameLabel->setText(QString());
         setTabText(tr("Script"));
+        setWindowTitle(tr("Script"));
     }
     m_editor->setModified(false);
 }
@@ -288,6 +296,7 @@ bool ScriptEditor::save(const QString& file)
 
     setStatus(tr("File %1 was saved").arg(f.fileName().split("/").last()));
     setFilename(file);
+    m_fileChanged = false;
     return true;
 }
 
@@ -420,6 +429,28 @@ void ScriptEditor::on_exampleBtn_clicked()
 void ScriptEditor::examplePreviewDestroyed()
 {
     ui->exampleBtn->setChecked(false);
+}
+
+bool ScriptEditor::onTabClose()
+{
+    if(!m_fileChanged || m_filename.isEmpty())
+        return true;
+
+    QMessageBox box(QMessageBox::Question, tr("Script was changed"),
+                    tr("File was changed, but not saved:"),
+                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
+    box.setInformativeText(m_filename);
+    switch(box.exec())
+    {
+        case QMessageBox::Save:
+            save(m_filename);
+            return true;
+        case QMessageBox::Discard:
+            return true;
+        case QMessageBox::Cancel:
+            return false;
+    }
+    return true;
 }
 
 ExamplesPreview::ExamplesPreview(int engine, QWidget *parent) : QScrollArea(parent)

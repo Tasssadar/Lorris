@@ -206,7 +206,7 @@ void ScriptWidget::setSourceTriggered()
     }
 
     m_editor = new ScriptEditor(m_engine->getSource(), m_filename, m_engine_type);
-    emit addChildTab(m_editor, tr("Script source"));
+    emit addChildTab(m_editor, m_editor->windowTitle());
     m_editor->activateTab();
 
     connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
