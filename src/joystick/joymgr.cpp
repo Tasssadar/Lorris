@@ -111,6 +111,7 @@ void JoyMgr::removeJoystick(JoystickPrivate *joy)
     delete joy;
 
     m_thread.setStopped(m_joysticks.empty());
+    libenjoy_poll(m_context, NULL);
 }
 
 JoystickPrivate *JoyMgr::getJoystickPrivate(int id)

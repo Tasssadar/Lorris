@@ -183,6 +183,8 @@ void QtScriptEngine::setSource(const QString &source)
     delete m_engine;
     m_engine = new QtScriptEngine_private(this, parent());
 
+    connect(this, SIGNAL(stopUsingJoy(QObject*)), m_engine, SIGNAL(stopUsingJoy(QObject*)));
+
     prepareNewContext();
     m_engine->evaluate(classImplement + source);
 
