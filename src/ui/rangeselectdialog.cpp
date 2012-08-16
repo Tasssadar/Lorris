@@ -5,25 +5,40 @@
 **    See README and COPYING
 ***********************************************/
 
+#include <QDoubleValidator>
+#include <float.h>
+
 #include "rangeselectdialog.h"
 #include "ui_rangeselectdialog.h"
 
-RangeSelectDialog::RangeSelectDialog(int val_min, int val_max, int max, int min, QWidget *parent) : QDialog(parent), ui(new Ui::RangeSelectDialog)
+RangeSelectDialog::RangeSelectDialog(double val_min, double val_max, bool isInt, QWidget *parent) :
+    QDialog(parent), ui(new Ui::RangeSelectDialog)
 {
     ui->setupUi(this);
 
-    ui->maxBox->setRange(val_min, max);
-    ui->minBox->setRange(min, val_max);
-    ui->maxBox->setValue(val_max);
-    ui->minBox->setValue(val_min);
+    m_valMin = m_valMax = NULL;
 
-    connect(ui->maxBox, SIGNAL(valueChanged(int)), this, SLOT(maxChanged(int)));
-    connect(ui->minBox, SIGNAL(valueChanged(int)), this, SLOT(minChanged(int)));
-    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(boxClicked(QAbstractButton*)));
+    if(isInt)
+    {
+        m_valMin = new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this);
+        m_valMax = new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this);
+    }
+    else
+    {
+        m_valMin = new QDoubleValidator(-DBL_MAX, DBL_MAX, DBL_DIG, this);
+        m_valMax = new QDoubleValidator(-DBL_MAX, DBL_MAX, DBL_DIG, this);
+    }
+
+    ui->minBox->setValidator(m_valMin);
+    ui->maxBox->setValidator(m_valMax);
+    ui->minBox->setText(QString::number(val_min));
+    ui->maxBox->setText(QString::number(val_max));
+
+    connect(ui->maxBox, SIGNAL(textEdited(QString)), SLOT(maxChanged(QString)));
+    connect(ui->minBox, SIGNAL(textEdited(QString)), SLOT(minChanged(QString)));
 
     m_minRes = val_min;
     m_maxRes = val_max;
-    m_res = false;
 
     setFixedSize(size());
 }
@@ -33,21 +48,34 @@ RangeSelectDialog::~RangeSelectDialog()
     delete ui;
 }
 
-void RangeSelectDialog::maxChanged(int value)
+void RangeSelectDialog::maxChanged(const QString& text)
 {
-    m_maxRes = value;
-    ui->minBox->setMaximum(value);
+    bool ok;
+    double val = text.toDouble(&ok);
+    if(!ok)
+        return;
+
+    if(val < m_minRes)
+        ui->maxBox->setStyleSheet("background-color: red");
+    else
+    {
+        m_maxRes = val;
+        ui->maxBox->setStyleSheet("");
+    }
 }
 
-void RangeSelectDialog::minChanged(int value)
+void RangeSelectDialog::minChanged(const QString &text)
 {
-    m_minRes = value;
-    ui->maxBox->setMinimum(value);
-}
+    bool ok;
+    double val = text.toDouble(&ok);
+    if(!ok)
+        return;
 
-void RangeSelectDialog::boxClicked(QAbstractButton *b)
-{
-    if(ui->buttonBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
-        m_res = true;
-    close();
+    if(val > m_maxRes)
+        ui->minBox->setStyleSheet("background-color: red");
+    else
+    {
+        m_minRes = val;
+        ui->minBox->setStyleSheet("");
+    }
 }

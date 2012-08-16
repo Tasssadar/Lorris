@@ -34,18 +34,21 @@ class Storage : public QObject
     Q_OBJECT
 
 public:
+    typedef std::vector<QByteArray> DataVector;
+
     explicit Storage(LorrisAnalyzer *analyzer);
     ~Storage();
 
     void setPacket(analyzer_packet *packet);
+    analyzer_packet *getPacket() const { return m_packet; }
 
     void Clear();
 
-    void addData(analyzer_data *data);
+    void addData(const QByteArray& data);
     quint32 getSize() const { return m_size; }
     quint32 getMaxIdx() const { return m_size ? m_size -1 : 0; }
     bool isEmpty() const { return m_size == 0; }
-    analyzer_data *get(quint32 index) { return m_data[index]; }
+    QByteArray *get(quint32 index) { return &m_data[index]; }
     analyzer_packet *loadFromFile(QString *name, quint8 load, WidgetArea *area, DeviceTabWidget *devices, quint32 &data_idx);
 
     const QString& getFilename() { return m_filename; }
@@ -58,8 +61,9 @@ public slots:
 
 private:
     bool checkMagic(DataFileParser *file);
+    void readLegacyStructure(DataFileParser *file, analyzer_packet *packet);
 
-    std::vector<analyzer_data*> m_data;
+    DataVector m_data;
     analyzer_packet *m_packet;
     quint32 m_size;
     LorrisAnalyzer *m_analyzer;

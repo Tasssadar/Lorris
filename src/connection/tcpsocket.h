@@ -22,7 +22,8 @@ class TcpSocket : public PortConnection
     Q_OBJECT
 public:
     explicit TcpSocket();
-    ~TcpSocket();
+
+    virtual QString details() const;
 
     bool Open();
     void OpenConcurrent();
@@ -42,12 +43,16 @@ public:
 
     QHash<QString, QVariant> config() const;
     bool applyConfig(QHash<QString, QVariant> const & config);
+    bool canSaveToSession() const { return true; }
 
 public slots:
     void connectResultSer(bool opened);
     void tcpConnectResult();
     void readyRead();
     void stateChanged();
+
+protected:
+    ~TcpSocket();
 
 private:
     bool connectToHost();

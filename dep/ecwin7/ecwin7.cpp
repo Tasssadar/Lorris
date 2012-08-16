@@ -31,6 +31,9 @@ EcWin7::EcWin7()
 #ifdef Q_WS_WIN
     mTaskbar = NULL;
     mOverlayIcon = NULL;
+
+    CoCreateInstance(CLSID_TaskbarList, 0,CLSCTX_INPROC_SERVER,
+                     IID_ITaskbarList3, reinterpret_cast<void**> (&(mTaskbar)));
 #endif
 }
 
@@ -38,53 +41,35 @@ EcWin7::EcWin7()
 void EcWin7::init(WId wid)
 {
     mWindowId = wid;
-#ifdef Q_WS_WIN
-    mTaskbarMessageId = RegisterWindowMessage(L"TaskbarButtonCreated");
-#endif
-}
-
-// Windows event handler callback function
-// (handles taskbar communication initial message)
-bool EcWin7::winEvent(MSG * message, long * result)
-{
-#ifdef Q_WS_WIN
-    if (message->message == mTaskbarMessageId)
-    {
-        HRESULT hr = CoCreateInstance(CLSID_TaskbarList,
-                                      0,
-                                      CLSCTX_INPROC_SERVER,
-                                      IID_ITaskbarList3,
-                                      reinterpret_cast<void**> (&(mTaskbar)));
-        *result = hr;
-        return true;
-    }
-#endif
-    return false;
 }
 
 // Set progress bar current value
+#ifdef Q_WS_WIN
 void EcWin7::setProgressValue(int value, int max)
 {
-#ifdef Q_WS_WIN
     if(mTaskbar)
         mTaskbar->SetProgressValue(mWindowId, value, max);
-#endif
 }
+#else
+void EcWin7::setProgressValue(int, int) { }
+#endif
 
 // Set progress bar current state (active, error, pause, ecc...)
+#ifdef Q_WS_WIN
 void EcWin7::setProgressState(ToolBarProgressState state)
 {
-#ifdef Q_WS_WIN
     if(mTaskbar)
         mTaskbar->SetProgressState(mWindowId, (TBPFLAG)state);
-#endif
 }
+#else
+void EcWin7::setProgressState(ToolBarProgressState) { }
+#endif
 
 // Set new overlay icon and corresponding description (for accessibility)
 // (call with iconName == "" and description == "" to remove any previous overlay icon)
+#ifdef Q_WS_WIN
 void EcWin7::setOverlayIcon(QString iconName, QString description)
 {
-#ifdef Q_WS_WIN
     if(!mTaskbar)
         return;
 
@@ -109,5 +94,7 @@ void EcWin7::setOverlayIcon(QString iconName, QString description)
     {
         DestroyIcon(oldIcon);
     }
-#endif
 }
+#else
+void EcWin7::setOverlayIcon(QString, QString) { }
+#endif

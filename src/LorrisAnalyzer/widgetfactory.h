@@ -9,12 +9,11 @@
 #define WIDGETFACTORY_H
 
 #include <vector>
-#include <QHash>
 #include "../misc/singleton.h"
 
+class QWidget;
 class DataWidget;
 class DataWidgetAddBtn;
-class QWidget;
 
 #define REGISTER_DATAWIDGET(id, n) DataWidget *n##WidgetInst(QWidget *parent) { return new n##Widget(parent); } \
        DataWidgetAddBtn *n##BtnInst(QWidget *parent) { return new n##WidgetAddBtn(parent); } \
@@ -34,6 +33,24 @@ class QWidget;
         }; \
         static const n##WidgetInit n##widgetinit;
 
+enum WidgetTypes
+{
+    WIDGET_NUMBERS,
+    WIDGET_BAR,
+    WIDGET_COLOR,
+    WIDGET_GRAPH,
+    WIDGET_SCRIPT,
+    WIDGET_INPUT,
+    WIDGET_TERMINAL,
+    WIDGET_BUTTON,
+    WIDGET_CIRCLE,
+    WIDGET_SLIDER,
+    WIDGET_CANVAS,
+
+    WIDGET_MAX
+    //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
+};
+
 class WidgetFactory : public Singleton<WidgetFactory>
 {
 public:
@@ -48,8 +65,10 @@ public:
     DataWidget *getWidget(quint32 type, QWidget *parent);
     std::vector<DataWidgetAddBtn*> getButtons(QWidget *parent);
 
+    DataWidget *copy(DataWidget *w);
+
 private:
-    QHash<quint32, widgetInit> m_widgetInits;
+    widgetInit m_widgetInits[WIDGET_MAX];
     std::vector<btnInit> m_btnInits;
 };
 

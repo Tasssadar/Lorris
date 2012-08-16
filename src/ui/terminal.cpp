@@ -94,6 +94,8 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
     m_updateTimer.start(100);
     viewport()->setAutoFillBackground(true);
+
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 Terminal::~Terminal()
@@ -393,6 +395,12 @@ void Terminal::keyPressEvent(QKeyEvent *event)
             m_command.chop(1);
             return;
         }
+        case Qt::Key_Tab:
+        {
+            if(event->modifiers() & Qt::ControlModifier)
+                return QAbstractScrollArea::keyPressEvent(event);
+            break;
+        }
     }
 
     if(key.isEmpty())
@@ -422,6 +430,20 @@ void Terminal::handleInput(const QString &data, int key)
             m_command.clear();
         }
     }
+}
+
+bool Terminal::event(QEvent *event)
+{
+    if(event->type() != QEvent::ShortcutOverride)
+        return QAbstractScrollArea::event(event);
+
+    QKeyEvent *ke = (QKeyEvent*)event;
+    if(ke->modifiers() == Qt::NoModifier)
+    {
+        ke->accept();
+        return true;
+    }
+    return QAbstractScrollArea::event(event);
 }
 
 void Terminal::copyToClipboard()
@@ -543,7 +565,7 @@ void Terminal::paintEvent(QPaintEvent *)
         if(m_sel_stop.y() == m_sel_start.y())
             w *= m_sel_stop.x() - m_sel_start.x();
         else
-            w *= width - m_sel_start.x();
+            w *= width - (m_sel_start.x() - startX);
 
         painter.setPen(Qt::NoPen);
         painter.setBrush(this->palette().color(QPalette::Highlight));
@@ -586,10 +608,11 @@ void Terminal::paintEvent(QPaintEvent *)
 
 void Terminal::adjustSelectionWidth(int &w, quint32 i, quint32 max, int len)
 {
-    if(i == 0 && m_sel_start.x()*m_char_width > len)
+    int startX = horizontalScrollBar()->value();
+    if(i == 0 && (m_sel_start.x() - startX)*m_char_width > len)
         w = 0;
-    else if(i == 0)   w = std::min(w, (len - m_sel_start.x()*m_char_width));
-    else if(i == max) w = std::min(len, m_sel_stop.x()*m_char_width);
+    else if(i == 0)   w = std::min(w, (len - (m_sel_start.x() - startX)*m_char_width));
+    else if(i == max) w = std::min(len, (m_sel_stop.x() - startX)*m_char_width);
     else              w = len;
 }
 
@@ -700,14 +723,16 @@ void Terminal::mouseMoveEvent(QMouseEvent *event)
     viewport()->update();
 }
 
-void Terminal::focusInEvent(QFocusEvent *)
+void Terminal::focusInEvent(QFocusEvent *event)
 {
     viewport()->update();
+    QAbstractScrollArea::focusInEvent(event);
 }
 
-void Terminal::focusOutEvent(QFocusEvent *)
+void Terminal::focusOutEvent(QFocusEvent *event)
 {
     viewport()->update();
+    QAbstractScrollArea::focusOutEvent(event);
 }
 
 void Terminal::setFmt(int fmt)

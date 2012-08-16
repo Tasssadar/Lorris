@@ -153,6 +153,13 @@ struct analyzer_packet
         big_endian = true;
     }
 
+    QByteArray getStaticData()
+    {
+        if(header)
+            return QByteArray::fromRawData((char*)static_data.data(), header->static_len);
+        return QByteArray();
+    }
+
     analyzer_header *header;
     bool big_endian;
     std::vector<quint8> static_data;
@@ -162,26 +169,22 @@ struct analyzer_packet
 class analyzer_data
 {
 public:
-    analyzer_data(analyzer_packet *packet);
+    analyzer_data(QByteArray *data = NULL);
     void clear();
 
-    void setPacket(analyzer_packet *packet)
-    {
-        m_packet = packet;
-    }
+    void setPacket(analyzer_packet *packet) { m_packet = packet; }
+    analyzer_packet *getPacket() const { return m_packet; }
 
-    void setData(QByteArray data)
+    void setData(QByteArray *data)
     {
         m_data = data;
-        m_forceValid = true;
     }
-    quint32 addData(char *d_itr, char *d_end);
 
-    const QByteArray& getData() { return m_data; }
-    const QByteArray& getStaticData() { return m_static_data; }
+    quint32 addData(char *d_itr, char *d_end, quint32& itr);
 
-    bool isValid();
-    bool isFresh() const { return itr == 0; }
+    const QByteArray& getData() { return *m_data; }
+
+    bool isValid(quint32 itr);
 
     bool getDeviceId(quint8& id);
     bool getCmd(quint8& cmd);
@@ -206,19 +209,16 @@ public:
 
 private:
     analyzer_packet *m_packet;
-    QByteArray m_data;
-    QByteArray m_static_data;
-    quint32 itr;
-    bool m_forceValid;
+    QByteArray *m_data;
 };
 
 template <typename T>
 T analyzer_data::read(quint32 pos)
 {
-    if(pos+sizeof(T) > (quint32)m_data.length())
+    if(pos+sizeof(T) > (quint32)m_data->length())
         throw "Cannot read beyond data size!";
 
-    T val = *((T const*)&m_data.data()[pos]);
+    T val = *((T const*)&m_data->data()[pos]);
     if(m_packet->big_endian)
         Utils::swapEndian<T>((char*)&val);
     return val;

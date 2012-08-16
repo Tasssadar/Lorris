@@ -191,6 +191,21 @@ bool PythonQtSignalReceiver::removeSignalHandler(const char* signal, PyObject* c
   return found;
 }
 
+bool PythonQtSignalReceiver::removeSignalHandler(PyObject* callable)
+{
+    bool found = false;
+    QMutableListIterator<PythonQtSignalTarget> i(_targets);
+    while (i.hasNext())
+    {
+        if (i.next().isSameCallable(callable))
+        {
+            i.remove();
+            found = true;
+        }
+    }
+    return found;
+}
+
 void PythonQtSignalReceiver::removeSignalHandlers()
 {
   _targets.clear();

@@ -14,7 +14,7 @@
 #include "../connection/serialport.h"
 #include "../connection/tcpsocket.h"
 
-WorkTab::WorkTab() : QWidget(NULL)
+WorkTab::WorkTab() : Tab(TABTYPE_WORKTAB, NULL)
 {
     m_id = 0;
     m_info = NULL;
@@ -24,32 +24,9 @@ WorkTab::~WorkTab()
 {
 }
 
-void WorkTab::DeleteAllMembers(QLayout *layout)
-{
-    while(layout->count())
-    {
-        QLayoutItem *item = layout->itemAt(0);
-        layout->removeItem(item);
-        if(item->layout())
-        {
-            WorkTab::DeleteAllMembers(item->layout());
-            delete item->layout();
-            continue;
-        }
-        else if(item->widget())
-            delete item->widget();
-        delete item;
-    }
-}
-
 void WorkTab::onTabShow(const QString &)
 {
 
-}
-
-bool WorkTab::onTabClose()
-{
-    return true;
 }
 
 void WorkTab::addTopMenu(QMenu *menu)
@@ -72,9 +49,13 @@ void WorkTab::loadData(DataFileParser *)
 
 }
 
+void WorkTab::childClosed(QWidget *child)
+{
+    delete child;
+}
+
 //----------------------------------------------------------------------------
 PortConnWorkTab::PortConnWorkTab()
-    : m_con(0)
 {
 }
 
@@ -84,11 +65,17 @@ PortConnWorkTab::~PortConnWorkTab()
         m_con->releaseTab();
 }
 
-void PortConnWorkTab::setConnection(PortConnection *con)
+void PortConnWorkTab::setConnection(ConnectionPointer<Connection> const & con)
+{
+    this->setPortConnection(con.dynamicCast<PortConnection>());
+}
+
+void PortConnWorkTab::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
     if (m_con)
     {
-        disconnect(m_con, 0, this, 0);
+        m_con->disconnect(this);
+        this->disconnect(m_con.data());
         m_con->releaseTab();
     }
 
@@ -96,18 +83,12 @@ void PortConnWorkTab::setConnection(PortConnection *con)
 
     m_con = con;
 
-    if(!con)
-        return;
-
-    connect(m_con, SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
-    connect(m_con, SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
-    connect(m_con, SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
-    m_con->addTabRef();
-}
-
-void PortConnWorkTab::connectionDestroyed()
-{
-    m_con = 0;
+    if(m_con)
+    {
+        connect(m_con.data(), SIGNAL(dataRead(QByteArray)), this, SLOT(readData(QByteArray)));
+        connect(m_con.data(), SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
+        m_con->addTabRef();
+    }
 }
 
 void PortConnWorkTab::readData(const QByteArray& /*data*/)
@@ -124,7 +105,7 @@ void PortConnWorkTab::saveData(DataFileParser *file)
 {
     WorkTab::saveData(file);
 
-    if(m_con && (m_con->getType() == CONNECTION_SERIAL_PORT || m_con->getType() == CONNECTION_TCP_SOCKET))
+    if(m_con && m_con->canSaveToSession())
     {
         file->writeBlockIdentifier("portTabCon");
         file->writeVal(m_con->getType());
@@ -190,7 +171,7 @@ void PortConnWorkTab::loadData(DataFileParser *file)
             cfg.insert(key, val);
         }
 
-        PortConnection *con = sConMgr2.getConnWithConfig(type, cfg);
+        ConnectionPointer<Connection> con = sConMgr2.getConnWithConfig(type, cfg);
         if(con)
         {
             setConnection(con);

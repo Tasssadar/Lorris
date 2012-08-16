@@ -16,6 +16,7 @@
 #include "DataWidgets/datawidget.h"
 #include "../ui/connectbutton.h"
 #include "storage.h"
+#include "packetparser.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -26,8 +27,6 @@ class DeviceTabWidget;
 class WidgetArea;
 class QSpinBox;
 class QScrollArea;
-class PacketParser;
-struct analyzer_packet;
 
 enum hideable_areas
 {
@@ -59,13 +58,11 @@ class LorrisAnalyzer : public PortConnWorkTab
         void setAreaVisibility(quint8 area, bool visible);
         analyzer_data *getLastData(quint32& idx);
 
-        Connection *getCon() { return m_con; }
-
         quint32 getCurrentIndex();
 
         bool showTitleBars() const { return m_title_action->isChecked(); }
 
-        void setConnection(PortConnection *con);
+        void setPortConnection(ConnectionPointer<PortConnection> const & con);
         void openFile(const QString& filename);
 
         void saveData(DataFileParser *file);
@@ -77,6 +74,9 @@ class LorrisAnalyzer : public PortConnWorkTab
         void updateData();
         void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);
         void setDataChanged(bool changed = true) { m_data_changed = changed; }
+
+        void addChildTab(ChildTab *tab, const QString& name);
+        void removeChildTab(ChildTab *tab);
 
     private slots:
         void doNewSource();
@@ -94,7 +94,6 @@ class LorrisAnalyzer : public PortConnWorkTab
         void collapseRightButton();
         void collapseLeftButton();
 
-        void connectionResult(Connection*,bool);
         void connectedStatus(bool connected);
         void indexChanged(int value);
         void showTitleTriggered(bool checked);
@@ -106,13 +105,15 @@ class LorrisAnalyzer : public PortConnWorkTab
         bool load(QString& name, quint8 mask);
         void importBinary(const QString& filename, bool reset = true);
         void resetDevAndStorage(analyzer_packet *packet = NULL);
+        void setPacket(analyzer_packet *packet);
+
 
         bool highlightInfoNotNull;
         data_widget_info highlightInfo;
         Ui::LorrisAnalyzer *ui;
-        Storage *m_storage;
+        Storage m_storage;
         analyzer_packet *m_packet;
-        PacketParser *m_parser;
+        PacketParser m_parser;
 
         QAction *m_title_action;
 
@@ -120,6 +121,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         qint32 m_curIndex;
 
         ConnectButton * m_connectButton;
+        analyzer_data m_curData;
 };
 
 #endif // LORRISANALYZER_H

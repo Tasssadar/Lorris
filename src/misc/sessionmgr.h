@@ -10,6 +10,7 @@
 
 #include <QFile>
 #include <vector>
+#include <set>
 
 #include "ui_sessiondialog.h"
 
@@ -36,13 +37,14 @@ public slots:
 
 private slots:
     void openManager();
+    void removeMenu(QObject *menu);
 
 private:
     void updateSessions();
     QString getFolder();
 
     QStringList m_sessions;
-    QMenu *m_menu;
+    std::set<QMenu*> m_menus;
     QSignalMapper *m_sig_map;
 };
 

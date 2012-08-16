@@ -24,7 +24,7 @@ function onKeyPress(key)
         Slider.setOrientation(1);
 
         Slider.setValue(50.5);
-        Slider.hideMinMax(True);
+        Slider.hideMinMax(true);
     }
 }
 

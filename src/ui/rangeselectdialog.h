@@ -9,32 +9,35 @@
 #define RANGESELECTDIALOG_H
 
 #include <QDialog>
+#include <QAbstractButton>
 
 namespace Ui {
   class RangeSelectDialog;
 }
 
+class QDoubleValidator;
+
 class RangeSelectDialog : public QDialog
 {
     Q_OBJECT
 public:
-    RangeSelectDialog(int val_min, int val_max, int max, int min, QWidget *parent);
+    RangeSelectDialog(double val_min, double val_max, bool isInt, QWidget *parent);
     ~RangeSelectDialog();
 
-    int getMax() { return m_maxRes; }
-    int getMin() { return m_minRes; }
-    bool getRes() { return m_res; }
+    double getMax() { return m_maxRes; }
+    double getMin() { return m_minRes; }
 
 private slots:
-    void maxChanged(int value);
-    void minChanged(int value);
-    void boxClicked(QAbstractButton* b);
+    void maxChanged(const QString& text);
+    void minChanged(const QString& text);
 
 private:
     Ui::RangeSelectDialog *ui;
-    int m_minRes;
-    int m_maxRes;
-    bool m_res;
+    double m_minRes;
+    double m_maxRes;
+
+    QDoubleValidator *m_valMin;
+    QDoubleValidator *m_valMax;
 };
 
 #endif // RANGESELECTDIALOG_H

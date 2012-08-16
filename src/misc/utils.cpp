@@ -8,12 +8,10 @@
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QApplication>
+#include <QLayout>
 
 #include "utils.h"
 #include "../dep/ecwin7/ecwin7.h"
-
-QStatusBar *Utils::m_status_bar = NULL;
-EcWin7 *Utils::m_win7 = NULL;
 
 QString Utils::hexToString(quint8 data, bool withZeroEx)
 {
@@ -65,7 +63,7 @@ QFont Utils::getMonospaceFont(quint8 size)
     return QFont("Courier New", size);
 }
 
-void Utils::ThrowException(const QString& text, QWidget* parent)
+void Utils::showErrorBox(const QString& text, QWidget* parent)
 {
     QMessageBox box(parent);
     box.setIcon(QMessageBox::Critical);
@@ -73,36 +71,6 @@ void Utils::ThrowException(const QString& text, QWidget* parent)
     box.setTextFormat(Qt::RichText);
     box.setText(text);
     box.exec();
-}
-
-void Utils::setStatusBar(QStatusBar *bar)
-{
-    m_status_bar = bar;
-}
-
-void Utils::printToStatusBar(const QString& msg, int timeout)
-{
-    if(m_status_bar)
-        m_status_bar->showMessage(msg, timeout);
-}
-
-void Utils::setWin7(EcWin7 *win7)
-{
-    m_win7 = win7;
-}
-
-void Utils::setProgress(int val)
-{
-    if(!m_win7)
-        return;
-
-    if(val == -1 || val == 100)
-        m_win7->setProgressState(EcWin7::NoProgress);
-    else
-    {
-        m_win7->setProgressState(EcWin7::Normal);
-        m_win7->setProgressValue(val, 100);
-    }
 }
 
 void Utils::swapEndian(char *val, quint8 size)
@@ -168,4 +136,64 @@ QFont Utils::getFontFromString(const QString &str)
         }
     }
     return fnt;
+}
+
+QString Utils::saveWindowParams(QWidget *w)
+{
+    QStringList params;
+    params << QString::number(w->isMaximized())
+           << QString::number(w->width()) << QString::number(w->height())
+           << QString::number(w->x()) << QString::number(w->y());
+    return params.join(";");
+}
+
+void Utils::loadWindowParams(QWidget *w, const QString &param)
+{
+    QStringList params = param.split(';', QString::SkipEmptyParts);
+    if(params.size() < 5)
+        return;
+
+    QRect s;
+    for(int i = 0; i < params.size(); ++i)
+    {
+        int val = params[i].toInt();
+        switch(i)
+        {
+            case 0:
+                if(val != 0)
+                {
+                    w->setWindowState(Qt::WindowMaximized);
+                    return;
+                }
+                break;
+            case 1: s.setWidth(val); break;
+            case 2: s.setHeight(val);break;
+            case 3: s.setX(val); break;
+            case 4: s.setY(val); break;
+        }
+    }
+    w->resize(s.size());
+    w->move(s.topLeft());
+}
+
+void Utils::deleteLayoutMembers(QLayout *layout)
+{
+    while(layout->count())
+    {
+        QLayoutItem *item = layout->itemAt(0);
+        layout->removeItem(item);
+        if(item->layout())
+        {
+            Utils::deleteLayoutMembers(item->layout());
+            delete item->layout();
+            continue;
+        }
+        else if(item->widget())
+        {
+            delete item->widget();
+            delete item;
+        }
+        else if(item->spacerItem())
+            delete item->spacerItem();
+    }
 }

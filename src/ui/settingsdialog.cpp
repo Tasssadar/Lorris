@@ -51,6 +51,11 @@ void SettingsDialog::loadSettings()
     ui->sizeBox->setValue(fnt.pointSize());
 
     ui->portableBox->setChecked(sConfig.get(CFG_BOOL_PORTABLE));
+
+    ui->scaleBox->setChecked(sConfig.get(CFG_BOOL_SMOOTH_SCALING));
+    ui->cmprBlock->setValue(sConfig.get(CFG_QUINT32_COMPRESS_BLOCK)/1024/1024);
+
+    ui->instanceBox->setChecked(sConfig.get(CFG_BOOL_ONE_INSTANCE));
 }
 
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *btn)
@@ -74,6 +79,11 @@ void SettingsDialog::applySettings()
         setPortable(ui->portableBox->isChecked());
         sConfig.set(CFG_BOOL_PORTABLE, ui->portableBox->isChecked());
     }
+
+    sConfig.set(CFG_BOOL_SMOOTH_SCALING, ui->scaleBox->isChecked());
+    sConfig.set(CFG_QUINT32_COMPRESS_BLOCK, ui->cmprBlock->value()*1024*1024);
+
+    sConfig.set(CFG_BOOL_ONE_INSTANCE, ui->instanceBox->isChecked());
 }
 
 void SettingsDialog::setPortable(bool portable)
@@ -117,7 +127,7 @@ fail:
     for(int i = 0; i < list.size(); ++i)
         QFile::remove(to + list[i]);
 
-    Utils::ThrowException(tr("Unable to copy settings files!"));
+    Utils::showErrorBox(tr("Unable to copy settings files!"));
 }
 
 void SettingsDialog::on_updateBtn_clicked()
@@ -129,7 +139,7 @@ void SettingsDialog::on_updateBtn_clicked()
     else
         ui->updateBtn->setText(tr("No update available"));
 #else
-    Utils::ThrowException(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
+    Utils::showErrorBox(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                              "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
 #endif
 }

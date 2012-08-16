@@ -111,13 +111,14 @@ void GraphData::dataPosChanged(quint32 pos)
     if(pos == m_data_pos)
         return;
 
-    qint32 absPos = abs(m_data_pos - pos);
+    qint32 absPos = abs((long)(m_data_pos - pos));
 
     eraseSpareData(absPos, pos);
 
     m_data_pos = pos;
 
-    analyzer_data *cur;
+    analyzer_data cur;
+    cur.setPacket(m_storage->getPacket());
     quint8 cmd, dev;
 
     resetMinMax();
@@ -126,15 +127,15 @@ void GraphData::dataPosChanged(quint32 pos)
 
     for(quint32 i = getStorageBegin(absPos); i < m_data_pos && i < m_storage->getSize(); ++i)
     {
-        cur = m_storage->get(i);
+        cur.setData(m_storage->get(i));
 
-        if(m_info.command != -1 && (!cur->getCmd(cmd) || cmd != m_info.command))
+        if(m_info.command != -1 && (!cur.getCmd(cmd) || cmd != m_info.command))
             continue;
 
-        if(m_info.device != -1 && (!cur->getDeviceId(dev) || dev != m_info.device))
+        if(m_info.device != -1 && (!cur.getDeviceId(dev) || dev != m_info.device))
             continue;
 
-        v = DataWidget::getNumFromPacket(cur, m_info.pos, m_data_type);
+        v = DataWidget::getNumFromPacket(&cur, m_info.pos, m_data_type);
 
         if(!v.isValid())
             continue;

@@ -20,6 +20,7 @@
 #include "lorristerminal.h"
 #include "../ui/terminal.h"
 #include "eeprom.h"
+#include "../WorkTab/WorkTabMgr.h"
 #include "../shared/hexfile.h"
 #include "../shared/defmgr.h"
 #include "../ui/ui_lorristerminal.h"
@@ -139,7 +140,7 @@ void LorrisTerminal::initUI()
     connect(qApp,              SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
-    connect(m_connectButton, SIGNAL(connectionChosen(PortConnection*)), this, SLOT(setConnection(PortConnection*)));
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 
     fmtAction(fmt);
 }
@@ -250,14 +251,6 @@ void LorrisTerminal::connectedStatus(bool connected)
     }
 }
 
-void LorrisTerminal::connectionResult(Connection */*con*/,bool result)
-{
-    disconnect(m_con, SIGNAL(connectResult(Connection*,bool)), this, 0);
-
-    if(!result)
-        Utils::ThrowException(tr("Can't open serial port!"));
-}
-
 void LorrisTerminal::readData(const QByteArray& data)
 {
     if(!m_bootloader.dataRead(data))
@@ -272,7 +265,7 @@ void LorrisTerminal::stopButton()
 
     if(!res)
     {
-        Utils::ThrowException(tr("Timeout on stopping chip!"));
+        Utils::showErrorBox(tr("Timeout on stopping chip!"));
         return;
     }
 
@@ -306,7 +299,7 @@ void LorrisTerminal::flashButton()
     }
     catch(QString ex)
     {
-        Utils::ThrowException(tr("Error loading hex file: ") + ex);
+        Utils::showErrorBox(tr("Error loading hex file: ") + ex);
         return;
     }
 
@@ -376,7 +369,7 @@ void LorrisTerminal::loadText()
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        Utils::ThrowException(tr("Can't open file \"%1\"!").arg(filename), this);
+        Utils::showErrorBox(tr("Can't open file \"%1\"!").arg(filename), this);
         return;
     }
 
@@ -398,7 +391,7 @@ void LorrisTerminal::saveText()
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        Utils::ThrowException(tr("Can't open/create file \"%1\"!").arg(filename), this);
+        Utils::showErrorBox(tr("Can't open/create file \"%1\"!").arg(filename), this);
         return;
     }
 
@@ -420,7 +413,7 @@ void LorrisTerminal::saveBin()
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly))
     {
-        Utils::ThrowException(tr("Can't open/create file \"%1\"!").arg(filename), this);
+        Utils::showErrorBox(tr("Can't open/create file \"%1\"!").arg(filename), this);
         return;
     }
     file.write(ui->terminal->getData());
@@ -438,11 +431,11 @@ void LorrisTerminal::inputAct(int act)
     ui->terminal->setInput(act);
 }
 
-void LorrisTerminal::setConnection(PortConnection *con)
+void LorrisTerminal::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
-    this->PortConnWorkTab::setConnection(con);
-    m_connectButton->setConn(con);
-    m_bootloader.setCon(con);
+    this->PortConnWorkTab::setPortConnection(con);
+    m_connectButton->setConn(con, false);
+    m_bootloader.setCon(con.data());
     connectedStatus(con && con->isOpen());
 }
 
@@ -578,4 +571,10 @@ void LorrisTerminal::sendButton()
         m_con->SendData(data);
 
     lastText = text;
+}
+
+void LorrisTerminal::setWindowId(quint32 id)
+{
+    WorkTab::setWindowId(id);
+    ui->progressBar->setWindowId(sWorkTabMgr.getWindow(id)->winId());
 }

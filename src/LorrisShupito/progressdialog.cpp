@@ -11,7 +11,7 @@
 #include "progressdialog.h"
 #include "../misc/utils.h"
 
-ProgressDialog::ProgressDialog(const QString &text, QWidget *parent) :
+ProgressDialog::ProgressDialog(WId id, const QString &text, QWidget *parent) :
     QProgressDialog(parent, Qt::CustomizeWindowHint)
 {
     setWindowTitle(tr("Progress"));
@@ -26,11 +26,14 @@ ProgressDialog::ProgressDialog(const QString &text, QWidget *parent) :
     disconnect(this, 0, 0, 0);
     connect(m_cancel_btn, SIGNAL(clicked()), SLOT(cancel()));
     connect(m_cancel_btn, SIGNAL(clicked()), SIGNAL(canceled()));
+
+    m_win7.init(id);
 }
 
 void ProgressDialog::cancel()
 {
-    Utils::setProgress(-1);
+    m_win7.setProgressState(EcWin7::NoProgress);
+
     m_cancel_btn->setEnabled(false);
     setLabelText(tr("Waiting for pending operation to finish..."));
 }
@@ -38,11 +41,12 @@ void ProgressDialog::cancel()
 void ProgressDialog::hideEvent(QHideEvent *event)
 {
     QProgressDialog::hideEvent(event);
-    Utils::setProgress(-1);
+    m_win7.setProgressState(EcWin7::NoProgress);
 }
 
 void ProgressDialog::setValue(int progress)
 {
     QProgressDialog::setValue(progress);
-    Utils::setProgress(progress);
+    m_win7.setProgressState(EcWin7::Normal);
+    m_win7.setProgressValue(progress, 100);
 }

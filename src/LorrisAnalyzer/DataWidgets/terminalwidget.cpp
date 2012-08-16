@@ -22,13 +22,16 @@ void TerminalWidget::setUp(Storage *storage)
 {
     ScriptWidget::setUp(storage);
 
-    m_engine->setSource("function onDataChanged(data, dev, cmd, index) {\n"
-                     "    appendTerm(data);\n"
-                     "}\n"
-                     "\n"
-                     "function onKeyPress(key) {\n"
-                     "    sendData(new Array(key.charCodeAt(0)));\n"
-                     "}\n");
+    static const QString append[ENGINE_MAX] = {
+        "js", // ENGINE_QTSCRIPT
+        "py"  // ENGINE_PYTHON
+    };
+
+    QFile f(":/examples/terminal." + append[m_engine_type]);
+    if(!f.open(QIODevice::ReadOnly))
+        return;
+
+    m_engine->setSource(QString::fromUtf8(f.readAll()));
 }
 
 TerminalWidget::~TerminalWidget()

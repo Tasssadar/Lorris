@@ -187,7 +187,7 @@ void ColorWidget::brightTriggered()
     }
     else
     {
-        WorkTab::DeleteAllMembers(m_brightness_layout);
+        Utils::deleteLayoutMembers(m_brightness_layout);
         delete m_brightness_layout;
         m_brightness_layout = NULL;
     }
@@ -229,7 +229,7 @@ void ColorWidget::colorTriggered()
         }
         else
         {
-            WorkTab::DeleteAllMembers(m_color_layout[i]);
+            Utils::deleteLayoutMembers(m_color_layout[i]);
             delete m_color_layout[i];
             m_color_layout[i] = NULL;
         }

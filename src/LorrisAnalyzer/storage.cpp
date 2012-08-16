@@ -39,20 +39,15 @@ void Storage::setPacket(analyzer_packet *packet)
 
     if(m_data.empty())
         return;
-
-    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
-        (*itr)->setPacket(packet);
 }
 
 void Storage::Clear()
 {
     m_size = 0;
-    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
-        delete *itr;
     m_data.clear();
 }
 
-void Storage::addData(analyzer_data *data)
+void Storage::addData(const QByteArray& data)
 {
     if(!m_packet)
         return;
@@ -69,7 +64,7 @@ void Storage::SaveToFile(WidgetArea *area, DeviceTabWidget *devices)
     QFile file(m_filename);
     if(!file.open(QIODevice::ReadOnly))
     {
-        Utils::ThrowException(QObject::tr("Can't create/open file!"));
+        Utils::showErrorBox(QObject::tr("Can't create/open file!"));
         return;
     }
 
@@ -108,93 +103,78 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
             return;
     }
 
-    QFile file(filename);
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
-    {
-        Utils::ThrowException(QObject::tr("Can't create/open file!"));
-        return;
-    }
     m_filename = filename;
 
     sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
 
     QByteArray data;
-    DataFileParser *buffer = new DataFileParser(&data);
-    buffer->open(QIODevice::WriteOnly);
-
-    //Magic
-    buffer->write(ANALYZER_DATA_FORMAT);
-    buffer->write(ANALYZER_DATA_MAGIC, 3);
-
-    //Header
-    char *itr = (char*)&packet->header->length;
-    buffer->write(itr, sizeof(analyzer_header));
-
-    //Packet
-    itr = (char*)&packet->big_endian;
-    buffer->write(itr, sizeof(bool));
-
-    //collapse status
-    buffer->writeBlockIdentifier(BLOCK_COLLAPSE_STATUS);
-    char dta = m_analyzer->isAreaVisible(AREA_TOP);
-    buffer->write(&dta, 1);
-    dta = m_analyzer->isAreaVisible(AREA_RIGHT);
-    buffer->write(&dta, 1);
-
-    buffer->writeBlockIdentifier(BLOCK_COLLAPSE_STATUS2);
-    dta = m_analyzer->isAreaVisible(AREA_LEFT);
-    buffer->write(&dta, 1);
-
-    //header static data
-    buffer->writeBlockIdentifier(BLOCK_STATIC_DATA);
-    buffer->write((char*)&packet->header->static_len, sizeof(packet->header->static_len));
-    buffer->write((char*)packet->static_data.data(), packet->header->static_len);
-
-    //Devices and commands
-    buffer->writeBlockIdentifier(BLOCK_DEVICE_TABS);
-    devices->Save(buffer);
-
-    //Data
-    buffer->writeBlockIdentifier(BLOCK_DATA);
-
-    quint32 packetCount = m_data.size();
-    buffer->write((char*)&packetCount, sizeof(quint32));
-
-    for(quint32 i = 0; i < m_data.size(); ++i)
     {
-        quint32 len = m_data[i]->getData().length();
-        buffer->write((char*)&len, sizeof(len));
-        buffer->write(m_data[i]->getData());
+        DataFileParser buffer(&data, QIODevice::WriteOnly);
+
+        //Header
+        buffer.writeBlockIdentifier("analyzerHeaderV2");
+        buffer.write((char*)&packet->header->length, sizeof(analyzer_header));
+
+        //Packet
+        buffer.writeBlockIdentifier("analyzerPacket");
+        buffer.write((char*)&packet->big_endian, sizeof(bool));
+
+        //collapse status
+        buffer.writeBlockIdentifier(BLOCK_COLLAPSE_STATUS);
+        buffer.writeVal(m_analyzer->isAreaVisible(AREA_TOP));
+        buffer.writeVal(m_analyzer->isAreaVisible(AREA_RIGHT));
+
+        buffer.writeBlockIdentifier(BLOCK_COLLAPSE_STATUS2);
+        buffer.writeVal(m_analyzer->isAreaVisible(AREA_LEFT));
+
+        //header static data
+        buffer.writeBlockIdentifier(BLOCK_STATIC_DATA);
+        buffer.write((char*)&packet->header->static_len, sizeof(packet->header->static_len));
+        buffer.write((char*)packet->static_data.data(), packet->header->static_len);
+
+        //Devices and commands
+        buffer.writeBlockIdentifier(BLOCK_DEVICE_TABS);
+        devices->Save(&buffer);
+
+        //Data
+        buffer.writeBlockIdentifier(BLOCK_DATA);
+
+        quint32 packetCount = m_data.size();
+        buffer.write((char*)&packetCount, sizeof(quint32));
+
+        for(quint32 i = 0; i < m_data.size(); ++i)
+        {
+            quint32 len = m_data[i].length();
+            buffer.write((char*)&len, sizeof(len));
+            buffer.write(m_data[i]);
+        }
+
+        //Widgets
+        buffer.writeBlockIdentifier(BLOCK_WIDGETS);
+        area->SaveWidgets(&buffer);
+
+        // Area settings
+        area->SaveSettings(&buffer);
+
+        // Data index
+        buffer.writeBlockIdentifier(BLOCK_DATA_INDEX);
+        quint32 idx = m_analyzer->getCurrentIndex();
+        buffer.write((char*)&idx, sizeof(idx));
+
+        buffer.close();
     }
 
-    //Widgets
-    buffer->writeBlockIdentifier(BLOCK_WIDGETS);
-    area->SaveWidgets(buffer);
-
-    // Area settings
-    area->SaveSettings(buffer);
-
-    // Data index
-    buffer->writeBlockIdentifier(BLOCK_DATA_INDEX);
-    quint32 idx = m_analyzer->getCurrentIndex();
-    buffer->write((char*)&idx, sizeof(idx));
-
-    buffer->close();
-    delete buffer;
-
-    if(filename.contains(".cldta"))
-        data = qCompress(data);
-
-    file.write(data);
-    file.close();
+    try {
+        m_file_md5 = DataFileBuilder::writeWithHeader(filename, data, filename.contains(".cldta"), DATAFILE_ANALYZER);
+    } catch(const QString& ex) {
+        Utils::showErrorBox(ex);
+    }
 
     if(!m_packet)
     {
         delete packet->header;
         delete packet;
     }
-
-    m_file_md5 = MD5(data);
 }
 
 analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *area, DeviceTabWidget *devices, quint32 &data_idx)
@@ -209,17 +189,19 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
     }
 
     QByteArray data;
-    QMessageBox *loading_box = NULL;
+    bool legacy = false;
+
+    QScopedPointer<QMessageBox> loading_box;
     {
         QFile file(filename);
         if(!file.open(QIODevice::ReadOnly))
         {
             if(filename != "")
-                Utils::ThrowException(QObject::tr("Can't open file!"));
+                Utils::showErrorBox(QObject::tr("Can't open file!"));
             return NULL;
         }
 
-        loading_box = new QMessageBox();
+        loading_box.reset(new QMessageBox());
         loading_box->setText(tr("Loading data file..."));
         loading_box->setStandardButtons(QMessageBox::NoButton);
         loading_box->setWindowModality(Qt::ApplicationModal);
@@ -232,72 +214,43 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
         QCoreApplication::processEvents();
         QCoreApplication::processEvents();
 
-        data = file.readAll();
-        file.close();
-    }
+        try {
+            data = DataFileBuilder::readAndCheck(file, DATAFILE_ANALYZER, &legacy);
+        }
+        catch(const QString& ex)
+        {
+            delete loading_box.take();
+            Utils::showErrorBox(tr("Error while loading data file: %1").arg(ex));
+            return NULL;
+        }
 
-    m_file_md5 = MD5(data);
-    {
+        file.seek(0);
+        m_file_md5 = MD5(file.readAll());
+
+        file.close();
         QFileInfo info(filename);
         m_filename = info.absoluteFilePath();
     }
 
-    if(filename.endsWith(".cldta"))
-        data = qUncompress(data);
+    DataFileParser buffer(&data, QIODevice::ReadOnly);
 
-    DataFileParser *buffer = new DataFileParser(&data);
-    buffer->open(QIODevice::ReadOnly);
+    QScopedPointer<analyzer_header> header(new analyzer_header());
+    QScopedPointer<analyzer_packet> packet(new analyzer_packet(header.data(), true));
 
-    //Magic
-    char *version = new char[3];
-    buffer->read(version, 2);
-    version[2] = 0;
-
-    if(version[0] != ANALYZER_DATA_FORMAT[0] || version[1] != ANALYZER_DATA_FORMAT[1])
+    if(legacy)
     {
-        QMessageBox box;
-        box.setWindowTitle(QObject::tr("Warning!"));
-        box.setText(QObject::tr("You are opening file with old structure format, some things may be messed up!"));
-        box.setIcon(QMessageBox::Warning);
-        box.exec();
-    }
-
-    if(!checkMagic(buffer))
-    {
-        delete loading_box;
-
-        Utils::ThrowException(QObject::tr("Data file has wrong magic!"));
-
-        buffer->close();
-        delete buffer;
-        delete[] version;
-        return NULL;
+        try {
+            readLegacyStructure(&buffer, packet.data());
+        }
+        catch(const QString& ex)
+        {
+            delete loading_box.take();
+            Utils::showErrorBox(ex);
+            return NULL;
+        }
     }
 
     Clear();
-
-    analyzer_header *header = new analyzer_header();
-    analyzer_packet *packet = new analyzer_packet(header, true);
-
-    //Header
-    char *itr = NULL;
-    if(strcmp(version, "v6") == 0)
-    {
-        analyzer_header_v1 old_header;
-        itr = (char*)&old_header.length;
-        buffer->read(itr, sizeof(analyzer_header_v1));
-
-        old_header.copyToNew(header);
-    }
-    else
-    {
-        itr = (char*)&header->length;
-        buffer->read(itr, sizeof(analyzer_header));
-    }
-
-    //Packet
-    itr = (char*)&packet->big_endian;
-    buffer->read(itr, sizeof(bool));
 
     if(load & STORAGE_STRUCTURE)
     {
@@ -306,15 +259,29 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
             delete m_packet->header;
             delete m_packet;
         }
-        m_packet = packet;
+        m_packet = packet.data();
+    }
+
+    // Header
+    if(buffer.seekToNextBlock("analyzerHeaderV2", BLOCK_COLLAPSE_STATUS))
+    {
+        char *itr = (char*)&header->length;
+        buffer.read(itr, sizeof(analyzer_header));
+    }
+
+    //Packet
+    if(buffer.seekToNextBlock("analyzerPacket", BLOCK_COLLAPSE_STATUS))
+    {
+        char *itr = (char*)&packet->big_endian;
+        buffer.read(itr, sizeof(bool));
     }
 
     //collapse status
-    if(buffer->seekToNextBlock(BLOCK_COLLAPSE_STATUS, BLOCK_STATIC_DATA))
+    if(buffer.seekToNextBlock(BLOCK_COLLAPSE_STATUS, BLOCK_STATIC_DATA))
     {
         bool status;
 
-        buffer->read((char*)&status, 1);
+        buffer.read((char*)&status, 1);
 
         // FIXME: hack, dunno what else to do about this
         if(m_analyzer->isAreaVisible(AREA_TOP) != status)
@@ -322,13 +289,13 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
 
         m_analyzer->setAreaVisibility(AREA_TOP, status);
 
-        buffer->read((char*)&status, 1);
+        buffer.read((char*)&status, 1);
         m_analyzer->setAreaVisibility(AREA_RIGHT, status);
     }
-    if(buffer->seekToNextBlock(BLOCK_COLLAPSE_STATUS2, BLOCK_STATIC_DATA))
+    if(buffer.seekToNextBlock(BLOCK_COLLAPSE_STATUS2, BLOCK_STATIC_DATA))
     {
         bool status;
-        buffer->read((char*)&status, 1);
+        buffer.read((char*)&status, 1);
 
         // FIXME: hack, dunno what else to do about this
         if(m_analyzer->isAreaVisible(AREA_LEFT) != status)
@@ -339,10 +306,10 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
 
 
     //header static data
-    if(buffer->seekToNextBlock(BLOCK_STATIC_DATA, BLOCK_DEVICE_TABS))
+    if(buffer.seekToNextBlock(BLOCK_STATIC_DATA, BLOCK_DEVICE_TABS))
     {
         quint8 static_len = 0;
-        buffer->read((char*)&static_len, sizeof(quint8));
+        buffer.read((char*)&static_len, sizeof(quint8));
 
         // FIXME: header data and this lenght must be same,
         // corrupted file?
@@ -351,59 +318,52 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
         if(static_len)
         {
             m_packet->static_data.resize(static_len);
-            buffer->read((char*)m_packet->static_data.data(), static_len);
+            buffer.read((char*)m_packet->static_data.data(), static_len);
         }
     }
 
     //Devices and commands
-    devices->setHeader(header);
-    if(buffer->seekToNextBlock(BLOCK_DEVICE_TABS, BLOCK_DATA))
-        devices->Load(buffer, !(load & STORAGE_STRUCTURE));
+    devices->setHeader(header.data());
+    if(buffer.seekToNextBlock(BLOCK_DEVICE_TABS, BLOCK_DATA))
+        devices->Load(&buffer, !(load & STORAGE_STRUCTURE));
 
     //Data
-    if(buffer->seekToNextBlock(BLOCK_DATA, 0))
+    if(buffer.seekToNextBlock(BLOCK_DATA, 0))
     {
         quint32 packetCount = 0;
-        buffer->read((char*)&packetCount, sizeof(quint32));
+        buffer.read((char*)&packetCount, sizeof(quint32));
 
         QByteArray data;
         for(quint32 i = 0; i < packetCount; ++i)
         {
             quint32 len = 0;
-            buffer->read((char*)&len, sizeof(quint32));
-            data = buffer->read(len);
+            buffer.read((char*)&len, sizeof(quint32));
+            data = buffer.read(len);
 
             if(load & STORAGE_DATA)
-            {
-                analyzer_data *a_data = new analyzer_data(m_packet);
-                a_data->setData(data);
-                addData(a_data);
-            }
+                addData(data);
         }
     }
 
     //Widgets
-    if(buffer->seekToNextBlock(BLOCK_WIDGETS, 0))
-        area->LoadWidgets(buffer, !(load & STORAGE_WIDGETS));
+    if(buffer.seekToNextBlock(BLOCK_WIDGETS, 0))
+        area->LoadWidgets(&buffer, !(load & STORAGE_WIDGETS));
 
     // Area settings
-    area->LoadSettings(buffer);
+    area->LoadSettings(&buffer);
 
     // Data index
-    if((load & STORAGE_DATA) && buffer->seekToNextBlock(BLOCK_DATA_INDEX, 0))
-        buffer->read((char*)&data_idx, sizeof(data_idx));
+    if((load & STORAGE_DATA) && buffer.seekToNextBlock(BLOCK_DATA_INDEX, 0))
+        buffer.read((char*)&data_idx, sizeof(data_idx));
 
-    buffer->close();
-    delete buffer;
+    buffer.close();
 
-    if(!(load & STORAGE_STRUCTURE))
+    if(load & STORAGE_STRUCTURE)
     {
-        delete packet->header;
-        delete packet;
+        packet.take();
+        header.take();
     }
 
-    delete[] version;
-    delete loading_box;
     return m_packet;
 }
 
@@ -429,8 +389,46 @@ void Storage::ExportToBin(const QString &filename)
     if(!f.open(QIODevice::Truncate | QIODevice::WriteOnly))
         throw tr("Unable to open file %1 for writing!").arg(filename);
 
-    for(std::vector<analyzer_data*>::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
-        f.write((*itr)->getData());
+    for(DataVector::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+        f.write((*itr));
 
     f.close();
+}
+
+void Storage::readLegacyStructure(DataFileParser *file, analyzer_packet *packet)
+{
+    char version[3] = { 0, 0, 0 };
+    file->read(version, 2);
+
+    if(strcmp(version, ANALYZER_DATA_FORMAT) != 0)
+    {
+        QMessageBox box;
+        box.setWindowTitle(QObject::tr("Warning!"));
+        box.setText(QObject::tr("You are opening file with old structure format, some things may be messed up!"));
+        box.setIcon(QMessageBox::Warning);
+        box.exec();
+    }
+
+    if(!checkMagic(file))
+        throw QObject::tr("Data file has wrong magic!");
+
+    //Header
+    char *itr = NULL;
+    if(strcmp(version, "v6") == 0)
+    {
+        analyzer_header_v1 old_header;
+        itr = (char*)&old_header.length;
+        file->read(itr, sizeof(analyzer_header_v1));
+
+        old_header.copyToNew(packet->header);
+    }
+    else
+    {
+        itr = (char*)&packet->header->length;
+        file->read(itr, sizeof(analyzer_header));
+    }
+
+    //Packet
+    itr = (char*)&packet->big_endian;
+    file->read(itr, sizeof(bool));
 }

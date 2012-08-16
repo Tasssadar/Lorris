@@ -10,18 +10,23 @@
 
 #include <QObject>
 #include <QDialog>
+#include <QFuture>
+#include <QFutureWatcher>
 
 #include "ui_updatecheck.h"
 
 class Updater
 {
+    friend class UpdateHandler;
 public:
     static bool doUpdate(bool autoCheck);
+    static bool startUpdater();
 
 private:
     static bool checkForUpdate(bool autoCheck);
     static bool askForUpdate();
     static bool copyUpdater();
+    static void showNotification();
 };
 
 class UpdaterDialog : public QDialog, private Ui::UpdateCheck
@@ -37,6 +42,24 @@ private slots:
 
 private:
     Ui::UpdateCheck *ui;
+};
+
+class UpdateHandler : public QObject
+{
+    Q_OBJECT
+
+    friend class Updater;
+protected:
+    UpdateHandler(QObject *parent);
+
+    void createWatcher(const QFuture<bool>& f);
+
+protected slots:
+    void updateBtn();
+    void updateCheckResult();
+
+private:
+    QFutureWatcher<bool> *m_watcher;
 };
 
 #endif // UPDATER_H

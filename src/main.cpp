@@ -10,6 +10,7 @@
 #include <QLocale>
 #include <QLibraryInfo>
 #include <stdio.h>
+#include <qtsingleapplication/qtsingleapplication.h>
 
 #include "revision.h"
 #include "ui/mainwindow.h"
@@ -85,14 +86,23 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Lorris");
 
     // Sort tab infos after they were added by static variables
+    // Also adds handled filetypes, so must be before checkArgs
     sWorkTabMgr.SortTabInfos();
 
     QStringList openFiles;
     if(!checkArgs(argc, argv, openFiles))
         return 0;
 
-    QApplication a(argc, argv);
-    psConMgr2 = new ConnectionManager2(&a);
+    QtSingleApplication a(argc, argv);
+    if(sConfig.get(CFG_BOOL_ONE_INSTANCE) && a.isRunning() && a.sendMessage("newWindow|" + openFiles.join(";")))
+    {
+        qWarning("Running instance activated");
+        return 0;
+    }
+
+    QObject::connect(&a, SIGNAL(messageReceived(QString)), &sWorkTabMgr, SLOT(instanceMessage(QString)));
+
+    ConnectionManager2 conmgr(&a);
     installTranslator(a);
 
 #ifdef Q_OS_WIN
@@ -100,7 +110,6 @@ int main(int argc, char *argv[])
         return 0;
 #endif
 
-    MainWindow w;
-    w.show(openFiles);
+    sWorkTabMgr.initialize(openFiles);
     return a.exec();
 }

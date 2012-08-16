@@ -65,8 +65,8 @@ QString GraphExport::generateCSV(quint32 limit)
 {
     quint32 maxSize = 0;
     for(quint32 i = 0; i < m_curves->size(); ++i)
-        maxSize = std::max(maxSize, m_curves->at(i)->curve->getSize());
-    maxSize = std::min(maxSize, limit);
+        maxSize = (std::max)(maxSize, m_curves->at(i)->curve->getSize());
+    maxSize = (std::min)(maxSize, limit);
 
     std::vector<GraphCurve*> order;
     for(int i = 0; i < ui->colList->count(); ++i)
@@ -217,7 +217,7 @@ void GraphExport::accept()
     if(exportData())
         QDialog::accept();
     else
-        Utils::ThrowException(tr("Failed to open output file!"), this);
+        Utils::showErrorBox(tr("Failed to open output file!"), this);
 
     ui->buttonBox->setEnabled(true);
 }

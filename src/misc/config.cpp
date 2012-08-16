@@ -12,8 +12,9 @@
 
 #include "../connection/connection.h"
 #include "config.h"
+#include "utils.h"
 
-static const QString keys_quint32[CFG_QUINT32_NUM] =
+static const QString keys_quint32[] =
 {
     "general/connection_type",   // CFG_QUINT32_CONNECTION_TYPE
     "general/tab_type",          // CFG_QUINT32_TAB_TYPE
@@ -30,9 +31,13 @@ static const QString keys_quint32[CFG_QUINT32_NUM] =
     "shupito/terminal_format",   // CFG_QUITN32_SHUPITO_TERM_FMT
     "analyzer/grid_size",        // CFG_QUINT32_ANALYZER_GRID_SIZE
     "general/last_update_check", // CFG_QUINT32_LAST_UPDATE_CHECK
+    "analyzer/script_error_str", // CFG_QUINT32_SCRIPTEDITOR_STR
+    "analyzer/script_edit_type", // CFG_QUINT32_SCRIPTEDITOR_TYPE
+    "analyzer/script_engine",    // CFG_QUINT32_ANALYZER_SCRIPT_ENG
+    "general/compress_block",    // CFG_QUINT32_COMPRESS_BLOCK
 };
 
-static const quint32 def_quint32[CFG_QUINT32_NUM] =
+static const quint32 def_quint32[] =
 {
     MAX_CON_TYPE,                // CFG_QUINT32_CONNECTION_TYPE
     0,                           // CFG_QUINT32_TAB_TYPE
@@ -49,9 +54,13 @@ static const quint32 def_quint32[CFG_QUINT32_NUM] =
     0,                           // CFG_QUITN32_SHUPITO_TERM_FMT
     10,                          // CFG_QUINT32_ANALYZER_GRID_SIZE
     0,                           // CFG_QUINT32_LAST_UPDATE_CHECK
+    40,                          // CFG_QUINT32_SCRIPTEDITOR_STR
+    UINT_MAX,                    // CFG_QUINT32_SCRIPTEDITOR_TYPE
+    0,                           // CFG_QUINT32_ANALYZER_SCRIPT_ENG
+    10*1024*1024,                // CFG_QUINT32_COMPRESS_BLOCK
 };
 
-static const QString keys_string[CFG_STRING_NUM] =
+static const QString keys_string[] =
 {
     "serial_port/port",           // CFG_STRING_SERIAL_PORT
     "shupito/port",               // CFG_STRING_SHUPITO_PORT
@@ -69,9 +78,11 @@ static const QString keys_string[CFG_STRING_NUM] =
     "general/window_params",      // CFG_STRING_WINDOW_PARAMS
     "analyzer/graph_export_path", // CFG_STRING_GRAPH_EXPORT
     "general/font",               // CFG_STRING_APP_FONT
+    "analyzer/script_wnd_params", // CFG_STRING_SCRIPT_WND_PARAMS
+    "proxy/tunnel_name",          // CFG_STRING_PROXY_TUNNEL_NAME
 };
 
-static const QString def_string[CFG_STRING_NUM] =
+static const QString def_string[] =
 {
     "",                           // CFG_STRING_SERIAL_PORT
     "",                           // CFG_STRING_SHUPITO_PORT
@@ -89,9 +100,11 @@ static const QString def_string[CFG_STRING_NUM] =
     "",                           // CFG_STRING_WINDOW_PARAMS
     "",                           // CFG_STRING_GRAPH_EXPORT
     "",                           // CFG_STRING_APP_FONT
+    "",                           // CFG_STRING_SCRIPT_WND_PARAMS
+    "Proxy tunnel",               // CFG_STRING_PROXY_TUNNEL_NAME
 };
 
-static const QString keys_bool[CFG_BOOL_NUM] =
+static const QString keys_bool[] =
 {
     "shupito/enable_tunnel",      // CFG_BOOL_SHUPITO_TUNNEL
     "shupito/show_log",           // CFG_BOOL_SHUPITO_SHOW_LOG
@@ -111,9 +124,15 @@ static const QString keys_bool[CFG_BOOL_NUM] =
     "general/load_last_session",  // CFG_BOOL_LOAD_LAST_SESSION
     "general/session_connect",    // CFG_BOOL_SESSION_CONNECT
     "general/portable",           // CFG_BOOL_PORTABLE
+    "analyzer/script_show_errors",// CFG_BOOL_SHOW_SCRIPT_ERROR
+    "general/smooth_scaling",     // CFG_BOOL_SMOOTH_SCALING
+    "proxy/enable_tunnel",        // CFG_BOOL_PROXY_TUNNEL
+    "analyzer/script_input",      // CFG_BOOL_SCRIPT_SHOW_INPUT
+    "general/one_instance",       // CFG_BOOL_ONE_INSTANCE
+    "analyzer/placement_lines",   // CFG_BOOL_ANALYZER_PLACEMENT_LINES
 };
 
-static const bool def_bool[CFG_BOOL_NUM] =
+static const bool def_bool[] =
 {
     true,                         // CFG_BOOL_SHUPITO_TUNNEL
     false,                        // CFG_BOOL_SHUPITO_SHOW_LOG
@@ -133,25 +152,45 @@ static const bool def_bool[CFG_BOOL_NUM] =
     false,                        // CFG_BOOL_LOAD_LAST_SESSION
     true,                         // CFG_BOOL_SESSION_CONNECT
     false,                        // CFG_BOOL_PORTABLE
+    false,                        // CFG_BOOL_SHOW_SCRIPT_ERROR
+    false,                        // CFG_BOOL_SMOOTH_SCALING
+    false,                        // CFG_BOOL_PROXY_TUNNEL
+    false,                        // CFG_BOOL_SCRIPT_SHOW_INPUT
+    true,                         // CFG_BOOL_ONE_INSTANCE
+    true,                         // CFG_BOOL_ANALYZER_PLACEMENT_LINES
 };
 
-static const QString keys_variant[CFG_VARIANT_NUM] =
+static const QString keys_variant[] =
 {
     "general/connections",        // CFG_VARIANT_CONNECTIONS
+    "general/usb_enumerator",     // CFG_VARIANT_USB_ENUMERATOR
+    "kate/kate_sett_doc",         // CFG_VARIANT_KATE_SETTINGS_DOC
+    "kate/kate_sett_view",        // CFG_VARIANT_KATE_SETTINGS_VIEW
 };
 
-static const QString keys_float[CFG_FLOAT_NUM] =
+static const QString keys_float[] =
 {
     "shupito/overvoltage_val",    // CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL
 };
 
-static const float def_float[CFG_FLOAT_NUM] =
+static const float def_float[] =
 {
     5.5f,                         // CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL
 };
 
 Config::Config()
 {
+    // Check defaults
+    Q_ASSERT(sizeof_array(keys_quint32)   == CFG_QUINT32_NUM);
+    Q_ASSERT(sizeof_array(def_quint32)    == CFG_QUINT32_NUM);
+    Q_ASSERT(sizeof_array(keys_string)    == CFG_STRING_NUM);
+    Q_ASSERT(sizeof_array(def_string)     == CFG_STRING_NUM);
+    Q_ASSERT(sizeof_array(keys_bool)      == CFG_BOOL_NUM);
+    Q_ASSERT(sizeof_array(def_bool)       == CFG_BOOL_NUM);
+    Q_ASSERT(sizeof_array(keys_variant)   == CFG_VARIANT_NUM);
+    Q_ASSERT(sizeof_array(def_float)      == CFG_FLOAT_NUM);
+    Q_ASSERT(sizeof_array(keys_float)     == CFG_FLOAT_NUM);
+
     openSettings();
 }
 

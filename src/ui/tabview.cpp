@@ -23,6 +23,7 @@
 #include "../misc/datafileparser.h"
 #include "tooltipwarn.h"
 #include "settingsdialog.h"
+#include "mainwindow.h"
 
 #ifdef Q_OS_WIN
  #include "../misc/updater.h"
@@ -30,9 +31,11 @@
 
 #define LAYOUT_MARGIN 4
 
-TabView::TabView(QWidget *parent) :
-    QWidget(parent), m_active_widget(NULL), m_session_mgr(this)
+TabView::TabView(MainWindow *parent) :
+    QWidget(parent), m_active_widget(NULL)
 {
+    m_windowId = parent->getId();
+
     QHBoxLayout *layout = new QHBoxLayout(this);
     m_layouts.insert(layout);
     layout->setMargin(LAYOUT_MARGIN);
@@ -60,11 +63,12 @@ TabView::TabView(QWidget *parent) :
         }
     }
 
+    QAction *newW = file_menu->addAction(tr("New window"));
     QAction* actionConnectionManager = file_menu->addAction(tr("Connection &manager..."));
-    QAction* actionQuit = file_menu->addAction(tr("&Quit"));
+    QAction* actionQuit = file_menu->addAction(tr("&Close"));
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
-    m_session_mgr.initMenu(session_menu);
+    sWorkTabMgr.getSessionMgr()->initMenu(session_menu);
 
     QAction *settingsAct = opt_menu->addAction(tr("&Settings"));
     QAction *updateAct = opt_menu->addAction(tr("Check for update..."));
@@ -72,14 +76,13 @@ TabView::TabView(QWidget *parent) :
     connect(actionConnectionManager, SIGNAL(triggered()), SLOT(OpenConnectionManager()));
     connect(settingsAct,             SIGNAL(triggered()), SLOT(showSettings()));
     connect(updateAct,               SIGNAL(triggered()), SLOT(checkForUpdate()));
-    connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeLorris()));
+    connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeWindow()));
+    connect(newW,                    SIGNAL(triggered()), &sWorkTabMgr, SLOT(newWindow()));
 }
 
 TabWidget *TabView::newTabWidget(QBoxLayout *l)
 {
     quint32 id = sWorkTabMgr.generateNewWidgetId();
-    if(m_tab_widgets.empty())
-        id = 0;
 
     TabWidget *tabW = new TabWidget(id, this);
     m_tab_widgets.insert(id, tabW);
@@ -90,11 +93,12 @@ TabWidget *TabView::newTabWidget(QBoxLayout *l)
         m_active_widget = tabW;
 
     connect(tabW, SIGNAL(newTab()),                       SLOT(newTab()));
-    connect(tabW, SIGNAL(openHomeTab(quint32)),           SIGNAL(openHomeTab(quint32)));
     connect(tabW, SIGNAL(statusBarMsg(QString,int)),      SIGNAL(statusBarMsg(QString,int)));
+    connect(tabW, SIGNAL(closeHomeTab()),                 SIGNAL(closeHomeTab()));
     connect(tabW, SIGNAL(split(bool,int)),                SLOT(split(bool,int)));
     connect(tabW, SIGNAL(removeWidget(quint32)),          SLOT(removeWidget(quint32)));
     connect(tabW, SIGNAL(changeActiveWidget(TabWidget*)), SLOT(changeActiveWidget(TabWidget*)));
+    connect(tabW, SIGNAL(changeWindowTitle(QString)),     SLOT(checkChangeWindowTitle(QString)));
 
     updateResizeLines((QBoxLayout*)layout());
     return tabW;
@@ -103,6 +107,8 @@ TabWidget *TabView::newTabWidget(QBoxLayout *l)
 void TabView::changeActiveWidget(TabWidget *widget)
 {
     m_active_widget = widget;
+    if(widget && !widget->isEmpty())
+        emit changeWindowTitle(widget->tabToolTip(widget->currentIndex()));
 }
 
 void TabView::removeWidget(quint32 id)
@@ -111,8 +117,23 @@ void TabView::removeWidget(quint32 id)
     if(wid == m_tab_widgets.end())
         return;
 
-    if(m_active_widget == *wid)
-        m_active_widget = m_tab_widgets[0];
+    if(m_tab_widgets.size() == 1)
+    {
+        if(sWorkTabMgr.canCloseWindow())
+        {
+            emit closeWindow();
+            sWorkTabMgr.removeWindow(m_windowId);
+        }
+        else
+        {
+            emit openHomeTab();
+            (*wid)->setTabsClosable(false);
+        }
+        return;
+    }
+
+    for(QHash<quint32, TabWidget*>::iterator i = m_tab_widgets.begin(); m_active_widget == *wid && i != m_tab_widgets.end(); ++i)
+        m_active_widget = *i;
 
     if(QBoxLayout *l = getLayoutForWidget(*wid))
         l->removeWidget(*wid);
@@ -190,7 +211,7 @@ void TabView::updateResizeLines(QBoxLayout *l)
         // Remove ResizeLine if there are two in a row or if it is the first or last item
         if(isResizeLine(curItem) && (!prevItem || i+1 >= count || isResizeLine(prevItem)))
         {
-            m_resize_lines.remove((ResizeLine*)curItem->widget());
+            m_resize_lines.remove((TabViewResLine*)curItem->widget());
             delete curItem->widget();
 
             if(!l->count())
@@ -221,7 +242,7 @@ restart_loop:
 
 void TabView::newResizeLine(QBoxLayout *l, int idx)
 {
-    ResizeLine *line = new ResizeLine(l->inherits("QHBoxLayout"), this);
+    TabViewResLine *line = new TabViewResLine(l->inherits("QHBoxLayout"), this);
     l->insertWidget(idx, line, 1);
     m_resize_lines.insert(line, l);
     line->updateStretch();
@@ -229,12 +250,12 @@ void TabView::newResizeLine(QBoxLayout *l, int idx)
 
 bool TabView::isResizeLine(QLayoutItem *item)
 {
-    return (item && item->widget() && item->widget()->inherits("ResizeLine"));
+    return (item && item->widget() && item->widget()->inherits("TabViewResLine"));
 }
 
-QBoxLayout *TabView::getLayoutForLine(ResizeLine *line)
+QBoxLayout *TabView::getLayoutForLine(TabViewResLine *line)
 {
-    QHash<ResizeLine*, QBoxLayout*>::iterator itr = m_resize_lines.find(line);
+    QHash<TabViewResLine*, QBoxLayout*>::iterator itr = m_resize_lines.find(line);
     if(itr != m_resize_lines.end())
         return *itr;
     return NULL;
@@ -248,11 +269,24 @@ void TabView::createSplitOverlay(quint32 id, QDrag *drag)
 
     TabWidget *tab = *itr;
 
-    SplitOverlay *overlay = new SplitOverlay(SplitOverlay::POS_RIGHT, this);
-    connect(overlay, SIGNAL(split(bool,int)), tab, SIGNAL(split(bool,int)));
+    SplitOverlay *overlay = new SplitOverlay(SplitOverlay::POS_CENTER, this);
+    connect(overlay, SIGNAL(newWindow(int)), tab, SLOT(newWindow(int)), Qt::QueuedConnection);
     connect(drag,    SIGNAL(destroyed()), overlay, SLOT(deleteLater()));
 
     QPoint pos;
+    pos.rx() = tab->x() + (tab->width() - overlay->width())/2;
+    pos.ry() = tab->y() + (tab->height() - overlay->height())/2;
+
+    overlay->move(pos);
+    overlay->show();
+
+    if(tab->count() < 2)
+        return;
+
+    overlay = new SplitOverlay(SplitOverlay::POS_RIGHT, this);
+    connect(overlay, SIGNAL(split(bool,int)), tab, SIGNAL(split(bool,int)));
+    connect(drag,    SIGNAL(destroyed()), overlay, SLOT(deleteLater()));
+
     pos.rx() = (tab->x() + tab->width()) - overlay->width() - 15;
     pos.ry() = tab->y() + (tab->height() - overlay->height())/2;
 
@@ -306,18 +340,18 @@ void TabView::NewSpecificTab()
 {
     WorkTabInfo * info = m_actionTabInfoMap.value(this->sender());
     if (info)
-        sWorkTabMgr.AddWorkTab(info);
+        sWorkTabMgr.AddWorkTab(info, m_windowId);
 }
 
 void TabView::OpenConnectionManager()
 {
-    ChooseConnectionDlg dialog(0, this);
+    ChooseConnectionDlg dialog(this);
     dialog.exec();
 }
 
 void TabView::newTab()
 {
-    HomeDialog dialog(this);
+    HomeDialog dialog(getWindowId(), this);
     dialog.exec();
 }
 
@@ -362,15 +396,16 @@ void TabView::loadData(DataFileParser *file)
     QHash<quint32, TabWidget*> tabs = m_tab_widgets;
     for(QHash<quint32, TabWidget*>::iterator itr = tabs.begin(); itr != tabs.end(); ++itr)
     {
-        while(!(*itr)->isEmpty())
+        while((*itr)->tabsClosable())
             (*itr)->closeTab((*itr)->count()-1);
     }
 
     if(!file->seekToNextBlock("tabViewLayouts", 0))
         return;
 
-    sWorkTabMgr.CloseHomeTab();
-    delete m_tab_widgets[0];
+    sWorkTabMgr.getWindow(m_windowId)->closeHomeTab();
+    for(QList<quint32> keys = m_tab_widgets.keys(); !keys.isEmpty();)
+        delete m_tab_widgets.take(keys.takeLast());
 
     quint8 type = 0;
     file->readVal(type);
@@ -453,173 +488,65 @@ void TabView::loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHas
 void TabView::showSettings()
 {
     SettingsDialog d(this);
-    connect(&d, SIGNAL(closeLorris()), SIGNAL(closeLorris()));
+    connect(&d, SIGNAL(closeLorris()), qApp, SLOT(closeAllWindows()));
     d.exec();
 }
 
 void TabView::checkForUpdate()
 {
 #ifdef Q_OS_WIN
-     Utils::printToStatusBar(tr("Checking for update..."), 0);
+    emit statusBarMsg(tr("Checking for update..."), 0);
     if(Updater::doUpdate(false))
-        emit closeLorris();
+        qApp->closeAllWindows();
     else
     {
-        Utils::printToStatusBar(tr("No update available"));
-        new ToolTipWarn(tr("No update available"), (QWidget*)sender(), this);
+        emit statusBarMsg(tr("No update available"), 3000);
+        new ToolTipWarn(tr("No update available"), (QWidget*)sender(), this, 3000, ":/actions/info");
     }
 #else
-    Utils::ThrowException(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
+    Utils::showErrorBox(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                              "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));
 #endif
 }
 
-ResizeLine::ResizeLine(bool vertical, TabView *parent) : QFrame(parent)
+TabWidget *TabView::getWidgetWithTab(quint32 tabId)
 {
-    m_vertical = vertical;
-    m_cur_stretch = 50;
-    m_tab_view = parent;
-    m_resize_layout = NULL;
-    m_pct_label = NULL;
+    for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); ++itr)
+        if((*itr)->containsTab(tabId))
+            return *itr;
 
-    setFrameStyle((vertical ? QFrame::VLine : QFrame::HLine) | QFrame::Plain);
-
-    if(vertical)
-        setSizeIncrement(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    else
-        setSizeIncrement(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-    setCursor(vertical ? Qt::SizeHorCursor : Qt::SizeVerCursor);
+    return NULL;
 }
 
-void ResizeLine::updateStretch()
+// very clear name
+TabWidget *TabView::getWidgetWithWidget(QWidget *widget)
 {
-    QBoxLayout *l= m_tab_view->getLayoutForLine(this);
-    Q_ASSERT(l);
-
-    if(l)
-    {
-        int index = l->indexOf(this);
-        if(index < 1)
-        {
-            Q_ASSERT(false);
-            return;
-        }
-        m_cur_stretch = l->stretch(index-1);
-    }
+    for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); ++itr)
+        if((*itr)->indexOf(widget) != -1)
+            return *itr;
+    return NULL;
 }
 
-void ResizeLine::mousePressEvent(QMouseEvent *event)
+void TabView::checkChangeWindowTitle(const QString &title)
 {
-    if(event->button() != Qt::LeftButton)
-        return QFrame::mousePressEvent(event);
-
-    event->accept();
-
-    m_resize_layout = m_tab_view->getLayoutForLine(this);
-    Q_ASSERT(m_resize_layout);
-
-    m_mouse_pos = event->globalPos();
-
-    if(m_resize_layout)
-    {
-        int index = m_resize_layout->indexOf(this);
-        if(index < 1)
-        {
-            Q_ASSERT(false);
-            m_resize_layout = NULL;
-            return;
-        }
-
-        m_resize_index = index;
-
-        QLayoutItem *item = m_resize_layout->itemAt(index-1);
-        if(item->widget()) m_resize_pos[0] = item->widget()->pos();
-        else               m_resize_pos[0] = item->layout()->geometry().topLeft();
-
-        item = m_resize_layout->itemAt(index+1);
-        if(!item)
-            return;
-
-        if(item->widget())
-        {
-            m_resize_pos[1] = item->widget()->pos();
-            m_resize_pos[1].rx() += item->widget()->width();
-            m_resize_pos[1].ry() += item->widget()->height();
-        }
-        else
-            m_resize_pos[1] = item->layout()->geometry().bottomRight();
-
-        m_pct_label = new QLabel(this, Qt::ToolTip);
-        m_pct_label->setMargin(3);
-
-        QPalette p(m_pct_label->palette());
-        p.setColor(QPalette::Window, p.color(QPalette::ToolTipBase));
-        m_pct_label->setPalette(p);
-
-        setPctLabel(event->globalPos(), m_resize_layout->stretch(m_resize_index-1),
-                                        m_resize_layout->stretch(m_resize_index+1));
-        m_pct_label->show();
-    }
-}
-
-void ResizeLine::mouseReleaseEvent(QMouseEvent *event)
-{
-    if(event->button() != Qt::LeftButton)
-        return QFrame::mouseReleaseEvent(event);
-
-    event->accept();
-
-    m_resize_layout = NULL;
-    delete m_pct_label;
-    m_pct_label = NULL;
-}
-
-void ResizeLine::mouseMoveEvent(QMouseEvent *event)
-{
-    if(!m_resize_layout)
-        return QFrame::mouseMoveEvent(event);
-
-    event->accept();
-
-    QPoint mouse = event->globalPos();
-
-    float dist, move;
-    if(m_vertical)
-    {
-        move = (mouse - m_mouse_pos).x();
-        dist = (m_resize_pos[1] - m_resize_pos[0]).x();
-    }
-    else
-    {
-        move = (mouse - m_mouse_pos).y();
-        dist = (m_resize_pos[1] - m_resize_pos[0]).y();
-    }
-
-    m_cur_stretch += move / (dist / 100.f);
-
-    if(m_cur_stretch > 100)    m_cur_stretch = 100;
-    else if(m_cur_stretch < 0) m_cur_stretch = 0;
-
-    int stretch = m_cur_stretch;
-    if(abs(50 - m_cur_stretch) < 3)
-        stretch = 50;
-
-    m_resize_layout->setStretch(m_resize_index-1, stretch);
-    m_resize_layout->setStretch(m_resize_index+1, 100 - stretch);
-
-    m_mouse_pos = event->globalPos();
-
-    setPctLabel(m_mouse_pos, stretch, 100 - stretch);
-}
-
-void ResizeLine::setPctLabel(const QPoint& p, int l, int r)
-{
-    if(!m_pct_label)
+    Q_ASSERT(sender());
+    if(!sender())
         return;
 
-    m_pct_label->move(p + QPoint(0, 15));
-    m_pct_label->setText(tr("%1% / %2%").arg(l).arg(r));
+    if((TabWidget*)sender() != m_active_widget)
+        return;
+
+    emit changeWindowTitle(title);
+}
+
+TabViewResLine::TabViewResLine(bool vertical, TabView *parent) : ResizeLine(vertical, parent)
+{
+    m_tab_view = parent;
+}
+
+QBoxLayout *TabViewResLine::getLayout()
+{
+    return m_tab_view->getLayoutForLine(this);
 }
 
 #define OVERLAY_1 40
@@ -655,6 +582,10 @@ void SplitOverlay::paintEvent(QPaintEvent *)
         {
             QPoint(0, 0), QPoint(OVERLAY_2, 0), QPoint(OVERLAY_2, OVERLAY_1/2),
             QPoint(OVERLAY_2/2, OVERLAY_1), QPoint(0, OVERLAY_1/2)
+        },
+        {
+            QPoint(0, 0), QPoint(OVERLAY_2, 0), QPoint(OVERLAY_2, OVERLAY_1),
+            QPoint(OVERLAY_2, OVERLAY_1), QPoint(0, OVERLAY_1)
         }
     };
 
@@ -664,14 +595,21 @@ void SplitOverlay::paintEvent(QPaintEvent *)
     p.drawPolygon(poly[m_pos], 5);
 
     p.setPen(Qt::black);
-    if(m_pos == POS_RIGHT)
+    switch(m_pos)
     {
-        p.rotate(-90);
-        p.translate(-height(), 0);
-        p.drawText(0, 0, height(), width(), Qt::AlignCenter, tr("Split"));
+        case POS_RIGHT:
+            p.rotate(-90);
+            p.translate(-height(), 0);
+            p.drawText(0, 0, height(), width(), Qt::AlignCenter, tr("Split"));
+            break;
+        case POS_BOTTOM:
+            p.drawText(0, 0, width(), height(), Qt::AlignCenter, tr("Split"));
+            break;
+        case POS_CENTER:
+            p.drawText(0, 0, width(), height(), Qt::AlignCenter, tr("New window"));
+            break;
+        default: break;
     }
-    else
-        p.drawText(0, 0, width(), height(), Qt::AlignCenter, tr("Split"));
 }
 
 void SplitOverlay::dragEnterEvent(QDragEnterEvent *event)
@@ -696,6 +634,14 @@ void SplitOverlay::dropEvent(QDropEvent *event)
 {
     event->accept();
 
-    QStringList lst = event->mimeData()->text().split(' ');
-    emit split(m_pos == POS_BOTTOM, lst[1].toInt());
+    QStringList lst = QString::fromAscii(event->mimeData()->data("data/tabinfo")).split(' ');
+    switch(m_pos)
+    {
+        case POS_RIGHT:
+        case POS_BOTTOM:
+            return emit split(m_pos == POS_BOTTOM, lst[1].toInt());
+        case POS_CENTER:
+            return emit newWindow(lst[1].toInt());
+        default: break;
+    }
 }

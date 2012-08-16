@@ -46,13 +46,16 @@ public:
     explicit LorrisTerminal();
     virtual ~LorrisTerminal();
 
+    virtual void setPortConnection(ConnectionPointer<PortConnection> const & con);
+
     QString GetIdString();
 
     void onTabShow(const QString& filename);
-    virtual void setConnection(PortConnection *con);
 
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
+
+    void setWindowId(quint32 id);
 
 private slots:
     //Buttons
@@ -73,7 +76,6 @@ private slots:
 
     void readData(const QByteArray& data);
     void sendKeyEvent(const QString& key);
-    void connectionResult(Connection *con, bool result);
     void connectedStatus(bool connected);
     void saveTermSettings();
     void showBootloader(bool show);

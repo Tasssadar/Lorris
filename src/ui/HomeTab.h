@@ -11,13 +11,15 @@
 #include <QWidget>
 #include <QHash>
 
+#include "../WorkTab/tab.h"
+
 class WorkTabInfo;
 
 namespace Ui {
     class HomeTab;
 }
 
-class HomeTab : public QWidget {
+class HomeTab : public Tab {
     Q_OBJECT
 
 Q_SIGNALS:
@@ -29,6 +31,8 @@ public:
 
 private slots:
     void buttonClicked();
+
+    void on_openConnManagerLink_linkActivated(const QString &link);
 
 private:
     Ui::HomeTab *ui;

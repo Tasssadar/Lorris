@@ -14,5 +14,7 @@
         <file>icons/list-add_32.png</file>
         <file>icons/list-remove_32.png</file>
         <file alias="red-cross">icons/emblem-unreadable.png</file>
+        <file alias="info">icons/dialog-information.png</file>
+        <file alias="spinner">icons/spinner.gif</file>
     </qresource>
 </RCC>

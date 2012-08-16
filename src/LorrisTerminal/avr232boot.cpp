@@ -121,7 +121,7 @@ bool avr232boot::getChipId()
 
     if(m_dev_id.size() != 4)
     {
-        Utils::ThrowException(tr("Can't read chip ID!"));
+        Utils::showErrorBox(tr("Can't read chip ID!"));
         return false;
     }
 
@@ -135,7 +135,7 @@ bool avr232boot::flash(Ui::LorrisTerminal *ui)
     chip_definition cd = sDefMgr.findChipdef("avr232boot:" + deviceId);
     if(cd.getName().isEmpty())
     {
-        Utils::ThrowException(tr("Unsupported chip: ") + deviceId);
+        Utils::showErrorBox(tr("Unsupported chip: ") + deviceId);
         ui->flashText->setText(tr("Chip: %1").arg(tr("<unknown>")));
         return false;
     }
@@ -146,7 +146,7 @@ bool avr232boot::flash(Ui::LorrisTerminal *ui)
     try {
         m_hex.makePages(pages, MEM_FLASH, cd, NULL);
     } catch(QString ex) {
-        Utils::ThrowException(tr("Error making pages: ") + ex);
+        Utils::showErrorBox(tr("Error making pages: ") + ex);
         return false;
     }
 
@@ -174,7 +174,7 @@ bool avr232boot::flash(Ui::LorrisTerminal *ui)
         ui->progressBar->setValue(cur_page);
     } while(waitForAck());
 
-    Utils::ThrowException(tr("Timeout during flashing!"));
+    Utils::showErrorBox(tr("Timeout during flashing!"));
 
 exit:
     ui->progressBar->setValue(0);
@@ -190,7 +190,7 @@ void avr232boot::readEEPROM(Ui::LorrisTerminal *ui)
     chip_definition cd = sDefMgr.findChipdef("avr232boot:" + id);
     if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
-        Utils::ThrowException(tr("Unsupported chip: ") + id);
+        Utils::showErrorBox(tr("Unsupported chip: ") + id);
         return;
     }
 
@@ -220,7 +220,7 @@ void avr232boot::readEEPROM(Ui::LorrisTerminal *ui)
         ui->progressBar->setValue(itr);
     }while(waitForRec());
 
-    Utils::ThrowException(tr("Timeout during EEPROM read."));
+    Utils::showErrorBox(tr("Timeout during EEPROM read."));
 
 exit:
     ui->progressBar->setValue(0);
@@ -236,7 +236,7 @@ void avr232boot::writeEEPROM(Ui::LorrisTerminal *ui)
     chip_definition cd = sDefMgr.findChipdef("avr232boot:" + id);
     if(cd.getName().isEmpty() || !cd.getMemDef(MEM_EEPROM))
     {
-        Utils::ThrowException(tr("Unsupported chip: ") + id);
+        Utils::showErrorBox(tr("Unsupported chip: ") + id);
         return;
     }
     m_eeprom.reset(cd);
@@ -269,7 +269,7 @@ void avr232boot::writeEEPROM(Ui::LorrisTerminal *ui)
         ui->progressBar->setValue(p->address);
     }while(waitForAck());
 
-    Utils::ThrowException(tr("Timout during EEPROM write!"));
+    Utils::showErrorBox(tr("Timout during EEPROM write!"));
 
 exit:
     ui->progressBar->setValue(0);
