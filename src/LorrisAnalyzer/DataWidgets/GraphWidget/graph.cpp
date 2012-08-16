@@ -47,7 +47,7 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
     QwtPlotZoomer *zoomer = new QwtPlotZoomer(canvas());
     {
         QVector<QwtEventPattern::MousePattern> pattern(6);
-        pattern[0].button = Qt::MiddleButton;
+        pattern[0].button = Qt::MidButton;
         zoomer->setMousePattern(pattern);
     }
 

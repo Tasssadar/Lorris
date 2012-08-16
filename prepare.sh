@@ -64,8 +64,8 @@ for lib in ${qtLibs[@]} ; do
         echo "$lib not found!"
         exit 1
     else
-        if [ $(echo $libver | tr -d .) -lt 470 ] ; then
-            echo "too old ($libver, minimum is 4.7.0)"
+        if [ $(echo $libver | tr -d .) -lt 460 ] ; then
+            echo "too old ($libver, minimum is 4.6.0)"
             exit 1
         else
             echo "ok ($libver)"
