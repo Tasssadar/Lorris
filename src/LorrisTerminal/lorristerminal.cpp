@@ -207,12 +207,9 @@ void LorrisTerminal::eepromExportButton()
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
-    if(!m_bootloader.getChipId())
-        goto exit;
+    if(m_bootloader.getChipId())
+        m_bootloader.readEEPROM(ui);
 
-    m_bootloader.readEEPROM(ui);
-
-exit:
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
 }
 
@@ -225,12 +222,9 @@ void LorrisTerminal::eepromImportButton()
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
-    if(!m_bootloader.getChipId())
-        goto exit;
+    if(m_bootloader.getChipId())
+        m_bootloader.writeEEPROM(ui);
 
-    m_bootloader.writeEEPROM(ui);
-
-exit:
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
 }
 
@@ -305,10 +299,7 @@ void LorrisTerminal::flashButton()
 
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), false);
 
-    if(!m_bootloader.getChipId())
-        goto exit;
-
-    if(m_bootloader.flash(ui))
+    if(m_bootloader.getChipId() && m_bootloader.flash(ui))
     {
         m_flashdate = m_filedate;
 
@@ -316,7 +307,6 @@ void LorrisTerminal::flashButton()
             stopButton();
     }
 
-exit:
     EnableButtons((BUTTON_STOP | BUTTON_FLASH | BUTTON_EEPROM_READ | BUTTON_EEPROM_WRITE), true);
 }
 
