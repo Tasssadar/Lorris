@@ -116,7 +116,7 @@ void SourceDialog::butonnBoxClicked(QAbstractButton *b)
     if(ui->ok_close_bBox->buttonRole(b) == QDialogButtonBox::AcceptRole)
     {
         if(m_packet.header->length + ui->len_box->value() == 0)
-            return Utils::ThrowException(tr("You have to set something!"), this);
+            return Utils::showErrorBox(tr("You have to set something!"), this);
         else
             setted = true;
     }

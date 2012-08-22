@@ -17,12 +17,19 @@
 class EEPROM
 {
 public:
-    EEPROM(QWidget *parent, chip_definition& chip);
+    EEPROM();
     ~EEPROM();
+
+    void reset(chip_definition& chip);
 
     void AddData(QByteArray newData)
     {
         data.append(newData);
+    }
+
+    int size()
+    {
+        return data.size();
     }
 
     quint16 GetEEPROMSize()
@@ -46,7 +53,6 @@ public:
 private:
     QByteArray data;
     chip_definition m_chip;
-    QWidget *m_parent;
     quint16 pageItr;
     std::vector<page> pages;
 };

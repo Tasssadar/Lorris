@@ -5,6 +5,82 @@ Copyright (C) 2012 Vojtěch Boček
 Contact: <vbocek@gmail.com>
          https://github.com/Tasssadar
 
+Version 0.6.0 - git revision [608] - 31009d84f312b8491aec0f7d758dcc24fd9bc72e
+================================================================
+ * Disable updater on non-windows systems
+ * Implement sessions
+ * Show connection name in tab's title
+ * Implement portable mode (for flash drives)
+ * Add new settings dialog, Menu->Options->Settings
+ * Show percents when resizing splitted tabs
+ * Fix and freezes with serial port on Windows
+ * Connect directly to USB devices, not to their
+   emulated Serial port (thanks to Avakar)
+ * Add support for multiple windows
+ * ctrl+tab to switch tabs
+ * Show only notification when update is available
+ * Check for update asynchronously - do not block app's start
+ * Fix freeze when destroying SerialPort which is connecting to the device
+ * Show current tab's name in window title
+ * Qwt and PythonQt are no longer prebuilt on Windows
+ * Build fixes for linux, add new prepare.sh script
+ * Use libenjoy for joystick support, drop SDL dependecy
+ * Bug, crash and freeze fixes
+
+ LorrisAnalyzer:
+ * Add option to change graph's background
+ * Add examples to ScriptWidget
+ * Save ScriptWidget Terminal's settings
+ * Add option to import binary data without resetting widgets
+ * Add Slider widget, usable from script
+ * Fix cursor changing while in widgets
+ * Improvements in Script Editor
+ * Add option to set shortcut for button widget
+ * Add Canvas widget, usable from script (can only draw lines for now)
+ * Use QwtThermo insted of QProgressBar in BarWidget
+ * Make Graph's "removeCurve" available from script
+ * Rename widgets with double-click to their title
+ * Copy widgets with ctrl+drag
+ * Add error-notifier icon to ScriptWidget
+ * Open Script editor in another tab
+ * Show area preview while it's moved
+ * Add ScriptStorage::exists(key) function
+ * Add support for Kate and QScintilla2 editors
+ * Raise widget up when user clicks on it
+ * Switch graph mouse buttons:
+    - left: moving
+    - middle: zoom to area
+ * Update axes values while panning the graph
+ * Implement markers for Graph
+ * Data file format has changed. It is not backwards-compatible.
+ * Optimize memory usage
+ * Set F5 as "apply" shortcut in ScriptEditor
+ * Make widget area a bit darker, widgets should stand out
+ * Add interactive input to ScriptWidget
+ * Show placement lines when moving/resizing widget
+ * Make sure widget's name is unique
+ * Add new methods to InputWidget
+
+ LorrisProxy:
+ * Rewrite TcpServer
+ * Add option to disconnect clients
+ * Redesign UI
+ * Implement ProxyTunnel
+
+ LorrisShupito:
+ * Show notification when shupito stops responding
+ * Fix initial status of read/write buttons
+ * Fix WDTON fuse translation
+ * Properly verify fuse values after write on ATmega chips
+
+ LorrisTerminal:
+ * Bootloader code rewrite
+ * Add ability to change colors
+ * Auto-press "stop" if not stopped when flashing
+ * Do not show same-file-again warn if flashing fails
+ * Add option to send bytes
+ * Fix mouse selection
+
 Version 0.5.0 - git revision [430] - be480e09f75a2101e37204d1e6b994402dd66135
 ================================================================
  * Use precompiled headers to speed-up compilation

@@ -26,6 +26,9 @@ class QtScriptEngine_private : public QScriptEngine
     Q_OBJECT
 
     friend class QtScriptEngine;
+Q_SIGNALS:
+    void stopUsingJoy(QObject *object);
+
 private:
     QtScriptEngine_private(QtScriptEngine *base, QObject *parent);
 
@@ -47,9 +50,11 @@ private:
     static QScriptValue __getJoystick(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __closeJoystick(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getJoystickNames(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getJoystickIds(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newTimer(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __addComboBoxItems(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __moveWidget(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __resizeWidget(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);
@@ -57,6 +62,8 @@ private:
     static QScriptValue __newGraphWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newInputWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newCircleWidget(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __newSliderWidget(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __newCanvasWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newWidget(QScriptContext *context, QScriptEngine *engine);
 
     QScriptValue  m_global;
@@ -70,7 +77,7 @@ class QtScriptEngine : public ScriptEngine
 friend class QtScriptEngine_private;
 
 public:
-    QtScriptEngine(WidgetArea *area , quint32 w_id, Terminal *terminal, QObject *parent = 0);
+    QtScriptEngine(WidgetArea *area , quint32 w_id, ScriptWidget *parent);
     ~QtScriptEngine();
 
     void setSource(const QString& source);
@@ -101,7 +108,7 @@ private slots:
 private:
     void prepareNewContext();
 
-    QScriptValue *m_global;
+    QScriptValue  m_global;
     QScriptValue  m_on_data;
     QScriptValue  m_on_key;
     QScriptValue  m_on_widget_add;
@@ -109,7 +116,7 @@ private:
     QScriptValue  m_on_script_exit;
     QScriptValue  m_on_save;
 
-    QtScriptEngine_private m_engine;
+    QtScriptEngine_private *m_engine;
 };
 
 #endif // QTSCRIPTENGINE_H

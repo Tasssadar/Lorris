@@ -11,86 +11,117 @@
 #include <vector>
 #include <QHash>
 
-#include "../singleton.h"
+#include "../misc/singleton.h"
 #include "WorkTab.h"
 #include "../ui/tabview.h"
+#include "../ui/mainwindow.h"
 
 class WorkTabInfo;
 class HomeTab;
+class ChildTab;
+
+#define IDMASK_CHILD 0x01000000
 
 class WorkTabMgr : public QObject, public Singleton<WorkTabMgr>
 {
     Q_OBJECT
 
-    public:
-        typedef QHash<quint32, WorkTab*> WorkTabMap;
-        typedef QList<WorkTabInfo*> InfoList;
+public:
+    typedef QHash<quint32, WorkTab*> WorkTabMap;
+    typedef QHash<quint32, std::set<ChildTab*> > ChildrenMap;
+    typedef QHash<quint32, TabWidget*> TabWidgetMap;
+    typedef QList<WorkTabInfo*> InfoList;
+    typedef QHash<quint32, MainWindow*> WindowMap;
 
-        WorkTabMgr();
-        ~WorkTabMgr();
+    WorkTabMgr();
+    ~WorkTabMgr();
 
-        void RegisterTabInfo(WorkTabInfo *info);
+    void initialize(const QStringList& openFiles);
 
-        InfoList const & GetWorkTabInfos() const;
-        void SortTabInfos();
-        void AddWorkTab(WorkTab *tab, QString label);
-        WorkTab *AddWorkTab(WorkTabInfo * info, QString filename = QString());
-        WorkTab* GetNewTab(WorkTabInfo *info);
+    void RegisterTabInfo(WorkTabInfo *info);
 
-        WorkTab* getWorkTab(quint32 id)
-        {
-            WorkTabMap::iterator itr = m_workTabs.find(id);
-            if(itr != m_workTabs.end())
-                return *itr;
-            return NULL;
-        }
+    InfoList const & GetWorkTabInfos() const;
+    void SortTabInfos();
+    void AddWorkTab(WorkTab *tab, MainWindow *window, QString label);
+    WorkTab *AddWorkTab(WorkTabInfo * info, MainWindow *window, QString filename = QString());
+    WorkTab *AddWorkTab(WorkTabInfo * info, quint32 windowId, QString filename = QString());
+    WorkTab* GetNewTab(WorkTabInfo *info);
+    void registerTab(WorkTab *tab);
 
-        void removeTab(quint32 id)
-        {
-            WorkTabMap::iterator itr = m_workTabs.find(id);
-            if(itr != m_workTabs.end())
-                removeTab(*itr);
-        }
+    WorkTab* getWorkTab(quint32 id)
+    {
+        WorkTabMap::iterator itr = m_workTabs.find(id);
+        if(itr != m_workTabs.end())
+            return *itr;
+        return NULL;
+    }
+    void removeTab(quint32 id)
+    {
+        WorkTabMap::iterator itr = m_workTabs.find(id);
+        if(itr != m_workTabs.end())
+            removeTab(*itr);
+    }
 
-        void removeTab(WorkTab *tab);
+    void removeTab(WorkTab *tab);
 
-        TabView *getWi() { return tabView; }
-        TabView *CreateWidget(QWidget *parent);
+    void addChildTab(ChildTab *child, const QString& name, quint32 workTabId);
+    void removeChildTab(ChildTab *child);
 
-        quint32 generateNewWidgetId()
-        {
-            return tabWidgetCounter++;
-        }
+    quint32 generateNewWidgetId() { return tabWidgetCounter++; }
+    quint32 generateNewWindowId() { return windowIdCounter++; }
+    quint32 generateNewTabId();
+    quint32 generateNewChildId();
 
-        quint32 generateNewTabId()
-        {
-            return tabIdCounter++;
-        }
+    bool isFileHandled(const QString& extension) const
+    {
+        return m_handledTypes.contains(extension, Qt::CaseInsensitive);
+    }
 
-        bool isFileHandled(const QString& extension) const
-        {
-            return m_handledTypes.contains(extension, Qt::CaseInsensitive);
-        }
+    void openTabWithFile(const QString& filename, MainWindow *window);
 
-        void openTabWithFile(const QString& filename);
+    void OpenHomeTab();
+    void CloseHomeTab();
 
-        void OpenHomeTab();
-        void CloseHomeTab();
+    bool onTabsClose(quint32 windowId);
+    bool isAnyTabOpened() const { return !m_workTabs.isEmpty(); }
 
-        bool onTabsClose();
+    SessionMgr *getSessionMgr() const { return m_session_mgr; }
+    void registerTabWidget(TabWidget *widget);
 
-    private slots:
-        void OpenHomeTab(quint32 id);
+    TabWidget *getTabWidgetWithWidget(QWidget *widget);
+    TabWidget *getTabWidgetWithTab(quint32 tabId);
 
-    private:
-        InfoList m_workTabInfos;
-        WorkTabMap m_workTabs;
-        QStringList m_handledTypes;
+    MainWindow *getWindow(quint32 id);
+    bool canCloseWindow() const { return !m_disable_window_close && m_windows.size() > 1; }
+    void removeWindow(quint32 id);
 
-        quint32 tabWidgetCounter;
-        quint32 tabIdCounter;
-        TabView *tabView;
-        HomeTab *hometab;
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
+    void printToAllStatusBars(const QString& text, int timeout = 3000);
+
+public slots:
+    MainWindow *newWindow(QStringList openFiles = QStringList());
+    void instanceMessage(const QString& message);
+
+private slots:
+    void tabWidgetDestroyed(QObject *widget);
+    void workTabDestroyed(QObject *tab);
+
+private:
+    InfoList m_workTabInfos;
+    WorkTabMap m_workTabs;
+    QStringList m_handledTypes;
+    ChildrenMap m_children;
+    WindowMap m_windows;
+    TabWidgetMap m_tab_widgets;
+
+    quint32 tabWidgetCounter;
+    quint32 tabIdCounter;
+    quint32 windowIdCounter;
+
+    bool m_disable_window_close;
+    SessionMgr *m_session_mgr;
 };
 
 #define sWorkTabMgr WorkTabMgr::GetSingleton()

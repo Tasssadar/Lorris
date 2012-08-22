@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>183</width>
-    <height>97</height>
+    <height>103</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -27,7 +27,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="minBox"/>
+      <widget class="QLineEdit" name="minBox"/>
      </item>
     </layout>
    </item>
@@ -41,7 +41,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="maxBox"/>
+      <widget class="QLineEdit" name="maxBox"/>
      </item>
     </layout>
    </item>
@@ -58,5 +58,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>RangeSelectDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>91</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>91</x>
+     <y>51</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>RangeSelectDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>91</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>91</x>
+     <y>51</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

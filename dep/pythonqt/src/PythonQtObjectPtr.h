@@ -126,7 +126,7 @@ public:
   }
 
   //! evaluates the given script code in the context of this object and returns the result value
-  QVariant evalScript(const QString& script, int start = Py_file_input);
+  QVariant evalScript(const QString& script, const QString& filename, int start = Py_file_input);
 
   //! evaluates the given code and returns the result value (use Py_Compile etc. to create pycode from string)
   //! If pycode is NULL, a python error is printed.

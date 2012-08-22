@@ -15,7 +15,10 @@
 #include "connection.h"
 
 class QComboBox;
-class SerialPortThread;
+class SerialPortOpenThread;
+#ifdef Q_OS_WIN
+    class SerialPortThread;
+#endif
 
 class SerialPort : public PortConnection
 {
@@ -26,7 +29,8 @@ Q_SIGNALS:
 
 public:
     SerialPort();
-    virtual ~SerialPort();
+
+    virtual QString details() const;
 
     bool Open();
     void Close();
@@ -37,14 +41,31 @@ public:
     int baudRate() const { return m_rate; }
     void setBaudRate(int value) { m_rate = value; emit changed(); }
 
-    QString deviceName() const { return m_deviceName; } // FIXME: id and devname should be separate
+    QString deviceName() const { return m_deviceName; }
     void setDeviceName(QString const & value);
+
+    QString friendlyName() const { return m_deviceName; }
+    void setFriendlyName(QString const & value);
 
     bool devNameEditable() const { return m_devNameEditable; }
     void setDevNameEditable(bool value) { m_devNameEditable = value; }
 
     QHash<QString, QVariant> config() const;
     bool applyConfig(QHash<QString, QVariant> const & config);
+    bool canSaveToSession() const { return true; }
+
+    void lockMutex()
+    {
+        m_port_mutex.lock();
+    }
+
+    void unlockMutex()
+    {
+        m_port_mutex.unlock();
+    }
+
+protected:
+    ~SerialPort();
 
 private slots:
     void connectResultSer(bool opened);
@@ -53,18 +74,73 @@ private slots:
     void socketError(SocketError err);
 
 private:
-    bool openPort();
-
     QString m_deviceName;
+    QString m_friendlyName;
 
     QextSerialPort *m_port;
     int m_rate;
 
-    QFuture<bool> m_future;
-    QFutureWatcher<bool> m_watcher;
-
     QMutex m_port_mutex;
     bool m_devNameEditable;
+
+#ifdef Q_OS_WIN
+    SerialPortThread *m_thread;
+#endif
+    SerialPortOpenThread *m_openThread;
 };
+
+class SerialPortOpenThread : public QThread
+{
+    Q_OBJECT
+public:
+    SerialPortOpenThread(SerialPort *conn);
+
+    QextSerialPort *claimPort()
+    {
+        QextSerialPort *res = m_port;
+        m_port = NULL;
+        return res;
+    }
+
+    void stop() { m_run = false; }
+
+protected:
+    void run();
+
+private:
+    QextSerialPort *m_port;
+    SerialPort *m_conn;
+    volatile bool m_run;
+};
+
+#ifdef Q_OS_WIN
+
+class SerialPortThread : public QThread
+{
+    Q_OBJECT
+
+Q_SIGNALS:
+    void readyRead();
+
+public:
+    SerialPortThread(SerialPort *port);
+
+    void setPort(QextSerialPort *port);
+
+    void stop()
+    {
+        m_run = false;
+    }
+
+protected:
+    void run();
+
+private:
+    volatile bool m_run;
+    QextSerialPort *m_port;
+    SerialPort *m_con;
+};
+
+#endif // Q_OS_WIN
 
 #endif // SERIALPORT_H

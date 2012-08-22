@@ -6,14 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>297</width>
-    <height>119</height>
+    <width>219</width>
+    <height>128</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="curveLabel">
+     <property name="text">
+      <string>Curve</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="curveBox"/>
+   </item>
    <item row="1" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
@@ -32,48 +48,34 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QComboBox" name="colorBox">
-     <property name="currentIndex">
-      <number>1</number>
-     </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <property name="text">
-       <string>Type:</string>
-      </property>
+      <widget class="QPushButton" name="colorBtn">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>16</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
-      <property name="text">
-       <string notr="true">Red</string>
-      </property>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
-     <item>
-      <property name="text">
-       <string notr="true">Blue</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string notr="true">Yellow</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string notr="true">Green</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string notr="true">Black</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QLineEdit" name="ColorEdit">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-    </widget>
+    </layout>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="label_3">
@@ -88,16 +90,6 @@
       <bool>true</bool>
      </property>
     </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="curveLabel">
-     <property name="text">
-      <string>Curve</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="curveBox"/>
    </item>
   </layout>
  </widget>

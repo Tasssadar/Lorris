@@ -6,11 +6,14 @@
 ***********************************************/
 
 #include <QLabel>
+#include <QLineEdit>
 
 #include "scriptwidget.h"
 #include "scripteditor.h"
 #include "engines/qtscriptengine.h"
-#include "../../../shared/terminal.h"
+#include "../../../ui/terminal.h"
+
+REGISTER_DATAWIDGET(WIDGET_SCRIPT, Script)
 
 ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -21,18 +24,31 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
     m_editor = NULL;
 
     m_terminal = new Terminal(this);
-    layout->setContentsMargins(5, 0, 5, 5);
     layout->addWidget(m_terminal, 4);
+
+    m_inputEdit = new QLineEdit(this);
+    m_inputEdit->setToolTip(tr("Interactive input.\nAvailable in script as \"inputLine\" (class QLineEdit) object."));
+    m_inputEdit->hide();
+    layout->addWidget(m_inputEdit);
 
     resize(120, 100);
 
     m_engine = NULL;
     m_engine_type = ENGINE_QTSCRIPT;
+    m_error_label = new QLabel(this);
+    m_error_label->setPixmap(QIcon(":/actions/red-cross").pixmap(16, 16));
+    m_error_label->hide();
+
+    ((QHBoxLayout*)layout->itemAt(0)->layout())->insertWidget(2, m_error_label);
 }
 
 ScriptWidget::~ScriptWidget()
 {
-    delete m_editor;
+    if(m_editor)
+        emit removeChildTab(m_editor);
+
+    if(m_examplePreview)
+        emit removeChildTab(m_examplePreview);
 }
 
 void ScriptWidget::setUp(Storage *storage)
@@ -40,18 +56,28 @@ void ScriptWidget::setUp(Storage *storage)
     DataWidget::setUp(storage);
 
     QAction *src_act = contextMenu->addAction(tr("Set source..."));
-    connect(src_act,    SIGNAL(triggered()),                 this,       SLOT(setSourceTriggered()));
+    m_inputAct = contextMenu->addAction(tr("Show input line"));
+    m_inputAct->setCheckable(true);
 
+    connect(m_inputAct,           SIGNAL(triggered(bool)), SLOT(inputShowAct(bool)));
+    connect(src_act,              SIGNAL(triggered()), SLOT(setSourceTriggered()));
+    connect(&m_error_blink_timer, SIGNAL(timeout()),   SLOT(blinkError()));
+    connect(this, SIGNAL(closeEdit()), SLOT(closeEditor()), Qt::QueuedConnection);
+
+    inputShowAct(sConfig.get(CFG_BOOL_SCRIPT_SHOW_INPUT));
+
+    m_engine_type = sConfig.get(CFG_QUINT32_ANALYZER_SCRIPT_ENG);
     createEngine();
 }
 
 void ScriptWidget::createEngine()
 {
-    m_engine = ScriptEngine::getEngine(m_engine_type, (WidgetArea*)parent(), getId(), m_terminal, this);
+    delete m_engine;
+    m_engine = ScriptEngine::getEngine(m_engine_type, (WidgetArea*)parent(), getId(), this);
 
     if(!m_engine && m_engine_type != ENGINE_QTSCRIPT)
     {
-        Utils::ThrowException(tr("Script engine %1 is not available, using QtScript!").arg(m_engine_type));
+        Utils::showErrorBox(tr("Script engine %1 is not available, using QtScript!").arg(m_engine_type));
         m_engine_type = ENGINE_QTSCRIPT;
         return createEngine();
     }
@@ -66,6 +92,7 @@ void ScriptWidget::createEngine()
     connect(m_engine,      SIGNAL(appendTerm(QString)),         m_terminal, SLOT(appendText(QString)));
     connect(m_engine,      SIGNAL(appendTermRaw(QByteArray)),   m_terminal, SLOT(appendText(QByteArray)));
     connect(m_engine,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
+    connect(m_engine,      SIGNAL(error(QString)),              this,       SLOT(blinkError()));
 }
 
 void ScriptWidget::newData(analyzer_data *data, quint32 index)
@@ -89,13 +116,7 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
 
     // source
     file->writeBlockIdentifier("scriptWSource");
-    {
-        QByteArray source = m_engine->getSource().toUtf8();
-        quint32 len = source.length();
-
-        file->write((char*)&len, sizeof(quint32));
-        file->write(source.data(), len);
-    }
+    file->writeString(m_engine->getSource());
 
     // terminal data
     file->writeBlockIdentifier("scriptWTerm");
@@ -107,9 +128,21 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
         file->write(data.data(), len);
     }
 
+    // terminal settings
+    file->writeBlockIdentifier("scriptWTermSett");
+    file->writeString(m_terminal->getSettingsData());
+
     // storage data
     m_engine->onSave();
     m_engine->getStorage()->saveToFile(file);
+
+    // scripts filename
+    file->writeBlockIdentifier("scriptWFilename");
+    file->writeString(m_filename);
+
+    // script editor
+    file->writeBlockIdentifier("scriptWEditor");
+    file->writeVal(!m_editor.isNull());
 }
 
 void ScriptWidget::loadWidgetInfo(DataFileParser *file)
@@ -125,12 +158,7 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     QString source = "";
     // source
     if(file->seekToNextBlock("scriptWSource", BLOCK_WIDGET))
-    {
-        quint32 size = 0;
-        file->read((char*)&size, sizeof(quint32));
-
-        source = QString::fromUtf8(file->read(size), size);
-    }
+        source = file->readString();
 
     // terminal data
     if(file->seekToNextBlock("scriptWTerm", BLOCK_WIDGET))
@@ -142,26 +170,49 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
         m_terminal->appendText(data);
     }
 
+    // terminal settings
+    if(file->seekToNextBlock("scriptWTermSett", BLOCK_WIDGET))
+    {
+        QString settings = file->readString();
+        m_terminal->loadSettings(settings);
+    }
+
     createEngine();
 
     // storage data
     m_engine->getStorage()->loadFromFile(file);
 
+    // Filename
+    if(file->seekToNextBlock("scriptWFilename", BLOCK_WIDGET))
+        m_filename = file->readString();
+
     try
     {
         m_engine->setSource(source);
     } catch(const QString&) { }
+
+    // Editor settings
+    if(file->seekToNextBlock("scriptWEditor", BLOCK_WIDGET))
+        if(file->readVal<bool>())
+            setSourceTriggered();
 }
 
 void ScriptWidget::setSourceTriggered()
 {
-    delete m_editor;
+    if(m_editor)
+    {
+        m_editor->activateTab();
+        return;
+    }
 
-    m_editor = new ScriptEditor(m_engine->getSource(), m_engine_type, getTitle());
-    m_editor->show();
+    m_editor = new ScriptEditor(m_engine->getSource(), m_filename, m_engine_type);
+    emit addChildTab(m_editor, m_editor->windowTitle());
+    m_editor->activateTab();
 
     connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
+    connect(m_editor, SIGNAL(rejected()),        SLOT(closeEditor()), Qt::QueuedConnection);
     connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
+    connect(m_editor, SIGNAL(openPreview(QString)), SLOT(addExampleTab(QString)));
 }
 
 void ScriptWidget::sourceSet(bool close)
@@ -172,26 +223,32 @@ void ScriptWidget::sourceSet(bool close)
 
         if(type != m_engine_type)
         {
+            sConfig.set(CFG_QUINT32_ANALYZER_SCRIPT_ENG, type);
             m_engine_type = type;
-            delete m_engine;
             createEngine();
             connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
         }
         m_editor->clearErrors();
 
+        m_error_blink_timer.stop();
+        m_error_label->hide();
+
         m_engine->setSource(m_editor->getSource());
+        m_filename = m_editor->getFilename();
 
         if(close)
-        {
-            m_editor->deleteLater();
-            m_editor = NULL;
-        }
-        emit updateData();
+            emit closeEdit();
+        emit updateForMe();
     }
     catch(const QString& text)
     {
-        Utils::ThrowException(text, m_editor);
+        Utils::showErrorBox(text);
     }
+}
+
+void ScriptWidget::closeEditor()
+{
+    emit removeChildTab(m_editor);
 }
 
 void ScriptWidget::moveEvent(QMoveEvent *)
@@ -222,6 +279,36 @@ void ScriptWidget::onScriptEvent(const QString& eventId)
 {
     if(m_engine)
         m_engine->callEventHandler(eventId);
+}
+
+void ScriptWidget::blinkError()
+{
+    m_error_label->setVisible(!m_error_label->isVisible());
+    m_error_blink_timer.start(500);
+}
+
+void ScriptWidget::titleDoubleClick()
+{
+    setSourceTriggered();
+}
+
+void ScriptWidget::addExampleTab(const QString &name)
+{
+    if(m_examplePreview)
+        m_examplePreview->loadExample(name);
+    else
+    {
+        m_examplePreview = new ExamplePreviewTab(name);
+        addChildTab(m_examplePreview, name + tr(" - example"));
+    }
+    m_examplePreview->activateTab();
+}
+
+void ScriptWidget::inputShowAct(bool show)
+{
+    m_inputAct->setChecked(show);
+    m_inputEdit->setVisible(show);
+    sConfig.set(CFG_BOOL_SCRIPT_SHOW_INPUT, show);
 }
 
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

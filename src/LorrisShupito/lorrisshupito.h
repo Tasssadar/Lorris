@@ -12,7 +12,7 @@
 #include "shupito.h"
 #include "shupitodesc.h"
 #include "../shared/hexfile.h"
-#include "../shared/terminal.h"
+#include "../ui/terminal.h"
 #include "../ui/connectbutton.h"
 
 #include <QDateTime>
@@ -62,8 +62,9 @@ class chip_definition;
 class FuseWidget;
 class ProgressDialog;
 class OverVccDialog;
+class ToolTipWarn;
 
-class LorrisShupito : public PortConnWorkTab
+class LorrisShupito : public WorkTab
 {
     Q_OBJECT
 Q_SIGNALS:
@@ -73,16 +74,25 @@ public:
     LorrisShupito();
     ~LorrisShupito();
 
-    void setConnection(PortConnection *con);
     void stopAll(bool wait);
+
+public slots:
+    void setConnection(ConnectionPointer<Connection> const & con);
+
+protected:
+    ConnectionPointer<ShupitoConnection> m_con;
+
+    QString GetIdString();
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
 
 private slots:
     void onTabShow(const QString& filename);
     void connDisconnecting();
 
-    void connectionResult(Connection*,bool);
     void connectedStatus(bool connected);
-    void readData(const QByteArray& data);
+    void readPacket(const ShupitoPacket & data);
     void descRead(bool correct);
 
     void vccValueChanged(quint8 id, double value);
@@ -151,6 +161,8 @@ private slots:
     void overvoltageSwitched(bool enabled);
     void overvoltageChanged(double val);
     void overvoltageTurnOffVcc(bool enabled);
+
+    void timeout();
 
 private:
     void log(const QString& text);
@@ -221,6 +233,9 @@ private:
     chip_definition m_cur_def;
 
     ConnectButton * m_connectButton;
+
+    QTimer m_timeout_timer;
+    QPointer<ToolTipWarn> m_timeout_warn;
 };
 
 #endif // LORRISSHUPITO_H

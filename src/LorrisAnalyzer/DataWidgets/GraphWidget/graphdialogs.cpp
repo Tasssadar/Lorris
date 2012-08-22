@@ -6,6 +6,7 @@
 ***********************************************/
 
 #include <QMessageBox>
+#include <QColorDialog>
 
 #include "../datawidget.h"
 #include "graphdialogs.h"
@@ -26,9 +27,11 @@ GraphCurveAddDialog::GraphCurveAddDialog(QWidget *parent, std::vector<GraphCurve
     ui->mainLayout->insertWidget(1, m_edit_widget);
     newOrEditCurve(true);
 
+    setButtonColor(Qt::red);
+
     connect(ui->newRadio,             SIGNAL(toggled(bool)),                SLOT(newOrEditCurve(bool)));
-    connect(edit_widget_ui->colorBox, SIGNAL(currentIndexChanged(int)),     SLOT(colorChanged(int)));
     connect(ui->buttonBox,            SIGNAL(accepted()),                   SLOT(tryAccept()));
+    connect(edit_widget_ui->colorBtn, SIGNAL(clicked()),                    SLOT(selectColor()));
     connect(edit_widget_ui->curveBox, SIGNAL(currentIndexChanged(int)),     SLOT(curveChanged(int)));
 
     static const QString dataTypes[] =
@@ -89,12 +92,9 @@ QString GraphCurveAddDialog::getEditName()
     return edit_widget_ui->curveBox->currentText();
 }
 
-QString GraphCurveAddDialog::getColor()
+QColor GraphCurveAddDialog::getColor()
 {
-    if(edit_widget_ui->colorBox->currentIndex() == 0)
-        return edit_widget_ui->ColorEdit->text();
-    else
-        return edit_widget_ui->colorBox->currentText();
+    return m_color;
 }
 
 QString GraphCurveAddDialog::getCurrentCurve()
@@ -105,11 +105,6 @@ QString GraphCurveAddDialog::getCurrentCurve()
 quint8 GraphCurveAddDialog::getDataType()
 {
     return edit_widget_ui->dataTypeBox->currentIndex();
-}
-
-void GraphCurveAddDialog::colorChanged(int idx)
-{
-    edit_widget_ui->ColorEdit->setEnabled(idx == 0);
 }
 
 void GraphCurveAddDialog::showError(const QString& text)
@@ -126,13 +121,6 @@ void GraphCurveAddDialog::tryAccept()
     if(edit_widget_ui->nameEdit->text().isEmpty())
     {
         showError(tr("You have to set name!"));
-        return;
-    }
-
-    if(edit_widget_ui->colorBox->currentIndex() == 0 &&
-       edit_widget_ui->ColorEdit->text().isEmpty())
-    {
-        showError(tr("You have to set color!"));
         return;
     }
 
@@ -171,19 +159,23 @@ void GraphCurveAddDialog::curveChanged(int idx)
     edit_widget_ui->nameEdit->setText(curve->title().text());
     edit_widget_ui->dataTypeBox->setCurrentIndex(curve->getDataType());
 
-    bool set = false;
-    for(int i = 0; !set && i < edit_widget_ui->colorBox->count(); ++i)
-    {
-        if(QColor(edit_widget_ui->colorBox->itemText(i)) == curve->pen().color())
-        {
-            edit_widget_ui->colorBox->setCurrentIndex(i);
-            set = true;
-        }
-    }
+    setButtonColor(curve->pen().color());
+}
 
-    if(!set)
-    {
-        edit_widget_ui->colorBox->setCurrentIndex(0);
-        edit_widget_ui->ColorEdit->setText(curve->pen().color().name());
-    }
+void GraphCurveAddDialog::selectColor()
+{
+    QColor color = QColorDialog::getColor(m_color, this);
+
+    if(!color.isValid())
+        return;
+
+    setButtonColor(color);
+}
+
+void GraphCurveAddDialog::setButtonColor(const QColor& clr)
+{
+    QPixmap map(50, 25);
+    map.fill(clr);
+    m_color = clr;
+    edit_widget_ui->colorBtn->setIcon(QIcon(map));
 }

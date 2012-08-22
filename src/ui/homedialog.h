@@ -14,7 +14,7 @@ class HomeDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit HomeDialog(QWidget *parent = 0);
+    explicit HomeDialog(quint32 windowId, QWidget *parent = 0);
 };
 
 #endif // HOMEDIALOG_H

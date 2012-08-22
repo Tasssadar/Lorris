@@ -1,51 +1,59 @@
-    Lorris - GUI tool for robotics (at least until I think of
-             something which suits more)
-           - https://github.com/Tasssadar/Lorris
+Lorris - GUI tool for robotics (at least until I think of
+         something which suits more)
+       - https://github.com/Tasssadar/Lorris
 
-    Copyright (C) 2012 Vojtěch Boček
-    Contact: <vbocek@gmail.com>
-            https://github.com/Tasssadar
+Copyright (C) 2012 Vojtěch Boček
+Contact: <vbocek@gmail.com>
+        https://github.com/Tasssadar
 
-    Lorris is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+Lorris is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    Lorris is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-    You should have received a copy of the GNU General Public License
-    along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
+Lorris is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with Lorris.  If not, see <http://www.gnu.org/licenses/>.
 
 
-    Lorris uses following libraries:
-        Qt Framework(http://qt.nokia.com/), the cross-platform application
-            and UI framework, which is distributed under the GNU LGPL v2.1
+Lorris uses following libraries:
+    Qt Framework (http://qt.nokia.com/), the cross-platform application
+        and UI framework, which is distributed under the GNU LGPL v2.1
 
-        Qwt(http://qwt.sourceforge.net/), Qt Widgets for Technical Applications,
-            which is distributed under the Qwt license - see dep/qwt/COPYING
+    Qwt (http://qwt.sourceforge.net/), Qt Widgets for Technical Applications,
+        which is distributed under the Qwt license - see dep/qwt/COPYING
 
-        QExtSerialPort(http://code.google.com/p/qextserialport/),
-            Qt interface class for old fashioned serial ports,
-            which is distributed under the New BSD License.
-            See http://www.opensource.org/licenses/bsd-license.php
+    QExtSerialPort (http://code.google.com/p/qextserialport/),
+        Qt interface class for old fashioned serial ports,
+        which is distributed under the New BSD License.
+        See http://www.opensource.org/licenses/bsd-license.php
 
-        Modified version of QHexEdit2(http://code.google.com/p/qhexedit2/),
-            "QHexEdit is a Binary Edior for Qt",
-            which is distributed under the LGPL v2.1.
-            See dep/qhexedit2/src/license.txt
+    Modified version of QHexEdit2 (http://code.google.com/p/qhexedit2/),
+        "QHexEdit is a Binary Edior for Qt",
+        which is distributed under the LGPL v2.1.
+        See dep/qhexedit2/src/license.txt
 
-        SDL(http://www.libsdl.org), Simple directmedia layer,
-            which is distributed under the GNU LGPL v2.1
+    Simple JavaScript Inheritance implementation by John Resig,
+        http://ejohn.org/blog/simple-javascript-inheritance/
+        which is distributed under the MIT license.
+        See MIT_LICENSE file.
 
-        Simple JavaScript Inheritance implementation by John Resig,
-            http://ejohn.org/blog/simple-javascript-inheritance/
-            which is distributed under the MIT license.
-            See MIT_LICENSE file.
+    Tango Icon Library (http://tango.freedesktop.org/),
+        which is released to the Public Domain
 
-        Tango Icon Library (http://tango.freedesktop.org/),
-            which is released to the Public Domain
+    EcWin7 library (http://www.msec.it/blog/?p=118),
+        which is released under the GNU GPLv2
 
-        EcWin7 library (http://www.msec.it/blog/?p=118),
-            which is released under the GNU GPLv2
+    QScintilla2 (http://www.riverbankcomputing.co.uk/software/qscintilla/intro),
+        which is released under the GNU GPL v2 and v3
+
+    libusby (https://github.com/avakar/libusby),
+        library that provides access to USB devices and is released
+        under the Boost Software License
+
+    libenjoy (https://github.com/Tasssadar/libenjoy), simple joystick library,
+        which is released under the GNU LGPLv2.1
+

@@ -19,7 +19,6 @@ class ShupitoTunnel : public PortConnection
 
 public:
     ShupitoTunnel();
-    ~ShupitoTunnel();
 
     bool Open();
     void OpenConcurrent();
@@ -27,6 +26,9 @@ public:
     void SendData(const QByteArray &data);
 
     void setShupito(Shupito* s);
+
+protected:
+    ~ShupitoTunnel();
 
 private:
     Shupito *m_shupito;

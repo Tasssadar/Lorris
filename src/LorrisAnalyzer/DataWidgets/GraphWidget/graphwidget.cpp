@@ -11,6 +11,9 @@
 #include <QSignalMapper>
 #include <QInputDialog>
 #include <QTimer>
+#include <QColorDialog>
+#include <qwt_plot_canvas.h>
+#include <qwt_plot_grid.h>
 
 #include "graphwidget.h"
 #include "graph.h"
@@ -19,6 +22,8 @@
 #include "graphcurve.h"
 #include "../../storage.h"
 #include "graphexport.h"
+
+REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph)
 
 static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
@@ -60,6 +65,9 @@ void GraphWidget::setUp(Storage *storage)
     m_deleteCurve->setEnabled(false);
     m_deleteMap = NULL;
 
+    QAction *removeAllCurves = m_deleteCurve->addAction(tr("Remove all curves"));
+    m_deleteCurve->addSeparator();
+
     QMenu *sampleSize = contextMenu->addMenu(tr("Sample size"));
 
     QSignalMapper *sampleMap = new QSignalMapper(this);
@@ -86,6 +94,7 @@ void GraphWidget::setUp(Storage *storage)
     updateSampleSize();
 
     QAction *exportAct = contextMenu->addAction(tr("Export data..."));
+    QAction *bgAct = contextMenu->addAction(tr("Change background..."));
 
     m_showLegend = contextMenu->addAction(tr("Show legend"));
     m_showLegend->setCheckable(true);
@@ -100,11 +109,13 @@ void GraphWidget::setUp(Storage *storage)
 
     connect(m_editCurve,  SIGNAL(triggered()),        SLOT(editCurve()));
     connect(exportAct,    SIGNAL(triggered()),        SLOT(exportData()));
+    connect(bgAct,        SIGNAL(triggered()),        SLOT(changeBackground()));
     connect(sampleMap,    SIGNAL(mapped(int)),        SLOT(sampleSizeChanged(int)));
     connect(m_showLegend, SIGNAL(triggered(bool)),    SLOT(showLegend(bool)));
     connect(m_autoScroll, SIGNAL(triggered(bool)),    SLOT(toggleAutoScroll(bool)));
     connect(m_graph,      SIGNAL(updateSampleSize()), SLOT(updateSampleSize()));
     connect(replotTimer,  SIGNAL(timeout()),          SLOT(tryReplot()));
+    connect(removeAllCurves, SIGNAL(triggered()),     SLOT(removeAllCurves()));
 }
 
 void GraphWidget::updateRemoveMapping()
@@ -164,6 +175,9 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         file->write((char*)&m_enableAutoScroll, sizeof(bool));
     }
 
+    // Graph data
+    m_graph->saveData(file);
+
     // curves
     file->writeBlockIdentifier("graphWCurveCount");
     {
@@ -196,10 +210,7 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
 
         // color
         file->writeBlockIdentifier("graphWCurveColor");
-        QByteArray color = info->curve->pen().color().name().toAscii();
-        size = color.length();
-        file->write((char*)&size, sizeof(quint32));
-        file->write(color.data());
+        file->writeString(info->curve->pen().color().name());
     }
 }
 
@@ -248,6 +259,9 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         toggleAutoScroll(enable);
     }
 
+    // Graph data
+    m_graph->loadData(file);
+
     if(!file->seekToNextBlock("graphWCurveCount", BLOCK_WIDGET))
         return;
 
@@ -291,9 +305,7 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         if(!file->seekToNextBlock("graphWCurveColor", "graphWCurve"))
             continue;
         {
-            quint32 size = 0;
-            file->read((char*)&size, sizeof(quint32));
-            color = file->read(size);
+            color = file->readString();
         }
 
         GraphDataSimple *dta = new GraphData(m_storage, info, m_sample_size, dataType);
@@ -341,7 +353,7 @@ void GraphWidget::addCurve()
     {
         GraphData *data = new GraphData(m_storage, m_info, m_sample_size, m_add_dialog->getDataType());
         GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), data);
-        curve->setPen(QPen(QColor(m_add_dialog->getColor())));
+        curve->setPen(QPen(m_add_dialog->getColor()));
         curve->attach(m_graph);
         m_graph->showCurve(curve, true);
         m_curves.push_back(new GraphCurveInfo(curve, m_info));
@@ -373,8 +385,8 @@ void GraphWidget::addCurve()
         m_deleteAct[m_add_dialog->getName()] = deleteCurve;
 
         info->curve->setTitle(m_add_dialog->getName());
-        info->curve->setPen(QPen(QColor(m_add_dialog->getColor())));
-        if(m_add_dialog->forceEdit())
+        info->curve->setPen(QPen(m_add_dialog->getColor()));
+        if(!m_add_dialog->forceEdit())
             info->curve->setDataInfo(m_info);
         info->curve->setDataType(m_add_dialog->getDataType());
     }
@@ -386,7 +398,7 @@ void GraphWidget::addCurve()
     m_add_dialog = NULL;
 
     m_assigned = true;
-    emit updateData();
+    emit updateForMe();
 }
 
 void GraphWidget::updateVisibleArea()
@@ -400,7 +412,7 @@ void GraphWidget::tryReplot()
 {
     if(m_doReplot)
     {
-        if(m_enableAutoScroll)
+        if(m_enableAutoScroll && !m_curves.empty())
         {
             qint32 size = 0;
 
@@ -498,6 +510,30 @@ void GraphWidget::removeCurve(QString name)
 
     m_editCurve->setEnabled(!m_curves.empty());
     m_deleteCurve->setEnabled(!m_curves.empty());
+
+    updateRemoveMapping();
+}
+
+void GraphWidget::removeAllCurves()
+{
+    while(!m_curves.empty())
+    {
+        GraphCurveInfo *info = m_curves.back();
+        m_curves.pop_back();
+
+        QString name = info->curve->title().text();
+        delete info->curve;
+        delete info;
+
+        m_deleteCurve->removeAction(m_deleteAct[name]);
+        delete m_deleteAct[name];
+        m_deleteAct.erase(name);
+    }
+
+    m_editCurve->setEnabled(false);
+    m_deleteCurve->setEnabled(false);
+
+    m_doReplot = true;
 }
 
 void GraphWidget::showLegend(bool show)
@@ -514,6 +550,10 @@ void GraphWidget::toggleAutoScroll(bool scroll)
 
 GraphCurve *GraphWidget::addCurve(QString name, QString color)
 {
+    for(quint32 i = 0; i < m_curves.size(); ++i)
+        if(m_curves[i]->curve->title().text() == name)
+            return m_curves[i]->curve;
+
     GraphDataSimple *dta = new GraphDataSimple();
     GraphCurve *curve = new GraphCurve(name, dta);
 
@@ -522,6 +562,13 @@ GraphCurve *GraphWidget::addCurve(QString name, QString color)
     m_graph->showCurve(curve, true);
     m_curves.push_back(new GraphCurveInfo(curve, m_info));
 
+    QAction *deleteCurve = m_deleteCurve->addAction(name);
+    m_deleteCurve->setEnabled(true);
+    m_deleteAct[name] = deleteCurve;
+
+    m_editCurve->setEnabled(true);
+
+    updateRemoveMapping();
     return curve;
 }
 
@@ -547,6 +594,16 @@ void GraphWidget::exportData()
 {
     GraphExport ex(&m_curves, this);
     ex.exec();
+}
+
+void GraphWidget::changeBackground()
+{
+    QColor c = QColorDialog::getColor(m_graph->canvas()->palette().color(QPalette::Window));
+
+    if(!c.isValid())
+        return;
+
+    m_graph->setBgColor(c);
 }
 
 GraphWidgetAddBtn::GraphWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

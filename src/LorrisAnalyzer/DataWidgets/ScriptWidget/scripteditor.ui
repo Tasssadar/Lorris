@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>ScriptEditor</class>
- <widget class="QDialog" name="ScriptEditor">
+ <widget class="QWidget" name="ScriptEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>735</width>
+    <width>767</width>
     <height>468</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>JavaScript source - </string>
+   <string>Script</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../../icons.qrc">
     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,4,2,0">
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0,40,0">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -31,49 +31,124 @@
       <widget class="QComboBox" name="langBox"/>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>30</width>
          <height>20</height>
         </size>
        </property>
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="exampleBtn">
+       <property name="text">
+        <string>Examples</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="editorLabel">
+       <property name="text">
+        <string>Editor:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="editorBox"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="editSettBtn">
+       <property name="toolTip">
+        <string>Editor settings</string>
+       </property>
+       <property name="text">
+        <string>Settings</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>30</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="nameLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Currently opened file</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="loadBtn">
        <property name="text">
-        <string>Load from file...</string>
+        <string>Load...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../actions.qrc">
+         <normaloff>:/actions/open</normaloff>:/actions/open</iconset>
        </property>
        <property name="shortcut">
         <string>Ctrl+O</string>
        </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="editLayout" stretch="0">
      <item>
-      <widget class="QPlainTextEdit" name="sourceEdit">
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOn</enum>
+      <widget class="QToolButton" name="saveBtn">
+       <property name="text">
+        <string>Save</string>
        </property>
-       <property name="lineWrapMode">
-        <enum>QPlainTextEdit::NoWrap</enum>
+       <property name="icon">
+        <iconset resource="../../../actions.qrc">
+         <normaloff>:/actions/save</normaloff>:/actions/save</iconset>
        </property>
-       <property name="plainText">
-        <string/>
+       <property name="shortcut">
+        <string>Ctrl+S</string>
        </property>
-       <property name="tabStopWidth">
-        <number>40</number>
+       <property name="popupMode">
+        <enum>QToolButton::MenuButtonPopup</enum>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::NoArrow</enum>
        </property>
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="ResizeLine" name="resizeLine"/>
    </item>
    <item>
     <widget class="QPlainTextEdit" name="errorEdit">
@@ -222,6 +297,29 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>10</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="statusLabel">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -248,25 +346,17 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ResizeLine</class>
+   <extends>QFrame</extends>
+   <header>../src/ui/resizeline.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
+  <include location="../../../actions.qrc"/>
   <include location="../../../icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>ScriptEditor</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

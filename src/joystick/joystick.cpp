@@ -9,10 +9,10 @@
 
 #define DEFAULT_SIGNAL_TIME 50
 
-Joystick::Joystick(int id, SDL_Joystick *joy, QObject *parent) :
+JoystickPrivate::JoystickPrivate(libenjoy_joystick *joy, QObject *parent) :
     QObject(parent)
 {
-    m_id = id;
+    m_id = joy->id;
     m_joy = joy;
     init();
 
@@ -20,74 +20,66 @@ Joystick::Joystick(int id, SDL_Joystick *joy, QObject *parent) :
     connect(&m_timer, SIGNAL(timeout()), SLOT(timeout()));
 }
 
-Joystick::~Joystick()
+JoystickPrivate::~JoystickPrivate()
 {
     if(m_joy)
-        SDL_JoystickClose(m_joy);
+        libenjoy_close_joystick(m_joy);
 }
 
-void Joystick::init()
+void JoystickPrivate::init()
 {
-    m_num_axes = SDL_JoystickNumAxes(m_joy);
-    m_num_hats = SDL_JoystickNumHats(m_joy);
-    m_num_balls = SDL_JoystickNumBalls(m_joy);
-    m_num_buttons = SDL_JoystickNumButtons(m_joy);
+    m_num_axes = libenjoy_get_axes_num(m_joy);
+    m_num_buttons = libenjoy_get_buttons_num(m_joy);
 
     m_axes.resize(m_num_axes, 0);
     m_buttons.resize(m_num_buttons, 0);
+    m_changed_axes.resize(m_num_axes, false);
 }
 
-void Joystick::timeout()
+void JoystickPrivate::timeout()
 {
     QList<int> axes;
-    std::list<btn_event> btns;
+    std::vector<btn_event> btns;
 
     {
-        QMutexLocker l(&m_lock);
+        QWriteLocker l(&m_lock);
 
-        for(std::set<int>::iterator itr = m_changed_axes.begin(); itr != m_changed_axes.end(); ++itr)
-            axes.push_back(*itr);
-        btns = m_changed_btns;
-        m_changed_axes.clear();
-        m_changed_btns.clear();
+        for(size_t i = 0; i < m_changed_axes.size(); ++i)
+        {
+            if(m_changed_axes[i])
+            {
+                m_changed_axes[i] = false;
+                axes.push_back(i);
+            }
+        }
+
+        m_changed_btns.swap(btns);
     }
 
     if(!axes.empty())
         emit axesChanged(axes);
 
-    for(std::list<btn_event>::iterator itr = btns.begin(); itr != btns.end(); ++itr)
+    for(std::vector<btn_event>::iterator itr = btns.begin(); itr != btns.end(); ++itr)
         emit buttonChanged((*itr).id, (*itr).status);
 }
 
-void Joystick::setSignalTimer(int periodMS)
+void JoystickPrivate::setSignalTimer(int periodMS)
 {
     m_timer.start(periodMS);
 }
 
-void Joystick::axisEvent(int id, qint16 val)
+void JoystickPrivate::axisEvent(int id, qint16 val)
 {
-    QMutexLocker l(&m_lock);
+    QWriteLocker l(&m_lock);
     m_axes[id] = val;
-    m_changed_axes.insert(id);
+    m_changed_axes[id] = true;
 }
 
-void Joystick::buttonEvent(int id, quint8 state)
+void JoystickPrivate::buttonEvent(int id, quint8 state)
 {
-    QMutexLocker l(&m_lock);
+    QWriteLocker l(&m_lock);
     m_buttons[id] = state;
 
     btn_event ev = { id, state };
     m_changed_btns.push_back(ev);
 }
-
-void Joystick::ballEvent(int /*id*/, qint16 /*x*/, qint16 /*y*/)
-{
-    // NYI
-}
-
-void Joystick::hatEvent(int /*id*/, quint8 /*val*/)
-{
-    // NYI
-}
-
-

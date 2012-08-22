@@ -10,12 +10,12 @@
 
 #include "../WorkTab/WorkTab.h"
 #include "../ui/connectbutton.h"
+#include "tcpserver.h"
 
 namespace Ui {
     class LorrisProxy;
 }
 
-class TcpServer;
 class QTcpSocket;
 
 class LorrisProxy : public PortConnWorkTab
@@ -26,19 +26,28 @@ public:
     explicit LorrisProxy();
     ~LorrisProxy();
 
-    void setConnection(PortConnection *con);
+    void setPortConnection(ConnectionPointer<PortConnection> const & con);
+
+    QString GetIdString();
+
     void onTabShow(const QString& filename);
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
 
 private slots:
     void updateAddressText();
     void listenChanged();
     void addConnection(QTcpSocket *connection, quint32 id);
     void removeConnection(quint32 id);
-    void connectionResult(Connection *con,bool result);
+    void connectionMenu(const QPoint& pos);
+    void tunnelNameEditFinished();
+    void tunnelNameEdited(const QString& text);
+    void tunnelToggled(bool enable);
 
 private:
     Ui::LorrisProxy *ui;
-    TcpServer *m_server;
+    TcpServer m_server;
     ConnectButton * m_connectButton;
 };
 

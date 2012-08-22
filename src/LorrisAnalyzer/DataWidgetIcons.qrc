@@ -9,5 +9,7 @@
         <file alias="terminal.png">icons/terminal.png</file>
         <file alias="button.png">icons/button.png</file>
         <file alias="circle.png">icons/circle.png</file>
+        <file alias="slider.png">icons/slider.png</file>
+        <file alias="canvas.png">icons/canvas.png</file>
     </qresource>
 </RCC>

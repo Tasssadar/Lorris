@@ -487,7 +487,17 @@ bool PythonQt::addSignalHandler(QObject* obj, const char* signal, PyObject* modu
 
 bool PythonQt::addSignalHandler(QObject* obj, const char* signal, PyObject* receiver)
 {
+    if(PyCallable_Check(receiver))
+    {
+        PyFunctionObject *func = (PyFunctionObject*)receiver;
+        if(func->func_module)
+        {
+            _p->addSlot(QString(PyString_AsString(func->func_module)), receiver);
+        }
+    }
+
   bool flag = false;
+
   PythonQtSignalReceiver* r = getSignalReceiver(obj);
   if (r) {
     flag = r->addSignalHandler(signal, receiver);
@@ -591,7 +601,7 @@ QVariant PythonQt::evalCode(PyObject* object, PyObject* pycode) {
   return result;
 }
 
-QVariant PythonQt::evalScript(PyObject* object, const QString& script, int start)
+QVariant PythonQt::evalScript(PyObject* object, const QString& script, const QString& filename, int start)
 {
   QVariant result;
   PythonQtObjectPtr p;
@@ -602,7 +612,10 @@ QVariant PythonQt::evalScript(PyObject* object, const QString& script, int start
     dict = object;
   }
   if (dict) {
-    p.setNewRef(PyRun_String(script.toLatin1().data(), start, dict, dict));
+      PyCodeObject* pycode;
+      pycode = (PyCodeObject*)Py_CompileString((char*)script.toLatin1().data(), (char*)filename.toLatin1().constData(), Py_file_input);
+      if(pycode)
+        p.setNewRef(PyEval_EvalCode(pycode, dict, dict));
   }
   if (p) {
     result = PythonQtConv::PyObjToQVariant(p);
@@ -648,7 +661,7 @@ PythonQtObjectPtr PythonQt::createModuleFromScript(const QString& name, const QS
     scriptCode = "\n";
   }
   PythonQtObjectPtr pycode;
-  pycode.setNewRef(Py_CompileString((char*)scriptCode.toLatin1().data(), "",  Py_file_input));
+  pycode.setNewRef(Py_CompileString((char*)scriptCode.toLatin1().data(), (char*)name.toLatin1().constData(),  Py_file_input));
   PythonQtObjectPtr module = _p->createModule(name, pycode);
   return module;
 }
@@ -1130,6 +1143,28 @@ void PythonQtPrivate::addPolymorphicHandler(const char* typeName, PythonQtPolymo
 bool PythonQt::addParentClass(const char* typeName, const char* parentTypeName, int upcastingOffset)
 {
   return _p->addParentClass(typeName, parentTypeName, upcastingOffset);
+}
+
+void PythonQt::disconnectAllSlots(const QString &module)
+{
+    const QList<PyObject*>& mSlots = _p->getSlots(module);
+    for(int i = 0; i < mSlots.size(); ++i)
+        for(QHash<QObject*, PythonQtSignalReceiver *>::iterator itr = _p->_signalReceivers.begin(); itr != _p->_signalReceivers.end(); ++itr)
+            (*itr)->removeSignalHandler(mSlots[i]);
+
+    _p->clearSlots(module);
+}
+
+void PythonQt::disconnectSlots(const QString &module, QObject *object)
+{
+    PythonQtSignalReceiver* r = _p->_signalReceivers[object];
+
+    if(!r)
+        return;
+
+    const QList<PyObject*>& mSlots = _p->getSlots(module);
+    for(int i = 0; i < mSlots.size(); ++i)
+        r->removeSignalHandler(mSlots[i]);
 }
 
 bool PythonQtPrivate::addParentClass(const char* typeName, const char* parentTypeName, int upcastingOffset)

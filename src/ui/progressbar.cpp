@@ -5,9 +5,10 @@
 **    See README and COPYING
 ***********************************************/
 #include <QHideEvent>
+#include <QApplication>
 
 #include "progressbar.h"
-#include "../utils.h"
+#include "../misc/utils.h"
 
 ProgressBar::ProgressBar(QWidget *parent) :
     QProgressBar(parent)
@@ -20,14 +21,17 @@ void ProgressBar::setValue(int value)
         return;
 
     if(value == -1)
-        Utils::setProgress(-1);
+        m_win7.setProgressState(EcWin7::NoProgress);
     else
-        Utils::setProgress(value*100/maximum());
+    {
+        m_win7.setProgressState(EcWin7::Normal);
+        m_win7.setProgressValue(value, maximum());
+    }
     QProgressBar::setValue(value);
 }
 
 void ProgressBar::hide()
 {
     QProgressBar::hide();
-    Utils::setProgress(-1);
+    m_win7.setProgressState(EcWin7::NoProgress);
 }

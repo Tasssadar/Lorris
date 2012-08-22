@@ -1,15 +1,9 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-win32 {
-    SUBDIRS = src
-}
+SUBDIRS = dep \
+          src
+src.depends = dep
 
-unix {
-    SUBDIRS = dep \
-              src
-    src.depends = dep
-}
-
-CONFIG(debug, debug|release):TARGET = bin/debug/Lorris
-else:TARGET = bin/release/Lorris
+CONFIG(debug, debug|release):TARGET = "$$PWD/bin/debug/Lorris"
+else:TARGET = "$$PWD/bin/release/Lorris"

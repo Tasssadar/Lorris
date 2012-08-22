@@ -13,6 +13,8 @@
 #include "../../WorkTab/WorkTab.h"
 #include "colorwidget.h"
 
+REGISTER_DATAWIDGET(WIDGET_COLOR, Color)
+
 ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle(tr("Color"));
@@ -24,7 +26,6 @@ ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
     m_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_widget->setStyleSheet("background-color: black");
 
-    layout->setContentsMargins(3, 0, 3, 3);
     layout->addWidget(m_widget, 1);
 
     resize(150, 100);
@@ -186,7 +187,7 @@ void ColorWidget::brightTriggered()
     }
     else
     {
-        WorkTab::DeleteAllMembers(m_brightness_layout);
+        Utils::deleteLayoutMembers(m_brightness_layout);
         delete m_brightness_layout;
         m_brightness_layout = NULL;
     }
@@ -228,7 +229,7 @@ void ColorWidget::colorTriggered()
         }
         else
         {
-            WorkTab::DeleteAllMembers(m_color_layout[i]);
+            Utils::deleteLayoutMembers(m_color_layout[i]);
             delete m_color_layout[i];
             m_color_layout[i] = NULL;
         }

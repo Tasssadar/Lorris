@@ -13,6 +13,6 @@
 #CONFIG += debug
 
 # for all debug builds, add "_d" extension to target
-CONFIG(debug, debug|release) {
-  TARGET = $${TARGET}_d 
-}
+#CONFIG(debug, debug|release) {
+#  TARGET = $${TARGET}_d
+#}

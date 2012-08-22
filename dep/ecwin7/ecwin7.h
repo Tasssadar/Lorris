@@ -118,7 +118,6 @@ public:
 	// Initialization methods
     EcWin7();
     void init(WId wid);
-    bool winEvent(MSG * message, long * result);
 
 	// Overlay icon handling
 	void setOverlayIcon(QString iconName, QString description);
@@ -137,7 +136,6 @@ public:
 private:
     WId mWindowId;
 #ifdef Q_WS_WIN
-    UINT mTaskbarMessageId;
     ITaskbarList3 *mTaskbar;
     HICON mOverlayIcon;
 #endif

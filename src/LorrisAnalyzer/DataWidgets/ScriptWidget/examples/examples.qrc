@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/examples">
+        <file>snake.js</file>
+        <file>snake.py</file>
+        <file>default.js</file>
+        <file>default.py</file>
+        <file>slider.js</file>
+        <file>slider.py</file>
+        <file>canvas.js</file>
+        <file>canvas.py</file>
+        <file>graph.js</file>
+        <file>graph.py</file>
+        <file>joystick.js</file>
+        <file>joystick.py</file>
+        <file>terminal.js</file>
+        <file>terminal.py</file>
+        <file>input.py</file>
+        <file>input.js</file>
+    </qresource>
+</RCC>

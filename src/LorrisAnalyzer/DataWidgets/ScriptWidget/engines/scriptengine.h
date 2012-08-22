@@ -10,6 +10,7 @@
 
 #include <QObject>
 #include <QSize>
+#include <QHash>
 
 class ScriptStorage;
 class analyzer_data;
@@ -17,6 +18,7 @@ class DataWidget;
 class WidgetArea;
 class QTimer;
 class Terminal;
+class ScriptWidget;
 
 enum ScriptEngines
 {
@@ -39,11 +41,11 @@ Q_SIGNALS:
     void error(const QString& text);
 
 public:
-    ScriptEngine(WidgetArea *area , quint32 w_id, Terminal *terminal, QObject *parent = 0);
+    ScriptEngine(WidgetArea *area , quint32 w_id, ScriptWidget *parent);
     ~ScriptEngine();
 
     static QStringList getEngineList();
-    static ScriptEngine *getEngine(int idx, WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent);
+    static ScriptEngine *getEngine(int idx, WidgetArea *area, quint32 w_id, ScriptWidget *parent);
 
     virtual void setSource(const QString& source) = 0;
     virtual QString dataChanged(analyzer_data *data, quint32 index) = 0;
@@ -77,6 +79,7 @@ public slots:
     virtual void keyPressed(const QString &key) = 0;
 
 protected:
+    ScriptWidget *scriptWidget() const { return (ScriptWidget*)parent(); }
     QString sanitizeWidgetName(QString const & name);
 
     int m_x;
@@ -88,7 +91,6 @@ protected:
     QString m_source;
     WidgetArea *m_area;
     qint32 m_widget_id;
-    Terminal *m_terminal;
 
     QHash<quint32, DataWidget*> m_widgets;
     std::list<QTimer*> m_timers;

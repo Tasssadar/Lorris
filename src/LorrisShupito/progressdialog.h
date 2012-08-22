@@ -10,11 +10,13 @@
 
 #include <QProgressDialog>
 
+#include "../dep/ecwin7/ecwin7.h"
+
 class ProgressDialog : public QProgressDialog
 {
     Q_OBJECT
 public:
-    explicit ProgressDialog(const QString& text, QWidget *parent = 0);
+    explicit ProgressDialog(WId id, const QString& text, QWidget *parent = 0);
 
 public slots:
     void cancel();
@@ -25,6 +27,7 @@ protected:
 
 private:
     QPushButton *m_cancel_btn;
+    EcWin7 m_win7;
 };
 
 #endif // PROGRESSDIALOG_H

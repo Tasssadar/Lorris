@@ -10,14 +10,18 @@
 #include <QLocale>
 #include <QLibraryInfo>
 #include <stdio.h>
+#include <qtsingleapplication/qtsingleapplication.h>
 
-#include "updater.h"
 #include "revision.h"
 #include "ui/mainwindow.h"
-#include "config.h"
-
+#include "misc/config.h"
 #include "connection/connectionmgr2.h"
 #include "WorkTab/WorkTabMgr.h"
+#include "ui/settingsdialog.h"
+
+#ifdef Q_OS_WIN
+ #include "misc/updater.h"
+#endif
 
 static bool checkArgs(int argc, char** argv, QStringList& openFiles)
 {
@@ -82,20 +86,30 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Lorris");
 
     // Sort tab infos after they were added by static variables
+    // Also adds handled filetypes, so must be before checkArgs
     sWorkTabMgr.SortTabInfos();
 
     QStringList openFiles;
     if(!checkArgs(argc, argv, openFiles))
         return 0;
 
-    QApplication a(argc, argv);
-    psConMgr2 = new ConnectionManager2(&a);
+    QtSingleApplication a(argc, argv);
+    if(sConfig.get(CFG_BOOL_ONE_INSTANCE) && a.isRunning() && a.sendMessage("newWindow|" + openFiles.join(";")))
+    {
+        qWarning("Running instance activated");
+        return 0;
+    }
+
+    QObject::connect(&a, SIGNAL(messageReceived(QString)), &sWorkTabMgr, SLOT(instanceMessage(QString)));
+
+    ConnectionManager2 conmgr(&a);
     installTranslator(a);
 
+#ifdef Q_OS_WIN
     if(Updater::doUpdate(true))
         return 0;
+#endif
 
-    MainWindow w;
-    w.show(openFiles);
+    sWorkTabMgr.initialize(openFiles);
     return a.exec();
 }

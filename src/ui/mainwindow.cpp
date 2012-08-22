@@ -5,63 +5,50 @@
 **    See README and COPYING
 ***********************************************/
 
-#include <QPushButton>
-#include <QString>
-#include <QMessageBox>
 #include <QCloseEvent>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QComboBox>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLineEdit>
-#include <QtGui/QMainWindow>
-#include <QtGui/QMenuBar>
-#include <QtGui/QProgressBar>
-#include <QtGui/QPushButton>
-#include <QtGui/QStatusBar>
-#include <QtGui/QToolBar>
-#include <QtGui/QWidget>
-#include <QHBoxLayout>
-#include <QObjectList>
-#include <QSignalMapper>
-#include <QLocale>
-#include <QTranslator>
 #include <QCloseEvent>
+#include <QStatusBar>
 
 #include "mainwindow.h"
 #include "../WorkTab/WorkTab.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../WorkTab/WorkTabInfo.h"
 #include "../revision.h"
-#include "../config.h"
+#include "../misc/config.h"
+#include "HomeTab.h"
+#include "../misc/datafileparser.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+static const QString titleString = QString("Lorris v%1").arg(REVISION);
+MainWindow::MainWindow(quint32 id, QWidget *parent) :
     QMainWindow(parent)
 {
-    setWindowTitle(getVersionString());
+    m_id = id;
+    m_hometab = NULL;
+
+    setWindowTitle(titleString);
     setMinimumSize(600, 500);
     setWindowIcon(QIcon(":/icons/icon.png"));
+    setAttribute(Qt::WA_DeleteOnClose);
     loadWindowParams();
 
-    m_win7.init(winId());
-    Utils::setWin7(&m_win7);
+    QApplication::setFont(Utils::getFontFromString(sConfig.get(CFG_STRING_APP_FONT)));
 
     setStatusBar(new QStatusBar(this));
-    Utils::setStatusBar(statusBar());
 
-    TabView *tabWidget = sWorkTabMgr.CreateWidget(this);
-    connect(tabWidget, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
-    connect(tabWidget, SIGNAL(closeLorris()),                          SLOT(close()));
+    m_tabView = new TabView(this);
+    connect(m_tabView, SIGNAL(statusBarMsg(QString,int)), statusBar(), SLOT(showMessage(QString,int)));
+    connect(m_tabView, SIGNAL(closeWindow()),                          SLOT(close()));
+    connect(m_tabView, SIGNAL(openHomeTab()),                          SLOT(openHomeTab()));
+    connect(m_tabView, SIGNAL(closeHomeTab()),                         SLOT(closeHomeTab()));
+    connect(m_tabView, SIGNAL(changeWindowTitle(QString)),             SLOT(changeWindowTitle(QString)));
 
-    sWorkTabMgr.OpenHomeTab();
-    setCentralWidget(tabWidget);
+    setCentralWidget(m_tabView);
+    openHomeTab();
 }
 
 MainWindow::~MainWindow()
 {
-    Utils::setWin7(NULL);
-    Utils::setStatusBar(NULL);
+    sWorkTabMgr.removeWindow(m_id);
 }
 
 void MainWindow::show(const QStringList& openFiles)
@@ -69,23 +56,12 @@ void MainWindow::show(const QStringList& openFiles)
     QMainWindow::show();
 
     for(QStringList::const_iterator itr = openFiles.begin(); itr != openFiles.end(); ++itr)
-        sWorkTabMgr.openTabWithFile(*itr);
-}
-
-bool MainWindow::winEvent(MSG *message, long *result)
-{
-    return m_win7.winEvent(message, result);
-}
-
-QString MainWindow::getVersionString()
-{
-    QString ver = "Lorris v" + QString::number(REVISION);
-    return ver;
+        sWorkTabMgr.openTabWithFile(*itr, this);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if(!sWorkTabMgr.onTabsClose())
+    if(!sWorkTabMgr.onTabsClose(getId()))
         event->ignore();
     else
     {
@@ -96,38 +72,54 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::saveWindowParams()
 {
-    QStringList params;
-    params << QString::number(isMaximized())
-           << QString::number(width()) << QString::number(height())
-           << QString::number(x()) << QString::number(y());
-    sConfig.set(CFG_STRING_WINDOW_PARAMS, params.join(";"));
+    sConfig.set(CFG_STRING_WINDOW_PARAMS, Utils::saveWindowParams(this));
 }
 
 void MainWindow::loadWindowParams()
 {
-    QStringList params = sConfig.get(CFG_STRING_WINDOW_PARAMS).split(';');
-    if(params.size() != 5)
+    Utils::loadWindowParams(this, sConfig.get(CFG_STRING_WINDOW_PARAMS));
+}
+
+void MainWindow::openHomeTab()
+{
+    Q_ASSERT(!m_hometab);
+    if(m_hometab)
         return;
 
-    QRect s;
-    for(int i = 0; i < params.size(); ++i)
-    {
-        int val = params[i].toInt();
-        switch(i)
-        {
-            case 0:
-                if(val != 0)
-                {
-                    setWindowState(Qt::WindowMaximized);
-                    return;
-                }
-                break;
-            case 1: s.setWidth(val); break;
-            case 2: s.setHeight(val);break;
-            case 3: s.setX(val); break;
-            case 4: s.setY(val); break;
-        }
-    }
-    resize(s.size());
-    move(s.topLeft());
+    m_hometab = new HomeTab(this);
+    m_hometab->setWindowId(m_id);
+    m_tabView->getActiveWidget()->addTab(m_hometab, tr("Home"));
+}
+
+void MainWindow::closeHomeTab()
+{
+    if(!m_hometab)
+        return;
+
+    delete m_hometab;
+    m_hometab = NULL;
+}
+
+void MainWindow::saveData(DataFileParser *file)
+{
+    file->writeBlockIdentifier("windowInfo");
+    file->writeString(Utils::saveWindowParams(this));
+    m_tabView->saveData(file);
+}
+
+void MainWindow::loadData(DataFileParser *file)
+{
+    if(!file->seekToNextBlock("windowInfo", 0))
+        return;
+
+    Utils::loadWindowParams(this, file->readString());
+    m_tabView->loadData(file);
+}
+
+void MainWindow::changeWindowTitle(const QString &title)
+{
+    if(!title.isEmpty())
+        setWindowTitle(title + " - " + titleString);
+    else
+        setWindowTitle(titleString);
 }

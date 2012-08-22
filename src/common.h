@@ -11,7 +11,7 @@
 #include <QString>
 
 #include "revision.h"
-#include "utils.h"
-#include "config.h"
+#include "misc/utils.h"
+#include "misc/config.h"
 
 #endif // COMMON_H

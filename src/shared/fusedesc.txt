@@ -11,7 +11,7 @@
     lb | Memory lock bit (Default: No lock) | 0b11=No lock | 0b10=Disable write | 0b00=Disable read and write | 0b01=<reserved>
     blb0 | Boot lock bit (Default: No restrictions) | 0b11=No restrictions
     blb1 | Boot lock bit (Default: No restrictions) | 0b11=No restrictions
-    wdton | Watchdog Timer always on (Default: Yes) | 0b1=Yes | 0b0=No
+    wdton | Watchdog Timer always on (Default: Yes) | 0b1=No | 0b0=Yes
     spien | Enable SPI Serial program and Data downloading (default: enabled) | 0b0=Enabled | 0b1=Disabled
 }
 
@@ -130,11 +130,6 @@
     rstdisbl | Disable external reset (default: disabled) | 0b1=Disabled | 0b0=Enabled
     selfprgen | Enable self programming (default: disabled) | 0b01=Disabled | 0b0=Enabled
 }
-
-atxmega128a avr:1e9746 flash=139264:512,eeprom=2048:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
-atxmega64a avr:1e9646 flash=69632:256,eeprom=2048:32,fuses=8   jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
-atxmega32a avr:1e9541 flash=36864:256,eeprom=1024:32,fuses=8   jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
-atxmega16a avr:1e9441 flash=20480:256,eeprom=1024:32,fuses=8   jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
 
 # atxmega128a, atxmega64a, atxmega32a, atxmega16a
 {=avr:1e9746,avr:1e9646,avr:1e9541,avr:1e9441

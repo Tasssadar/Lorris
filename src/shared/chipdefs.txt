@@ -6,7 +6,7 @@ atmega88 avr:1e930a flash=8192:64,eeprom=512:4 lb:0,1 blb0:2,3 blb1:4,5 sut+ckse
 atmega168 avr:1e9406 flash=16384:128,eeprom=512:4 lb:0,1 blb0:2,3 blb1:4,5 sut+cksel:8,9,10,11,12,13 ckout:14 ckdiv8:15 bodlevel:16,17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bootrst:24 bootsz:25,26
 atmega328 avr:1e9514 flash=32768:128,eeprom=1024:4 lb:0,1 blb0:2,3 blb1:4,5 sut+cksel:8,9,10,11,12,13 ckout:14 ckdiv8:15 bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bodlevel:24,25,26
 atmega328p avr:1e950f flash=32768:128,eeprom=1024:4 lb:0,1 blb0:2,3 blb1:4,5 sut+cksel:8,9,10,11,12,13 ckout:14 ckdiv8:15 bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 dwen:22 rstdisbl:23:1 bodlevel:24,25,26
-atmega16 avr:1e9403 flash=16384:128,eeprom=512:4 lb:0,1 blb0:2,3 blb1:4,5 sut+cksel:8,9,10,11,12,13 boden:14 bodlevel:15 bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23
+atmega16 avr:1e9403 flash=16384:128,eeprom=512:4,fuses=3 lb:0,1 blb0:2,3 blb1:4,5 sut+cksel:8,9,10,11,12,13 boden:14 bodlevel:15 bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23
 atmega128 avr:1e9702 flash=131072:256,eeprom=4096:8 lb:0,1 blb0:2,3 blb1:4,5 sut+cksel:8,9,10,11,12,13 boden:14 bodlevel:15 bootrst:16 bootsz:17,18 eesave:19 ckopt:20 spien:21:0 jtagen:22 ocden:23 wdton:24 m103c:25
 atmega1284p avr:1e9705 flash=131072:256,eeprom=4096:8 lb:0,1 blb0:2,3 blb1:4,5 sut+cksel:8,9,10,11,12,13 ckout:14 ckdiv8:15 bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 jtagen:22 ocden:23 bodlevel:24,25,26
 atmega8u2 avr:1e9389 flash=8192:128,eeprom=256:4 lb:0,1 blb0:2,3 blb1:4,5 sut+cksel:8,9,10,11,12,13 ckout:14 ckdiv8:15 bootrst:16 bootsz:17,18 eesave:19 wdton:20 spien:21:0 rstdsbl:22:1 dwen:23:1 bodlevel:24,25,26 hwbe:27

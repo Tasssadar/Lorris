@@ -13,10 +13,11 @@
 #include "HomeTab.h"
 #include "mainwindow.h"
 #include "../WorkTab/WorkTabMgr.h"
+#include "chooseconnectiondlg.h"
 
 #include "../ui/ui_hometab.h"
 
-HomeTab::HomeTab(QWidget *parent) : QWidget(parent), ui(new Ui::HomeTab)
+HomeTab::HomeTab(QWidget *parent) : Tab(TABTYPE_HOME, parent), ui(new Ui::HomeTab)
 {
     ui->setupUi(this);
 
@@ -45,6 +46,9 @@ HomeTab::HomeTab(QWidget *parent) : QWidget(parent), ui(new Ui::HomeTab)
     }
 
     ui->tabButtonsWidget->layout()->addItem(vertStretch);
+
+    connect(ui->sessionMgrLabel, SIGNAL(linkActivated(QString)),
+            sWorkTabMgr.getSessionMgr(), SLOT(openManager()));
 }
 
 HomeTab::~HomeTab()
@@ -58,6 +62,12 @@ void HomeTab::buttonClicked()
     if (info)
     {
         emit tabOpened();
-        sWorkTabMgr.AddWorkTab(info);
+        sWorkTabMgr.AddWorkTab(info, getWindowId());
     }
+}
+
+void HomeTab::on_openConnManagerLink_linkActivated(const QString &)
+{
+    ChooseConnectionDlg dialog(this);
+    dialog.exec();
 }

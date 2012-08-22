@@ -1,0 +1,6 @@
+[submodule "dep/libusby"]
+	path = dep/libusby
+	url = git://github.com/avakar/libusby.git
+[submodule "dep/libenjoy"]
+	path = dep/libenjoy
+	url = git://github.com/Tasssadar/libenjoy.git

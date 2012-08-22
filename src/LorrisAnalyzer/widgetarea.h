@@ -16,6 +16,22 @@
 class DataFileParser;
 class Storage;
 class LorrisAnalyzer;
+class ChildTab;
+class WidgetAreaPreview;
+
+#define PLACEMENT_SHOW 20
+#define PLACEMENT_STICK 7
+
+enum AreaMenuActions
+{
+    ACT_ENABLE_GRID = 0,
+    ACT_SHOW_GRID,
+    ACT_ENABLE_LINES,
+    ACT_GRID_SIZE,
+    ACT_ALIGN,
+
+    ACT_MAX
+};
 
 class WidgetArea : public QFrame
 {
@@ -49,9 +65,9 @@ public:
     void SaveSettings(DataFileParser *file);
     void LoadSettings(DataFileParser *file);
 
-    static DataWidget *newWidget(quint8 type, QWidget *parent);
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void moveWidgets(QPoint diff);
+    void correctWidgetName(QString& name, DataWidget *widget);
 
     void skipNextMove() { m_skipNextMove = true; }
 
@@ -62,6 +78,13 @@ public:
     const QPoint& getGridOffset() const { return m_grid_offset; }
     quint32 getGrid() const { return m_grid; }
     void setGrid(quint32 grid) { m_grid = grid; }
+
+    Storage *getStorage() const { return m_storage; }
+
+    QRegion getRegionWithWidgets();
+
+    void updatePlacement(int x, int y, int w, int h, DataWidget *widget);
+    const QVector<QLine>& getPlacementLines() const { return m_placementLines; }
 
 public slots:
     void removeWidget(quint32 id);
@@ -82,10 +105,13 @@ private slots:
     void showGrid(bool show);
     void setGridSize();
     void alignWidgets();
+    void clearPlacementLines();
+    void enableLines(bool enable);
 
 private:
     void getMarkPos(int &x, int &y, QSize &size);
     quint32 getNewId() { return m_widgetIdCounter++; }
+    void addPlacementLine(int val, bool vertical, bool &changed);
 
     w_map m_widgets;
     mark_map m_marks;
@@ -101,6 +127,29 @@ private:
     bool m_show_grid;
 
     QMenu *m_menu;
+    WidgetAreaPreview *m_prev;
+
+    QVector<QLine> m_placementLines;
+    bool m_enablePlacementLines;
+};
+
+class WidgetAreaPreview : public QWidget
+{
+    Q_OBJECT
+public:
+    WidgetAreaPreview(WidgetArea *area, QWidget *parent);
+
+    void prepareRender();
+
+protected:
+    void paintEvent(QPaintEvent *);
+
+private:
+    WidgetArea *m_widgetArea;
+    QPixmap m_render;
+    QRegion m_region;
+    QRect m_visible;
+    bool m_smooth;
 };
 
 #endif // WIDGETAREA_H

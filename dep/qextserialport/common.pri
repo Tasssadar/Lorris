@@ -8,9 +8,9 @@ SAVE_TEMPLATE = $$TEMPLATE
 TEMPLATE = fakelib
 contains(QT_VERSION, ^5\\..*\\..*) {
     #different name for Qt4 and Qt5
-    QEXTSERIALPORT_LIBNAME = $$qtLibraryTarget(QtExtSerialPort-1.2)
+    QEXTSERIALPORT_LIBNAME = $$qtLibraryTarget(QtExtSerialPort-1.2_lorris)
 } else {
-    QEXTSERIALPORT_LIBNAME = $$qtLibraryTarget(qextserialport)
+    QEXTSERIALPORT_LIBNAME = $$qtLibraryTarget(qextserialport_lorris)
 }
 TEMPLATE = $$SAVE_TEMPLATE
 QEXTSERIALPORT_LIBDIR = $$PWD/lib

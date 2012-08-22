@@ -5,27 +5,29 @@
 **    See README and COPYING
 ***********************************************/
 
+#include "pythonengine.h"
+
 #include <QVariant>
 #include <QByteArray>
 #include <QComboBox>
+#include <QLineEdit>
 
-#include "pythonengine.h"
-#include "../../../../shared/terminal.h"
+#include "../../../../ui/terminal.h"
 #include "../../../packet.h"
 #include "../scriptstorage.h"
 #include "../../../widgetarea.h"
 #include "../../../../joystick/joymgr.h"
 #include "../../GraphWidget/graphcurve.h"
+#include "../scriptwidget.h"
 
 QString PythonEngine::getNewModuleName()
 {
     static int i = 0;
-    return QString(5, i++);
+    return QString::number(i++).repeated(3);
 }
 
-
-PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent) :
-    ScriptEngine(area, w_id, terminal, parent), m_functions(this, parent)
+PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent) :
+    ScriptEngine(area, w_id, parent), m_functions(this, parent)
 {
     static bool initialized = false;
     if(!initialized)
@@ -35,10 +37,15 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, Q
         PythonQt::init();
         PythonQt::self()->registerClass(&QTimer::staticMetaObject);
         PythonQt::self()->registerClass(&GraphCurve::staticMetaObject);
+        PythonQt::self()->registerClass(&Joystick::staticMetaObject);
         initialized = true;
     }
-    connect(PythonQt::self(), SIGNAL(pythonStdErr(QString)), SIGNAL(error(QString)));
+    connect(PythonQt::self(), SIGNAL(pythonStdErr(QString)), SLOT(errorFilter(QString)));
+    connect(&m_sendError,     SIGNAL(timeout()),             SLOT(sendError()));
     m_evaluating = false;
+
+    // Create m_module object
+    setSource(QString());
 }
 
 PythonEngine::~PythonEngine()
@@ -55,27 +62,31 @@ PythonEngine::~PythonEngine()
 void PythonEngine::setSource(const QString &source)
 {
     if(!m_module.isNull())
+    {
+        PythonQt::self()->disconnectAllSlots(m_name);
         m_module.call("onScriptExit");
+    }
 
     m_evaluating = true;
     m_source = source;
 
-    QString name = getNewModuleName();
+    m_name = getNewModuleName();
     static const QString predefSource = "from PythonQt.Qt import *\n"
                                         "from PythonQt.QtGui import *\n"
                                         "from PythonQt import *\n";
 
-    m_module = PythonQt::self()->createModuleFromScript(name, predefSource);
+    m_module = PythonQt::self()->createModuleFromScript(m_name, predefSource);
 
     // remove script created widgets and timer from previous script
     while(!m_widgets.empty())
         m_area->removeWidget((*m_widgets.begin())->getId());
 
-    m_module.addObject("terminal", m_terminal);
+    m_module.addObject("terminal", scriptWidget()->getTerminal());
     m_module.addObject("script", parent());
     m_module.addObject("area", m_area);
     m_module.addObject("storage", m_storage);
     m_module.addObject("lorris", &m_functions);
+    m_module.addObject("inputLine", scriptWidget()->getInputEdit());
 
     // FIXMEWTF: lorris.newWidget fails on every second setSource
     // with "AttributeError: *widgetTitle*" if this is not. What?
@@ -87,6 +98,8 @@ void PythonEngine::setSource(const QString &source)
     m_module.addVariable("WIDGET_GRAPH",  WIDGET_GRAPH);
     m_module.addVariable("WIDGET_INPUT",  WIDGET_INPUT);
     m_module.addVariable("WIDGET_CIRCLE",  WIDGET_CIRCLE);
+    m_module.addVariable("WIDGET_SLIDER",  WIDGET_SLIDER);
+    m_module.addVariable("WIDGET_CANVAS",  WIDGET_CANVAS);
 
     const WidgetArea::w_map& widgets = m_area->getWidgets();
     for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
@@ -102,7 +115,7 @@ void PythonEngine::setSource(const QString &source)
 
     emit stopUsingJoy(this);
 
-    m_module.evalScript(source);
+    m_module.evalScript(source, m_name, 257);
     m_evaluating = false;
 }
 
@@ -190,6 +203,19 @@ void PythonEngine::keyPressed(const QString &key)
     m_module.call("onKeyPress", (QVariantList() << key));
 }
 
+void PythonEngine::errorFilter(const QString &error)
+{
+    m_sendError.start(50);
+    m_errorBuffer.append(error);
+}
+
+void PythonEngine::sendError()
+{
+    m_sendError.stop();
+    if(m_errorBuffer.contains(QString("File \"%1\"").arg(m_name)))
+        emit error(m_errorBuffer);
+    m_errorBuffer.clear();
+}
 
 PythonFunctions::PythonFunctions(PythonEngine *engine, QObject *parent) :
     QObject(parent)
@@ -200,6 +226,11 @@ PythonFunctions::PythonFunctions(PythonEngine *engine, QObject *parent) :
 void PythonFunctions::sendData(const QByteArray &data)
 {
     emit m_engine->SendData(data);
+}
+
+void PythonFunctions::sendData(const QString& str)
+{
+    emit m_engine->SendData(str.toUtf8());
 }
 
 int PythonFunctions::getWidth()
@@ -214,7 +245,7 @@ int PythonFunctions::getHeight()
 
 void PythonFunctions::throwException(const QString &text)
 {
-    Utils::ThrowException(text);
+    Utils::showErrorBox(text);
 }
 
 Joystick *PythonFunctions::getJoystick(int id)
@@ -230,14 +261,22 @@ Joystick *PythonFunctions::getJoystick(int id)
 
 void PythonFunctions::closeJoystick(Joystick *joy)
 {
-    disconnect(m_engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
-    joy->stopUsing(m_engine);
+    if(!joy)
+        return;
+
+    if(!joy->stopUsing(m_engine))
+        delete joy;
 }
 
 QStringList PythonFunctions::getJoystickNames()
 {
     sJoyMgr.updateJoystickNames();
     return sJoyMgr.getNamesList();
+}
+
+QList<quint32> PythonFunctions::getJoystickIds()
+{
+    return sJoyMgr.getIdList();
 }
 
 QTimer *PythonFunctions::newTimer()
@@ -255,6 +294,11 @@ void PythonFunctions::AddComboBoxItems(QComboBox *box, QStringList items)
 void PythonFunctions::moveWidget(QWidget *w, int x, int y)
 {
     w->move(x, y);
+}
+
+void PythonFunctions::resizeWidget(QWidget *w, int width, int height)
+{
+    w->resize(width, height);
 }
 
 DataWidget *PythonFunctions::newWidget(int type, QString title, int width, int height, int x, int y)

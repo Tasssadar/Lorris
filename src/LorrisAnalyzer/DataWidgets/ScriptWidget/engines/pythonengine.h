@@ -9,7 +9,7 @@
 #define PYTHONENGINE_H
 
 #include "../../../../../dep/pythonqt/src/PythonQt.h"
-
+#include <QTimer>
 #include "scriptengine.h"
 
 class PythonEngine;
@@ -24,15 +24,18 @@ public:
 
 public slots:
     void sendData(const QByteArray& data);
+    void sendData(const QString& str);
     int getWidth();
     int getHeight();
     void throwException(const QString& text);
     Joystick *getJoystick(int id);
     void closeJoystick(Joystick *joy);
     QStringList getJoystickNames();
+    QList<quint32> getJoystickIds();
     QTimer *newTimer();
     void AddComboBoxItems(QComboBox *box, QStringList items);
     void moveWidget(QWidget *w, int x, int y);
+    void resizeWidget(QWidget *w, int width, int height);
     DataWidget *newWidget(int type, QString title, int width, int height, int x, int y);
     DataWidget *newWidget(int type, QString title, int width, int height)
     {
@@ -54,7 +57,7 @@ class PythonEngine : public ScriptEngine
     friend class PythonFunctions;
 
 public:
-    PythonEngine(WidgetArea *area, quint32 w_id, Terminal *terminal, QObject *parent = 0);
+    PythonEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent);
     ~PythonEngine();
     
     void setSource(const QString& source);
@@ -64,12 +67,16 @@ public:
     void callEventHandler(const QString& eventId);
     void onSave();
 
+    const QString& getName() const { return m_name; }
+
 public slots:
     void keyPressed(const QString &key);
 
 private slots:
     void onTitleChange(const QString& newTitle);
     void widgetDestroyed(QObject *widget);
+    void errorFilter(const QString& error);
+    void sendError();
 
 private:
     static QString getNewModuleName();
@@ -77,6 +84,9 @@ private:
     PythonQtObjectPtr m_module;
     bool m_evaluating;
     PythonFunctions m_functions;
+    QString m_name;
+    QString m_errorBuffer;
+    QTimer m_sendError;
 };
 
 #endif // PYTHONENGINE_H

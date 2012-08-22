@@ -17,7 +17,7 @@
 #include "datawidget.h"
 #include "../../WorkTab/WorkTab.h"
 #include "../widgetarea.h"
-#include "../datafileparser.h"
+#include "../../misc/datafileparser.h"
 
 DataWidget::DataWidget(QWidget *parent) :
     QFrame(parent)
@@ -32,6 +32,7 @@ DataWidget::DataWidget(QWidget *parent) :
     m_title_label->setObjectName("titleLabel");
     m_title_label->setStyleSheet("border-right: 1px solid black; border-bottom: 1px solid black");
     m_title_label->setAlignment(Qt::AlignVCenter);
+    m_title_label->setCursor(Qt::SizeAllCursor);
 
     m_closeLabel = new CloseLabel(this);
 
@@ -43,8 +44,8 @@ DataWidget::DataWidget(QWidget *parent) :
     title_bar->addWidget(m_title_label, 1);
     title_bar->addWidget(m_closeLabel, 0);
 
-    layout->setMargin(0);
     title_bar->setMargin(0);
+    layout->setContentsMargins(5, 0, 5, 5);
 
     layout->addLayout(title_bar);
     layout->addWidget(sepV);
@@ -53,17 +54,21 @@ DataWidget::DataWidget(QWidget *parent) :
     setLineWidth(1);
     setMidLineWidth(2);
     setAutoFillBackground(true);
+    setFocusPolicy(Qt::StrongFocus);
 
-    QPalette p;
-    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    QPalette p = palette();
+    p.setColor(QPalette::Window, QColor("#FFFFFF"));
     setPalette(p);
 
     contextMenu = NULL;
     m_mouseIn = false;
     m_updating = true;
     m_dragAction = DRAG_NONE;
+    m_copy_widget = NULL;
 
     m_widgetControlled = -1;
+
+    setMinimumSize(20, 20);
 }
 
 DataWidget::~DataWidget()
@@ -72,7 +77,7 @@ DataWidget::~DataWidget()
     if(m_mouseIn)
         emit mouseStatus(false, m_info, m_widgetControlled);
 
-    WorkTab::DeleteAllMembers(layout);
+    Utils::deleteLayoutMembers(layout);
     delete layout;
 }
 
@@ -114,10 +119,12 @@ void DataWidget::setTitleVisibility(bool visible)
     m_icon_widget->setVisible(visible);
 }
 
-void DataWidget::setTitle(const QString &title)
+void DataWidget::setTitle(QString title)
 {
-    emit titleChanged(title);
+    if(parent()->inherits("WidgetArea"))
+        widgetArea()->correctWidgetName(title, this);
 
+    emit titleChanged(title);
     m_title_label->setText(title);
 }
 
@@ -137,22 +144,56 @@ void DataWidget::contextMenuEvent ( QContextMenuEvent * event )
     contextMenu->exec(event->globalPos());
 }
 
+void DataWidget::childEvent(QChildEvent *event)
+{
+    QFrame::childEvent(event);
+
+    if(event->type() == QEvent::ChildAdded)
+        event->child()->installEventFilter(this);
+}
+
+bool DataWidget::eventFilter(QObject *, QEvent *ev)
+{
+    switch(ev->type())
+    {
+        case QEvent::Enter:
+            setCursor(Qt::ArrowCursor);
+            break;
+        case QEvent::FocusIn:
+            raise();
+            break;
+        default:
+            break;
+    }
+    return false;
+}
+
+void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::LeftButton && m_title_label->rect().contains(e->pos()))
+        titleDoubleClick();
+    else
+        QFrame::mouseDoubleClickEvent(e);
+}
+
 void DataWidget::mousePressEvent( QMouseEvent* e )
 {
-    m_dragAction = getDragAction(e->pos());
+    m_dragAction = getDragAction(e);
     mOrigin = e->globalPos();
+    m_clickPos = e->pos();
 }
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
 {
-    if(m_locked)
-        return;
-
     switch(e->buttons())
     {
         case Qt::NoButton:
         {
-            switch(getDragAction(e->pos()))
+            quint8 act = getDragAction(e);
+            if(m_locked && act != DRAG_NONE && act != (DRAG_MOVE | DRAG_COPY))
+                return;
+
+            switch(act)
             {
                 case DRAG_NONE:
                     setCursor(Qt::ArrowCursor);
@@ -173,6 +214,9 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
                 case (DRAG_RES_RIGHT | DRAG_RES_BOTTOM):
                     setCursor(Qt::SizeFDiagCursor);
                     break;
+                case (DRAG_MOVE | DRAG_COPY):
+                    setCursor(Qt::UpArrowCursor);
+                    break;
             }
             break;
         }
@@ -181,8 +225,18 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
             switch(m_dragAction)
             {
                 case DRAG_NONE: break;
-                case DRAG_MOVE: dragMove(e); break;
-                default: dragResize(e); break;
+                case DRAG_MOVE:
+                    if(!m_locked)
+                        dragMove(e, this);
+                    break;
+                case (DRAG_MOVE | DRAG_COPY):
+                    if(m_copy_widget) dragMove(e, m_copy_widget);
+                    else              copyWidget(e);
+                    break;
+                default:
+                    if(!m_locked)
+                        dragResize(e);
+                    break;
             }
             break;
         }
@@ -193,6 +247,8 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
 
 void DataWidget::mouseReleaseEvent(QMouseEvent *ev)
 {
+    emit clearPlacementLines();
+    m_copy_widget = NULL;
     m_dragAction = DRAG_NONE;
     QWidget::mouseReleaseEvent(ev);
 }
@@ -213,7 +269,7 @@ void DataWidget::leaveEvent(QEvent *)
 
 void DataWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(m_locked || !event->source() || event->mimeData()->text().at(0) == 'w')
+    if(m_locked || !event->source() || !event->mimeData()->hasText() || event->mimeData()->text().at(0) == 'w')
     {
         QFrame::dragEnterEvent(event);
         return;
@@ -233,14 +289,14 @@ void DataWidget::dropEvent(QDropEvent *event)
     qint16 cmd = data[2].toInt();
     setInfo(device, cmd, pos);
     m_assigned = true;
-    emit updateData();
+    emit updateForMe();
 }
 
-quint8 DataWidget::getDragAction(const QPoint &clickPos)
+quint8 DataWidget::getDragAction(QMouseEvent *ev)
 {
     quint8 res = 0;
-    int x = clickPos.x();
-    int y = clickPos.y();
+    int x = ev->pos().x();
+    int y = ev->pos().y();
 
     if(x < RESIZE_BORDER)
         res |= DRAG_RES_LEFT;
@@ -251,7 +307,11 @@ quint8 DataWidget::getDragAction(const QPoint &clickPos)
         res |= DRAG_RES_BOTTOM;
 
     if(res == 0)
+    {
         res = DRAG_MOVE;
+        if(ev->modifiers() & Qt::ControlModifier)
+            res |= DRAG_COPY;
+    }
     return res;
 }
 
@@ -262,47 +322,97 @@ void DataWidget::dragResize(QMouseEvent* e)
     int x = pos().x();
     int y = pos().y();
 
-    QPoint m_pos = e->pos();
-    mapXYToGrid(m_pos);
-    int gx = x + m_pos.x();
+    QPoint p = e->pos();
+    mapXYToGrid(p);
+    p -= widgetArea()->getGridOffset();
 
     if(m_dragAction & DRAG_RES_LEFT)
     {
+        int gx = x + e->pos().x();
+        mapToGrid(gx);
+
         w += x - gx;
         x = gx;
     }
     else if(m_dragAction & DRAG_RES_RIGHT)
-        w = m_pos.x();
+        w = p.x();
 
     if(m_dragAction & DRAG_RES_BOTTOM)
-        h = m_pos.y();
+        h = p.y();
 
     if(w < minimumWidth())
-    {
-        w = width();
         x = pos().x();
+
+    w = (std::max)(w, minimumWidth());
+    h = (std::max)(h, minimumHeight());
+
+    // stick to placement lines
+    widgetArea()->updatePlacement(x, y, w, h, this);
+
+    int lx, ly;
+    QPoint mouse = mapToParent(e->pos() - m_clickPos);
+    int wx = mouse.x() + width();
+    int wy = mouse.y() + height();
+    const QVector<QLine>& lines = widgetArea()->getPlacementLines();
+    for(QVector<QLine>::const_iterator itr = lines.begin(); itr != lines.end(); ++itr)
+    {
+        lx = (*itr).x1();
+        ly = (*itr).y1();
+
+        if((m_dragAction & DRAG_RES_RIGHT) && abs(lx - wx) < PLACEMENT_STICK)
+                w = lx - x;
+        else if((m_dragAction & DRAG_RES_LEFT) && abs(lx - mouse.x()) < PLACEMENT_STICK)
+        {
+            w += x - lx;
+            x = lx;
+        }
+
+        if((m_dragAction & DRAG_RES_BOTTOM) && abs(ly - wy) < PLACEMENT_STICK)
+            h = ly - y;
     }
 
-    if(h < minimumHeight())
-    {
-        h = height();
-        y = pos().y();
-    }
+    m_clickPos += (QPoint(w, h) - QPoint(width(), height())) - (pos() - QPoint(x, y));
 
     resize(w, h);
     move(x, y);
 }
 
-void DataWidget::dragMove(QMouseEvent *e)
+void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
 {
-    QPoint p = pos() + ( e->globalPos() - mOrigin );
+    QPoint p = widget->pos() + ( e->globalPos() - mOrigin );
     mapXYToGrid(p);
-    move(p);
-
     mOrigin = e->globalPos();
     mapXYToGrid(mOrigin);
 
-    emit updateMarker(this);
+    // stick to placement lines
+    widgetArea()->updatePlacement(p.x(), p.y(),
+                                  widget->width(), widget->height(), widget);
+
+
+    QPoint mouse = mapToParent(e->pos() - m_clickPos);
+    int lx, ly;
+    int wx = mouse.x() + widget->width();
+    int wy = mouse.y() + widget->height();
+    const QVector<QLine>& lines = widgetArea()->getPlacementLines();
+    for(QVector<QLine>::const_iterator itr = lines.begin(); itr != lines.end(); ++itr)
+    {
+        lx = (*itr).x1();
+        ly = (*itr).y1();
+
+        if(abs(lx - mouse.x()) < PLACEMENT_STICK)
+            p.rx() = lx;
+        else if(abs(lx - wx) < PLACEMENT_STICK)
+            p.rx() = lx - widget->width();
+
+        if(abs(ly - mouse.y()) < PLACEMENT_STICK)
+            p.ry() = ly;
+        else if(abs(ly - wy) < PLACEMENT_STICK)
+            p.ry() = ly - widget->height();
+    }
+
+    widget->move(p);
+
+    emit updateMarker(widget);
 }
 
 void DataWidget::newData(analyzer_data *data, quint32 /*index*/)
@@ -336,7 +446,8 @@ void DataWidget::lockTriggered()
 
 void DataWidget::setTitleTriggered()
 {
-    QString title = QInputDialog::getText(this, tr("Set widget title"), tr("Enter title:"));
+    QString title = QInputDialog::getText(this, tr("Set widget title"), tr("Enter title:"),
+                                          QLineEdit::Normal, getTitle());
     if(title.length() == 0)
         return;
     setTitle(title);
@@ -406,10 +517,6 @@ void DataWidget::loadWidgetInfo(DataFileParser *file)
     }
 }
 
-void DataWidget::setValue(const QVariant &/*var*/)
-{
-}
-
 void DataWidget::setWidgetControlled(qint32 widget)
 {
     m_widgetControlled = widget;
@@ -441,7 +548,7 @@ void DataWidget::mapXYToGrid(QPoint& point)
 {
     mapToGrid(point.rx());
     mapToGrid(point.ry());
-    point += ((WidgetArea*)parent())->getGridOffset();
+    point += widgetArea()->getGridOffset();
 }
 
 void DataWidget::mapXYToGrid(int& x, int& y)
@@ -449,14 +556,14 @@ void DataWidget::mapXYToGrid(int& x, int& y)
     mapToGrid(x);
     mapToGrid(y);
 
-    const QPoint& offset = ((WidgetArea*)parent())->getGridOffset();
+    const QPoint& offset = widgetArea()->getGridOffset();
     x += offset.x();
     y += offset.y();
 }
 
 void DataWidget::mapToGrid(int &val)
 {
-    int grid = ((WidgetArea*)parent())->getGrid();
+    int grid = widgetArea()->getGrid();
     int div = abs(val%grid);
     val += div >= grid/2 ? grid - div : -div;
 }
@@ -464,14 +571,35 @@ void DataWidget::mapToGrid(int &val)
 void DataWidget::align()
 {
     QPoint p(pos());
-    p -= ((WidgetArea*)parent())->getGridOffset();
+    p -= widgetArea()->getGridOffset();
     mapXYToGrid(p);
     move(p);
 
     p = QPoint(width(), height());
     mapXYToGrid(p);
-    p -= ((WidgetArea*)parent())->getGridOffset();
+    p -= widgetArea()->getGridOffset();
     resize(p.x(), p.y());
+}
+
+void DataWidget::copyWidget(QMouseEvent *ev)
+{
+    Q_ASSERT(!m_copy_widget);
+
+    m_copy_widget = sWidgetFactory.copy(this);
+    m_copy_widget->move(mapToParent(ev->pos()));
+}
+
+void DataWidget::titleDoubleClick()
+{
+    if(m_locked)
+        return;
+    setTitleTriggered();
+}
+
+void DataWidget::focusInEvent(QFocusEvent *event)
+{
+    QFrame::focusInEvent(event);
+    this->raise();
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
@@ -505,7 +633,7 @@ const QPixmap& DataWidgetAddBtn::getRender()
 {
     if(!m_pixmap)
     {
-        DataWidget *w = WidgetArea::newWidget(m_widgetType, this);
+        DataWidget *w = sWidgetFactory.getWidget(m_widgetType, this);
         if(w)
         {
             m_pixmap = new QPixmap(w->size());

@@ -29,7 +29,7 @@ void ShupitoDesc::AddData(const QByteArray& data)
     quint8 *last = (quint8*)(first + m_data.size());
 
     if((last - first) < 17 || *first++ != 1)
-        return Utils::ThrowException("Invalid descriptor.");
+        return Utils::showErrorBox("Invalid descriptor.");
 
     m_guid = makeGuid(first);
     first += 16;
@@ -59,7 +59,7 @@ QString ShupitoDesc::makeGuid(quint8 *data)
 void ShupitoDesc::parseGroupConfig(quint8 *& first, quint8 *& last, quint8& base_cmd, std::vector<quint8>& actseq)
 {
     if(first == last)
-        return Utils::ThrowException("Invalid descriptor.");
+        return Utils::showErrorBox("Invalid descriptor.");
 
     if(*first == 0)
     {
@@ -100,7 +100,7 @@ void ShupitoDesc::parseGroupConfig(quint8 *& first, quint8 *& last, quint8& base
 void ShupitoDesc::parseConfig(quint8 *& first, quint8 *& last, quint8& base_cmd, std::vector<quint8>& actseq)
 {
     if ((last - first) < 19)
-        return Utils::ThrowException("Invalid descriptor.");
+        return Utils::showErrorBox("Invalid descriptor.");
 
     config cfg;
     cfg.flags = *first++;
@@ -115,7 +115,7 @@ void ShupitoDesc::parseConfig(quint8 *& first, quint8 *& last, quint8& base_cmd,
 
     quint8 data_len = *first++;
     if (last - first < data_len)
-        return Utils::ThrowException("Invalid descriptor.");
+        return Utils::showErrorBox("Invalid descriptor.");
 
     cfg.data.assign(first, first + data_len);
     first += data_len;
@@ -125,13 +125,10 @@ void ShupitoDesc::parseConfig(quint8 *& first, quint8 *& last, quint8& base_cmd,
 
 ShupitoPacket ShupitoDesc::config::getStateChangeCmd(bool activate)
 {
-    ShupitoPacket packet = ShupitoPacket();
-    QByteArray data;
-    data[0] = 0x80;
-    data[1] = actseq.size() + 1;
-    data[2] = activate ? 0x01 : 0x02;
+    ShupitoPacket pkt;
+    pkt.push_back(0);
+    pkt.push_back(activate ? 0x01 : 0x02);
     for(quint8 i = 0; i < actseq.size(); ++i)
-        data[i+3] = actseq[i];
-    packet.addData(data.data(), data.data()+data.size());
-    return packet;
+        pkt.push_back(actseq[i]);
+    return pkt;
 }

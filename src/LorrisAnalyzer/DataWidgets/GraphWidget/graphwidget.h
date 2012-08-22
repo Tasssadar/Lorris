@@ -43,47 +43,49 @@ public:
 public slots:
     GraphCurve *addCurve(QString name, QString color);
     void setAxisScale(bool x, double min, double max);
+    void removeCurve(QString name);
+    void removeAllCurves();
     void updateVisibleArea();
 
 protected:
-     void processData(analyzer_data *data);
-     void dropEvent(QDropEvent *event);
+    void processData(analyzer_data *data);
+    void dropEvent(QDropEvent *event);
 
 private slots:
-     void addCurve();
-     void newData(analyzer_data *data, quint32 index);
-     void sampleSizeChanged(int val);
-     void editCurve();
-     void removeCurve(QString name);
-     void showLegend(bool show);
-     void toggleAutoScroll(bool scroll);
-     void updateSampleSize();
-     void tryReplot();
-     void exportData();
+    void addCurve();
+    void newData(analyzer_data *data, quint32 index);
+    void sampleSizeChanged(int val);
+    void editCurve();
+    void showLegend(bool show);
+    void toggleAutoScroll(bool scroll);
+    void updateSampleSize();
+    void tryReplot();
+    void exportData();
+    void changeBackground();
 
 private:
-     void updateRemoveMapping();
+    void updateRemoveMapping();
 
-     Graph *m_graph;
-     GraphCurveAddDialog *m_add_dialog;
-     QString m_drop_data;
-     Storage *m_storage;
+    Graph *m_graph;
+    GraphCurveAddDialog *m_add_dialog;
+    QString m_drop_data;
+    Storage *m_storage;
 
-     QAction *m_sample_act[SAMPLE_ACT_COUNT];
-     QAction *m_editCurve;
-     QAction *m_showLegend;
-     QAction *m_autoScroll;
+    QAction *m_sample_act[SAMPLE_ACT_COUNT];
+    QAction *m_editCurve;
+    QAction *m_showLegend;
+    QAction *m_autoScroll;
 
-     QMenu *m_deleteCurve;
-     std::map<QString, QAction*> m_deleteAct;
-     QSignalMapper *m_deleteMap;
+    QMenu *m_deleteCurve;
+    std::map<QString, QAction*> m_deleteAct;
+    QSignalMapper *m_deleteMap;
 
-     int m_sample_size_idx;
-     qint32 m_sample_size;
-     bool m_enableAutoScroll;
+    int m_sample_size_idx;
+    qint32 m_sample_size;
+    bool m_enableAutoScroll;
 
-     std::vector<GraphCurveInfo*> m_curves;
-     bool m_doReplot;
+    std::vector<GraphCurveInfo*> m_curves;
+    bool m_doReplot;
 };
 
 class GraphWidgetAddBtn : public DataWidgetAddBtn

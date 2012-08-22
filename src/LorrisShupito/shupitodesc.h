@@ -13,7 +13,7 @@
 #include <map>
 #include <QHash>
 
-class ShupitoPacket;
+#include "shupitopacket.h"
 
 class ShupitoDesc
 {

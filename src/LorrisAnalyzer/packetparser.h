@@ -12,8 +12,8 @@
 #include <QByteArray>
 #include <QFile>
 
-struct analyzer_packet;
-class analyzer_data;
+#include "packet.h"
+
 class Storage;
 
 class PacketParser : public QObject
@@ -41,10 +41,12 @@ public slots:
 
 private:
     bool m_paused;
-    analyzer_data *m_curData;
+    analyzer_data m_curData;
+    QByteArray m_curByteArray;
     analyzer_packet *m_packet;
     Storage *m_storage;
     QFile m_import;
+    quint32 m_packetItr;
 };
 
 #endif // PACKETPARSER_H

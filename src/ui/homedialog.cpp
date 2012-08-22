@@ -9,12 +9,13 @@
 #include "homedialog.h"
 #include "HomeTab.h"
 
-HomeDialog::HomeDialog(QWidget *parent) :
+HomeDialog::HomeDialog(quint32 windowId, QWidget *parent) :
     QDialog(parent)
 {
     QVBoxLayout *l = new QVBoxLayout(this);
 
     HomeTab *widget = new HomeTab(this);
+    widget->setWindowId(windowId);
     l->addWidget(widget);
 
     connect(widget, SIGNAL(tabOpened()), SLOT(accept()));

@@ -9,34 +9,43 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <map>
-#include <vector>
-#include <QLocale>
-#include <QHash>
-
-#include "../dep/ecwin7/ecwin7.h"
 
 class WorkTabInfo;
+class TabView;
+class HomeTab;
+class DataFileParser;
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(quint32 id, QWidget *parent = 0);
     ~MainWindow();
+
+    quint32 getId() const { return m_id; }
+    TabView *getTabView() const { return m_tabView; }
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
 
 public slots:
     void show(const QStringList &openFiles);
+    void closeHomeTab();
 
 protected:
     void closeEvent(QCloseEvent *event);
-    bool winEvent(MSG *message, long *result);
+
+private slots:
+    void openHomeTab();
+    void changeWindowTitle(const QString &title);
 
 private:
     void saveWindowParams();
     void loadWindowParams();
-    QString getVersionString();
 
-    EcWin7 m_win7;
+    quint32 m_id;
+    TabView *m_tabView;
+    HomeTab *m_hometab;
 };
 
 #endif // MAINWINDOW_H

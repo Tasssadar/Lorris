@@ -10,39 +10,35 @@
 #include <QNetworkInterface>
 #include <QSignalMapper>
 
+#include "../connection/connectionmgr2.h"
+
 #include "tcpserver.h"
 
-TcpServer::TcpServer() : QObject()
+TcpServer::TcpServer(QObject *parent) : QTcpServer(parent)
 {
-    m_server = new QTcpServer(this);
-    m_disconnect_map = new QSignalMapper(this);
-    m_ready_map = new QSignalMapper(this);
-
-    connect(m_server,         SIGNAL(newConnection()), SLOT(newConnection()));
-    connect(m_disconnect_map, SIGNAL(mapped(int)),     SLOT(disconnected(int)));
-    connect(m_ready_map,      SIGNAL(mapped(int)),     SLOT(readyRead(int)));
+    connect(this,              SIGNAL(newConnection()), SLOT(newConnection()));
+    connect(&m_disconnect_map, SIGNAL(mapped(int)),     SLOT(disconnected(int)));
+    connect(&m_ready_map,      SIGNAL(mapped(int)),     SLOT(readyRead(int)));
 
     m_con_counter = 0;
 }
 
 TcpServer::~TcpServer()
 {
+    if(m_tunnel_conn)
+        m_tunnel_conn->setTcpServer(NULL);
     stopListening();
-
-    delete m_server;
-    delete m_disconnect_map;
-    delete m_ready_map;
 }
 
 void TcpServer::newConnection()
 {
-    QTcpSocket *socket = m_server->nextPendingConnection();
+    QTcpSocket *socket = nextPendingConnection();
     m_socket_map[m_con_counter] = socket;
 
-    m_disconnect_map->setMapping(socket, m_con_counter);
-    m_ready_map->setMapping(socket, m_con_counter);
-    connect(socket, SIGNAL(disconnected()), m_disconnect_map, SLOT(map()));
-    connect(socket, SIGNAL(readyRead()),    m_ready_map,      SLOT(map()));
+    m_disconnect_map.setMapping(socket, m_con_counter);
+    m_ready_map.setMapping(socket, m_con_counter);
+    connect(socket, SIGNAL(disconnected()), &m_disconnect_map, SLOT(map()));
+    connect(socket, SIGNAL(readyRead()),    &m_ready_map,      SLOT(map()));
 
     emit newConnection(socket, m_con_counter);
 
@@ -51,11 +47,11 @@ void TcpServer::newConnection()
 
 void TcpServer::SendData(const QByteArray& data)
 {
-    if(!m_server->isListening())
+    if(!isListening())
         return;
 
     for(socketMap::iterator itr = m_socket_map.begin(); itr != m_socket_map.end(); ++itr)
-        itr->second->write(data);
+        (*itr)->write(data);
 }
 
 void TcpServer::disconnected(int con)
@@ -64,7 +60,7 @@ void TcpServer::disconnected(int con)
     if(itr == m_socket_map.end())
         return;
 
-    itr->second->deleteLater();
+    (*itr)->deleteLater();
 
     m_socket_map.erase(itr);
 
@@ -79,7 +75,7 @@ bool TcpServer::listen(const QString& address, quint16 port)
     else
         host_address = QHostAddress(address);
 
-    return m_server->listen(host_address, port);
+    return QTcpServer::listen(host_address, port);
 }
 
 void TcpServer::stopListening()
@@ -87,9 +83,9 @@ void TcpServer::stopListening()
     // Socket is deleted in void TcpServer::disconnected(int con)
     socketMap tmpMap = m_socket_map;
     for(socketMap::iterator itr = tmpMap.begin(); itr != tmpMap.end(); ++itr)
-        itr->second->close();
+        (*itr)->close();
 
-    m_server->close();
+    close();
 }
 
 void TcpServer::readyRead(int con)
@@ -98,36 +94,56 @@ void TcpServer::readyRead(int con)
     if(itr == m_socket_map.end())
         return;
 
-    emit newData(itr->second->readAll());
-}
-
-QString TcpServer::getLastErr()
-{
-    return m_server->errorString();
-}
-
-bool TcpServer::isListening()
-{
-    return m_server->isListening();
+    emit newData((*itr)->readAll());
 }
 
 QString TcpServer::getAddress()
 {
-    if(m_server->serverAddress() == QHostAddress::Any)
+    if(serverAddress() == QHostAddress::Any)
     {
         QList<QHostAddress> addr = QNetworkInterface::allAddresses();
-        QString name;
-        for(qint32 i = 0; name.isEmpty() && i < addr.size(); ++i)
+
+        QString name = "127.0.0.1";
+        for(qint32 i = 0; i < addr.size(); ++i)
         {
-            QString cur = addr[i].toString();
-            if(cur.contains("192.168"))
-                name = cur;
+            if(addr[i] != QHostAddress::LocalHost && addr[i] != QHostAddress::LocalHostIPv6)
+            {
+                name = addr[i].toString();
+                break;
+            }
         }
-        if(name.isEmpty())
-            name = "127.0.0.1";
         return name;
     }
     else
-        return m_server->serverAddress().toString();
+        return serverAddress().toString();
 }
 
+void TcpServer::closeConnection(quint32 id)
+{
+    socketMap::iterator itr = m_socket_map.find(id);
+    if(itr == m_socket_map.end())
+        return;
+
+    (*itr)->close();
+}
+
+void TcpServer::createProxyTunnel(const QString &name)
+{
+    if(!m_tunnel_conn)
+    {
+        m_tunnel_conn.reset(new ProxyTunnel);
+        m_tunnel_conn->setTcpServer(this);
+        m_tunnel_conn->setRemovable(false);
+        sConMgr2.addConnection(m_tunnel_conn.data());
+    }
+    m_tunnel_conn->setName(name);
+}
+
+void TcpServer::destroyProxyTunnel()
+{
+    if(!m_tunnel_conn)
+        return;
+
+    m_tunnel_conn->setTcpServer(NULL);
+    m_tunnel_conn.reset();
+}

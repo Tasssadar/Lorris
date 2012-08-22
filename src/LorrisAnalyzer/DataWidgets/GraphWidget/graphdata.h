@@ -33,6 +33,7 @@ class GraphDataSimple : public QwtSeriesData<QPointF>
 public:
     typedef std::deque<graph_data_st*> storage;
     GraphDataSimple();
+    ~GraphDataSimple();
 
     QPointF sample(size_t i) const;
     size_t  size() const;

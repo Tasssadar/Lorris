@@ -12,6 +12,10 @@
 #include "circlewidget.h"
 #include "../../ui/rangeselectdialog.h"
 
+static const double pi = 3.1415926535897932384626433832795;
+
+REGISTER_DATAWIDGET(WIDGET_CIRCLE, Circle)
+
 CircleWidget::CircleWidget(QWidget *parent) :
     DataWidget(parent)
 {
@@ -23,7 +27,6 @@ CircleWidget::CircleWidget(QWidget *parent) :
     m_circle = new CircleDraw(this);
     layout->addWidget(m_circle, 1);
     resize(150, 150);
-    this->setMinimumSize(10, 10);
 }
 
 CircleWidget::~CircleWidget()
@@ -165,7 +168,7 @@ void CircleWidget::setValue(const QVariant &var)
 {
     float rad = toRad(var);
     if(!m_clockwiseAct->isChecked())
-        rad = (2*M_PI) - rad;
+        rad = (2*pi) - rad;
     m_circle->setAngle(rad);
 }
 
@@ -179,9 +182,8 @@ void CircleWidget::angTypeChanged(int i)
 {
     if(i == ANG_RANGE)
     {
-        RangeSelectDialog dialog(m_range_min, m_range_max, INT_MAX, INT_MIN, this);
-        dialog.exec();
-        if(dialog.getRes())
+        RangeSelectDialog dialog(m_range_min, m_range_max, true, this);
+        if(dialog.exec())
         {
             m_range_min = dialog.getMin();
             m_range_max = dialog.getMax();
@@ -203,7 +205,7 @@ void CircleWidget::changeAngType(int i, int min, int max)
         m_range_max = max;
     }
 
-    emit updateData();
+    emit updateForMe();
 }
 
 float CircleWidget::toRad(const QVariant& var)
@@ -217,17 +219,17 @@ float CircleWidget::toRad(const QVariant& var)
         case ANG_DEG:
         {
             ret = var.toFloat();
-            ret = (ret * M_PI*2) / 360.f;
+            ret = (ret * pi*2) / 360.f;
             break;
         }
         case ANG_RANGE:
         {
             ret = var.toFloat()-m_range_min;
-            ret = (ret * M_PI*2) / (m_range_max-m_range_min);
+            ret = (ret * pi*2) / (m_range_max-m_range_min);
             break;
         }
     }
-    ret = std::min(float(M_PI*2), ret);
+    ret = std::min(float(pi*2), ret);
     ret = std::max(ret, 0.f);
     return ret;
 }
@@ -238,14 +240,14 @@ void CircleWidget::setNumType(int i)
         m_bits_act[y]->setChecked(y == i);
 
     m_num_type = i;
-    emit updateData();
+    emit updateForMe();
 }
 
 void CircleWidget::setClockwise(bool clockwise)
 {
     m_clockwiseAct->setChecked(clockwise);
     m_circle->setClockwise(clockwise);
-    emit updateData();
+    emit updateForMe();
 }
 
 void CircleWidget::drawAngle(bool draw)
@@ -292,7 +294,7 @@ void CircleDraw::paintEvent(QPaintEvent *)
     p.drawPoint(center);
 
     QRect angRect(center.x()-r, center.y()-r, r*2, r*2);
-    int arcAngle = m_angle*916.732; // (1/(M_PI*2))*5760 = 916.732
+    int arcAngle = m_angle*916.732; // (1/(pi*2))*5760 = 916.732
     p.drawArc(angRect, 1440, m_clockwise ? -arcAngle : 5760 - arcAngle);
 }
 
