@@ -25,6 +25,7 @@ class DataWidgetAddBtn;
         }; \
         static const n##WidgetInit n##widgetinit;
 
+/*
 #define REGISTER_DATAWIDGET_NOBTN(id, n) DataWidget *n##WidgetInst(QWidget *parent) { return new n##Widget(parent); } \
        struct n##WidgetInit { \
             n##WidgetInit() { \
@@ -32,6 +33,7 @@ class DataWidgetAddBtn;
             } \
         }; \
         static const n##WidgetInit n##widgetinit;
+*/
 
 enum WidgetTypes
 {

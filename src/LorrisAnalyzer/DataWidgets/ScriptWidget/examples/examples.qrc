@@ -14,5 +14,7 @@
         <file>joystick.py</file>
         <file>terminal.js</file>
         <file>terminal.py</file>
+        <file>input.py</file>
+        <file>input.js</file>
     </qresource>
 </RCC>
