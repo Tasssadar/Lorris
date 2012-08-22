@@ -1241,6 +1241,14 @@
     </message>
 </context>
 <context>
+    <name>InputWidgetAddBtn</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/inputwidget.cpp" line="89"/>
+        <source>Input</source>
+        <translation>Vstup</translation>
+    </message>
+</context>
+<context>
     <name>LorrisAnalyzer</name>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="26"/>
@@ -2957,7 +2965,7 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>QtScriptEngine</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="190"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="192"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
@@ -3403,10 +3411,6 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
         <location filename="../src/ui/settingsdialog.ui" line="164"/>
         <source>Set font for whole application</source>
         <translation>Nastaví písmo pro celou aplikaci</translation>
-    </message>
-    <message>
-        <source>Portable</source>
-        <translation type="obsolete">Přenositelnost</translation>
     </message>
     <message>
         <location filename="../src/ui/settingsdialog.ui" line="40"/>
