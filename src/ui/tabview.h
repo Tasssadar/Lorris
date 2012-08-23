@@ -152,7 +152,7 @@ public:
         POS_MAX
     };
 
-    SplitOverlay(position pos, QWidget *parent = 0);
+    SplitOverlay(position pos, TabWidget *tab, QWidget *parent = 0);
 
 protected:
     void paintEvent(QPaintEvent *);
@@ -161,6 +161,8 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private:
+    void showAt(TabWidget *tab);
+
     position m_pos;
     bool m_hover;
 };

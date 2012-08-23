@@ -268,40 +268,25 @@ void TabView::createSplitOverlay(quint32 id, QDrag *drag)
         return;
 
     TabWidget *tab = *itr;
+    SplitOverlay *overlay;
 
-    SplitOverlay *overlay = new SplitOverlay(SplitOverlay::POS_CENTER, this);
-    connect(overlay, SIGNAL(newWindow(int)), tab, SLOT(newWindow(int)), Qt::QueuedConnection);
-    connect(drag,    SIGNAL(destroyed()), overlay, SLOT(deleteLater()));
-
-    QPoint pos;
-    pos.rx() = tab->x() + (tab->width() - overlay->width())/2;
-    pos.ry() = tab->y() + (tab->height() - overlay->height())/2;
-
-    overlay->move(pos);
-    overlay->show();
+    // Center - new window
+    overlay = new SplitOverlay(SplitOverlay::POS_CENTER, tab, this);
+    connect(overlay, SIGNAL(newWindow(int)), tab,     SLOT(newWindow(int)), Qt::QueuedConnection);
+    connect(drag,    SIGNAL(destroyed()),    overlay, SLOT(deleteLater()));
 
     if(tab->count() < 2)
         return;
 
-    overlay = new SplitOverlay(SplitOverlay::POS_RIGHT, this);
-    connect(overlay, SIGNAL(split(bool,int)), tab, SIGNAL(split(bool,int)));
-    connect(drag,    SIGNAL(destroyed()), overlay, SLOT(deleteLater()));
+    // Right - split
+    overlay = new SplitOverlay(SplitOverlay::POS_RIGHT, tab, this);
+    connect(overlay, SIGNAL(split(bool,int)), tab,     SIGNAL(split(bool,int)));
+    connect(drag,    SIGNAL(destroyed()),     overlay, SLOT(deleteLater()));
 
-    pos.rx() = (tab->x() + tab->width()) - overlay->width() - 15;
-    pos.ry() = tab->y() + (tab->height() - overlay->height())/2;
-
-    overlay->move(pos);
-    overlay->show();
-
-    overlay = new SplitOverlay(SplitOverlay::POS_BOTTOM, this);
-    connect(overlay, SIGNAL(split(bool,int)), tab, SIGNAL(split(bool,int)));
-    connect(drag,    SIGNAL(destroyed()), overlay, SLOT(deleteLater()));
-
-    pos.rx() = tab->x() + (tab->width() - overlay->width())/2;
-    pos.ry() = tab->y() + tab->height() - overlay->height() - 15;
-
-    overlay->move(pos);
-    overlay->show();
+    // Bottom - split
+    overlay = new SplitOverlay(SplitOverlay::POS_BOTTOM, tab, this);
+    connect(overlay, SIGNAL(split(bool,int)), tab,     SIGNAL(split(bool,int)));
+    connect(drag,    SIGNAL(destroyed()),     overlay, SLOT(deleteLater()));
 }
 
 QBoxLayout *TabView::getLayoutForWidget(QWidget *widget)
@@ -552,7 +537,7 @@ QBoxLayout *TabViewResLine::getLayout()
 #define OVERLAY_1 40
 #define OVERLAY_2 150
 
-SplitOverlay::SplitOverlay(position pos, QWidget *parent) : QWidget(parent)
+SplitOverlay::SplitOverlay(position pos, TabWidget *tab, QWidget *parent) : QWidget(parent)
 {
     m_pos = pos;
     m_hover = false;
@@ -565,10 +550,19 @@ SplitOverlay::SplitOverlay(position pos, QWidget *parent) : QWidget(parent)
     fnt.setBold(true);
     setFont(fnt);
 
-    if(pos == POS_RIGHT)
-        resize(OVERLAY_1, OVERLAY_2);
-    else
-        resize(OVERLAY_2, OVERLAY_1);
+    switch(pos)
+    {
+        case POS_RIGHT:
+            resize(OVERLAY_1, OVERLAY_2);
+            break;
+        case POS_BOTTOM:
+        case POS_CENTER:
+            resize(OVERLAY_2, OVERLAY_1);
+            break;
+        default: Q_ASSERT(false); break;
+    }
+
+    showAt(tab);
 }
 
 void SplitOverlay::paintEvent(QPaintEvent *)
@@ -644,4 +638,27 @@ void SplitOverlay::dropEvent(QDropEvent *event)
             return emit newWindow(lst[1].toInt());
         default: break;
     }
+}
+
+void SplitOverlay::showAt(TabWidget *tab)
+{
+    int x,y;
+    switch(m_pos)
+    {
+        case POS_RIGHT:
+            x = (tab->x() + tab->width()) - width() - 15;
+            y = tab->y() + (tab->height() - height())/2;
+            break;
+        case POS_BOTTOM:
+            x = tab->x() + (tab->width() - width())/2;
+            y = tab->y() + tab->height() - height() - 15;
+            break;
+        case POS_CENTER:
+            x = tab->x() + (tab->width() - width())/2;
+            y = tab->y() + (tab->height() - height())/2;
+            break;
+        default: Q_ASSERT(false); break;
+    }
+    move(x, y);
+    show();
 }
