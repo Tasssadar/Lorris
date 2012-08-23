@@ -45,12 +45,12 @@ enum DragActions
     DRAG_MOVE       = 0x01,
     DRAG_RES_LEFT   = 0x02,
     DRAG_RES_RIGHT  = 0x04,
-    //DRAG_RES_TOP    = 0x08, // Unused
+    DRAG_RES_TOP    = 0x08,
     DRAG_RES_BOTTOM = 0x10,
     DRAG_COPY       = 0x20
 };
 
-#define RESIZE_BORDER 15 // number of pixels from every side which counts as resize drag
+#define RESIZE_BORDER 8 // number of pixels from every side which counts as resize drag
 
 struct data_widget_info
 {
@@ -191,6 +191,7 @@ private:
     quint8 getDragAction(QMouseEvent* ev);
     void dragResize(QMouseEvent* e);
     void dragMove(QMouseEvent* e, DataWidget *widget);
+    static Qt::CursorShape getCursor(quint8 act);
 
     void copyWidget(QMouseEvent *ev);
 

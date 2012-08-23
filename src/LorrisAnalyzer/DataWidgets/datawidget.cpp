@@ -27,12 +27,13 @@ DataWidget::DataWidget(QWidget *parent) :
 
     m_icon_widget = new QLabel(this);
     m_icon_widget->setStyleSheet("padding: 2px");
+    m_icon_widget->setMouseTracking(true);
 
     m_title_label = new QLabel(this);
     m_title_label->setObjectName("titleLabel");
     m_title_label->setStyleSheet("border-right: 1px solid black; border-bottom: 1px solid black");
     m_title_label->setAlignment(Qt::AlignVCenter);
-    m_title_label->setCursor(Qt::SizeAllCursor);
+    m_title_label->setMouseTracking(true);
 
     m_closeLabel = new CloseLabel(this);
 
@@ -148,8 +149,13 @@ void DataWidget::childEvent(QChildEvent *event)
 {
     QFrame::childEvent(event);
 
+    if(event->child() == m_icon_widget || event->child() == m_title_label)
+        return;
+
     if(event->type() == QEvent::ChildAdded)
         event->child()->installEventFilter(this);
+    else if(event->type() == QEvent::ChildRemoved)
+        event->child()->removeEventFilter(this);
 }
 
 bool DataWidget::eventFilter(QObject *, QEvent *ev)
@@ -193,31 +199,7 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
             if(m_locked && act != DRAG_NONE && act != (DRAG_MOVE | DRAG_COPY))
                 return;
 
-            switch(act)
-            {
-                case DRAG_NONE:
-                    setCursor(Qt::ArrowCursor);
-                    break;
-                case DRAG_MOVE:
-                    setCursor(Qt::SizeAllCursor);
-                    break;
-                case DRAG_RES_LEFT:
-                case DRAG_RES_RIGHT:
-                    setCursor(Qt::SizeHorCursor);
-                    break;
-                case DRAG_RES_BOTTOM:
-                    setCursor(Qt::SizeVerCursor);
-                    break;
-                case (DRAG_RES_LEFT | DRAG_RES_BOTTOM):
-                    setCursor(Qt::SizeBDiagCursor);
-                    break;
-                case (DRAG_RES_RIGHT | DRAG_RES_BOTTOM):
-                    setCursor(Qt::SizeFDiagCursor);
-                    break;
-                case (DRAG_MOVE | DRAG_COPY):
-                    setCursor(Qt::UpArrowCursor);
-                    break;
-            }
+            setCursor(DataWidget::getCursor(act));
             break;
         }
         case Qt::LeftButton:
@@ -305,6 +287,8 @@ quint8 DataWidget::getDragAction(QMouseEvent *ev)
 
     if(y > height() - RESIZE_BORDER)
         res |= DRAG_RES_BOTTOM;
+    else if(y < RESIZE_BORDER)
+        res |= DRAG_RES_TOP;
 
     if(res == 0)
     {
@@ -337,11 +321,22 @@ void DataWidget::dragResize(QMouseEvent* e)
     else if(m_dragAction & DRAG_RES_RIGHT)
         w = p.x();
 
-    if(m_dragAction & DRAG_RES_BOTTOM)
+    if(m_dragAction & DRAG_RES_TOP)
+    {
+        int gy = y + e->pos().y();
+        mapToGrid(gy);
+
+        h += y - gy;
+        y = gy;
+    }
+    else if(m_dragAction & DRAG_RES_BOTTOM)
         h = p.y();
 
     if(w < minimumWidth())
         x = pos().x();
+
+    if(h < minimumHeight())
+        y = pos().y();
 
     w = (std::max)(w, minimumWidth());
     h = (std::max)(h, minimumHeight());
@@ -369,6 +364,11 @@ void DataWidget::dragResize(QMouseEvent* e)
 
         if((m_dragAction & DRAG_RES_BOTTOM) && abs(ly - wy) < PLACEMENT_STICK)
             h = ly - y;
+        else if((m_dragAction & DRAG_RES_TOP) && abs(ly - mouse.y()) < PLACEMENT_STICK)
+        {
+            h += y -ly;
+            y = ly;
+        }
     }
 
     m_clickPos += (QPoint(w, h) - QPoint(width(), height())) - (pos() - QPoint(x, y));
@@ -600,6 +600,38 @@ void DataWidget::focusInEvent(QFocusEvent *event)
 {
     QFrame::focusInEvent(event);
     this->raise();
+}
+
+Qt::CursorShape DataWidget::getCursor(quint8 act)
+{
+    switch(act)
+    {
+        case DRAG_NONE:
+        default:
+            return Qt::ArrowCursor;
+
+        case DRAG_MOVE:
+            return Qt::SizeAllCursor;
+
+        case DRAG_RES_LEFT:
+        case DRAG_RES_RIGHT:
+            return Qt::SizeHorCursor;
+
+        case DRAG_RES_TOP:
+        case DRAG_RES_BOTTOM:
+            return Qt::SizeVerCursor;
+
+        case (DRAG_RES_LEFT | DRAG_RES_BOTTOM):
+        case (DRAG_RES_RIGHT | DRAG_RES_TOP):
+            return Qt::SizeBDiagCursor;
+
+        case (DRAG_RES_RIGHT | DRAG_RES_BOTTOM):
+        case (DRAG_RES_LEFT | DRAG_RES_TOP):
+            return Qt::SizeFDiagCursor;
+
+        case (DRAG_MOVE | DRAG_COPY):
+            return Qt::UpArrowCursor;
+    }
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
