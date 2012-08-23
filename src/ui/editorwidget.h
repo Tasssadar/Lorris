@@ -9,6 +9,7 @@
 #define EDITORWIDGET_H
 
 #include <QWidget>
+#include "../misc/config.h"
 
 class QSyntaxHighlighter;
 class QPlainTextEdit;
@@ -115,8 +116,6 @@ namespace KTextEditor {
     class View;
     class ConfigInterface;
 }
-
-enum cfg_variant;
 
 class EditorWidgetKate : public EditorWidget
 {

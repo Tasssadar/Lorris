@@ -15,6 +15,7 @@
 #include <QHash>
 #include <QReadWriteLock>
 #include <QStringList>
+#include <QMap>
 
 #include "../misc/singleton.h"
 #include "joythread.h"

@@ -657,7 +657,7 @@ void SplitOverlay::showAt(TabWidget *tab)
             x = tab->x() + (tab->width() - width())/2;
             y = tab->y() + (tab->height() - height())/2;
             break;
-        default: Q_ASSERT(false); break;
+        default: Q_ASSERT(false); return;
     }
     move(x, y);
     show();

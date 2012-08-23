@@ -10,6 +10,7 @@
 
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QThread>
 #include <qextserialport.h>
 
 #include "connection.h"

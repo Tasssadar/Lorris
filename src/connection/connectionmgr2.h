@@ -14,6 +14,7 @@
 #include <QHash>
 #include <QSet>
 #include <set>
+#include <map>
 
 class SerialPort;
 class TcpSocket;

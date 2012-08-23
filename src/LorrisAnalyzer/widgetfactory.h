@@ -8,6 +8,7 @@
 #ifndef WIDGETFACTORY_H
 #define WIDGETFACTORY_H
 
+#include <QTypeInfo>
 #include <vector>
 #include "../misc/singleton.h"
 

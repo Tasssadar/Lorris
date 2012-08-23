@@ -10,9 +10,11 @@
 #include <QScrollBar>
 #include <qscriptsyntaxhighlighter_p.h>
 #include <QPainter>
+#include <QHBoxLayout>
 
 #include "pythonhighlighter.h"
 #include "editorwidget.h"
+#include "../misc/utils.h"
 
 EditorWidget::EditorWidget(QWidget *parent) : QWidget(parent)
 {
