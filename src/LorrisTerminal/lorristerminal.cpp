@@ -451,6 +451,10 @@ void LorrisTerminal::setHexName(QString name)
         m_filename = name;
 
     QFileInfo info(m_filename);
+
+    if(!info.exists())
+        return;
+
     m_filedate = info.lastModified();
 
     ui->fileName->setText(m_filename);
