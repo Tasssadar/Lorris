@@ -65,6 +65,7 @@ TabView::TabView(MainWindow *parent) :
 
     QAction *newW = file_menu->addAction(tr("New window"));
     QAction* actionConnectionManager = file_menu->addAction(tr("Connection &manager..."));
+    QAction* actCloseAll = file_menu->addAction(tr("Close &all tabs"));
     QAction* actionQuit = file_menu->addAction(tr("&Close"));
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
 
@@ -78,6 +79,7 @@ TabView::TabView(MainWindow *parent) :
     connect(updateAct,               SIGNAL(triggered()), SLOT(checkForUpdate()));
     connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeWindow()));
     connect(newW,                    SIGNAL(triggered()), &sWorkTabMgr, SLOT(newWindow()));
+    connect(actCloseAll,             SIGNAL(triggered()), SLOT(closeAllTabs()));
 }
 
 TabWidget *TabView::newTabWidget(QBoxLayout *l)
@@ -522,6 +524,24 @@ void TabView::checkChangeWindowTitle(const QString &title)
         return;
 
     emit changeWindowTitle(title);
+}
+
+void TabView::closeAllTabs()
+{
+    int size = m_tab_widgets.size();
+    for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); )
+    {
+        while(size == m_tab_widgets.size() && (*itr)->tabsClosable())
+            (*itr)->closeTab(0);
+
+        if(size != m_tab_widgets.size())
+        {
+            itr = m_tab_widgets.begin();
+            size = m_tab_widgets.size();
+        }
+        else
+            ++itr;
+    }
 }
 
 TabViewResLine::TabViewResLine(bool vertical, TabView *parent) : ResizeLine(vertical, parent)

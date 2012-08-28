@@ -90,6 +90,7 @@ private slots:
     void showSettings();
     void checkForUpdate();
     void checkChangeWindowTitle(const QString& title);
+    void closeAllTabs();
 
 private:
     TabWidget *newTabWidget(QBoxLayout *l);
