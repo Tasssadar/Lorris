@@ -293,6 +293,9 @@
            <bold>true</bold>
           </font>
          </property>
+         <property name="toolTip">
+          <string>Voltage</string>
+         </property>
          <property name="autoFillBackground">
           <bool>false</bool>
          </property>
