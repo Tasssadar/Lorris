@@ -15,6 +15,10 @@ class Canvas;
 class CanvasWidget : public DataWidget
 {
     Q_OBJECT
+
+    Q_PROPERTY(int cWidth READ getCanvasWidth)
+    Q_PROPERTY(int cHeight READ getCanvasHeight)
+
 public:
     CanvasWidget(QWidget *parent);
     ~CanvasWidget();
@@ -31,6 +35,9 @@ public slots:
     void setLineSize(int width);
     void setLineColor(const QString& color);
     void clear();
+
+    int getCanvasWidth() const;
+    int getCanvasHeight() const;
 
 private:
     Canvas *m_canvas;

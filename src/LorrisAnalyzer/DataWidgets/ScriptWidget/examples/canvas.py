@@ -21,3 +21,6 @@ def onKeyPress(key):
     Canvas.setLineSize(3);
 
     Canvas.drawLine(100, 100); # x2, y2 - x1 and y1 are x2 and y2 from last line
+
+    # dimensions of the actual drawing space
+    terminal.appendText(str(Canvas.cWidth) + "x" + str(Canvas.cHeight) + "\n");

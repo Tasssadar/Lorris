@@ -104,6 +104,16 @@ void CanvasWidget::clear()
     m_canvas->clear();
 }
 
+int CanvasWidget::getCanvasWidth() const
+{
+    return m_canvas->width();
+}
+
+int CanvasWidget::getCanvasHeight() const
+{
+    return m_canvas->height();
+}
+
 CanvasWidgetAddBtn::CanvasWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText(tr("Canvas"));
