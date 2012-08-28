@@ -126,6 +126,8 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
 
     emit onWidgetAdd(w);
 
+    m_analyzer->setDataChanged();
+
     w->setTitleVisibility(m_analyzer->showTitleBars());
     return w;
 }
