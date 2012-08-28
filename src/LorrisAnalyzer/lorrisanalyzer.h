@@ -106,7 +106,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         void importBinary(const QString& filename, bool reset = true);
         void resetDevAndStorage(analyzer_packet *packet = NULL);
         void setPacket(analyzer_packet *packet);
-
+        bool askToSave();
 
         bool highlightInfoNotNull;
         data_widget_info highlightInfo;

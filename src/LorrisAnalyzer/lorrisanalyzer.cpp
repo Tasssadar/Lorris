@@ -225,6 +225,9 @@ void LorrisAnalyzer::onTabShow(const QString& filename)
 
 void LorrisAnalyzer::doNewSource()
 {
+    if(!askToSave())
+        return;
+
     m_parser.setPaused(true);
     SourceSelectDialog s(this);
 
@@ -323,6 +326,11 @@ void LorrisAnalyzer::importBinary(const QString& filename, bool reset)
 }
 
 bool LorrisAnalyzer::onTabClose()
+{
+    return askToSave();
+}
+
+bool LorrisAnalyzer::askToSave()
 {
     if(!m_data_changed)
         return true;
