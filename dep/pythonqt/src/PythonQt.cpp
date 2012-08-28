@@ -490,7 +490,9 @@ bool PythonQt::addSignalHandler(QObject* obj, const char* signal, PyObject* rece
     if(PyCallable_Check(receiver))
     {
         PyFunctionObject *func = (PyFunctionObject*)receiver;
-        if(func->func_module)
+        if(func->func_module &&
+          (quint64)func->func_module != 0x01 && // Wat?
+          PyString_Check(func->func_module))
         {
             _p->addSlot(QString(PyString_AsString(func->func_module)), receiver);
         }
