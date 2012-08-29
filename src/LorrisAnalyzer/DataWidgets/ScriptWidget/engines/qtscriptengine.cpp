@@ -127,6 +127,9 @@ void QtScriptEngine::prepareNewContext()
     m_global.setProperty("WIDGET_GRAPH",  QScriptValue(m_engine, WIDGET_GRAPH));
     m_global.setProperty("WIDGET_INPUT",  QScriptValue(m_engine, WIDGET_INPUT));
     m_global.setProperty("WIDGET_CIRCLE", QScriptValue(m_engine, WIDGET_CIRCLE));
+    m_global.setProperty("WIDGET_BUTTON", QScriptValue(m_engine, WIDGET_BUTTON));
+    m_global.setProperty("WIDGET_SLIDER", QScriptValue(m_engine, WIDGET_SLIDER));
+    m_global.setProperty("WIDGET_CANVAS", QScriptValue(m_engine, WIDGET_CANVAS));
 
     m_global.setProperty("NUM_UINT8",  QScriptValue(m_engine, NUM_UINT8));
     m_global.setProperty("NUM_UINT16", QScriptValue(m_engine, NUM_UINT16));

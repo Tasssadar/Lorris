@@ -92,14 +92,26 @@ void PythonEngine::setSource(const QString &source)
     // with "AttributeError: *widgetTitle*" if this is not. What?
     m_module.getVariable("lorris");
 
-    m_module.addVariable("WIDGET_NUMBER", WIDGET_NUMBERS);
-    m_module.addVariable("WIDGET_BAR",    WIDGET_BAR);
-    m_module.addVariable("WIDGET_COLOR",  WIDGET_COLOR);
-    m_module.addVariable("WIDGET_GRAPH",  WIDGET_GRAPH);
-    m_module.addVariable("WIDGET_INPUT",  WIDGET_INPUT);
+    m_module.addVariable("WIDGET_NUMBER",  WIDGET_NUMBERS);
+    m_module.addVariable("WIDGET_BAR",     WIDGET_BAR);
+    m_module.addVariable("WIDGET_COLOR",   WIDGET_COLOR);
+    m_module.addVariable("WIDGET_GRAPH",   WIDGET_GRAPH);
+    m_module.addVariable("WIDGET_INPUT",   WIDGET_INPUT);
+    m_module.addVariable("WIDGET_BUTTON",  WIDGET_BUTTON);
     m_module.addVariable("WIDGET_CIRCLE",  WIDGET_CIRCLE);
     m_module.addVariable("WIDGET_SLIDER",  WIDGET_SLIDER);
     m_module.addVariable("WIDGET_CANVAS",  WIDGET_CANVAS);
+
+    m_module.addVariable("NUM_UINT8",  NUM_UINT8);
+    m_module.addVariable("NUM_UINT16", NUM_UINT16);
+    m_module.addVariable("NUM_UINT32", NUM_UINT32);
+    m_module.addVariable("NUM_UINT64", NUM_UINT64);
+    m_module.addVariable("NUM_INT8",   NUM_INT8);
+    m_module.addVariable("NUM_INT16",  NUM_INT16);
+    m_module.addVariable("NUM_INT32",  NUM_INT32);
+    m_module.addVariable("NUM_INT64",  NUM_INT64);
+    m_module.addVariable("NUM_FLOAT",  NUM_FLOAT);
+    m_module.addVariable("NUM_DOUBLE", NUM_DOUBLE);
 
     const WidgetArea::w_map& widgets = m_area->getWidgets();
     for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
