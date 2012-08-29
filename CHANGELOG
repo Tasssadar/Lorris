@@ -5,6 +5,12 @@ Copyright (C) 2012 Vojtěch Boček
 Contact: <vbocek@gmail.com>
          https://github.com/Tasssadar
 
+Version 0.6.1 - git revision [616] - 0faae5dc58047daf482c756fbf04fce6c819b3a1
+================================================================
+ * Fix crash with python script
+ * Update libenjoy
+     * handle POV hats as 2 additional axes
+
 Version 0.6.0 - git revision [608] - 31009d84f312b8491aec0f7d758dcc24fd9bc72e
 ================================================================
  * Disable updater on non-windows systems
