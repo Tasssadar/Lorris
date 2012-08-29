@@ -497,12 +497,12 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="723"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="730"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="724"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="731"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -618,12 +618,12 @@
         <translation>Změnit jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="449"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="456"/>
         <source>Set widget title</source>
         <translation>Nastavení jména widgetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="449"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="456"/>
         <source>Enter title:</source>
         <translation>Zadejne nové jméno:</translation>
     </message>
@@ -1279,7 +1279,6 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.ui" line="299"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="97"/>
         <source>Widgets</source>
         <translation>Widgety</translation>
     </message>
@@ -1299,37 +1298,37 @@
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="199"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="323"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="421"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="592"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="614"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="192"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="316"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="414"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="585"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="607"/>
         <source> of </source>
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="342"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="335"/>
         <source>Data has been modified.</source>
         <translation>Data byla změněna.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="349"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="342"/>
         <source>Do you want to save your changes?</source>
         <translation>Chcete je uložit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="438"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="449"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="431"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="442"/>
         <source>File &quot;%1&quot; was saved</source>
         <translation>Soubor &quot;%1&quot; byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="574"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="567"/>
         <source>Clear everything?</source>
         <translation>Vymazat vše?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="575"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="568"/>
         <source>Do you really want to clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
@@ -1355,13 +1354,13 @@
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="87"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="477"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="470"/>
         <source>Import binary data</source>
         <translation>Importovat binární data</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="88"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="456"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="449"/>
         <source>Export binary data</source>
         <translation>Exportovat binární data</translation>
     </message>
@@ -1371,42 +1370,37 @@
         <translation>Vymazat vše</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="98"/>
-        <source>Show widget&apos;s title bar</source>
-        <translation>Ukázat titulek widgetů</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="105"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="99"/>
         <source>Change structure</source>
         <translation>Změnit strukturu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="107"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="101"/>
         <source>Export received bytes as binary file</source>
         <translation>Exportuje přijaté byty do binárního souboru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="108"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="102"/>
         <source>Change structure of incoming data</source>
         <translation>Změnit strukturu přijmaných dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="307"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="300"/>
         <source>Could not open file %1 for reading!</source>
         <translation>Nemůžu otevřít soubor %1!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="309"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="302"/>
         <source>Importing...</source>
         <translation>Importuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="309"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="302"/>
         <source>Importing your data...</source>
         <translation>Importuji vaše data...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="345"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="338"/>
         <source>Data has been modified.
 
 %1</source>
@@ -1415,17 +1409,17 @@
 %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="469"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="462"/>
         <source>Binary data were exported to file &quot;%1&quot;</source>
         <translation>Binární data byla exportována do souboru &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="576"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="569"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="577"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="570"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -2482,7 +2476,7 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>ProgressReporter</name>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="442"/>
+        <location filename="../src/misc/datafileparser.cpp" line="453"/>
         <source>Saving data file...</source>
         <translation>Ukládám datový soubor...</translation>
     </message>
@@ -2517,13 +2511,13 @@ stejného souboru vícekrát:</translation>
         <translation>Komprimovaný datový soubor Lorris (*.cldta);;Datový soubor Lorris (*.ldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="455"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="476"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="448"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="469"/>
         <source>Any file (*.*)</source>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="638"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="631"/>
         <location filename="../src/LorrisAnalyzer/storage.cpp" line="187"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -2781,7 +2775,7 @@ stejného souboru vícekrát:</translation>
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="639"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="632"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
@@ -2838,40 +2832,40 @@ stejného souboru vícekrát:</translation>
         <translation>(Připojeno)</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="236"/>
-        <location filename="../src/misc/datafileparser.cpp" line="318"/>
+        <location filename="../src/misc/datafileparser.cpp" line="247"/>
+        <location filename="../src/misc/datafileparser.cpp" line="329"/>
         <source>Cannot open file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="240"/>
         <location filename="../src/misc/datafileparser.cpp" line="251"/>
+        <location filename="../src/misc/datafileparser.cpp" line="262"/>
         <source>Corrupted data file</source>
         <translation>Datový soubor je porušený</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="257"/>
+        <location filename="../src/misc/datafileparser.cpp" line="268"/>
         <source>This file is not of expected content type</source>
         <translation>Obsah tohoto souboru nema očekáváný typ</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="269"/>
+        <location filename="../src/misc/datafileparser.cpp" line="280"/>
         <source>Error</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="270"/>
-        <location filename="../src/misc/datafileparser.cpp" line="275"/>
+        <location filename="../src/misc/datafileparser.cpp" line="281"/>
+        <location filename="../src/misc/datafileparser.cpp" line="286"/>
         <source>Corrupted data file - MD5 checksum does not match</source>
         <translation>Soubor je porušený - nesedí kontrolní součet</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="272"/>
+        <location filename="../src/misc/datafileparser.cpp" line="283"/>
         <source>Load anyway?</source>
         <translation>Přejete si soubor přesto načíst?</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="323"/>
+        <location filename="../src/misc/datafileparser.cpp" line="334"/>
         <source>Another file is currently saving!</source>
         <translation>Právě se ukládá jiný soubor!</translation>
     </message>
@@ -3278,7 +3272,7 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
         <translation>Script engine %1 není k dispozici, používám QtScript!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="302"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="303"/>
         <source> - example</source>
         <translation>- příklad</translation>
     </message>
@@ -3286,7 +3280,7 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="316"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="317"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -3341,7 +3335,7 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
     </message>
     <message>
         <location filename="../src/misc/sessionmgr.cpp" line="84"/>
-        <location filename="../src/misc/sessionmgr.cpp" line="195"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="198"/>
         <source>No saved sessions</source>
         <translation>Žádná uložená sezení</translation>
     </message>
@@ -3356,27 +3350,27 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
         <translation>Správce sezení...</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="131"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="134"/>
         <source>Session name</source>
         <translation>Jméno sezení</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="131"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="134"/>
         <source>Enter new session name:</source>
         <translation>Zadejte jméno tohoto sezení:</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="142"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="145"/>
         <source>Session %1 saved.</source>
         <translation>Sezení &quot;%1&quot; bylo uloženo.</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="154"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="157"/>
         <source>Load session</source>
         <translation>Načíst sezení</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="154"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="157"/>
         <source>Tabs you&apos;ve already opened will be closed. Proceed?</source>
         <translation>Existující záložky budou zavřeny, chcete přesto pokračovat?</translation>
     </message>
@@ -3958,13 +3952,13 @@ ke změně uspořádání</translation>
 <context>
     <name>SplitOverlay</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="617"/>
-        <location filename="../src/ui/tabview.cpp" line="620"/>
+        <location filename="../src/ui/tabview.cpp" line="623"/>
+        <location filename="../src/ui/tabview.cpp" line="626"/>
         <source>Split</source>
         <translation>Rozdělit</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="623"/>
+        <location filename="../src/ui/tabview.cpp" line="629"/>
         <source>New window</source>
         <translation>Nové okno</translation>
     </message>
@@ -4046,68 +4040,68 @@ ke změně uspořádání</translation>
 <context>
     <name>TabView</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="45"/>
+        <location filename="../src/ui/tabview.cpp" line="46"/>
         <source>&amp;File</source>
         <translation>&amp;Soubor</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="46"/>
+        <location filename="../src/ui/tabview.cpp" line="47"/>
         <source>&amp;Sessions</source>
         <translation>&amp;Sezení</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="47"/>
+        <location filename="../src/ui/tabview.cpp" line="48"/>
         <source>&amp;Options</source>
         <translation>&amp;Volby</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="53"/>
+        <location filename="../src/ui/tabview.cpp" line="54"/>
         <source>&amp;New</source>
         <translation>&amp;Nový</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="66"/>
+        <location filename="../src/ui/tabview.cpp" line="67"/>
         <source>New window</source>
         <translation>Nové okno</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="67"/>
+        <location filename="../src/ui/tabview.cpp" line="68"/>
         <source>Connection &amp;manager...</source>
         <translation>&amp;Manažer připojení...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="68"/>
+        <location filename="../src/ui/tabview.cpp" line="69"/>
         <source>Close &amp;all tabs</source>
         <translation>Zavřít všechny t&amp;aby</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="69"/>
+        <location filename="../src/ui/tabview.cpp" line="70"/>
         <source>&amp;Close</source>
         <translation>&amp;Zavřít</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="74"/>
+        <location filename="../src/ui/tabview.cpp" line="75"/>
         <source>&amp;Settings</source>
         <translation>Na&amp;stavení</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="75"/>
+        <location filename="../src/ui/tabview.cpp" line="76"/>
         <source>Check for update...</source>
         <translation>Zkontrolovat aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="485"/>
+        <location filename="../src/ui/tabview.cpp" line="491"/>
         <source>Checking for update...</source>
         <translation>Kontroluji aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="490"/>
-        <location filename="../src/ui/tabview.cpp" line="491"/>
+        <location filename="../src/ui/tabview.cpp" line="496"/>
+        <location filename="../src/ui/tabview.cpp" line="497"/>
         <source>No update available</source>
         <translation>Žádná aktualizace není dostupná</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="494"/>
+        <location filename="../src/ui/tabview.cpp" line="500"/>
         <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
@@ -4465,17 +4459,17 @@ ke změně uspořádání</translation>
 <context>
     <name>WidgetArea</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="41"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="42"/>
         <source>Enable grid</source>
         <translation>Povolit síť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="42"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="43"/>
         <source>Show grid</source>
         <translation>Ukázat síť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="43"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="51"/>
         <source>Enable placement lines</source>
         <translation>Povolit zarovnávací čáry</translation>
     </message>
@@ -4485,17 +4479,37 @@ ke změně uspořádání</translation>
         <translation>Nastavit rozteč sítě...</translation>
     </message>
     <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="40"/>
+        <source>Grid</source>
+        <translation>Síť</translation>
+    </message>
+    <message>
         <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="45"/>
         <source>Align widgets to the grid</source>
         <translation>Zarovnat widgety k síti</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="436"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="57"/>
+        <source>Show widget&apos;s title bar</source>
+        <translation>Ukázat titulek widgetů</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="58"/>
+        <source>Lock all widgets</source>
+        <translation>Uzamknout všechny widgety</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="59"/>
+        <source>Unlock all widgets</source>
+        <translation>Odemnkout všechny widgety</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="450"/>
         <source>Grid size</source>
         <translation>Rozteč sítě</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="436"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="450"/>
         <source>Enter grid size in pixels</source>
         <translation>Zadejte rozteč sítě v pixelech</translation>
     </message>
