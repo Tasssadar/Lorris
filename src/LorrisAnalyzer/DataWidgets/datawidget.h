@@ -139,6 +139,7 @@ public slots:
     void lockTriggered();
     void remove();
     void setTitleVisibility(bool visible);
+    void setLocked(bool locked);
 
     //events
     virtual void onWidgetAdd(DataWidget *w);

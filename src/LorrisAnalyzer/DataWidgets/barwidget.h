@@ -32,7 +32,13 @@ public slots:
     }
 
     void setRange(double min, double max);
-    void rotationSelected(int i);
+
+    void setRotation(int i);
+    void rotationSelected(int i)
+    {
+        setRotation(i);
+    }
+
     void setDataType(int i);
     double getValue() const;
     double getMin() const;

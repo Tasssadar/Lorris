@@ -444,6 +444,13 @@ void DataWidget::lockTriggered()
     m_closeLabel->setLocked(m_locked);
 }
 
+void DataWidget::setLocked(bool locked)
+{
+    if(locked == m_locked)
+        return;
+    lockTriggered();
+}
+
 void DataWidget::setTitleTriggered()
 {
     QString title = QInputDialog::getText(this, tr("Set widget title"), tr("Enter title:"),

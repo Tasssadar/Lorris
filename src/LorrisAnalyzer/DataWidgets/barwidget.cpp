@@ -112,7 +112,7 @@ void BarWidget::setUp(Storage *storage)
         connect(m_rotAct[i], SIGNAL(triggered()), signalMapRot, SLOT(map()));
     }
     rotationSelected(0);
-    connect(signalMapRot, SIGNAL(mapped(int)), SLOT(rotationSelected(int)));
+    connect(signalMapRot, SIGNAL(mapped(int)), SLOT(setRotation(int)));
 
 
     QMenu *alarmMenu = contextMenu->addMenu(tr("Alarm"));
@@ -230,7 +230,7 @@ void BarWidget::rangeSelected()
     emit updateForMe();
 }
 
-void BarWidget::rotationSelected(int i)
+void BarWidget::setRotation(int i)
 {
     for(quint8 y = 0; y < 2; ++y)
         m_rotAct[y]->setChecked(y == i);
