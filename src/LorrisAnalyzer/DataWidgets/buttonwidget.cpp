@@ -10,6 +10,7 @@
 
 #include "buttonwidget.h"
 #include "../../ui/shortcutinputbox.h"
+#include "../../ui/colordialog.h"
 
 REGISTER_DATAWIDGET(WIDGET_BUTTON, Button)
 
@@ -34,10 +35,17 @@ void ButtonWidget::setUp(Storage *storage)
 
     QAction *btnText = contextMenu->addAction(tr("Set button text..."));
     QAction *btnShortcut = contextMenu->addAction(tr("Set shortcut..."));
+    QAction *btnColor = contextMenu->addAction(tr("Set colors..."));
+
+    const QPalette &p = m_button->palette();
+    m_colors.push_back(p.color(QPalette::Button));
+    m_colors.push_back(p.color(QPalette::ButtonText));
 
     connect(btnText,     SIGNAL(triggered()), SLOT(setButtonName()));
     connect(btnShortcut, SIGNAL(triggered()), SLOT(setShortcut()));
+    connect(btnColor,    SIGNAL(triggered()),   SLOT(setColors()));
     connect(m_button,    SIGNAL(clicked()),   SLOT(buttonClicked()));
+    connect(m_button,    SIGNAL(clicked()),   SIGNAL(clicked()));
 }
 
 void ButtonWidget::buttonClicked()
@@ -84,6 +92,44 @@ void ButtonWidget::setShortcut(const QString &shortcut)
     m_button->setShortcut(QKeySequence(shortcut));
 }
 
+void ButtonWidget::setColors()
+{
+    static const QStringList labels = (QStringList() << tr("Button") << tr("Button text"));
+    if(!ColorDialog::getColors(m_colors, labels, this))
+        return;
+
+    QPalette p = m_button->palette();
+    p.setColor(QPalette::Button, m_colors[0]);
+    p.setColor(QPalette::ButtonText, m_colors[1]);
+    m_button->setPalette(p);
+}
+
+void ButtonWidget::setColor(const QString& color)
+{
+    QColor c(color);
+    if(!c.isValid())
+        return;
+
+    m_colors[0] = c;
+
+    QPalette p = m_button->palette();
+    p.setColor(QPalette::Button, c);
+    m_button->setPalette(p);
+}
+
+void ButtonWidget::setTextColor(const QString& color)
+{
+    QColor c(color);
+    if(!c.isValid())
+        return;
+
+    m_colors[1] = c;
+
+    QPalette p = m_button->palette();
+    p.setColor(QPalette::ButtonText, c);
+    m_button->setPalette(p);
+}
+
 void ButtonWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
@@ -93,6 +139,10 @@ void ButtonWidget::saveWidgetInfo(DataFileParser *file)
 
     file->writeBlockIdentifier("buttonWShortcut");
     file->writeString(m_button->shortcut().toString());
+
+    file->writeBlockIdentifier("buttonWColors");
+    file->writeString(m_colors[0].name());
+    file->writeString(m_colors[1].name());
 }
 
 void ButtonWidget::loadWidgetInfo(DataFileParser *file)
@@ -104,6 +154,12 @@ void ButtonWidget::loadWidgetInfo(DataFileParser *file)
 
     if(file->seekToNextBlock("buttonWShortcut", BLOCK_WIDGET))
         m_button->setShortcut(QKeySequence(file->readString()));
+
+    if(file->seekToNextBlock("buttonWColors", BLOCK_WIDGET))
+    {
+        setColor(file->readString());
+        setTextColor(file->readString());
+    }
 }
 
 ButtonWidgetAddBtn::ButtonWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

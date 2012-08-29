@@ -13,6 +13,10 @@
 class ButtonWidget : public DataWidget
 {
     Q_OBJECT
+
+Q_SIGNALS:
+    void clicked();
+
 public:
     ButtonWidget(QWidget *parent);
     void setUp(Storage *storage);
@@ -24,12 +28,16 @@ public slots:
     void setButtonName();
     void setShortcut();
     void setShortcut(const QString &shortcut);
+    void setColor(const QString& color);
+    void setTextColor(const QString& color);
 
 private slots:
     void buttonClicked();
+    void setColors();
 
 private:
     QPushButton *m_button;
+    QList<QColor> m_colors;
 };
 
 class ButtonWidgetAddBtn : public DataWidgetAddBtn

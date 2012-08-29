@@ -127,7 +127,8 @@ SOURCES += ui/mainwindow.cpp \
     WorkTab/tab.cpp \
     connection/proxytunnel.cpp \
     ui/editorwidget.cpp \
-    ui/pythonhighlighter.cpp
+    ui/pythonhighlighter.cpp \
+    ui/colordialog.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -234,7 +235,8 @@ HEADERS += ui/mainwindow.h \
     WorkTab/tab.h \
     connection/proxytunnel.h \
     ui/editorwidget.h \
-    ui/pythonhighlighter.h
+    ui/pythonhighlighter.h \
+    ui/colordialog.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
