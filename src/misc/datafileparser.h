@@ -71,7 +71,8 @@ class DataFileParser : public QBuffer
 {
     Q_OBJECT
 public:
-    explicit DataFileParser(QByteArray *data, QIODevice::OpenMode openMode, QObject *parent = 0);
+    DataFileParser(QByteArray *data, QIODevice::OpenMode openMode, QString path = QString(),
+                   QString name = QString(), QObject *parent = 0);
     ~DataFileParser();
 
     bool seekToNextBlock(DataBlocks block, qint32 maxDist);
@@ -89,6 +90,8 @@ public:
     void writeString(const QString& str);
     QString readString();
 
+    QString getAttachmentFilename();
+
     template <typename T> void readVal(T& val);
     template <typename T> T readVal();
     template <typename T> void writeVal(T val);
@@ -97,6 +100,9 @@ private:
     char *getBlockWithFormat(const char *block, quint8& lenght);
 
     int m_last_block;
+    QString m_name;
+    QString m_path;
+    int m_attachmentId;
 };
 
 class DataFileBuilder

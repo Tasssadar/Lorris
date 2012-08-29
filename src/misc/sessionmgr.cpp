@@ -116,8 +116,11 @@ void SessionMgr::saveSession(QString name)
     if(!dir.exists())
         dir.mkpath(dir.absolutePath());
 
+    if(m_sessions.contains(name))
+        removeSession(name);
+
     QByteArray data;
-    DataFileParser parser(&data, QIODevice::WriteOnly);
+    DataFileParser parser(&data, QIODevice::WriteOnly, getFolder(), name);
 
     sWorkTabMgr.saveData(&parser);
 
@@ -134,8 +137,8 @@ void SessionMgr::saveSessionAct()
 
     name.replace(QRegExp("[/\\\\<>\\*:\"\\|\\?]"), "_");
 
-    if(name.startsWith(".."))
-        name.prepend("_");
+    if(name.startsWith("..") || name.startsWith('_'))
+        name.prepend("-");
 
     try {
         saveSession(name);
@@ -172,7 +175,7 @@ void SessionMgr::loadSession(QString name)
 void SessionMgr::updateSessions()
 {
     QDir dir(getFolder());
-    m_sessions = dir.entryList((QStringList() << "*.cldta"));
+    m_sessions = dir.entryList((QStringList() << "[^_]*.cldta"), (QDir::Files | QDir::Readable), QDir::Name);
 
     for(std::set<QMenu*>::iterator itr = m_menus.begin(); itr != m_menus.end(); ++itr)
     {
@@ -214,7 +217,16 @@ void SessionMgr::removeSession(QString name)
     if(!name.contains("cldta"))
         name.append(".cldta");
 
-    QFile::remove(getFolder() + name);
+    QString folder = getFolder();
+    QFile::remove(folder + name);
+
+    // Remove attachment files
+    int at = 0;
+    name.remove(".cldta");
+    name = QString("%1_%2_at%3.cldta").arg(folder).arg(name);
+    while(QFile::remove(name.arg(at)))
+        ++at;
+
     updateSessions();
 }
 

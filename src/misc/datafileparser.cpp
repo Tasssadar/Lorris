@@ -44,10 +44,13 @@ DataFileHeader::DataFileHeader(const DataFileHeader& other)
     std::copy(other.unused, other.unused + sizeof(unused), unused);
 }
 
-DataFileParser::DataFileParser(QByteArray *data, OpenMode openMode, QObject *parent) :
+DataFileParser::DataFileParser(QByteArray *data, QIODevice::OpenMode openMode, QString path, QString name, QObject *parent) :
     QBuffer(data, parent)
 {
     m_last_block = 0;
+    m_name = name;
+    m_path = path;
+    m_attachmentId = 0;
     open(openMode);
 }
 
@@ -225,6 +228,14 @@ QString DataFileParser::readString()
 
     QByteArray raw = read(size);
     return QString::fromUtf8(raw.data(), size);
+}
+
+QString DataFileParser::getAttachmentFilename()
+{
+    if(m_name.isEmpty() || m_path.isEmpty())
+        return QString();
+
+    return QString("%1_%2_at%3.cldta").arg(m_path).arg(m_name).arg(m_attachmentId++);
 }
 
 QFuture<QByteArray> DataFileBuilder::m_future;

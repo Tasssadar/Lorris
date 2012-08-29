@@ -712,8 +712,27 @@ void LorrisAnalyzer::saveData(DataFileParser *file)
 {
     PortConnWorkTab::saveData(file);
 
-    file->writeBlockIdentifier("LorrAnalyzerFile");
-    file->writeString(m_storage.getFilename());
+    QString filename = m_storage.getFilename();
+
+    if(!filename.isEmpty())
+    {
+        file->writeBlockIdentifier("LorrAnalyzerFile");
+        file->writeString(filename);
+    }
+    else
+    {
+        filename = file->getAttachmentFilename();
+        if(!filename.isEmpty())
+        {
+            QString cfg_name = sConfig.get(CFG_STRING_ANALYZER_FOLDER);
+            m_storage.SaveToFile(filename, ui->dataArea, ui->devTabs);
+            m_storage.clearFilename();
+            sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
+
+            file->writeBlockIdentifier("LorrAnalyzerTemp");
+            file->writeString(filename);
+        }
+    }
 }
 
 void LorrisAnalyzer::loadData(DataFileParser *file)
@@ -722,6 +741,14 @@ void LorrisAnalyzer::loadData(DataFileParser *file)
 
     if(file->seekToNextBlock("LorrAnalyzerFile", BLOCK_WORKTAB))
         openFile(file->readString());
+    else if(file->seekToNextBlock("LorrAnalyzerTemp", BLOCK_WORKTAB))
+    {
+        QString cfg_name = sConfig.get(CFG_STRING_ANALYZER_FOLDER);
+        openFile(file->readString());
+        sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
+
+        m_storage.clearFilename();
+    }
 }
 
 void LorrisAnalyzer::addChildTab(ChildTab *tab, const QString &name)
