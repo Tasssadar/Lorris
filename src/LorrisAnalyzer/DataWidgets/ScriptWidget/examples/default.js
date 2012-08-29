@@ -12,3 +12,9 @@ function onDataChanged(data, dev, cmd, index) {
 function onKeyPress(key) {
 
 }
+
+// This function is called when data arrives to serial port
+// parameter is array with unparsed data
+function onRawData(data) {
+
+}

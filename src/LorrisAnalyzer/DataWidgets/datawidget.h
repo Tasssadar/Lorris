@@ -94,6 +94,7 @@ Q_SIGNALS:
 
     void addChildTab(ChildTab *tab, const QString& name);
     void removeChildTab(ChildTab *tab);
+    void rawData(const QByteArray& data);
 
 public:
     explicit DataWidget(QWidget *parent = 0);

@@ -77,6 +77,7 @@ public:
 
 public slots:
     virtual void keyPressed(const QString &key) = 0;
+    virtual void rawData(const QByteArray& data) = 0;
 
 protected:
     ScriptWidget *scriptWidget() const { return (ScriptWidget*)parent(); }

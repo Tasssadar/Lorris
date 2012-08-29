@@ -200,6 +200,7 @@ void QtScriptEngine::setSource(const QString &source)
     m_on_widget_remove = m_global.property("onWidgetRemove");
     m_on_script_exit = m_global.property("onScriptExit");
     m_on_save = m_global.property("onSave");
+    m_on_raw = m_global.property("onRawData");
 
     m_engine->setAgent(new ScriptAgent(this, m_engine));
 }
@@ -347,6 +348,22 @@ void QtScriptEngine::onSave()
 {
     if(m_on_save.isFunction())
         m_on_save.call();
+}
+
+void QtScriptEngine::rawData(const QByteArray &data)
+{
+    // do not execute when setting source - agent() == NULL
+    if(!m_on_raw.isFunction() || !m_engine->agent())
+        return;
+
+    QScriptValue jsData = m_engine->newArray(data.size());
+    for(qint32 i = 0; i < data.size(); ++i)
+        jsData.setProperty(i, QScriptValue(m_engine, (quint8)data[i]));
+
+    QScriptValueList args;
+    args.push_back(jsData);
+
+    m_on_raw.call(QScriptValue(), args);
 }
 
 QtScriptEngine_private::QtScriptEngine_private(QtScriptEngine *base, QObject *parent) :

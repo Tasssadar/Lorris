@@ -117,6 +117,7 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(m_analyzer, SIGNAL(setTitleVisibility(bool)),        w, SLOT(setTitleVisibility(bool)));
     connect(w,  SIGNAL(addChildTab(ChildTab*,QString)), m_analyzer, SLOT(addChildTab(ChildTab*,QString)));
     connect(w,  SIGNAL(removeChildTab(ChildTab*)),      m_analyzer, SLOT(removeChildTab(ChildTab*)));
+    connect(m_analyzer, SIGNAL(rawData(QByteArray)),             w, SIGNAL(rawData(QByteArray)));
 
     //events
     connect(this,       SIGNAL(onWidgetAdd(DataWidget*)),        w, SLOT(onWidgetAdd(DataWidget*)));

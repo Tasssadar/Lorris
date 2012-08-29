@@ -71,6 +71,7 @@ public:
 
 public slots:
     void keyPressed(const QString &key);
+    void rawData(const QByteArray& data);
 
 private slots:
     void onTitleChange(const QString& newTitle);

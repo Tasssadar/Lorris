@@ -4,9 +4,14 @@
 # This function gets called on data received
 # it should return string, which is automatically appended to terminal
 def onDataChanged(data, dev, cmd, index):
-        return "";
+    return ""
 
 # This function is called on key press in terminal.
 # Param is string
 def onKeyPress(key):
-        return;
+    return
+
+# This function is called when data arrives to serial port
+# parameter is array with unparsed data
+def onRawData(data):
+    return

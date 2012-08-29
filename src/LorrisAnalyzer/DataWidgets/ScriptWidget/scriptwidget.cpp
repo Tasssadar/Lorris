@@ -93,6 +93,7 @@ void ScriptWidget::createEngine()
     connect(m_engine,      SIGNAL(appendTermRaw(QByteArray)),   m_terminal, SLOT(appendText(QByteArray)));
     connect(m_engine,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
     connect(m_engine,      SIGNAL(error(QString)),              this,       SLOT(blinkError()));
+    connect(this,          SIGNAL(rawData(QByteArray)),         m_engine,   SLOT(rawData(QByteArray)));
 }
 
 void ScriptWidget::newData(analyzer_data *data, quint32 index)

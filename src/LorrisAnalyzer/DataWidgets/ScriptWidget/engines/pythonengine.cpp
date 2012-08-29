@@ -229,6 +229,15 @@ void PythonEngine::sendError()
     m_errorBuffer.clear();
 }
 
+void PythonEngine::rawData(const QByteArray &data)
+{
+    if(m_evaluating)
+        return;
+
+    QVariantList args = (QVariantList() << data);
+    m_module.call("onRawData", args);
+}
+
 PythonFunctions::PythonFunctions(PythonEngine *engine, QObject *parent) :
     QObject(parent)
 {

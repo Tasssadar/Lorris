@@ -696,7 +696,10 @@ void LorrisAnalyzer::setPortConnection(ConnectionPointer<PortConnection> const &
     m_connectButton->setConn(con, false);
 
     if(con)
+    {
         connect(this, SIGNAL(SendData(QByteArray)), con.data(), SLOT(SendData(QByteArray)));
+        connect(con.data(), SIGNAL(dataRead(QByteArray)), SIGNAL(rawData(QByteArray)));
+    }
 }
 
 void LorrisAnalyzer::updateForWidget()

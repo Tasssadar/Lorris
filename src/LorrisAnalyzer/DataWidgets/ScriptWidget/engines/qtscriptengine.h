@@ -100,6 +100,7 @@ public:
 
 public slots:
     void keyPressed(const QString &key);
+    void rawData(const QByteArray& data);
 
 private slots:
     void widgetDestroyed(QObject *widget);
@@ -115,6 +116,7 @@ private:
     QScriptValue  m_on_widget_remove;
     QScriptValue  m_on_script_exit;
     QScriptValue  m_on_save;
+    QScriptValue  m_on_raw;
 
     QtScriptEngine_private *m_engine;
 };
