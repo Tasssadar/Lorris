@@ -35,6 +35,7 @@ TabView::TabView(MainWindow *parent) :
     QWidget(parent), m_active_widget(NULL)
 {
     m_windowId = parent->getId();
+    m_blockActive = false;
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     m_layouts.insert(layout);
@@ -108,6 +109,9 @@ TabWidget *TabView::newTabWidget(QBoxLayout *l)
 
 void TabView::changeActiveWidget(TabWidget *widget)
 {
+    if(m_blockActive)
+        return;
+
     m_active_widget = widget;
     if(widget && !widget->isEmpty())
         emit changeWindowTitle(widget->tabToolTip(widget->currentIndex()));
@@ -338,8 +342,10 @@ void TabView::OpenConnectionManager()
 
 void TabView::newTab()
 {
+    m_blockActive = true;
     HomeDialog dialog(getWindowId(), this);
     dialog.exec();
+    m_blockActive = false;
 }
 
 void TabView::saveData(DataFileParser *file)

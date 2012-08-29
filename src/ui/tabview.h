@@ -116,6 +116,7 @@ private:
     std::vector<QAction*> m_menus;
 
     quint32 m_windowId;
+    bool m_blockActive;
 
     QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
 };
