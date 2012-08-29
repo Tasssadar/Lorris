@@ -22,17 +22,6 @@ class WidgetAreaPreview;
 #define PLACEMENT_SHOW 20
 #define PLACEMENT_STICK 7
 
-enum AreaMenuActions
-{
-    ACT_ENABLE_GRID = 0,
-    ACT_SHOW_GRID,
-    ACT_ENABLE_LINES,
-    ACT_GRID_SIZE,
-    ACT_ALIGN,
-
-    ACT_MAX
-};
-
 class WidgetArea : public QFrame
 {
     Q_OBJECT
@@ -40,6 +29,8 @@ class WidgetArea : public QFrame
 Q_SIGNALS:
     void updateData();
     void mouseStatus(bool in, const data_widget_info& info, qint32 parent);
+    void setTitleVisibility(bool visible);
+    void setLocked(bool locked);
 
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
@@ -107,6 +98,9 @@ private slots:
     void alignWidgets();
     void clearPlacementLines();
     void enableLines(bool enable);
+    void lockAll();
+    void unlockAll();
+    void titleVisibilityAct(bool toggled);
 
 private:
     void getMarkPos(int &x, int &y, QSize &size);
@@ -127,6 +121,9 @@ private:
     bool m_show_grid;
 
     QMenu *m_menu;
+    QAction *m_actEnableGrid;
+    QAction *m_actShowGrid;
+    QAction *m_titleVisibility;
     WidgetAreaPreview *m_prev;
 
     QVector<QLine> m_placementLines;

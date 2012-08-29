@@ -37,28 +37,40 @@ WidgetArea::WidgetArea(QWidget *parent) :
 
     setCursor(Qt::OpenHandCursor);
 
-    // update enum AreaMenuActions when changing these
-    QAction *enableGrid = m_menu->addAction(tr("Enable grid"));
-    QAction *showGrid = m_menu->addAction(tr("Show grid"));
+    QMenu *gridMenu = m_menu->addMenu(tr("Grid"));
+
+    m_actEnableGrid = gridMenu->addAction(tr("Enable grid"));
+    m_actShowGrid = gridMenu->addAction(tr("Show grid"));
+    QAction *gridSize = gridMenu->addAction(tr("Set grid size..."));
+    QAction *align = gridMenu->addAction(tr("Align widgets to the grid"));
+    m_actEnableGrid->setCheckable(true);
+    m_actEnableGrid->setChecked(m_grid != 1);
+    m_actShowGrid->setCheckable(true);
+    m_actShowGrid->setChecked(m_show_grid);
+
     QAction *linesAct = m_menu->addAction(tr("Enable placement lines"));
-    QAction *gridSize = m_menu->addAction(tr("Set grid size..."));
-    QAction *align = m_menu->addAction(tr("Align widgets to the grid"));
-    enableGrid->setCheckable(true);
-    enableGrid->setChecked(m_grid != 1);
-    showGrid->setCheckable(true);
-    showGrid->setChecked(m_show_grid);
     linesAct->setCheckable(true);
     linesAct->setChecked(m_enablePlacementLines);
 
-    Q_ASSERT(ACT_MAX == m_menu->actions().size());
+    m_menu->addSeparator();
 
-    connect(enableGrid, SIGNAL(toggled(bool)),           SLOT(enableGrid(bool)));
-    connect(enableGrid, SIGNAL(toggled(bool)), showGrid, SLOT(setEnabled(bool)));
-    connect(enableGrid, SIGNAL(toggled(bool)), gridSize, SLOT(setEnabled(bool)));
-    connect(showGrid,   SIGNAL(toggled(bool)),           SLOT(showGrid(bool)));
-    connect(gridSize,   SIGNAL(triggered()),             SLOT(setGridSize()));
-    connect(align,      SIGNAL(triggered()),             SLOT(alignWidgets()));
-    connect(linesAct,   SIGNAL(toggled(bool)),           SLOT(enableLines(bool)));
+    m_titleVisibility = m_menu->addAction(tr("Show widget's title bar"));
+    QAction *lockAll = m_menu->addAction(tr("Lock all widgets"));
+    QAction *unlockAll = m_menu->addAction(tr("Unlock all widgets"));
+
+    m_titleVisibility->setCheckable(true);
+    m_titleVisibility->setChecked(true);
+
+    connect(m_actEnableGrid, SIGNAL(toggled(bool)),                SLOT(enableGrid(bool)));
+    connect(m_actEnableGrid, SIGNAL(toggled(bool)), m_actShowGrid, SLOT(setEnabled(bool)));
+    connect(m_actEnableGrid, SIGNAL(toggled(bool)), gridSize,      SLOT(setEnabled(bool)));
+    connect(m_actShowGrid,   SIGNAL(toggled(bool)),                SLOT(showGrid(bool)));
+    connect(gridSize,        SIGNAL(triggered()),                  SLOT(setGridSize()));
+    connect(align,           SIGNAL(triggered()),                  SLOT(alignWidgets()));
+    connect(linesAct,        SIGNAL(toggled(bool)),                SLOT(enableLines(bool)));
+    connect(m_titleVisibility, SIGNAL(triggered(bool)),            SLOT(titleVisibilityAct(bool)));
+    connect(lockAll,         SIGNAL(triggered()),                  SLOT(lockAll()));
+    connect(unlockAll,       SIGNAL(triggered()),                  SLOT(unlockAll()));
 }
 
 WidgetArea::~WidgetArea()
@@ -114,10 +126,11 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(w,          SIGNAL(updateData()),                       SIGNAL(updateData()));
     connect(w,   SIGNAL(mouseStatus(bool,data_widget_info,qint32)), SIGNAL(mouseStatus(bool,data_widget_info,qint32)));
     connect(w,          SIGNAL(SendData(QByteArray)),   m_analyzer, SIGNAL(SendData(QByteArray)));
-    connect(m_analyzer, SIGNAL(setTitleVisibility(bool)),        w, SLOT(setTitleVisibility(bool)));
+    connect(this,       SIGNAL(setTitleVisibility(bool)),        w, SLOT(setTitleVisibility(bool)));
     connect(w,  SIGNAL(addChildTab(ChildTab*,QString)), m_analyzer, SLOT(addChildTab(ChildTab*,QString)));
     connect(w,  SIGNAL(removeChildTab(ChildTab*)),      m_analyzer, SLOT(removeChildTab(ChildTab*)));
     connect(m_analyzer, SIGNAL(rawData(QByteArray)),             w, SIGNAL(rawData(QByteArray)));
+    connect(this,       SIGNAL(setLocked(bool)),                 w, SLOT(setLocked(bool)));
 
     //events
     connect(this,       SIGNAL(onWidgetAdd(DataWidget*)),        w, SLOT(onWidgetAdd(DataWidget*)));
@@ -129,7 +142,7 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
 
     m_analyzer->setDataChanged();
 
-    w->setTitleVisibility(m_analyzer->showTitleBars());
+    w->setTitleVisibility(m_titleVisibility->isChecked());
     return w;
 }
 
@@ -244,18 +257,18 @@ void WidgetArea::LoadSettings(DataFileParser *file)
 {
     if(file->seekToNextBlock("areaGridSettings", BLOCK_DATA_INDEX))
     {
-        file->read((char*)&m_grid, sizeof(m_grid));
-        file->read((char*)&m_show_grid, sizeof(m_show_grid));
+        m_grid = file->readVal<quint32>();
+        m_show_grid = file->readVal<bool>();
 
-        m_menu->actions()[ACT_ENABLE_GRID]->setChecked(m_grid != 1);
-        m_menu->actions()[ACT_SHOW_GRID]->setChecked(m_show_grid);
+        m_actEnableGrid->setChecked(m_grid != 1);
+        m_actShowGrid->setChecked(m_show_grid);
     }
 
     if(file->seekToNextBlock("areaGridOffset", BLOCK_DATA_INDEX))
     {
-        int x, y;
-        file->read((char*)&x, sizeof(x));
-        file->read((char*)&y, sizeof(y));
+        int x = file->readVal<int>();
+        int y = file->readVal<int>();
+
         m_grid_offset = QPoint(x, y);
         update();
     }
@@ -560,6 +573,22 @@ void WidgetArea::enableLines(bool enable)
 {
     sConfig.set(CFG_BOOL_ANALYZER_PLACEMENT_LINES, enable);
     m_enablePlacementLines = enable;
+}
+
+void WidgetArea::titleVisibilityAct(bool toggled)
+{
+    m_titleVisibility->setChecked(toggled);
+    emit setTitleVisibility(toggled);
+}
+
+void WidgetArea::lockAll()
+{
+    emit setLocked(true);
+}
+
+void WidgetArea::unlockAll()
+{
+    emit setLocked(false);
 }
 
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)

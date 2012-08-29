@@ -94,13 +94,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     saveAsAct->setShortcut(QKeySequence("Ctrl+Shift+S"));
     saveAct->setShortcut(QKeySequence("Ctrl+S"));
 
-    QMenu *menuWidgets = new QMenu(tr("Widgets"), this);
-    m_title_action = menuWidgets->addAction(tr("Show widget's title bar"));
-    m_title_action->setCheckable(true);
-    m_title_action->setChecked(true);
-
     addTopMenu(menuData);
-    addTopMenu(menuWidgets);
 
     QAction *structAct = new QAction(QIcon(":/actions/system"), tr("Change structure"), this);
 
@@ -127,7 +121,6 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(saveAct,        SIGNAL(triggered()),     SLOT(saveButton()));
     connect(clearAct,       SIGNAL(triggered()),     SLOT(clearDataButton()));
     connect(clearAllAct,    SIGNAL(triggered()),     SLOT(clearAllButton()));
-    connect(m_title_action, SIGNAL(triggered(bool)), SLOT(showTitleTriggered(bool)));
     connect(structAct,      SIGNAL(triggered()),     SLOT(editStruture()));
     connect(exportAct,      SIGNAL(triggered()),     SLOT(exportBin()));
     connect(importAct,      SIGNAL(triggered()),     SLOT(importBinAct()));
@@ -681,13 +674,6 @@ void LorrisAnalyzer::editStruture()
 quint32 LorrisAnalyzer::getCurrentIndex()
 {
     return m_curIndex;
-}
-
-void LorrisAnalyzer::showTitleTriggered(bool checked)
-{
-    m_title_action->setChecked(checked);
-
-    emit setTitleVisibility(checked);
 }
 
 void LorrisAnalyzer::setPortConnection(ConnectionPointer<PortConnection> const & con)

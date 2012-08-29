@@ -45,7 +45,6 @@ class LorrisAnalyzer : public PortConnWorkTab
 
     Q_SIGNALS:
         void newData(analyzer_data *data, quint32 index);
-        void setTitleVisibility(bool visible);
         void SendData(const QByteArray& data);
         void rawData(const QByteArray& data);
 
@@ -60,8 +59,6 @@ class LorrisAnalyzer : public PortConnWorkTab
         analyzer_data *getLastData(quint32& idx);
 
         quint32 getCurrentIndex();
-
-        bool showTitleBars() const { return m_title_action->isChecked(); }
 
         void setPortConnection(ConnectionPointer<PortConnection> const & con);
         void openFile(const QString& filename);
@@ -97,7 +94,6 @@ class LorrisAnalyzer : public PortConnWorkTab
 
         void connectedStatus(bool connected);
         void indexChanged(int value);
-        void showTitleTriggered(bool checked);
 
         void updateForWidget();
 
@@ -115,8 +111,6 @@ class LorrisAnalyzer : public PortConnWorkTab
         Storage m_storage;
         analyzer_packet *m_packet;
         PacketParser m_parser;
-
-        QAction *m_title_action;
 
         bool m_data_changed;
         qint32 m_curIndex;
