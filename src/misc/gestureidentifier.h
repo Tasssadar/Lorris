@@ -63,6 +63,7 @@ private:
     int m_correct[GESTURE_MAX];
     directions m_current;
     QPoint m_last_point;
+    qint64 m_start_time;
 };
 
 #endif // GESTUREIDENTIFIER_H

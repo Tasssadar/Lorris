@@ -6,9 +6,11 @@
 ***********************************************/
 
 #include <algorithm>
+#include <QDateTime>
 #include "gestureidentifier.h"
 
 #define GESTURE_THRESHOLD 100
+#define TIME_LIMIT 1500
 
 GestureIdentifier::GestureIdentifier(QObject *parent) : QObject(parent)
 {
@@ -43,9 +45,16 @@ void GestureIdentifier::moveEvent(const QPoint &pos)
         case STATE_NONE:
             m_last_point = pos;
             m_state = STATE_PROGRESS;
+            m_start_time = QDateTime::currentMSecsSinceEpoch();
             break;
         case STATE_PROGRESS:
         {
+            if(QDateTime::currentMSecsSinceEpoch() - m_start_time >= TIME_LIMIT)
+            {
+                m_state = STATE_WRONG;
+                break;
+            }
+
             QPoint diff = pos - m_last_point;
             if(diff.manhattanLength() < GESTURE_THRESHOLD)
                 break;

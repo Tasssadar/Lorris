@@ -387,6 +387,21 @@ void DataWidget::dragResize(QMouseEvent* e)
 
 void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
 {
+    if(widget == this && (m_state & STATE_SCALED_UP))
+    {
+        m_state &= ~(STATE_SCALED_UP);
+
+        QPoint pos = mapToParent(e->pos());
+        int pctW = (e->pos().x()*100)/width();
+        int pctH = (e->pos().y()*100)/height();
+
+        m_orig_geometry.moveLeft(pos.x() - (m_orig_geometry.width()*pctW)/100);
+        m_orig_geometry.moveTop(pos.y() - (m_orig_geometry.height()*pctH)/100);
+
+        startAnimation(m_orig_geometry);
+        return;
+    }
+
     QPoint p = widget->pos() + ( e->globalPos() - mOrigin );
     mapXYToGrid(p);
     mOrigin = e->globalPos();
@@ -497,6 +512,14 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
     quint32 size = title.length();
     file->write((char*)&size, sizeof(quint32));
     file->write(title.data());
+
+    // scaled up
+    file->writeBlockIdentifier("widgetScaledUp");
+    file->writeVal(bool(m_state & STATE_SCALED_UP));
+    file->writeVal(m_orig_geometry.x());
+    file->writeVal(m_orig_geometry.y());
+    file->writeVal(m_orig_geometry.width());
+    file->writeVal(m_orig_geometry.height());
 }
 
 void DataWidget::loadWidgetInfo(DataFileParser *file)
@@ -533,6 +556,19 @@ void DataWidget::loadWidgetInfo(DataFileParser *file)
 
         QString title(file->read(size));
         setTitle(title);
+    }
+
+    // scaled up
+    if(file->seekToNextBlock("widgetScaledUp", BLOCK_WIDGET))
+    {
+        if(file->readVal<bool>())
+            m_state |= STATE_SCALED_UP;
+
+        int x = file->readVal<int>();
+        int y = file->readVal<int>();
+        int w = file->readVal<int>();
+        int h = file->readVal<int>();
+        m_orig_geometry = QRect(x, y, w, h);
     }
 }
 
@@ -658,16 +694,21 @@ void DataWidget::gestureCompleted(int gesture)
     if(gesture != GESTURE_SHAKE_LEFT && gesture != GESTURE_SHAKE_RIGHT)
         return;
 
+    m_state |= (STATE_BLOCK_MOVE | STATE_SCALED_UP);
+    m_orig_geometry = geometry();
+
+    startAnimation(widgetArea()->rect());
+}
+
+void DataWidget::startAnimation(const QRect &target)
+{
     QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry", this);
     animation->setDuration(100);
     animation->setStartValue(geometry());
-    animation->setEndValue(QRect(0, 0, widgetArea()->width(), widgetArea()->height()));
-
+    animation->setEndValue(target);
     connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
     animation->start();
-
-    m_state |= STATE_BLOCK_MOVE;
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)

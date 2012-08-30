@@ -89,7 +89,8 @@ protected:
         STATE_ASSIGNED   = 0x02,
         STATE_UPDATING   = 0x04,
         STATE_MOUSE_IN   = 0x08,
-        STATE_BLOCK_MOVE = 0x10
+        STATE_BLOCK_MOVE = 0x10,
+        STATE_SCALED_UP  = 0x20
     };
 
 Q_SIGNALS:
@@ -215,6 +216,7 @@ private:
     void dragResize(QMouseEvent* e);
     void dragMove(QMouseEvent* e, DataWidget *widget);
     static Qt::CursorShape getCursor(quint8 act);
+    void startAnimation(const QRect& target);
 
     void copyWidget(QMouseEvent *ev);
 
@@ -229,6 +231,7 @@ private:
     QLabel *m_title_label;
     quint32 m_id;
     GestureIdentifier m_gestures;
+    QRect m_orig_geometry;
 };
 
 class DataWidgetAddBtn : public QPushButton
