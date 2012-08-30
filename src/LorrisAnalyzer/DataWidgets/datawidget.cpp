@@ -13,6 +13,7 @@
 #include <QDrag>
 #include <QMenu>
 #include <QInputDialog>
+#include <QPropertyAnimation>
 
 #include "datawidget.h"
 #include "../../WorkTab/WorkTab.h"
@@ -20,7 +21,7 @@
 #include "../../misc/datafileparser.h"
 
 DataWidget::DataWidget(QWidget *parent) :
-    QFrame(parent)
+    QFrame(parent), m_gestures(this)
 {
     layout = new QVBoxLayout(this);
     QHBoxLayout *title_bar = new QHBoxLayout();
@@ -62,10 +63,9 @@ DataWidget::DataWidget(QWidget *parent) :
     setPalette(p);
 
     contextMenu = NULL;
-    m_mouseIn = false;
-    m_updating = true;
     m_dragAction = DRAG_NONE;
     m_copy_widget = NULL;
+    m_state = STATE_UPDATING;
 
     m_widgetControlled = -1;
 
@@ -75,7 +75,7 @@ DataWidget::DataWidget(QWidget *parent) :
 DataWidget::~DataWidget()
 {
     // Remove highlight from top data widget
-    if(m_mouseIn)
+    if(m_state & STATE_MOUSE_IN)
         emit mouseStatus(false, m_info, m_widgetControlled);
 
     Utils::deleteLayoutMembers(layout);
@@ -91,10 +91,7 @@ void DataWidget::setId(quint32 id)
 void DataWidget::setUp(Storage */*storage*/)
 {
     setAcceptDrops(true);
-    m_assigned = false;
-    m_locked = false;
     contextMenu = new QMenu(this);
-    m_mouseIn = false;
 
     m_lockAction = new QAction(tr("Lock"), this);
     m_lockAction->setCheckable(true);
@@ -110,7 +107,8 @@ void DataWidget::setUp(Storage */*storage*/)
 
     setMouseTracking(true);
 
-    connect(m_closeLabel, SIGNAL(removeWidget(quint32)), this, SIGNAL(removeWidget(quint32)));
+    connect(m_closeLabel, SIGNAL(removeWidget(quint32)),  SIGNAL(removeWidget(quint32)));
+    connect(&m_gestures,  SIGNAL(gestureCompleted(int)),  SLOT(gestureCompleted(int)));
 }
 
 void DataWidget::setTitleVisibility(bool visible)
@@ -196,7 +194,7 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
         case Qt::NoButton:
         {
             quint8 act = getDragAction(e);
-            if(m_locked && act != DRAG_NONE && act != (DRAG_MOVE | DRAG_COPY))
+            if(isLocked() && act != DRAG_NONE && act != (DRAG_MOVE | DRAG_COPY))
                 return;
 
             setCursor(DataWidget::getCursor(act));
@@ -208,15 +206,18 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
             {
                 case DRAG_NONE: break;
                 case DRAG_MOVE:
-                    if(!m_locked)
+                    if(!isLocked() && !isMoveBlocked())
+                    {
                         dragMove(e, this);
+                        m_gestures.moveEvent(e->globalPos());
+                    }
                     break;
                 case (DRAG_MOVE | DRAG_COPY):
                     if(m_copy_widget) dragMove(e, m_copy_widget);
                     else              copyWidget(e);
                     break;
                 default:
-                    if(!m_locked)
+                    if(!isLocked())
                         dragResize(e);
                     break;
             }
@@ -232,26 +233,30 @@ void DataWidget::mouseReleaseEvent(QMouseEvent *ev)
     emit clearPlacementLines();
     m_copy_widget = NULL;
     m_dragAction = DRAG_NONE;
+    m_gestures.clear();
+
+    m_state &= ~(STATE_BLOCK_MOVE);
+
     QWidget::mouseReleaseEvent(ev);
 }
 
 void DataWidget::enterEvent(QEvent *)
 {
-    if(m_assigned || m_widgetControlled != -1)
+    if(isAssigned() || m_widgetControlled != -1)
         emit mouseStatus(true, m_info, m_widgetControlled);
-    m_mouseIn = true;
+    m_state |= STATE_MOUSE_IN;
 }
 
 void DataWidget::leaveEvent(QEvent *)
 {
-    if(m_assigned || m_widgetControlled != -1)
+    if(isAssigned() || m_widgetControlled != -1)
         emit mouseStatus(false, m_info, m_widgetControlled);
-    m_mouseIn = false;
+    m_state &= ~(STATE_MOUSE_IN);
 }
 
 void DataWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(m_locked || !event->source() || !event->mimeData()->hasText() || event->mimeData()->text().at(0) == 'w')
+    if(isLocked() || !event->source() || !event->mimeData()->hasText() || event->mimeData()->text().at(0) == 'w')
     {
         QFrame::dragEnterEvent(event);
         return;
@@ -261,8 +266,9 @@ void DataWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void DataWidget::dropEvent(QDropEvent *event)
 {
-    if(m_locked)
+    if(isLocked())
         return;
+
     event->acceptProposedAction();
 
     QStringList data = event->mimeData()->text().split(" ");
@@ -270,7 +276,9 @@ void DataWidget::dropEvent(QDropEvent *event)
     qint16 device = data[1].toInt();
     qint16 cmd = data[2].toInt();
     setInfo(device, cmd, pos);
-    m_assigned = true;
+
+    m_state |= STATE_ASSIGNED;
+
     emit updateForMe();
 }
 
@@ -417,7 +425,7 @@ void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
 
 void DataWidget::newData(analyzer_data *data, quint32 /*index*/)
 {
-    if(!m_updating || !m_assigned || m_info.pos >= (quint32)data->getData().length())
+    if(!isUpdating() || !isAssigned() || m_info.pos >= (quint32)data->getData().length())
         return;
 
     quint8 id;
@@ -439,14 +447,14 @@ void DataWidget::processData(analyzer_data */*data*/)
 
 void DataWidget::lockTriggered()
 {
-    m_locked = !m_locked;
-    m_lockAction->setChecked(m_locked);
-    m_closeLabel->setLocked(m_locked);
+    m_state ^= STATE_LOCKED;
+    m_lockAction->setChecked(isLocked());
+    m_closeLabel->setLocked(isLocked());
 }
 
 void DataWidget::setLocked(bool locked)
 {
-    if(locked == m_locked)
+    if(isLocked() == locked)
         return;
     lockTriggered();
 }
@@ -481,8 +489,7 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
 
     // locked
     file->writeBlockIdentifier("widgetLocked");
-    p = (char*)&m_locked;
-    file->write(p, sizeof(m_locked));
+    file->writeVal(isLocked());
 
     // title
     file->writeBlockIdentifier("widgetTitle");
@@ -501,16 +508,21 @@ void DataWidget::loadWidgetInfo(DataFileParser *file)
         p = (char*)&m_info.pos;
         file->read(p, sizeof(m_info));
 
-        m_assigned = true;
+        m_state |= STATE_ASSIGNED;
     }
 
     // Locked
     if(file->seekToNextBlock("widgetLocked", BLOCK_WIDGET))
     {
-        p = (char*)&m_locked;
-        file->read(p, sizeof(m_locked));
-        m_lockAction->setChecked(m_locked);
-        m_closeLabel->setLocked(m_locked);
+        bool locked = file->readVal<bool>();
+
+        if(locked)
+            m_state |= STATE_LOCKED;
+        else
+            m_state &= ~(STATE_LOCKED);
+
+        m_lockAction->setChecked(locked);
+        m_closeLabel->setLocked(locked);
     }
 
     // title
@@ -598,7 +610,7 @@ void DataWidget::copyWidget(QMouseEvent *ev)
 
 void DataWidget::titleDoubleClick()
 {
-    if(m_locked)
+    if(isLocked())
         return;
     setTitleTriggered();
 }
@@ -639,6 +651,23 @@ Qt::CursorShape DataWidget::getCursor(quint8 act)
         case (DRAG_MOVE | DRAG_COPY):
             return Qt::UpArrowCursor;
     }
+}
+
+void DataWidget::gestureCompleted(int gesture)
+{
+    if(gesture != GESTURE_SHAKE_LEFT && gesture != GESTURE_SHAKE_RIGHT)
+        return;
+
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry", this);
+    animation->setDuration(100);
+    animation->setStartValue(geometry());
+    animation->setEndValue(QRect(0, 0, widgetArea()->width(), widgetArea()->height()));
+
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+    animation->start();
+
+    m_state |= STATE_BLOCK_MOVE;
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)

@@ -133,7 +133,7 @@ void GraphWidget::updateRemoveMapping()
 
 void GraphWidget::newData(analyzer_data */*data*/, quint32 index)
 {
-    if(!m_updating || m_curves.empty())
+    if(!isUpdating() || m_curves.empty())
         return;
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
@@ -397,7 +397,8 @@ void GraphWidget::addCurve()
     delete m_add_dialog;
     m_add_dialog = NULL;
 
-    m_assigned = true;
+    m_state |= STATE_ASSIGNED;
+
     emit updateForMe();
 }
 

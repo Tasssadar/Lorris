@@ -18,6 +18,7 @@
 #include "../packet.h"
 #include "../../misc/datafileparser.h"
 #include "../widgetfactory.h"
+#include "../../misc/gestureidentifier.h"
 
 class WidgetArea;
 
@@ -80,6 +81,17 @@ class DataWidget : public QFrame
 
     Q_PROPERTY(quint8 widgetType READ getWidgetType)
 
+protected:
+    enum widgetStates
+    {
+        STATE_NONE       = 0x00,
+        STATE_LOCKED     = 0x01,
+        STATE_ASSIGNED   = 0x02,
+        STATE_UPDATING   = 0x04,
+        STATE_MOUSE_IN   = 0x08,
+        STATE_BLOCK_MOVE = 0x10
+    };
+
 Q_SIGNALS:
     void updateData();
     void updateForMe();
@@ -105,7 +117,7 @@ public:
     void setId(quint32 id);
     quint32 getId() { return m_id; }
 
-    bool isMouseIn() { return m_mouseIn; }
+    bool isMouseIn() { return (m_state & STATE_MOUSE_IN); }
 
     void setInfo(qint16 device, qint16 command, quint32 pos)
     {
@@ -122,7 +134,10 @@ public:
 
     void setUpdating(bool update)
     {
-        m_updating = update;
+        if(update)
+            m_state |= STATE_UPDATING;
+        else
+            m_state &= ~(STATE_UPDATING);
     }
 
     void setWidgetControlled(qint32 widget);
@@ -141,6 +156,7 @@ public slots:
     void remove();
     void setTitleVisibility(bool visible);
     void setLocked(bool locked);
+    bool isLocked() const { return (m_state & STATE_LOCKED); }
 
     //events
     virtual void onWidgetAdd(DataWidget *w);
@@ -173,17 +189,22 @@ protected:
         return (WidgetArea*)parent();
     }
 
+    bool isAssigned() const { return (m_state & STATE_ASSIGNED); }
+    bool isUpdating() const { return (m_state & STATE_UPDATING); }
+    bool isMoveBlocked() const { return (m_state & STATE_BLOCK_MOVE); }
+
     quint8 m_widgetType;
     data_widget_info m_info;
-    bool m_assigned;
-    bool m_updating;
     qint32 m_widgetControlled;
 
     QVBoxLayout *layout;
     QMenu *contextMenu;
 
+    quint8 m_state;
+
 private slots:
     void setTitleTriggered();
+    void gestureCompleted(int gesture);
 
 private:
     inline void mapToGrid(int &val);
@@ -201,14 +222,13 @@ private:
     QPoint m_clickPos;
     quint8 m_dragAction;
     DataWidget *m_copy_widget;
-    bool m_locked;
-    bool m_mouseIn;
 
     QAction *m_lockAction;
     CloseLabel *m_closeLabel;
     QLabel *m_icon_widget;
     QLabel *m_title_label;
     quint32 m_id;
+    GestureIdentifier m_gestures;
 };
 
 class DataWidgetAddBtn : public QPushButton
