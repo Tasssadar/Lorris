@@ -230,6 +230,25 @@ QString DataFileParser::readString()
     return QString::fromUtf8(raw.data(), size);
 }
 
+void DataFileParser::writeColor(const QColor &color)
+{
+    writeVal(color.isValid());
+
+    if(!color.isValid())
+        return;
+
+    writeVal(color.rgb());
+}
+
+QColor DataFileParser::readColor()
+{
+    bool valid = readVal<bool>();
+    if(!valid)
+        return QColor();
+
+    return QColor(readVal<QRgb>());
+}
+
 QString DataFileParser::getAttachmentFilename()
 {
     if(m_name.isEmpty() || m_path.isEmpty())

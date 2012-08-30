@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 
 #include "canvaswidget.h"
+#include "../../misc/utils.h"
 
 REGISTER_DATAWIDGET(WIDGET_CANVAS, Canvas)
 
@@ -21,9 +22,6 @@ CanvasWidget::CanvasWidget(QWidget *parent) : DataWidget(parent)
 
     m_canvas = new Canvas(this);
     layout->addWidget(m_canvas);
-
-    m_lineWidth = 2;
-    m_lineColor = Qt::black;
 
     resize(200, 200);
 }
@@ -47,10 +45,13 @@ void CanvasWidget::saveWidgetInfo(DataFileParser *file)
         file->writeVal(m_lastLine.x());
         file->writeVal(m_lastLine.y());
 
-        file->writeVal(m_lineWidth);
+        file->writeVal(m_canvas->lineWidth());
 
-        file->writeString(m_lineColor.name());
+        file->writeString(m_canvas->lineColor().name());
     }
+
+    file->writeBlockIdentifier("canvasWfillClr");
+    file->writeColor(m_canvas->fillColor());
 
     m_canvas->save(file);
 }
@@ -64,10 +65,12 @@ void CanvasWidget::loadWidgetInfo(DataFileParser *file)
         m_lastLine.setX(file->readVal<int>());
         m_lastLine.setY(file->readVal<int>());
 
-        m_lineWidth = file->readVal<int>();
-
-        m_lineColor = QColor(file->readString());
+        m_canvas->lineWidth() = file->readVal<int>();
+        m_canvas->lineColor() = QColor(file->readString());
     }
+
+    if(file->seekToNextBlock("canvasWfillClr", BLOCK_WIDGET))
+        m_canvas->fillColor() = file->readColor();
 
     m_canvas->load(file);
 }
@@ -79,28 +82,49 @@ void CanvasWidget::setBackground(const QString &color)
 
 void CanvasWidget::drawLine(int x1, int y1, int x2, int y2)
 {
-    m_canvas->addLine(QLine(x1, y1, x2, y2), m_lineColor, m_lineWidth);
+    m_canvas->addLine(QLine(x1, y1, x2, y2));
     m_lastLine = QPoint(x2, y2);
 }
 
 void CanvasWidget::drawLine(int x, int y)
 {
-    m_canvas->addLine(QLine(m_lastLine, QPoint(x, y)), m_lineColor, m_lineWidth);
+    m_canvas->addLine(QLine(m_lastLine, QPoint(x, y)));
     m_lastLine = QPoint(x, y);
+}
+
+void CanvasWidget::drawRect(int x, int y, int w, int h)
+{
+    m_canvas->addRect(QRect(x, y, w, h));
+}
+
+void CanvasWidget::drawEllipse(int x, int y, int w, int h)
+{
+    m_canvas->addCircle(QPoint(x+w/2, y+h/2), w/2, h/2);
+}
+
+void CanvasWidget::drawCircle(int x, int y, int r)
+{
+    m_canvas->addCircle(QPoint(x, y), r, r);
 }
 
 void CanvasWidget::setLineSize(int width)
 {
-    m_lineWidth = width;
+    m_canvas->lineWidth() = width;
 }
 
 void CanvasWidget::setLineColor(const QString &color)
 {
-    m_lineColor = QColor(color);
+    m_canvas->lineColor() = QColor(color);
+}
+
+void CanvasWidget::setFillColor(const QString &color)
+{
+    m_canvas->fillColor() = QColor(color);
 }
 
 void CanvasWidget::clear()
 {
+    m_lastLine = QPoint();
     m_canvas->clear();
 }
 
@@ -130,6 +154,9 @@ Canvas::Canvas(QWidget *parent) : QWidget(parent)
     setBackground(Qt::white);
 
     setCursor(Qt::OpenHandCursor);
+
+    m_lineWidth = 2;
+    m_lineColor = Qt::black;
 }
 
 void Canvas::save(DataFileParser *file)
@@ -140,7 +167,7 @@ void Canvas::save(DataFileParser *file)
     file->writeVal((quint32)m_lines.size());
     for(quint32 i = 0; i < m_lines.size(); ++i)
     {
-        line& l = m_lines[i];
+        const line& l = m_lines[i];
 
         file->writeVal(l.l.x1());
         file->writeVal(l.l.y1());
@@ -150,28 +177,111 @@ void Canvas::save(DataFileParser *file)
         file->writeVal(l.width);
         file->writeString(l.color.name());
     }
+
+    // offset
+    file->writeBlockIdentifier("canvasWoffset");
+    file->writeVal(m_offset.x());
+    file->writeVal(m_offset.y());
+
+    // Rectangles
+    file->writeBlockIdentifier("canvasWrects");
+    file->writeVal((quint32)m_rects.size());
+    for(quint32 i = 0; i < m_rects.size(); ++i)
+    {
+        const rect& r = m_rects[i];
+
+        int vals[4] = { r.r.x(), r.r.y(), r.r.width(), r.r.height() };
+        qDebug("size %d", sizeof(vals));
+        file->write((char*)vals, sizeof(vals));
+
+        file->writeVal(r.width);
+        file->writeColor(r.color);
+        file->writeColor(r.fillColor);
+    }
+
+    // circles
+    file->writeBlockIdentifier("canvasWcircles");
+    file->writeVal((quint32)m_circles.size());
+    for(quint32 i = 0; i < m_circles.size(); ++i)
+    {
+        const circle& c = m_circles[i];
+
+        int vals[4] = { c.center.x(), c.center.y(), c.r1, c.r2 };
+        file->write((char*)vals, sizeof(vals));
+
+        file->writeVal(c.width);
+        file->writeColor(c.color);
+        file->writeColor(c.fillColor);
+    }
 }
 
 void Canvas::load(DataFileParser *file)
 {
-    if(!file->seekToNextBlock("canvasWcanvas", BLOCK_WIDGET))
-        return;
-
-    setBackground(QColor(file->readString()));
-
-    quint32 count = file->readVal<quint32>();
-    for(quint32 i = 0; i < count; ++i)
+    if(file->seekToNextBlock("canvasWcanvas", BLOCK_WIDGET))
     {
-        line l;
+        setBackground(QColor(file->readString()));
 
-        l.l.setP1(QPoint(file->readVal<int>(), file->readVal<int>()));
-        l.l.setP2(QPoint(file->readVal<int>(), file->readVal<int>()));
+        quint32 count = file->readVal<quint32>();
+        for(quint32 i = 0; i < count; ++i)
+        {
+            line l;
 
-        l.width = file->readVal<int>();
-        l.color = QColor(file->readString());
+            l.l.setP1(QPoint(file->readVal<int>(), file->readVal<int>()));
+            l.l.setP2(QPoint(file->readVal<int>(), file->readVal<int>()));
 
-        m_lines.push_back(l);
+            l.width = file->readVal<int>();
+            l.color = QColor(file->readString());
+
+            m_lines.push_back(l);
+        }
     }
+
+    if(file->seekToNextBlock("canvasWoffset", BLOCK_WIDGET))
+    {
+        m_offset.setX(file->readVal<int>());
+        m_offset.setY(file->readVal<int>());
+    }
+
+    if(file->seekToNextBlock("canvasWrects", BLOCK_WIDGET))
+    {
+        quint32 count = file->readVal<quint32>();
+        int vals[4];
+        for(quint32 i = 0; i < count; ++i)
+        {
+            rect r;
+            qDebug("size %d", sizeof(vals));
+            file->read((char*)vals, sizeof(vals));
+            r.r = QRect(vals[0], vals[1], vals[2], vals[3]);
+
+            r.width = file->readVal<int>();
+            r.color = file->readColor();
+            r.fillColor = file->readColor();
+
+            m_rects.push_back(r);
+        }
+    }
+
+    if(file->seekToNextBlock("canvasWcircles", BLOCK_WIDGET))
+    {
+        quint32 count = file->readVal<quint32>();
+        int vals[4];
+        for(quint32 i = 0; i < count; ++i)
+        {
+            circle c;
+
+            file->read((char*)vals, sizeof(vals));
+            c.center = QPoint(vals[0], vals[1]);
+            c.r1 = vals[2];
+            c.r2 = vals[3];
+
+            c.width = file->readVal<int>();
+            c.color = file->readColor();
+            c.fillColor = file->readColor();
+
+            m_circles.push_back(c);
+        }
+    }
+
     update();
 }
 
@@ -184,11 +294,26 @@ void Canvas::setBackground(QColor bg)
     update();
 }
 
-void Canvas::addLine(const QLine &l, const QColor &c, int width)
+void Canvas::addLine(const QLine &l)
 {
-    line lin(l, c, width);
-    lin.l.setPoints(lin.l.p1() + m_offset, lin.l.p2() + m_offset);
+    line lin = {l, m_lineColor, m_lineWidth };
     m_lines.push_back(lin);
+
+    update();
+}
+
+void Canvas::addRect(const QRect &r)
+{
+    rect rec = {r, m_lineColor, m_fillColor, m_lineWidth };
+    m_rects.push_back(rec);
+
+    update();
+}
+
+void Canvas::addCircle(const QPoint& center, int r1, int r2)
+{
+    circle cir = { center, r1, r2, m_lineColor, m_fillColor, m_lineWidth };
+    m_circles.push_back(cir);
 
     update();
 }
@@ -196,23 +321,70 @@ void Canvas::addLine(const QLine &l, const QColor &c, int width)
 void Canvas::clear()
 {
     m_lines.clear();
+    m_rects.clear();
+    m_circles.clear();
+
     m_offset = QPoint();
+    m_fillColor = QColor();
+    m_lineWidth = 2;
+    m_lineColor = Qt::black;
+
+    setBackground(Qt::white);
+
     update();
 }
 
 void Canvas::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
+    p.translate(m_offset);
+
+    QPen pen;
+    QBrush brush;
 
     for(quint32 i = 0; i < m_lines.size(); ++i)
     {
-        line l = m_lines[i];
+        const line& l = m_lines[i];
 
-        QPen pen(l.color);
+        pen.setColor(l.color);
         pen.setWidth(l.width);
         p.setPen(pen);
 
         p.drawLine(l.l);
+    }
+
+    for(quint32 i = 0; i < m_rects.size(); ++i)
+    {
+        const rect& r = m_rects[i];
+
+        pen.setColor(r.color);
+        pen.setWidth(r.width);
+        p.setPen(pen);
+
+        if(r.fillColor.isValid())
+            brush = QBrush(r.fillColor);
+        else
+            brush = QBrush();
+        p.setBrush(brush);
+
+        p.drawRect(r.r);
+    }
+
+    for(quint32 i = 0; i < m_circles.size(); ++i)
+    {
+        const circle& c = m_circles[i];
+
+        pen.setColor(c.color);
+        pen.setWidth(c.width);
+        p.setPen(pen);
+
+        if(c.fillColor.isValid())
+            brush = QBrush(c.fillColor);
+        else
+            brush = QBrush();
+        p.setBrush(brush);
+
+        p.drawEllipse(c.center, c.r1, c.r2);
     }
 }
 
@@ -242,10 +414,5 @@ void Canvas::mouseMoveEvent(QMouseEvent *event)
     m_mouse = event->globalPos();
 
     m_offset += diff;
-    for(quint32 i = 0; i < m_lines.size(); ++i)
-    {
-        QLine &l = m_lines[i].l;
-        l.setPoints(l.p1()+diff, l.p2()+diff);
-    }
     update();
 }

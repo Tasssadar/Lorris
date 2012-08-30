@@ -90,6 +90,9 @@ public:
     void writeString(const QString& str);
     QString readString();
 
+    void writeColor(const QColor& color);
+    QColor readColor();
+
     QString getAttachmentFilename();
 
     template <typename T> void readVal(T& val);
