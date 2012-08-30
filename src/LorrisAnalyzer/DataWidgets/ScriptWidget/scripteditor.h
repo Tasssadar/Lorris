@@ -35,6 +35,7 @@ public:
     ScriptEditor(const QString& source, const QString& filename, int type);
     ~ScriptEditor();
 
+    void setSource(const QString& source);
     QString getSource();
     int getEngine();
 

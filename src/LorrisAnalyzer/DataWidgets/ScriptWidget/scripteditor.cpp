@@ -92,6 +92,15 @@ ScriptEditor::~ScriptEditor()
     delete ui;
 }
 
+void ScriptEditor::setSource(const QString &source)
+{
+    m_editor->setText(source);
+    m_editor->setModified(false);
+    m_contentChanged = false;
+    m_fileChanged = false;
+    m_changed = !source.isNull();
+}
+
 QString ScriptEditor::getSource()
 {
     return m_editor->getText();

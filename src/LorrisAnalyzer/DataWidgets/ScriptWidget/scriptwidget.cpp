@@ -247,13 +247,14 @@ void ScriptWidget::sourceSet(bool close)
 
 void ScriptWidget::setSourceDirect(const QString &source)
 {
-    if(!m_engine)
-        return;
+    if(m_editor)
+        m_editor->setSource(source);
 
     try
     {
-        m_engine->setSource(source);
-    } catch(const QString&) { }
+        if(m_engine)
+            m_engine->setSource(source);
+    }catch(const QString&) { }
 }
 
 void ScriptWidget::closeEditor()
