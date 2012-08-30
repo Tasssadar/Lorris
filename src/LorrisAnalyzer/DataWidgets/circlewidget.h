@@ -32,13 +32,12 @@ public:
     void saveWidgetInfo(DataFileParser *file);
     void loadWidgetInfo(DataFileParser *file);
 
-    void changeAngType(int i, int min = -1, int max = -1);
-
 public slots:
     void setValue(const QVariant &var);
     void setClockwise(bool clockwise);
     void drawAngle(bool draw);
     void setDataType(int i);
+    void setAngType(int i, int min = -1, int max = -1);
 
 protected:
      void processData(analyzer_data *data);

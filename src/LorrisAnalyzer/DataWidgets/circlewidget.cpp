@@ -89,7 +89,7 @@ void CircleWidget::setUp(Storage *storage)
         map->setMapping(m_type_act[i], i);
         connect(m_type_act[i], SIGNAL(triggered()), map, SLOT(map()));
     }
-    changeAngType(ANG_RAD);
+    setAngType(ANG_RAD);
     connect(map, SIGNAL(mapped(int)), SLOT(angTypeChanged(int)));
 
     m_clockwiseAct = contextMenu->addAction(tr("Clockwise"));
@@ -160,7 +160,7 @@ void CircleWidget::loadWidgetInfo(DataFileParser *file)
         drawAngle(draw);
     }
 
-    changeAngType(m_ang_type);
+    setAngType(m_ang_type);
     setDataType(m_num_type);
 }
 
@@ -189,10 +189,10 @@ void CircleWidget::angTypeChanged(int i)
             m_range_max = dialog.getMax();
         }
     }
-    changeAngType(i, m_range_min, m_range_max);
+    setAngType(i, m_range_min, m_range_max);
 }
 
-void CircleWidget::changeAngType(int i, int min, int max)
+void CircleWidget::setAngType(int i, int min, int max)
 {
     for(int y = 0; y < ANG_MAX; ++y)
         m_type_act[y]->setChecked(y == i);
