@@ -507,11 +507,8 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
     file->writeVal(isLocked());
 
     // title
-    file->writeBlockIdentifier("widgetTitle");
-    QByteArray title = getTitle().toAscii();
-    quint32 size = title.length();
-    file->write((char*)&size, sizeof(quint32));
-    file->write(title.data());
+    file->writeBlockIdentifier("widgetTitleUtf8");
+    file->writeString(getTitle());
 
     // scaled up
     file->writeBlockIdentifier("widgetScaledUp");
@@ -556,6 +553,10 @@ void DataWidget::loadWidgetInfo(DataFileParser *file)
 
         QString title(file->read(size));
         setTitle(title);
+    }
+    else if(file->seekToNextBlock("widgetTitleUtf8", BLOCK_WIDGET))
+    {
+        setTitle(file->readString());
     }
 
     // scaled up
