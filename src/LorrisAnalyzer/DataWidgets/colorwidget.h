@@ -26,6 +26,7 @@ public:
 public slots:
     void setValue(int r, int g, int b);
     void setValue(QString hex);
+    void setValueAr(QList<int> val);
 
 protected:
      void processData(analyzer_data *data);

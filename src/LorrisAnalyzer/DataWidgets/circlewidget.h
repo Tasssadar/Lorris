@@ -38,13 +38,13 @@ public slots:
     void setValue(const QVariant &var);
     void setClockwise(bool clockwise);
     void drawAngle(bool draw);
+    void setDataType(int i);
 
 protected:
      void processData(analyzer_data *data);
 
 private slots:
      void angTypeChanged(int i);
-     void setNumType(int i);
 
 private:
      float toRad(const QVariant& var);

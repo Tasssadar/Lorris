@@ -72,7 +72,7 @@ void CircleWidget::setUp(Storage *storage)
         connect(m_bits_act[i], SIGNAL(triggered()), signalMapBits, SLOT(map()));
     }
     m_bits_act[0]->setChecked(true);
-    connect(signalMapBits, SIGNAL(mapped(int)), SLOT(setNumType(int)));
+    connect(signalMapBits, SIGNAL(mapped(int)), SLOT(setDataType(int)));
 
     static const QString title[ANG_MAX] = {
         tr("Radians"),
@@ -161,7 +161,7 @@ void CircleWidget::loadWidgetInfo(DataFileParser *file)
     }
 
     changeAngType(m_ang_type);
-    setNumType(m_num_type);
+    setDataType(m_num_type);
 }
 
 void CircleWidget::setValue(const QVariant &var)
@@ -234,7 +234,7 @@ float CircleWidget::toRad(const QVariant& var)
     return ret;
 }
 
-void CircleWidget::setNumType(int i)
+void CircleWidget::setDataType(int i)
 {
     for(quint8 y = 0; y < NUM_COUNT; ++y)
         m_bits_act[y]->setChecked(y == i);

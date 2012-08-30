@@ -107,10 +107,26 @@ void ColorWidget::setValue(int r, int g, int b)
 
 void ColorWidget::setValue(QString hex)
 {
-    hex.remove("#");
-    m_color[0] = hex.mid(0, 2).toInt(NULL, 16);
-    m_color[1] = hex.mid(2, 2).toInt(NULL, 16);
-    m_color[2] = hex.mid(4, 2).toInt(NULL, 16);
+    QColor c(hex);
+
+    if(!c.isValid())
+        return;
+
+    m_color[0] = c.red();
+    m_color[1] = c.green();
+    m_color[2] = c.blue();
+
+    updateColor();
+}
+
+void ColorWidget::setValueAr(QList<int> val)
+{
+    if(val.size() < 3)
+        return;
+
+    m_color[0] = val[0];
+    m_color[1] = val[1];
+    m_color[2] = val[2];
 
     updateColor();
 }
