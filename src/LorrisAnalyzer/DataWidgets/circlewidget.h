@@ -65,6 +65,7 @@ class CircleDraw : public QWidget
 public:
     CircleDraw(QWidget *parent = 0);
 
+    QVariant& userVal() { return m_userVal; }
     void setAngle(float ang);
     void setClockwise(bool clockwise);
 
@@ -79,6 +80,7 @@ protected:
 
 private:
     float m_angle;
+    QVariant m_userVal;
     bool m_clockwise;
     bool m_draw_angle;
 };

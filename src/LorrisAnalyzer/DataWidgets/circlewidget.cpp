@@ -39,7 +39,7 @@ void CircleWidget::setUp(Storage *storage)
     DataWidget::setUp(storage);
 
     m_range_min = 0;
-    m_range_max = 4096;
+    m_range_max = 4095;
     m_num_type = NUM_UINT8;
 
     QMenu *bitsMenu = contextMenu->addMenu(tr("Data type"));
@@ -205,6 +205,9 @@ void CircleWidget::setAngType(int i, int min, int max)
         m_range_max = max;
     }
 
+    if(i != ANG_RANGE)
+        m_circle->userVal() = QVariant();
+
     emit updateForMe();
 }
 
@@ -224,6 +227,7 @@ float CircleWidget::toRad(const QVariant& var)
         }
         case ANG_RANGE:
         {
+            m_circle->userVal() = var;
             ret = var.toFloat()-m_range_min;
             ret = (ret * pi*2) / (m_range_max-m_range_min);
             break;
@@ -286,7 +290,16 @@ void CircleDraw::paintEvent(QPaintEvent *)
     p.drawLine(center.x()-r, center.y(), center.x()+r, center.y());
 
     if(m_draw_angle)
-        p.drawText(rect(), QString("%1\n%2\x00b0").arg(m_angle, -1, 'f', 3).arg(m_angle*57.2958, -1, 'f', 1));
+    {
+        p.drawText(rect(), QString("R%1\n%2\x00b0").arg(m_angle, -1, 'f', 3).arg(m_angle*57.2958, -1, 'f', 1));
+
+        if(m_userVal.isValid())
+        {
+            QString str = m_userVal.toString();
+            int w = fontMetrics().width(str)+5;
+            p.drawText(QRect(width()-w, 0, w, height()), str);
+        }
+    }
 
     pen.setColor(Qt::red);
     pen.setWidth(5);
