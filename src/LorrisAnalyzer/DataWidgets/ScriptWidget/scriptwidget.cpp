@@ -63,6 +63,7 @@ void ScriptWidget::setUp(Storage *storage)
     connect(src_act,              SIGNAL(triggered()), SLOT(setSourceTriggered()));
     connect(&m_error_blink_timer, SIGNAL(timeout()),   SLOT(blinkError()));
     connect(this, SIGNAL(closeEdit()), SLOT(closeEditor()), Qt::QueuedConnection);
+    connect(this, SIGNAL(setSourceDelayed(QString)), SLOT(setSourceDirect(QString)), Qt::QueuedConnection);
 
     inputShowAct(sConfig.get(CFG_BOOL_SCRIPT_SHOW_INPUT));
 
@@ -187,10 +188,7 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     if(file->seekToNextBlock("scriptWFilename", BLOCK_WIDGET))
         m_filename = file->readString();
 
-    try
-    {
-        m_engine->setSource(source);
-    } catch(const QString&) { }
+    emit setSourceDelayed(source);
 
     // Editor settings
     if(file->seekToNextBlock("scriptWEditor", BLOCK_WIDGET))
@@ -245,6 +243,17 @@ void ScriptWidget::sourceSet(bool close)
     {
         Utils::showErrorBox(text);
     }
+}
+
+void ScriptWidget::setSourceDirect(const QString &source)
+{
+    if(!m_engine)
+        return;
+
+    try
+    {
+        m_engine->setSource(source);
+    } catch(const QString&) { }
 }
 
 void ScriptWidget::closeEditor()

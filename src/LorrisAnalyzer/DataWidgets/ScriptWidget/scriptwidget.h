@@ -26,6 +26,7 @@ class ScriptWidget : public DataWidget
 
 Q_SIGNALS:
     void closeEdit();
+    void setSourceDelayed(QString source);
 
 public:
     ScriptWidget(QWidget *parent = 0);
@@ -50,6 +51,7 @@ protected slots:
      void blinkError();
      void addExampleTab(const QString& name);
      void inputShowAct(bool show);
+     void setSourceDirect(const QString& source);
 
 protected:
      void newData(analyzer_data *data, quint32 index);
