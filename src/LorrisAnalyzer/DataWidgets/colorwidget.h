@@ -11,6 +11,7 @@
 #include "datawidget.h"
 
 class QSlider;
+class ColorDisplay;
 
 class ColorWidget : public DataWidget
 {
@@ -27,6 +28,7 @@ public slots:
     void setValue(int r, int g, int b);
     void setValue(QString hex);
     void setValueAr(QList<int> val);
+    void showValues(bool show);
 
 protected:
      void processData(analyzer_data *data);
@@ -42,14 +44,33 @@ private slots:
 private:
      void updateColor();
 
-     QWidget *m_widget;
+     ColorDisplay *m_widget;
      QHBoxLayout *m_brightness_layout;
      QHBoxLayout *m_color_layout[3];
      qint16 m_brightness;
      qint16 m_color_cor[3];
-     quint8 m_color[3];
+
      QAction *brightAct;
      QAction *colorAct;
+     QAction *textAct;
+};
+
+class ColorDisplay : public QWidget
+{
+    Q_OBJECT
+public:
+    ColorDisplay(QWidget *parent);
+
+    quint8 *color() { return m_color; }
+
+    void setDrawNums(bool draw) { m_drawNums = draw; }
+
+protected:
+    void paintEvent(QPaintEvent * ev);
+
+private:
+    quint8 m_color[3];
+    bool m_drawNums;
 };
 
 class ColorWidgetAddBtn : public DataWidgetAddBtn

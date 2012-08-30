@@ -497,12 +497,12 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="730"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="801"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="731"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="802"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -553,22 +553,27 @@
 <context>
     <name>ColorWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="20"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="21"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="50"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="51"/>
+        <source>Show RGB values</source>
+        <translation>Zobrazit RGB hodnoty</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="56"/>
         <source>Brightness correction</source>
         <translation>Úprava jasu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="54"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="60"/>
         <source>Color correction</source>
         <translation>Úprava barev</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="175"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="215"/>
         <source>Brightness: </source>
         <translation>Jas:</translation>
     </message>
@@ -576,7 +581,7 @@
 <context>
     <name>ColorWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="265"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="352"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
@@ -608,22 +613,22 @@
 <context>
     <name>DataWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="99"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="96"/>
         <source>Lock</source>
         <translation>Uzamknout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="104"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="101"/>
         <source>Set title</source>
         <translation>Změnit jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="456"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="479"/>
         <source>Set widget title</source>
         <translation>Nastavení jména widgetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="456"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="479"/>
         <source>Enter title:</source>
         <translation>Zadejne nové jméno:</translation>
     </message>
@@ -1203,12 +1208,12 @@
         <translation>Automaticky posouvat graf</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="445"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="446"/>
         <source>Set sample size</source>
         <translation>Nastavení velikosti vzorku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="445"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="446"/>
         <source>Sample size:</source>
         <translation>Velikost vzorku</translation>
     </message>
@@ -1216,7 +1221,7 @@
 <context>
     <name>GraphWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="611"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="612"/>
         <source>Graph</source>
         <translation>Graf</translation>
     </message>

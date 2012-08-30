@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QSignalMapper>
+#include <QPainter>
 
 #include "../../WorkTab/WorkTab.h"
 #include "colorwidget.h"
@@ -22,20 +23,20 @@ ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 
     m_widgetType = WIDGET_COLOR;
 
-    m_widget = new QWidget(this);
+    m_widget = new ColorDisplay(this);
     m_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_widget->setStyleSheet("background-color: black");
 
     layout->addWidget(m_widget, 1);
 
-    resize(150, 100);
+    resize(180, 100);
 
     setMinimumSize(50, 50);
 
     m_brightness = 0;
     m_color_layout[0] = m_color_layout[1] = m_color_layout[2] = NULL;
     m_color_cor[0] = m_color_cor[1] = m_color_cor[2] = 0;
-    m_color[0] = m_color[1] = m_color[2] = 0;
+
+    updateColor();
 }
 
 ColorWidget::~ColorWidget()
@@ -47,6 +48,11 @@ void ColorWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
+    textAct = new QAction(tr("Show RGB values"), this);
+    textAct->setCheckable(true);
+    textAct->setChecked(true);
+    connect(textAct, SIGNAL(triggered(bool)), this, SLOT(showValues(bool)));
+
     brightAct = new QAction(tr("Brightness correction"), this);
     brightAct->setCheckable(true);
     connect(brightAct, SIGNAL(triggered()), this, SLOT(brightTriggered()));
@@ -55,6 +61,7 @@ void ColorWidget::setUp(Storage *storage)
     colorAct->setCheckable(true);
     connect(colorAct , SIGNAL(triggered()), this, SLOT(colorTriggered()));
 
+    contextMenu->addAction(textAct);
     contextMenu->addAction(brightAct);
     contextMenu->addAction(colorAct);
 
@@ -66,7 +73,7 @@ void ColorWidget::processData(analyzer_data *data)
     try
     {
         for(quint8 i = 0; i < 3; ++i)
-            m_color[i] = data->getUInt8(m_info.pos + i);
+            m_widget->color()[i] = data->getUInt8(m_info.pos + i);
         updateColor();
     }
     catch(const char*) { }
@@ -74,14 +81,11 @@ void ColorWidget::processData(analyzer_data *data)
 
 void ColorWidget::updateColor()
 {
-    static const QString css = "background-color: #";
-
-    QString color_str = "";
-
     qint16 cor[] = { m_brightness, 0 };
+    QRgb res = 0;
     for(quint8 i = 0; i < 3; ++i)
     {
-        quint8 color = m_color[i];
+        quint8 color = m_widget->color()[i];
         cor[1] = m_color_cor[i];
 
         for(quint8 y = 0; y < 2; ++y)
@@ -91,16 +95,21 @@ void ColorWidget::updateColor()
             else                           color += cor[y];
         }
 
-        color_str += Utils::hexToString(color);
+        res |= (color << (2 - i)*8);
     }
-    m_widget->setStyleSheet(css + color_str);
+
+    QPalette p = m_widget->palette();
+    p.setColor(QPalette::Window, QColor(res));
+    m_widget->setPalette(p);
+
+    m_widget->update();
 }
 
 void ColorWidget::setValue(int r, int g, int b)
 {
-    m_color[0] = r;
-    m_color[1] = g;
-    m_color[2] = b;
+    m_widget->color()[0] = r;
+    m_widget->color()[1] = g;
+    m_widget->color()[2] = b;
 
     updateColor();
 }
@@ -112,9 +121,9 @@ void ColorWidget::setValue(QString hex)
     if(!c.isValid())
         return;
 
-    m_color[0] = c.red();
-    m_color[1] = c.green();
-    m_color[2] = c.blue();
+    m_widget->color()[0] = c.red();
+    m_widget->color()[1] = c.green();
+    m_widget->color()[2] = c.blue();
 
     updateColor();
 }
@@ -124,11 +133,18 @@ void ColorWidget::setValueAr(QList<int> val)
     if(val.size() < 3)
         return;
 
-    m_color[0] = val[0];
-    m_color[1] = val[1];
-    m_color[2] = val[2];
+    m_widget->color()[0] = val[0];
+    m_widget->color()[1] = val[1];
+    m_widget->color()[2] = val[2];
 
     updateColor();
+}
+
+void ColorWidget::showValues(bool show)
+{
+    textAct->setChecked(show);
+    m_widget->setDrawNums(show);
+    m_widget->update();
 }
 
 void ColorWidget::saveWidgetInfo(DataFileParser *file)
@@ -149,6 +165,9 @@ void ColorWidget::saveWidgetInfo(DataFileParser *file)
     showed = m_color_layout[0] ? 1 : 0;
     file->write(&showed, 1);
 
+    // draw nums
+    file->writeBlockIdentifier("clrWShowNums");
+    file->writeVal(textAct->isChecked());
 }
 
 void ColorWidget::loadWidgetInfo(DataFileParser *file)
@@ -179,6 +198,11 @@ void ColorWidget::loadWidgetInfo(DataFileParser *file)
             colorTriggered();
         }
     }
+
+    // draw nums
+    if(file->seekToNextBlock("clrWShowNums", BLOCK_WIDGET))
+        showValues(file->readVal<bool>());
+
     updateColor();
 }
 
@@ -275,6 +299,53 @@ void ColorWidget::brightChanged(int value)
     m_brightness = value;
     updateColor();
 }
+
+
+ColorDisplay::ColorDisplay(QWidget *parent) : QWidget(parent)
+{
+    m_color[0] = m_color[1] = m_color[2] = 0;
+    m_drawNums = true;
+
+    QFont f = Utils::getMonospaceFont(20);
+    f.setBold(true);
+    setFont(f);
+
+    setAutoFillBackground(true);
+}
+
+void ColorDisplay::paintEvent(QPaintEvent *ev)
+{
+    QWidget::paintEvent(ev);
+
+    if(!m_drawNums)
+        return;
+
+    int thrd = (std::min)(width()/3, 100);
+    int start = abs(width() - thrd*3)/2;
+
+    QPointF baseline;
+    baseline.ry() = height() - 10;
+
+    QPainter p(this);
+    p.setRenderHint(QPainter::TextAntialiasing);
+    p.setBrush(QBrush(Qt::white));
+
+    QPen pen(Qt::black);
+    pen.setWidth(1);
+    p.setPen(pen);
+
+    for(int i = 0; i < 3; ++i)
+    {
+        QString str = QString::number(m_color[i]);
+        int w = fontMetrics().width(str);
+        baseline.rx() = start + thrd*i + (thrd - w)/2;
+
+        QPainterPath path;
+        path.addText(baseline, font(), str);
+        p.drawPath(path);
+    }
+}
+
 
 ColorWidgetAddBtn::ColorWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
