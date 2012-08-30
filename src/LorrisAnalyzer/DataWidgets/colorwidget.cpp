@@ -327,12 +327,13 @@ void ColorDisplay::paintEvent(QPaintEvent *ev)
     baseline.ry() = height() - 10;
 
     QPainter p(this);
-    p.setRenderHint(QPainter::TextAntialiasing);
     p.setBrush(QBrush(Qt::white));
 
     QPen pen(Qt::black);
     pen.setWidth(1);
     p.setPen(pen);
+
+    QPainterPath path;
 
     for(int i = 0; i < 3; ++i)
     {
@@ -340,10 +341,9 @@ void ColorDisplay::paintEvent(QPaintEvent *ev)
         int w = fontMetrics().width(str);
         baseline.rx() = start + thrd*i + (thrd - w)/2;
 
-        QPainterPath path;
         path.addText(baseline, font(), str);
-        p.drawPath(path);
     }
+    p.drawPath(path);
 }
 
 
