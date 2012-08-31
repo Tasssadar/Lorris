@@ -10,7 +10,7 @@
 
 #include "inputwidget.h"
 
-REGISTER_DATAWIDGET(WIDGET_INPUT, Input)
+REGISTER_DATAWIDGET(WIDGET_INPUT, Input, NULL)
 
 InputWidget::InputWidget(QWidget *parent) :
     DataWidget(parent)

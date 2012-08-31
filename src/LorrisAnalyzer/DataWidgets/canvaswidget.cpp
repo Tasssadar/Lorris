@@ -11,7 +11,7 @@
 #include "canvaswidget.h"
 #include "../../misc/utils.h"
 
-REGISTER_DATAWIDGET(WIDGET_CANVAS, Canvas)
+REGISTER_DATAWIDGET(WIDGET_CANVAS, Canvas, NULL)
 
 CanvasWidget::CanvasWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -191,7 +191,6 @@ void Canvas::save(DataFileParser *file)
         const rect& r = m_rects[i];
 
         int vals[4] = { r.r.x(), r.r.y(), r.r.width(), r.r.height() };
-        qDebug("size %d", sizeof(vals));
         file->write((char*)vals, sizeof(vals));
 
         file->writeVal(r.width);
@@ -249,7 +248,7 @@ void Canvas::load(DataFileParser *file)
         for(quint32 i = 0; i < count; ++i)
         {
             rect r;
-            qDebug("size %d", sizeof(vals));
+
             file->read((char*)vals, sizeof(vals));
             r.r = QRect(vals[0], vals[1], vals[2], vals[3]);
 

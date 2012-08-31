@@ -121,26 +121,9 @@ void QtScriptEngine::prepareNewContext()
     m_global.setProperty("newWidget", newW);
 
     // defines
-    m_global.setProperty("WIDGET_NUMBER", QScriptValue(m_engine, WIDGET_NUMBERS));
-    m_global.setProperty("WIDGET_BAR",    QScriptValue(m_engine, WIDGET_BAR));
-    m_global.setProperty("WIDGET_COLOR",  QScriptValue(m_engine, WIDGET_COLOR));
-    m_global.setProperty("WIDGET_GRAPH",  QScriptValue(m_engine, WIDGET_GRAPH));
-    m_global.setProperty("WIDGET_INPUT",  QScriptValue(m_engine, WIDGET_INPUT));
-    m_global.setProperty("WIDGET_CIRCLE", QScriptValue(m_engine, WIDGET_CIRCLE));
-    m_global.setProperty("WIDGET_BUTTON", QScriptValue(m_engine, WIDGET_BUTTON));
-    m_global.setProperty("WIDGET_SLIDER", QScriptValue(m_engine, WIDGET_SLIDER));
-    m_global.setProperty("WIDGET_CANVAS", QScriptValue(m_engine, WIDGET_CANVAS));
-
-    m_global.setProperty("NUM_UINT8",  QScriptValue(m_engine, NUM_UINT8));
-    m_global.setProperty("NUM_UINT16", QScriptValue(m_engine, NUM_UINT16));
-    m_global.setProperty("NUM_UINT32", QScriptValue(m_engine, NUM_UINT32));
-    m_global.setProperty("NUM_UINT64", QScriptValue(m_engine, NUM_UINT64));
-    m_global.setProperty("NUM_INT8",   QScriptValue(m_engine, NUM_INT8));
-    m_global.setProperty("NUM_INT16",  QScriptValue(m_engine, NUM_INT16));
-    m_global.setProperty("NUM_INT32",  QScriptValue(m_engine, NUM_INT32));
-    m_global.setProperty("NUM_INT64",  QScriptValue(m_engine, NUM_INT64));
-    m_global.setProperty("NUM_FLOAT",  QScriptValue(m_engine, NUM_FLOAT));
-    m_global.setProperty("NUM_DOUBLE", QScriptValue(m_engine, NUM_DOUBLE));
+    const QHash<QString, quint32>& enums = sWidgetFactory.getScriptEnums();
+    for(QHash<QString, quint32>::const_iterator itr = enums.begin(); itr != enums.end(); ++itr)
+         m_global.setProperty(itr.key(),  QScriptValue(m_engine, *itr));
 
     // objects
     m_global.setProperty("script", m_engine->newQObject(parent()));

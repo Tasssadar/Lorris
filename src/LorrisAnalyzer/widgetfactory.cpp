@@ -27,6 +27,11 @@ void WidgetFactory::addBtnInit(btnInit init)
     m_btnInits.push_back(init);
 }
 
+void WidgetFactory::addScriptEnum(const char *text, quint32 val)
+{
+    m_scriptEnums[QString(text)] = val;
+}
+
 DataWidget *WidgetFactory::getWidget(quint32 type, QWidget *parent)
 {
     if(!m_widgetInits[type])

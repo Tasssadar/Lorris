@@ -13,7 +13,7 @@
 #include "engines/qtscriptengine.h"
 #include "../../../ui/terminal.h"
 
-REGISTER_DATAWIDGET(WIDGET_SCRIPT, Script)
+REGISTER_DATAWIDGET(WIDGET_SCRIPT, Script, NULL)
 
 ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 {

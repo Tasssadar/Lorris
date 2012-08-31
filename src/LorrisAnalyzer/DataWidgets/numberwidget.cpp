@@ -16,7 +16,23 @@
 
 #include "numberwidget.h"
 
-REGISTER_DATAWIDGET(WIDGET_NUMBERS, Number)
+static void addEnum()
+{
+    REGISTER_ENUM(NUM_UINT8);
+    REGISTER_ENUM(NUM_UINT16);
+    REGISTER_ENUM(NUM_UINT32);
+    REGISTER_ENUM(NUM_UINT64);
+
+    REGISTER_ENUM(NUM_INT8);
+    REGISTER_ENUM(NUM_INT16);
+    REGISTER_ENUM(NUM_INT32);
+    REGISTER_ENUM(NUM_INT64);
+
+    REGISTER_ENUM(NUM_FLOAT);
+    REGISTER_ENUM(NUM_DOUBLE);
+}
+
+REGISTER_DATAWIDGET(WIDGET_NUMBERS, Number, &addEnum)
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {

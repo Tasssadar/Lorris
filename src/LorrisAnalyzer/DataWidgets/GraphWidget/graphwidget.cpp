@@ -23,7 +23,7 @@
 #include "../../storage.h"
 #include "graphexport.h"
 
-REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph)
+REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph, NULL)
 
 static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 

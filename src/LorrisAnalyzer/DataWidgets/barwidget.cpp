@@ -21,7 +21,7 @@
 #include "../../ui/rangeselectdialog.h"
 #include "../../misc/datafileparser.h"
 
-REGISTER_DATAWIDGET(WIDGET_BAR, Bar)
+REGISTER_DATAWIDGET(WIDGET_BAR, Bar, NULL)
 
 static const QPalette::ColorRole roles[COLOR_COUNT] = { QPalette::Base, QPalette::Highlight, QPalette::ButtonText };
 

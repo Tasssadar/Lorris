@@ -11,20 +11,27 @@
 #include <QTypeInfo>
 #include <vector>
 #include "../misc/singleton.h"
+#include <QHash>
 
 class QWidget;
 class DataWidget;
 class DataWidgetAddBtn;
 
-#define REGISTER_DATAWIDGET(id, n) DataWidget *n##WidgetInst(QWidget *parent) { return new n##Widget(parent); } \
+#define REGISTER_DATAWIDGET(id, n, en) DataWidget *n##WidgetInst(QWidget *parent) { return new n##Widget(parent); } \
        DataWidgetAddBtn *n##BtnInst(QWidget *parent) { return new n##WidgetAddBtn(parent); } \
        struct n##WidgetInit { \
             n##WidgetInit() { \
                 sWidgetFactory.addWidgetInit(id, &n##WidgetInst); \
                 sWidgetFactory.addBtnInit(&n##BtnInst); \
+                sWidgetFactory.addScriptEnum(#id, id); \
+                void (*func)() = en; \
+                if(func) \
+                    func(); \
             } \
         }; \
         static const n##WidgetInit n##widgetinit;
+
+#define REGISTER_ENUM(val) sWidgetFactory.addScriptEnum(#val, val);
 
 /*
 #define REGISTER_DATAWIDGET_NOBTN(id, n) DataWidget *n##WidgetInst(QWidget *parent) { return new n##Widget(parent); } \
@@ -64,14 +71,21 @@ public:
 
     void addWidgetInit(quint32 type, widgetInit init);
     void addBtnInit(btnInit init);
+    void addScriptEnum(const char *text, quint32 val);
 
     DataWidget *getWidget(quint32 type, QWidget *parent);
     std::vector<DataWidgetAddBtn*> getButtons(QWidget *parent);
 
     DataWidget *copy(DataWidget *w);
 
+    const QHash<QString, quint32>& getScriptEnums() const
+    {
+        return m_scriptEnums;
+    }
+
 private:
     widgetInit m_widgetInits[WIDGET_MAX];
+    QHash<QString, quint32> m_scriptEnums;
     std::vector<btnInit> m_btnInits;
 };
 

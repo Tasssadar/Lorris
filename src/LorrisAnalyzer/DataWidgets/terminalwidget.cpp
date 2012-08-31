@@ -8,7 +8,7 @@
 #include "ScriptWidget/engines/qtscriptengine.h"
 #include "terminalwidget.h"
 
-REGISTER_DATAWIDGET(WIDGET_TERMINAL, Terminal)
+REGISTER_DATAWIDGET(WIDGET_TERMINAL, Terminal, NULL)
 
 TerminalWidget::TerminalWidget(QWidget *parent) : ScriptWidget(parent)
 {

@@ -16,7 +16,7 @@
 #include "ui_sliderwidget_horizontal.h"
 #include "ui_sliderwidget_vertical.h"
 
-REGISTER_DATAWIDGET(WIDGET_SLIDER, Slider)
+REGISTER_DATAWIDGET(WIDGET_SLIDER, Slider, NULL)
 
 SliderWidget::SliderWidget(QWidget *parent) : DataWidget(parent),
     ui_hor(new Ui::SliderWidget_horizontal), ui_ver(new Ui::SliderWidget_vertical)

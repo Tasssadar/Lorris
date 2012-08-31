@@ -14,7 +14,7 @@
 #include "../../WorkTab/WorkTab.h"
 #include "colorwidget.h"
 
-REGISTER_DATAWIDGET(WIDGET_COLOR, Color)
+REGISTER_DATAWIDGET(WIDGET_COLOR, Color, NULL)
 
 ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 {

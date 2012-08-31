@@ -14,7 +14,7 @@
 
 static const double pi = 3.1415926535897932384626433832795;
 
-REGISTER_DATAWIDGET(WIDGET_CIRCLE, Circle)
+REGISTER_DATAWIDGET(WIDGET_CIRCLE, Circle, NULL)
 
 CircleWidget::CircleWidget(QWidget *parent) :
     DataWidget(parent)

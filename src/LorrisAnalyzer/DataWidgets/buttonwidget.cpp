@@ -12,7 +12,7 @@
 #include "../../ui/shortcutinputbox.h"
 #include "../../ui/colordialog.h"
 
-REGISTER_DATAWIDGET(WIDGET_BUTTON, Button)
+REGISTER_DATAWIDGET(WIDGET_BUTTON, Button, NULL)
 
 ButtonWidget::ButtonWidget(QWidget *parent) : DataWidget(parent)
 {
