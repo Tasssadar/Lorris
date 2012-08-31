@@ -18,3 +18,27 @@ function onKeyPress(key) {
 function onRawData(data) {
 
 }
+
+// Called when new widget is added.
+// widget is widget's object, name is string
+function onWidgetAdd(widget, name) {
+
+}
+
+// Called when new widget is removed.
+// widget is widget's object, name is string
+function onWidgetRemove(widget, name) {
+
+}
+
+// Called when this script instance is destroyed.
+// useful for saving data.
+function onScriptExit() {
+
+}
+
+// Called when this analyzer session is saved to data file.
+// Useful for saving data.
+function onSave() {
+
+}

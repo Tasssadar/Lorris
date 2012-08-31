@@ -27,6 +27,9 @@ struct ScriptData
     char *data;
 };
 
+/**
+ * \brief This storage can hold values for script. It persists through script destruction and is saved to data file
+ */
 class ScriptStorage : public QObject
 {
     Q_OBJECT

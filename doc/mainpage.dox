@@ -1,0 +1,27 @@
+/**
+\mainpage Really incomplete Lorris script documentation
+
+This documentation should act only as reference for ScriptWidget. I am using doxygen, because it generates basically everything needed by itself.
+
+See \link Script \endlink for native methods, see additional class pages for methods which you can use.
+You can use <b>public slots</b>, connect to <b>signals</b> and read/write their <b>properties</b>.
+
+<h3>Public slots</h3>
+<p>Public slots are used as normal methods. For example \link Terminal \endlink:</p>
+\snippet snippets.js slot example
+
+<h3>Signals</h3>
+<p>You can connect to signals in script. For example \link ButtonWidget \endlink:</p>
+QtScript:
+\snippet snippets.js signal example
+Python:
+\snippet snippets.py signal example
+
+<h3>Properties</h3>
+<p>You can access objec's properties as their members. For example \link DataWidget \endlink:</p>
+QtScript:
+\snippet snippets.js property example
+Python:
+\snippet snippets.py property example
+
+*/

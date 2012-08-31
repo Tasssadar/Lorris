@@ -15,3 +15,23 @@ def onKeyPress(key):
 # parameter is array with unparsed data
 def onRawData(data):
     return
+
+# Called when new widget is added.
+# widget is widget's object, name is string
+def onWidgetAdd(widget, name):
+    return
+
+# Called when new widget is removed.
+# widget is widget's object, name is string
+def onWidgetRemove(widget, name):
+    return
+
+# Called when this script instance is destroyed.
+# useful for saving data.
+def onScriptExit():
+    return
+
+# Called when this analyzer session is saved to data file.
+# Useful for saving data.
+def onSave():
+    return

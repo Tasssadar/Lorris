@@ -1,0 +1,16 @@
+/**
+\page Script Script methods
+
+Documentation for native script methods:
+\li \ref qtscript "QtScript"
+\li \ref lorris "Python"
+
+Both script types have acces to these global variables:
+\li \c Terminal *terminal;
+\li \c ScriptWidget *script;
+\li \c WidgetArea *area;
+\li \c ScriptStorage *storage;
+\li \c <a href="http://qt-project.org/doc/qt-4.8/qlineedit.html">QLineEdit</a> *inputLine;
+
+In addition to these, <b>for every widget on work desktop there is coresponding object created</b>. Title of widget is it's name.
+*/
