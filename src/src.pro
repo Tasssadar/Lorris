@@ -238,7 +238,8 @@ HEADERS += ui/mainwindow.h \
     ui/editorwidget.h \
     ui/pythonhighlighter.h \
     ui/colordialog.h \
-    misc/gestureidentifier.h
+    misc/gestureidentifier.h \
+    misc/qtpointerarray.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

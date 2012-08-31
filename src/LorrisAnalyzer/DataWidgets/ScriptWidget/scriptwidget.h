@@ -12,6 +12,7 @@
 #include <QPointer>
 
 #include "../datawidget.h"
+#include "../../../misc/qtpointerarray.h"
 
 class QLabel;
 class ScriptEditor;
@@ -62,7 +63,7 @@ protected:
      void createEngine();
 
      QPointer<ScriptEditor> m_editor;
-     QPointer<ExamplePreviewTab> m_examplePreview;
+     QtPointerArray<ExamplePreviewTab> m_examplePrevs;
      ScriptEngine *m_engine;
      int m_engine_type;
      Terminal *m_terminal;

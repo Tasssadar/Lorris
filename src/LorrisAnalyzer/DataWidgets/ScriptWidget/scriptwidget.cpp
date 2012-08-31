@@ -47,8 +47,12 @@ ScriptWidget::~ScriptWidget()
     if(m_editor)
         emit removeChildTab(m_editor);
 
-    if(m_examplePreview)
-        emit removeChildTab(m_examplePreview);
+    if(!m_examplePrevs.empty())
+    {
+        std::vector<ExamplePreviewTab*> prevs = m_examplePrevs.takeAll();
+        for(quint32 i = 0; i < prevs.size(); ++i)
+            emit removeChildTab(prevs[i]);
+    }
 }
 
 void ScriptWidget::setUp(Storage *storage)
@@ -305,14 +309,11 @@ void ScriptWidget::titleDoubleClick()
 
 void ScriptWidget::addExampleTab(const QString &name)
 {
-    if(m_examplePreview)
-        m_examplePreview->loadExample(name);
-    else
-    {
-        m_examplePreview = new ExamplePreviewTab(name);
-        addChildTab(m_examplePreview, name + tr(" - example"));
-    }
-    m_examplePreview->activateTab();
+    ExamplePreviewTab *tab = new ExamplePreviewTab(name);
+    m_examplePrevs.add(tab);
+
+    addChildTab(tab, name + tr(" - example"));
+    tab->activateTab();
 }
 
 void ScriptWidget::inputShowAct(bool show)
