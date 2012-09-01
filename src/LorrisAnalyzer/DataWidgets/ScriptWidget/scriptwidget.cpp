@@ -212,13 +212,13 @@ void ScriptWidget::setSourceTriggered()
     emit addChildTab(m_editor, m_editor->windowTitle());
     m_editor->activateTab();
 
-    connect(m_editor, SIGNAL(applySource(bool)), SLOT(sourceSet(bool)));
+    connect(m_editor, SIGNAL(applySource()),     SLOT(sourceSet()));
     connect(m_editor, SIGNAL(rejected()),        SLOT(closeEditor()), Qt::QueuedConnection);
     connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
     connect(m_editor, SIGNAL(openPreview(QString)), SLOT(addExampleTab(QString)));
 }
 
-void ScriptWidget::sourceSet(bool close)
+void ScriptWidget::sourceSet()
 {
     try
     {
@@ -239,8 +239,6 @@ void ScriptWidget::sourceSet(bool close)
         m_engine->setSource(m_editor->getSource());
         m_filename = m_editor->getFilename();
 
-        if(close)
-            emit closeEdit();
         emit updateForMe();
     }
     catch(const QString& text)

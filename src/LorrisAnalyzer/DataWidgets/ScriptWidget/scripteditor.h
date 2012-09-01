@@ -21,13 +21,15 @@ class LineNumber;
 class QSyntaxHighlighter;
 class EditorWidget;
 class ExamplesPreview;
+class QComboBox;
+class SettingsPopup;
 
 class ScriptEditor : public ChildTab, private Ui::ScriptEditor
 {
     Q_OBJECT
 
 Q_SIGNALS:
-    void applySource(bool close);
+    void applySource();
     void rejected();
     void openPreview(const QString& name);
     
@@ -44,28 +46,32 @@ public:
         return m_filename;
     }
 
+    int getEditorType() const;
+    EditorWidget *getEditor() const { return m_editor; }
+
     bool onTabClose();
 
 public slots:
     void addError(const QString& error);
     void clearErrors();
-    void reject();
+    void setEditor(int editorType);
+    void setLanguage(int lang);
 
 private slots:
-    void on_buttonBox_clicked(QAbstractButton *btn);
-    void on_loadBtn_clicked();
-    void on_langBox_currentIndexChanged(int idx);
     void on_errorBtn_toggled(bool checked);
-    void on_editorBox_currentIndexChanged(int idx);
-    void on_saveBtn_clicked();
-    void on_exampleBtn_clicked();
 
+    void loadAct();
+    void saveAct();
+    void applyAct();
+    void exampleBtn();
+    void settingsBtn();
     void textChanged();
     void saveAs();
     void clearStatus() { ui->statusLabel->setText(QString()); }
     void checkChange();
     void focusChanged(QWidget *prev, QWidget *now);
     void examplePreviewDestroyed();
+    void settingsDestroyed();
     void loadExample(const QString& name);
 
 private:
@@ -81,12 +87,17 @@ private:
     bool m_ignoreNextFocus;
     bool m_ignoreFocus;
     quint32 m_errors;
+    int m_language;
 
     QString m_filename;
     QTimer m_status_timer;
 
+    QPushButton *m_exampleBtn;
+    QPushButton *m_settingsBtn;
+
     EditorWidget *m_editor;
     QPointer<ExamplesPreview> m_examples;
+    QPointer<SettingsPopup> m_settings;
 };
 
 class ExamplesPreview : public QScrollArea
@@ -129,6 +140,24 @@ public:
 
 private:
     EditorWidget *m_editor;
+};
+
+class SettingsPopup : public QFrame
+{
+    Q_OBJECT
+public:
+    SettingsPopup(ScriptEditor *editor);
+
+private slots:
+    void focusChanged(QWidget *, QWidget *to);
+    void editorChanged(int idx);
+
+private:
+    bool isAncestorOf(const QWidget *child) const;
+    inline ScriptEditor *editor() { return (ScriptEditor*)parent(); }
+
+    QComboBox *m_editorBox;
+    QPushButton *m_editorSett;
 };
 
 #endif // SCRIPTEDITOR_H

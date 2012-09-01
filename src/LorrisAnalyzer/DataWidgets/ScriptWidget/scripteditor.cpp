@@ -13,6 +13,8 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QCryptographicHash>
+#include <QToolBar>
+#include <QComboBox>
 
 #include "scripteditor.h"
 #include "../../../common.h"
@@ -32,47 +34,64 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 {
     ui->setupUi(this);
 
+    m_exampleBtn = new QPushButton(tr("Examples"));
+    m_settingsBtn = new QPushButton(tr("Settings"));
+    m_exampleBtn->setCheckable(true);
+    m_settingsBtn->setCheckable(true);
+
+    QToolBar *bar = new QToolBar(this);
+    bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    bar->setIconSize(QSize(16, 16));
+
+    QAction *load = bar->addAction(QIcon(":/actions/open"), tr("Load"), this, SLOT(loadAct()));
+    QAction *save = bar->addAction(QIcon(":/actions/save"), tr("Save"), this, SLOT(saveAct()));
+    QAction *saveAs = bar->addAction(QIcon(":/actions/save-as"), tr("Save as..."), this, SLOT(saveAs()));
+    bar->addSeparator();
+    QAction *apply = bar->addAction(QIcon(":/icons/start"), tr("Apply"), this, SLOT(applyAct()));
+    bar->addSeparator();
+    bar->addWidget(m_exampleBtn);
+    bar->addWidget(m_settingsBtn);
+
+    load->setShortcut(QKeySequence("Ctrl+O"));
+    load->setToolTip(tr("Load (Ctrl+O)"));
+    save->setShortcut(QKeySequence("Ctrl+S"));
+    save->setToolTip(tr("Save (Ctrl+S)"));
+    saveAs->setShortcut(QKeySequence("Ctrl+Shift+S"));
+    saveAs->setToolTip(tr("Save as... (Ctrl+Shift+S)"));
+    apply->setShortcut(QKeySequence("F5"));
+    apply->setToolTip(tr("Apply (F5)"));
+
+    ui->mainLayout->insertWidget(0, bar);
+
+    quint32 editor_cfg = sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE);
+
+#ifdef USE_KATE
+    setEditor(EDITOR_KATE);
+#elif defined(USE_QSCI)
+    setEditor(EDITOR_QSCINTILLA);
+#else
+    setEditor(EDITOR_INTERNAL);
+#endif
+
+    if(editor_cfg != UINT_MAX)
+        setEditor(editor_cfg);
+
     ui->resizeLine->setOrientation(false);
     ui->resizeLine->setResizeLayout(ui->mainLayout);
     ui->mainLayout->setStretch(ui->mainLayout->indexOf(ui->errorEdit), sConfig.get(CFG_QUINT32_SCRIPTEDITOR_STR));
     ui->mainLayout->setStretch(ui->mainLayout->indexOf(ui->errorEdit)-2, 100 - sConfig.get(CFG_QUINT32_SCRIPTEDITOR_STR));
     ui->resizeLine->updateStretch();
 
-    quint32 editor_cfg = sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE);
-    EditorWidget::fillEditorBox(ui->editorBox);
-
-#if defined(USE_KATE) || defined(USE_QSCI)
-    ui->editorBox->setCurrentIndex(1);
-#else
-    ui->editorBox->setCurrentIndex(0);
-#endif
-
-    if(editor_cfg != UINT_MAX)
-        ui->editorBox->setCurrentIndex(editor_cfg);
-
-    if(ui->editorBox->count() == 1)
-    {
-        ui->editorLabel->hide();
-        ui->editorBox->hide();
-    }
-
-    ui->buttonBox->button(QDialogButtonBox::Apply)->setShortcut(QKeySequence("F5"));
-
     m_errors = 0;
     m_ignoreNextFocus = false;
     m_ignoreFocus = false;
 
     m_editor->setText(source);
-    m_changed = !source.isNull();
+    m_changed = !source.isEmpty();
 
-    ui->langBox->addItems(ScriptEngine::getEngineList());
-    ui->langBox->setCurrentIndex(type);
-
-    QAction *saveAs = new QAction(tr("Save as..."), this);
-    ui->saveBtn->addAction(saveAs);
+    setLanguage(type);
 
     connect(&m_status_timer, SIGNAL(timeout()), SLOT(clearStatus()));
-    connect(saveAs, SIGNAL(triggered()), SLOT(saveAs()));
     connect(qApp,   SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
 
     ui->errorBtn->setChecked(sConfig.get(CFG_BOOL_SHOW_SCRIPT_ERROR));
@@ -83,7 +102,8 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     m_fileChanged = false;
     checkChange();
 
-    Utils::loadWindowParams(this, sConfig.get(CFG_STRING_SCRIPT_WND_PARAMS));
+    connect(m_exampleBtn,  SIGNAL(clicked()), SLOT(exampleBtn()));
+    connect(m_settingsBtn, SIGNAL(clicked()), SLOT(settingsBtn()));
 }
 
 ScriptEditor::~ScriptEditor()
@@ -94,11 +114,14 @@ ScriptEditor::~ScriptEditor()
 
 void ScriptEditor::setSource(const QString &source)
 {
+    if(source.isEmpty())
+        return;
+
     m_editor->setText(source);
     m_editor->setModified(false);
     m_contentChanged = false;
     m_fileChanged = false;
-    m_changed = !source.isNull();
+    m_changed = true;
 }
 
 QString ScriptEditor::getSource()
@@ -108,49 +131,12 @@ QString ScriptEditor::getSource()
 
 int ScriptEditor::getEngine()
 {
-    return ui->langBox->currentIndex();
+    return m_language;
 }
 
-void ScriptEditor::on_buttonBox_clicked(QAbstractButton *btn)
+int ScriptEditor::getEditorType() const
 {
-    sConfig.set(CFG_STRING_SCRIPT_WND_PARAMS, Utils::saveWindowParams(this));
-    sConfig.set(CFG_QUINT32_SCRIPTEDITOR_STR, ui->mainLayout->stretch(ui->mainLayout->indexOf(ui->errorEdit)));
-
-    switch(ui->buttonBox->buttonRole(btn))
-    {
-        case QDialogButtonBox::ApplyRole:  emit applySource(false); break;
-        case QDialogButtonBox::AcceptRole: emit applySource(true);  break;
-        case QDialogButtonBox::RejectRole:
-            if(onTabClose())
-                emit rejected();
-            return;
-        default: return;
-    }
-    m_contentChanged = false;
-
-    if(!m_filename.isEmpty())
-        save(m_filename);
-}
-
-void ScriptEditor::reject()
-{
-    if(!m_contentChanged)
-        return emit rejected();
-
-    QMessageBox box(QMessageBox::Question, tr("Script changed"), tr("Script was changed, but not applied."),
-                    QMessageBox::Cancel | QMessageBox::Close | QMessageBox::Apply, this);
-    box.setInformativeText(tr("Do you really want to close editor?"));
-    switch(box.exec())
-    {
-        case QMessageBox::Close:
-            return emit rejected();
-        case QMessageBox::Cancel:
-            return;
-        case QMessageBox::Apply:
-            applySource(true);
-            m_contentChanged = false;
-            return;
-    }
+    return m_editor->getType();
 }
 
 void ScriptEditor::textChanged()
@@ -165,11 +151,11 @@ void ScriptEditor::textChanged()
     m_fileChanged = true;
 }
 
-void ScriptEditor::on_loadBtn_clicked()
+void ScriptEditor::loadAct()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Load file"),
                                                     sConfig.get(CFG_STRING_ANALYZER_JS),
-                                                    filters[ui->langBox->currentIndex()]);
+                                                    filters[m_language]);
     if(filename.isEmpty())
         return;
 
@@ -203,44 +189,16 @@ void ScriptEditor::setFilename(const QString& filename)
     m_editor->setModified(false);
 }
 
-void ScriptEditor::on_langBox_currentIndexChanged(int idx)
+void ScriptEditor::setLanguage(int lang)
 {
     if(!m_changed)
     {
-        static const QString defaultCode[ENGINE_MAX] = {
-            tr("// You can use clearTerm() and appendTerm(string) to set term content\n"
-            "// You can use sendData(Array of ints) to send data to device. It expects array of uint8s\n\n"
-            "// This function gets called on data received\n"
-            "// it should return string, which is automatically appended to terminal\n"
-            "function onDataChanged(data, dev, cmd, index) {\n"
-            "\treturn \"\";\n"
-            "}\n\n"
-            "// This function is called on key press in terminal.\n"
-            "// Param is string\n"
-            "function onKeyPress(key) {\n"
-            "\n"
-            "}\n"),
-
-            tr("# You can use terminal.clear() and terminal.appendText(string) to set term content\n"
-            "# You can use lorris.sendData(QByteArray) to send data to device.\n"
-            "\n"
-            "# This function gets called on data received\n"
-            "# it should return string, which is automatically appended to terminal\n"
-            "def onDataChanged(data, dev, cmd, index):\n"
-            "\treturn \"\";\n"
-            "\n"
-            "# This function is called on key press in terminal.\n"
-            "# Param is string\n"
-            "def onKeyPress(key):\n"
-            "\treturn;\n")
-        };
-
-        m_editor->setText(defaultCode[idx]);
-        m_changed = false;
+        static const QString def[ENGINE_MAX] = { "default.js", "default.py" };
+        loadExample(def[lang]);
     }
 
-    m_editor->setHighlighter((EditorHighlight)idx);
-
+    m_editor->setHighlighter((EditorHighlight)lang);
+    m_language = lang;
     setFilename(QString());
 }
 
@@ -284,7 +242,7 @@ void ScriptEditor::clearErrors()
     ui->errorBtn->setText(tr("Show errors (%1)").arg(m_errors));
 }
 
-void ScriptEditor::on_saveBtn_clicked()
+void ScriptEditor::saveAct()
 {
     if(m_filename.isEmpty())
         saveAs();
@@ -313,7 +271,7 @@ void ScriptEditor::saveAs()
 {
     QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
                                                     sConfig.get(CFG_STRING_ANALYZER_JS),
-                                                    filters[ui->langBox->currentIndex()]);
+                                                    filters[m_language]);
 
     if(filename.isEmpty())
         return;
@@ -333,7 +291,7 @@ void ScriptEditor::setStatus(const QString &status)
 
 void ScriptEditor::checkChange()
 {
-    if(m_contentChanged || m_filename.isEmpty())
+    if(m_fileChanged || m_filename.isEmpty())
         return;
 
     QFile f(m_filename);
@@ -385,12 +343,8 @@ void ScriptEditor::focusChanged(QWidget *prev, QWidget *now)
     }
 }
 
-void ScriptEditor::on_editorBox_currentIndexChanged(int idx)
+void ScriptEditor::setEditor(int editorType)
 {
-    if(idx == -1)
-        return;
-
-    int editorType = ui->editorBox->itemData(idx).toInt();
     if(m_editor && m_editor->getType() == editorType)
         return;
 
@@ -403,21 +357,20 @@ void ScriptEditor::on_editorBox_currentIndexChanged(int idx)
         w->setText(m_editor->getText());
         delete m_editor;
     }
-    w->setHighlighter((EditorHighlight)ui->langBox->currentIndex());
+    w->setHighlighter((EditorHighlight)m_language);
 
     m_editor = w;
-    ui->mainLayout->insertWidget(1, m_editor->getWidget(),
+    int idx = ui->mainLayout->indexOf(ui->resizeLine);
+    ui->mainLayout->insertWidget(idx, m_editor->getWidget(),
                                  100 - ui->mainLayout->stretch(ui->mainLayout->indexOf(ui->errorEdit)));
-    ui->editSettBtn->setVisible(m_editor->hasSettings());
 
-    connect(m_editor, SIGNAL(textChangedByUser()), SLOT(textChanged()));
-    connect(m_editor, SIGNAL(applyShortcutPressed()), ui->buttonBox->button(QDialogButtonBox::Apply), SLOT(animateClick()));
-    connect(ui->editSettBtn, SIGNAL(clicked()), m_editor, SLOT(settingsBtn()));
+    connect(m_editor, SIGNAL(textChangedByUser()),    SLOT(textChanged()));
+    connect(m_editor, SIGNAL(applyShortcutPressed()), SLOT(applyAct()));
 
-    sConfig.set(CFG_QUINT32_SCRIPTEDITOR_TYPE, idx);
+    sConfig.set(CFG_QUINT32_SCRIPTEDITOR_TYPE, editorType);
 }
 
-void ScriptEditor::on_exampleBtn_clicked()
+void ScriptEditor::exampleBtn()
 {
     if(m_examples)
     {
@@ -425,8 +378,8 @@ void ScriptEditor::on_exampleBtn_clicked()
         return;
     }
 
-    m_examples = new ExamplesPreview(ui->langBox->currentIndex(), this);
-    m_examples->move(ui->exampleBtn->mapToGlobal(QPoint(0, 0)) + QPoint(0, ui->exampleBtn->height()));
+    m_examples = new ExamplesPreview(m_language, this);
+    m_examples->move(m_exampleBtn->mapToGlobal(QPoint(0, 0)) + QPoint(0, m_exampleBtn->height()));
     m_examples->show();
     m_examples->setFocus();
 
@@ -437,29 +390,75 @@ void ScriptEditor::on_exampleBtn_clicked()
 
 void ScriptEditor::examplePreviewDestroyed()
 {
-    ui->exampleBtn->setChecked(false);
+    m_exampleBtn->setChecked(false);
 }
 
 bool ScriptEditor::onTabClose()
 {
-    if(!m_fileChanged || m_filename.isEmpty())
-        return true;
+    sConfig.set(CFG_QUINT32_SCRIPTEDITOR_STR, ui->mainLayout->stretch(ui->mainLayout->indexOf(ui->errorEdit)));
 
-    QMessageBox box(QMessageBox::Question, tr("Script was changed"),
-                    tr("File was changed, but not saved:"),
-                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
-    box.setInformativeText(m_filename);
-    switch(box.exec())
+    if(m_fileChanged && !m_filename.isEmpty())
     {
-        case QMessageBox::Save:
-            save(m_filename);
-            return true;
-        case QMessageBox::Discard:
-            return true;
-        case QMessageBox::Cancel:
-            return false;
+        QMessageBox box(QMessageBox::Question, tr("Script was changed"),
+                        tr("File was changed, but not saved:"),
+                        QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
+        box.setInformativeText(m_filename);
+        switch(box.exec())
+        {
+            case QMessageBox::Save:
+                save(m_filename);
+                return true;
+            case QMessageBox::Discard:
+                return true;
+            case QMessageBox::Cancel:
+                return false;
+        }
+    }
+    else if(m_contentChanged)
+    {
+        QMessageBox box(QMessageBox::Question, tr("Script was changed"),
+                        tr("Script was changed, but not applied"),
+                        QMessageBox::Apply | QMessageBox::Discard | QMessageBox::Cancel, this);
+        switch(box.exec())
+        {
+            case QMessageBox::Apply:
+                applyAct();
+                return true;
+            case QMessageBox::Discard:
+                return true;
+            case QMessageBox::Cancel:
+                return false;
+        }
     }
     return true;
+}
+
+void ScriptEditor::settingsBtn()
+{
+    if(m_settings)
+    {
+        delete m_settings.data();
+        return;
+    }
+
+    m_settings = new SettingsPopup(this);
+    m_settings->move(m_settingsBtn->mapToGlobal(QPoint(0, 0)) + QPoint(0, m_settingsBtn->height()));
+    m_settings->show();
+    m_settings->setFocus();
+
+    connect(m_settings.data(), SIGNAL(destroyed()), SLOT(settingsDestroyed()));
+}
+
+void ScriptEditor::settingsDestroyed()
+{
+    m_settingsBtn->setChecked(false);
+}
+
+void ScriptEditor::applyAct()
+{
+    emit applySource();
+    setStatus(tr("Source was applied."));
+    m_contentChanged = false;
 }
 
 ExamplesPreview::ExamplesPreview(int engine, QWidget *parent) : QScrollArea(parent)
@@ -592,4 +591,85 @@ void ExamplePreviewTab::loadExample(const QString &name)
         m_editor->setHighlighter(HIGHLIGHT_JSCRIPT);
 
     m_editor->setText(QString::fromUtf8(f.readAll()));
+}
+
+SettingsPopup::SettingsPopup(ScriptEditor *editor) : QFrame(editor)
+{
+    setWindowFlags(windowFlags() | Qt::Popup);
+    setAutoFillBackground(true);
+
+    QPalette p(palette());
+    p.setColor(QPalette::Window, QColor("#c0daff"));
+    setPalette(p);
+
+    setFocusPolicy(Qt::StrongFocus);
+
+    setFrameStyle(QFrame::Box | QFrame::Plain);
+
+    QGridLayout *l = new QGridLayout(this);
+
+    QComboBox *langBox = new QComboBox(this);
+    langBox->addItems(ScriptEngine::getEngineList());
+    langBox->setCurrentIndex(editor->getEngine());
+
+    m_editorBox = new QComboBox(this);
+    EditorWidget::fillEditorBox(m_editorBox);
+
+    for(int i = 0; i < m_editorBox->count(); ++i)
+    {
+        if(m_editorBox->itemData(i).toInt() == editor->getEditorType())
+        {
+            m_editorBox->setCurrentIndex(i);
+            break;
+        }
+    }
+
+    m_editorSett = new QPushButton(tr("Settings"), this);
+
+    l->addWidget(new QLabel(tr("Language:"), this), 0, 0, Qt::AlignRight);
+    l->addWidget(langBox, 0, 1);
+    l->addWidget(new QLabel(tr("Editor:"), this), 1, 0, Qt::AlignRight);
+    l->addWidget(m_editorBox, 1, 1);
+    l->addWidget(m_editorSett, 1, 2);
+
+    m_editorSett->setShown(editor->getEditor()->hasSettings());
+
+    adjustSize();
+
+    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*, QWidget*)));
+    connect(m_editorSett, SIGNAL(clicked()), editor->getEditor(), SLOT(settingsBtn()));
+    connect(m_editorBox,  SIGNAL(currentIndexChanged(int)),       SLOT(editorChanged(int)));
+    connect(langBox,      SIGNAL(currentIndexChanged(int)),editor,SLOT(setLanguage(int)));
+}
+
+void SettingsPopup::focusChanged(QWidget *, QWidget *to)
+{
+    if(!to || (to != this && !isAncestorOf(to)))
+        deleteLater();
+}
+
+void SettingsPopup::editorChanged(int idx)
+{
+    if(idx == -1)
+        return;
+
+    int type = m_editorBox->itemData(idx).toInt();
+
+    disconnect(m_editorSett, 0, editor()->getEditor(), 0);
+    editor()->setEditor(type);
+    connect(m_editorSett, SIGNAL(clicked()), editor()->getEditor(), SLOT(settingsBtn()));
+    m_editorSett->setShown(editor()->getEditor()->hasSettings());
+
+    adjustSize();
+}
+
+bool SettingsPopup::isAncestorOf(const QWidget *child) const
+{
+    while (child)
+    {
+        if (child == this)
+            return true;
+        child = child->parentWidget();
+    }
+    return false;
 }

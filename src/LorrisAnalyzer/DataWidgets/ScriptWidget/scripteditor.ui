@@ -17,136 +17,7 @@
    <iconset resource="../../../icons.qrc">
     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0,40,0">
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Language:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="langBox"/>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_4">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>30</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="exampleBtn">
-       <property name="text">
-        <string>Examples</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="editorLabel">
-       <property name="text">
-        <string>Editor:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="editorBox"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="editSettBtn">
-       <property name="toolTip">
-        <string>Editor settings</string>
-       </property>
-       <property name="text">
-        <string>Settings</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>30</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="nameLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>Currently opened file</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="loadBtn">
-       <property name="text">
-        <string>Load...</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../actions.qrc">
-         <normaloff>:/actions/open</normaloff>:/actions/open</iconset>
-       </property>
-       <property name="shortcut">
-        <string>Ctrl+O</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="saveBtn">
-       <property name="text">
-        <string>Save</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../actions.qrc">
-         <normaloff>:/actions/save</normaloff>:/actions/save</iconset>
-       </property>
-       <property name="shortcut">
-        <string>Ctrl+S</string>
-       </property>
-       <property name="popupMode">
-        <enum>QToolButton::MenuButtonPopup</enum>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonTextBesideIcon</enum>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::NoArrow</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,40,0">
    <item>
     <widget class="ResizeLine" name="resizeLine"/>
    </item>
@@ -313,6 +184,29 @@
       </spacer>
      </item>
      <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>15</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="nameLabel">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="statusLabel">
        <property name="text">
         <string/>
@@ -332,16 +226,6 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QDialogButtonBox" name="buttonBox">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>
@@ -355,7 +239,6 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../../../actions.qrc"/>
   <include location="../../../icons.qrc"/>
  </resources>
  <connections/>

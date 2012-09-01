@@ -34,7 +34,7 @@ void WidgetFactory::addScriptEnum(const char *text, quint32 val)
 
 DataWidget *WidgetFactory::getWidget(quint32 type, QWidget *parent)
 {
-    if(!m_widgetInits[type])
+    if(type >= WIDGET_MAX || !m_widgetInits[type])
         return NULL;
     return m_widgetInits[type](parent);
 }

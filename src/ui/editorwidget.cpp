@@ -16,7 +16,7 @@
 #include "editorwidget.h"
 #include "../misc/utils.h"
 
-EditorWidget::EditorWidget(QWidget *parent) : QWidget(parent)
+EditorWidget::EditorWidget(QWidget *parent) : QObject(parent)
 {
 
 }
@@ -51,11 +51,13 @@ void EditorWidget::fillEditorBox(QComboBox *box)
 
 EditorWidgetLorris::EditorWidgetLorris(QWidget *parent) : EditorWidget(parent)
 {
-    QHBoxLayout *l = new QHBoxLayout(this);
-    this->setStyleSheet("margin: 0px; padding: 0px");
+    m_widget = new QWidget(parent);
 
-    m_lineNumber = new LineNumber(this);
-    m_edit = new QPlainTextEdit(this);
+    QHBoxLayout *l = new QHBoxLayout(m_widget);
+    m_widget->setStyleSheet("margin: 0px; padding: 0px");
+
+    m_lineNumber = new LineNumber(m_widget);
+    m_edit = new QPlainTextEdit(m_widget);
 
     l->addWidget(m_lineNumber);
     l->addWidget(m_edit, 1);
@@ -76,6 +78,10 @@ EditorWidgetLorris::EditorWidgetLorris(QWidget *parent) : EditorWidget(parent)
     connect(m_edit->document(), SIGNAL(contentsChange(int,int,int)), SLOT(contentsChange(int,int,int)));
 }
 
+EditorWidgetLorris::~EditorWidgetLorris()
+{
+    delete m_widget;
+}
 
 void EditorWidgetLorris::setText(const QString &text)
 {
@@ -183,8 +189,8 @@ void LineNumber::paintEvent(QPaintEvent */*event*/)
 EditorWidgetKate::EditorWidgetKate(QWidget *parent) : EditorWidget(parent)
 {
     KTextEditor::Editor *editor = KTextEditor::EditorChooser::editor();
-    m_doc = editor->createDocument(this);
-    m_view = m_doc->createView(this);
+    m_doc = editor->createDocument(parent);
+    m_view = m_doc->createView(parent);
 
     KTextEditor::ConfigInterface *iface = qobject_cast<KTextEditor::ConfigInterface*>(m_doc);
     loadSettings(iface, CFG_VARIANT_KATE_SETTINGS_DOC);
@@ -207,6 +213,8 @@ EditorWidgetKate::EditorWidgetKate(QWidget *parent) : EditorWidget(parent)
 EditorWidgetKate::~EditorWidgetKate()
 {
     save();
+    delete m_view;
+    delete m_doc;
 }
 
 bool EditorWidgetKate::hasSettings()
@@ -343,7 +351,7 @@ void EditorWidgetKate::setReadOnly(bool readOnly)
 
 EditorWidgetQSci::EditorWidgetQSci(QWidget *parent) : EditorWidget(parent)
 {
-    m_editor = new QsciScintilla(this);
+    m_editor = new QsciScintilla(parent);
     m_editor->setMarginLineNumbers(QsciScintilla::NumberMargin, true);
     m_editor->setMarginWidth(QsciScintilla::NumberMargin, "12322");
     m_editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);

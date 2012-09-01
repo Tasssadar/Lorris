@@ -31,7 +31,7 @@ enum EditorHighlight
     HIGHLIGHT_PYTHON
 };
 
-class EditorWidget : public QWidget
+class EditorWidget : public QObject
 {
     Q_OBJECT
 
@@ -66,8 +66,9 @@ class EditorWidgetLorris : public EditorWidget
     Q_OBJECT
 public:
     EditorWidgetLorris(QWidget *parent = 0);
+    ~EditorWidgetLorris();
 
-    QWidget *getWidget() { return this; }
+    QWidget *getWidget() { return m_widget; }
 
     void setText(const QString& text);
     QString getText() const;
@@ -86,6 +87,7 @@ private:
     LineNumber *m_lineNumber;
     QPlainTextEdit *m_edit;
     QSyntaxHighlighter *m_highlighter;
+    QWidget *m_widget;
 };
 
 class LineNumber : public QWidget

@@ -47,7 +47,7 @@ public slots:
 
 protected slots:
      void setSourceTriggered();
-     void sourceSet(bool close);
+     void sourceSet();
      void closeEditor();
      void blinkError();
      void addExampleTab(const QString& name);
