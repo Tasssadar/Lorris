@@ -35,5 +35,8 @@ var searchData=
   ['sourcedialog',['SourceDialog',['../classSourceDialog.html',1,'']]],
   ['sourceselectdialog',['SourceSelectDialog',['../classSourceSelectDialog.html',1,'']]],
   ['splitoverlay',['SplitOverlay',['../classSplitOverlay.html',1,'']]],
+  ['statusmanager',['StatusManager',['../classStatusManager.html',1,'']]],
+  ['statuswidget',['StatusWidget',['../classStatusWidget.html',1,'']]],
+  ['statuswidgetaddbtn',['StatusWidgetAddBtn',['../classStatusWidgetAddBtn.html',1,'']]],
   ['storage',['Storage',['../classStorage.html',1,'']]]
 ];
