@@ -302,7 +302,7 @@ quint32 WorkTabMgr::generateNewTabId()
 
 quint32 WorkTabMgr::generateNewChildId()
 {
-    if(tabIdCounter >= 0xFF)
+    if(tabIdCounter >= 0x00FFFFFF)
     {
         qWarning("Tab guid overflow");
         tabIdCounter = 0;
