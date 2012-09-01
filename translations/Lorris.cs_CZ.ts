@@ -3981,24 +3981,41 @@ ke změně uspořádání</translation>
         <translation>Správce stavů</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="38"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="20"/>
+        <source>You can use %v or %h in status&apos; text. It will be replaced by (hexadecimal) value of the status.</source>
+        <translation>V textu stavu můžete použít %v nebo %h. Tato sekvence bude nahrazena (hexadecimální) hodnotou stavu.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="48"/>
         <source>Value</source>
         <translation>Hodnota</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="43"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="53"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="48"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="58"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="86"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="53"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="63"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="96"/>
         <source>Text color</source>
         <translation>Barva textu</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="73"/>
+        <source>This value is show if no other coresponding value is found.</source>
+        <translation>Tato hodnota je ukázána, pokud žádná jiná nevyhovuje.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="76"/>
+        <source>Unknown value:</source>
+        <translation>Neznámá hodnota:</translation>
     </message>
 </context>
 <context>
@@ -4009,52 +4026,57 @@ ke změně uspořádání</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="45"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="36"/>
+        <source>Unknown: %v</source>
+        <translation>Neznámé: %v</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="50"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="52"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="57"/>
         <source>unsigned 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="53"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="58"/>
         <source>unsigned 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="54"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="59"/>
         <source>unsigned 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="55"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="60"/>
         <source>unsigned 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="57"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="62"/>
         <source>signed 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="58"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="63"/>
         <source>signed 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="59"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="64"/>
         <source>signed 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="60"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="65"/>
         <source>signed 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="79"/>
         <source>Manage states...</source>
         <translation>Spravovat stavy...</translation>
     </message>
@@ -4062,7 +4084,7 @@ ke změně uspořádání</translation>
 <context>
     <name>StatusWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="227"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="290"/>
         <source>Status</source>
         <translation></translation>
     </message>

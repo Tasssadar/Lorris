@@ -22,6 +22,7 @@ StatusWidget::StatusWidget(QWidget *parent) :
 
     m_status = 0;
     m_dataType = 0;
+    m_curUnknown = false;
 
     m_label = new QLabel(this);
     m_label->setAlignment(Qt::AlignCenter);
@@ -31,6 +32,10 @@ StatusWidget::StatusWidget(QWidget *parent) :
     layout->addWidget(m_label);
 
     resize(200, 60);
+
+    m_unknown.text = tr("Unknown: %v");
+    m_unknown.color = Qt::white;
+    m_unknown.textColor = Qt::black;
 
     addStatus(0, "FALSE", "red", "black");
     addStatus(1, "TRUE", "#00FF00", "black");
@@ -93,6 +98,13 @@ void StatusWidget::saveWidgetInfo(DataFileParser *file)
         file->writeColor((*itr).textColor);
     }
     file->writeVal(m_status);
+
+    // unk state
+    file->writeBlockIdentifier("statusWUnkState");
+    file->writeString(m_unknown.text);
+    file->writeColor(m_unknown.color);
+    file->writeColor(m_unknown.textColor);
+    file->writeVal(m_curUnknown);
 }
 
 void StatusWidget::loadWidgetInfo(DataFileParser *file)
@@ -106,6 +118,9 @@ void StatusWidget::loadWidgetInfo(DataFileParser *file)
     // states
     if(file->seekToNextBlock("statusWStates", BLOCK_WIDGET))
     {
+        while(!m_states.isEmpty())
+            removeStatus(m_states.begin().key());
+
         quint32 count = file->readVal<quint32>();
         for(quint32 i = 0; i < count; ++i)
         {
@@ -117,7 +132,19 @@ void StatusWidget::loadWidgetInfo(DataFileParser *file)
 
             m_states[val] = s;
         }
-        setValue(file->readVal<quint64>());
+        quint64 id = file->readVal<quint64>();
+        m_status = id+1;
+        setValue(id);
+    }
+
+    // unk state
+    if(file->seekToNextBlock("statusWUnkState", BLOCK_WIDGET))
+    {
+        m_unknown.text = file->readString();
+        m_unknown.color = file->readColor();
+        m_unknown.textColor = file->readColor();
+        m_curUnknown = file->readVal<bool>();
+        updateUnknown();
     }
 }
 
@@ -145,6 +172,7 @@ void StatusWidget::addStatus(quint64 id, const status &s)
 {
     if(m_states.isEmpty())
     {
+        m_status = id+1;
         m_states.insert(id, s);
         setValue(id);
     }
@@ -170,21 +198,23 @@ void StatusWidget::removeStatus(quint64 id)
 
 void StatusWidget::setValue(quint64 id)
 {
-    if(id == m_status)
+    if(id == m_status && !m_curUnknown)
         return;
 
+    status *st = NULL;
     QHash<quint64, status>::iterator itr = m_states.find(id);
-    if(itr == m_states.end())
-        return;
-
+    if(itr != m_states.end())
+    {
+        m_curUnknown = false;
+        st = &(*itr);
+    }
+    else
+    {
+        m_curUnknown = true;
+        st = &m_unknown;
+    }
     m_status = id;
-
-    m_label->setText((*itr).text);
-
-    QPalette p = m_label->palette();
-    p.setColor(QPalette::Window, (*itr).color);
-    p.setColor(QPalette::WindowText, (*itr).textColor);
-    m_label->setPalette(p);
+    setFromStatus(*st);
 }
 
 void StatusWidget::updateValue(quint64 id)
@@ -196,11 +226,26 @@ void StatusWidget::updateValue(quint64 id)
     if(itr == m_states.end())
         return;
 
-    m_label->setText((*itr).text);
+    setFromStatus(*itr);
+}
+
+void StatusWidget::updateUnknown()
+{
+    if(!m_curUnknown)
+        return;
+    setFromStatus(m_unknown);
+}
+
+void StatusWidget::setFromStatus(const status &st)
+{
+    QString text = st.text;
+    text.replace("%v", QString::number(m_status));
+    text.replace("%h", "0x" + QString::number(m_status, 16).toUpper());
+    m_label->setText(text);
 
     QPalette p = m_label->palette();
-    p.setColor(QPalette::Window, (*itr).color);
-    p.setColor(QPalette::WindowText, (*itr).textColor);
+    p.setColor(QPalette::Window, st.color);
+    p.setColor(QPalette::WindowText, st.textColor);
     m_label->setPalette(p);
 }
 
@@ -220,6 +265,24 @@ void StatusWidget::showStatusManager()
 {
     StatusManager m(this);
     m.exec();
+}
+
+void StatusWidget::setUnknownText(const QString &text)
+{
+    m_unknown.text = text;
+    updateUnknown();
+}
+
+void StatusWidget::setUnknownColor(const QString &color)
+{
+    m_unknown.color = QColor(color);
+    updateUnknown();
+}
+
+void StatusWidget::setUnknownTextColor(const QString &color)
+{
+    m_unknown.textColor = QColor(color);
+    updateUnknown();
 }
 
 StatusWidgetAddBtn::StatusWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
@@ -292,6 +355,11 @@ void StatusManager::updateItems()
 
     connect(m_clrMap,     SIGNAL(mapped(int)), SLOT(colorChanged(int)));
     connect(m_textClrMap, SIGNAL(mapped(int)), SLOT(textColorChanged(int)));
+
+    const StatusWidget::status& unk = widget()->unknown();
+    ui->unkText->setText(unk.text);
+    ui->unkColor->setColor(unk.color);
+    ui->unkTextColor->setColor(unk.textColor);
 }
 
 void StatusManager::colorChanged(int row)
@@ -376,4 +444,19 @@ void StatusManager::on_rmBtn_clicked()
         return;
     widget()->removeStatus(m_rowVals[item->row()]);
     updateItems();
+}
+
+void StatusManager::on_unkText_editingFinished()
+{
+    widget()->setUnknownText(ui->unkText->text());
+}
+
+void StatusManager::on_unkColor_colorChanged(const QColor &color)
+{
+    widget()->setUnknownColor(color.name());
+}
+
+void StatusManager::on_unkTextColor_colorChanged(const QColor &color)
+{
+    widget()->setUnknownTextColor(color.name());
 }

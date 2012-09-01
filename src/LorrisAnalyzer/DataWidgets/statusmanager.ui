@@ -15,6 +15,16 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>You can use %v or %h in status' text. It will be replaced by (hexadecimal) value of the status.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QTableWidget" name="table">
      <property name="sortingEnabled">
       <bool>true</bool>
@@ -54,6 +64,43 @@
       </property>
      </column>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="toolTip">
+        <string>This value is show if no other coresponding value is found.</string>
+       </property>
+       <property name="text">
+        <string>Unknown value:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="unkText"/>
+     </item>
+     <item>
+      <widget class="ColorButton" name="unkColor">
+       <property name="toolTip">
+        <string>Color</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="ColorButton" name="unkTextColor">
+       <property name="toolTip">
+        <string>Text color</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -114,6 +161,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ColorButton</class>
+   <extends>QPushButton</extends>
+   <header>../src/ui/colorbutton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../../actions.qrc"/>
  </resources>

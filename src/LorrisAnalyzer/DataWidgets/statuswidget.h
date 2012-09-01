@@ -41,6 +41,10 @@ public slots:
     void setValue(quint64 id);
     quint64 getValue() const { return m_status; }
 
+    void setUnknownText(const QString& text);
+    void setUnknownColor(const QString& color);
+    void setUnknownTextColor(const QString& color);
+
     void setDataType(int type);
 
     void showStatusManager();
@@ -50,15 +54,21 @@ protected:
 
 private:
      QHash<quint64, status>& states() { return m_states; }
+     status& unknown() { return m_unknown; }
      void updateValue(quint64 id);
+     void updateUnknown();
      void addStatus(quint64 id, const status& s);
+     void setFromStatus(const status& st);
 
      QLabel *m_label;
      QHash<quint64, status> m_states;
+     status m_unknown;
      quint64 m_status;
 
      QAction *m_typeAction[NUM_FLOAT];
      int m_dataType;
+
+     bool m_curUnknown;
 };
 
 class StatusWidgetAddBtn : public DataWidgetAddBtn
@@ -83,6 +93,9 @@ private slots:
     void on_table_currentItemChanged(QTableWidgetItem *current, QTableWidgetItem *);
     void on_addBtn_clicked();
     void on_rmBtn_clicked();
+    void on_unkText_editingFinished();
+    void on_unkColor_colorChanged(const QColor& color);
+    void on_unkTextColor_colorChanged(const QColor& color);
 
 private:
     inline StatusWidget *widget() const { return (StatusWidget*)parent(); }

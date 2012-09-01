@@ -17,7 +17,8 @@ Q_SIGNALS:
     void colorChanged(const QColor& color);
 
 public:
-    ColorButton(QColor color = Qt::black, QWidget *parent = 0);
+    ColorButton(QColor color, QWidget *parent = 0);
+    ColorButton(QWidget *parent = 0);
 
     void setColor(const QColor& color);
     const QColor& getColor() const { return m_color; }

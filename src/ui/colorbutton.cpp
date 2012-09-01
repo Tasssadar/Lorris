@@ -19,6 +19,15 @@ ColorButton::ColorButton(QColor color, QWidget *parent) :
     connect(this, SIGNAL(clicked()), SLOT(choose()));
 }
 
+ColorButton::ColorButton(QWidget *parent) : QPushButton(parent)
+{
+    setIconSize(QSize(32, 16));
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    setColor(Qt::black);
+
+    connect(this, SIGNAL(clicked()), SLOT(choose()));
+}
+
 void ColorButton::setColor(const QColor &color)
 {
     if(m_color == color)
