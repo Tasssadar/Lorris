@@ -129,7 +129,9 @@ SOURCES += ui/mainwindow.cpp \
     ui/editorwidget.cpp \
     ui/pythonhighlighter.cpp \
     ui/colordialog.cpp \
-    misc/gestureidentifier.cpp
+    misc/gestureidentifier.cpp \
+    LorrisAnalyzer/DataWidgets/statuswidget.cpp \
+    ui/colorbutton.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -239,7 +241,9 @@ HEADERS += ui/mainwindow.h \
     ui/pythonhighlighter.h \
     ui/colordialog.h \
     misc/gestureidentifier.h \
-    misc/qtpointerarray.h
+    misc/qtpointerarray.h \
+    LorrisAnalyzer/DataWidgets/statuswidget.h \
+    ui/colorbutton.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -264,7 +268,8 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/sliderwidget_horizontal.ui \
     LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui \
     ui/tabswitchwidget.ui \
-    LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui
+    LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui \
+    LorrisAnalyzer/DataWidgets/statusmanager.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

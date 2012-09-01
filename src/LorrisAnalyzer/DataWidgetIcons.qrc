@@ -11,5 +11,6 @@
         <file alias="circle.png">icons/circle.png</file>
         <file alias="slider.png">icons/slider.png</file>
         <file alias="canvas.png">icons/canvas.png</file>
+        <file alias="status.png">icons/status.png</file>
     </qresource>
 </RCC>
