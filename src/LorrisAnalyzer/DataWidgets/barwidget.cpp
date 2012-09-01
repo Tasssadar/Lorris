@@ -337,11 +337,11 @@ void BarWidget::loadWidgetInfo(DataFileParser *file)
     // alarm
     if(file->seekToNextBlock("barWAlarm", BLOCK_WIDGET))
     {
-        m_bar->setAlarmEnabled(file->readVal<bool>());
+        bool enable = file->readVal<bool>();
+        m_bar->setAlarmLevel(file->readVal<double>());
+        m_bar->setAlarmEnabled(enable);
         m_alarmEnable->setChecked(m_bar->alarmEnabled());
         m_alarmLevel->setEnabled(m_bar->alarmEnabled());
-
-        m_bar->setAlarmLevel(file->readVal<double>());
     }
 }
 
