@@ -46,6 +46,7 @@ enum
     WIDGET_CIRCLE,
     WIDGET_SLIDER,
     WIDGET_CANVAS,
+    WIDGET_STATUS
 };
 
 /*!
