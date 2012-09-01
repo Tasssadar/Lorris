@@ -82,10 +82,13 @@ public:
     const QList<quint32>& getHistory() const { return m_tabHistory; }
     const std::vector<quint32>& getTabIds() const { return m_tab_ids; }
 
+    bool canCloseTabs();
+    void forceCloseChilds();
+
 public slots:
     int pullTab(int index, TabWidget *origin);
     void pullTab(int index, TabWidget *origin, int to);
-    void closeTab(int index);
+    bool closeTab(int index);
     void checkEmpty();
 
 protected:

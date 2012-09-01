@@ -80,6 +80,9 @@ public:
 
     quint32 getWindowId() const { return m_windowId; }
 
+    bool canCloseWindow();
+    void forceCloseChilds();
+
 private slots:
     void split(bool horizontal, int index);
     void removeWidget(quint32 id);

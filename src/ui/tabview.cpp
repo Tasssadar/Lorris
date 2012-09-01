@@ -538,7 +538,8 @@ void TabView::closeAllTabs()
     for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); )
     {
         while(size == m_tab_widgets.size() && (*itr)->tabsClosable())
-            (*itr)->closeTab(0);
+            if(!(*itr)->closeTab(0))
+                return;
 
         if(size != m_tab_widgets.size())
         {
@@ -548,6 +549,22 @@ void TabView::closeAllTabs()
         else
             ++itr;
     }
+}
+
+bool TabView::canCloseWindow()
+{
+    for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); ++itr)
+    {
+        if(!(*itr)->canCloseTabs())
+            return false;
+    }
+    return true;
+}
+
+void TabView::forceCloseChilds()
+{
+    for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); ++itr)
+        (*itr)->forceCloseChilds();
 }
 
 TabViewResLine::TabViewResLine(bool vertical, TabView *parent) : ResizeLine(vertical, parent)

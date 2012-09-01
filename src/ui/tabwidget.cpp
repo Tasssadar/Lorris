@@ -103,12 +103,12 @@ void TabWidget::checkEmpty()
     emit removeWidget(m_id);
 }
 
-void TabWidget::closeTab(int index)
+bool TabWidget::closeTab(int index)
 {
     if(index < 0 || m_tab_ids.size() <= (uint)index)
     {
         Q_ASSERT(false);
-        return;
+        return false;
     }
 
     quint32 id = m_tab_ids[index];
@@ -116,11 +116,11 @@ void TabWidget::closeTab(int index)
     if(!tab)
     {
         Q_ASSERT(false);
-        return;
+        return false;
     }
 
     if(!tab->onTabClose())
-        return;
+        return false;
 
     if(id & IDMASK_CHILD)
     {
@@ -134,6 +134,7 @@ void TabWidget::closeTab(int index)
 
     changeMenu(currentIndex());
     checkEmpty();
+    return true;
 }
 
 void TabWidget::tabMoved(int from, int to)
@@ -526,6 +527,46 @@ void TabWidget::removeEventFilterFromChildren(QObject *object)
     const QObjectList &children = object->children();
     for(int i = 0; i < children.size(); ++i)
         removeEventFilterFromChildren(children[i]);
+}
+
+bool TabWidget::canCloseTabs()
+{
+    if(m_tab_ids.empty())
+        return true;
+
+    for(int i = 0; i < count(); ++i)
+    {
+        Tab *tab = dynamic_cast<Tab*>(widget(i));
+        if(!tab)
+            continue;
+
+        if(tab->isChild())
+        {
+            ChildTab* child = (ChildTab*)tab;
+            WorkTab* parent = sWorkTabMgr.getWorkTab(child->getParentId());
+            if(child->getWindowId() == parent->getWindowId())
+                continue;
+        }
+
+        if(!tab->onTabClose())
+            return false;
+    }
+    return true;
+}
+
+void TabWidget::forceCloseChilds()
+{
+    if(m_tab_ids.empty())
+        return;
+
+    for(int i = 0; i < count(); ++i)
+    {
+        ChildTab *tab = dynamic_cast<ChildTab*>(widget(i));
+        if(!tab)
+            continue;
+        sWorkTabMgr.removeChildTab(tab);
+        i = 0;
+    }
 }
 
 TabBar::TabBar(quint32 id, QWidget *parent) :

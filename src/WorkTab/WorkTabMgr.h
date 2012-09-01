@@ -82,7 +82,7 @@ public:
     void OpenHomeTab();
     void CloseHomeTab();
 
-    bool onTabsClose(quint32 windowId);
+    bool askChildrenToClose(quint32 parentId);
     bool isAnyTabOpened() const { return !m_workTabs.isEmpty(); }
 
     SessionMgr *getSessionMgr() const { return m_session_mgr; }
@@ -94,6 +94,7 @@ public:
     MainWindow *getWindow(quint32 id);
     bool canCloseWindow() const { return !m_disable_window_close && m_windows.size() > 1; }
     void removeWindow(quint32 id);
+    quint32 getWindowCount() const { return m_windows.size(); }
 
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);

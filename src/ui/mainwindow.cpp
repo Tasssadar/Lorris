@@ -61,13 +61,22 @@ void MainWindow::show(const QStringList& openFiles)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if(!sWorkTabMgr.onTabsClose(getId()))
-        event->ignore();
-    else
+    if(m_tabView->canCloseWindow())
     {
+        if(sWorkTabMgr.getWindowCount() == 1)
+        {
+            try {
+                sWorkTabMgr.getSessionMgr()->saveSession();
+            } catch(const QString&) { }
+        }
+
+        m_tabView->forceCloseChilds();
+
         saveWindowParams();
         event->accept();
     }
+    else
+        event->ignore();
 }
 
 void MainWindow::saveWindowParams()

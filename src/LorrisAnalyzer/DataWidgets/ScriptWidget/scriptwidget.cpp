@@ -45,7 +45,10 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 ScriptWidget::~ScriptWidget()
 {
     if(m_editor)
+    {
+        m_editor->onTabClose();
         emit removeChildTab(m_editor);
+    }
 
     if(!m_examplePrevs.empty())
     {

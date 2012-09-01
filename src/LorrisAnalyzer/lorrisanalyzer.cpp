@@ -169,6 +169,7 @@ LorrisAnalyzer::~LorrisAnalyzer()
         delete m_packet;
     }
     delete ui->devTabs;
+    delete ui->dataArea;
     delete ui;
 }
 
@@ -320,7 +321,7 @@ void LorrisAnalyzer::importBinary(const QString& filename, bool reset)
 
 bool LorrisAnalyzer::onTabClose()
 {
-    return askToSave();
+    return sWorkTabMgr.askChildrenToClose(getId()) && askToSave();
 }
 
 bool LorrisAnalyzer::askToSave()

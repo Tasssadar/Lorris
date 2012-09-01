@@ -133,19 +133,16 @@ void WorkTabMgr::removeTab(WorkTab *tab)
     delete tab;
 }
 
-bool WorkTabMgr::onTabsClose(quint32 windowId)
+bool WorkTabMgr::askChildrenToClose(quint32 parentId)
 {
-    for(WorkTabMap::iterator itr = m_workTabs.begin(); itr != m_workTabs.end(); ++itr)
-    {
-        if((*itr)->getWindowId() == windowId && !(*itr)->onTabClose())
-            return false;
-    }
+    ChildrenMap::iterator c_itr = m_children.find(parentId);
+    if(c_itr == m_children.end())
+        return true;
 
-    if(m_windows.size() == 1)
+    for(std::set<ChildTab*>::const_iterator w_itr = (*c_itr).begin(); w_itr != (*c_itr).end(); ++w_itr)
     {
-        try {
-            m_session_mgr->saveSession();
-        } catch(const QString&) { }
+        if(!(*w_itr)->onTabClose())
+            return false;
     }
     return true;
 }
@@ -198,9 +195,6 @@ void WorkTabMgr::removeChildTab(ChildTab *child)
     WorkTab *tab = getWorkTab(tabId);
     if(!tab)
         return;
-
-    TabWidget *tabW = getTabWidgetWithWidget(child);
-    tabW->removeChildTab(child);
 
     tab->childClosed(child);
 }
@@ -308,7 +302,7 @@ quint32 WorkTabMgr::generateNewTabId()
 
 quint32 WorkTabMgr::generateNewChildId()
 {
-    if(tabIdCounter >= 0x00FFFFFF)
+    if(tabIdCounter >= 0xFF)
     {
         qWarning("Tab guid overflow");
         tabIdCounter = 0;
