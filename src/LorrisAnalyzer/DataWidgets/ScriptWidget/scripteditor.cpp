@@ -34,10 +34,16 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 {
     ui->setupUi(this);
 
-    m_exampleBtn = new QPushButton(tr("Examples"));
-    m_settingsBtn = new QPushButton(tr("Settings"));
+    m_exampleBtn = new QPushButton(tr("Examples"), this);
+    m_settingsBtn = new QPushButton(tr("Settings"), this);
     m_exampleBtn->setCheckable(true);
     m_settingsBtn->setCheckable(true);
+
+    QLabel *docLabel = new QLabel(this);
+    docLabel->setTextFormat(Qt::RichText);
+    docLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    docLabel->setOpenExternalLinks(true);
+    docLabel->setText(tr("<a href=\"http://tasssadar.github.com/Lorris/doc/\">Documentation</a>"));
 
     QToolBar *bar = new QToolBar(this);
     bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -51,6 +57,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     bar->addSeparator();
     bar->addWidget(m_exampleBtn);
     bar->addWidget(m_settingsBtn);
+    bar->addWidget(docLabel);
 
     load->setShortcut(QKeySequence("Ctrl+O"));
     load->setToolTip(tr("Load (Ctrl+O)"));
