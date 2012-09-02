@@ -57,6 +57,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     bar->addSeparator();
     bar->addWidget(m_exampleBtn);
     bar->addWidget(m_settingsBtn);
+    bar->addSeparator();
     bar->addWidget(docLabel);
 
     load->setShortcut(QKeySequence("Ctrl+O"));
