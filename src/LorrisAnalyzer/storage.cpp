@@ -372,17 +372,13 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
 
 bool Storage::checkMagic(DataFileParser *file)
 {
-    char *itr = new char[3];
-    file->read(itr, 3);
+    char magic[3];
+    file->read(magic, 3);
+
     for(quint8 i = 0; i < 3; ++i)
-    {
-        if(itr[i] != ANALYZER_DATA_MAGIC[i])
-        {
-            delete[] itr;
+        if(magic[i] != ANALYZER_DATA_MAGIC[i])
             return false;
-        }
-    }
-    delete[] itr;
+
     return true;
 }
 
@@ -400,7 +396,7 @@ void Storage::ExportToBin(const QString &filename)
 
 void Storage::readLegacyStructure(DataFileParser *file, analyzer_packet *packet)
 {
-    char version[3] = { 0, 0, 0 };
+    char version[3] = { 0 };
     file->read(version, 2);
 
     if(strcmp(version, ANALYZER_DATA_FORMAT) != 0)
