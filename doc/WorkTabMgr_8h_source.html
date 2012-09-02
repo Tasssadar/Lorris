@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">Lorris
-   &#160;<span id="projectnumber">[640]</span>
+   &#160;<span id="projectnumber">[644]</span>
    </div>
    <div id="projectbrief">GUI tool for robotics</div>
   </td>
@@ -174,7 +174,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> OpenHomeTab();</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">void</span> CloseHomeTab();</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">bool</span> onTabsClose(quint32 windowId);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">bool</span> askChildrenToClose(quint32 parentId);</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">bool</span> isAnyTabOpened()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !m_workTabs.isEmpty(); }</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <a class="code" href="classSessionMgr.html">SessionMgr</a> *getSessionMgr()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_session_mgr; }</div>
@@ -186,39 +186,40 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="classMainWindow.html">MainWindow</a> *getWindow(quint32 <span class="keywordtype">id</span>);</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">bool</span> canCloseWindow()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !m_disable_window_close &amp;&amp; m_windows.size() &gt; 1; }</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">void</span> removeWindow(quint32 <span class="keywordtype">id</span>);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">void</span> saveData(<a class="code" href="classDataFileParser.html">DataFileParser</a> *file);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">void</span> loadData(<a class="code" href="classDataFileParser.html">DataFileParser</a> *file);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordtype">void</span> printToAllStatusBars(<span class="keyword">const</span> QString&amp; text, <span class="keywordtype">int</span> timeout = 3000);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keyword">public</span> slots:</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <a class="code" href="classMainWindow.html">MainWindow</a> *newWindow(QStringList openFiles = QStringList());</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordtype">void</span> instanceMessage(<span class="keyword">const</span> QString&amp; message);</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keyword">private</span> slots:</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordtype">void</span> tabWidgetDestroyed(QObject *widget);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordtype">void</span> workTabDestroyed(QObject *tab);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    InfoList m_workTabInfos;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    WorkTabMap m_workTabs;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    QStringList m_handledTypes;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    ChildrenMap m_children;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    WindowMap m_windows;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    TabWidgetMap m_tab_widgets;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    quint32 tabWidgetCounter;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    quint32 tabIdCounter;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    quint32 windowIdCounter;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordtype">bool</span> m_disable_window_close;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <a class="code" href="classSessionMgr.html">SessionMgr</a> *m_session_mgr;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;};</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="preprocessor">#define sWorkTabMgr WorkTabMgr::GetSingleton()</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="preprocessor">#endif // WORKTABMGR_H</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    quint32 getWindowCount()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_windows.size(); }</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">void</span> saveData(<a class="code" href="classDataFileParser.html">DataFileParser</a> *file);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordtype">void</span> loadData(<a class="code" href="classDataFileParser.html">DataFileParser</a> *file);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">void</span> printToAllStatusBars(<span class="keyword">const</span> QString&amp; text, <span class="keywordtype">int</span> timeout = 3000);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="keyword">public</span> slots:</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <a class="code" href="classMainWindow.html">MainWindow</a> *newWindow(QStringList openFiles = QStringList());</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordtype">void</span> instanceMessage(<span class="keyword">const</span> QString&amp; message);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keyword">private</span> slots:</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordtype">void</span> tabWidgetDestroyed(QObject *widget);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordtype">void</span> workTabDestroyed(QObject *tab);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    InfoList m_workTabInfos;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    WorkTabMap m_workTabs;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    QStringList m_handledTypes;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    ChildrenMap m_children;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    WindowMap m_windows;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    TabWidgetMap m_tab_widgets;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    quint32 tabWidgetCounter;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    quint32 tabIdCounter;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    quint32 windowIdCounter;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keywordtype">bool</span> m_disable_window_close;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <a class="code" href="classSessionMgr.html">SessionMgr</a> *m_session_mgr;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;};</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="preprocessor">#define sWorkTabMgr WorkTabMgr::GetSingleton()</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor">#endif // WORKTABMGR_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
