@@ -8,7 +8,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QCryptographicHash>
-#include <QCoreApplication>
+#include <QApplication>
 
 #include "storage.h"
 #include "widgetarea.h"
@@ -211,8 +211,8 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
         // Proccess events to properly draw message box
         // must be done twice, first one draws dialog
         // and second draws content
-        QCoreApplication::processEvents();
-        QCoreApplication::processEvents();
+        QApplication::processEvents();
+        QApplication::processEvents();
 
         try {
             data = DataFileBuilder::readAndCheck(file, DATAFILE_ANALYZER, &legacy);
@@ -357,6 +357,9 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
         buffer.read((char*)&data_idx, sizeof(data_idx));
 
     buffer.close();
+
+    // To process delayed load events
+    QApplication::processEvents();
 
     if(load & STORAGE_STRUCTURE)
     {
