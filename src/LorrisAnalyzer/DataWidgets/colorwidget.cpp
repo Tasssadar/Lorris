@@ -14,7 +14,16 @@
 #include "../../WorkTab/WorkTab.h"
 #include "colorwidget.h"
 
-REGISTER_DATAWIDGET(WIDGET_COLOR, Color, NULL)
+void ColorWidget::addEnum()
+{
+    REGISTER_ENUM(COLOR_RGB_8);
+    REGISTER_ENUM(COLOR_RGB_10);
+    REGISTER_ENUM(COLOR_RGB_10_UINT);
+    REGISTER_ENUM(COLOR_GRAY_8);
+    REGISTER_ENUM(COLOR_GRAY_10);
+}
+
+REGISTER_DATAWIDGET(WIDGET_COLOR, Color, &ColorWidget::addEnum)
 
 ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 {
@@ -48,6 +57,26 @@ void ColorWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
+    QSignalMapper *map = new QSignalMapper(this);
+    connect(map, SIGNAL(mapped(int)), SLOT(setColorType(int)));
+
+    QMenu *typeMenu = contextMenu->addMenu(tr("Color type"));
+    for(int i = 0; i < COLOR_MAX; ++i)
+    {
+        static const QString name[COLOR_MAX] = {
+            tr("RGB (8b/channel, 3 uint8s)"),
+            tr("RGB (10b/channel, 3 uint16s)"),
+            tr("RGB (10b/channel, 1 uint32)"),
+            tr("Shades of gray (8b/channel, 1 uint8)"),
+            tr("Shades of gray (10b/channel, 1 uint16)")
+        };
+
+        colorType[i] = typeMenu->addAction(name[i], map, SLOT(map()));
+        colorType[i]->setCheckable(true);
+        map->setMapping(colorType[i], i);
+    }
+    setColorType(COLOR_RGB_8);
+
     textAct = new QAction(tr("Show RGB values"), this);
     textAct->setCheckable(true);
     textAct->setChecked(true);
@@ -72,8 +101,34 @@ void ColorWidget::processData(analyzer_data *data)
 {
     try
     {
-        for(quint8 i = 0; i < 3; ++i)
-            m_widget->color()[i] = data->getUInt8(m_info.pos + i);
+        switch(m_color_type)
+        {
+            case COLOR_RGB_8:
+                for(quint8 i = 0; i < 3; ++i)
+                    m_widget->color()[i] = data->getUInt8(m_info.pos + i);
+                break;
+            case COLOR_RGB_10:
+                for(quint8 i = 0; i < 3; ++i)
+                    m_widget->color()[i] = (data->getUInt16(m_info.pos + i) & 0x3FF);
+                break;
+            case COLOR_RGB_10_UINT:
+            {
+                quint32 color = data->getUInt32(m_info.pos);
+                m_widget->color()[0] = ((color >> 20) & 0x3FF);
+                m_widget->color()[1] = ((color >> 10) & 0x3FF);
+                m_widget->color()[2] = ((color) & 0x3FF);
+                break;
+            }
+            case COLOR_GRAY_8:
+                m_widget->setAll(data->getUInt8(m_info.pos));
+                break;
+            case COLOR_GRAY_10:
+                m_widget->setAll(data->getUInt16(m_info.pos));
+                break;
+            default:
+                return;
+        }
+
         updateColor();
     }
     catch(const char*) { }
@@ -83,9 +138,13 @@ void ColorWidget::updateColor()
 {
     qint16 cor[] = { m_brightness, 0 };
     QRgb res = 0;
+    bool tenBit = is10bit();
     for(quint8 i = 0; i < 3; ++i)
     {
-        quint8 color = m_widget->color()[i];
+        quint16 color = m_widget->color()[i];
+        if(tenBit)
+            color >>= 2;
+
         cor[1] = m_color_cor[i];
 
         for(quint8 y = 0; y < 2; ++y)
@@ -107,6 +166,39 @@ void ColorWidget::updateColor()
 
 void ColorWidget::setValue(int r, int g, int b)
 {
+    m_widget->color()[0] = r;
+    m_widget->color()[1] = g;
+    m_widget->color()[2] = b;
+
+    updateColor();
+}
+
+void ColorWidget::setValue(quint32 color)
+{
+    int r, g, b;
+    switch(m_color_type)
+    {
+        case COLOR_RGB_8:
+            r = (color >> 16) & 0xFF;
+            g = (color >> 8) & 0xFF;
+            b = (color) & 0xFF;
+            break;
+        case COLOR_RGB_10:
+        case COLOR_RGB_10_UINT:
+            r = (color >> 20) & 0x3FF;
+            g = (color >> 10) & 0x3FF;
+            b = (color) & 0x3FF;
+            break;
+        case COLOR_GRAY_8:
+            r = g = b = (color & 0xFF);
+            break;
+        case COLOR_GRAY_10:
+            r = g = b = (color & 0x3FF);
+            break;
+        default:
+            Q_ASSERT(false);
+            return;
+    }
     m_widget->color()[0] = r;
     m_widget->color()[1] = g;
     m_widget->color()[2] = b;
@@ -147,6 +239,22 @@ void ColorWidget::showValues(bool show)
     m_widget->update();
 }
 
+void ColorWidget::setColorType(int type)
+{
+    if(type < 0 || type >= COLOR_MAX)
+        return;
+
+    for(int i = 0; i < COLOR_MAX; ++i)
+        colorType[i]->setChecked(i == type);
+
+    m_color_type = type;
+
+    m_widget->setGrey(type == COLOR_GRAY_8 || type == COLOR_GRAY_10);
+    m_widget->update();
+
+    emit updateForMe();
+}
+
 void ColorWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
@@ -168,6 +276,10 @@ void ColorWidget::saveWidgetInfo(DataFileParser *file)
     // draw nums
     file->writeBlockIdentifier("clrWShowNums");
     file->writeVal(textAct->isChecked());
+
+    // color type
+    file->writeBlockIdentifier("clrWClrType");
+    file->writeVal(m_color_type);
 }
 
 void ColorWidget::loadWidgetInfo(DataFileParser *file)
@@ -202,6 +314,10 @@ void ColorWidget::loadWidgetInfo(DataFileParser *file)
     // draw nums
     if(file->seekToNextBlock("clrWShowNums", BLOCK_WIDGET))
         showValues(file->readVal<bool>());
+
+    // color type
+    if(file->seekToNextBlock("clrWClrType", BLOCK_WIDGET))
+        setColorType(file->readVal<int>());
 
     updateColor();
 }
@@ -317,7 +433,7 @@ void ColorDisplay::paintEvent(QPaintEvent *ev)
 {
     QWidget::paintEvent(ev);
 
-    if(!m_drawNums)
+    if(!(m_drawNums & 0x01))
         return;
 
     int thrd = (std::min)(width()/3, 100);
@@ -337,6 +453,9 @@ void ColorDisplay::paintEvent(QPaintEvent *ev)
 
     for(int i = 0; i < 3; ++i)
     {
+        if((m_drawNums & 0x02) && i != 1)
+            continue;
+
         QString str = QString::number(m_color[i]);
         int w = fontMetrics().width(str);
         baseline.rx() = start + thrd*i + (thrd - w)/2;
