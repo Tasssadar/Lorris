@@ -22,7 +22,6 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">Lorris
-   &#160;<span id="projectnumber">[644]</span>
    </div>
    <div id="projectbrief">GUI tool for robotics</div>
   </td>
@@ -86,8 +85,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-slots">Public Slots</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a>  </div>
   <div class="headertitle">
 <div class="title">ColorWidget Class Reference</div>  </div>
@@ -105,8 +106,24 @@ Inheritance diagram for ColorWidget:</div>
 
 <p><a href="classColorWidget-members.html">List of all members.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a312a44f6cc5cbc2eceec43b0b32dc9a2"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classColorWidget.html#a312a44f6cc5cbc2eceec43b0b32dc9a2">colorType</a> { <br/>
+&#160;&#160;<b>COLOR_RGB_8</b>, 
+<b>COLOR_RGB_10</b>, 
+<b>COLOR_RGB_10_UINT</b>, 
+<b>COLOR_GRAY_8</b>, 
+<br/>
+&#160;&#160;<b>COLOR_GRAY_10</b>, 
+<b>COLOR_MAX</b>
+<br/>
+ }</td></tr>
+<tr class="memdesc:a312a44f6cc5cbc2eceec43b0b32dc9a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">To be used with <code>setColorType()</code> <br/></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-slots"></a>
 Public Slots</h2></td></tr>
+<tr class="memitem:a3d96134a355e634256d23863b06c342e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classColorWidget.html#a3d96134a355e634256d23863b06c342e">setValue</a> (quint32 color)</td></tr>
+<tr class="memdesc:a3d96134a355e634256d23863b06c342e"><td class="mdescLeft">&#160;</td><td class="mdescRight">See detailed description.  <a href="#a3d96134a355e634256d23863b06c342e"></a><br/></td></tr>
 <tr class="memitem:a4190fe1938820420b9a6aa2a5bf16571"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4190fe1938820420b9a6aa2a5bf16571"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setValue</b> (int r, int g, int b)</td></tr>
 <tr class="memitem:a95a7999110ec0a99c42cd29f29daa34f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95a7999110ec0a99c42cd29f29daa34f"></a>
@@ -115,6 +132,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setValue</b> (QString
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setValueAr</b> (QList&lt; int &gt; val)</td></tr>
 <tr class="memitem:a7b680098ad49a01a56cb08b535b6826e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b680098ad49a01a56cb08b535b6826e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>showValues</b> (bool show)</td></tr>
+<tr class="memitem:a9297b1ec06722ec81726bd06bfc83ac4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9297b1ec06722ec81726bd06bfc83ac4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setColorType</b> (int type)</td></tr>
+<tr class="memitem:a88f5d52a36c868e645f50960e16bc678"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a88f5d52a36c868e645f50960e16bc678"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is10bit</b> () const </td></tr>
 <tr class="inherit_header pub_slots_classDataWidget"><td colspan="2" onclick="javascript:toggleInherit('pub_slots_classDataWidget')"><img src="closed.png" alt="-"/>&nbsp;Public Slots inherited from <a class="el" href="classDataWidget.html">DataWidget</a></td></tr>
 <tr class="memitem:a55deb68615fbaa14f1103c2f4dc6af6a inherit pub_slots_classDataWidget"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a55deb68615fbaa14f1103c2f4dc6af6a"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>newData</b> (<a class="el" href="classanalyzer__data.html">analyzer_data</a> *data, quint32)</td></tr>
@@ -172,6 +193,14 @@ QString&#160;</td><td class="memItemRight" valign="bottom"><b>getTitle</b> ()</t
 quint8&#160;</td><td class="memItemRight" valign="bottom"><b>getWidgetType</b> () const </td></tr>
 <tr class="memitem:afcd185b4ddf212233b7c6b5f2b944c0c inherit pub_methods_classDataWidget"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afcd185b4ddf212233b7c6b5f2b944c0c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>align</b> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aeb4275447db3215d683561fa8ce66074"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeb4275447db3215d683561fa8ce66074"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>addEnum</b> ()</td></tr>
+<tr class="inherit_header pub_static_methods_classDataWidget"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classDataWidget')"><img src="closed.png" alt="-"/>&nbsp;Static Public Member Functions inherited from <a class="el" href="classDataWidget.html">DataWidget</a></td></tr>
+<tr class="memitem:aa9e0bc55c2799d7bcd963e7da61d1530 inherit pub_static_methods_classDataWidget"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa9e0bc55c2799d7bcd963e7da61d1530"></a>
+static QVariant&#160;</td><td class="memItemRight" valign="bottom"><b>getNumFromPacket</b> (<a class="el" href="classanalyzer__data.html">analyzer_data</a> *data, quint32 pos, quint8 type)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -242,9 +271,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addChildTab</b> (<a c
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeChildTab</b> (<a class="el" href="classChildTab.html">ChildTab</a> *tab)</td></tr>
 <tr class="memitem:a3942d12d06fc866c8d39b6c33ada1c9f inherit signals_classDataWidget"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3942d12d06fc866c8d39b6c33ada1c9f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>rawData</b> (const QByteArray &amp;data)</td></tr>
-<tr class="inherit_header pub_static_methods_classDataWidget"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classDataWidget')"><img src="closed.png" alt="-"/>&nbsp;Static Public Member Functions inherited from <a class="el" href="classDataWidget.html">DataWidget</a></td></tr>
-<tr class="memitem:aa9e0bc55c2799d7bcd963e7da61d1530 inherit pub_static_methods_classDataWidget"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa9e0bc55c2799d7bcd963e7da61d1530"></a>
-static QVariant&#160;</td><td class="memItemRight" valign="bottom"><b>getNumFromPacket</b> (<a class="el" href="classanalyzer__data.html">analyzer_data</a> *data, quint32 pos, quint8 type)</td></tr>
 <tr class="inherit_header pro_types_classDataWidget"><td colspan="2" onclick="javascript:toggleInherit('pro_types_classDataWidget')"><img src="closed.png" alt="-"/>&nbsp;Protected Types inherited from <a class="el" href="classDataWidget.html">DataWidget</a></td></tr>
 <tr class="memitem:ad5207aec0c3b72cd99a330ad4f27d51f inherit pro_types_classDataWidget"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>widgetStates</b> { <br/>
 &#160;&#160;<b>STATE_NONE</b> =  0x00, 
@@ -274,6 +300,40 @@ quint8&#160;</td><td class="memItemRight" valign="bottom"><b>m_state</b></td></t
 <tr class="memitem:a8b5ca6989d46927a9edcd49858fa4f43 inherit properties_classDataWidget"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b5ca6989d46927a9edcd49858fa4f43"></a>
 quint8&#160;</td><td class="memItemRight" valign="bottom"><b>widgetType</b></td></tr>
 </table>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a3d96134a355e634256d23863b06c342e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ColorWidget::setValue </td>
+          <td>(</td>
+          <td class="paramtype">quint32&#160;</td>
+          <td class="paramname"><em>color</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>See detailed description. </p>
+<p>Format of <code>color</code> depends on the color type </p>
+<ul>
+<li><code>COLOR_RGB_8:</code> ((R &lt;&lt; 16) | (G &lt;&lt; 8) | B), channel values 0 to 255 </li>
+<li><code>COLOR_RGB_10 and COLOR_RGB_10_UINT:</code> ((R &lt;&lt; 20) | (G &lt;&lt; 10) | B), channel values 0 to 1023 </li>
+<li><code>COLOR_GRAY_8:</code> value from 0 to 255 </li>
+<li><code>COLOR_GRAY_10:</code> value from 0 to 1023 </li>
+</ul>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>LorrisAnalyzer/DataWidgets/<a class="el" href="colorwidget_8h_source.html">colorwidget.h</a></li>
 <li>LorrisAnalyzer/DataWidgets/colorwidget.cpp</li>

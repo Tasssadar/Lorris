@@ -15,6 +15,7 @@ var searchData=
   ['colorbutton',['ColorButton',['../classColorButton.html',1,'']]],
   ['colordialog',['ColorDialog',['../classColorDialog.html',1,'']]],
   ['colordisplay',['ColorDisplay',['../classColorDisplay.html',1,'']]],
+  ['colortype',['colorType',['../classColorWidget.html#a312a44f6cc5cbc2eceec43b0b32dc9a2',1,'ColorWidget']]],
   ['colorwidget',['ColorWidget',['../classColorWidget.html',1,'']]],
   ['colorwidgetaddbtn',['ColorWidgetAddBtn',['../classColorWidgetAddBtn.html',1,'']]],
   ['config',['Config',['../classConfig.html',1,'']]],

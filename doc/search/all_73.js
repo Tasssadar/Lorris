@@ -17,6 +17,7 @@ var searchData=
   ['sessionmgr',['SessionMgr',['../classSessionMgr.html',1,'']]],
   ['settingsdialog',['SettingsDialog',['../classSettingsDialog.html',1,'']]],
   ['settingspopup',['SettingsPopup',['../classSettingsPopup.html',1,'']]],
+  ['setvalue',['setValue',['../classColorWidget.html#a3d96134a355e634256d23863b06c342e',1,'ColorWidget']]],
   ['shortcutinputbox',['ShortcutInputBox',['../classShortcutInputBox.html',1,'']]],
   ['shupito',['Shupito',['../classShupito.html',1,'']]],
   ['shupitocc25xx',['ShupitoCC25XX',['../classShupitoCC25XX.html',1,'']]],
