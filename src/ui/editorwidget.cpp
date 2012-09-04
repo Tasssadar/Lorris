@@ -385,6 +385,11 @@ EditorWidgetQSci::EditorWidgetQSci(QWidget *parent) : EditorWidget(parent)
     m_editor->setMarginLineNumbers(QsciScintilla::NumberMargin, true);
     m_editor->setMarginWidth(QsciScintilla::NumberMargin, "12322");
     m_editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
+    m_editor->setAutoCompletionSource(QsciScintilla::AcsAll);
+    m_editor->setAutoCompletionThreshold(3);
+    m_editor->setAutoIndent(true);
+    m_editor->setIndentationsUseTabs(false);
+    m_editor->setIndentationWidth(4);
     m_editor->setUtf8(true);
 
     m_canUndo = false;
