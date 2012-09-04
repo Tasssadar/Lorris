@@ -34,10 +34,21 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 {
     ui->setupUi(this);
 
-    m_exampleBtn = new QPushButton(tr("Examples"), this);
-    m_settingsBtn = new QPushButton(tr("Settings"), this);
+    m_exampleBtn = new QPushButton(this);
+    m_exampleBtn->setToolTip(tr("Examples"));
     m_exampleBtn->setCheckable(true);
+    m_exampleBtn->setIconSize(QSize(24, 24));
+    m_exampleBtn->setIcon(QIcon(":/actions/info"));
+    m_exampleBtn->setFlat(true);
+    m_exampleBtn->setStyleSheet("padding: 3px;");
+
+    m_settingsBtn = new QPushButton(this);
+    m_settingsBtn->setToolTip(tr("Settings"));
     m_settingsBtn->setCheckable(true);
+    m_settingsBtn->setIconSize(QSize(24, 24));
+    m_settingsBtn->setIcon(QIcon(":/actions/system"));
+    m_settingsBtn->setFlat(true);
+    m_settingsBtn->setStyleSheet("padding: 3px;");
 
     QLabel *docLabel = new QLabel(this);
     docLabel->setTextFormat(Qt::RichText);
@@ -46,12 +57,14 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     docLabel->setText(tr("<a href=\"http://tasssadar.github.com/Lorris/doc/\">Documentation</a>"));
 
     QToolBar *bar = new QToolBar(this);
-    bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    bar->setIconSize(QSize(16, 16));
+    bar->setIconSize(QSize(24, 24));
 
     QAction *load = bar->addAction(QIcon(":/actions/open"), tr("Load"), this, SLOT(loadAct()));
     QAction *save = bar->addAction(QIcon(":/actions/save"), tr("Save"), this, SLOT(saveAct()));
     QAction *saveAs = bar->addAction(QIcon(":/actions/save-as"), tr("Save as..."), this, SLOT(saveAs()));
+    bar->addSeparator();
+    QAction *undo = bar->addAction(QIcon(":/actions/undo"), tr("Undo"), this, SIGNAL(undo()));
+    QAction *redo = bar->addAction(QIcon(":/actions/redo"), tr("Redo"), this, SIGNAL(redo()));
     bar->addSeparator();
     QAction *apply = bar->addAction(QIcon(":/icons/start"), tr("Apply"), this, SLOT(applyAct()));
     bar->addSeparator();
@@ -69,6 +82,9 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     apply->setShortcut(QKeySequence("F5"));
     apply->setToolTip(tr("Apply (F5)"));
 
+    connect(this, SIGNAL(undoAvailable(bool)), undo, SLOT(setEnabled(bool)));
+    connect(this, SIGNAL(redoAvailable(bool)), redo, SLOT(setEnabled(bool)));
+
     ui->mainLayout->insertWidget(0, bar);
 
     quint32 editor_cfg = sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE);
@@ -83,6 +99,9 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
 
     if(editor_cfg != UINT_MAX)
         setEditor(editor_cfg);
+
+    undo->setToolTip(tr("Undo (%1)").arg(m_editor->getUndoShortcut()));
+    redo->setToolTip(tr("Redo (%1)").arg(m_editor->getRedoShortcut()));
 
     ui->resizeLine->setOrientation(false);
     ui->resizeLine->setResizeLayout(ui->mainLayout);
@@ -360,6 +379,11 @@ void ScriptEditor::setEditor(int editorType)
     if(!w)
         return;
 
+    emit undoAvailable(false);
+    emit redoAvailable(false);
+    connect(w, SIGNAL(undoAvailable(bool)),    SIGNAL(undoAvailable(bool)));
+    connect(w, SIGNAL(redoAvailable(bool)),    SIGNAL(redoAvailable(bool)));
+
     if(m_editor)
     {
         w->setText(m_editor->getText());
@@ -374,6 +398,8 @@ void ScriptEditor::setEditor(int editorType)
 
     connect(m_editor, SIGNAL(textChangedByUser()),    SLOT(textChanged()));
     connect(m_editor, SIGNAL(applyShortcutPressed()), SLOT(applyAct()));
+    connect(this,     SIGNAL(undo()),       m_editor, SLOT(undo()));
+    connect(this,     SIGNAL(redo()),       m_editor, SLOT(redo()));
 
     sConfig.set(CFG_QUINT32_SCRIPTEDITOR_TYPE, editorType);
 }

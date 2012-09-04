@@ -16,5 +16,7 @@
         <file alias="red-cross">icons/emblem-unreadable.png</file>
         <file alias="info">icons/dialog-information.png</file>
         <file alias="spinner">icons/spinner.gif</file>
+        <file alias="redo">icons/edit-redo.png</file>
+        <file alias="undo">icons/edit-undo.png</file>
     </qresource>
 </RCC>

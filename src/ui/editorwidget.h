@@ -38,6 +38,8 @@ class EditorWidget : public QObject
 Q_SIGNALS:
     void textChangedByUser();
     void applyShortcutPressed();
+    void undoAvailable(bool available);
+    void redoAvailable(bool available);
 
 public:
     static EditorWidget *getEditor(int type, QWidget *parent);
@@ -50,12 +52,16 @@ public:
     virtual QWidget *getWidget() = 0;
     virtual bool hasSettings() = 0;
     virtual int getType() const = 0;
+    virtual QString getUndoShortcut() const = 0;
+    virtual QString getRedoShortcut() const = 0;
 
     virtual void setModified(bool /*modded*/) { }
     virtual void setReadOnly(bool readOnly) = 0;
 
 public slots:
     virtual void settingsBtn() { }
+    virtual void undo() = 0;
+    virtual void redo() = 0;
 
 protected:
     EditorWidget(QWidget *parent = 0);
@@ -78,6 +84,13 @@ public:
     bool hasSettings() { return false; }
     int getType() const { return EDITOR_INTERNAL; }
     void setReadOnly(bool readOnly);
+
+    QString getUndoShortcut() const { return "Ctrl+Z"; }
+    QString getRedoShortcut() const { return "Ctrl+Shift+Z"; }
+
+public slots:
+    void undo();
+    void redo();
 
 private slots:
     void rangeChanged(int, int);
@@ -136,15 +149,22 @@ public:
     bool hasSettings();
     int getType() const { return EDITOR_KATE; }
 
+    QString getUndoShortcut() const { return "Ctrl+Z"; }
+    QString getRedoShortcut() const { return "Ctrl+Shift+Z"; }
+
     void setModified(bool modded);
     void setReadOnly(bool readOnly);
 
 public slots:
     void settingsBtn();
-    void modified(KTextEditor::Document*);
+    void undo();
+    void redo();
 
 protected:
     bool eventFilter(QObject *, QEvent *ev);
+
+private slots:
+    void modified(KTextEditor::Document*);
 
 private:
     void save();
@@ -154,6 +174,8 @@ private:
     KTextEditor::Document *m_doc;
     KTextEditor::View *m_view;
     bool m_readOnly;
+    bool m_canUndo;
+    bool m_canRedo;
 };
 
 #endif // USE_KATE
@@ -180,11 +202,21 @@ public:
     void setModified(bool modded);
     void setReadOnly(bool readOnly);
 
+    QString getUndoShortcut() const { return "Ctrl+Z"; }
+    QString getRedoShortcut() const { return "Ctrl+Y"; }
+
+public slots:
+    void undo();
+    void redo();
+
 private slots:
     void modified(bool mod);
+    void checkUndoRedo();
 
 private:
     QsciScintilla *m_editor;
+    bool m_canUndo;
+    bool m_canRedo;
 };
 
 #endif // USE QSCI

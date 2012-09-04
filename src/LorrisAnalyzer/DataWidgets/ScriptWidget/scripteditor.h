@@ -32,6 +32,10 @@ Q_SIGNALS:
     void applySource();
     void rejected();
     void openPreview(const QString& name);
+    void undo();
+    void redo();
+    void undoAvailable(bool available);
+    void redoAvailable(bool available);
     
 public:
     ScriptEditor(const QString& source, const QString& filename, int type);

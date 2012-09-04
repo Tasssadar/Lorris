@@ -76,6 +76,8 @@ EditorWidgetLorris::EditorWidgetLorris(QWidget *parent) : EditorWidget(parent)
     connect(bar,    SIGNAL(rangeChanged(int,int)),           SLOT(rangeChanged(int,int)));
     connect(bar,    SIGNAL(valueChanged(int)), m_lineNumber, SLOT(setScroll(int)));
     connect(m_edit->document(), SIGNAL(contentsChange(int,int,int)), SLOT(contentsChange(int,int,int)));
+    connect(m_edit, SIGNAL(undoAvailable(bool)),             SIGNAL(undoAvailable(bool)));
+    connect(m_edit, SIGNAL(redoAvailable(bool)),             SIGNAL(redoAvailable(bool)));
 }
 
 EditorWidgetLorris::~EditorWidgetLorris()
@@ -125,6 +127,16 @@ void EditorWidgetLorris::setHighlighter(EditorHighlight lang)
 void EditorWidgetLorris::setReadOnly(bool readOnly)
 {
     m_edit->setReadOnly(readOnly);
+}
+
+void EditorWidgetLorris::undo()
+{
+    m_edit->undo();
+}
+
+void EditorWidgetLorris::redo()
+{
+    m_edit->redo();
 }
 
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)
@@ -184,6 +196,7 @@ void LineNumber::paintEvent(QPaintEvent */*event*/)
 #include <ktexteditor/editor.h>
 #include <ktexteditor/editorchooser.h>
 #include <ktexteditor/configinterface.h>
+#include <ktexteditor/commandinterface.h>
 #include <kconfig.h>
 
 EditorWidgetKate::EditorWidgetKate(QWidget *parent) : EditorWidget(parent)
@@ -206,6 +219,8 @@ EditorWidgetKate::EditorWidgetKate(QWidget *parent) : EditorWidget(parent)
     m_doc->editor()->readConfig(&config);
 
     m_readOnly = false;
+    m_canUndo = false;
+    m_canRedo = false;
 
     connect(m_doc, SIGNAL(textChanged(KTextEditor::Document*)), SLOT(modified(KTextEditor::Document*)));
 }
@@ -308,6 +323,11 @@ void EditorWidgetKate::loadSettings(KTextEditor::ConfigInterface *iface, cfg_var
 void EditorWidgetKate::modified(KTextEditor::Document *)
 {
     emit textChangedByUser();
+
+    // FIXME: how the fuck do I get to "isUndoAvailable()" through
+    // these fancy abstraction patterns?!
+    emit undoAvailable(true);
+    emit redoAvailable(true);
 }
 
 bool EditorWidgetKate::eventFilter(QObject *, QEvent *ev)
@@ -341,6 +361,16 @@ void EditorWidgetKate::setReadOnly(bool readOnly)
     m_doc->setReadWrite(!readOnly);
 }
 
+void EditorWidgetKate::undo()
+{
+    QMetaObject::invokeMethod(m_doc,"undo");
+}
+
+void EditorWidgetKate::redo()
+{
+    QMetaObject::invokeMethod(m_doc,"redo");
+}
+
 #endif // USE_KATE
 
 #ifdef USE_QSCI
@@ -357,7 +387,11 @@ EditorWidgetQSci::EditorWidgetQSci(QWidget *parent) : EditorWidget(parent)
     m_editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
     m_editor->setUtf8(true);
 
+    m_canUndo = false;
+    m_canRedo = false;
+
     connect(m_editor, SIGNAL(modificationChanged(bool)), SLOT(modified(bool)));
+    connect(m_editor, SIGNAL(textChanged()),             SLOT(checkUndoRedo()));
 }
 
 EditorWidgetQSci::~EditorWidgetQSci()
@@ -378,6 +412,7 @@ void EditorWidgetQSci::setText(const QString &text)
 {
     m_editor->setText(text);
     m_editor->setModified(false);
+    checkUndoRedo();
 }
 
 void EditorWidgetQSci::setHighlighter(EditorHighlight lang)
@@ -415,6 +450,23 @@ void EditorWidgetQSci::modified(bool mod)
         emit textChangedByUser();
 }
 
+void EditorWidgetQSci::checkUndoRedo()
+{
+    bool can = m_editor->isUndoAvailable();
+    if(can ^ m_canUndo)
+    {
+        emit undoAvailable(can);
+        m_canUndo = can;
+    }
+
+    can = m_editor->isRedoAvailable();
+    if(can ^ m_canRedo)
+    {
+        emit redoAvailable(can);
+        m_canRedo = can;
+    }
+}
+
 void EditorWidgetQSci::setModified(bool modded)
 {
     m_editor->setModified(modded);
@@ -423,6 +475,16 @@ void EditorWidgetQSci::setModified(bool modded)
 void EditorWidgetQSci::setReadOnly(bool readOnly)
 {
     m_editor->setReadOnly(readOnly);
+}
+
+void EditorWidgetQSci::undo()
+{
+    m_editor->undo();
+}
+
+void EditorWidgetQSci::redo()
+{
+    m_editor->redo();
 }
 
 #endif // USE_QSCI
