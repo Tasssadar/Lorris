@@ -36,8 +36,6 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
     m_engine = NULL;
     m_engine_type = ENGINE_QTSCRIPT;
     m_error_label = new QLabel(this);
-    m_error_label->setPixmap(QIcon(":/actions/red-cross").pixmap(16, 16));
-    m_error_label->hide();
 
     ((QHBoxLayout*)layout->itemAt(0)->layout())->insertWidget(2, m_error_label);
 }
@@ -95,12 +93,12 @@ void ScriptWidget::createEngine()
     m_engine->setPos(pos().x(), pos().y());
     m_engine->setSize(size());
 
-    connect(m_terminal, SIGNAL(keyPressed(QString)),         m_engine,      SLOT(keyPressed(QString)));
+    connect(m_terminal,    SIGNAL(keyPressed(QString)),         m_engine,   SLOT(keyPressed(QString)));
     connect(m_engine,      SIGNAL(clearTerm()),                 m_terminal, SLOT(clear()));
     connect(m_engine,      SIGNAL(appendTerm(QString)),         m_terminal, SLOT(appendText(QString)));
     connect(m_engine,      SIGNAL(appendTermRaw(QByteArray)),   m_terminal, SLOT(appendText(QByteArray)));
     connect(m_engine,      SIGNAL(SendData(QByteArray)),        this,       SIGNAL(SendData(QByteArray)));
-    connect(m_engine,      SIGNAL(error(QString)),              this,       SLOT(blinkError()));
+    connect(m_engine,      SIGNAL(error(QString)),              this,       SLOT(blinkError(QString)));
     connect(this,          SIGNAL(rawData(QByteArray)),         m_engine,   SLOT(rawData(QByteArray)));
 }
 
@@ -215,6 +213,9 @@ void ScriptWidget::setSourceTriggered()
     emit addChildTab(m_editor, m_editor->windowTitle());
     m_editor->activateTab();
 
+    if(!m_errors.isEmpty())
+        m_editor->addError(m_errors);
+
     connect(m_editor, SIGNAL(applySource()),     SLOT(sourceSet()));
     connect(m_editor, SIGNAL(rejected()),        SLOT(closeEditor()), Qt::QueuedConnection);
     connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
@@ -234,10 +235,8 @@ void ScriptWidget::sourceSet()
             createEngine();
             connect(m_engine, SIGNAL(error(QString)), m_editor, SLOT(addError(QString)));
         }
-        m_editor->clearErrors();
 
-        m_error_blink_timer.stop();
-        m_error_label->hide();
+        clearErrors();
 
         m_engine->setSource(m_editor->getSource());
         m_filename = m_editor->getFilename();
@@ -299,8 +298,34 @@ void ScriptWidget::onScriptEvent(const QString& eventId)
 
 void ScriptWidget::blinkError()
 {
-    m_error_label->setVisible(!m_error_label->isVisible());
+    if(!m_error_label->pixmap() || m_error_label->pixmap()->isNull())
+    {
+        static const QPixmap pixmap = QIcon(":/actions/red-cross").pixmap(16, 16);
+        m_error_label->setPixmap(pixmap);
+    }
+    else
+        m_error_label->clear();
+
     m_error_blink_timer.start(500);
+}
+
+void ScriptWidget::blinkError(const QString &text)
+{
+    m_errors.append(text);
+    m_error_label->setToolTip(text);
+    blinkError();
+}
+
+void ScriptWidget::clearErrors()
+{
+    if(m_editor)
+        m_editor->clearErrors();
+
+    m_errors.clear();
+
+    m_error_blink_timer.stop();
+    m_error_label->setToolTip(QString());
+    m_error_label->clear();
 }
 
 void ScriptWidget::titleDoubleClick()

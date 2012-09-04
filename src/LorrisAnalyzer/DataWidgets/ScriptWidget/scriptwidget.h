@@ -50,6 +50,7 @@ protected slots:
      void sourceSet();
      void closeEditor();
      void blinkError();
+     void blinkError(const QString& text);
      void addExampleTab(const QString& name);
      void inputShowAct(bool show);
      void setSourceDirect(const QString& source);
@@ -61,6 +62,7 @@ protected:
      void titleDoubleClick();
 
      void createEngine();
+     void clearErrors();
 
      QPointer<ScriptEditor> m_editor;
      QtPointerArray<ExamplePreviewTab> m_examplePrevs;
@@ -72,6 +74,7 @@ protected:
      QString m_filename;
      QLabel *m_error_label;
      QTimer m_error_blink_timer;
+     QString m_errors;
 };
 
 class ScriptWidgetAddBtn : public DataWidgetAddBtn
