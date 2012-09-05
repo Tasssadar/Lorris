@@ -32,14 +32,14 @@ static void addEnum()
     REGISTER_ENUM(NUM_DOUBLE);
 }
 
-REGISTER_DATAWIDGET(WIDGET_NUMBERS, Number, &addEnum)
+REGISTER_DATAWIDGET(WIDGET_NUMBER, Number, &addEnum)
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
     setTitle(tr("Number"));
     setIcon(":/dataWidgetIcons/num.png");
 
-    m_widgetType = WIDGET_NUMBERS;
+    m_widgetType = WIDGET_NUMBER;
 
     num = new QLabel("0", this);
     num->setAlignment(Qt::AlignCenter);
@@ -301,7 +301,7 @@ NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(paren
     setIconSize(QSize(17, 17));
     setIcon(QIcon(":/dataWidgetIcons/num.png"));
 
-    m_widgetType = WIDGET_NUMBERS;
+    m_widgetType = WIDGET_NUMBER;
 }
 
 

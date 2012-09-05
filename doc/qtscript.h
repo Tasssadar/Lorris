@@ -35,7 +35,7 @@ DataWidget *newWidget(int type, String name, int w = 0, int h = 0, int x = 0, in
  */
 enum
 {
-    WIDGET_NUMBERS,
+    WIDGET_NUMBER,
     WIDGET_BAR,
     WIDGET_COLOR,
     WIDGET_GRAPH,

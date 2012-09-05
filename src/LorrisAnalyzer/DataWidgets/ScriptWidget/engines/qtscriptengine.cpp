@@ -456,7 +456,7 @@ QScriptValue QtScriptEngine_private::__sendData(QScriptContext *context, QScript
 
 QScriptValue QtScriptEngine_private::__newNumberWidget(QScriptContext *context, QScriptEngine *engine)
 {
-    DataWidget *w = ((QtScriptEngine_private*)engine)->addWidget(WIDGET_NUMBERS, context);
+    DataWidget *w = ((QtScriptEngine_private*)engine)->addWidget(WIDGET_NUMBER, context);
     return engine->newQObject(w);
 }
 

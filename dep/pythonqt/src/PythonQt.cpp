@@ -487,24 +487,32 @@ bool PythonQt::addSignalHandler(QObject* obj, const char* signal, PyObject* modu
 
 bool PythonQt::addSignalHandler(QObject* obj, const char* signal, PyObject* receiver)
 {
-    if(PyCallable_Check(receiver))
+    if(PyFunction_Check(receiver))
     {
         PyFunctionObject *func = (PyFunctionObject*)receiver;
-        if(func->func_module &&
-          (quint64)func->func_module != 0x01 && // Wat?
-          PyString_Check(func->func_module))
-        {
+        if(func->func_module && PyString_Check(func->func_module))
             _p->addSlot(QString(PyString_AsString(func->func_module)), receiver);
-        }
+    }
+    else if(PyMethod_Check(receiver) && PyClass_Check(PyMethod_GET_CLASS(receiver)))
+    {
+        PyClassObject* cl = (PyClassObject*)PyMethod_GET_CLASS(receiver);
+        PyObject *module_str = PyDict_GetItem(cl->cl_dict, PyString_FromString("__module__"));
+        if(module_str && PyString_Check(module_str))
+            _p->addSlot(QString(PyString_AsString(module_str)), receiver);
+    }
+    else if(PyClass_Check(receiver))
+    {
+        PyClassObject* cl = (PyClassObject*)receiver;
+        PyObject *module_str = PyDict_GetItem(cl->cl_dict, PyString_FromString("__module__"));
+        if(module_str && PyString_Check(module_str))
+            _p->addSlot(QString(PyString_AsString(module_str)), receiver);
     }
 
-  bool flag = false;
-
-  PythonQtSignalReceiver* r = getSignalReceiver(obj);
-  if (r) {
-    flag = r->addSignalHandler(signal, receiver);
-  }
-  return flag;
+    bool flag = false;
+    PythonQtSignalReceiver* r = getSignalReceiver(obj);
+    if (r)
+        flag = r->addSignalHandler(signal, receiver);
+    return flag;
 }
 
 bool PythonQt::removeSignalHandler(QObject* obj, const char* signal, PyObject* module, const QString& objectname)

@@ -11,7 +11,7 @@ class lorris
 public:
     enum WidgetTypes
     {
-        WIDGET_NUMBERS,
+        WIDGET_NUMBER,
         WIDGET_BAR,
         WIDGET_COLOR,
         WIDGET_GRAPH,
