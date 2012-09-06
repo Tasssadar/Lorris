@@ -128,7 +128,8 @@ void SourceDialog::butonnBoxClicked(QAbstractButton *b)
 
 void SourceDialog::packetReceived(analyzer_data *data, quint32)
 {
-    scroll_layout->SetData(data);
+    if(!ui->freezeBtn->isChecked())
+        scroll_layout->SetData(data);
 }
 
 void SourceDialog::AddOrRmHeaderType(bool add, quint8 type)
