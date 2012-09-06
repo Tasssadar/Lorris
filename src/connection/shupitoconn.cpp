@@ -11,6 +11,7 @@ PortShupitoConnection::PortShupitoConnection()
 PortShupitoConnection::~PortShupitoConnection()
 {
     this->Close();
+    Q_ASSERT(!m_holdsTabRef);
 }
 
 void PortShupitoConnection::setPort(ConnectionPointer<PortConnection> const & port)
