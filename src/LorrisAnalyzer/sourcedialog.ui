@@ -561,7 +561,7 @@ to change order</string>
             <property name="text">
              <string>Header of Avakar's protocol is 2 bytes long and has this structure:
 
-0x80, (cmd &lt;&lt; 4 | lenght)
+0x80, (cmd &lt;&lt; 4 | length)
 
 That means it cannot be set in standard UI yet, hence this special option.</string>
             </property>
