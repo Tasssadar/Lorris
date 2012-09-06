@@ -3,6 +3,7 @@
 PortShupitoConnection::PortShupitoConnection()
     : ShupitoConnection(CONNECTION_PORT_SHUPITO),
       m_port(0),
+      m_holdsTabRef(false),
       m_parserState(pst_discard)
 {
 }
@@ -22,7 +23,7 @@ void PortShupitoConnection::setPort(ConnectionPointer<PortConnection> const & po
     if (m_port)
     {
         disconnect(m_port.data(), 0, this, 0);
-        m_port->releaseTab();
+        releasePortTabRef();
     }
 
     m_port = port;
@@ -34,10 +35,6 @@ void PortShupitoConnection::setPort(ConnectionPointer<PortConnection> const & po
         connect(m_port.data(), SIGNAL(stateChanged(ConnectionState)), this, SLOT(portStateChanged(ConnectionState)));
         connect(m_port.data(), SIGNAL(dataRead(QByteArray)), this, SLOT(portDataRead(QByteArray)));
         this->portStateChanged(m_port->state());
-
-        // add TabRef so that connection is not closed when another tab
-        // with this PortConnection calls releaseTab();
-        m_port->addTabRef();
     }
 }
 
@@ -50,6 +47,10 @@ void PortShupitoConnection::OpenConcurrent()
         return;
 
     this->SetState(st_connecting);
+
+    // add TabRef so that connection is not closed when another tab
+    // with this PortConnection calls releaseTab();
+    addPortTabRef();
 
     if (m_port->state() != st_connected)
         m_port->OpenConcurrent();
@@ -66,7 +67,7 @@ void PortShupitoConnection::Close()
     {
         emit disconnecting();
         this->SetState(st_disconnected);
-        m_port->Close();
+        releasePortTabRef();
     }
 }
 
@@ -74,6 +75,7 @@ void PortShupitoConnection::portStateChanged(ConnectionState state)
 {
     if (state == st_disconnected)
     {
+        releasePortTabRef();
         this->SetState(st_disconnected);
     }
     else if (state == st_connected && this->state() == st_connecting)
@@ -173,4 +175,24 @@ void PortShupitoConnection::sendPacket(ShupitoPacket const & packet)
     data.append((char const *)packet.data(), packet.size());
     data[1] = (data[1] << 4) | (packet.size() - 1);
     m_port->SendData(data);
+}
+
+void PortShupitoConnection::addPortTabRef()
+{
+    if(!m_port || m_holdsTabRef)
+        return;
+
+    m_holdsTabRef = true;
+    m_port->addTabRef();
+}
+
+void PortShupitoConnection::releasePortTabRef()
+{
+    if(!m_holdsTabRef)
+        return;
+
+    m_holdsTabRef = false;
+
+    if(m_port)
+        m_port->releaseTab();
 }

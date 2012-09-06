@@ -44,7 +44,11 @@ private slots:
     void portDataRead(QByteArray const & data);
 
 private:
+    void addPortTabRef();
+    void releasePortTabRef();
+
     ConnectionPointer<PortConnection> m_port;
+    bool m_holdsTabRef;
 
     enum { pst_init0, pst_init1, pst_init2, pst_discard, pst_cmd, pst_data } m_parserState;
     size_t m_parserLen;
