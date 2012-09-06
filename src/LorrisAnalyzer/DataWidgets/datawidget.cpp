@@ -256,7 +256,8 @@ void DataWidget::leaveEvent(QEvent *)
 
 void DataWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(isLocked() || !event->source() || !event->mimeData()->hasText() || event->mimeData()->text().at(0) == 'w')
+    const QMimeData *mime = event->mimeData();
+    if(isLocked() || !event->source() || !mime || !mime->hasFormat("analyzer/dragLabel"))
     {
         QFrame::dragEnterEvent(event);
         return;
@@ -271,11 +272,10 @@ void DataWidget::dropEvent(QDropEvent *event)
 
     event->acceptProposedAction();
 
-    QStringList data = event->mimeData()->text().split(" ");
-    qint32 pos = data[0].toInt();
-    qint16 device = data[1].toInt();
-    qint16 cmd = data[2].toInt();
-    setInfo(device, cmd, pos);
+    QByteArray data = event->mimeData()->data("analyzer/dragLabel");
+    QDataStream str(data);
+
+    str >> m_info.pos >> m_info.device >> m_info.command;
 
     m_state |= STATE_ASSIGNED;
 

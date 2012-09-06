@@ -67,6 +67,7 @@ public:
     }
 
     QString getLabelText(quint32 index);
+    int getLabelPos(DraggableLabel *label);
 
     bool setHightlightLabel(quint32 pos, bool highlight);
 
@@ -85,6 +86,7 @@ protected:
     virtual quint8 GetTypeForPos(quint32 pos);
 
     std::vector<DraggableLabel*> m_labels;
+    std::vector<DraggableLabel*> m_freedLabels;
     analyzer_header *m_header;
 
     inline quint32 getFirstLabelPos(bool withLabelsSize)
@@ -94,6 +96,10 @@ protected:
             res += m_labels.size();
         return res;
     }
+
+private slots:
+    void setLabelFreed(DraggableLabel *label);
+    void freeLabels();
 
 private:
     QSpacerItem *m_spacer_r;

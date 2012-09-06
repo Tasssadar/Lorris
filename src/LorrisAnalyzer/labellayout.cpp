@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QDrag>
+#include <QTimer>
 
 #include "labellayout.h"
 #include "sourcedialog.h"
@@ -40,11 +41,17 @@ LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enab
     lenChanged(len);
     cmd_w = cmd;
     dev_w = dev;
+
+    QTimer *freeTimer = new QTimer(this);
+    freeTimer->start(1000);
+    connect(freeTimer, SIGNAL(timeout()), SLOT(freeLabels()));
 }
 
 LabelLayout::~LabelLayout()
 {
     ClearLabels();
+    freeLabels();
+
     removeItem(m_spacer_r);
     removeItem(m_spacer_l);
     delete m_spacer_r;
@@ -53,12 +60,26 @@ LabelLayout::~LabelLayout()
 
 void LabelLayout::ClearLabels()
 {
-    for(quint16 i = 0; i < m_labels.size(); ++i)
+    for(quint32 i = 0; i < m_labels.size(); ++i)
     {
         removeWidget(m_labels[i]);
-        delete m_labels[i];
+        setLabelFreed(m_labels[i]);
     }
     m_labels.clear();
+}
+
+void LabelLayout::freeLabels()
+{
+    for(quint32 i = 0; i < m_freedLabels.size(); ++i)
+        delete m_freedLabels[i];
+    m_freedLabels.clear();
+}
+
+void LabelLayout::setLabelFreed(DraggableLabel *label)
+{
+    label->setVisible(false);
+    disconnect(label, 0, this, 0);
+    m_freedLabels.push_back(label);
 }
 
 void LabelLayout::AddLabel(QString value, qint8 type)
@@ -66,9 +87,22 @@ void LabelLayout::AddLabel(QString value, qint8 type)
     if(type == -1)
         type = GetTypeForPos(m_labels.size());
 
-    DraggableLabel *label = new DraggableLabel(value, m_labels.size(), m_enableReorder, m_enableDrag, this);
+    DraggableLabel *label = NULL;
+
+    if(m_freedLabels.empty())
+        label = new DraggableLabel(value, m_labels.size(), m_enableReorder, m_enableDrag, this);
+    else
+    {
+        label = m_freedLabels.back();
+        m_freedLabels.pop_back();
+
+        label->setLabelText(value);
+        label->setPos(m_labels.size());
+        label->setVisible(true);
+    }
+
     SetLabelType(label, type);
-    label->setObjectName(QString::number(m_labels.size()));
+
     if(m_enableReorder)
         connect(label, SIGNAL(changePos(int,int)), this, SLOT(changePos(int,int)));
 
@@ -78,19 +112,16 @@ void LabelLayout::AddLabel(QString value, qint8 type)
 
 void LabelLayout::RemoveLabel(quint16 index)
 {
+    if(index >= m_labels.size())
+        return;
+
     removeWidget(m_labels[index]);
-    delete m_labels[index];
+    setLabelFreed(m_labels[index]);
 
-    std::vector<DraggableLabel*>::iterator itr = m_labels.begin();
-    for(quint16 i = 0; i < index; ++i)
-        ++itr;
-    m_labels.erase(itr);
+    m_labels.erase(m_labels.begin()+index);
 
-    for(quint16 i = 0; i < m_labels.size(); ++i)
-    {
-        m_labels[i]->setObjectName(QString::number(i));
+    for(quint16 i = index; i < m_labels.size(); ++i)
         m_labels[i]->setPos(i);
-    }
 }
 
 QString LabelLayout::getLabelText(quint32 index)
@@ -100,13 +131,19 @@ QString LabelLayout::getLabelText(quint32 index)
     return m_labels[index]->GetText();
 }
 
+int LabelLayout::getLabelPos(DraggableLabel *label)
+{
+    for(quint32 i = 0; i < m_labels.size(); ++i)
+        if(m_labels[i] == label)
+            return i;
+    return -1;
+}
+
 void LabelLayout::changePos(int this_label, int dragged_label)
 {
     DraggableLabel *label = m_labels[this_label];
     m_labels[this_label] = m_labels[dragged_label];
     m_labels[dragged_label] = label;
-    m_labels[this_label]->setObjectName(QString::number(this_label));
-    m_labels[dragged_label]->setObjectName(QString::number(dragged_label));
     m_labels[this_label]->setPos(this_label);
     m_labels[dragged_label]->setPos(dragged_label);
 
@@ -347,14 +384,21 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
     {
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
+
+        QByteArray data;
+        QDataStream str(&data, QIODevice::WriteOnly);
+        str << labelLayout->getLabelPos(this);
+
         if(m_drag && !m_drop && labelLayout)
         {
-            mimeData->setText(objectName() + " " +
-                              QString::number(labelLayout->getDeviceTab()->getCurrentDevice()) + " " +
-                              QString::number(labelLayout->getCmdTab()->getCurrentCmd()));
+            str << labelLayout->getDeviceTab()->getCurrentDevice();
+            str << labelLayout->getCmdTab()->getCurrentCmd();
+
+            mimeData->setData("analyzer/dragLabel", data);
         }
         else
-            mimeData->setText(objectName());
+            mimeData->setData("analyzer/dropLabel", data);
+
         drag->setMimeData(mimeData);
 
         QPixmap pixmap(size());
@@ -369,7 +413,18 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 
 void DraggableLabel::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(!m_drop || !event->source() || event->mimeData()->text() == objectName())
+    const QMimeData *mime = event->mimeData();
+    if(!mime || !mime->hasFormat("analyzer/dropLabel") || !event->source())
+        return QWidget::dragEnterEvent(event);
+
+    int pos;
+    int myPos = labelLayout->getLabelPos(this);
+
+    QByteArray data = mime->data("analyzer/dropLabel");
+    QDataStream str(data);
+    str >> pos;
+
+    if(myPos == pos)
         return QWidget::dragEnterEvent(event);
 
     event->acceptProposedAction();
@@ -382,6 +437,7 @@ void DraggableLabel::dragLeaveEvent(QDragLeaveEvent */*event*/)
 {
     if(!m_drop)
         return;
+
     QString css = valueLabel->styleSheet();
     css.replace(QRegExp("red"), "orange");
     valueLabel->setStyleSheet(css);
@@ -391,7 +447,16 @@ void DraggableLabel::dropEvent(QDropEvent *event)
 {
     if(!m_drop)
         return;
-    emit changePos(objectName().toInt(), event->mimeData()->text().toInt());
+
+    int myPos = labelLayout->getLabelPos(this);
+    int pos;
+
+    QByteArray data = event->mimeData()->data("analyzer/dropLabel");
+    QDataStream str(data);
+    str >> pos;
+
+    emit changePos(myPos, pos);
+
     QString css = valueLabel->styleSheet();
     css.replace(QRegExp("red"), "orange");
     valueLabel->setStyleSheet(css);

@@ -188,6 +188,8 @@ void SourceDialog::headerLenChanged(int value)
     m_packet.header->length = value;
     if(scroll_layout->GetLabelCount() < (quint32)value)
         scroll_layout->lenChanged(value);
+
+    scroll_header->UpdateTypes();
     scroll_layout->UpdateTypes();
 
     m_parser->resetCurPacket();
