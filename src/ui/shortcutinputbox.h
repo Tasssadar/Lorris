@@ -8,12 +8,11 @@
 #ifndef SHORTCUTINPUTBOX_H
 #define SHORTCUTINPUTBOX_H
 
-#include <QLineEdit>
 #include <QShortcut>
 
-class QToolButton;
+#include "resettablelineedit.h"
 
-class ShortcutInputBox : public QLineEdit
+class ShortcutInputBox : public ResettableLineEdit
 {
     Q_OBJECT
     
@@ -24,18 +23,13 @@ public:
     QKeySequence getKeySequence() { return m_sequence; }
     void setKeySequence(const QKeySequence& seq);
 
+protected slots:
+    void reset();
+
 protected:
-    void resizeEvent(QResizeEvent *);
     void keyPressEvent(QKeyEvent *event);
 
-private slots:
-    void updateClearBtn(const QString& text);
-    void clearSeq();
-
 private:
-    void init();
-
-    QToolButton *m_clear_btn;
     QKeySequence m_sequence;
 };
 

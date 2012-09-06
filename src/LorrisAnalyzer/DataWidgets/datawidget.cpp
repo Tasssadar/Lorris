@@ -38,6 +38,8 @@ DataWidget::DataWidget(QWidget *parent) :
 
     m_closeLabel = new CloseLabel(this);
 
+    m_error_label = NULL;
+
     QFrame *sepV = new QFrame(this);
     sepV->setFrameStyle(QFrame::HLine | QFrame::Plain);
     sepV->setLineWidth(1);
@@ -710,6 +712,58 @@ void DataWidget::startAnimation(const QRect &target)
     connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
     animation->start();
+}
+
+void DataWidget::setUseErrorLabel(bool use)
+{
+    if(!(use ^ bool(m_error_label)))
+        return;
+
+    if(use)
+    {
+        m_error_label = new QLabel(this);
+        m_error_blink_timer = new QTimer(this);
+        ((QHBoxLayout*)layout->itemAt(0)->layout())->insertWidget(2, m_error_label);
+
+        connect(m_error_blink_timer, SIGNAL(timeout()), SLOT(blinkErrorLabel()));
+    }
+    else
+    {
+        delete m_error_label;
+        delete m_error_blink_timer;
+        m_error_label = NULL;
+        m_error_blink_timer = NULL;
+    }
+}
+
+void DataWidget::blinkErrorLabel()
+{
+    if(!m_error_label->pixmap() || m_error_label->pixmap()->isNull())
+    {
+        static const QPixmap pixmap = QIcon(":/actions/red-cross").pixmap(16, 16);
+        m_error_label->setPixmap(pixmap);
+    }
+    else
+        m_error_label->clear();
+    m_error_blink_timer->start(500);
+}
+
+void DataWidget::setError(bool error, QString tooltip)
+{
+    if(!m_error_label)
+        return;
+
+    if(error)
+    {
+        m_error_label->setToolTip(tooltip);
+        blinkErrorLabel();
+    }
+    else
+    {
+        m_error_blink_timer->stop();
+        m_error_label->clear();
+        m_error_label->setToolTip(tooltip);
+    }
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)

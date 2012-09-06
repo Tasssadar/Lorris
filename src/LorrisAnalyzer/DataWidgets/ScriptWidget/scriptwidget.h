@@ -49,7 +49,6 @@ protected slots:
      void setSourceTriggered();
      void sourceSet();
      void closeEditor();
-     void blinkError();
      void blinkError(const QString& text);
      void addExampleTab(const QString& name);
      void inputShowAct(bool show);
@@ -72,8 +71,6 @@ protected:
      QLineEdit *m_inputEdit;
      QAction *m_inputAct;
      QString m_filename;
-     QLabel *m_error_label;
-     QTimer m_error_blink_timer;
      QString m_errors;
 };
 

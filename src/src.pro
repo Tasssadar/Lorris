@@ -131,7 +131,8 @@ SOURCES += ui/mainwindow.cpp \
     ui/colordialog.cpp \
     misc/gestureidentifier.cpp \
     LorrisAnalyzer/DataWidgets/statuswidget.cpp \
-    ui/colorbutton.cpp
+    ui/colorbutton.cpp \
+    ui/resettablelineedit.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -243,7 +244,8 @@ HEADERS += ui/mainwindow.h \
     misc/gestureidentifier.h \
     misc/qtpointerarray.h \
     LorrisAnalyzer/DataWidgets/statuswidget.h \
-    ui/colorbutton.h
+    ui/colorbutton.h \
+    ui/resettablelineedit.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -269,7 +271,8 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/sliderwidget_vertical.ui \
     ui/tabswitchwidget.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui \
-    LorrisAnalyzer/DataWidgets/statusmanager.ui
+    LorrisAnalyzer/DataWidgets/statusmanager.ui \
+    LorrisAnalyzer/DataWidgets/formuladialog.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

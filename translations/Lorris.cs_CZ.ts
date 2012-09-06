@@ -497,12 +497,12 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="801"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="855"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="802"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="856"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -643,22 +643,22 @@
 <context>
     <name>DataWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="96"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="98"/>
         <source>Lock</source>
         <translation>Uzamknout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="101"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="103"/>
         <source>Set title</source>
         <translation>Změnit jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="479"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="481"/>
         <source>Set widget title</source>
         <translation>Nastavení jména widgetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="479"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="481"/>
         <source>Enter title:</source>
         <translation>Zadejne nové jméno:</translation>
     </message>
@@ -791,6 +791,44 @@
         <location filename="../src/LorrisShupito/flashbuttonmenu.cpp" line="47"/>
         <source>Write fuses</source>
         <translation>Zapsat pojistky</translation>
+    </message>
+</context>
+<context>
+    <name>FormulaDialog</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/formuladialog.ui" line="14"/>
+        <source>Edit formula</source>
+        <translation>Upravit výraz</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/formuladialog.ui" line="20"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;DejaVu Sans&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Input value will be evaluated with formula you specify. &amp;quot;%n&amp;quot; represents the input value. You can use operators like in JavaScript (or C, they are really similiar). Formula must contain &amp;quot;%n&amp;quot;. You can use %n multiple times in one formula.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Example formula: &lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;(%n + 20)/42&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;DejaVu Sans&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;
+Vstupní hodnota bude zpracována výrazem, který zde vyplníte. &amp;quot;%n&amp;quot; zastupuje vstupní hodnotu. Můžete použít operátory jako v JavaScriptu (nebo C, jsou dost podobné). Výraz musí obsahovat &amp;quot;%n&amp;quot;. %n můžete použít ve výrazu vícekrát.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Příklad: &lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;(%n + 20)/42&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/formuladialog.ui" line="38"/>
+        <source>Formula:</source>
+        <translation>Výraz:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="413"/>
+        <source>There is an error in the formula, following exception was thrown:
+
+%1</source>
+        <translation>Ve výrazu je chyba, nastala následující výjimka:</translation>
     </message>
 </context>
 <context>
@@ -2323,100 +2361,110 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>NumberWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="70"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="76"/>
         <source>Format</source>
         <translation>Formát</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="69"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="75"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="39"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="40"/>
         <source>Number</source>
         <translation>Číslo</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="80"/>
         <source>unsigned 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="75"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="81"/>
         <source>unsigned 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="76"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="82"/>
         <source>unsigned 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="77"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="83"/>
         <source>unsigned 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="79"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="85"/>
         <source>signed 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="80"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="86"/>
         <source>signed 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="81"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="87"/>
         <source>signed 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="82"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="88"/>
         <source>signed 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="84"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="90"/>
         <source>float (4 bytes)</source>
         <translation>float (4 byty)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="85"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="91"/>
         <source>double (8 bytes)</source>
         <translation>double (8 bytů)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="106"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="112"/>
         <source>Decimal</source>
         <translation>Desítkový</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="107"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="113"/>
         <source>Decimal (w/ exponent)</source>
         <translation>Desítkový (s exponentem)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="108"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="114"/>
         <source>Hex</source>
         <translation>Hexadecimální</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="109"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="115"/>
         <source>Binary</source>
         <translation>Binární</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="125"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="131"/>
         <source>Level off</source>
         <translation>Zarovnat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="136"/>
+        <source>Set formula...</source>
+        <translation>Nastavit výraz...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="349"/>
+        <source>Formula must contain &quot;%n&quot; expression!</source>
+        <translation>Výraz musí obsahovat &quot;%n&quot;!</translation>
     </message>
 </context>
 <context>
     <name>NumberWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="300"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="374"/>
         <source>Number</source>
         <translation>Číslo</translation>
     </message>
@@ -3035,6 +3083,14 @@ stejného souboru vícekrát:</translation>
     </message>
 </context>
 <context>
+    <name>ResettableLineEdit</name>
+    <message>
+        <location filename="../src/ui/resettablelineedit.cpp" line="29"/>
+        <source>Reset to default value</source>
+        <translation>Vrátit na původní hodnotu</translation>
+    </message>
+</context>
+<context>
     <name>ResizeLine</name>
     <message>
         <location filename="../src/ui/resizeline.cpp" line="169"/>
@@ -3251,22 +3307,22 @@ Available in script as &quot;inputLine&quot; (class QLineEdit) object.</source>
 Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="63"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="62"/>
         <source>Set source...</source>
         <translation>Zdrojový kód scriptu...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="64"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="63"/>
         <source>Show input line</source>
         <translation>Zobrat řádek pro vstup</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="86"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="84"/>
         <source>Script engine %1 is not available, using QtScript!</source>
         <translation>Script engine %1 není k dispozici, používám QtScript!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="341"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="323"/>
         <source> - example</source>
         <translation>- příklad</translation>
     </message>
@@ -3274,7 +3330,7 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
 <context>
     <name>ScriptWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="354"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="336"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -3590,8 +3646,10 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ShortcutInputBox</name>
     <message>
-        <location filename="../src/ui/shortcutinputbox.cpp" line="27"/>
-        <location filename="../src/ui/shortcutinputbox.cpp" line="28"/>
+        <location filename="../src/ui/shortcutinputbox.cpp" line="16"/>
+        <location filename="../src/ui/shortcutinputbox.cpp" line="17"/>
+        <location filename="../src/ui/shortcutinputbox.cpp" line="22"/>
+        <location filename="../src/ui/shortcutinputbox.cpp" line="23"/>
         <source>Press keys...</source>
         <translation>Stisknětě klávesy...</translation>
     </message>

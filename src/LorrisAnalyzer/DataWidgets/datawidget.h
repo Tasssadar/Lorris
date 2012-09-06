@@ -194,11 +194,16 @@ protected:
     bool isUpdating() const { return (m_state & STATE_UPDATING); }
     bool isMoveBlocked() const { return (m_state & STATE_BLOCK_MOVE); }
 
+    void setUseErrorLabel(bool use);
+    void setError(bool error, QString tooltip = QString());
+
     quint8 m_widgetType;
     data_widget_info m_info;
     qint32 m_widgetControlled;
 
     QVBoxLayout *layout;
+    QLabel *m_error_label;
+    QTimer *m_error_blink_timer;
     QMenu *contextMenu;
 
     quint8 m_state;
@@ -206,6 +211,7 @@ protected:
 private slots:
     void setTitleTriggered();
     void gestureCompleted(int gesture);
+    void blinkErrorLabel();
 
 private:
     inline void mapToGrid(int &val);

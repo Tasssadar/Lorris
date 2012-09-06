@@ -35,9 +35,6 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 
     m_engine = NULL;
     m_engine_type = ENGINE_QTSCRIPT;
-    m_error_label = new QLabel(this);
-
-    ((QHBoxLayout*)layout->itemAt(0)->layout())->insertWidget(2, m_error_label);
 }
 
 ScriptWidget::~ScriptWidget()
@@ -60,13 +57,14 @@ void ScriptWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
+    setUseErrorLabel(true);
+
     QAction *src_act = contextMenu->addAction(tr("Set source..."));
     m_inputAct = contextMenu->addAction(tr("Show input line"));
     m_inputAct->setCheckable(true);
 
     connect(m_inputAct,           SIGNAL(triggered(bool)), SLOT(inputShowAct(bool)));
     connect(src_act,              SIGNAL(triggered()), SLOT(setSourceTriggered()));
-    connect(&m_error_blink_timer, SIGNAL(timeout()),   SLOT(blinkError()));
     connect(this, SIGNAL(closeEdit()), SLOT(closeEditor()), Qt::QueuedConnection);
     connect(this, SIGNAL(setSourceDelayed(QString)), SLOT(setSourceDirect(QString)), Qt::QueuedConnection);
 
@@ -296,24 +294,10 @@ void ScriptWidget::onScriptEvent(const QString& eventId)
         m_engine->callEventHandler(eventId);
 }
 
-void ScriptWidget::blinkError()
-{
-    if(!m_error_label->pixmap() || m_error_label->pixmap()->isNull())
-    {
-        static const QPixmap pixmap = QIcon(":/actions/red-cross").pixmap(16, 16);
-        m_error_label->setPixmap(pixmap);
-    }
-    else
-        m_error_label->clear();
-
-    m_error_blink_timer.start(500);
-}
-
 void ScriptWidget::blinkError(const QString &text)
 {
     m_errors.append(text);
-    m_error_label->setToolTip(text);
-    blinkError();
+    setError(true, text);
 }
 
 void ScriptWidget::clearErrors()
@@ -323,9 +307,7 @@ void ScriptWidget::clearErrors()
 
     m_errors.clear();
 
-    m_error_blink_timer.stop();
-    m_error_label->setToolTip(QString());
-    m_error_label->clear();
+    setError(false);
 }
 
 void ScriptWidget::titleDoubleClick()
