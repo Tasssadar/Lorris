@@ -16,6 +16,7 @@
 #include <QTimer>
 
 class QEventLoop;
+class PortConnection;
 
 enum DataBlocks
 {
@@ -92,6 +93,9 @@ public:
 
     void writeColor(const QColor& color);
     QColor readColor();
+
+    void writeConn(PortConnection *conn);
+    bool readConn(quint8& type, QHash<QString, QVariant>& cfg);
 
     QString getAttachmentFilename();
 

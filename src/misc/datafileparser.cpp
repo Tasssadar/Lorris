@@ -17,6 +17,7 @@
 #include "datafileparser.h"
 #include "config.h"
 #include "../ui/tooltipwarn.h"
+#include "../connection/connection.h"
 
 #define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
 
@@ -247,6 +248,71 @@ QColor DataFileParser::readColor()
         return QColor();
 
     return QColor(readVal<QRgb>());
+}
+
+void DataFileParser::writeConn(PortConnection *conn)
+{
+    if(!conn || !conn->canSaveToSession())
+    {
+        writeVal(false);
+        return;
+    }
+
+    writeVal(true);
+    writeVal(conn->getType());
+
+    QHash<QString, QVariant> cfg = conn->config();
+    writeVal((int)cfg.count());
+    for(QHash<QString, QVariant>::iterator itr = cfg.begin(); itr != cfg.end(); ++itr)
+    {
+        writeString(itr.key());
+        writeVal((int)(*itr).type());
+
+        switch((*itr).type())
+        {
+            case QVariant::String:
+                writeString((*itr).toString());
+                break;
+            case QVariant::Int:
+            case QVariant::UInt:
+                writeVal((*itr).value<int>());
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+bool DataFileParser::readConn(quint8 &type, QHash<QString, QVariant> &cfg)
+{
+    if(!readVal<bool>())
+        return false;
+
+    type = readVal<quint8>();
+    int count = readVal<int>();
+
+    for(int i = 0; i < count; ++i)
+    {
+        QString key = readString();
+        int val_type = readVal<int>();
+
+        QVariant val;
+        switch(val_type)
+        {
+            case QVariant::String:
+                val = readString();
+                break;
+            case QVariant::Int:
+            case QVariant::UInt:
+                val = readVal<int>();
+                val.convert((QVariant::Type)val_type);
+                break;
+            default:
+                break;
+        }
+        cfg.insert(key, val);
+    }
+    return true;
 }
 
 QString DataFileParser::getAttachmentFilename()

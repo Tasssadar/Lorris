@@ -519,7 +519,7 @@ void ConnectionManager2::autoShupitoDestroyed()
     port->release();
 }
 
-ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type, const QHash<QString, QVariant> &cfg)
+ConnectionPointer<PortConnection> ConnectionManager2::getConnWithConfig(quint8 type, const QHash<QString, QVariant> &cfg)
 {
     this->refresh();
 
@@ -539,7 +539,7 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
                     if(!sp->removable())
                         enumCon = sp;
                     else if(sp->baudRate() == cfg["baud_rate"])
-                        return ConnectionPointer<Connection>::fromPtr(sp);
+                        return ConnectionPointer<PortConnection>::fromPtr(sp);
                 }
                 break;
             }
@@ -547,26 +547,26 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
             {
                 TcpSocket *socket = (TcpSocket*)m_conns[i];
                 if(socket->host() == cfg["host"] && socket->port() == cfg["port"])
-                    return ConnectionPointer<Connection>::fromPtr(socket);
+                    return ConnectionPointer<PortConnection>::fromPtr(socket);
                 break;
             }
             case CONNECTION_PROXY_TUNNEL:
             {
                 ProxyTunnel *tunnel = (ProxyTunnel*)m_conns[i];
                 if(tunnel->name() == cfg["name"])
-                    return ConnectionPointer<Connection>::fromPtr(tunnel);
+                    return ConnectionPointer<PortConnection>::fromPtr(tunnel);
                 break;
             }
             default:
-                return ConnectionPointer<Connection>();
+                return ConnectionPointer<PortConnection>();
         }
     }
 
     if(enumCon)
     {
         enumCon->applyConfig(cfg);
-        return ConnectionPointer<Connection>::fromPtr(enumCon);
+        return ConnectionPointer<PortConnection>::fromPtr(enumCon);
     }
 
-    return ConnectionPointer<Connection>();
+    return ConnectionPointer<PortConnection>();
 }

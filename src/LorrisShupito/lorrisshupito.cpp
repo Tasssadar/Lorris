@@ -32,6 +32,7 @@
 #include "overvccdialog.h"
 #include "../ui/tooltipwarn.h"
 #include "../WorkTab/WorkTabMgr.h"
+#include "../connection/connectionmgr2.h"
 
 #include "ui_lorrisshupito.h"
 
@@ -1486,6 +1487,13 @@ void LorrisShupito::saveData(DataFileParser *file)
     file->writeVal(ui->over_enable->isChecked());
     file->writeVal(ui->over_turnoff->isChecked());
     file->writeVal(ui->over_val->value());
+
+    ConnectionPointer<PortShupitoConnection> sc = m_con.dynamicCast<PortShupitoConnection>();
+    if(sc)
+    {
+        file->writeBlockIdentifier("LorrShupitoConn");
+        file->writeConn(sc->port().data());
+    }
 }
 
 void LorrisShupito::loadData(DataFileParser *file)
@@ -1541,5 +1549,24 @@ void LorrisShupito::loadData(DataFileParser *file)
         ui->over_enable->setChecked(file->readVal<bool>());
         ui->over_turnoff->setChecked(file->readVal<bool>());
         ui->over_val->setValue(file->readVal<double>());
+    }
+
+    if(file->seekToNextBlock("LorrShupitoConn", BLOCK_WORKTAB))
+    {
+        quint8 type = 0;
+        QHash<QString, QVariant> cfg;
+
+        if(file->readConn(type, cfg))
+        {
+            ConnectionPointer<PortConnection> pc = sConMgr2.getConnWithConfig(type, cfg);
+            if(pc)
+            {
+                ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc.data());
+                m_connectButton->setConn(sc);
+
+                if(!sc->isOpen() && sConfig.get(CFG_BOOL_SESSION_CONNECT))
+                    sc->OpenConcurrent();
+            }
+        }
     }
 }

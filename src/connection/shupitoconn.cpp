@@ -20,7 +20,10 @@ void PortShupitoConnection::setPort(ConnectionPointer<PortConnection> const & po
         return;
 
     if (m_port)
+    {
         disconnect(m_port.data(), 0, this, 0);
+        m_port->releaseTab();
+    }
 
     m_port = port;
 
@@ -31,6 +34,10 @@ void PortShupitoConnection::setPort(ConnectionPointer<PortConnection> const & po
         connect(m_port.data(), SIGNAL(stateChanged(ConnectionState)), this, SLOT(portStateChanged(ConnectionState)));
         connect(m_port.data(), SIGNAL(dataRead(QByteArray)), this, SLOT(portDataRead(QByteArray)));
         this->portStateChanged(m_port->state());
+
+        // add TabRef so that connection is not closed when another tab
+        // with this PortConnection calls releaseTab();
+        m_port->addTabRef();
     }
 }
 
@@ -43,8 +50,14 @@ void PortShupitoConnection::OpenConcurrent()
         return;
 
     this->SetState(st_connecting);
+
     if (m_port->state() != st_connected)
         m_port->OpenConcurrent();
+    else
+    {
+        m_parserState = pst_init0;
+        this->SetState(st_connected);
+    }
 }
 
 void PortShupitoConnection::Close()

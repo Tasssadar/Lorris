@@ -108,28 +108,7 @@ void PortConnWorkTab::saveData(DataFileParser *file)
     if(m_con && m_con->canSaveToSession())
     {
         file->writeBlockIdentifier("portTabCon");
-        file->writeVal(m_con->getType());
-
-        QHash<QString, QVariant> cfg = m_con->config();
-        file->writeVal(cfg.count());
-        for(QHash<QString, QVariant>::iterator itr = cfg.begin(); itr != cfg.end(); ++itr)
-        {
-            file->writeString(itr.key());
-            file->writeVal((int)(*itr).type());
-
-            switch((*itr).type())
-            {
-                case QVariant::String:
-                    file->writeString((*itr).toString());
-                    break;
-                case QVariant::Int:
-                case QVariant::UInt:
-                    file->writeVal((*itr).value<int>());
-                    break;
-                default:
-                    break;
-            }
-        }
+        file->writeConn(m_con.data());
     }
 }
 
@@ -140,43 +119,17 @@ void PortConnWorkTab::loadData(DataFileParser *file)
     if(file->seekToNextBlock("portTabCon", BLOCK_WORKTAB))
     {
         quint8 type = 0;
-        file->readVal(type);
-
-        int count = 0;
-        file->readVal(count);
         QHash<QString, QVariant> cfg;
-        for(int i = 0; i < count; ++i)
-        {
-            QString key = file->readString();
-            int type = 0;
-            file->readVal(type);
-            QVariant val;
-            switch(type)
-            {
-                case QVariant::String:
-                    val = file->readString();
-                    break;
-                case QVariant::Int:
-                case QVariant::UInt:
-                {
-                    int dta = 0;
-                    file->readVal(dta);
-                    val = dta;
-                    val.convert((QVariant::Type)type);
-                    break;
-                }
-                default:
-                    break;
-            }
-            cfg.insert(key, val);
-        }
 
-        ConnectionPointer<Connection> con = sConMgr2.getConnWithConfig(type, cfg);
-        if(con)
+        if(file->readConn(type, cfg))
         {
-            setConnection(con);
-            if(!con->isOpen() && sConfig.get(CFG_BOOL_SESSION_CONNECT))
-                con->OpenConcurrent();
+            ConnectionPointer<Connection> con = sConMgr2.getConnWithConfig(type, cfg);
+            if(con)
+            {
+                setConnection(con);
+                if(!con->isOpen() && sConfig.get(CFG_BOOL_SESSION_CONNECT))
+                    con->OpenConcurrent();
+            }
         }
     }
 }
