@@ -107,7 +107,7 @@ void PortConnWorkTab::saveData(DataFileParser *file)
 
     if(m_con && m_con->canSaveToSession())
     {
-        file->writeBlockIdentifier("portTabCon");
+        file->writeBlockIdentifier("portTabConV2");
         file->writeConn(m_con.data());
     }
 }
@@ -116,7 +116,7 @@ void PortConnWorkTab::loadData(DataFileParser *file)
 {
     WorkTab::loadData(file);
 
-    if(file->seekToNextBlock("portTabCon", BLOCK_WORKTAB))
+    if(file->seekToNextBlock("portTabConV2", BLOCK_WORKTAB))
     {
         quint8 type = 0;
         QHash<QString, QVariant> cfg;
