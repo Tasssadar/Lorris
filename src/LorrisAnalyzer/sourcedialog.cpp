@@ -66,6 +66,8 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, PortConnection *con, const QStr
     connect(ui->offsetBox,      SIGNAL(valueChanged(int)),                       SLOT(offsetChanged(int)));
     connect(ui->staticList,     SIGNAL(itemChanged(QListWidgetItem*)),           SLOT(staticDataChanged(QListWidgetItem*)));
     connect(ui->endianBox,      SIGNAL(currentIndexChanged(int)),                SLOT(endianChanged(int)));
+    connect(ui->radioAvakar,    SIGNAL(toggled(bool)),                           SLOT(switchStackPage(bool)));
+    connect(ui->len_static,     SIGNAL(toggled(bool)),                           SLOT(packetLenSetStatic(bool)));
     connect(m_parser,           SIGNAL(packetReceived(analyzer_data*,quint32)),  SLOT(packetReceived(analyzer_data*,quint32)));
 
     setted = false;
@@ -85,6 +87,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, PortConnection *con, const QStr
             case DATA_STATIC:    staticCheckToggled(true); break;
             case DATA_DEVICE_ID: idCheckToggled(true);     break;
             case DATA_OPCODE:    cmdCheckToggled(true);    break;
+            case DATA_AVAKAR:    ui->radioAvakar->setChecked(true); break;
         }
     }
 
@@ -125,7 +128,7 @@ void SourceDialog::butonnBoxClicked(QAbstractButton *b)
 
 void SourceDialog::packetReceived(analyzer_data *data, quint32)
 {
-    scroll_layout->SetData(data->getData());
+    scroll_layout->SetData(data);
 }
 
 void SourceDialog::AddOrRmHeaderType(bool add, quint8 type)
@@ -159,6 +162,7 @@ void SourceDialog::updateHeaderLabels()
             case DATA_STATIC:    text = tr("Static"); break;
             case DATA_DEVICE_ID: text = tr("ID");     break;
             case DATA_OPCODE:    text = tr("Cmd");    break;
+            default: continue;
         }
         scroll_header->AddLabel(text, (DATA_HEADER | m_packet.header->order[i]));
     }
@@ -277,6 +281,48 @@ void SourceDialog::staticDataChanged(QListWidgetItem *)
             m_packet.static_data[i] = text.toInt();
     }
     m_parser->resetCurPacket();
+}
+
+void SourceDialog::switchStackPage(bool avakar)
+{
+    ui->stackedWidget->setCurrentIndex((int)avakar);
+
+    if(avakar)
+    {
+        m_packet.header->data_mask |= DATA_AVAKAR;
+
+        headerLenToggled(false);
+        headerLenChanged(2);
+        staticCheckToggled(true);
+        staticLenChanged(1);
+        cmdCheckToggled(false);
+        idCheckToggled(false);
+
+
+        QListWidgetItem *it = ui->staticList->item(0);
+        ui->staticList->setCurrentItem(it);
+        it->setText("0x80");
+
+        ui->len_dynamic->setChecked(true);
+        AddOrRmHeaderType(true, DATA_AVAKAR);
+    }
+    else
+    {
+        AddOrRmHeaderType(false, DATA_AVAKAR);
+        packetLenSetStatic(ui->len_static->isChecked());
+    }
+
+    ui->len_dynamic->setEnabled(!avakar);
+    ui->len_static->setEnabled(!avakar);
+
+    scroll_layout->UpdateTypes();
+    m_parser->resetCurPacket();
+}
+
+void SourceDialog::packetLenSetStatic(bool setStatic)
+{
+    if(!(m_packet.header->data_mask & DATA_AVAKAR))
+        ui->len_check->setChecked(!setStatic);
 }
 
 analyzer_packet *SourceDialog::getStructure(analyzer_packet *pkt, PortConnection *con, const QString &importFile)

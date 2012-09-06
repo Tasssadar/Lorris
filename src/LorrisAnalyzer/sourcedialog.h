@@ -50,6 +50,8 @@ public slots:
     void endianChanged(int idx);
     void packetLenChanged(int val);
     void packetReceived(analyzer_data *data, quint32);
+    void switchStackPage(bool avakar);
+    void packetLenSetStatic(bool setStatic);
 
 private:
     void AddOrRmHeaderType(bool add, quint8 type);

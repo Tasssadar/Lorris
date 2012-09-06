@@ -102,7 +102,7 @@ void PacketParser::tryImport()
 
     newData(m_import.read(len));
 
-    if((m_packet->header->data_mask & DATA_LEN) && !fromheader && m_import.size() >= len)
+    if(m_packet->header->hasLen() && !fromheader && m_import.size() >= len)
     {
         int total = m_curData.getLenght(&fromheader);
         if(fromheader)

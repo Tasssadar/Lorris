@@ -39,7 +39,7 @@ quint32 analyzer_data::addData(char *d_itr, char *d_end, quint32 &itr)
     quint32 len = getLenght(&readFromHeader);
     quint32 var_len = 0;
 
-    quint8 lenRead = (m_packet->header->data_mask & DATA_LEN);
+    quint8 lenRead = m_packet->header->hasLen();
 
     for(quint32 i = itr; i < len && d_itr+read != d_end; ++i)
     {
@@ -56,7 +56,7 @@ quint32 analyzer_data::addData(char *d_itr, char *d_end, quint32 &itr)
 
 quint32 analyzer_data::getLenght(bool *readFromHeader)
 {
-    if(m_packet->header->data_mask & DATA_LEN)
+    if(m_packet->header->hasLen())
     {
         quint32 res = 0;
         if(getLenFromHeader(res))
@@ -86,7 +86,7 @@ bool analyzer_data::isValid(quint32 itr)
     if(m_data->isEmpty() || itr < (quint32)static_data.length())
         return false;
 
-    quint32 static_pos = getHeaderDataPos(DATA_STATIC);
+    quint32 static_pos = m_packet->header->findDataPos(DATA_STATIC);
     for(quint8 i = 0; i < static_data.length(); ++i)
     {
         if((*m_data)[static_pos++] != static_data[i])
@@ -103,67 +103,64 @@ bool analyzer_data::getDeviceId(quint8& id)
     if(!(m_packet->header->data_mask & DATA_DEVICE_ID))
         return false;
 
-    id = (quint8)m_data->at(getHeaderDataPos(DATA_DEVICE_ID));
+    id = (quint8)m_data->at(m_packet->header->findDataPos(DATA_DEVICE_ID));
     return true;
 }
 
 bool analyzer_data::getCmd(quint8 &cmd)
 {
-    if(!(m_packet->header->data_mask & DATA_OPCODE))
+    if(!m_packet->header->hasOpcode())
         return false;
 
-    cmd = (quint8)m_data->at(getHeaderDataPos(DATA_OPCODE));
+    if(m_packet->header->data_mask & DATA_OPCODE)
+        cmd = (quint8)m_data->at(m_packet->header->findDataPos(DATA_OPCODE));
+    else
+    {
+        int pos = m_packet->header->findDataPos(DATA_AVAKAR);
+        if(pos < 0 || pos >= m_data->size())
+            return false;
+        cmd = quint8(m_data->at(pos)) >> 4;
+    }
     return true;
 }
 
 bool analyzer_data::getLenFromHeader(quint32& len)
 {
-    if(!(m_packet->header->data_mask & DATA_LEN))
-        return false;
-
-    try
+    if(m_packet->header->data_mask & DATA_LEN)
     {
-        quint32 pos = getHeaderDataPos(DATA_LEN);
-        switch(m_packet->header->len_fmt)
+        try
         {
-            case 0: len = getUInt8(pos);  break;
-            case 1: len = getUInt16(pos); break;
-            case 2: len = getUInt32(pos); break;
-            default: return false;
+            quint32 pos = m_packet->header->findDataPos(DATA_LEN);
+            switch(m_packet->header->len_fmt)
+            {
+                case 0: len = getUInt8(pos);  break;
+                case 1: len = getUInt16(pos); break;
+                case 2: len = getUInt32(pos); break;
+                default: return false;
+            }
+            len += m_packet->header->len_offset;
         }
-        len += m_packet->header->len_offset;
+        catch(const char*)
+        {
+            return false;
+        }
     }
-    catch(const char*)
+    else if(m_packet->header->data_mask & DATA_AVAKAR)
     {
-        return false;
+        try
+        {
+            quint32 pos = m_packet->header->findDataPos(DATA_AVAKAR);
+            len = (getUInt8(pos) & 0xF) + m_packet->header->len_offset;
+        }
+        catch(const char*)
+        {
+            return false;
+        }
     }
+    else
+        return false;
 
     return true;
-}
-
-quint16 analyzer_data::getHeaderDataPos(quint8 type)
-{
-    quint16 pos = 0;
-    for(quint8 i = 0; i < 4; ++i)
-    {
-        if(m_packet->header->order[i] == type)
-            return pos;
-
-        switch(m_packet->header->order[i])
-        {
-            case DATA_STATIC:
-                pos += m_packet->header->static_len;
-                break;
-            case DATA_LEN:
-                pos += (1 << m_packet->header->len_fmt);
-                break;
-            case DATA_DEVICE_ID:
-            case DATA_OPCODE:
-                ++pos;
-                break;
-        }
-    }
-    return pos;
 }
 
 QString analyzer_data::getString(quint32 pos)

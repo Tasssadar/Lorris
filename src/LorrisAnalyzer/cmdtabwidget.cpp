@@ -27,7 +27,7 @@ CmdTabWidget::CmdTabWidget(analyzer_header *header, DeviceTabWidget *device, QWi
     setTabPosition(QTabWidget::South);
 
     new_cmd_act = new QAction(tr("Add command"), this);
-    if(!header || !(header->data_mask & DATA_OPCODE))
+    if(!header || !header->hasOpcode())
     {
         new_cmd_act->setEnabled(false);
         emit disableCmdAdd(true);
@@ -123,7 +123,7 @@ void CmdTabWidget::addCommand(bool add_all_cmds, quint8 id)
 void CmdTabWidget::handleData(analyzer_data *data, quint32 /*index*/)
 {
     if(m_all_cmds)
-        m_all_cmds->l->SetData(data->getData());
+        m_all_cmds->l->SetData(data);
 
     quint8 cmd = 0;
     if(!m_enableCmds || (m_enableCmds && !data->getCmd(cmd)))
@@ -132,7 +132,7 @@ void CmdTabWidget::handleData(analyzer_data *data, quint32 /*index*/)
     cmd_map::iterator itr = m_cmds.find(cmd);
     if(itr == m_cmds.end())
         return;
-    itr->second->l->SetData(data->getData());
+    itr->second->l->SetData(data);
 }
 
 void CmdTabWidget::newCommand()
@@ -297,8 +297,8 @@ bool CmdTabWidget::setHighlightPos(const data_widget_info& info, bool highlight)
 void CmdTabWidget::setHeader(analyzer_header *header)
 {
     m_header = header;
-    new_cmd_act->setEnabled(header->data_mask & DATA_OPCODE);
-    emit disableCmdAdd(!(header->data_mask & DATA_OPCODE));
+    new_cmd_act->setEnabled(header->hasOpcode());
+    emit disableCmdAdd(!header->hasOpcode());
 
     if(m_all_cmds && m_all_cmds->l)
         m_all_cmds->l->setHeader(header);

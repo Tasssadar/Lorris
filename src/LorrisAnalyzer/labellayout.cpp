@@ -36,7 +36,7 @@ LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enab
     if(m_enableReorder)
         ((QWidget*)parent)->setAcceptDrops(true);
 
-    quint16 len = (m_header->data_mask & DATA_LEN) ? m_header->length : m_header->packet_length;
+    quint16 len = m_header->hasLen() ? m_header->length : m_header->packet_length;
     lenChanged(len);
     cmd_w = cmd;
     dev_w = dev;
@@ -133,10 +133,25 @@ void LabelLayout::SetLabelType(DraggableLabel *label, quint8 type)
     else if(type & DATA_HEADER)
     {
          css = "border: 2px solid orange; background-color: ";
-         if     (type & DATA_DEVICE_ID)  css += "#00FF4C";
-         else if(type & DATA_OPCODE)     css += "#E5FF00";
-         else if(type & DATA_LEN)        css += "#FFCC66";
-         else if(type & DATA_STATIC)     css += "#FF99FF";
+         switch(type & ~(DATA_HEADER))
+         {
+            case DATA_DEVICE_ID:
+                css += "#00FF4C";
+                break;
+            case DATA_OPCODE:
+                css += "#E5FF00";
+                break;
+            case DATA_LEN:
+                css += "#FFCC66";
+                break;
+            case DATA_STATIC:
+                css += "#FF99FF";
+                break;
+            case DATA_AVAKAR:
+                css = "border: 2px solid orange; background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+                        "stop: 0.50 #E5FF00, stop: 0.51 #FFCC66);";
+                break;
+         }
     }
     label->setLabelStyleSheet(css);
 }
@@ -181,7 +196,7 @@ void LabelLayout::setHeader(analyzer_header *header)
 {
     m_header = header;
 
-    quint16 len = (m_header->data_mask & DATA_LEN) ? m_header->length : m_header->packet_length;
+    quint16 len = m_header->hasLen() ? m_header->length : m_header->packet_length;
     lenChanged(len);
 
     UpdateTypes();
@@ -222,6 +237,7 @@ quint8 ScrollDataLayout::GetTypeForPos(quint32 pos)
                     break;
                 case DATA_DEVICE_ID:
                 case DATA_OPCODE:
+                case DATA_AVAKAR:
                     ++pos_h;
                     break;
                 default:
@@ -239,54 +255,20 @@ quint8 ScrollDataLayout::GetTypeForPos(quint32 pos)
     return DATA_BODY;
 }
 
-void ScrollDataLayout::SetData(const QByteArray& data)
+void ScrollDataLayout::SetData(analyzer_data *data)
 {
     QString value;
-    if(m_header->data_mask & DATA_LEN)
-    {
-        quint8 pos_h = 0;
-        for(quint8 i = 0; i < 4; ++i)
-        {
-            switch(m_header->order[i])
-            {
-                case DATA_STATIC:
-                    pos_h += m_header->static_len;
-                    break;
-                case DATA_LEN:
-                    pos_h += (1 << m_header->len_fmt);
-                    break;
-                case DATA_DEVICE_ID:
-                case DATA_OPCODE:
-                    ++pos_h;
-                    break;
-            }
-            if(m_header->order[i] == DATA_LEN)
-                break;
-        }
-        if(data.length() >= pos_h)
-        {
-            switch(m_header->len_fmt)
-            {
-                case 0:
-                {
-                    int len = m_header->length + (int)data[pos_h-1] + m_header->len_offset;
-                    lenChanged(len >= 0 ? len : 0);
-                    break;
-                }
-                //TODO: implement
-                case 1:
-                case 2:
-                    break;
-            }
-        }
-    }
-    for(quint32 i = 0; i < (quint32)data.length() && i < m_labels.size(); ++i)
+    const QByteArray& bytes = data->getData();
+
+    lenChanged(data->getLenght());
+
+    for(quint32 i = 0; i < (quint32)bytes.size() && i < m_labels.size(); ++i)
     {
         switch(m_format)
         {
-            case FORMAT_HEX:    value = Utils::hexToString((quint8)data[i], true); break;
-            case FORMAT_BYTE:   value = QString::number((int)data[i]);             break;
-            case FORMAT_STRING: value = Utils::parseChar(data[i]);                 break;
+            case FORMAT_HEX:    value = Utils::hexToString((quint8)bytes[i], true); break;
+            case FORMAT_BYTE:   value = QString::number((int)bytes[i]);             break;
+            case FORMAT_STRING: value = Utils::parseChar(bytes[i]);                 break;
         }
         m_labels[i]->setLabelText(value);
     }

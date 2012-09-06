@@ -17,9 +17,9 @@ QString Utils::hexToString(quint8 data, bool withZeroEx)
 {
     static const char* hex = "0123456789ABCDEF";
 
-    QString result(withZeroEx ? "0x" : "");
-    result += hex[data >> 4];
-    result += hex[data & 0x0F];
+    QString result(withZeroEx ? "0x  " : "  ");
+    result[int(withZeroEx)*2]     = hex[data >> 4];
+    result[1 + int(withZeroEx)*2] = hex[data & 0x0F];
     return result;
 }
 

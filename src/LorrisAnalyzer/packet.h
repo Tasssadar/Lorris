@@ -22,7 +22,8 @@ enum DataType
     DATA_DEVICE_ID = 0x04,
     DATA_OPCODE    = 0x08,
     DATA_LEN       = 0x10,
-    DATA_STATIC    = 0x20
+    DATA_STATIC    = 0x20,
+    DATA_AVAKAR    = 0x40
 };
 
 // analyzer_header & analyzer_packet contain only structure
@@ -85,6 +86,42 @@ struct analyzer_header
                 continue;
             order[y++] = tmpOrder[i];
         }
+    }
+
+    int findDataPos(quint8 dataType)
+    {
+        int pos_h = 0;
+        for(int i = 0; i < 4; ++i)
+        {
+            if(order[i] == dataType)
+                return pos_h;
+
+            switch(order[i])
+            {
+                case DATA_STATIC:
+                    pos_h += static_len;
+                    break;
+                case DATA_LEN:
+                    pos_h += (1 << len_fmt);
+                    break;
+                case DATA_DEVICE_ID:
+                case DATA_OPCODE:
+                case DATA_AVAKAR:
+                    ++pos_h;
+                    break;
+            }
+        }
+        return -1;
+    }
+
+    bool hasLen() const
+    {
+        return (data_mask & (DATA_AVAKAR | DATA_LEN));
+    }
+
+    bool hasOpcode() const
+    {
+        return (data_mask & (DATA_AVAKAR | DATA_OPCODE));
     }
 
     quint32 length;
@@ -190,7 +227,6 @@ public:
     bool getCmd(quint8& cmd);
     bool getLenFromHeader(quint32& len);
     quint32 getLenght(bool *readFromHeader = NULL);
-    quint16 getHeaderDataPos(quint8 type);
 
     quint8   getUInt8  (quint32 pos) { return read<quint8> (pos); }
     qint8    getInt8   (quint32 pos) { return read<qint8>  (pos); }

@@ -16,6 +16,7 @@ class CmdTabWidget;
 class DeviceTabWidget;
 
 struct analyzer_header;
+class analyzer_data;
 class QLabel;
 class QString;
 class QByteArray;
@@ -112,7 +113,7 @@ public:
                               CmdTabWidget *cmd = NULL, DeviceTabWidget *dev = NULL, QWidget *parent = 0);
     ~ScrollDataLayout();
 
-    void SetData(const QByteArray &data);
+    void SetData(analyzer_data *data);
 
 public slots:
     void fmtChanged(int len);
