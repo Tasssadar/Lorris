@@ -366,12 +366,22 @@ void TabView::saveData(DataFileParser *file)
 void TabView::writeLayoutStructure(DataFileParser *file, QLayout *l)
 {
     file->writeVal(quint8(l->inherits("QHBoxLayout") ? ITEM_LAYOUT_H : ITEM_LAYOUT_V));
-    file->writeVal(l->count());
+
+    int count = l->count();
+    quint64 countPos = file->pos();
+    file->writeVal(count); // placeholder
+
     for(int i = 0; i < l->count(); ++i)
     {
         QLayoutItem *item = l->itemAt(i);
         if(item->layout())
+        {
+            file->writeVal((quint8)ITEM_LAYOUT_STRETCH);
+            file->writeVal(((QBoxLayout*)l)->stretch(i));
+            ++count; // additional item for layout
+
             writeLayoutStructure(file, item->layout());
+        }
         else if(!isResizeLine(item) && item->widget())
         {
             file->writeVal((quint8)ITEM_WIDGET_WITH_PCT);
@@ -381,6 +391,9 @@ void TabView::writeLayoutStructure(DataFileParser *file, QLayout *l)
         else
             file->writeVal((quint8)ITEM_SKIP);
     }
+
+    // real count
+    file->writeVal(count, countPos);
 }
 
 void TabView::loadData(DataFileParser *file)
@@ -440,22 +453,30 @@ void TabView::loadData(DataFileParser *file)
 
 void TabView::loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHash<quint32, quint32>& id_pair)
 {
-    int count = 0;
-    file->readVal(count);
+    quint8 type;
+    int stretch = 50;
+
+    int count = file->readVal<int>();
 
     for(int i = 0; i < count; ++i)
     {
-        quint8 type = 0;
-        file->readVal(type);
+        type = file->readVal<quint8>();
         switch(type)
         {
+            case ITEM_LAYOUT_STRETCH:
+            {
+                stretch = file->readVal<int>();
+                break;
+            }
             case ITEM_LAYOUT_H:
             case ITEM_LAYOUT_V:
             {
                 QBoxLayout *l = newLayout(type == ITEM_LAYOUT_V);
                 l->setMargin(0);
-                parent->addLayout(l, 50);
+                parent->addLayout(l, stretch);
                 loadLayoutStructure(file, l, id_pair);
+
+                stretch = 50;
                 break;
             }
             case ITEM_WIDGET:

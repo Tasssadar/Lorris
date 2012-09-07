@@ -33,7 +33,8 @@ enum saveLayoutItem
     ITEM_LAYOUT_H,
     ITEM_LAYOUT_V,
     ITEM_SKIP,
-    ITEM_WIDGET_WITH_PCT
+    ITEM_WIDGET_WITH_PCT,
+    ITEM_LAYOUT_STRETCH
 };
 
 class TabView : public QWidget

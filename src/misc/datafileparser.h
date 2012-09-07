@@ -102,6 +102,7 @@ public:
     template <typename T> void readVal(T& val);
     template <typename T> T readVal();
     template <typename T> void writeVal(T val);
+    template <typename T> void writeVal(T val, quint64 pos);
 
 private:
     char *getBlockWithFormat(const char *block, quint8& lenght);
@@ -165,6 +166,15 @@ template <typename T>
 void DataFileParser::writeVal(T val)
 {
     write((char*)&val, sizeof(T));
+}
+
+template <typename T>
+void DataFileParser::writeVal(T val, quint64 pos)
+{
+    quint64 origin = this->pos();
+    if(seek(pos))
+        write((char*)&val, sizeof(T));
+    seek(origin);
 }
 
 #endif // DATAFILEPARSER_H
