@@ -139,12 +139,14 @@ class ProgressReporter : public QObject
 
 protected:
     ProgressReporter();
+    ~ProgressReporter();
 
 private slots:
     void showSavingNotice();
 
 private:
     QTimer m_timer;
+    bool m_showDone;
 };
 
 

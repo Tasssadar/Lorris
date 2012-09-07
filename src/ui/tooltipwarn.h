@@ -11,7 +11,7 @@
 #include <QFrame>
 
 class QPushButton;
-class QProgressBar;
+class QLabel;
 
 class ToolTipWarn : public QFrame
 {
@@ -21,6 +21,10 @@ public:
 
     void setButton(QPushButton *btn);
     void showSpinner();
+    void toRightBottom();
+
+private:
+    QLabel *m_lorrLabel;
 };
 
 #endif // TOOLTIPWARN_H

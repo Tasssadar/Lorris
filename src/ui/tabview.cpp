@@ -515,7 +515,8 @@ void TabView::checkForUpdate()
     else
     {
         emit statusBarMsg(tr("No update available"), 3000);
-        new ToolTipWarn(tr("No update available"), (QWidget*)sender(), this, 3000, ":/actions/info");
+        ToolTipWarn *w = new ToolTipWarn(tr("No update available"), NULL, this, 3000, ":/actions/info");
+        w->toRightBottom();
     }
 #else
     Utils::showErrorBox(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"

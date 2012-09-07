@@ -129,12 +129,7 @@ void Updater::showNotification()
                                      NULL, NULL, -1, ":/actions/update");
     QPushButton *btn = new QPushButton(QObject::tr("Download"));
     w->setButton(btn);
-
-    if(QDesktopWidget *desktop = qApp->desktop())
-    {
-        QRect rect = desktop->availableGeometry();
-        w->move(rect.width() - w->width() - 90, rect.height() - w->height() - 15);
-    }
+    w->toRightBottom();
 
     UpdateHandler *h = new UpdateHandler(w);
     QObject::connect(btn, SIGNAL(clicked()), h, SLOT(updateBtn()));

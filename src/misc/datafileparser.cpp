@@ -528,9 +528,19 @@ void DataFileBuilder::writeHeader(QIODevice &file, DataFileHeader *header)
 
 ProgressReporter::ProgressReporter() : QObject()
 {
+    m_showDone = false;
     m_timer.start(500);
     m_timer.setSingleShot(true);
     connect(&m_timer, SIGNAL(timeout()), SLOT(showSavingNotice()));
+}
+
+ProgressReporter::~ProgressReporter()
+{
+    if(m_showDone)
+    {
+        ToolTipWarn *w = new ToolTipWarn(tr("Data file saved"), NULL, NULL, 3000, ":/actions/info");
+        w->toRightBottom();
+    }
 }
 
 void ProgressReporter::showSavingNotice()
@@ -539,10 +549,7 @@ void ProgressReporter::showSavingNotice()
     connect(this, SIGNAL(destroyed()), w, SLOT(deleteLater()));
 
     w->showSpinner();
+    w->toRightBottom();
 
-    if(QDesktopWidget *desktop = qApp->desktop())
-    {
-        QRect rect = desktop->availableGeometry();
-        w->move(rect.width() - w->width() - 15, rect.height() - w->height() - 15);
-    }
+    m_showDone = true;
 }
