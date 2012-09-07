@@ -65,6 +65,8 @@ TabView::TabView(MainWindow *parent) :
     }
 
     QAction *newW = file_menu->addAction(tr("New window"));
+    newW->setShortcut(QKeySequence("Ctrl+N"));
+
     QAction* actionConnectionManager = file_menu->addAction(tr("Connection &manager..."));
     QAction* actCloseAll = file_menu->addAction(tr("Close &all tabs"));
     QAction* actionQuit = file_menu->addAction(tr("&Close"));
