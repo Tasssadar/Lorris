@@ -67,7 +67,7 @@ static void installTranslator(QApplication& a)
     struct transl_entry { QString name; QStringList paths; };
     static const transl_entry trans[] =
     {
-        { "qt_%1", (QStringList() << QLibraryInfo::location(QLibraryInfo::TranslationsPath)) << "translations" },
+        { "qt_%1", (QStringList() << QLibraryInfo::location(QLibraryInfo::TranslationsPath) << "translations") },
         { "Lorris.%1", (QStringList() << "translations" << "/usr/share/lorris") }
     };
 
