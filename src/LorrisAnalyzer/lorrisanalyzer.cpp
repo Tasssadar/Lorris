@@ -619,6 +619,7 @@ void LorrisAnalyzer::resetDevAndStorage(analyzer_packet *packet)
     m_parser.setPacket(packet);
     m_storage.Clear();
     m_storage.setPacket(packet);
+    m_storage.clearFilename();
 }
 
 void LorrisAnalyzer::openFile(const QString& filename)
