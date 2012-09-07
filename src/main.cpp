@@ -11,6 +11,7 @@
 #include <QLibraryInfo>
 #include <stdio.h>
 #include <qtsingleapplication/qtsingleapplication.h>
+#include <QScopedPointer>
 
 #include "revision.h"
 #include "ui/mainwindow.h"
@@ -63,19 +64,36 @@ static bool checkArgs(int argc, char** argv, QStringList& openFiles)
 
 static void installTranslator(QApplication& a)
 {
-    QLocale newLang = QLocale(langs[sConfig.get(CFG_QUINT32_LANGUAGE)]);
+    struct transl_entry { QString name; QStringList paths; };
+    static const transl_entry trans[] =
+    {
+        { "qt_%1", (QStringList() << QLibraryInfo::location(QLibraryInfo::TranslationsPath)) << "translations" },
+        { "Lorris.%1", (QStringList() << "translations" << "/usr/share/lorris") }
+    };
 
-    QTranslator* qtTranslator = new QTranslator(&a);
-    qtTranslator->load("qt_" + newLang.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    a.installTranslator(qtTranslator);
+    QString lang = QLocale(langs[sConfig.get(CFG_QUINT32_LANGUAGE)]).name();
+    QScopedPointer<QTranslator> translator;
 
-    QTranslator *translator = new QTranslator(&a);
-    bool loaded = translator->load("Lorris." + newLang.name(), "translations");
-    if(!loaded)
-        loaded = translator->load("Lorris." + newLang.name(), "/usr/share/lorris");
+    for(quint32 x = 0; x < sizeof_array(trans); ++x)
+    {
+        if(translator.isNull())
+            translator.reset(new QTranslator(&a));
 
-    if(loaded)
-        a.installTranslator(translator);
+        const transl_entry& e = trans[x];
+
+        QString name = e.name.arg(lang);
+        if(x == 0)
+            name = name.left(e.name.length());
+
+        for(int y = 0; y < e.paths.size(); ++y)
+        {
+            if(!translator->load(name, e.paths[y]))
+                continue;
+
+            a.installTranslator(translator.take());
+            break;
+        }
+    }
 }
 
 int main(int argc, char *argv[])
