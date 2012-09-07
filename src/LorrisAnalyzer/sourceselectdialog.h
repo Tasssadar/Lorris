@@ -26,12 +26,14 @@ public:
     quint8 getDataMask();
     QString getFileName();
 
+protected:
+    void accept();
+
 private slots:
     void on_newRadio_toggled(bool toggle);
     void on_loadRadio_toggled(bool toggle);
     void on_binRadio_toggled(bool toggle);
 
-    void on_contButton_clicked();
     void on_loadBrowse_clicked();
     void on_importBrowse_clicked();
     

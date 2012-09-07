@@ -32,14 +32,14 @@ void SourceSelectDialog::DisableNew()
     ui->loadRadio->setChecked(true);
 }
 
-void SourceSelectDialog::on_contButton_clicked()
+void SourceSelectDialog::accept()
 {
     if(ui->loadRadio->isChecked() && !ui->structBox->isChecked() &&
        !ui->dataBox->isChecked() && !ui->widgetBox->isChecked())
     {
         return Utils::showErrorBox(tr("You have to select at least one thing to load."), this);
     }
-    accept();
+    QDialog::accept();
 }
 
 qint8 SourceSelectDialog::get()
@@ -81,7 +81,7 @@ void SourceSelectDialog::on_newRadio_toggled(bool toggle)
 {
     if(toggle)
     {
-        ui->contButton->setEnabled(true);
+        ui->btnBox->button(QDialogButtonBox::Ok)->setEnabled(true);
         ui->stack->setCurrentIndex(0);
     }
 }
@@ -90,7 +90,7 @@ void SourceSelectDialog::on_loadRadio_toggled(bool toggle)
 {
     if(toggle)
     {
-        ui->contButton->setEnabled(!ui->fileEdit->text().isEmpty());
+        ui->btnBox->button(QDialogButtonBox::Ok)->setEnabled(!ui->fileEdit->text().isEmpty());
         ui->stack->setCurrentIndex(1);
     }
 }
@@ -99,7 +99,7 @@ void SourceSelectDialog::on_binRadio_toggled(bool toggle)
 {
     if(toggle)
     {
-        ui->contButton->setEnabled(!ui->importEdit->text().isEmpty());
+        ui->btnBox->button(QDialogButtonBox::Ok)->setEnabled(!ui->importEdit->text().isEmpty());
         ui->stack->setCurrentIndex(2);
     }
 }
@@ -114,7 +114,7 @@ void SourceSelectDialog::on_loadBrowse_clicked()
         return;
 
     ui->fileEdit->setText(filename);
-    ui->contButton->setEnabled(true);
+    ui->btnBox->button(QDialogButtonBox::Ok)->setEnabled(true);
     sConfig.set(CFG_STRING_ANALYZER_FOLDER, filename);
 }
 
@@ -128,6 +128,6 @@ void SourceSelectDialog::on_importBrowse_clicked()
         return;
 
     ui->importEdit->setText(filename);
-    ui->contButton->setEnabled(true);
+    ui->btnBox->button(QDialogButtonBox::Ok)->setEnabled(true);
     sConfig.set(CFG_STRING_ANALYZER_IMPORT, filename);
 }

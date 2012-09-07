@@ -203,12 +203,15 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="contButton">
-       <property name="text">
-        <string>Continue</string>
+      <widget class="QDialogButtonBox" name="btnBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="default">
-        <bool>true</bool>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
        </property>
       </widget>
      </item>
@@ -217,5 +220,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>btnBox</sender>
+   <signal>accepted()</signal>
+   <receiver>SourceSelectDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>397</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>243</x>
+     <y>78</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnBox</sender>
+   <signal>rejected()</signal>
+   <receiver>SourceSelectDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>397</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>243</x>
+     <y>78</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
