@@ -79,7 +79,6 @@ void ColorWidget::setUp(Storage *storage)
 
     textAct = new QAction(tr("Show RGB values"), this);
     textAct->setCheckable(true);
-    textAct->setChecked(true);
     connect(textAct, SIGNAL(triggered(bool)), this, SLOT(showValues(bool)));
 
     brightAct = new QAction(tr("Brightness correction"), this);
@@ -420,7 +419,7 @@ void ColorWidget::brightChanged(int value)
 ColorDisplay::ColorDisplay(QWidget *parent) : QWidget(parent)
 {
     m_color[0] = m_color[1] = m_color[2] = 0;
-    m_drawNums = true;
+    m_drawNums = false;
 
     QFont f = Utils::getMonospaceFont(20);
     f.setBold(true);
