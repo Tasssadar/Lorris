@@ -598,17 +598,17 @@
         <translation>Zobrazit RGB hodnoty</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="85"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="84"/>
         <source>Brightness correction</source>
         <translation>Úprava jasu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="89"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="88"/>
         <source>Color correction</source>
         <translation>Úprava barev</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="331"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="330"/>
         <source>Brightness: </source>
         <translation>Jas:</translation>
     </message>
@@ -616,7 +616,7 @@
 <context>
     <name>ColorWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="471"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="470"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
@@ -2608,7 +2608,7 @@ stejného souboru vícekrát:</translation>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="632"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="633"/>
         <location filename="../src/LorrisAnalyzer/storage.cpp" line="187"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -2866,7 +2866,7 @@ stejného souboru vícekrát:</translation>
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="633"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="634"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
@@ -4008,11 +4008,6 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.ui" line="45"/>
         <source>Import binary data</source>
         <translation>Importovat binární data</translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisAnalyzer/sourceselectdialog.ui" line="208"/>
-        <source>Continue</source>
-        <translation>Pokračovat</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/sourceselectdialog.ui" line="94"/>
