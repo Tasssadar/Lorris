@@ -130,6 +130,7 @@ void BarWidget::setUp(Storage *storage)
     m_showValAct->setChecked(true);
 
     QAction *colorAct = contextMenu->addAction(tr("Set colors"));
+    QAction *formula = contextMenu->addAction(tr("Set formula..."));
 
     connect(m_rangeAct,     SIGNAL(triggered()),     SLOT(rangeSelected()));
     connect(m_showScaleAct, SIGNAL(triggered(bool)), SLOT(showScale(bool)));
@@ -137,6 +138,7 @@ void BarWidget::setUp(Storage *storage)
     connect(m_alarmEnable,  SIGNAL(triggered(bool)), SLOT(setAlarmEnabled(bool)));
     connect(m_alarmLevel,   SIGNAL(triggered()),     SLOT(alarmLevelAct()));
     connect(colorAct,       SIGNAL(triggered()),     SLOT(showColorsDialog()));
+    connect(formula,        SIGNAL(triggered()),     SLOT(showFormulaDialog()));
 }
 
 void BarWidget::processData(analyzer_data *data)
@@ -155,6 +157,13 @@ void BarWidget::processData(analyzer_data *data)
 
 void BarWidget::setValuePrivate(double val)
 {
+    if(m_eval.isActive())
+    {
+        QVariant res = m_eval.evaluate(QString::number(val));
+        if(res.isValid())
+            val = res.toDouble();
+    }
+
     m_bar->setValue(val);
     m_label->setText(QString::number(val));
 
@@ -283,6 +292,10 @@ void BarWidget::saveWidgetInfo(DataFileParser *file)
     file->writeBlockIdentifier("barWAlarm");
     file->writeVal(m_bar->alarmEnabled());
     file->writeVal(m_bar->alarmLevel());
+
+    // formula
+    file->writeBlockIdentifier("barWFormula");
+    file->writeString(m_eval.getFormula());
 }
 
 void BarWidget::loadWidgetInfo(DataFileParser *file)
@@ -343,6 +356,10 @@ void BarWidget::loadWidgetInfo(DataFileParser *file)
         m_alarmEnable->setChecked(m_bar->alarmEnabled());
         m_alarmLevel->setEnabled(m_bar->alarmEnabled());
     }
+
+    // formula
+    if(file->seekToNextBlock("barWFormula", BLOCK_WIDGET))
+        m_eval.setFormula(file->readString());
 }
 
 void BarWidget::showScale(bool show)
@@ -388,6 +405,18 @@ void BarWidget::showColorsDialog()
     QPalette p = m_bar->palette();
     d.updatePalette(p);
     m_bar->setPalette(p);
+}
+
+void BarWidget::setFormula(const QString &formula)
+{
+    m_eval.setFormula(formula);
+    emit updateForMe();
+}
+
+void BarWidget::showFormulaDialog()
+{
+    m_eval.showFormulaDialog();
+    emit updateForMe();
 }
 
 BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

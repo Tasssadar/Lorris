@@ -132,7 +132,9 @@ SOURCES += ui/mainwindow.cpp \
     misc/gestureidentifier.cpp \
     LorrisAnalyzer/DataWidgets/statuswidget.cpp \
     ui/colorbutton.cpp \
-    ui/resettablelineedit.cpp
+    ui/resettablelineedit.cpp \
+    ui/formuladialog.cpp \
+    misc/formulaevaluation.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -245,7 +247,9 @@ HEADERS += ui/mainwindow.h \
     misc/qtpointerarray.h \
     LorrisAnalyzer/DataWidgets/statuswidget.h \
     ui/colorbutton.h \
-    ui/resettablelineedit.h
+    ui/resettablelineedit.h \
+    ui/formuladialog.h \
+    misc/formulaevaluation.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

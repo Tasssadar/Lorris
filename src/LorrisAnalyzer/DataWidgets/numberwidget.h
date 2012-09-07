@@ -8,13 +8,10 @@
 #ifndef NUMBERWIDGET_H
 #define NUMBERWIDGET_H
 
-#include <QDialog>
 #include "datawidget.h"
-
-#include "ui_formuladialog.h"
+#include "../../misc/formulaevaluation.h"
 
 class QMenu;
-class QScriptEngine;
 
 enum NumberFormats
 {
@@ -62,8 +59,8 @@ private:
      QAction *bitsAction[NUM_COUNT];
      QAction *fmtAction[FMT_COUNT];
      QAction *levelAction;
-     QScriptEngine *m_script_eng;
-     QString m_formula;
+
+     FormulaEvaluation m_eval;
 };
 
 class NumberWidgetAddBtn : public DataWidgetAddBtn
@@ -71,22 +68,6 @@ class NumberWidgetAddBtn : public DataWidgetAddBtn
     Q_OBJECT
 public:
     NumberWidgetAddBtn(QWidget *parent = 0);
-};
-
-class FormulaDialog : public QDialog, private Ui::FormulaDialog
-{
-    Q_OBJECT
-public:
-    FormulaDialog(QString formula, QWidget *parent = NULL);
-    ~FormulaDialog();
-
-    QString getFormula() const;
-
-public slots:
-    void accept();
-
-private:
-    Ui::FormulaDialog *ui;
 };
 
 #endif // NUMBERWIDGET_H

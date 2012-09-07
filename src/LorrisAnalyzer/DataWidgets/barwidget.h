@@ -9,7 +9,9 @@
 #define BARWIDGET_H
 
 #include <QDialog>
+
 #include "datawidget.h"
+#include "../../misc/formulaevaluation.h"
 
 class QSpinBox;
 class QwtThermo;
@@ -48,6 +50,9 @@ public slots:
     bool isAlarmEnabled() const;
     double getAlarmLevel() const;
 
+    void setFormula(const QString& formula);
+    void showFormulaDialog();
+
 private slots:
     void rangeSelected();
     void showScale(bool show);
@@ -74,6 +79,8 @@ private:
     QAction *m_alarmEnable;
     QAction *m_alarmLevel;
     quint8 m_rotation;
+
+    FormulaEvaluation m_eval;
 };
 
 class BarWidgetAddBtn : public DataWidgetAddBtn

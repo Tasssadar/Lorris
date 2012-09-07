@@ -158,6 +158,7 @@ public slots:
     void setTitleVisibility(bool visible);
     void setLocked(bool locked);
     bool isLocked() const { return (m_state & STATE_LOCKED); }
+    void setError(bool error, QString tooltip = QString());
 
     //events
     virtual void onWidgetAdd(DataWidget *w);
@@ -195,7 +196,6 @@ protected:
     bool isMoveBlocked() const { return (m_state & STATE_BLOCK_MOVE); }
 
     void setUseErrorLabel(bool use);
-    void setError(bool error, QString tooltip = QString());
 
     quint8 m_widgetType;
     data_widget_info m_info;
