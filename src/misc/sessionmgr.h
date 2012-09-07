@@ -32,7 +32,7 @@ public:
 
 public slots:
     void saveSessionAct();
-    void loadSession(QString name = tr("[Last session]"));
+    void loadSession(QString name = QString());
     void removeSession(QString name);
 
 private slots:

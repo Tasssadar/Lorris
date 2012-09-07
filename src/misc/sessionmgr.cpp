@@ -152,14 +152,9 @@ void SessionMgr::saveSessionAct()
 
 void SessionMgr::loadSession(QString name)
 {
-    if(sWorkTabMgr.isAnyTabOpened())
-    {
-        QMessageBox box(QMessageBox::Question, tr("Load session"), tr("Tabs you've already opened will be closed. Proceed?"),
-                       (QMessageBox::Yes | QMessageBox::No));
-
-        if(box.exec() == QMessageBox::No)
-            return;
-    }
+    bool closeOther = name.isNull();
+    if(closeOther)
+        name = tr("[Last session]");
 
     if(!name.contains("cldta"))
         name.append(".cldta");
@@ -169,7 +164,7 @@ void SessionMgr::loadSession(QString name)
         return;
 
     DataFileParser parser(&data, QIODevice::ReadOnly);
-    sWorkTabMgr.loadData(&parser);
+    sWorkTabMgr.loadData(&parser, closeOther);
 }
 
 void SessionMgr::updateSessions()

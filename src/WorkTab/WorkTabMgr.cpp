@@ -252,29 +252,49 @@ void WorkTabMgr::saveData(DataFileParser *file)
         (*itr)->saveData(file);
 }
 
-void WorkTabMgr::loadData(DataFileParser *file)
+void WorkTabMgr::loadData(DataFileParser *file, bool closeOther)
 {
     if(!file->seekToNextBlock("windowsInfo", 0))
         return;
 
     m_disable_window_close = true;
 
-    QList<quint32> keys = m_windows.keys();
-
     int count = file->readVal<int>();
-    while(count != m_windows.size())
-    {
-        if(count < m_windows.size())
-        {
-            m_windows[keys.back()]->close();
-            m_windows.remove(keys.takeLast());
-        }
-        else
-            newWindow();
-    }
 
-    for(WindowMap::iterator itr = m_windows.begin(); itr != m_windows.end(); ++itr)
-        (*itr)->loadData(file);
+    if(!closeOther)
+    {
+        // use current window, if it is empty
+        MainWindow *activeWin = dynamic_cast<MainWindow*>(qApp->activeWindow());
+        if(activeWin && activeWin->onlyHomeTab())
+        {
+            activeWin->loadData(file);
+            --count;
+        }
+
+        // create new windows
+        for(int i = 0; i < count; ++i)
+        {
+            MainWindow *win = newWindow();
+            win->loadData(file);
+        }
+    }
+    else
+    {
+        QList<quint32> keys = m_windows.keys();
+        while(count != m_windows.size())
+        {
+            if(count < m_windows.size())
+            {
+                m_windows[keys.back()]->close();
+                m_windows.remove(keys.takeLast());
+            }
+            else
+                newWindow();
+        }
+
+        for(WindowMap::iterator itr = m_windows.begin(); itr != m_windows.end(); ++itr)
+            (*itr)->loadData(file);
+    }
 
     m_disable_window_close = false;
 }

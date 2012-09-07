@@ -559,7 +559,7 @@ void TabView::closeAllTabs()
     int size = m_tab_widgets.size();
     for(QHash<quint32, TabWidget*>::iterator itr = m_tab_widgets.begin(); itr != m_tab_widgets.end(); )
     {
-        while(size == m_tab_widgets.size() && (*itr)->tabsClosable())
+        while(size == m_tab_widgets.size() && (*itr)->count() && (*itr)->tabsClosable())
             if(!(*itr)->closeTab(0))
                 return;
 

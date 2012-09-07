@@ -28,6 +28,8 @@ public:
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
 
+    bool onlyHomeTab() const { return m_hometab != NULL; }
+
 public slots:
     void show(const QStringList &openFiles);
     void closeHomeTab();

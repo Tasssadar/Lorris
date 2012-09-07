@@ -97,7 +97,7 @@ public:
     quint32 getWindowCount() const { return m_windows.size(); }
 
     void saveData(DataFileParser *file);
-    void loadData(DataFileParser *file);
+    void loadData(DataFileParser *file, bool closeOther = false);
 
     void printToAllStatusBars(const QString& text, int timeout = 3000);
 
