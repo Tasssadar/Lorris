@@ -97,6 +97,12 @@ LorrisShupito::LorrisShupito()
     connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
     connect(&m_timeout_timer,    SIGNAL(timeout()),                SLOT(timeout()));
 
+    const QWidget *buttons[] = { ui->readButton, ui->writeButton, ui->eraseButton, ui->startStopBtn, NULL };
+    for(const QWidget **itr = buttons; *itr; ++itr)
+        connect(this, SIGNAL(enableButtons(bool)), *itr, SLOT(setEnabled(bool)));
+
+    m_buttons_enabled = true;
+
     int w = ui->hideFusesBtn->fontMetrics().height()+10;
     ui->hideLogBtn->setFixedHeight(w);
     ui->hideFusesBtn->setFixedWidth(w);
@@ -163,6 +169,8 @@ LorrisShupito::LorrisShupito()
     m_connectButton = new ConnectButton(ui->connectButton);
     m_connectButton->setConnectionType(pct_shupito);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+
+    connectedStatus(false);
 }
 
 LorrisShupito::~LorrisShupito()
@@ -213,7 +221,7 @@ void LorrisShupito::initMenus()
     QMenu *modeBar = new QMenu(tr("Mode"), this);
     addTopMenu(modeBar);
 
-    static const QString modeNames[] = { "SPI", "PDI", "JTAG", "cc25xx" };
+    static const QString modeNames[] = { "SPI", "PDI", "cc25xx" };
 
     QSignalMapper *signalMap = new QSignalMapper(this);
 
@@ -319,16 +327,19 @@ void LorrisShupito::connectedStatus(bool connected)
         m_state |= STATE_DISCONNECTED;
         updateStartStopUi(false);
         m_timeout_timer.stop();
+
+        setEnableButtons(false);
+
+        ui->vccLabel->clear();
+        ui->engineLabel->clear();
+
+        for(quint8 i = 0; i < m_vdd_radios.size(); ++i)
+            delete m_vdd_radios[i];
+        m_vdd_radios.clear();
     }
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
     ui->progSpeedBox->setEnabled(connected);
-    ui->readButton->setEnabled(connected);
-    ui->writeButton->setEnabled(connected);
-    ui->eraseButton->setEnabled(connected);
-
-    for(quint8 i = 0; i < m_vdd_radios.size(); ++i)
-        m_vdd_radios[i]->setEnabled(connected);
 }
 
 void LorrisShupito::readPacket(const ShupitoPacket & packet)
@@ -446,6 +457,8 @@ void LorrisShupito::vccValueChanged(quint8 id, double value)
     {
         if((value < 0 ? -value : value) < 0.03)
             value = 0;
+
+        setEnableButtons(value != 0);
 
         ui->vccLabel->setText(QString("%1").arg(value, 3, 'f', 2, '0'));
 
@@ -1569,4 +1582,13 @@ void LorrisShupito::loadData(DataFileParser *file)
             }
         }
     }
+}
+
+void LorrisShupito::setEnableButtons(bool enable)
+{
+    if(!(enable ^ m_buttons_enabled))
+        return;
+
+    m_buttons_enabled = enable;
+    emit enableButtons(enable);
 }

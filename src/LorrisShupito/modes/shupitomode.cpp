@@ -40,9 +40,6 @@ ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito)
         case MODE_SPI:    return new ShupitoSPI(shupito);
         case MODE_PDI:    return new ShupitoPDI(shupito);
         case MODE_CC25XX: return new ShupitoCC25XX(shupito);
-        // TODO
-        case MODE_JTAG:
-            return NULL;
     }
     return NULL;
 }

@@ -69,6 +69,7 @@ class LorrisShupito : public WorkTab
     Q_OBJECT
 Q_SIGNALS:
     void responseChanged();
+    void enableButtons(bool enable);
 
 public:
     LorrisShupito();
@@ -187,6 +188,8 @@ private:
     void tryFileReload(quint8 memId);
     inline int getMemIndex();
 
+    void setEnableButtons(bool enable);
+
     bool m_chipStopped;
 
     QAction *m_start_act;
@@ -236,6 +239,8 @@ private:
 
     QTimer m_timeout_timer;
     QPointer<ToolTipWarn> m_timeout_warn;
+
+    bool m_buttons_enabled;
 };
 
 #endif // LORRISSHUPITO_H
