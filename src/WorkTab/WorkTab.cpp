@@ -31,7 +31,12 @@ void WorkTab::onTabShow(const QString &)
 
 void WorkTab::addTopMenu(QMenu *menu)
 {
-    m_menus.push_back(menu);
+    m_actions.push_back(menu->menuAction());
+}
+
+void WorkTab::addTopAction(QAction *act)
+{
+    m_actions.push_back(act);
 }
 
 void WorkTab::openFile(const QString &/*filename*/)

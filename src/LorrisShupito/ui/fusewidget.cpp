@@ -15,9 +15,9 @@
 #include <QContextMenuEvent>
 #include <algorithm>
 
-#include "../common.h"
+#include "../../common.h"
 #include "fusewidget.h"
-#include "../shared/defmgr.h"
+#include "../../shared/defmgr.h"
 
 //#define DEBUG_FUSES "avr:1e9403" // Atmega16
 

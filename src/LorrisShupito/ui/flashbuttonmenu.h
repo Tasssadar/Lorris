@@ -23,14 +23,17 @@ enum ActionSlots
 class FlashButtonMenu : public QMenu
 {
     Q_OBJECT
+Q_SIGNALS:
+    void mainAct();
+
 public:
-    explicit FlashButtonMenu(bool read, QToolButton *btn, QWidget *parent = 0);
+    explicit FlashButtonMenu(bool read, QToolButton *btn, QObject *target, QWidget *parent = 0);
 
 public slots:
     void setActiveAction(int actInt);
 
 private:
-    void createActions();
+    void createActions(QObject *target);
 
     std::map<ActionSlots, QAction*> m_actions;
     QToolButton *m_button;
@@ -39,6 +42,7 @@ private:
 
     QFont m_font;
     QFont m_boldFont;
+    QObject *m_target;
 };
 
 #endif // FLASHBUTTONMENU_H

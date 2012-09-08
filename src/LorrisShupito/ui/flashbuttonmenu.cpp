@@ -6,21 +6,22 @@
 ***********************************************/
 
 #include "flashbuttonmenu.h"
-#include "lorrisshupito.h"
+#include "../lorrisshupito.h"
 
-FlashButtonMenu::FlashButtonMenu(bool read, QToolButton *btn, QWidget *parent) :
+FlashButtonMenu::FlashButtonMenu(bool read, QToolButton *btn, QObject *target, QWidget *parent) :
     QMenu(parent)
 {
     m_button = btn;
     m_read = read;
     m_active = ACT_ALL;
+    m_target = target;
 
-    createActions();
+    createActions(target);
 
     m_button->setMenu(this);
 }
 
-void FlashButtonMenu::createActions()
+void FlashButtonMenu::createActions(QObject *target)
 {
     QAction *Flash  = NULL;
     QAction *All    = NULL;
@@ -34,10 +35,10 @@ void FlashButtonMenu::createActions()
         EEPROM = addAction(tr("Read EEPROM"));
         Fuses  = addAction(tr("Read fuses"));
 
-        connect(All,      SIGNAL(triggered()), parent(), SLOT(readAll()));
-        connect(Flash,    SIGNAL(triggered()), parent(), SLOT(readMemButton()));
-        connect(EEPROM,   SIGNAL(triggered()), parent(), SLOT(readEEPROMBtn()));
-        connect(Fuses,    SIGNAL(triggered()), parent(), SLOT(readFusesInFlash()));
+        connect(All,      SIGNAL(triggered()), target, SLOT(readAll()));
+        connect(Flash,    SIGNAL(triggered()), target, SLOT(readMemButton()));
+        connect(EEPROM,   SIGNAL(triggered()), target, SLOT(readEEPROMBtn()));
+        connect(Fuses,    SIGNAL(triggered()), target, SLOT(readFusesInFlash()));
     }
     else
     {
@@ -46,10 +47,10 @@ void FlashButtonMenu::createActions()
         EEPROM = addAction(tr("Write EEPROM"));
         Fuses  = addAction(tr("Write fuses"));
 
-        connect(All,      SIGNAL(triggered()), parent(), SLOT(writeAll()));
-        connect(Flash,    SIGNAL(triggered()), parent(), SLOT(writeFlashBtn()));
-        connect(EEPROM,   SIGNAL(triggered()), parent(), SLOT(writeEEPROMBtn()));
-        connect(Fuses,    SIGNAL(triggered()), parent(), SLOT(writeFusesInFlash()));
+        connect(All,      SIGNAL(triggered()), target, SLOT(writeAll()));
+        connect(Flash,    SIGNAL(triggered()), target, SLOT(writeFlashBtn()));
+        connect(EEPROM,   SIGNAL(triggered()), target, SLOT(writeEEPROMBtn()));
+        connect(Fuses,    SIGNAL(triggered()), target, SLOT(writeFusesInFlash()));
     }
 
     insertSeparator(All);
@@ -83,13 +84,13 @@ void FlashButtonMenu::setActiveAction(int actInt)
     m_button->disconnect();
     if(act == ACT_FLASH)
     {
-        if(m_read) connect(m_button, SIGNAL(clicked()), parent(), SLOT(readMemButton()));
-        else       connect(m_button, SIGNAL(clicked()), parent(), SLOT(writeFlashBtn()));
+        if(m_read) connect(m_button, SIGNAL(clicked()), m_target, SLOT(readMemButton()));
+        else       connect(m_button, SIGNAL(clicked()), m_target, SLOT(writeFlashBtn()));
     }
     else
     {
-        if(m_read) connect(m_button, SIGNAL(clicked()), parent(), SLOT(readEEPROMBtn()));
-        else       connect(m_button, SIGNAL(clicked()), parent(), SLOT(writeEEPROMBtn()));
+        if(m_read) connect(m_button, SIGNAL(clicked()), m_target, SLOT(readEEPROMBtn()));
+        else       connect(m_button, SIGNAL(clicked()), m_target, SLOT(writeEEPROMBtn()));
     }
 
     m_active = act;

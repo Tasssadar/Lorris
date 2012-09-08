@@ -35,7 +35,7 @@ public:
 
     virtual void onTabShow(const QString& filename);
     virtual void openFile(const QString& filename);
-    virtual std::vector<QMenu*>& getMenu() { return m_menus; }
+    virtual std::vector<QAction*>& getActions() { return m_actions; }
 
     WorkTabInfo *getInfo() const { return m_info; }
     void setInfo(WorkTabInfo *info) { m_info = info; }
@@ -50,11 +50,12 @@ protected:
     WorkTab();
 
     void addTopMenu(QMenu *menu);
+    void addTopAction(QAction *act);
 
     quint32 m_id;
 
 private:
-    std::vector<QMenu*> m_menus;
+    std::vector<QAction*> m_actions;
     WorkTabInfo *m_info;
 };
 

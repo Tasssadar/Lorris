@@ -24,6 +24,8 @@ public:
     void setConn(ConnectionPointer<Connection> const & conn, bool emitConnChosen = true);
     void setConnectionType(PrimaryConnectionType type);
 
+    QToolButton *btn() const { return m_btn; }
+
 public slots:
     ConnectionPointer<Connection> choose();
 

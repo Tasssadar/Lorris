@@ -8,7 +8,7 @@
 #include <QAccessible>
 
 #include "overvccdialog.h"
-#include "../misc/utils.h"
+#include "../../misc/utils.h"
 #include "ui_overvccdialog.h"
 
 OverVccDialog::OverVccDialog(bool autoclose, QWidget *parent) :

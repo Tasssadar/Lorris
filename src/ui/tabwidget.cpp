@@ -243,12 +243,14 @@ void TabWidget::changeMenu(int idx)
         return clearMenu();
 
     WorkTab *tab = sWorkTabMgr.getWorkTab(m_tab_ids[idx]);
-    if(!tab || tab->getMenu().empty())
+    if(!tab || tab->getActions().empty())
         return clearMenu();
 
     clearMenu();
-    for(quint32 i = 0; i < tab->getMenu().size(); ++i)
-        m_menu->addMenu(tab->getMenu()[i]);
+
+    const std::vector<QAction*>& acts = tab->getActions();
+    for(quint32 i = 0; i < acts.size(); ++i)
+        m_menu->addAction(acts[i]);
     m_menuBtn->setEnabled(true);
 }
 

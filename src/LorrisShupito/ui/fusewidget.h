@@ -10,7 +10,7 @@
 
 #include <QFrame>
 #include <vector>
-#include "../shared/chipdefs.h"
+#include "../../shared/chipdefs.h"
 
 class QVBoxLayout;
 class QHBoxLayout;

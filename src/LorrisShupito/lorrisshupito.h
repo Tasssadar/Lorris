@@ -14,6 +14,7 @@
 #include "../shared/hexfile.h"
 #include "../ui/terminal.h"
 #include "../ui/connectbutton.h"
+#include "ui/shupitoui.h"
 
 #include <QDateTime>
 #include <QPointer>
@@ -31,14 +32,6 @@ enum responses
     RESPONSE_BAD
 };
 
-enum VddColor
-{
-    VDD_BLACK = 0,
-    VDD_GREEN,
-    VDD_RED,
-    VDD_ORANGE
-};
-
 enum TabIndex
 {
     TAB_TERMINAL = 0,
@@ -46,10 +39,6 @@ enum TabIndex
     TAB_EEPROM,
     TAB_MAX
 };
-
-namespace Ui {
-    class LorrisShupito;
-}
 
 class QLabel;
 class QComboBox;
@@ -71,11 +60,16 @@ Q_SIGNALS:
     void responseChanged();
     void enableButtons(bool enable);
 
+    friend class FullShupitoUI;
+    friend class MiniShupitoUI;
+    friend class ShupitoUI;
 public:
     LorrisShupito();
     ~LorrisShupito();
 
     void stopAll(bool wait);
+    void createConnBtn(QToolButton *btn);
+    ShupitoMode *mode() const { return m_modes[m_cur_mode]; }
 
 public slots:
     void setConnection(ConnectionPointer<Connection> const & con);
@@ -91,6 +85,7 @@ protected:
 private slots:
     void onTabShow(const QString& filename);
     void connDisconnecting();
+    void setMiniUi(bool mini);
 
     void connectedStatus(bool connected);
     void readPacket(const ShupitoPacket & data);
@@ -105,34 +100,7 @@ private slots:
     void tunnelStateChanged(bool opened);
     void setTunnelName();
     void verifyChanged(int mode);
-
-    void hideLogBtn(bool checked);
-    void hideFusesBtn(bool checked);
-    void hideSettingsBtn(bool checked);
-
-    void readMemButton()
-    {
-        readMemInFlash(MEM_FLASH);
-    }
-    void readEEPROMBtn()
-    {
-        readMemInFlash(MEM_EEPROM);
-    }
-
-    void readAll();
-    void writeAll();
     void progSpeedChanged(QString text);
-    void eraseDevice();
-    void readFusesInFlash();
-    void writeFusesInFlash();
-    void writeFlashBtn()
-    {
-        writeMemInFlash(MEM_FLASH);
-    }
-    void writeEEPROMBtn()
-    {
-        writeMemInFlash(MEM_EEPROM);
-    }
 
     void updateProgressDialog(int value);
     void updateProgressLabel(const QString& text);
@@ -156,24 +124,11 @@ private slots:
     void loadFromFile(int memId, const QString& filename);
     void saveToFile(int memId);
     void focusChanged(QWidget *prev, QWidget *curr);
-    void saveTermSettings();
-    void flashWarnBox(bool checked);
-
-    void overvoltageSwitched(bool enabled);
-    void overvoltageChanged(double val);
-    void overvoltageTurnOffVcc(bool enabled);
 
     void timeout();
 
 private:
-    void log(const QString& text);
     bool checkVoltage(bool active);
-    void readMemInFlash(quint8 memId);
-    void writeMemInFlash(quint8 memId);
-    void readMem(quint8 memId, chip_definition& chip);
-    void writeMem(quint8 memId, chip_definition& chip);
-    void readFuses(chip_definition& chip);
-    void writeFuses(chip_definition& chip);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     bool showContinueBox(const QString& title, const QString& text);
     void postFlashSwitchCheck(chip_definition &chip);
@@ -181,14 +136,14 @@ private:
     void update_chip_description(chip_definition &cd);
     void initMenus();
 
-    void changeVddColor(float val);
     void checkOvervoltage();
     void shutdownVcc();
-    void disableOvervoltVDDs();
     void tryFileReload(quint8 memId);
-    inline int getMemIndex();
+    void setUiType(int type);
 
     void setEnableButtons(bool enable);
+
+    ShupitoUI *ui;
 
     bool m_chipStopped;
 
@@ -201,15 +156,15 @@ private:
     QAction *m_load_eeprom;
     QAction *m_save_flash;
     QAction *m_save_eeprom;
+    QAction *m_miniUi;
+    QMenu *m_modeBar;
 
-    Ui::LorrisShupito *ui;
     quint8 m_state;
     Shupito *m_shupito;
     ShupitoDesc *m_desc;
     quint32 m_prog_speed_hz;
     quint8 m_verify_mode;
 
-    QHexEdit *m_hexAreas[MEM_FUSES];
     QString m_hexFilenames[MEM_FUSES];
     QDateTime m_hexWriteTimes[MEM_FUSES];
     QDateTime m_hexFlashTimes[MEM_FUSES];
@@ -219,19 +174,15 @@ private:
     vdd_setup m_vdd_setup;
     double m_vcc;
     int lastVccIndex;
-    VddColor m_color;
     double m_overvcc;
     bool m_enable_overvcc;
+    bool m_overvcc_turnoff;
     QPointer<OverVccDialog> m_overvcc_dialog;
-
-    std::vector<QRadioButton*> m_vdd_radios;
-    QSignalMapper *m_vdd_signals;
 
     ShupitoDesc::config *m_vdd_config;
     ShupitoDesc::config *m_tunnel_config;
 
     ProgressDialog *m_progress_dialog;
-    FuseWidget *m_fuse_widget;
 
     chip_definition m_cur_def;
 

@@ -11,30 +11,25 @@
 #include <QTimer>
 #include <stdio.h>
 #include <QComboBox>
-#include <qhexedit.h>
 #include <QByteArray>
 #include <QProgressDialog>
 #include <QSignalMapper>
-#include <QRadioButton>
 #include <QFileInfo>
-#include <QToolBar>
-#include <QIntValidator>
+#include <QStringBuilder>
+#include <QInputDialog>
+#include <QFileDialog>
 
-#include "progressdialog.h"
+#include "ui/progressdialog.h"
 #include "shupito.h"
 #include "lorrisshupito.h"
 #include "modes/shupitomode.h"
-#include "fusewidget.h"
 #include "../shared/hexfile.h"
 #include "../shared/chipdefs.h"
-#include "flashbuttonmenu.h"
 #include "../connection/shupitoconn.h"
-#include "overvccdialog.h"
+#include "ui/overvccdialog.h"
 #include "../ui/tooltipwarn.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../connection/connectionmgr2.h"
-
-#include "ui_lorrisshupito.h"
 
 // When no packet from shupito is received for TIMEOUT_INTERVAL ms,
 // warning will appear
@@ -47,20 +42,23 @@ static const QString memNames[] = { "", "flash", "eeprom" };
 
 static const QString filters = QObject::tr("Intel HEX file (*.hex)");
 
-LorrisShupito::LorrisShupito()
-    : ui(new Ui::LorrisShupito)
+LorrisShupito::LorrisShupito() : WorkTab()
 {
-    ui->setupUi(this);
-
+    m_connectButton = NULL;
+    ui = NULL;
     m_chipStopped = false;
     m_overvcc_dialog = NULL;
     m_overvcc = 0.0;
     m_enable_overvcc = false;
-
-    m_timeout_timer.setInterval(TIMEOUT_INTERVAL);
-
-    m_fuse_widget = new FuseWidget(this);
-    ui->mainLayout->addWidget(m_fuse_widget);
+    m_overvcc_turnoff = false;
+    m_vcc = 0;
+    lastVccIndex = 0;
+    m_desc = NULL;
+    m_progress_dialog = NULL;
+    m_state = 0;
+    m_vdd_config = NULL;
+    m_tunnel_config = NULL;
+    m_shupito = new Shupito(this);
 
     m_cur_mode = sConfig.get(CFG_QUINT32_SHUPITO_MODE);
     if(m_cur_mode >= MODE_COUNT)
@@ -70,105 +68,22 @@ LorrisShupito::LorrisShupito()
     if(m_prog_speed_hz < 1)
         m_prog_speed_hz = 2000000;
 
-    ui->progSpeedBox->setEditText(QString::number(m_prog_speed_hz));
-
-    ui->tunnelCheck->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TUNNEL));
-
-    connect(ui->tunnelSpeedBox,  SIGNAL(editTextChanged(QString)), SLOT(tunnelSpeedChanged(QString)));
-    connect(ui->tunnelCheck,     SIGNAL(clicked(bool)),            SLOT(tunnelToggled(bool)));
-    connect(ui->progSpeedBox,    SIGNAL(editTextChanged(QString)), SLOT(progSpeedChanged(QString)));
-    connect(ui->hideLogBtn,      SIGNAL(clicked(bool)),            SLOT(hideLogBtn(bool)));
-    connect(ui->eraseButton,     SIGNAL(clicked()),                SLOT(eraseDevice()));
-    connect(ui->hideFusesBtn,    SIGNAL(clicked(bool)),            SLOT(hideFusesBtn(bool)));
-    connect(ui->settingsBtn,     SIGNAL(clicked(bool)),            SLOT(hideSettingsBtn(bool)));
-    connect(ui->over_enable,     SIGNAL(toggled(bool)),            SLOT(overvoltageSwitched(bool)));
-    connect(ui->over_val,        SIGNAL(valueChanged(double)),     SLOT(overvoltageChanged(double)));
-    connect(ui->over_turnoff,    SIGNAL(clicked(bool)),            SLOT(overvoltageTurnOffVcc(bool)));
-    connect(ui->startStopBtn,    SIGNAL(clicked()),                SLOT(startstopChip()));
-    connect(ui->flashWarnBox,    SIGNAL(clicked(bool)),            SLOT(flashWarnBox(bool)));
-    connect(ui->fmtBox,          SIGNAL(activated(int)),   ui->terminal, SLOT(setFmt(int)));
-    connect(ui->terminal,        SIGNAL(fmtSelected(int)), ui->fmtBox,   SLOT(setCurrentIndex(int)));
-    connect(ui->terminal,        SIGNAL(paused(bool)),     ui->pauseBtn, SLOT(setChecked(bool)));
-    connect(ui->clearBtn,        SIGNAL(clicked()),        ui->terminal, SLOT(clear()));
-    connect(ui->pauseBtn,        SIGNAL(clicked(bool)),    ui->terminal, SLOT(pause(bool)));
-    connect(m_fuse_widget,       SIGNAL(readFuses()),              SLOT(readFusesInFlash()));
-    connect(m_fuse_widget,       SIGNAL(status(QString)),          SLOT(status(QString)));
-    connect(m_fuse_widget,       SIGNAL(writeFuses()),             SLOT(writeFusesInFlash()));
-    connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
-    connect(&m_timeout_timer,    SIGNAL(timeout()),                SLOT(timeout()));
-
-    const QWidget *buttons[] = { ui->readButton, ui->writeButton, ui->eraseButton, ui->startStopBtn, NULL };
-    for(const QWidget **itr = buttons; *itr; ++itr)
-        connect(this, SIGNAL(enableButtons(bool)), *itr, SLOT(setEnabled(bool)));
-
-    m_buttons_enabled = true;
-
-    int w = ui->hideFusesBtn->fontMetrics().height()+10;
-    ui->hideLogBtn->setFixedHeight(w);
-    ui->hideFusesBtn->setFixedWidth(w);
-    ui->hideFusesBtn->setRotation(ROTATE_90);
-
-    hideLogBtn(sConfig.get(CFG_BOOL_SHUPITO_SHOW_LOG));
-    hideFusesBtn(sConfig.get(CFG_BOOL_SHUPITO_SHOW_FUSES));
-    hideSettingsBtn(sConfig.get(CFG_BOOL_SHUPITO_SHOW_SETTINGS));
-
-    ui->tunnelSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
-    ui->progSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
+    for(quint8 i = 0; i < MODE_COUNT; ++i)
+        m_modes[i] = ShupitoMode::getMode(i, m_shupito);
 
     initMenus();
+    setUiType(UI_FULL);
 
-    ui->terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
-    ui->terminal->loadSettings(sConfig.get(CFG_STRING_SHUPITO_TERM_SET));
+    m_timeout_timer.setInterval(TIMEOUT_INTERVAL);
 
-    QByteArray data = QByteArray(1024, (char)0xFF);
-    static const QString memNames[] = { tr("Program memory"), tr("EEPROM") };
-    m_hexAreas[0] = NULL;
-    for(quint8 i = 1; i < TAB_MAX; ++i)
-    {
-        QHexEdit *h = new QHexEdit(this);
-        h->setData(data);
-        m_hexAreas[i] = h;
-        ui->memTabs->addTab(h, memNames[i-1]);
-    }
-
-    m_shupito = new Shupito(this);
-    m_desc = NULL;
-
+    connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
+    connect(&m_timeout_timer,    SIGNAL(timeout()),                SLOT(timeout()));
     connect(m_shupito, SIGNAL(descRead(bool)),                  SLOT(descRead(bool)));
     connect(m_shupito, SIGNAL(vccValueChanged(quint8,double)),  SLOT(vccValueChanged(quint8,double)));
     connect(m_shupito, SIGNAL(vddDesc(vdd_setup)),              SLOT(vddSetup(vdd_setup)));
     connect(m_shupito, SIGNAL(tunnelStatus(bool)),              SLOT(tunnelStateChanged(bool)));
 
-    m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
-
-    connect(ui->terminal, SIGNAL(settingsChanged()),     this,         SLOT(saveTermSettings()));
-    connect(ui->terminal, SIGNAL(keyPressed(QString)),   m_shupito,    SLOT(sendTunnelData(QString)));
-    connect(m_shupito,  SIGNAL(tunnelData(QByteArray)),  ui->terminal, SLOT(appendText(QByteArray)));
-
-    m_vcc = 0;
-    lastVccIndex = 0;
-
-    m_vdd_config = NULL;
-    m_tunnel_config = NULL;
-
-    for(quint8 i = 0; i < MODE_COUNT; ++i)
-        m_modes[i] = ShupitoMode::getMode(i, m_shupito);
-
-    m_progress_dialog = NULL;
-    m_color = VDD_BLACK;
-    m_vdd_signals = NULL;
-
-    m_state = 0;
-
-    ui->over_enable->setChecked(sConfig.get(CFG_BOOL_SHUPITO_OVERVOLTAGE));
-    ui->over_val->setValue(sConfig.get(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL));
-    ui->over_turnoff->setChecked(sConfig.get(CFG_BOOL_SHUPITO_TURNOFF_VCC));
-
-    ui->flashWarnBox->setChecked(sConfig.get(CFG_BOOL_SHUPITO_SHOW_FLASH_WARN));
-
-    m_connectButton = new ConnectButton(ui->connectButton);
-    m_connectButton->setConnectionType(pct_shupito);
-    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+    ui->connectShupito(m_shupito);
 
     connectedStatus(false);
 }
@@ -178,31 +93,18 @@ LorrisShupito::~LorrisShupito()
     if (m_con)
         m_con->releaseTab();
 
-    sConfig.set(CFG_QUITN32_SHUPITO_TERM_FMT, ui->terminal->getFmt());
-
     stopAll(false);
     delete m_shupito;
     delete m_desc;
-    delete ui;
 
     for(quint8 i = 0; i < MODE_COUNT; ++i)
         delete m_modes[i];
 
-    delete m_vdd_signals;
+    delete ui;
 }
 
 void LorrisShupito::initMenus()
 {
-    // Flash/Read buttons
-    FlashButtonMenu *readBtnMenu = new FlashButtonMenu(true, ui->readButton, this);
-    FlashButtonMenu *writeBtnMenu = new FlashButtonMenu(false, ui->writeButton, this);
-
-    connect(ui->memTabs, SIGNAL(currentChanged(int)), readBtnMenu,  SLOT(setActiveAction(int)));
-    connect(ui->memTabs, SIGNAL(currentChanged(int)), writeBtnMenu, SLOT(setActiveAction(int)));
-
-    readBtnMenu->setActiveAction(0);
-    writeBtnMenu->setActiveAction(0);
-
     // top menu bar
     QMenu *chipBar = new QMenu(tr("Chip"), this);
     addTopMenu(chipBar);
@@ -218,8 +120,8 @@ void LorrisShupito::initMenus()
     connect(m_stop_act,   SIGNAL(triggered()), SLOT(stopChip()));
     connect(m_restart_act, SIGNAL(triggered()), SLOT(restartChip()));
 
-    QMenu *modeBar = new QMenu(tr("Mode"), this);
-    addTopMenu(modeBar);
+    m_modeBar = new QMenu(tr("Mode"), this);
+    addTopMenu(m_modeBar);
 
     static const QString modeNames[] = { "SPI", "PDI", "cc25xx" };
 
@@ -227,7 +129,7 @@ void LorrisShupito::initMenus()
 
     for(quint8 i = 0; i < MODE_COUNT; ++i)
     {
-        m_mode_act[i] = modeBar->addAction(modeNames[i]);
+        m_mode_act[i] = m_modeBar->addAction(modeNames[i]);
         m_mode_act[i]->setCheckable(true);
 
         signalMap->setMapping(m_mode_act[i], i);
@@ -236,9 +138,9 @@ void LorrisShupito::initMenus()
     m_mode_act[m_cur_mode]->setChecked(true);
     connect(signalMap, SIGNAL(mapped(int)), SLOT(modeSelected(int)));
 
-    modeBar->addSeparator();
+    m_modeBar->addSeparator();
 
-    QMenu *verifyMenu = modeBar->addMenu(tr("Verify write"));
+    QMenu *verifyMenu = m_modeBar->addMenu(tr("Verify write"));
     QSignalMapper *verifyMap = new QSignalMapper(this);
 
     for(quint8 i = 0; i < VERIFY_MAX; ++i)
@@ -260,7 +162,7 @@ void LorrisShupito::initMenus()
     connect(verifyMap, SIGNAL(mapped(int)), SLOT(verifyChanged(int)));
     verifyChanged(sConfig.get(CFG_QUINT32_SHUPITO_VERIFY));
 
-    QAction *setTunnelName = modeBar->addAction(tr("Set RS232 tunnel name..."));
+    QAction *setTunnelName = m_modeBar->addAction(tr("Set RS232 tunnel name..."));
     connect(setTunnelName, SIGNAL(triggered()), SLOT(setTunnelName()));
 
     QMenu *dataBar = new QMenu(tr("Data"), this);
@@ -289,19 +191,11 @@ void LorrisShupito::initMenus()
     connect(m_save_flash,  SIGNAL(triggered()), signalMapSave, SLOT(map()));
     connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
 
-    QToolBar *bar = new QToolBar(this);
-    ui->topLayout->insertWidget(1, bar);
-    bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    bar->setIconSize(QSize(16, 16));
+    m_miniUi = new QAction(tr("Minimal UI"), this);
+    m_miniUi->setCheckable(true);
+    addTopAction(m_miniUi);
 
-    bar->addAction(m_load_flash);
-    bar->addAction(m_save_flash);
-    bar->addSeparator();
-
-    QPushButton *btn = new QPushButton(QIcon(":/actions/wire"), tr("Mode"), this);
-    btn->setFlat(true);
-    btn->setMenu(modeBar);
-    bar->addWidget(btn);
+    connect(m_miniUi, SIGNAL(triggered(bool)), SLOT(setMiniUi(bool)));
 }
 
 void LorrisShupito::connDisconnecting()
@@ -329,17 +223,8 @@ void LorrisShupito::connectedStatus(bool connected)
         m_timeout_timer.stop();
 
         setEnableButtons(false);
-
-        ui->vccLabel->clear();
-        ui->engineLabel->clear();
-
-        for(quint8 i = 0; i < m_vdd_radios.size(); ++i)
-            delete m_vdd_radios[i];
-        m_vdd_radios.clear();
     }
-    ui->tunnelCheck->setEnabled(connected);
-    ui->tunnelSpeedBox->setEnabled(connected);
-    ui->progSpeedBox->setEnabled(connected);
+    ui->connectedStatus(connected);
 }
 
 void LorrisShupito::readPacket(const ShupitoPacket & packet)
@@ -351,8 +236,7 @@ void LorrisShupito::stopAll(bool wait)
 {
     if(m_tunnel_config)
     {
-        ui->tunnelCheck->setEnabled(false);
-        ui->tunnelCheck->setChecked(false);
+        ui->tunnelStop(true);
 
         m_shupito->setTunnelState(false);
         m_shupito->setTunnelPipe(0);
@@ -397,17 +281,17 @@ void LorrisShupito::descRead(bool correct)
 {
     if(!correct)
     {
-        log("Failed to read info from shupito!");
+        ui->log("Failed to read info from shupito!");
         return Utils::showErrorBox(tr("Failed to read info from Shupito. If you're sure "
                         "you're connected to shupito, try to disconnect and "
                         "connect again"));
     }
 
-    log("Device GUID: " % m_desc->getGuid());
+    ui->log("Device GUID: " % m_desc->getGuid());
 
     ShupitoDesc::intf_map map = m_desc->getInterfaceMap();
     for(ShupitoDesc::intf_map::iterator itr = map.begin(); itr != map.end(); ++itr)
-        log("Got interface GUID: " % itr.key());
+        ui->log("Got interface GUID: " % itr.key());
 
     m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
     m_shupito->setVddConfig(m_vdd_config);
@@ -419,9 +303,9 @@ void LorrisShupito::descRead(bool correct)
             pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
 
             if(pkt.size() == 2 && pkt[1] == 0)
-                log("VDD started!");
+                ui->log("VDD started!");
             else
-                log("Could not start VDD!");
+                ui->log("Could not start VDD!");
         }
         ShupitoPacket packet = makeShupitoPacket(m_vdd_config->cmd, 2, 0, 0);
         m_con->sendPacket(packet);
@@ -437,14 +321,14 @@ void LorrisShupito::descRead(bool correct)
             pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
 
             if(pkt.size() == 2 && pkt[1] == 0)
-                log("Tunnel started!");
+                ui->log("Tunnel started!");
             else
-                log("Could not start tunnel!");
+                ui->log("Could not start tunnel!");
         }
 
         m_shupito->setTunnelState(true);
     }else
-        ui->tunnelCheck->setChecked(false);
+        ui->setTunnelActive(false);
 }
 
 void LorrisShupito::vccValueChanged(quint8 id, double value)
@@ -453,43 +337,17 @@ void LorrisShupito::vccValueChanged(quint8 id, double value)
     if(m_timeout_warn)
         delete m_timeout_warn;
 
-    if(id == 0 && !ui->engineLabel->text().isEmpty() && m_vcc != value)
+    if(id == 0 && !m_vdd_setup.empty() && m_vcc != value)
     {
         if((value < 0 ? -value : value) < 0.03)
             value = 0;
 
         setEnableButtons(value != 0);
+        ui->vccValChanged(value);
 
-        ui->vccLabel->setText(QString("%1").arg(value, 3, 'f', 2, '0'));
-
-        changeVddColor(value);
         m_vcc = value;
-
         checkOvervoltage();
     }
-}
-
-void LorrisShupito::changeVddColor(float val)
-{
-    VddColor newClr;
-    if     (val == 0)                newClr = VDD_BLACK;
-    else if(val > 0 && val <= 2.7)   newClr = VDD_ORANGE;
-    else if(val > 2.7 && val <= 5.5) newClr = VDD_GREEN;
-    else                             newClr = VDD_RED;
-
-    if(newClr == m_color)
-        return;
-
-    static const QString vddColorHTML[] =
-    {
-        "#000000", // VDD_BLACK
-        "#009900", // VDD_GREEN
-        "#FF0000", // VDD_RED
-        "#996600", // VDD_ORANGE
-    };
-
-    ui->vccLabel->setStyleSheet("color: " % vddColorHTML[newClr]);
-    m_color = newClr;
 }
 
 //void do_vdd_setup(avrflash::device<comm>::vdd_setup const & vs)
@@ -497,42 +355,14 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
 {
     m_vdd_setup = vs;
 
-    for(quint8 i = 0; i < m_vdd_radios.size(); ++i)
-        delete m_vdd_radios[i];
-    m_vdd_radios.clear();
+    ui->clearVCC();
 
     if(vs.empty())
-    {
-        ui->engineLabel->setText("");
         return;
-    }
 
-    if(m_vdd_signals)
-    {
-        disconnect(this, SLOT(vddIndexChanged(int)));
-        delete m_vdd_signals;
-    }
-    m_vdd_signals = new QSignalMapper(this);
+    ui->vddSetup(vs);
 
-    for(quint8 i = 0; i < vs[0].drives.size() && i < 5; ++i)
-    {
-        QRadioButton *rad = new QRadioButton(vs[0].drives[i], this);
-        m_vdd_radios.push_back(rad);
-        ui->vddLayout->addWidget(rad);
-
-        m_vdd_signals->setMapping(rad, i);
-        connect(rad, SIGNAL(clicked()), m_vdd_signals, SLOT(map()));
-    }
     lastVccIndex = vs[0].current_drive;
-
-    if(m_vdd_radios.size() > (uint)lastVccIndex)
-        m_vdd_radios[lastVccIndex]->setChecked(true);
-
-    ui->engineLabel->setText(vs[0].name);
-
-    disableOvervoltVDDs();
-
-    connect(m_vdd_signals, SIGNAL(mapped(int)), this, SLOT(vddIndexChanged(int)));
 }
 
 void LorrisShupito::vddIndexChanged(int index)
@@ -542,7 +372,7 @@ void LorrisShupito::vddIndexChanged(int index)
 
     if(lastVccIndex == 0 && index > 0 && m_vcc != 0)
     {
-        m_vdd_radios[0]->setChecked(true);
+        ui->vddIndexChanged(0);
         Utils::showErrorBox(tr("Can't set output VCC, voltage detected!"));
         return;
     }
@@ -580,23 +410,9 @@ void LorrisShupito::tunnelStateChanged(bool opened)
     if(!m_tunnel_config)
         return;
 
-    QString text = tr("RS232 tunnel ");
+    ui->tunnelStateChanged(opened);
 
-    if(opened)
-    {
-        if(!ui->tunnelCheck->isEnabled())
-            ui->tunnelCheck->setEnabled(true);
-        text += tr("enabled");
-    }
-    else
-    {
-        if(ui->tunnelCheck->isChecked())
-            ui->tunnelCheck->setEnabled(false);
-        text += tr("disabled");
-    }
-
-    log(text);
-    ui->tunnelCheck->setChecked(opened);
+    ui->log(tr("RS232 tunnel %1").arg(opened ? tr("enabled") : tr("disabled")));
 }
 
 void LorrisShupito::setTunnelName()
@@ -636,11 +452,6 @@ void LorrisShupito::progSpeedChanged(QString text)
     sConfig.set(CFG_QUINT32_SHUPITO_PRG_SPEED, m_prog_speed_hz);
 }
 
-void LorrisShupito::log(const QString &text)
-{
-    ui->logText->appendPlainText(text);
-}
-
 void LorrisShupito::status(const QString &text)
 {
     emit statusBarMsg(text, 5000);
@@ -648,12 +459,7 @@ void LorrisShupito::status(const QString &text)
 
 bool LorrisShupito::checkVoltage(bool active)
 {
-    bool error = false;
-    if(active && m_vcc == 0.0)
-        error = true;
-    if(!active && m_vcc != 0.0)
-        error = true;
-
+    bool error = !active ^ (m_vcc == 0.0);
     if(error)
     {
         if(active)
@@ -670,9 +476,9 @@ void LorrisShupito::update_chip_description(chip_definition& cd)
     if(cd.getName().isEmpty())
     {
         if(cd.getSign().isEmpty())
-            ui->chipIdLabel->setText(tr("<unknown>"));
+            ui->setChipId(tr("<unknown>"));
         else
-            ui->chipIdLabel->setText("<" % cd.getSign() % ">");
+            ui->setChipId("<" % cd.getSign() % ">");
     }
     else
     {
@@ -687,7 +493,7 @@ void LorrisShupito::update_chip_description(chip_definition& cd)
         if(mem)
             name += "  EEPROM: " % QString::number(mem->size) % " bytes";
 
-        ui->chipIdLabel->setText(name);
+        ui->setChipId(name);
         m_cur_def = cd;
     }
 }
@@ -731,57 +537,27 @@ void LorrisShupito::updateProgressLabel(const QString &text)
     m_progress_dialog->setLabelText(text);
 }
 
-void LorrisShupito::hideLogBtn(bool checked)
-{
-    ui->hideLogBtn->setChecked(checked);
-    ui->logText->setVisible(checked);
-    sConfig.set(CFG_BOOL_SHUPITO_SHOW_LOG, checked);
-}
-
-void LorrisShupito::hideFusesBtn(bool checked)
-{
-    ui->hideFusesBtn->setChecked(checked);
-    m_fuse_widget->setVisible(checked);
-    sConfig.set(CFG_BOOL_SHUPITO_SHOW_FUSES, checked);
-}
-
-void LorrisShupito::hideSettingsBtn(bool checked)
-{
-    ui->progBox->setVisible(checked);
-    ui->tunnelBox->setVisible(checked);
-    ui->overvccBox->setVisible(checked);
-    ui->settingsBtn->setChecked(checked);
-    sConfig.set(CFG_BOOL_SHUPITO_SHOW_SETTINGS, checked);
-}
-
 chip_definition LorrisShupito::switchToFlashAndGetId()
 {
-    log("Swithing to flash mode");
+    ui->log("Swithing to flash mode");
 
     m_modes[m_cur_mode]->switchToFlashMode(m_prog_speed_hz);
 
-    log("Reading device id");
+    ui->log("Reading device id");
 
     chip_definition chip = m_modes[m_cur_mode]->readDeviceId();
     m_shupito->setChipId(chip);
 
-    log("Got device id: " % chip.getSign());
+    ui->log("Got device id: " % chip.getSign());
 
     update_chip_description(chip);
 
-    if(ui->chipIdLabel->text().contains("<"))
+    if(chip.getName().isEmpty())
         throw QString(tr("Unsupported chip: %1")).arg(chip.getSign());
 
-    postFlashSwitchCheck(chip);
+    ui->postFlashSwitchCheck(chip);
 
     return chip;
-}
-
-//void post_flash_switch_check(), avrclient232.cpp
-void LorrisShupito::postFlashSwitchCheck(chip_definition& chip)
-{
-    if(m_fuse_widget->getChipDef().getSign() != chip.getSign())
-        m_fuse_widget->clear(true);
 }
 
 bool LorrisShupito::showContinueBox(const QString &title, const QString &text)
@@ -811,7 +587,7 @@ void LorrisShupito::startChip()
     status("");
     try
     {
-        log("Switching to run mode");
+        ui->log("Switching to run mode");
         m_modes[m_cur_mode]->switchToRunMode();
 
         status(tr("Chip has been started"));
@@ -833,7 +609,7 @@ void LorrisShupito::stopChip()
 
     try
     {
-        log("Swithing to flash mode");
+        ui->log("Swithing to flash mode");
         switchToFlashAndGetId();
 
         status(tr("Chip has been stopped"));
@@ -851,20 +627,10 @@ void LorrisShupito::stopChip()
 
 void LorrisShupito::updateStartStopUi(bool stopped)
 {
-    if (stopped)
-    {
-        m_start_act->setEnabled(true);
-        m_stop_act->setEnabled(false);
-        ui->startStopBtn->setIcon(QIcon(":/icons/start"));
-        ui->startStopBtn->setText(tr("Start"));
-    }
-    else
-    {
-        m_start_act->setEnabled(false);
-        m_stop_act->setEnabled(true);
-        ui->startStopBtn->setIcon(QIcon(":/icons/stop"));
-        ui->startStopBtn->setText(tr("Stop"));
-    }
+    ui->setStartStopBtn(stopped);
+
+    m_start_act->setEnabled(stopped);
+    m_stop_act->setEnabled(!stopped);
 
     m_chipStopped = stopped;
 }
@@ -918,21 +684,14 @@ void LorrisShupito::loadFromFile(int memId, const QString& filename)
             len = memdef->size;
     }
 
-    m_hexAreas[memId]->setData(file.getDataArray(len));
-    m_hexAreas[memId]->setBackgroundColor(colorFromFile);
+    ui->setHexData(memId, file.getDataArray(len));
+    ui->setHexColor(memId, colorFromFile);
+
     m_hexFilenames[memId] = filename;
     m_hexWriteTimes[memId] = loadTimestamp;
 
     if(memId == MEM_FLASH)
-    {
-        ui->filename->setText(filename);
-        ui->filename->setToolTip(filename);
-
-        QDateTime lastMod = QFileInfo(filename).lastModified();
-        QString time = lastMod.toString(tr(" | h:mm:ss d.M.yyyy"));
-        ui->filedate->setText(time);
-        ui->filedate->setToolTip(time);
-    }
+        ui->setFileAndTime(filename, QFileInfo(filename).lastModified());
 
     status(tr("File loaded"));
 }
@@ -968,11 +727,12 @@ void LorrisShupito::saveToFile(int memId)
         status("");
 
         HexFile file;
-        file.setData(m_hexAreas[memId]->data());
+        file.setData(ui->getHexData(memId));
         file.SaveToFile(filename);
 
-        m_hexAreas[memId]->setBackgroundColor(colorFromFile);
-        m_hexAreas[memId]->clearDataChanged();
+        ui->setHexColor(memId, colorFromFile);
+        ui->clearHexChanged(memId);
+
         m_hexFilenames[memId] = filename;
 
         status(tr("File saved"));
@@ -983,312 +743,6 @@ void LorrisShupito::saveToFile(int memId)
     }
 }
 
-void LorrisShupito::readAll()
-{
-    if(!checkVoltage(true))
-        return;
-
-    status("");
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-        chip_definition chip = switchToFlashAndGetId();
-
-        readMem(MEM_FLASH, chip);
-        readMem(MEM_EEPROM, chip);
-        readFuses(chip);
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-
-        status(tr("Data has been successfuly read"));
-    }
-    catch(QString ex)
-    {
-        updateProgressDialog(-1);
-        Utils::showErrorBox(ex);
-    }
-}
-
-void LorrisShupito::readMemInFlash(quint8 memId)
-{
-    if(!checkVoltage(true))
-        return;
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-        chip_definition chip = switchToFlashAndGetId();
-
-        readMem(memId, chip);
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-
-        ui->memTabs->setCurrentIndex(memId);
-    }
-    catch(QString ex)
-    {
-        updateProgressDialog(-1);
-
-        Utils::showErrorBox(ex);
-    }
-}
-
-void LorrisShupito::readFusesInFlash()
-{
-    if(!checkVoltage(true))
-        return;
-
-    status("");
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-        chip_definition chip = switchToFlashAndGetId();
-
-        readFuses(chip);
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-        status(tr("Fuses had been succesfully read"));
-    }
-    catch(QString ex)
-    {
-        Utils::showErrorBox(ex);
-    }
-}
-
-void LorrisShupito::readMem(quint8 memId, chip_definition &chip)
-{
-    log("Reading memory");
-
-    showProgressDialog(tr("Reading memory"), m_modes[m_cur_mode]);
-    QByteArray mem = m_modes[m_cur_mode]->readMemory(memNames[memId], chip);
-    m_hexAreas[memId]->setData(mem);
-    m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
-    m_hexFilenames[memId].clear();
-
-    updateProgressDialog(-1);
-}
-
-void LorrisShupito::readFuses(chip_definition& chip)
-{
-    log("Reading fuses");
-
-    m_fuse_widget->setUpdatesEnabled(false);
-    m_fuse_widget->clear(false);
-
-    std::vector<quint8>& data = m_fuse_widget->getFuseData();
-    data.clear();
-
-    m_modes[m_cur_mode]->readFuses(data, chip);
-    m_fuse_widget->setFuses(chip);
-
-    m_fuse_widget->setUpdatesEnabled(true);
-
-    hideFusesBtn(true);
-}
-
-void LorrisShupito::writeAll()
-{
-    if(!checkVoltage(true))
-        return;
-
-    status("");
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-        chip_definition chip = switchToFlashAndGetId();
-
-        writeMem(MEM_FLASH, chip);
-        writeMem(MEM_EEPROM, chip);
-        writeFuses(chip);
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-
-        status(tr("Data has been successfuly written"));
-    }
-    catch(QString ex)
-    {
-        updateProgressDialog(-1);
-        Utils::showErrorBox(ex);
-    }
-}
-
-void LorrisShupito::writeMemInFlash(quint8 memId)
-{
-    if(!checkVoltage(true))
-        return;
-
-    status("");
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-        chip_definition chip = switchToFlashAndGetId();
-
-        writeMem(memId, chip);
-
-        m_hexAreas[memId]->clearDataChanged();
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-
-        status(tr("Data has been successfuly written"));
-    }
-    catch(QString ex)
-    {
-        updateProgressDialog(-1);
-        Utils::showErrorBox(ex);
-    }
-}
-
-void LorrisShupito::writeFusesInFlash()
-{
-    if(!checkVoltage(true))
-        return;
-
-    status("");
-
-    if(!m_fuse_widget->isLoaded())
-    {
-        Utils::showErrorBox(tr("Fuses had not been read yet"));
-        return;
-    }
-
-    if(m_fuse_widget->isChanged())
-    {
-        Utils::showErrorBox(tr("You have to \"Remember\" fuses prior to writing"));
-        return;
-    }
-
-    if(!showContinueBox(tr("Write fuses?"), tr("Do you really wanna to write fuses to the chip?")))
-        return;
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-        chip_definition chip = switchToFlashAndGetId();
-
-        writeFuses(chip);
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-        status(tr("Fuses had been succesfully written"));
-    }
-    catch(QString ex)
-    {
-        Utils::showErrorBox(ex);
-    }
-}
-
-void LorrisShupito::writeMem(quint8 memId, chip_definition &chip)
-{
-    tryFileReload(memId);
-
-    chip_definition::memorydef *memdef = chip.getMemDef(memId);
-
-    if(!memdef)
-        throw QString(tr("Unknown memory id"));
-
-    QByteArray data = m_hexAreas[memId]->data();
-    if((quint32)data.size() > memdef->size)
-        throw QString(tr("Somethings wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
-
-    log("Writing memory");
-    showProgressDialog(tr("Writing memory"), m_modes[m_cur_mode]);
-
-    QDateTime lastMod = m_hexFlashTimes[memId];
-    if(!m_hexFilenames[memId].isEmpty())
-    {
-        QFileInfo info(m_hexFilenames[memId]);
-        if(ui->flashWarnBox->isChecked() && info.exists() && m_hexFlashTimes[memId] == info.lastModified())
-            new ToolTipWarn(tr("You have flashed this file already, and it was not changed since."), ui->writeButton, this);
-        lastMod = info.lastModified();
-    }
-
-    HexFile file;
-    file.setData(data);
-
-    m_modes[m_cur_mode]->flashRaw(file, memId, chip, m_verify_mode);
-    m_hexAreas[memId]->setBackgroundColor(colorFromDevice);
-
-    updateProgressDialog(-1);
-
-    m_hexFlashTimes[memId] = lastMod;
-}
-
-void LorrisShupito::writeFuses(chip_definition &chip)
-{
-    if(!m_fuse_widget->isLoaded())
-        throw QString(tr("Fuses had not been read yet"));
-
-    log("Writing fuses");
-    std::vector<quint8>& data = m_fuse_widget->getFuseData();
-    m_modes[m_cur_mode]->writeFuses(data, chip, m_verify_mode);
-}
-
-void LorrisShupito::eraseDevice()
-{
-    if(!checkVoltage(true))
-        return;
-
-    if(!showContinueBox(tr("Erase chip?"), tr("Do you really wanna to erase WHOLE chip?")))
-        return;
-
-    try
-    {
-        bool restart = !m_modes[m_cur_mode]->isInFlashMode();
-
-        chip_definition cd = switchToFlashAndGetId();
-
-        log("Erasing device");
-        showProgressDialog(tr("Erasing chip..."));
-        m_modes[m_cur_mode]->erase_device(cd);
-
-        if(restart)
-        {
-            log("Switching to run mode");
-            m_modes[m_cur_mode]->switchToRunMode();
-        }
-
-        updateProgressDialog(-1);
-    }
-    catch(QString ex)
-    {
-        updateProgressDialog(-1);
-        Utils::showErrorBox(ex);
-        return;
-    }
-
-    QMessageBox succesBox(this);
-    succesBox.setIcon(QMessageBox::Information);
-    succesBox.setWindowTitle(tr("Succes!"));
-    succesBox.setText(tr("Chip was succesfuly erased!"));
-    succesBox.exec();
-}
 
 void LorrisShupito::verifyChanged(int mode)
 {
@@ -1302,7 +756,7 @@ void LorrisShupito::verifyChanged(int mode)
 
 void LorrisShupito::tryFileReload(quint8 memId)
 {
-    if (m_hexFilenames[memId].isEmpty() || m_hexAreas[memId]->hasDataChanged())
+    if (m_hexFilenames[memId].isEmpty() || ui->hasHexChanged(memId))
         return;
 
     QDateTime writeTime = QFileInfo(m_hexFilenames[memId]).lastModified();
@@ -1322,20 +776,7 @@ void LorrisShupito::tryFileReload(quint8 memId)
 void LorrisShupito::focusChanged(QWidget *prev, QWidget */*curr*/)
 {
     if(prev == NULL)
-        tryFileReload(getMemIndex());
-}
-
-int LorrisShupito::getMemIndex()
-{
-    switch(ui->memTabs->currentIndex())
-    {
-        default:
-        case TAB_TERMINAL:
-        case TAB_FLASH:
-            return MEM_FLASH;
-        case TAB_EEPROM:
-            return MEM_EEPROM;
-    }
+        tryFileReload(ui->getMemIndex());
 }
 
 void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
@@ -1359,47 +800,6 @@ void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
         connect(m_con.data(), SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
 }
 
-void LorrisShupito::saveTermSettings()
-{
-    sConfig.set(CFG_STRING_SHUPITO_TERM_SET, ui->terminal->getSettingsData());
-}
-
-void LorrisShupito::overvoltageSwitched(bool enabled)
-{
-    sConfig.set(CFG_BOOL_SHUPITO_OVERVOLTAGE, enabled);
-    m_enable_overvcc = enabled;
-
-    if(!enabled && m_overvcc_dialog)
-        delete m_overvcc_dialog;
-}
-
-void LorrisShupito::overvoltageChanged(double val)
-{
-    sConfig.set(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL, val);
-    m_overvcc = val;
-
-    disableOvervoltVDDs();
-}
-
-void LorrisShupito::disableOvervoltVDDs()
-{
-    bool ok = false;
-    for(std::vector<QRadioButton*>::iterator itr = m_vdd_radios.begin(); itr != m_vdd_radios.end(); ++itr)
-    {
-        if((*itr)->text() == "<hiz>")
-            continue;
-
-        QStringList split = (*itr)->text().split("V,", QString::SkipEmptyParts);
-        if(split.size() != 2)
-            return;
-
-        double val = split[0].toDouble(&ok);
-        if(!ok)
-            continue;
-        (*itr)->setEnabled(val < m_overvcc);
-    }
-}
-
 void LorrisShupito::checkOvervoltage()
 {
     if(!m_enable_overvcc)
@@ -1407,15 +807,15 @@ void LorrisShupito::checkOvervoltage()
 
     if(m_vcc >= m_overvcc && !m_overvcc_dialog)
     {
-        if(ui->over_turnoff->isChecked())
+        if(m_overvcc_turnoff)
             shutdownVcc();
 
-        m_overvcc_dialog = new OverVccDialog(ui->over_turnoff->isChecked(), this);
+        m_overvcc_dialog = new OverVccDialog(m_overvcc_turnoff, this);
         m_overvcc_dialog->show();
     }
     else if(m_overvcc_dialog && m_vcc < m_overvcc)
     {
-        if(!ui->over_turnoff->isChecked())
+        if(!m_overvcc_turnoff)
             delete m_overvcc_dialog;
         m_overvcc_dialog = NULL;
     }
@@ -1426,7 +826,7 @@ void LorrisShupito::shutdownVcc()
     if(m_vdd_setup.empty())
         return;
 
-    for(size_t i = 0; i < m_vdd_setup[0].drives.size() && i < m_vdd_radios.size(); ++i)
+    for(size_t i = 0; i < m_vdd_setup[0].drives.size(); ++i)
     {
         if(m_vdd_setup[0].drives[i] == "<hiz>")
         {
@@ -1437,22 +837,14 @@ void LorrisShupito::shutdownVcc()
     }
 }
 
-void LorrisShupito::overvoltageTurnOffVcc(bool enabled)
-{
-    sConfig.set(CFG_BOOL_SHUPITO_TURNOFF_VCC, enabled);
-}
-
-void LorrisShupito::flashWarnBox(bool checked)
-{
-    ui->flashWarnBox->setChecked(checked);
-    sConfig.set(CFG_BOOL_SHUPITO_SHOW_FLASH_WARN, checked);
-}
-
 void LorrisShupito::timeout()
 {
     m_timeout_timer.stop();
     if(!m_timeout_warn)
-        m_timeout_warn = new ToolTipWarn(tr("Shupito is not responding, try to re-plug it into computer!"), ui->connectButton, this, -1);
+    {
+        m_timeout_warn = new ToolTipWarn(tr("Shupito is not responding, try to re-plug it into computer!"),
+                                         m_connectButton->btn(), this, -1);
+    }
 }
 
 QString LorrisShupito::GetIdString()
@@ -1468,38 +860,7 @@ void LorrisShupito::saveData(DataFileParser *file)
     for(int i = 1; i < MEM_FUSES; ++i)
         file->writeString(m_hexFilenames[i]);
 
-    file->writeBlockIdentifier("LorrShupitoTermSett");
-    file->writeString(ui->terminal->getSettingsData());
-    file->writeVal(ui->terminal->getFmt());
-
-    file->writeBlockIdentifier("LorrShupitoTermData");
-    {
-        QByteArray data = ui->terminal->getData();
-        file->writeVal(data.size());
-        file->write(data);
-    }
-
-    file->writeBlockIdentifier("LorrShupitoSett");
-    {
-        file->writeVal(ui->memTabs->currentIndex());
-
-        file->writeVal(ui->hideLogBtn->isChecked());
-        file->writeVal(ui->hideFusesBtn->isChecked());
-        file->writeVal(ui->settingsBtn->isChecked());
-    }
-
-    file->writeBlockIdentifier("LorrShupitoProgSett");
-    file->writeVal(m_prog_speed_hz);
-    file->writeVal(ui->flashWarnBox->isChecked());
-
-    file->writeBlockIdentifier("LorrShupitoTunnel");
-    file->writeVal(ui->tunnelCheck->isChecked());
-    file->writeVal(m_shupito->getTunnelSpeed());
-
-    file->writeBlockIdentifier("LorrShupitoOvervcc");
-    file->writeVal(ui->over_enable->isChecked());
-    file->writeVal(ui->over_turnoff->isChecked());
-    file->writeVal(ui->over_val->value());
+    ui->saveData(file);
 
     ConnectionPointer<PortShupitoConnection> sc = m_con.dynamicCast<PortShupitoConnection>();
     if(sc)
@@ -1523,46 +884,10 @@ void LorrisShupito::loadData(DataFileParser *file)
         }
     }
 
-    if(file->seekToNextBlock("LorrShupitoTermSett", BLOCK_WORKTAB))
-    {
-        ui->terminal->loadSettings(file->readString());
-        ui->terminal->setFmt(file->readVal<int>());
-    }
+    if(file->seekToNextBlock("LorrShupitoUItype", BLOCK_WORKTAB))
+        setUiType(file->readVal<int>());
 
-    if(file->seekToNextBlock("LorrShupitoTermData", BLOCK_WORKTAB))
-    {
-        int size = file->readVal<int>();
-        QByteArray data = file->read(size);
-        ui->terminal->appendText(data);
-    }
-
-    if(file->seekToNextBlock("LorrShupitoSett", BLOCK_WORKTAB))
-    {
-        ui->memTabs->setCurrentIndex(file->readVal<int>());
-
-        hideLogBtn(file->readVal<bool>());
-        hideFusesBtn(file->readVal<bool>());
-        hideSettingsBtn(file->readVal<bool>());
-    }
-
-    if(file->seekToNextBlock("LorrShupitoProgSett", BLOCK_WORKTAB))
-    {
-        ui->progSpeedBox->setEditText(QString::number(file->readVal<quint32>()));
-        ui->flashWarnBox->setChecked(file->readVal<bool>());
-    }
-
-    if(file->seekToNextBlock("LorrShupitoTunnel", BLOCK_WORKTAB))
-    {
-        ui->tunnelCheck->setChecked(file->readVal<bool>());
-        ui->tunnelSpeedBox->setEditText(QString::number(file->readVal<quint32>()));
-    }
-
-    if(file->seekToNextBlock("LorrShupitoOvervcc", BLOCK_WORKTAB))
-    {
-        ui->over_enable->setChecked(file->readVal<bool>());
-        ui->over_turnoff->setChecked(file->readVal<bool>());
-        ui->over_val->setValue(file->readVal<double>());
-    }
+    ui->loadData(file);
 
     if(file->seekToNextBlock("LorrShupitoConn", BLOCK_WORKTAB))
     {
@@ -1591,4 +916,62 @@ void LorrisShupito::setEnableButtons(bool enable)
 
     m_buttons_enabled = enable;
     emit enableButtons(enable);
+}
+
+void LorrisShupito::createConnBtn(QToolButton *btn)
+{
+    Q_ASSERT(!m_connectButton);
+
+    m_connectButton = new ConnectButton(btn);
+    m_connectButton->setConnectionType(pct_shupito);
+    m_connectButton->setConn(m_con, false);
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+}
+
+void LorrisShupito::setUiType(int type)
+{
+    if(ui && ui->getType() == type)
+        return;
+
+    delete m_connectButton;
+    m_connectButton = NULL;
+
+    delete ui;
+
+    ui = ShupitoUI::createUI((ui_type)type, this);
+    ui->setupUi(this);
+    ui->vddSetup(m_vdd_setup);
+
+    m_miniUi->setChecked(type == UI_MINIMAL);
+}
+
+void LorrisShupito::setMiniUi(bool mini)
+{
+    int type = mini ? UI_MINIMAL : UI_FULL;
+    if(ui->getType() == type)
+        return;
+
+    QByteArray hexData[MEM_FUSES];
+    for(quint8 i = MEM_FLASH; i < MEM_FUSES; ++i)
+        hexData[i] = ui->getHexData(i);
+
+    QByteArray data;
+    DataFileParser parser(&data, QIODevice::ReadWrite);
+
+    ui->saveData(&parser);
+    parser.seek(0);
+
+    setUiType(type);
+
+    ui->loadData(&parser);
+
+    for(quint8 i = MEM_FLASH; i < MEM_FUSES; ++i)
+        ui->setHexData(i, hexData[i]);
+
+    ui->connectedStatus(!(m_state & STATE_DISCONNECTED));
+
+    emit enableButtons(m_buttons_enabled);
+
+    if(!m_hexFilenames[MEM_FLASH].isEmpty())
+        ui->setFileAndTime(m_hexFilenames[MEM_FLASH], QFileInfo(m_hexFilenames[MEM_FLASH]).lastModified());
 }

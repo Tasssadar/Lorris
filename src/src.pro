@@ -61,12 +61,10 @@ SOURCES += ui/mainwindow.cpp \
     ../dep/qhexedit2/src/qhexedit_p.cpp \
     ../dep/qhexedit2/src/qhexedit.cpp \
     ../dep/qhexedit2/src/commands.cpp \
-    LorrisShupito/fusewidget.cpp \
     shared/hexfile.cpp \
     shared/chipdefs.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp \
-    LorrisShupito/flashbuttonmenu.cpp \
     LorrisShupito/modes/shupitospi.cpp \
     LorrisShupito/modes/shupitopdi.cpp \
     LorrisShupito/modes/shupitomode.cpp \
@@ -76,7 +74,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProxy/lorrisproxyinfo.cpp \
     LorrisProxy/lorrisproxy.cpp \
     LorrisProxy/tcpserver.cpp \
-    LorrisShupito/progressdialog.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp \
     ../dep/qscriptsyntaxhighlighter.cpp \
@@ -96,7 +93,6 @@ SOURCES += ui/mainwindow.cpp \
     ui/homedialog.cpp \
     LorrisAnalyzer/widgetarea.cpp \
     LorrisAnalyzer/storage.cpp \
-    LorrisShupito/overvccdialog.cpp \
     shared/fuse_desc.cpp \
     shared/defmgr.cpp \
     ../dep/ecwin7/ecwin7.cpp \
@@ -134,7 +130,14 @@ SOURCES += ui/mainwindow.cpp \
     ui/colorbutton.cpp \
     ui/resettablelineedit.cpp \
     ui/formuladialog.cpp \
-    misc/formulaevaluation.cpp
+    misc/formulaevaluation.cpp \
+    LorrisShupito/ui/shupitoui.cpp \
+    LorrisShupito/ui/fullshupitoui.cpp \
+    LorrisShupito/ui/flashbuttonmenu.cpp \
+    LorrisShupito/ui/progressdialog.cpp \
+    LorrisShupito/ui/overvccdialog.cpp \
+    LorrisShupito/ui/fusewidget.cpp \
+    LorrisShupito/ui/minishupitoui.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -172,12 +175,10 @@ HEADERS += ui/mainwindow.h \
     ../dep/qhexedit2/src/qhexedit_p.h \
     ../dep/qhexedit2/src/qhexedit.h \
     ../dep/qhexedit2/src/commands.h \
-    LorrisShupito/fusewidget.h \
     shared/hexfile.h \
     shared/chipdefs.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h \
-    LorrisShupito/flashbuttonmenu.h \
     LorrisShupito/modes/shupitospi.h \
     LorrisShupito/modes/shupitopdi.h \
     LorrisShupito/modes/shupitomode.h \
@@ -187,7 +188,6 @@ HEADERS += ui/mainwindow.h \
     LorrisProxy/lorrisproxyinfo.h \
     LorrisProxy/lorrisproxy.h \
     LorrisProxy/tcpserver.h \
-    LorrisShupito/progressdialog.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.h \
     ../dep/qscriptsyntaxhighlighter_p.h \
@@ -208,7 +208,6 @@ HEADERS += ui/mainwindow.h \
     ui/homedialog.h \
     LorrisAnalyzer/widgetarea.h \
     LorrisAnalyzer/storage.h \
-    LorrisShupito/overvccdialog.h \
     pch.h \
     shared/fuse_desc.h \
     shared/defmgr.h \
@@ -249,7 +248,14 @@ HEADERS += ui/mainwindow.h \
     ui/colorbutton.h \
     ui/resettablelineedit.h \
     ui/formuladialog.h \
-    misc/formulaevaluation.h
+    misc/formulaevaluation.h \
+    LorrisShupito/ui/shupitoui.h \
+    LorrisShupito/ui/fullshupitoui.h \
+    LorrisShupito/ui/flashbuttonmenu.h \
+    LorrisShupito/ui/progressdialog.h \
+    LorrisShupito/ui/overvccdialog.h \
+    LorrisShupito/ui/fusewidget.h \
+    LorrisShupito/ui/minishupitoui.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -264,7 +270,6 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui \
     LorrisAnalyzer/playback.ui \
     ui/chooseconnectiondlg.ui \
-    LorrisShupito/overvccdialog.ui \
     ui/rangeselectdialog.ui \
     updatecheck.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
@@ -276,7 +281,10 @@ FORMS += \
     ui/tabswitchwidget.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui \
     LorrisAnalyzer/DataWidgets/statusmanager.ui \
-    LorrisAnalyzer/DataWidgets/formuladialog.ui
+    LorrisAnalyzer/DataWidgets/formuladialog.ui \
+    LorrisShupito/ui/fullshupitoui.ui \
+    LorrisShupito/ui/overvccdialog.ui \
+    LorrisShupito/ui/minishupitoui.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
