@@ -966,7 +966,13 @@ void LorrisShupito::setMiniUi(bool mini)
     ui->loadData(&parser);
 
     for(quint8 i = MEM_FLASH; i < MEM_FUSES; ++i)
-        ui->setHexData(i, hexData[i]);
+    {
+        if(!hexData[i].isEmpty())
+        {
+            ui->setHexColor(i, colorFromFile);
+            ui->setHexData(i, hexData[i]);
+        }
+    }
 
     ui->connectedStatus(!(m_state & STATE_DISCONNECTED));
 

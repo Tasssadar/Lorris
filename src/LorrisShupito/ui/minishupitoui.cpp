@@ -56,6 +56,7 @@ void MiniShupitoUI::setChipId(const QString &text)
 void MiniShupitoUI::setFileAndTime(const QString &file, const QDateTime &time)
 {
     m_fileSet = true;
+    enableWrite(true);
 
     ui->loadBtn->setToolTip(file);
 
