@@ -98,7 +98,7 @@ void WidgetArea::clear()
         itr = m_widgets.erase(itr);
     }
     m_marks.clear();
-    m_undoStack.checkValid();
+    m_undoStack.clear();
 }
 
 void WidgetArea::dropEvent(QDropEvent *event)
