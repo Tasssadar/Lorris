@@ -137,7 +137,9 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/ui/progressdialog.cpp \
     LorrisShupito/ui/overvccdialog.cpp \
     LorrisShupito/ui/fusewidget.cpp \
-    LorrisShupito/ui/minishupitoui.cpp
+    LorrisShupito/ui/minishupitoui.cpp \
+    LorrisAnalyzer/undostack.cpp \
+    LorrisAnalyzer/undoactions.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -255,7 +257,9 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/ui/progressdialog.h \
     LorrisShupito/ui/overvccdialog.h \
     LorrisShupito/ui/fusewidget.h \
-    LorrisShupito/ui/minishupitoui.h
+    LorrisShupito/ui/minishupitoui.h \
+    LorrisAnalyzer/undostack.h \
+    LorrisAnalyzer/undoactions.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

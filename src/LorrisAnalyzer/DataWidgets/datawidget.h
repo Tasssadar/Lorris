@@ -19,6 +19,7 @@
 #include "../../misc/datafileparser.h"
 #include "../widgetfactory.h"
 #include "../../misc/gestureidentifier.h"
+#include "../undoactions.h"
 
 class WidgetArea;
 
@@ -48,7 +49,8 @@ enum DragActions
     DRAG_RES_RIGHT  = 0x04,
     DRAG_RES_TOP    = 0x08,
     DRAG_RES_BOTTOM = 0x10,
-    DRAG_COPY       = 0x20
+    DRAG_RESIZE     = 0x20,
+    DRAG_COPY       = 0x40
 };
 
 #define RESIZE_BORDER 8 // number of pixels from every side which counts as resize drag
@@ -108,6 +110,8 @@ Q_SIGNALS:
     void addChildTab(ChildTab *tab, const QString& name);
     void removeChildTab(ChildTab *tab);
     void rawData(const QByteArray& data);
+
+    void addUndoAct(UndoAction *act);
 
 public:
     explicit DataWidget(QWidget *parent = 0);

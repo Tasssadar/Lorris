@@ -12,6 +12,7 @@
 #include <QHash>
 
 #include "DataWidgets/datawidget.h"
+#include "undostack.h"
 
 class DataFileParser;
 class Storage;
@@ -53,6 +54,7 @@ public:
 
     void SaveWidgets(DataFileParser *file);
     void LoadWidgets(DataFileParser *file, bool skip);
+    DataWidget *LoadOneWidget(DataFileParser *file, bool skip = false);
     void SaveSettings(DataFileParser *file);
     void LoadSettings(DataFileParser *file);
 
@@ -128,6 +130,8 @@ private:
 
     QVector<QLine> m_placementLines;
     bool m_enablePlacementLines;
+
+    UndoStack m_undoStack;
 };
 
 class WidgetAreaPreview : public QWidget

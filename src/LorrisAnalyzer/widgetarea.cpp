@@ -26,7 +26,7 @@ QPoint& operator %=(QPoint& a, const int& b)
 }
 
 WidgetArea::WidgetArea(QWidget *parent) :
-    QFrame(parent), m_menu(new QMenu(this))
+    QFrame(parent), m_menu(new QMenu(this)), m_undoStack(this)
 {
     m_widgetIdCounter = 0;
     m_skipNextMove = false;
@@ -61,6 +61,15 @@ WidgetArea::WidgetArea(QWidget *parent) :
     m_titleVisibility->setCheckable(true);
     m_titleVisibility->setChecked(true);
 
+    m_menu->addSeparator();
+
+    QAction *undo = m_menu->addAction(tr("Undo"), &m_undoStack, SLOT(undo()), QKeySequence("Ctrl+Z"));
+    QAction *redo = m_menu->addAction(tr("Redo"), &m_undoStack, SLOT(redo()), QKeySequence("Shift+Ctrl+Z"));
+    undo->setEnabled(false);
+    redo->setEnabled(false);
+    addAction(undo);
+    addAction(redo);
+
     connect(m_actEnableGrid, SIGNAL(toggled(bool)),                SLOT(enableGrid(bool)));
     connect(m_actEnableGrid, SIGNAL(toggled(bool)), m_actShowGrid, SLOT(setEnabled(bool)));
     connect(m_actEnableGrid, SIGNAL(toggled(bool)), gridSize,      SLOT(setEnabled(bool)));
@@ -71,6 +80,8 @@ WidgetArea::WidgetArea(QWidget *parent) :
     connect(m_titleVisibility, SIGNAL(triggered(bool)),            SLOT(titleVisibilityAct(bool)));
     connect(lockAll,         SIGNAL(triggered()),                  SLOT(lockAll()));
     connect(unlockAll,       SIGNAL(triggered()),                  SLOT(unlockAll()));
+    connect(&m_undoStack,    SIGNAL(undoAvailable(bool)),    undo, SLOT(setEnabled(bool)));
+    connect(&m_undoStack,    SIGNAL(redoAvailable(bool)),    redo, SLOT(setEnabled(bool)));
 }
 
 WidgetArea::~WidgetArea()
@@ -87,6 +98,7 @@ void WidgetArea::clear()
         itr = m_widgets.erase(itr);
     }
     m_marks.clear();
+    m_undoStack.checkValid();
 }
 
 void WidgetArea::dropEvent(QDropEvent *event)
@@ -129,6 +141,7 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(this,       SIGNAL(setTitleVisibility(bool)),        w, SLOT(setTitleVisibility(bool)));
     connect(w,  SIGNAL(addChildTab(ChildTab*,QString)), m_analyzer, SLOT(addChildTab(ChildTab*,QString)));
     connect(w,  SIGNAL(removeChildTab(ChildTab*)),      m_analyzer, SLOT(removeChildTab(ChildTab*)));
+    connect(w,          SIGNAL(addUndoAct(UndoAction*)),&m_undoStack,SLOT(addAction(UndoAction*)));
     connect(m_analyzer, SIGNAL(rawData(QByteArray)),             w, SIGNAL(rawData(QByteArray)));
     connect(this,       SIGNAL(setLocked(bool)),                 w, SLOT(setLocked(bool)));
 
@@ -167,6 +180,8 @@ void WidgetArea::removeWidget(quint32 id)
 
     m_marks.remove(id);
     update();
+
+    m_undoStack.checkValid();
 }
 
 DataWidget *WidgetArea::getWidget(quint32 id)
@@ -209,33 +224,40 @@ void WidgetArea::LoadWidgets(DataFileParser *file, bool skip)
         if(!file->seekToNextBlock(BLOCK_WIDGET, 0))
             break;
 
-        // type
-        if(!file->seekToNextBlock("widgetType", BLOCK_WIDGET))
+        if(!LoadOneWidget(file, skip))
             break;
-
-        quint8 type = 0;
-        file->read((char*)&type, sizeof(quint8));
-
-        // pos and size
-        if(!file->seekToNextBlock("widgetPosSize", BLOCK_WIDGET))
-            break;
-
-        int val[4];
-        file->read((char*)&val, sizeof(val));
-
-        DataWidget *w = addWidget(QPoint(val[0], val[1]), type, !skip);
-        if(!w)
-            continue;
-
-        w->resize(val[2], val[3]);
-        w->loadWidgetInfo(file);
-
-        if(skip)
-            removeWidget(w->getId());
-        else
-            updateMarker(w);
     }
     update();
+}
+
+DataWidget* WidgetArea::LoadOneWidget(DataFileParser *file, bool skip)
+{
+    // type
+    if(!file->seekToNextBlock("widgetType", BLOCK_WIDGET))
+        return NULL;
+
+    quint8 type = 0;
+    file->read((char*)&type, sizeof(quint8));
+
+    // pos and size
+    if(!file->seekToNextBlock("widgetPosSize", BLOCK_WIDGET))
+        return NULL;
+
+    int val[4];
+    file->read((char*)&val, sizeof(val));
+
+    DataWidget *w = addWidget(QPoint(val[0], val[1]), type, !skip);
+    if(!w)
+        return NULL;
+
+    w->resize(val[2], val[3]);
+    w->loadWidgetInfo(file);
+
+    if(skip)
+        removeWidget(w->getId());
+    else
+        updateMarker(w);
+    return w;
 }
 
 void WidgetArea::SaveSettings(DataFileParser *file)
@@ -362,6 +384,9 @@ void WidgetArea::moveWidgets(QPoint diff)
 
         updateMarker(*itr);
     }
+
+    m_undoStack.areaMoved(diff);
+
     update();
 }
 

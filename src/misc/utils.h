@@ -15,6 +15,10 @@
 class QLayout;
 
 #define sizeof_array(a) (sizeof(a)/sizeof(a[0]))
+#define delete_vect(vec) \
+    for(quint32 i = 0; i < vec.size(); ++i) \
+        delete vec[i]; \
+    vec.clear();
 
 class Utils : public QThread
 {

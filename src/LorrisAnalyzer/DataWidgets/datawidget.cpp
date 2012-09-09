@@ -76,6 +76,8 @@ DataWidget::DataWidget(QWidget *parent) :
 
 DataWidget::~DataWidget()
 {
+    emit addUndoAct(new RestoreAction(this));
+
     // Remove highlight from top data widget
     if(m_state & STATE_MOUSE_IN)
         emit mouseStatus(false, m_info, m_widgetControlled);
@@ -184,9 +186,15 @@ void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
 
 void DataWidget::mousePressEvent( QMouseEvent* e )
 {
+    if(e->button() != Qt::LeftButton)
+        return QWidget::mousePressEvent(e);
+
     m_dragAction = getDragAction(e);
     mOrigin = e->globalPos();
     m_clickPos = e->pos();
+
+    if(m_dragAction == DRAG_MOVE || (m_dragAction & DRAG_RESIZE))
+        emit addUndoAct(new MoveAction(this));
 }
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
@@ -300,7 +308,9 @@ quint8 DataWidget::getDragAction(QMouseEvent *ev)
     else if(y < RESIZE_BORDER)
         res |= DRAG_RES_TOP;
 
-    if(res == 0)
+    if(res != 0)
+        res |= DRAG_RESIZE;
+    else
     {
         res = DRAG_MOVE;
         if(ev->modifiers() & Qt::ControlModifier)
