@@ -54,7 +54,8 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     docLabel->setTextFormat(Qt::RichText);
     docLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     docLabel->setOpenExternalLinks(true);
-    docLabel->setText(tr("<a href=\"http://tasssadar.github.com/Lorris/doc/\">Documentation</a>"));
+    docLabel->setText(tr("<a href=\"http://technika.junior.cz/docs/Lorris/index.html\">Documentation</a>"));
+    docLabel->setToolTip("http://technika.junior.cz/docs/Lorris/index.html");
 
     QToolBar *bar = new QToolBar(this);
     bar->setIconSize(QSize(24, 24));
