@@ -4,6 +4,11 @@
 <context>
     <name>BarWidget</name>
     <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="30"/>
+        <source>Bar</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/barwidget.cpp" line="72"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
@@ -502,12 +507,12 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="855"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="865"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="856"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="866"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -648,22 +653,22 @@
 <context>
     <name>DataWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="98"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="100"/>
         <source>Lock</source>
         <translation>Uzamknout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="103"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="105"/>
         <source>Set title</source>
         <translation>Změnit jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="481"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="491"/>
         <source>Set widget title</source>
         <translation>Nastavení jména widgetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="481"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="491"/>
         <source>Enter title:</source>
         <translation>Zadejne nové jméno:</translation>
     </message>
@@ -2554,7 +2559,7 @@ stejného souboru vícekrát:</translation>
         <translation>Napětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisShupito/ui/minishupitoui.cpp" line="62"/>
+        <location filename="../src/LorrisShupito/ui/minishupitoui.cpp" line="63"/>
         <source>h:mm:ss M.d.yyyy</source>
         <translation>h:mm:ss d.M.yyyy</translation>
     </message>
@@ -4974,12 +4979,22 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
         <translation>Odemnkout všechny widgety</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="450"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="66"/>
+        <source>Undo</source>
+        <translation>Zpět</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="67"/>
+        <source>Redo</source>
+        <translation>Opakovat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="475"/>
         <source>Grid size</source>
         <translation>Rozteč sítě</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="450"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="475"/>
         <source>Enter grid size in pixels</source>
         <translation>Zadejte rozteč sítě v pixelech</translation>
     </message>

@@ -27,7 +27,7 @@ static const QPalette::ColorRole roles[COLOR_COUNT] = { QPalette::Base, QPalette
 
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle("BarWidget");
+    setTitle(tr("Bar"));
     setIcon(":/dataWidgetIcons/bar.png");
 
     m_widgetType = WIDGET_BAR;
