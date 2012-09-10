@@ -451,6 +451,19 @@ void TabView::loadData(DataFileParser *file)
 
         m_tab_widgets[id_pair[id]]->loadData(file);
     }
+
+    if(m_tab_widgets.empty())
+    {
+        if(!layout())
+        {
+            QHBoxLayout *layout = new QHBoxLayout(this);
+            m_layouts.insert(layout);
+            layout->setMargin(LAYOUT_MARGIN);
+        }
+        m_active_widget = newTabWidget((QBoxLayout*)layout());
+        removeEmptyLayouts();
+        emit openHomeTab();
+    }
 }
 
 void TabView::loadLayoutStructure(DataFileParser *file, QBoxLayout *parent, QHash<quint32, quint32>& id_pair)
