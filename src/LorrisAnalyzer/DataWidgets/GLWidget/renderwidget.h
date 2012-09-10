@@ -28,6 +28,8 @@ protected:
 
     void mousePressEvent(QMouseEvent *ev);
     void mouseMoveEvent(QMouseEvent *ev);
+    void wheelEvent(QWheelEvent *ev);
+    void keyPressEvent(QKeyEvent *ev);
 
 private:
     float xRot;
@@ -37,6 +39,10 @@ private:
     QVector<QVector3D> vertices;
     QVector<QVector2D> texCoords;
     QPoint lastPos;
+    double m_scale;
+    double m_x;
+    double m_z;
+    double m_y;
 };
 
 #endif // RENDERWIDGET_H
