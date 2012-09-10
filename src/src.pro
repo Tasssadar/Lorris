@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include(../config.pri)
 
-QT += gui core network script
+QT += gui core network script opengl
 TARGET = Lorris
 CONFIG += uitools precompile_header
 CONFIG(debug, debug|release):DESTDIR = $$PWD/../bin/debug
@@ -139,7 +139,9 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/ui/fusewidget.cpp \
     LorrisShupito/ui/minishupitoui.cpp \
     LorrisAnalyzer/undostack.cpp \
-    LorrisAnalyzer/undoactions.cpp
+    LorrisAnalyzer/undoactions.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -259,7 +261,9 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/ui/fusewidget.h \
     LorrisShupito/ui/minishupitoui.h \
     LorrisAnalyzer/undostack.h \
-    LorrisAnalyzer/undoactions.h
+    LorrisAnalyzer/undoactions.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/glwidget.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

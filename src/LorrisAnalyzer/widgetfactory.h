@@ -57,6 +57,7 @@ enum WidgetTypes
     WIDGET_SLIDER,
     WIDGET_CANVAS,
     WIDGET_STATUS,
+    WIDGET_OPENGL,
 
     WIDGET_MAX
     //TODO: X Y mapa, rafickovej ukazatel, timestamp, bool, binarni cisla
