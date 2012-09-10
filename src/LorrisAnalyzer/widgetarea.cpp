@@ -173,6 +173,8 @@ void WidgetArea::removeWidget(quint32 id)
     if(itr == m_widgets.end())
         return;
 
+    m_undoStack.addAction(new RestoreAction(*itr));
+
     emit onWidgetRemove(*itr);
 
     delete *itr;

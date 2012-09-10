@@ -157,6 +157,11 @@ public:
 
     void align();
 
+    void updateForThis()
+    {
+        emit updateForMe();
+    }
+
 public slots:
     virtual void newData(analyzer_data *data, quint32);
     void setTitle(QString title);

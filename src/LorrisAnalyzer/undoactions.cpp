@@ -35,6 +35,7 @@ UndoAction *RestoreAction::restore(WidgetArea *area)
     if(DataWidget *w = area->LoadOneWidget(&p))
     {
         w->move(m_pos);
+        w->updateForThis();
         return new DeleteAction(w);
     }
     return NULL;

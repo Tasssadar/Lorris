@@ -76,8 +76,6 @@ DataWidget::DataWidget(QWidget *parent) :
 
 DataWidget::~DataWidget()
 {
-    emit addUndoAct(new RestoreAction(this));
-
     // Remove highlight from top data widget
     if(m_state & STATE_MOUSE_IN)
         emit mouseStatus(false, m_info, m_widgetControlled);
@@ -187,7 +185,7 @@ void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
 void DataWidget::mousePressEvent( QMouseEvent* e )
 {
     if(e->button() != Qt::LeftButton)
-        return QWidget::mousePressEvent(e);
+        return;
 
     m_dragAction = getDragAction(e);
     mOrigin = e->globalPos();
