@@ -75,7 +75,7 @@ void ShupitoUI::clearVCC()
 
 void ShupitoUI::vccValChanged(double val)
 {
-    static const QString base = "%1";
+    static const QString base = "%1V";
     vccLabel()->setText(base.arg(val, 3, 'f', 2, '0'));
 
     changeVddColor(val);
