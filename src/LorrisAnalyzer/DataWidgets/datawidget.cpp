@@ -401,8 +401,6 @@ void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
 {
     if(widget == this && (m_state & STATE_SCALED_UP))
     {
-        m_state &= ~(STATE_SCALED_UP);
-
         QPoint pos = mapToParent(e->pos());
         int pctW = (e->pos().x()*100)/width();
         int pctH = (e->pos().y()*100)/height();
@@ -410,6 +408,7 @@ void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
         m_orig_geometry.moveLeft(pos.x() - (m_orig_geometry.width()*pctW)/100);
         m_orig_geometry.moveTop(pos.y() - (m_orig_geometry.height()*pctH)/100);
 
+        setScaledUp(false);
         startAnimation(m_orig_geometry);
         return;
     }
@@ -707,10 +706,23 @@ void DataWidget::gestureCompleted(int gesture)
     if(gesture != GESTURE_SHAKE_LEFT && gesture != GESTURE_SHAKE_RIGHT)
         return;
 
-    m_state |= (STATE_BLOCK_MOVE | STATE_SCALED_UP);
+    setScaledUp(true);
+
+    m_state |= STATE_BLOCK_MOVE;
     m_orig_geometry = geometry();
 
     startAnimation(widgetArea()->rect());
+}
+
+void DataWidget::setScaledUp(bool scaled)
+{
+    if(!(scaled ^ isScaledUp()))
+        return;
+
+    if(scaled)
+        m_state |= (STATE_SCALED_UP);
+    else
+        m_state &= ~(STATE_SCALED_UP);
 }
 
 void DataWidget::startAnimation(const QRect &target)

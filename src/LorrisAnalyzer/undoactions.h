@@ -78,6 +78,7 @@ public:
 private:
     QPoint m_pos;
     QSize m_size;
+    bool m_scaledUp;
 };
 
 #endif // UNDOACTIONS_H

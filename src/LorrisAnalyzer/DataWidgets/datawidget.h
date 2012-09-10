@@ -145,6 +145,9 @@ public:
             m_state &= ~(STATE_UPDATING);
     }
 
+    inline bool isScaledUp() const { return (m_state & STATE_SCALED_UP); }
+    void setScaledUp(bool scaled);
+
     void setWidgetControlled(qint32 widget);
     qint32 getWidgetControlled() { return m_widgetControlled; }
 

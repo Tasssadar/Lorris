@@ -66,6 +66,7 @@ MoveAction::MoveAction(DataWidget *w) :
 {
     m_pos = w->pos();
     m_size = w->size();
+    m_scaledUp = w->isScaledUp();
 }
 
 UndoAction *MoveAction::restore(WidgetArea *area)
@@ -76,8 +77,10 @@ UndoAction *MoveAction::restore(WidgetArea *area)
 
     UndoAction *opposite = new MoveAction(w);
 
+    w->setScaledUp(m_scaledUp);
     w->move(m_pos);
     w->resize(m_size);
+
     return opposite;
 }
 
