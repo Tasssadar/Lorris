@@ -21,6 +21,11 @@ void GLModel::addVertex(double *coords)
     m_vertices.push_back(vector4(coords[0], coords[1], coords[2], coords[3]));
 }
 
+void GLModel::addNormal(double *coords)
+{
+    m_normals.push_back(vector3(coords[0], coords[1], coords[2]));
+}
+
 void GLModel::addFace(const polygonFace &face)
 {
     m_faces.push_back(face);

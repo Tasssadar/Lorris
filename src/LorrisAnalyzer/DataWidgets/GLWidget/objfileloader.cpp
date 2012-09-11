@@ -18,9 +18,9 @@ static const QString objEntryTypes[] =
 {
     "v",          // 0 - vertex
     "f",          // 1 - face
-    "s",          // 2 - smooth shading
-    QString(),    // 3
-    QString(),    // 4
+    "vt",         // 2 - textures
+    "vn",         // 3 - normals
+    "s",          // 4 - smooth shading
     "o",          // 5 - model
     "mtllib",     // 6 - material lib
     "usemtl",     // 7 - use material
@@ -59,6 +59,9 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
     int vertexTotal = 0;
     int vertexModel = 0;
 
+    int normalsTotal = 0;
+    int normalsModel = 0;
+
     for(QString line = str.readLine(); !line.isNull(); line = str.readLine())
     {
         if(line.startsWith('#'))
@@ -84,6 +87,8 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
                 model = new GLModel(parts.back());
                 vertexTotal += vertexModel;
                 vertexModel = 0;
+                normalsTotal += normalsModel;
+                normalsModel = 0;
                 continue;
             }
             case 6: // mtllib
@@ -108,11 +113,22 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
             case 1: // face
             {
                 polygonFace f;
-                if(loadFace(parts, &f, vertexTotal))
+                if(loadFace(parts, &f, vertexTotal, normalsTotal))
                     model->addFace(f);
                 break;
             }
-            case 2: // smooth shading
+            case 2: // textures
+                break;
+            case 3: // normals
+            {
+                double coords[3] = { 0.0, 0.0, 0.0 };
+                for(int i = 1; i < parts.size() && i < 4; ++i)
+                    coords[i-1] = parts[i].toDouble();
+                model->addNormal(coords);
+                ++normalsModel;
+                break;
+            }
+            case 4: // smooth shading
                 model->setSmoothShading(parts.back() == "1");
                 break;
             case 7: // usemtl
@@ -218,7 +234,7 @@ int ObjFileLoader::getMtlType(const QString &line)
     return -1;
 }
 
-bool ObjFileLoader::loadFace(const QStringList &parts, polygonFace *f, int vertexTotal)
+bool ObjFileLoader::loadFace(const QStringList &parts, polygonFace *f, int vertexTotal, int normalsTotal)
 {
     if(parts.size() < 4)
         return false;
@@ -289,7 +305,7 @@ bool ObjFileLoader::loadFace(const QStringList &parts, polygonFace *f, int verte
                 int v = split[0].toInt(ok);
                 int vn = split[1].toInt(ok + 1);
                 if(ok[0] && ok[1])
-                    f->add(v- vertexTotal, -1, vn);
+                    f->add(v- vertexTotal, -1, vn - normalsTotal);
                 break;
             }
         }

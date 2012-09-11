@@ -86,6 +86,7 @@ public:
     GLModel(const QString& name);
 
     void addVertex(double *coords);
+    void addNormal(double *coords);
     void addFace(const polygonFace& face);
 
     void createNormals();
