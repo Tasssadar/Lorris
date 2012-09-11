@@ -35,7 +35,7 @@ RenderWidget::~RenderWidget()
 
 void RenderWidget::initializeGL()
 {
-    ObjFileLoader::load("/home/tassadar/kostka_test/opice6.obj", m_models);
+    ObjFileLoader::load("/home/tassadar/kostka_test/sintel.obj", m_models);
 
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);

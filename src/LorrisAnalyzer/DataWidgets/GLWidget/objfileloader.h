@@ -23,7 +23,7 @@ private:
     static int getObjType(const QString& line);
     static int getMtlType(const QString& line);
     static void loadMaterials(const QString& file, QHash<QString, material>& materials);
-    static bool loadFace(const QStringList& parts, polygonFace *f);
+    static bool loadFace(const QStringList& parts, polygonFace *f, int vertexTotal);
 };
 
 #endif // OBJFILELOADER_H

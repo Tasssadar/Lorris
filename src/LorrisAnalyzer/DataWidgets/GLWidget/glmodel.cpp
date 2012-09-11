@@ -29,7 +29,7 @@ void GLModel::addFace(const polygonFace &face)
 void GLModel::dump(bool mini)
 {
     qDebug("\nModel %s", m_name.toStdString().c_str());
-    m_material.dump();
+    //m_material.dump();
     qDebug("Vertex count: %lu", m_vertices.size());
     for(quint32 i = 0; !mini && i < m_vertices.size(); ++i)
     {
@@ -62,10 +62,10 @@ void GLModel::createNormals()
             polygonFace& f = m_faces[i];
 
             int v[3] = { f.v[0], f.v[1], f.v[2] };
-
             vector3 normal = GLUtils::normalize(GLUtils::cross(
                                 vector3(m_vertices[v[1]]) - vector3(m_vertices[v[0]]),
                                 vector3(m_vertices[v[2]]) - vector3(m_vertices[v[0]])));
+
             for(int j = 0; j < 3; ++j)
             {
                 int cur_v = v[j];
@@ -91,7 +91,6 @@ void GLModel::createNormals()
             polygonFace& f = m_faces[i];
 
             int v[3] = { f.v[0], f.v[1], f.v[2] };
-
             vector3 normal = GLUtils::normalize(GLUtils::cross(
                                 vector3(m_vertices[v[1]]) - vector3(m_vertices[v[0]]),
                                 vector3(m_vertices[v[2]]) - vector3(m_vertices[v[0]])));
@@ -118,14 +117,20 @@ void GLModel::draw()
     glGetIntegerv(GL_SHADE_MODEL, &shading);
     glShadeModel(m_smooth_shading ? GL_SMOOTH : GL_FLAT);
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m_material.Ka);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m_material.Kd);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m_material.Ks);
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_material.Ns);
-
+    std::vector<std::pair<quint32, material> >::iterator m_itr = m_materials.begin();
     for(quint32 i = 0; i < m_faces.size(); ++i)
     {
         polygonFace& f = m_faces[i];
+
+        if(m_itr != m_materials.end() && i == (*m_itr).first)
+        {
+            const material& mtl = (*m_itr).second;
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mtl.Ka);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mtl.Kd);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mtl.Ks);
+            glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mtl.Ns);
+            ++m_itr;
+        }
 
         glColor3f(1, 1, 1);
         glBegin(GL_POLYGON);

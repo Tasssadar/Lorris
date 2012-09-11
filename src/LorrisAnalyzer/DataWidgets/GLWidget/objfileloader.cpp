@@ -53,10 +53,11 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
 
     QHash<QString, material> materials;
     QHash<QString, material>::iterator m_itr;
-
     QTextStream str(&f);
 
     GLModel *model = NULL;
+    int vertexTotal = 0;
+    int vertexModel = 0;
 
     for(QString line = str.readLine(); !line.isNull(); line = str.readLine())
     {
@@ -81,6 +82,8 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
                     modelList.push_back(model);
                 }
                 model = new GLModel(parts.back());
+                vertexTotal += vertexModel;
+                vertexModel = 0;
                 continue;
             }
             case 6: // mtllib
@@ -99,12 +102,13 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
                 for(int i = 1; i < parts.size() && i < 5; ++i)
                     coords[i-1] = parts[i].toDouble();
                 model->addVertex(coords);
+                ++vertexModel;
                 break;
             }
             case 1: // face
             {
                 polygonFace f;
-                if(loadFace(parts, &f))
+                if(loadFace(parts, &f, vertexTotal))
                     model->addFace(f);
                 break;
             }
@@ -119,7 +123,7 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
                 m_itr = materials.find(parts.back());
                 if(m_itr == materials.end())
                     break;
-                model->setMaterial(*m_itr);
+                model->addMaterial(*m_itr);
                 break;
             }
         }
@@ -140,6 +144,7 @@ void ObjFileLoader::loadMaterials(const QString& file, QHash<QString, material>&
 
     QTextStream str(&f);
     material mtl;
+    QString name;
     for(QString line = str.readLine(); !line.isNull(); line = str.readLine())
     {
         if(line.startsWith('#'))
@@ -156,13 +161,13 @@ void ObjFileLoader::loadMaterials(const QString& file, QHash<QString, material>&
         switch(type)
         {
             case 0: // newmtl
-                if(!mtl.name.isNull())
-                    materials.insert(mtl.name, mtl);
+                if(!name.isNull())
+                    materials.insert(name, mtl);
 
                 mtl = material();
-                mtl.name = parts.back();
-                if(mtl.name.isNull())
-                    mtl.name = "";
+                name = parts.back();
+                if(name.isNull())
+                    name = "";
                 break;
             case 1: // Ka
                 for(int i = 1; i < 4 && i < parts.size(); ++i)
@@ -189,8 +194,8 @@ void ObjFileLoader::loadMaterials(const QString& file, QHash<QString, material>&
         }
     }
 
-    if(!mtl.name.isNull())
-        materials.insert(mtl.name, mtl);
+    if(!name.isNull())
+        materials.insert(name, mtl);
 }
 
 int ObjFileLoader::getObjType(const QString &line)
@@ -213,7 +218,7 @@ int ObjFileLoader::getMtlType(const QString &line)
     return -1;
 }
 
-bool ObjFileLoader::loadFace(const QStringList &parts, polygonFace *f)
+bool ObjFileLoader::loadFace(const QStringList &parts, polygonFace *f, int vertexTotal)
 {
     if(parts.size() < 4)
         return false;
@@ -246,7 +251,7 @@ bool ObjFileLoader::loadFace(const QStringList &parts, polygonFace *f)
             {
                 int v = parts[i].toInt(ok);
                 if(ok[0])
-                    f->add(v);
+                    f->add(v - vertexTotal);
                 break;
             }
             case 1:
@@ -258,7 +263,7 @@ bool ObjFileLoader::loadFace(const QStringList &parts, polygonFace *f)
                 int v = split[0].toInt(ok);
                 int vt = split[1].toInt(ok + 1);
                 if(ok[0] && ok[1])
-                    f->add(v, vt);
+                    f->add(v - vertexTotal, vt);
                 break;
             }
             case 2:
@@ -272,7 +277,7 @@ bool ObjFileLoader::loadFace(const QStringList &parts, polygonFace *f)
                 int vn = split[2].toInt(ok + 2);
 
                 if(ok[0] && ok[1] && ok[2])
-                    f->add(v, vt, vn);
+                    f->add(v - vertexTotal, vt, vn);
                 break;
             }
             case 3:
@@ -284,7 +289,7 @@ bool ObjFileLoader::loadFace(const QStringList &parts, polygonFace *f)
                 int v = split[0].toInt(ok);
                 int vn = split[1].toInt(ok + 1);
                 if(ok[0] && ok[1])
-                    f->add(v, -1, vn);
+                    f->add(v- vertexTotal, -1, vn);
                 break;
             }
         }

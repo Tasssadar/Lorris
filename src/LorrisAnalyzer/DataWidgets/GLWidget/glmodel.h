@@ -13,6 +13,7 @@
 #include <QVector3D>
 #include <QString>
 #include <QGLFunctions>
+#include <utility>
 
 namespace GLUtils {
     struct vector3;
@@ -36,13 +37,16 @@ struct material
 
     material(const material& m)
     {
-        memcpy(Ka, m.Ka, (4*4*3 + 4*3));
-        name = m.name;
+        memcpy(Ka, m.Ka, sizeof(Ka));
+        memcpy(Kd, m.Kd, sizeof(Kd));
+        memcpy(Ks, m.Ks, sizeof(Ks));
+        d = m.d;
+        Ns = m.Ns;
+        illum = m.illum;
     }
 
     void dump()
     {
-        qDebug("Material %s", name.toStdString().c_str());
         qDebug("Ka: %f %f %f %f", Ka[0], Ka[1], Ka[2], Ka[3]);
         qDebug("Kd: %f %f %f %f", Kd[0], Kd[1], Kd[2], Kd[3]);
         qDebug("Ks: %f %f %f %f", Ks[0], Ks[1], Ks[2], Ks[3]);
@@ -51,7 +55,7 @@ struct material
         qDebug("illum: %d", illum);
     }
 
-    QString name;
+    //QString name;
 
     float Ka[4]; // ambient color
     float Kd[4]; // diffuse color
@@ -83,10 +87,6 @@ public:
 
     void addVertex(double *coords);
     void addFace(const polygonFace& face);
-    void setMaterial(const material& m)
-    {
-        m_material = m;
-    }
 
     void createNormals();
     void dump(bool mini);
@@ -97,12 +97,17 @@ public:
         m_smooth_shading = on;
     }
 
+    void addMaterial(const material& mtl)
+    {
+        m_materials.push_back(std::make_pair<quint32, material>(m_faces.size(), mtl));
+    }
+
 private:
     std::vector<GLUtils::vector4> m_vertices;
     std::vector<GLUtils::vector3> m_normals;
     std::vector<polygonFace> m_faces;
+    std::vector<std::pair<quint32, material> > m_materials;
 
-    material m_material;
     QString m_name;
     bool m_smooth_shading;
 };
