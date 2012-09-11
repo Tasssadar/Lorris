@@ -141,7 +141,10 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/undostack.cpp \
     LorrisAnalyzer/undoactions.cpp \
     LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.cpp
+    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/glmodel.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/glutils.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -263,7 +266,10 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/undostack.h \
     LorrisAnalyzer/undoactions.h \
     LorrisAnalyzer/DataWidgets/GLWidget/glwidget.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.h
+    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/glmodel.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/glutils.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

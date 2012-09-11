@@ -7,7 +7,11 @@
 
 #include <QPixmap>
 #include <QMouseEvent>
+
+#include "glutils.h"
+#include "objfileloader.h"
 #include "renderwidget.h"
+#include "../../../misc/utils.h"
 
 RenderWidget::RenderWidget(QWidget *parent) :
     QGLWidget(parent)
@@ -18,44 +22,54 @@ RenderWidget::RenderWidget(QWidget *parent) :
     zRot = 0;
     m_x = 0;
     m_z = -10;
-    m_y = 0.5;
+    m_y = 0;
+    m_camera_dist = 10.f;
+
     setFocusPolicy(Qt::StrongFocus);
+}
+
+RenderWidget::~RenderWidget()
+{
+    delete_vect(m_models);
 }
 
 void RenderWidget::initializeGL()
 {
-    static const int coords[6][4][3] = {
-        { { +1, -1, -1 }, { -1, -1, -1 }, { -1, +1, -1 }, { +1, +1, -1 } },
-        { { +1, +1, -1 }, { -1, +1, -1 }, { -1, +1, +1 }, { +1, +1, +1 } },
-        { { +1, -1, +1 }, { +1, -1, -1 }, { +1, +1, -1 }, { +1, +1, +1 } },
-        { { -1, -1, -1 }, { -1, -1, +1 }, { -1, +1, +1 }, { -1, +1, -1 } },
-        { { +1, -1, +1 }, { -1, -1, +1 }, { -1, -1, -1 }, { +1, -1, -1 } },
-        { { -1, -1, +1 }, { +1, -1, +1 }, { +1, +1, +1 }, { -1, +1, +1 } }
-    };
+    ObjFileLoader::load("/home/tassadar/kostka_test/opice6.obj", m_models);
 
-    QPixmap map(256, 256);
-    map.fill(Qt::white);
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable (GL_BLEND);
+    glEnable (GL_LINE_SMOOTH);
+    glCullFace(GL_NONE);
+    glEnable (GL_TEXTURE_2D);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    for (int j=0; j < 6; ++j) {
-             textures[j] = bindTexture
-                  (QPixmap(":/dataWidgetIcons/canvas.png"), GL_TEXTURE_2D);
-         }
-
-    for (int i = 0; i < 6; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            texCoords.append
-                    (QVector2D(j == 0 || j == 3, j == 0 || j == 1));
-            vertices.append
-                    (QVector3D(0.2 * coords[i][j][0], 0.2 * coords[i][j][1],
-                               0.2 * coords[i][j][2]));
-        }
+    {
+        float specular[] = {1.0, 1.0, 1.0, 1.0};
+        float diffuse[] = {1, 1, 1, 1.0};
+        float ambient[] = {0, 0, 0, 1};
+        float position[] = { 1, 1, 0, 0.0f };
+        glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+        glLightfv(GL_LIGHT0, GL_POSITION, position);
+        glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+        glEnable(GL_LIGHT0);
     }
 
-    glClearColor(0,0,0,0);
-    glShadeModel(GL_FLAT);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_TEXTURE_2D);
+    {
+        float specular[] = {1.0, 1.0, 1.0, 1.0};
+        float diffuse[] = {1, 1, 1, 1.0};
+        float ambient[] = {0, 0, 0, 1};
+        float position[] = { -1, -1, 0, 0.0f };
+        glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
+        glLightfv(GL_LIGHT1, GL_POSITION, position);
+        glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
+        glEnable(GL_LIGHT1);
+    }
 }
 
 void RenderWidget::resizeGL(int width, int height)
@@ -78,43 +92,44 @@ void RenderWidget::resizeGL(int width, int height)
 
 void RenderWidget::paintGL()
 {
-    qglClearColor(Qt::white);
+    qglClearColor(Qt::lightGray);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float camerax = 10 * cos((90 + 270.0f) * M_PI / 180) + m_x;
-    float cameraz = 10 * sin((90 - 270.0f) * M_PI / 180) + m_z;
+    glMatrixMode(GL_MODELVIEW);
 
     // draw cube
     glLoadIdentity();
-    glTranslatef(0.0f, 0, -10.0f);
+    glTranslatef(0.0f, 0.f, -m_camera_dist);
     glRotatef(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
 
     glScalef(m_scale, m_scale, m_scale);
 
-    glVertexPointer(3, GL_FLOAT, 0, vertices.constData());
-    glTexCoordPointer(2, GL_FLOAT, 0, texCoords.constData());
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    for (int i = 0; i < 6; ++i) {
-             glBindTexture(GL_TEXTURE_2D, textures[i]);
-             glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
-    }
-
+    for(quint32 i = 0; i < m_models.size(); ++i)
+        m_models.at(i)->draw();
 
     // draw grid
+    float camerax = m_camera_dist * cos((90 + 270.0f) * M_PI / 180) + m_x;
+    float cameraz = m_camera_dist * sin((90 - 270.0f) * M_PI / 180) + m_z;
+
+    glLoadIdentity();
+    glTranslatef(0.0f, 0, -10.0f);
+    glRotatef(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(m_scale, m_scale, m_scale);
 
     glRotatef(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-
     glTranslatef(-camerax, -m_y, -cameraz);
     glRotatef(180, 1.0f, 0.0f, 0.0f);
 
-    glBegin(GL_QUADS);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+
+    /*glBegin(GL_QUADS);
     glVertex3f( 0,-0.001, 0);
     glVertex3f( 0,-0.001,10);
     glVertex3f(10,-0.001,10);
     glVertex3f(10,-0.001, 0);
-    glEnd();
+    glEnd();*/
 
     glBegin(GL_LINES);
     for(int i=0;i<=10;i++) {
@@ -126,6 +141,9 @@ void RenderWidget::paintGL()
         glVertex3f(10,0,i);
     };
     glEnd();
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
 }
 
 void RenderWidget::rotateBy(int xAngle, int yAngle, int zAngle)

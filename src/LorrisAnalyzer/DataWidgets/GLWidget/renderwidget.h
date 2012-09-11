@@ -13,11 +13,13 @@
 #include <QVector3D>
 #include <QVector2D>
 
+class GLModel;
 class RenderWidget : public QGLWidget
 {
     Q_OBJECT
 public:
     explicit RenderWidget(QWidget *parent = 0);
+    ~RenderWidget();
     
     void rotateBy(int xAngle, int yAngle, int zAngle);
 
@@ -35,14 +37,15 @@ private:
     float xRot;
     float yRot;
     float zRot;
-    GLuint textures[6];
-    QVector<QVector3D> vertices;
-    QVector<QVector2D> texCoords;
+
+    std::vector<GLModel*> m_models;
+
     QPoint lastPos;
     double m_scale;
     double m_x;
     double m_z;
     double m_y;
+    float m_camera_dist;
 };
 
 #endif // RENDERWIDGET_H
