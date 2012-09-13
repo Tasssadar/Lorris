@@ -24,6 +24,7 @@ static const QString objEntryTypes[] =
     "o",          // 5 - model
     "mtllib",     // 6 - material lib
     "usemtl",     // 7 - use material
+    "g",          // 8 - group
 };
 
 static const QString mtlEntryTypes[] =
@@ -85,10 +86,19 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
                     modelList.push_back(model);
                 }
                 model = new GLModel(parts.back());
-                vertexTotal += vertexModel;
-                vertexModel = 0;
-                normalsTotal += normalsModel;
-                normalsModel = 0;
+                if(type == 5)
+                {
+                    vertexTotal += vertexModel;
+                    vertexModel = 0;
+                    normalsTotal += normalsModel;
+                    normalsModel = 0;
+                }
+                continue;
+            }
+            case 8: // group
+            {
+                if(!model)
+                    model = new GLModel(parts.back());
                 continue;
             }
             case 6: // mtllib

@@ -35,7 +35,7 @@ RenderWidget::~RenderWidget()
 
 void RenderWidget::initializeGL()
 {
-    ObjFileLoader::load("/home/tassadar/kostka_test/sintel2.obj", m_models);
+    ObjFileLoader::load("/home/tassadar/kostka_test/quadro_small.obj", m_models);
 
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
@@ -103,7 +103,7 @@ void RenderWidget::paintGL()
     glRotatef(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
 
     glScalef(m_scale, m_scale, m_scale);
-
+glRotatef(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
 
     for(quint32 i = 0; i < m_models.size(); ++i)
         m_models.at(i)->draw();
