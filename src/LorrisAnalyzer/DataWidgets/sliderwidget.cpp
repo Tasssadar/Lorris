@@ -10,8 +10,12 @@
 #include <math.h>
 #include <float.h>
 #include <QSignalMapper>
+#include <QShortcut>
+#include <QDialogButtonBox>
+#include <QDialog>
 
 #include "sliderwidget.h"
+#include "../../ui/shortcutinputbox.h"
 
 #include "ui_sliderwidget_horizontal.h"
 #include "ui_sliderwidget_vertical.h"
@@ -32,6 +36,7 @@ SliderWidget::SliderWidget(QWidget *parent) : DataWidget(parent),
 
     m_ori_act[0] = NULL;
     m_hide_act = NULL;
+    m_shortcut = NULL;
 
     m_orientation = ORI_MAX+1;
 
@@ -77,11 +82,14 @@ void SliderWidget::setUp(Storage *storage)
     m_hide_act = contextMenu->addAction(tr("Hide min and max setting"));
     m_hide_act->setCheckable(true);
 
+    QAction *shortcut = contextMenu->addAction(tr("Set focus shortcut..."));
+
     setInteger();
 
     connect(m_int_act,       SIGNAL(triggered(bool)), SLOT(intAct(bool)));
     connect(m_double_act,    SIGNAL(triggered(bool)), SLOT(doubleAct(bool)));
     connect(m_hide_act,      SIGNAL(triggered(bool)), SLOT(hideMinMax(bool)));
+    connect(shortcut,        SIGNAL(triggered()),     SLOT(showShortcutDialog()));
     connect(map,             SIGNAL(mapped(int)),     SLOT(setOrientation(int)));
 }
 
@@ -104,6 +112,9 @@ void SliderWidget::saveWidgetInfo(DataFileParser *file)
         file->writeVal(m_hide_act->isChecked());
         file->writeVal(m_orientation);
     }
+
+    file->writeBlockIdentifier("sliderWshortcut");
+    file->writeString(m_shortcut ? m_shortcut->key().toString(QKeySequence::NativeText) : "");
 }
 
 void SliderWidget::loadWidgetInfo(DataFileParser *file)
@@ -125,6 +136,9 @@ void SliderWidget::loadWidgetInfo(DataFileParser *file)
         hideMinMax(file->readVal<bool>());
         setOrientation(file->readVal<quint8>());
     }
+
+    if(file->seekToNextBlock("sliderWshortcut", BLOCK_WIDGET))
+        setShortcut(file->readString());
 }
 
 double SliderWidget::getValue()
@@ -366,6 +380,40 @@ void SliderWidget::hideMinMax(bool hide)
 bool SliderWidget::isMinMaxVisible() const
 {
     return !m_hide_act->isChecked();
+}
+
+void SliderWidget::setShortcut(const QString &shortcut)
+{
+    if(shortcut.isEmpty())
+        return;
+
+    if(!m_shortcut)
+    {
+        m_shortcut = new QShortcut(this);
+        connect(m_shortcut, SIGNAL(activated()), slider(), SLOT(setFocus()));
+    }
+    m_shortcut->setKey(QKeySequence(shortcut));
+}
+
+void SliderWidget::showShortcutDialog()
+{
+    QDialog d(this);
+    d.setWindowFlags(d.windowFlags() & ~(Qt::WindowMaximizeButtonHint | Qt::WindowContextHelpButtonHint));
+    d.setWindowTitle(tr("Slider focus shortcut"));
+
+    QVBoxLayout *l = new QVBoxLayout(&d);
+
+    ShortcutInputBox *box = new ShortcutInputBox(m_shortcut ? m_shortcut->key() : QKeySequence(), &d);
+    QDialogButtonBox *btn = new QDialogButtonBox((QDialogButtonBox::Ok |QDialogButtonBox::Cancel), Qt::Horizontal, &d);
+
+    l->addWidget(box);
+    l->addWidget(btn);
+
+    connect(btn, SIGNAL(accepted()), &d, SLOT(accept()));
+    connect(btn, SIGNAL(rejected()), &d, SLOT(reject()));
+
+    if(d.exec() == QDialog::Accepted)
+        setShortcut(box->getKeySequence().toString());
 }
 
 SliderWidgetAddBtn::SliderWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
