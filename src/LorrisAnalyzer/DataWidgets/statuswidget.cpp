@@ -20,25 +20,22 @@ StatusWidget::StatusWidget(QWidget *parent) :
     setTitle(tr("Status"));
     setIcon(":/dataWidgetIcons/status.png");
 
-    m_status = 0;
     m_dataType = 0;
     m_curUnknown = false;
-
-    m_label = new QLabel(this);
-    m_label->setAlignment(Qt::AlignCenter);
-    m_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_label->setAutoFillBackground(true);
-
-    layout->addWidget(m_label);
+    m_lastVal = 0;
 
     resize(200, 60);
+
+    m_emptyLabel = new QLabel(tr("NONE"), this);
+    layout->addWidget(m_emptyLabel);
+    layout->addStretch(1);
 
     m_unknown.text = tr("Unknown: %v");
     m_unknown.color = Qt::white;
     m_unknown.textColor = Qt::black;
 
-    addStatus(0, "FALSE", "red", "black");
-    addStatus(1, "TRUE", "#00FF00", "black");
+    addStatus(0, false, "FALSE", "red", "black");
+    addStatus(1, false, "TRUE", "#00FF00", "black");
 
     setValue(1);
 }
@@ -88,16 +85,17 @@ void StatusWidget::saveWidgetInfo(DataFileParser *file)
     file->writeVal(m_dataType);
 
     // states
-    file->writeBlockIdentifier("statusWStates");
+    file->writeBlockIdentifier("statusWStatesV2");
     file->writeVal((quint32)m_states.size());
-    for(QHash<quint64, status>::iterator itr = m_states.begin(); itr != m_states.end(); ++itr)
+    for(QLinkedList<status>::iterator itr = m_states.begin(); itr != m_states.end(); ++itr)
     {
-        file->writeVal(itr.key());
+        file->writeVal((*itr).id);
+        file->writeVal((*itr).mask);
         file->writeString((*itr).text);
         file->writeColor((*itr).color);
         file->writeColor((*itr).textColor);
     }
-    file->writeVal(m_status);
+    file->writeVal(m_lastVal);
 
     // unk state
     file->writeBlockIdentifier("statusWUnkState");
@@ -116,25 +114,35 @@ void StatusWidget::loadWidgetInfo(DataFileParser *file)
         setDataType(file->readVal<int>());
 
     // states
-    if(file->seekToNextBlock("statusWStates", BLOCK_WIDGET))
+    bool hasStates = file->seekToNextBlock("statusWStates", BLOCK_WIDGET);
+    bool hasStatesV2 = !hasStates ? file->seekToNextBlock("statusWStatesV2", BLOCK_WIDGET) : false;
+    if(hasStates || hasStatesV2)
     {
         while(!m_states.isEmpty())
-            removeStatus(m_states.begin().key());
+            removeStatus(m_states.front().id,  m_states.front().mask);
 
         quint32 count = file->readVal<quint32>();
         for(quint32 i = 0; i < count; ++i)
         {
-            quint64 val = file->readVal<quint64>();
             status s;
+            s.id = file->readVal<quint64>();
+
+            if(hasStates)
+                s.mask = false;
+            else // statesV2
+                s.mask = file->readVal<bool>();
+
             s.text = file->readString();
             s.color = file->readColor();
             s.textColor = file->readColor();
 
-            m_states[val] = s;
+            m_states.push_back(s);
         }
-        quint64 id = file->readVal<quint64>();
-        m_status = id+1;
-        setValue(id);
+        quint64 val = file->readVal<quint64>();
+        m_lastVal = val+1;
+        setValue(val);
+
+        m_emptyLabel->setVisible(m_states.isEmpty());
     }
 
     // unk state
@@ -162,91 +170,145 @@ void StatusWidget::processData(analyzer_data *data)
     setValue(value);
 }
 
-void StatusWidget::addStatus(quint64 id, const QString &text, const QString &color, const QString &textColor)
+void StatusWidget::addStatus(quint64 id, bool mask, const QString &text, const QString &color, const QString &textColor)
 {
-    status s = { text, QColor(color), QColor(textColor) };
-    addStatus(id, s);
+    status s = { id, mask, text, QColor(color), QColor(textColor) };
+    addStatus(s);
 }
 
-void StatusWidget::addStatus(quint64 id, const status &s)
+void StatusWidget::addStatus(const status &s)
 {
     if(m_states.isEmpty())
     {
-        m_status = id+1;
-        m_states.insert(id, s);
-        setValue(id);
+        m_emptyLabel->hide();
+        m_states.push_back(s);
+        setValue(m_lastVal);
     }
     else
-        m_states[id] = s;
+    {
+        for(QLinkedList<status>::iterator itr = m_states.begin(); itr != m_states.end(); ++itr)
+        {
+            if((*itr).id == s.id && (*itr).mask == s.mask)
+            {
+                *itr = s;
+                return;
+            }
+        }
+        m_states.push_back(s);
+    }
 }
 
-void StatusWidget::removeStatus(quint64 id)
+void StatusWidget::removeStatus(quint64 id, bool mask)
 {
-    m_states.remove(id);
+    bool active = false;
+    for(QLinkedList<status*>::iterator itr = m_active.begin(); itr != m_active.end(); ++itr)
+    {
+        if((*itr)->id == id && (*itr)->mask == mask)
+        {
+            active = true;
+            m_active.erase(itr);
+            break;
+        }
+    }
+
+    for(QLinkedList<status>::iterator itr = m_states.begin(); itr != m_states.end(); ++itr)
+    {
+        if((*itr).id == id && (*itr).mask == mask)
+        {
+            m_states.erase(itr);
+            break;
+        }
+    }
 
     if(m_states.isEmpty())
     {
-        m_status = 0;
-        m_label->setText("NONE");
-        m_label->setPalette(QPalette());
+        Q_ASSERT(m_active.isEmpty() || m_curUnknown);
+
+        m_emptyLabel->show();
     }
-    else if(m_status == id)
+    else if(active)
     {
-        setValue(m_states.begin().key());
+        updateActive();
     }
 }
 
-void StatusWidget::setValue(quint64 id)
+void StatusWidget::setValue(quint64 id, bool force)
 {
-    if(id == m_status && !m_curUnknown)
-        return;
+    if(!force && id == m_lastVal && !m_curUnknown)
+         return;
 
-    status *st = NULL;
-    QHash<quint64, status>::iterator itr = m_states.find(id);
-    if(itr != m_states.end())
+    m_lastVal = id;
+
+    m_active.clear();
+
+    for(QLinkedList<status>::iterator itr = m_states.begin(); itr != m_states.end(); ++itr)
     {
-        m_curUnknown = false;
-        st = &(*itr);
+        if((!(*itr).mask && (*itr).id == id) || ((*itr).mask && (id & (*itr).id)))
+            m_active.push_back(&(*itr));
     }
-    else
+
+    m_curUnknown = m_active.isEmpty();
+    if(m_curUnknown)
     {
-        m_curUnknown = true;
-        st = &m_unknown;
+        m_unknown.id = id;
+        m_active.push_back(&m_unknown);
     }
-    m_status = id;
-    setFromStatus(*st);
-}
 
-void StatusWidget::updateValue(quint64 id)
-{
-    if(m_status != id)
-        return;
-
-    QHash<quint64, status>::iterator itr = m_states.find(id);
-    if(itr == m_states.end())
-        return;
-
-    setFromStatus(*itr);
+    updateLabels();
 }
 
 void StatusWidget::updateUnknown()
 {
     if(!m_curUnknown)
         return;
-    setFromStatus(m_unknown);
+    if(m_active.isEmpty())
+        m_active.push_back(&m_unknown);
+    updateLabels();
 }
 
-void StatusWidget::setFromStatus(const status &st)
+void StatusWidget::setFromStatus(status *st, QLabel *label)
 {
-    QString text = st.text;
-    text.replace("%v", QString::number(m_status));
-    text.replace("%h", "0x" + QString::number(m_status, 16).toUpper());
-    m_label->setText(text);
+    QString text = st->text;
+    text.replace("%v", QString::number(st->id));
+    text.replace("%h", "0x" + QString::number(st->id, 16).toUpper());
+    label->setText(text);
 
-    QPalette p = m_label->palette();
-    p.setColor(QPalette::Window, st.color);
-    p.setColor(QPalette::WindowText, st.textColor);
-    m_label->setPalette(p);
+    QPalette p = label->palette();
+    p.setColor(QPalette::Window, st->color);
+    p.setColor(QPalette::WindowText, st->textColor);
+    label->setPalette(p);
+}
+
+void StatusWidget::updateActive()
+{
+    setValue(m_lastVal, true);
+}
+
+void StatusWidget::updateLabels()
+{
+    while((quint32)m_active.size() != m_labels.size())
+    {
+        if((quint32)m_active.size() > m_labels.size())
+        {
+            QLabel *label = new QLabel(this);
+            label->setAlignment(Qt::AlignCenter);
+            label->setMinimumHeight(25);
+            label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            label->setAutoFillBackground(true);
+            m_labels.push_back(label);
+            layout->insertWidget(layout->count()-1, label);
+        }
+        else
+        {
+            delete m_labels.back();
+            m_labels.pop_back();
+        }
+    }
+
+    QLinkedList<status*>::iterator sitr = m_active.begin();
+    std::vector<QLabel*>::iterator litr = m_labels.begin();
+    for(; sitr != m_active.end(); ++sitr,++litr)
+        setFromStatus(*sitr, *litr);
 }
 
 void StatusWidget::setDataType(int type)
@@ -326,16 +388,17 @@ void StatusManager::updateItems()
     m_clrMap = new QSignalMapper(this);
     m_textClrMap = new QSignalMapper(this);
 
-    QHash<quint64, StatusWidget::status>& states = widget()->states();
+    QLinkedList<StatusWidget::status>& states = widget()->states();
+
     ui->table->setRowCount(states.size());
 
-    int rowItr = 0;
-    for(QHash<quint64, StatusWidget::status>::iterator itr = states.begin(); itr != states.end(); ++itr,++rowItr)
+    QLinkedList<StatusWidget::status>::iterator itr = states.begin();
+    for(int rowItr = 0; itr != states.end(); ++itr,++rowItr)
     {
-        m_rowVals.push_back(itr.key());
+        m_rowVals.push_back(std::make_pair<quint64, bool>((*itr).id, (*itr).mask));
 
         QTableWidgetItem *item = new QTableWidgetItem();
-        item->setText(QString::number(itr.key()));
+        item->setText(QString("%1%2").arg((*itr).mask ? "&" : "").arg((*itr).id));
         ui->table->setItem(rowItr, 0, item);
 
         item = new QTableWidgetItem((*itr).text);
@@ -365,27 +428,29 @@ void StatusManager::updateItems()
 void StatusManager::colorChanged(int row)
 {
     QColor clr = ((ColorButton*)ui->table->cellWidget(row, 2))->getColor();
-    quint64 val = m_rowVals[row];
 
-    getStatus(val)->color = clr;
-    widget()->updateValue(val);
+    getStatus(m_rowVals[row].first, m_rowVals[row].second)->color = clr;
+    widget()->updateActive();
 }
 
 void StatusManager::textColorChanged(int row)
 {
     QColor clr = ((ColorButton*)ui->table->cellWidget(row, 3))->getColor();
-    quint64 val = m_rowVals[row];
 
-    getStatus(val)->textColor = clr;
-    widget()->updateValue(val);
+    getStatus(m_rowVals[row].first, m_rowVals[row].second)->textColor = clr;
+    widget()->updateActive();
 }
 
-StatusWidget::status *StatusManager::getStatus(quint64 val)
+StatusWidget::status *StatusManager::getStatus(quint64 val, bool mask)
 {
-    QHash<quint64, StatusWidget::status>::iterator itr = widget()->states().find(val);
-    if(itr == widget()->states().end())
-        return NULL;
-    return &(*itr);
+    QLinkedList<StatusWidget::status>& states = widget()->states();
+    QLinkedList<StatusWidget::status>::iterator itr = states.begin();
+
+    for(; itr != states.end(); ++itr)
+        if((*itr).id == val && (*itr).mask == mask)
+            return &(*itr);
+
+    return NULL;
 }
 
 void StatusManager::on_table_itemChanged(QTableWidgetItem *item)
@@ -393,20 +458,40 @@ void StatusManager::on_table_itemChanged(QTableWidgetItem *item)
     if(item->column() >= 2)
         return;
 
-    quint64 val = m_rowVals[item->row()];
+    quint64 val = m_rowVals[item->row()].first;
+    bool val_mask = m_rowVals[item->row()].second;
     switch(item->column())
     {
         case 0:
         {
             bool ok;
-            quint64 id = item->text().toULongLong(&ok);
+            QString str = item->text();
+            str.remove(' ');
+
+            bool mask = false;
+            quint64 id = 0;
+
+            int base = 10;
+            if(str.contains("0x", Qt::CaseInsensitive))
+                base = 16;
+
+            if(str.startsWith('&'))
+            {
+                mask = true;
+                id = str.mid(1).toULongLong(&ok, base);
+            }
+            else
+                id = str.toULongLong(&ok, base);
+
             if(ok)
             {
-                if(id == val)
+                if(id == val && val_mask == mask)
                     break;
-                StatusWidget::status s = *getStatus(val);
-                widget()->removeStatus(val);
-                widget()->addStatus(id, s);
+                StatusWidget::status s = *getStatus(val, val_mask);
+                widget()->removeStatus(val, val_mask);
+                s.id = id;
+                s.mask = mask;
+                widget()->addStatus(s);
                 updateItems();
             }
             else
@@ -415,8 +500,8 @@ void StatusManager::on_table_itemChanged(QTableWidgetItem *item)
         }
         case 1:
         {
-            getStatus(val)->text = item->text();
-            widget()->updateValue(val);
+            getStatus(val, val_mask)->text = item->text();
+            widget()->updateActive();
             break;
         }
     }
@@ -431,7 +516,7 @@ void StatusManager::on_addBtn_clicked()
 {
     quint64 max = 0;
     for(quint32 i = 0; i < m_rowVals.size(); ++i)
-        max = (std::max)(max, m_rowVals[i]);
+        max = (std::max)(max, m_rowVals[i].first);
     ++max;
     widget()->addStatus(max, "", "white", "black");
     updateItems();
@@ -442,7 +527,7 @@ void StatusManager::on_rmBtn_clicked()
     QTableWidgetItem *item = ui->table->currentItem();
     if(!item)
         return;
-    widget()->removeStatus(m_rowVals[item->row()]);
+    widget()->removeStatus(m_rowVals[item->row()].first, m_rowVals[item->row()].second);
     updateItems();
 }
 

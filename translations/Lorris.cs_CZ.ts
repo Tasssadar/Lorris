@@ -507,12 +507,12 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="865"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="875"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="866"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="876"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -653,22 +653,22 @@
 <context>
     <name>DataWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="100"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="98"/>
         <source>Lock</source>
         <translation>Uzamknout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="105"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="103"/>
         <source>Set title</source>
         <translation>Změnit jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="491"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="488"/>
         <source>Set widget title</source>
         <translation>Nastavení jména widgetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="491"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="488"/>
         <source>Enter title:</source>
         <translation>Zadejne nové jméno:</translation>
     </message>
@@ -3917,52 +3917,62 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SliderWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="52"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="57"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="54"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="59"/>
         <source>Integer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="55"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="60"/>
         <source>Double</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="59"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="64"/>
         <source>Orientation</source>
         <translation>Orientace</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="64"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="69"/>
         <source>Horizontal, left to right</source>
         <translation>Vodorovně, zleva doprava</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="65"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="70"/>
         <source>Vertical, bottom to top</source>
         <translation>Svisle, odspodu nahoru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="66"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="71"/>
         <source>Horizontal, right to left</source>
         <translation>Vodorovně, zprava doleva</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="67"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="72"/>
         <source>Vertical, top to bottom</source>
         <translation>Svisle, shora dolů</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="77"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="82"/>
         <source>Hide min and max setting</source>
         <translation>Schovat nastavení min a max</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="24"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="85"/>
+        <source>Set focus shortcut...</source>
+        <translation>Nastavit zkratku pro focus...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="402"/>
+        <source>Slider focus shortcut</source>
+        <translation>Zkratka pro focus slideru</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="28"/>
         <source>Slider</source>
         <translation></translation>
     </message>
@@ -3970,7 +3980,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SliderWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="373"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="421"/>
         <source>Slider</source>
         <translation></translation>
     </message>
@@ -4311,13 +4321,13 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
 <context>
     <name>SplitOverlay</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="664"/>
-        <location filename="../src/ui/tabview.cpp" line="667"/>
+        <location filename="../src/ui/tabview.cpp" line="677"/>
+        <location filename="../src/ui/tabview.cpp" line="680"/>
         <source>Split</source>
         <translation>Rozdělit</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="670"/>
+        <location filename="../src/ui/tabview.cpp" line="683"/>
         <source>New window</source>
         <translation>Nové okno</translation>
     </message>
@@ -4331,38 +4341,40 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="20"/>
-        <source>You can use %v or %h in status&apos; text. It will be replaced by (hexadecimal) value of the status.</source>
-        <translation>V textu stavu můžete použít %v nebo %h. Tato sekvence bude nahrazena (hexadecimální) hodnotou stavu.</translation>
+        <source>You can use %v or %h in status&apos; text. It will be replaced by (hexadecimal) value of the status.
+If you put character &quot;&amp;&quot; before number in  Value field, input data will be checked using bit AND, eg. (in &amp; Value) != 0</source>
+        <translation>V textu stavu můžete použít %v nebo %h. Tato sekvence bude nahrazena (hexadecimální) hodnotou stavu.
+Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;&quot;, bude při porovnávání vsupních dat se stavy použito binární AND.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="48"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="49"/>
         <source>Value</source>
         <translation>Hodnota</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="53"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="54"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="58"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="86"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="59"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="87"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="63"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="96"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="64"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="97"/>
         <source>Text color</source>
         <translation>Barva textu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="73"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="74"/>
         <source>This value is show if no other coresponding value is found.</source>
         <translation>Tato hodnota je ukázána, pokud žádná jiná nevyhovuje.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="76"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statusmanager.ui" line="77"/>
         <source>Unknown value:</source>
         <translation>Neznámá hodnota:</translation>
     </message>
@@ -4375,57 +4387,62 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="36"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="29"/>
+        <source>NONE</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="33"/>
         <source>Unknown: %v</source>
         <translation>Neznámé: %v</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="50"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="47"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="57"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="54"/>
         <source>unsigned 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="58"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="55"/>
         <source>unsigned 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="59"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="56"/>
         <source>unsigned 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="60"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="57"/>
         <source>unsigned 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="62"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="59"/>
         <source>signed 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="63"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="60"/>
         <source>signed 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="64"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="61"/>
         <source>signed 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="65"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="62"/>
         <source>signed 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="79"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="76"/>
         <source>Manage states...</source>
         <translation>Spravovat stavy...</translation>
     </message>
@@ -4433,7 +4450,7 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
 <context>
     <name>StatusWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="290"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/statuswidget.cpp" line="352"/>
         <source>Status</source>
         <translation></translation>
     </message>
@@ -4565,18 +4582,18 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
         <translation>Zkontrolovat aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="514"/>
+        <location filename="../src/ui/tabview.cpp" line="527"/>
         <source>Checking for update...</source>
         <translation>Kontroluji aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="519"/>
-        <location filename="../src/ui/tabview.cpp" line="520"/>
+        <location filename="../src/ui/tabview.cpp" line="532"/>
+        <location filename="../src/ui/tabview.cpp" line="533"/>
         <source>No update available</source>
         <translation>Žádná aktualizace není dostupná</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="524"/>
+        <location filename="../src/ui/tabview.cpp" line="537"/>
         <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
@@ -4989,12 +5006,12 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
         <translation>Opakovat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="475"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="477"/>
         <source>Grid size</source>
         <translation>Rozteč sítě</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="475"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="477"/>
         <source>Enter grid size in pixels</source>
         <translation>Zadejte rozteč sítě v pixelech</translation>
     </message>

@@ -10,6 +10,8 @@
 
 #include <QColor>
 #include <QDialog>
+#include <vector>
+#include <QLinkedList>
 
 #include "datawidget.h"
 #include "ui_statusmanager.h"
@@ -22,6 +24,9 @@ class StatusWidget : public DataWidget
 
     struct status
     {
+        quint64 id;
+        bool mask;
+
         QString text;
         QColor color;
         QColor textColor;
@@ -36,10 +41,19 @@ public:
     void loadWidgetInfo(DataFileParser *file);
 
 public slots:
-    void addStatus(quint64 id, const QString& text, const QString& color, const QString& textColor);
-    void removeStatus(quint64 id);
-    void setValue(quint64 id);
-    quint64 getValue() const { return m_status; }
+    /// \deprecated Use addStatus(quint64 id, bool mask, const QString& text, const QString& color, const QString& textColor)
+    void addStatus(quint64 id, const QString& text, const QString& color, const QString& textColor)
+    {
+        addStatus(id, false, text, color, textColor);
+    }
+
+    void addStatus(quint64 id, bool mask, const QString& text, const QString& color, const QString& textColor);
+    void removeStatus(quint64 id, bool mask = false);
+    void setValue(quint64 id)
+    {
+        setValue(id, false);
+    }
+    quint64 getValue() const { return m_lastVal; }
 
     void setUnknownText(const QString& text);
     void setUnknownColor(const QString& color);
@@ -53,17 +67,21 @@ protected:
      void processData(analyzer_data *data);
 
 private:
-     QHash<quint64, status>& states() { return m_states; }
+     QLinkedList<status>& states() { return m_states; }
      status& unknown() { return m_unknown; }
-     void updateValue(quint64 id);
+     void updateActive();
      void updateUnknown();
-     void addStatus(quint64 id, const status& s);
-     void setFromStatus(const status& st);
+     void updateLabels();
+     void addStatus(const status& s);
+     void setFromStatus(status *st, QLabel *label);
+     void setValue(quint64 id, bool force);
 
-     QLabel *m_label;
-     QHash<quint64, status> m_states;
+     std::vector<QLabel*> m_labels;
+     QLinkedList<status> m_states;
+     QLinkedList<status*> m_active;
+     QLabel *m_emptyLabel;
      status m_unknown;
-     quint64 m_status;
+     quint64 m_lastVal;
 
      QAction *m_typeAction[NUM_FLOAT];
      int m_dataType;
@@ -99,13 +117,13 @@ private slots:
 
 private:
     inline StatusWidget *widget() const { return (StatusWidget*)parent(); }
-    StatusWidget::status *getStatus(quint64 val);
+    StatusWidget::status *getStatus(quint64 val, bool mask);
     void updateItems();
 
     Ui::StatusManager *ui;
     QSignalMapper *m_clrMap;
     QSignalMapper *m_textClrMap;
-    std::vector<quint64> m_rowVals;
+    std::vector<std::pair<quint64, bool> > m_rowVals;
 };
 
 #endif // STATUSWIDGET_H
