@@ -55,24 +55,24 @@ public slots:
     void setInt32Array           (const QString& key, const QVariantList& val);
     void setUInt32Array          (const QString& key, const QVariantList& val);
 
-    bool         getBool         (const QString& key);
-    quint32      getUInt32       (const QString& key);
-    qint32       getInt32        (const QString& key);
-    float        getFloat        (const QString& key);
-    QString      getString       (const QString& key);
-    QVariantList getFloatArray   (const QString& key);
-    QVariantList getInt32Array   (const QString& key);
-    QVariantList getUInt32Array  (const QString& key);
+    bool         getBool         (const QString& key, bool def = false);
+    quint32      getUInt32       (const QString& key, quint32 def = 0);
+    qint32       getInt32        (const QString& key, qint32 def = 0);
+    float        getFloat        (const QString& key, float def = 0.f);
+    QString      getString       (const QString& key, QString def = "");
+    QVariantList getFloatArray   (const QString& key, QVariantList def = QVariantList());
+    QVariantList getInt32Array   (const QString& key, QVariantList def = QVariantList());
+    QVariantList getUInt32Array  (const QString& key, QVariantList def = QVariantList());
 
 private:
     ScriptData *findKey(const QString& key);
     ScriptData *getKeyForSet(const QString& key);
 
     template <typename T> void setBaseType(const QString &key, T val);
-    template <typename T> T getBaseType(const QString &key);
+    template <typename T> T getBaseType(const QString &key, T def);
 
     template <typename T> void setArrayType(const QString& key, QVariantList val);
-    template <typename T> QVariantList getArrayType(const QString& key);
+    template <typename T> QVariantList getArrayType(const QString& key, QVariantList def);
 
     DataHash m_data;
 };
@@ -90,11 +90,11 @@ void ScriptStorage::setBaseType(const QString &key, T val)
 }
 
 template <typename T>
-T ScriptStorage::getBaseType(const QString &key)
+T ScriptStorage::getBaseType(const QString &key, T def)
 {
     ScriptData *sc_data = findKey(key);
 
-    T val = T();
+    T val = def;
 
     if(!sc_data)
         return val;
@@ -128,14 +128,14 @@ void ScriptStorage::setArrayType(const QString& key, QVariantList val)
 }
 
 template <typename T>
-QVariantList ScriptStorage::getArrayType(const QString& key)
+QVariantList ScriptStorage::getArrayType(const QString& key, QVariantList def)
 {
     ScriptData *sc_data = findKey(key);
     if(!sc_data)
-        return QVariantList();
+        return def;
 
     if(sc_data->len % sizeof(T) != 0 || sc_data->len < sizeof(T))
-        return QVariantList();
+        return def;
 
     QVariantList ret;
     for(quint32 i = 0; i < sc_data->len; i += sizeof(T))
