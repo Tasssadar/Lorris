@@ -185,7 +185,7 @@ void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
 void DataWidget::mousePressEvent( QMouseEvent* e )
 {
     if(e->button() != Qt::LeftButton)
-        return;
+        return QFrame::mousePressEvent(e);
 
     m_dragAction = getDragAction(e);
     mOrigin = e->globalPos();
@@ -669,7 +669,7 @@ void DataWidget::focusInEvent(QFocusEvent *event)
 
 Qt::CursorShape DataWidget::getCursor(quint8 act)
 {
-    switch(act)
+    switch(act & ~(DRAG_RESIZE))
     {
         case DRAG_NONE:
         default:
