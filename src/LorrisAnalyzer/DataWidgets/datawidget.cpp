@@ -118,6 +118,8 @@ void DataWidget::setTitleVisibility(bool visible)
     m_closeLabel->setVisible(visible);
     m_title_label->setVisible(visible);
     m_icon_widget->setVisible(visible);
+    if(m_error_label)
+        m_error_label->setVisible(visible);
 }
 
 void DataWidget::setTitle(QString title)
