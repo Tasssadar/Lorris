@@ -14,6 +14,7 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QPropertyAnimation>
+#include <QPainter>
 
 #include "datawidget.h"
 #include "../../WorkTab/WorkTab.h"
@@ -79,6 +80,8 @@ DataWidget::~DataWidget()
     // Remove highlight from top data widget
     if(m_state & STATE_MOUSE_IN)
         emit mouseStatus(false, m_info, m_widgetControlled);
+
+    emit toggleSelection(false);
 
     Utils::deleteLayoutMembers(layout);
     delete layout;
@@ -193,8 +196,16 @@ void DataWidget::mousePressEvent( QMouseEvent* e )
     mOrigin = e->globalPos();
     m_clickPos = e->pos();
 
+    if(e->modifiers() & Qt::ShiftModifier)
+        setSelected(!bool(m_state & STATE_SELECTED));
+
     if(m_dragAction == DRAG_MOVE || (m_dragAction & DRAG_RESIZE))
-        emit addUndoAct(new MoveAction(this));
+    {
+        if(m_dragAction == DRAG_MOVE && isSelected())
+            emit addUndoAct(new MoveGroupAction(widgetArea()->getSelected()));
+        else
+            emit addUndoAct(new MoveAction(this));
+    }
 }
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
@@ -219,7 +230,9 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
                     if(!isLocked() && !isMoveBlocked())
                     {
                         dragMove(e, this);
-                        m_gestures.moveEvent(e->globalPos());
+
+                        if(!isSelected())
+                            m_gestures.moveEvent(e->globalPos());
                     }
                     break;
                 case (DRAG_MOVE | DRAG_COPY):
@@ -442,6 +455,19 @@ void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
             p.ry() = ly;
         else if(abs(ly - wy) < PLACEMENT_STICK)
             p.ry() = ly - widget->height();
+    }
+
+
+    if(widget == this && (m_state & STATE_SELECTED))
+    {
+        QPoint diff = (p - pos());
+        const std::set<DataWidget*>& sel = widgetArea()->getSelected();
+        for(std::set<DataWidget*>::const_iterator itr = sel.begin(); itr != sel.end(); ++itr)
+        {
+            if(*itr == this)
+                continue;
+            (*itr)->move((*itr)->pos() + diff);
+        }
     }
 
     widget->move(p);
@@ -786,6 +812,60 @@ void DataWidget::setError(bool error, QString tooltip)
         m_error_label->clear();
         m_error_label->setToolTip(tooltip);
     }
+}
+
+void DataWidget::setSelected(bool selected)
+{
+    if(!(selected ^ bool(m_state & STATE_SELECTED)))
+        return;
+
+    if(selected) m_state |= STATE_SELECTED;
+    else         m_state &= ~(STATE_SELECTED);
+
+    update();
+
+    emit toggleSelection(selected);
+}
+
+void DataWidget::paintEvent(QPaintEvent *ev)
+{
+    QFrame::paintEvent(ev);
+
+    if(!isSelected() && !isHighlighted())
+        return;
+
+    QPainter p(this);
+
+    QPen pen;
+    pen.setWidth(2);
+    pen.setJoinStyle(Qt::MiterJoin);
+
+    QRect prect = rect();
+
+    if(isSelected())
+    {
+        prect.adjust(2, 2, -2, -2);
+        pen.setColor(Qt::blue);
+        p.setPen(pen);
+        p.drawRect(prect);
+    }
+
+    if(isHighlighted())
+    {
+        prect.adjust(2, 2, -2, -2);
+        pen.setColor(Qt::red);
+        p.setPen(pen);
+        p.drawRect(prect);
+    }
+}
+
+void DataWidget::setHighlighted(bool highlight)
+{
+    if(highlight)
+        m_state |= STATE_HIGHLIGHTED;
+    else
+        m_state &= ~(STATE_HIGHLIGHTED);
+    update();
 }
 
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)

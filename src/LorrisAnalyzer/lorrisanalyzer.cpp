@@ -485,17 +485,7 @@ void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qi
         DataWidget *w = ui->dataArea->getWidget(parent);
         if(!w)
             return;
-
-        if(in)
-        {
-            w->setStyleSheet("color: red");
-            w->setLineWidth(2);
-        }
-        else
-        {
-            w->setLineWidth(1);
-            w->setStyleSheet("");
-        }
+        w->setHighlighted(in);
     }
     else
     {

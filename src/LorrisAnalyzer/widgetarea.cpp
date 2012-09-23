@@ -138,6 +138,7 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(w,          SIGNAL(updateData()),                       SIGNAL(updateData()));
     connect(w,   SIGNAL(mouseStatus(bool,data_widget_info,qint32)), SIGNAL(mouseStatus(bool,data_widget_info,qint32)));
     connect(w,          SIGNAL(SendData(QByteArray)),   m_analyzer, SIGNAL(SendData(QByteArray)));
+    connect(w,          SIGNAL(toggleSelection(bool)),              SLOT(toggleSelection(bool)));
     connect(this,       SIGNAL(setTitleVisibility(bool)),        w, SLOT(setTitleVisibility(bool)));
     connect(w,  SIGNAL(addChildTab(ChildTab*,QString)), m_analyzer, SLOT(addChildTab(ChildTab*,QString)));
     connect(w,  SIGNAL(removeChildTab(ChildTab*)),      m_analyzer, SLOT(removeChildTab(ChildTab*)));
@@ -303,6 +304,7 @@ void WidgetArea::mousePressEvent(QMouseEvent *event)
     switch(event->button())
     {
         case Qt::LeftButton:
+            clearSelection();
             m_mouse_orig = event->globalPos();
             setCursor(Qt::ClosedHandCursor);
             m_prev = new WidgetAreaPreview(this, (QWidget*)parent());
@@ -616,6 +618,24 @@ void WidgetArea::lockAll()
 void WidgetArea::unlockAll()
 {
     emit setLocked(false);
+}
+
+void WidgetArea::toggleSelection(bool select)
+{
+    Q_ASSERT(sender() && sender()->inherits("DataWidget"));
+
+    DataWidget *w = (DataWidget*)sender();
+    if(select)
+        m_selected.insert(w);
+    else
+        m_selected.erase(w);
+}
+
+void WidgetArea::clearSelection()
+{
+    for(std::set<DataWidget*>::iterator itr = m_selected.begin(); itr != m_selected.end(); ++itr)
+        (*itr)->setSelected(false);
+    m_selected.clear();
 }
 
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)

@@ -92,7 +92,9 @@ protected:
         STATE_UPDATING   = 0x04,
         STATE_MOUSE_IN   = 0x08,
         STATE_BLOCK_MOVE = 0x10,
-        STATE_SCALED_UP  = 0x20
+        STATE_SCALED_UP  = 0x20,
+        STATE_SELECTED   = 0x40,
+        STATE_HIGHLIGHTED= 0x80
     };
 
 Q_SIGNALS:
@@ -112,6 +114,7 @@ Q_SIGNALS:
     void rawData(const QByteArray& data);
 
     void addUndoAct(UndoAction *act);
+    void toggleSelection(bool selected);
 
 public:
     explicit DataWidget(QWidget *parent = 0);
@@ -123,6 +126,7 @@ public:
     quint32 getId() { return m_id; }
 
     bool isMouseIn() { return (m_state & STATE_MOUSE_IN); }
+    void setHighlighted(bool highlight);
 
     void setInfo(qint16 device, qint16 command, quint32 pos)
     {
@@ -152,15 +156,16 @@ public:
     qint32 getWidgetControlled() { return m_widgetControlled; }
 
     QString getTitle();
-
     quint8 getWidgetType() const { return m_widgetType; }
-
     void align();
 
     void updateForThis()
     {
         emit updateForMe();
     }
+
+    void showSelectFrame(bool show);
+    void dragMove(QMouseEvent* e, DataWidget *widget);
 
 public slots:
     virtual void newData(analyzer_data *data, quint32);
@@ -171,6 +176,7 @@ public slots:
     void setLocked(bool locked);
     bool isLocked() const { return (m_state & STATE_LOCKED); }
     void setError(bool error, QString tooltip = QString());
+    void setSelected(bool selected);
 
     //events
     virtual void onWidgetAdd(DataWidget *w);
@@ -190,6 +196,7 @@ protected:
     void childEvent(QChildEvent *event);
     bool eventFilter(QObject *, QEvent *ev);
     void focusInEvent(QFocusEvent *event);
+    void paintEvent(QPaintEvent *ev);
 
     virtual void titleDoubleClick();
 
@@ -206,6 +213,8 @@ protected:
     bool isAssigned() const { return (m_state & STATE_ASSIGNED); }
     bool isUpdating() const { return (m_state & STATE_UPDATING); }
     bool isMoveBlocked() const { return (m_state & STATE_BLOCK_MOVE); }
+    bool isSelected() const { return (m_state & STATE_SELECTED); }
+    bool isHighlighted() const { return (m_state & STATE_HIGHLIGHTED); }
 
     void setUseErrorLabel(bool use);
 
@@ -232,7 +241,6 @@ private:
 
     quint8 getDragAction(QMouseEvent* ev);
     void dragResize(QMouseEvent* e);
-    void dragMove(QMouseEvent* e, DataWidget *widget);
     static Qt::CursorShape getCursor(quint8 act);
     void startAnimation(const QRect& target);
 

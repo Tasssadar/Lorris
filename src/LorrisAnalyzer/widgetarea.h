@@ -10,6 +10,7 @@
 
 #include <QFrame>
 #include <QHash>
+#include <set>
 
 #include "DataWidgets/datawidget.h"
 #include "undostack.h"
@@ -79,6 +80,8 @@ public:
     void updatePlacement(int x, int y, int w, int h, DataWidget *widget);
     const QVector<QLine>& getPlacementLines() const { return m_placementLines; }
 
+    const std::set<DataWidget*>& getSelected() const { return m_selected; }
+
 public slots:
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
@@ -103,6 +106,8 @@ private slots:
     void lockAll();
     void unlockAll();
     void titleVisibilityAct(bool toggled);
+    void toggleSelection(bool select);
+    void clearSelection();
 
 private:
     void getMarkPos(int &x, int &y, QSize &size);
@@ -132,6 +137,7 @@ private:
     bool m_enablePlacementLines;
 
     UndoStack m_undoStack;
+    std::set<DataWidget*> m_selected;
 };
 
 class WidgetAreaPreview : public QWidget
