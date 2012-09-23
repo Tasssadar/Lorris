@@ -190,7 +190,7 @@ void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
 void DataWidget::mousePressEvent( QMouseEvent* e )
 {
     if(e->button() != Qt::LeftButton)
-        return QFrame::mousePressEvent(e);
+        return; // must not call QFrame::mousePressEvent(e);
 
     m_dragAction = getDragAction(e);
     mOrigin = e->globalPos();
@@ -456,7 +456,6 @@ void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
         else if(abs(ly - wy) < PLACEMENT_STICK)
             p.ry() = ly - widget->height();
     }
-
 
     if(widget == this && (m_state & STATE_SELECTED))
     {
