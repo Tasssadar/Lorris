@@ -41,7 +41,7 @@
 
 static bool sortDataWidget(DataWidgetAddBtn *a, DataWidgetAddBtn *b)
 {
-    return a->text().localeAwareCompare(a->text(), b->text()) < 0;
+    return QString::localeAwareCompare(a->text(), b->text()) < 0;
 }
 
 LorrisAnalyzer::LorrisAnalyzer()

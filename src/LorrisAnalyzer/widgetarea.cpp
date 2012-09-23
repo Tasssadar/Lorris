@@ -55,11 +55,14 @@ WidgetArea::WidgetArea(QWidget *parent) :
     m_menu->addSeparator();
 
     m_titleVisibility = m_menu->addAction(tr("Show widget's title bar"));
+    m_showPreview = m_menu->addAction(tr("Show preview while moving the area"));
     QAction *lockAll = m_menu->addAction(tr("Lock all widgets"));
     QAction *unlockAll = m_menu->addAction(tr("Unlock all widgets"));
 
     m_titleVisibility->setCheckable(true);
     m_titleVisibility->setChecked(true);
+    m_showPreview->setCheckable(true);
+    m_showPreview->setChecked(sConfig.get(CFG_BOOL_ANALYZER_SHOW_PREVIEW));
 
     m_menu->addSeparator();
 
@@ -78,6 +81,7 @@ WidgetArea::WidgetArea(QWidget *parent) :
     connect(align,           SIGNAL(triggered()),                  SLOT(alignWidgets()));
     connect(linesAct,        SIGNAL(toggled(bool)),                SLOT(enableLines(bool)));
     connect(m_titleVisibility, SIGNAL(triggered(bool)),            SLOT(titleVisibilityAct(bool)));
+    connect(m_showPreview,   SIGNAL(toggled(bool)),                SLOT(setShowPreview(bool)));
     connect(lockAll,         SIGNAL(triggered()),                  SLOT(lockAll()));
     connect(unlockAll,       SIGNAL(triggered()),                  SLOT(unlockAll()));
     connect(&m_undoStack,    SIGNAL(undoAvailable(bool)),    undo, SLOT(setEnabled(bool)));
@@ -307,7 +311,6 @@ void WidgetArea::mousePressEvent(QMouseEvent *event)
             clearSelection();
             m_mouse_orig = event->globalPos();
             setCursor(Qt::ClosedHandCursor);
-            m_prev = new WidgetAreaPreview(this, (QWidget*)parent());
             break;
         case Qt::RightButton:
             m_menu->exec(event->globalPos());
@@ -372,7 +375,11 @@ void WidgetArea::mouseMoveEvent(QMouseEvent *event)
     QPoint n = event->globalPos() - m_mouse_orig;
     moveWidgets(n);
 
-    m_prev->prepareRender();
+    if(m_prev)
+        m_prev->prepareRender();
+    else if(m_showPreview->isChecked())
+        m_prev = new WidgetAreaPreview(this, (QWidget*)parent());
+
     m_mouse_orig = event->globalPos();
 }
 
@@ -636,6 +643,11 @@ void WidgetArea::clearSelection()
     for(std::set<DataWidget*>::iterator itr = m_selected.begin(); itr != m_selected.end(); ++itr)
         (*itr)->setSelected(false);
     m_selected.clear();
+}
+
+void WidgetArea::setShowPreview(bool show)
+{
+    sConfig.set(CFG_BOOL_ANALYZER_SHOW_PREVIEW, show);
 }
 
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)

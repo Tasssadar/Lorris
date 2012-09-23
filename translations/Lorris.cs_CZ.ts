@@ -507,12 +507,12 @@
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="875"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="957"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="876"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="958"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -653,22 +653,22 @@
 <context>
     <name>DataWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="98"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="101"/>
         <source>Lock</source>
         <translation>Uzamknout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="103"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="106"/>
         <source>Set title</source>
         <translation>Změnit jméno</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="488"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="516"/>
         <source>Set widget title</source>
         <translation>Nastavení jména widgetu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="488"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="516"/>
         <source>Enter title:</source>
         <translation>Zadejne nové jméno:</translation>
     </message>
@@ -1646,8 +1646,8 @@ stejného souboru vícekrát:</translation>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="193"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="317"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="415"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="586"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="608"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="576"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="598"/>
         <source> of </source>
         <translation> z </translation>
     </message>
@@ -1668,12 +1668,12 @@ stejného souboru vícekrát:</translation>
         <translation>Soubor &quot;%1&quot; byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="568"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="558"/>
         <source>Clear everything?</source>
         <translation>Vymazat vše?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="569"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="559"/>
         <source>Do you really want to clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
@@ -1759,12 +1759,12 @@ stejného souboru vícekrát:</translation>
         <translation>Binární data byla exportována do souboru &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="570"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="560"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="571"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="561"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
@@ -2806,7 +2806,7 @@ stejného souboru vícekrát:</translation>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="633"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="623"/>
         <location filename="../src/LorrisAnalyzer/storage.cpp" line="187"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -3064,7 +3064,7 @@ stejného souboru vícekrát:</translation>
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="634"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="624"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
@@ -4987,31 +4987,36 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="58"/>
+        <source>Show preview while moving the area</source>
+        <translation>Zobrazit náhled při posouvání plochy</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="59"/>
         <source>Lock all widgets</source>
         <translation>Uzamknout všechny widgety</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="59"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="60"/>
         <source>Unlock all widgets</source>
-        <translation>Odemnkout všechny widgety</translation>
+        <translation>Odemknout všechny widgety</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="66"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="69"/>
         <source>Undo</source>
         <translation>Zpět</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="67"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="70"/>
         <source>Redo</source>
         <translation>Opakovat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="477"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="486"/>
         <source>Grid size</source>
         <translation>Rozteč sítě</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="477"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="486"/>
         <source>Enter grid size in pixels</source>
         <translation>Zadejte rozteč sítě v pixelech</translation>
     </message>

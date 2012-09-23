@@ -108,6 +108,7 @@ private slots:
     void titleVisibilityAct(bool toggled);
     void toggleSelection(bool select);
     void clearSelection();
+    void setShowPreview(bool show);
 
 private:
     void getMarkPos(int &x, int &y, QSize &size);
@@ -131,6 +132,7 @@ private:
     QAction *m_actEnableGrid;
     QAction *m_actShowGrid;
     QAction *m_titleVisibility;
+    QAction *m_showPreview;
     WidgetAreaPreview *m_prev;
 
     QVector<QLine> m_placementLines;

@@ -130,6 +130,7 @@ static const QString keys_bool[] =
     "analyzer/script_input",      // CFG_BOOL_SCRIPT_SHOW_INPUT
     "general/one_instance",       // CFG_BOOL_ONE_INSTANCE
     "analyzer/placement_lines",   // CFG_BOOL_ANALYZER_PLACEMENT_LINES
+    "analyzer/show_preview",      // CFG_BOOL_ANALYZER_SHOW_PREVIEW
 };
 
 static const bool def_bool[] =
@@ -158,6 +159,7 @@ static const bool def_bool[] =
     false,                        // CFG_BOOL_SCRIPT_SHOW_INPUT
     true,                         // CFG_BOOL_ONE_INSTANCE
     true,                         // CFG_BOOL_ANALYZER_PLACEMENT_LINES
+    true,                         // CFG_BOOL_ANALYZER_SHOW_PREVIEW
 };
 
 static const QString keys_variant[] =
