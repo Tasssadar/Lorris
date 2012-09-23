@@ -33,7 +33,6 @@ DataWidget::DataWidget(QWidget *parent) :
 
     m_title_label = new QLabel(this);
     m_title_label->setObjectName("titleLabel");
-    m_title_label->setStyleSheet("border-right: 1px solid black; border-bottom: 1px solid black");
     m_title_label->setAlignment(Qt::AlignVCenter);
     m_title_label->setMouseTracking(true);
 
@@ -916,7 +915,6 @@ CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
     m_state = CLOSE_NONE;
 
     setObjectName("closeLabel");
-    setStyleSheet("border-bottom: 1px solid black");
     setAlignment(Qt::AlignVCenter);
     setLocked(false);
 
