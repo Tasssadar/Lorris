@@ -21,6 +21,23 @@
 
 #define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
 
+static const char *blockNames[] = {
+    "staticDataBlock",     // BLOCK_STATIC_DATA
+    "collapseWStatus",     // BLOCK_COLLAPSE_STATUS
+    "collapseWStatus2",    // BLOCK_COLLAPSE_STATUS2
+    "deviceTabsBlock",     // BLOCK_DEVICE_TABS
+    "deviceTabBlock",      // BLOCK_DEVICE_TAB
+    "cmdTabsBlock",        // BLOCK_CMD_TABS
+    "cmdTabBlock",         // BLOCK_CMD_TAB
+    "dataBlock",           // BLOCK_DATA
+    "widgetsBlock",        // BLOCK_WIDGETS
+    "widgetBlock",         // BLOCK_WIDGET
+    "dataIndexBlock",      // BLOCK_DATA_INDEX
+
+    "tabWidget",           // BLOCK_TABWIDGET
+    "tabWidgetTab",        // BLOCK_WORKTAB
+};
+
 DataFileHeader::DataFileHeader(quint8 data_type)
 {
     str[0] = 'L'; str[1] = 'D'; str[2] = 'T'; str[3] = 'A';
@@ -48,6 +65,8 @@ DataFileHeader::DataFileHeader(const DataFileHeader& other)
 DataFileParser::DataFileParser(QByteArray *data, QIODevice::OpenMode openMode, QString path, QString name, QObject *parent) :
     QBuffer(data, parent)
 {
+    Q_ASSERT(sizeof_array(blockNames) == BLOCK_MAX);
+
     m_last_block = 0;
     m_name = name;
     m_path = path;
@@ -62,21 +81,16 @@ DataFileParser::~DataFileParser()
 
 bool DataFileParser::seekToNextBlock(DataBlocks block, qint32 maxDist)
 {
-    char* block_name = getBlockName(block);
-    if(!block_name)
-        return false;
-    bool res = seekToNextBlock(block_name, maxDist);
-    delete[] block_name;
-    return res;
+    Q_ASSERT(block < BLOCK_MAX);
+    return seekToNextBlock(blockNames[block], maxDist);
 }
 
 bool DataFileParser::seekToNextBlock(const char *block, qint32 maxDist)
 {
     quint8 lenght = 0;
-    char* name = getBlockWithFormat(block, lenght);
 
-    int index = data().indexOf(QByteArray(name, lenght), m_last_block);
-    delete[] name;
+    pStr name(getBlockWithFormat(block, lenght));
+    int index = data().indexOf(QByteArray(name.data(), lenght), m_last_block);
 
     if(index == -1 || (maxDist != 0 && (index - m_last_block) > maxDist))
         return false;
@@ -88,11 +102,8 @@ bool DataFileParser::seekToNextBlock(const char *block, qint32 maxDist)
 bool DataFileParser::seekToNextBlock(const char *block, const char *toMax)
 {
     quint8 lenght = 0;
-    char* name = getBlockWithFormat(toMax, lenght);
-
-    int index = data().indexOf(QByteArray(name, lenght), m_last_block);
-
-    delete[] name;
+    pStr name(getBlockWithFormat(toMax, lenght));
+    int index = data().indexOf(QByteArray(name.data(), lenght), m_last_block);
 
     quint32 dist = 0;
     if(index != -1)
@@ -103,17 +114,11 @@ bool DataFileParser::seekToNextBlock(const char *block, const char *toMax)
 
 bool DataFileParser::seekToNextBlock(const char *block, DataBlocks toMax)
 {
-    char* block_name = getBlockName(toMax);
-    if(!block_name)
-        return false;
+    Q_ASSERT(toMax< BLOCK_MAX);
 
     quint8 len;
-    char *formatted = getBlockWithFormat(block_name, len);
-
-    int index = data().indexOf(QByteArray(formatted, len), m_last_block);
-
-    delete[] block_name;
-    delete[] formatted;
+    pStr formatted(getBlockWithFormat(blockNames[toMax], len));
+    int index = data().indexOf(QByteArray(formatted.data(), len), m_last_block);
 
     quint32 dist = 0;
     if(index != -1)
@@ -125,11 +130,8 @@ bool DataFileParser::seekToNextBlock(const char *block, DataBlocks toMax)
 bool DataFileParser::seekToNextBlock(DataBlocks block, const char *toMax)
 {
     quint8 lenght = 0;
-    char* name = getBlockWithFormat(toMax, lenght);
-
-    int index = data().indexOf(QByteArray(name, lenght), m_last_block);
-
-    delete[] name;
+    pStr name(getBlockWithFormat(toMax, lenght));
+    int index = data().indexOf(QByteArray(name.data(), lenght), m_last_block);
 
     quint32 dist = 0;
     if(index != -1)
@@ -140,17 +142,12 @@ bool DataFileParser::seekToNextBlock(DataBlocks block, const char *toMax)
 
 bool DataFileParser::seekToNextBlock(DataBlocks block, DataBlocks toMax)
 {
-    char* block_name = getBlockName(toMax);
-    if(!block_name)
-        return false;
+    Q_ASSERT(toMax < BLOCK_MAX);
 
     quint8 len;
-    char *formatted = getBlockWithFormat(block_name, len);
+    pStr formatted(getBlockWithFormat(blockNames[toMax], len));
 
-    int index = data().indexOf(QByteArray(formatted, len), m_last_block);
-
-    delete[] block_name;
-    delete[] formatted;
+    int index = data().indexOf(QByteArray(formatted.data(), len), m_last_block);
 
     quint32 dist = 0;
     if(index != -1)
@@ -159,57 +156,25 @@ bool DataFileParser::seekToNextBlock(DataBlocks block, DataBlocks toMax)
     return seekToNextBlock(block, dist);
 }
 
-char* DataFileParser::getBlockName(DataBlocks block)
-{
-    char* res = new char[100];
-
-    switch(block)
-    {
-        case BLOCK_STATIC_DATA:      strcpy(res, "staticDataBlock"); break;
-        case BLOCK_COLLAPSE_STATUS:  strcpy(res, "collapseWStatus"); break;
-        case BLOCK_COLLAPSE_STATUS2: strcpy(res, "collapseWStatus2");break;
-        case BLOCK_DEVICE_TABS:      strcpy(res, "deviceTabsBlock"); break;
-        case BLOCK_DEVICE_TAB:       strcpy(res, "deviceTabBlock");  break;
-        case BLOCK_CMD_TABS:         strcpy(res, "cmdTabsBlock");    break;
-        case BLOCK_CMD_TAB:          strcpy(res, "cmdTabBlock");     break;
-        case BLOCK_DATA:             strcpy(res, "dataBlock");       break;
-        case BLOCK_WIDGETS:          strcpy(res, "widgetsBlock");    break;
-        case BLOCK_WIDGET:           strcpy(res, "widgetBlock");     break;
-        case BLOCK_DATA_INDEX:       strcpy(res, "dataIndexBlock");  break;
-
-        case BLOCK_TABWIDGET:        strcpy(res, "tabWidget");       break;
-        case BLOCK_WORKTAB:          strcpy(res, "tabWidgetTab");    break;
-        default: return NULL;
-    }
-    return res;
-}
-
 void DataFileParser::writeBlockIdentifier(DataBlocks block)
 {
-    char* block_name = getBlockName(block);
-    if(block_name)
-        writeBlockIdentifier(block_name);
-    delete[] block_name;
+    Q_ASSERT(block < BLOCK_MAX);
+    writeBlockIdentifier(blockNames[block]);
 }
 
 void DataFileParser::writeBlockIdentifier(const char *block)
 {
     quint8 lenght = 0;
 
-    char* name = getBlockWithFormat(block, lenght);
-    write(name, lenght);
-    delete[] name;
+    pStr name(getBlockWithFormat(block, lenght));
+    write(name.data(), lenght);
 }
 
 char *DataFileParser::getBlockWithFormat(const char *block, quint8& lenght)
 {
-    char* name = new char[100];
-    name[0] = 0x80;
-    ++name;
-    strcpy(name, block);
-    lenght = strlen(name) + 3;
-    name[strlen(name) + 1] = 0x80;
-    --name;
+    lenght = strlen(block) + 3;
+    char* name = new char[lenght];
+    sprintf(name, "%c%s%c%c", 0x80, block, 0, 0x80);
     return name;
 }
 

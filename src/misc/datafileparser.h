@@ -33,7 +33,9 @@ enum DataBlocks
     BLOCK_DATA_INDEX,
 
     BLOCK_TABWIDGET,
-    BLOCK_WORKTAB
+    BLOCK_WORKTAB,
+
+    BLOCK_MAX
 };
 
 enum DataFileFlags
@@ -72,6 +74,8 @@ class DataFileParser : public QBuffer
 {
     Q_OBJECT
 public:
+    typedef QScopedPointer<char, QScopedPointerArrayDeleter<char> > pStr;
+
     DataFileParser(QByteArray *data, QIODevice::OpenMode openMode, QString path = QString(),
                    QString name = QString(), QObject *parent = 0);
     ~DataFileParser();
@@ -85,8 +89,6 @@ public:
 
     void writeBlockIdentifier(DataBlocks block);
     void writeBlockIdentifier(const char* block);
-
-    char* getBlockName(DataBlocks block);
 
     void writeString(const QString& str);
     QString readString();
