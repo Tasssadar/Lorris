@@ -44,6 +44,7 @@ ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
     m_brightness = 0;
     m_color_layout[0] = m_color_layout[1] = m_color_layout[2] = NULL;
     m_color_cor[0] = m_color_cor[1] = m_color_cor[2] = 0;
+    m_color_type = COLOR_RGB_8;
 
     updateColor();
 }

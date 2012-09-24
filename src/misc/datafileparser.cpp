@@ -114,7 +114,7 @@ bool DataFileParser::seekToNextBlock(const char *block, const char *toMax)
 
 bool DataFileParser::seekToNextBlock(const char *block, DataBlocks toMax)
 {
-    Q_ASSERT(toMax< BLOCK_MAX);
+    Q_ASSERT(toMax < BLOCK_MAX);
 
     quint8 len;
     pStr formatted(getBlockWithFormat(blockNames[toMax], len));
@@ -173,7 +173,7 @@ void DataFileParser::writeBlockIdentifier(const char *block)
 char *DataFileParser::getBlockWithFormat(const char *block, quint8& lenght)
 {
     lenght = strlen(block) + 3;
-    char* name = new char[lenght];
+    char* name = new char[lenght+1];
     sprintf(name, "%c%s%c%c", 0x80, block, 0, 0x80);
     return name;
 }

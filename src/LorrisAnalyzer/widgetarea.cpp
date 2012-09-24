@@ -640,9 +640,11 @@ void WidgetArea::toggleSelection(bool select)
 
 void WidgetArea::clearSelection()
 {
-    for(std::set<DataWidget*>::iterator itr = m_selected.begin(); itr != m_selected.end(); ++itr)
+    std::set<DataWidget*> sel;
+    m_selected.swap(sel);
+
+    for(std::set<DataWidget*>::iterator itr = sel.begin(); itr != sel.end(); ++itr)
         (*itr)->setSelected(false);
-    m_selected.clear();
 }
 
 void WidgetArea::setShowPreview(bool show)

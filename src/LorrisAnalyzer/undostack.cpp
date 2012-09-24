@@ -44,7 +44,10 @@ void UndoStack::addAction(UndoAction *act)
     m_undoStack.push_back(act);
 
     while(m_undoStack.size() > MAX_ACTIONS)
+    {
+        delete m_undoStack.front();
         m_undoStack.erase(m_undoStack.begin());
+    }
 
     emit undoAvailable(true);
 
@@ -92,7 +95,10 @@ void UndoStack::checkValid()
     for(std::vector<UndoAction*>::iterator itr = m_undoStack.begin(); itr != m_undoStack.end();)
     {
         if(!(*itr)->valid(widgetArea()))
+        {
+            delete *itr;
             itr = m_undoStack.erase(itr);
+        }
         else
             ++itr;
     }
@@ -100,7 +106,10 @@ void UndoStack::checkValid()
     for(std::vector<UndoAction*>::iterator itr = m_redoStack.begin(); itr != m_redoStack.end();)
     {
         if(!(*itr)->valid(widgetArea()))
+        {
+            delete *itr;
             itr = m_undoStack.erase(itr);
+        }
         else
             ++itr;
     }
