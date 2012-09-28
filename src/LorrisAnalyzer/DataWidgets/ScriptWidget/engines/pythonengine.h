@@ -24,6 +24,7 @@ public:
 
 public slots:
     void sendData(const QByteArray& data);
+    void sendData(const QList<int>& data);
     void sendData(const QString& str);
     int getWidth();
     int getHeight();

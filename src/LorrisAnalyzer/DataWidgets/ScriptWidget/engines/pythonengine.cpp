@@ -232,6 +232,15 @@ void PythonFunctions::sendData(const QByteArray &data)
     emit m_engine->SendData(data);
 }
 
+void PythonFunctions::sendData(const QList<int> &data)
+{
+    QByteArray send;
+    send.resize(data.size());
+    for(int i = 0; i < data.size(); ++i)
+        send[i] = data[i];
+    emit m_engine->SendData(send);
+}
+
 void PythonFunctions::sendData(const QString& str)
 {
     emit m_engine->SendData(str.toUtf8());
