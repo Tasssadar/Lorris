@@ -11,6 +11,7 @@
 #include <QVarLengthArray>
 #include <QMenu>
 #include <QInputDialog>
+#include <QApplication>
 
 #include "widgetarea.h"
 #include "lorrisanalyzer.h"
@@ -36,6 +37,7 @@ WidgetArea::WidgetArea(QWidget *parent) :
     m_enablePlacementLines = sConfig.get(CFG_BOOL_ANALYZER_PLACEMENT_LINES);
 
     setCursor(Qt::OpenHandCursor);
+    m_draggin = false;
 
     QMenu *gridMenu = m_menu->addMenu(tr("Grid"));
 
@@ -303,33 +305,6 @@ void WidgetArea::LoadSettings(DataFileParser *file)
     }
 }
 
-void WidgetArea::mousePressEvent(QMouseEvent *event)
-{
-    switch(event->button())
-    {
-        case Qt::LeftButton:
-            clearSelection();
-            m_mouse_orig = event->globalPos();
-            setCursor(Qt::ClosedHandCursor);
-            break;
-        case Qt::RightButton:
-            m_menu->exec(event->globalPos());
-            break;
-        default:
-            break;
-    }
-}
-
-void WidgetArea::mouseReleaseEvent(QMouseEvent *event)
-{
-    if(event->button() == Qt::LeftButton)
-    {
-        delete m_prev;
-        m_prev = NULL;
-        setCursor(Qt::OpenHandCursor);
-    }
-}
-
 void WidgetArea::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
@@ -367,10 +342,34 @@ void WidgetArea::paintEvent(QPaintEvent *event)
     }
 }
 
+void WidgetArea::mousePressEvent(QMouseEvent *event)
+{
+    switch(event->button())
+    {
+        case Qt::LeftButton:
+            m_mouse_orig = event->globalPos();
+            setCursor(Qt::ClosedHandCursor);
+            m_draggin = false;
+            break;
+        case Qt::RightButton:
+            m_menu->exec(event->globalPos());
+            break;
+        default:
+            break;
+    }
+}
+
 void WidgetArea::mouseMoveEvent(QMouseEvent *event)
 {
     if(event->buttons() != Qt::LeftButton)
         return;
+
+    if(!m_draggin)
+    {
+        if ((event->globalPos() - m_mouse_orig).manhattanLength() < QApplication::startDragDistance())
+              return;
+        m_draggin = true;
+    }
 
     QPoint n = event->globalPos() - m_mouse_orig;
     moveWidgets(n);
@@ -381,6 +380,19 @@ void WidgetArea::mouseMoveEvent(QMouseEvent *event)
         m_prev = new WidgetAreaPreview(this, (QWidget*)parent());
 
     m_mouse_orig = event->globalPos();
+}
+
+void WidgetArea::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton)
+    {
+        if(!m_draggin)
+            clearSelection();
+        m_draggin = false;
+        delete m_prev;
+        m_prev = NULL;
+        setCursor(Qt::OpenHandCursor);
+    }
 }
 
 void WidgetArea::moveWidgets(QPoint diff)

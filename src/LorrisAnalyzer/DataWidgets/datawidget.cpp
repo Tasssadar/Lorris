@@ -250,7 +250,7 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
     }
 }
 
-void DataWidget::mouseReleaseEvent(QMouseEvent *ev)
+void DataWidget::mouseReleaseEvent(QMouseEvent *)
 {
     emit clearPlacementLines();
     m_copy_widget = NULL;
@@ -258,8 +258,6 @@ void DataWidget::mouseReleaseEvent(QMouseEvent *ev)
     m_gestures.clear();
 
     m_state &= ~(STATE_BLOCK_MOVE);
-
-    QWidget::mouseReleaseEvent(ev);
 }
 
 void DataWidget::enterEvent(QEvent *)

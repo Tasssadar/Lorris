@@ -122,6 +122,7 @@ private:
     LorrisAnalyzer* m_analyzer;
 
     QPoint m_mouse_orig;
+    bool m_draggin;
 
     bool m_skipNextMove;
     QPoint m_grid_offset;
