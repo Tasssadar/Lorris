@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <qtsingleapplication/qtsingleapplication.h>
 #include <QScopedPointer>
+#include <QMetaType>
 
 #include "revision.h"
 #include "ui/mainwindow.h"
@@ -19,6 +20,10 @@
 #include "connection/connectionmgr2.h"
 #include "WorkTab/WorkTabMgr.h"
 #include "ui/settingsdialog.h"
+
+// metatypes
+#include "ui/colorbutton.h"
+#include "LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h"
 
 #ifdef Q_OS_WIN
  #include "misc/updater.h"
@@ -96,6 +101,12 @@ static void installTranslator(QApplication& a)
     }
 }
 
+static void registerMetaTypes()
+{
+    qRegisterMetaType<ColorButton>("ColorButton");
+    qRegisterMetaType<GraphCurve>("GraphCurve");
+}
+
 int main(int argc, char *argv[])
 {
     //TODO: found an organization
@@ -127,6 +138,8 @@ int main(int argc, char *argv[])
     if(Updater::doUpdate(true))
         return 0;
 #endif
+
+    registerMetaTypes();
 
     sWorkTabMgr.initialize(openFiles);
     return a.exec();

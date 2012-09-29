@@ -32,8 +32,6 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent)
     static bool initialized = false;
     if(!initialized)
     {
-        qRegisterMetaType<GraphCurve>("GraphCurve");
-
         PythonQt::init();
         PythonQt::self()->registerClass(&QTimer::staticMetaObject);
         PythonQt::self()->registerClass(&GraphCurve::staticMetaObject);
