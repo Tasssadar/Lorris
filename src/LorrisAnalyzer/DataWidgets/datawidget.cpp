@@ -121,6 +121,12 @@ void DataWidget::setTitleVisibility(bool visible)
     m_title_label->setVisible(visible);
     m_icon_widget->setVisible(visible);
     m_sep_line->setVisible(visible);
+
+    if(visible)
+        layout->setContentsMargins(5, 0, 5, 5);
+    else
+        layout->setContentsMargins(5, 5, 5, 5);
+
     if(m_error_label)
         m_error_label->setVisible(visible);
 }

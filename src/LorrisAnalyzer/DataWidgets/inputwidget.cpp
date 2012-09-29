@@ -21,9 +21,6 @@ InputWidget::InputWidget(QWidget *parent) :
     setTitle(tr("Input"));
     setIcon(":/dataWidgetIcons/input.png");
 
-    adjustSize();
-    setMinimumSize(width(), height());
-
     m_layout = new QVBoxLayout;
     m_layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_layout->setSpacing(0);
