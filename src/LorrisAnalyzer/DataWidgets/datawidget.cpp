@@ -40,9 +40,9 @@ DataWidget::DataWidget(QWidget *parent) :
 
     m_error_label = NULL;
 
-    QFrame *sepV = new QFrame(this);
-    sepV->setFrameStyle(QFrame::HLine | QFrame::Plain);
-    sepV->setLineWidth(1);
+    m_sep_line = new QFrame(this);
+    m_sep_line->setFrameStyle(QFrame::HLine | QFrame::Plain);
+    m_sep_line->setLineWidth(1);
 
     title_bar->addWidget(m_icon_widget);
     title_bar->addWidget(m_title_label, 1);
@@ -52,7 +52,7 @@ DataWidget::DataWidget(QWidget *parent) :
     layout->setContentsMargins(5, 0, 5, 5);
 
     layout->addLayout(title_bar);
-    layout->addWidget(sepV);
+    layout->addWidget(m_sep_line);
 
     setFrameStyle(QFrame::Box | QFrame::Plain);
     setLineWidth(1);
@@ -120,6 +120,7 @@ void DataWidget::setTitleVisibility(bool visible)
     m_closeLabel->setVisible(visible);
     m_title_label->setVisible(visible);
     m_icon_widget->setVisible(visible);
+    m_sep_line->setVisible(visible);
     if(m_error_label)
         m_error_label->setVisible(visible);
 }

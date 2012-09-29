@@ -255,6 +255,7 @@ private:
     CloseLabel *m_closeLabel;
     QLabel *m_icon_widget;
     QLabel *m_title_label;
+    QFrame *m_sep_line;
     quint32 m_id;
     GestureIdentifier m_gestures;
     QRect m_orig_geometry;
