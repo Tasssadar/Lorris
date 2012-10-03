@@ -139,7 +139,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/ui/fusewidget.cpp \
     LorrisShupito/ui/minishupitoui.cpp \
     LorrisAnalyzer/undostack.cpp \
-    LorrisAnalyzer/undoactions.cpp
+    LorrisAnalyzer/undoactions.cpp \
+    LorrisAnalyzer/DataWidgets/JoystickWidget/joystickwidget.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -259,7 +260,8 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/ui/fusewidget.h \
     LorrisShupito/ui/minishupitoui.h \
     LorrisAnalyzer/undostack.h \
-    LorrisAnalyzer/undoactions.h
+    LorrisAnalyzer/undoactions.h \
+    LorrisAnalyzer/DataWidgets/JoystickWidget/joystickwidget.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -288,7 +290,9 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/formuladialog.ui \
     LorrisShupito/ui/fullshupitoui.ui \
     LorrisShupito/ui/overvccdialog.ui \
-    LorrisShupito/ui/minishupitoui.ui
+    LorrisShupito/ui/minishupitoui.ui \
+    LorrisAnalyzer/DataWidgets/JoystickWidget/joystructdialog.ui \
+    LorrisAnalyzer/DataWidgets/JoystickWidget/joystickwidget.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

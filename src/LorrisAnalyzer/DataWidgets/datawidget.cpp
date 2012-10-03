@@ -875,6 +875,7 @@ DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 {
     setFlat(true);
     setStyleSheet("text-align: left");
+    setIconSize(QSize(16, 16));
     m_pixmap = NULL;
 }
 
