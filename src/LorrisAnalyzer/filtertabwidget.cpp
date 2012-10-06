@@ -360,7 +360,6 @@ FilterDialog::FilterDialog(QWidget *parent) : QDialog(parent), ui(new Ui::Filter
     m_editor->setHighlighter(HIGHLIGHT_JSCRIPT);
     ui->condGrid->addWidget(m_editor->getWidget(), ui->condGrid->rowCount()-2, 0, 1, 2);
 
-
     setCondVisibility(COND_MAX);
 
     connect(ui->typeBox, SIGNAL(currentIndexChanged(int)), SLOT(setCondVisibility(int)));
@@ -375,6 +374,7 @@ FilterDialog::FilterDialog(QWidget *parent) : QDialog(parent), ui(new Ui::Filter
         it->setText(f->getName());
         it->setData(Qt::UserRole, QVariant::fromValue((void*)f));
     }
+    ui->filterList->setCurrentRow(0);
     ui->mainStack->setCurrentIndex(filters.size() > 1 ? 0 : 1);
 }
 
