@@ -66,9 +66,10 @@ struct DataFileHeader
     char md5[16];            // md5 hash of data which follows the header
     quint16 header_size;     // header size, for compatibility. Should be 64 for version >= 2
     quint32 compressed_block;
+    quint32 lorris_rev;
 
     // SEE: align to 64 bytes
-    char unused[31];
+    char unused[27];
 };
 
 class DataFileParser : public QBuffer

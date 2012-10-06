@@ -18,6 +18,7 @@
 #include "config.h"
 #include "../ui/tooltipwarn.h"
 #include "../connection/connection.h"
+#include "../revision.h"
 
 #define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
 
@@ -48,6 +49,8 @@ DataFileHeader::DataFileHeader(quint8 data_type)
     std::fill(md5, md5 + sizeof(md5), 0);
     header_size = 64;
     compressed_block = UINT_MAX;
+    lorris_rev = REVISION;
+
     std::fill(unused, unused + sizeof(unused), 0xFF);
 }
 
@@ -60,6 +63,8 @@ DataFileHeader::DataFileHeader(const DataFileHeader& other)
     std::copy(other.md5, other.md5 + sizeof(md5), md5);
     header_size = other.header_size;
     compressed_block = other.compressed_block;
+    lorris_rev = other.lorris_rev;
+
     std::copy(other.unused, other.unused + sizeof(unused), unused);
 }
 
@@ -470,6 +475,7 @@ void DataFileBuilder::readHeader(QFile &file, DataFileHeader *header)
     file.read(header->md5, sizeof(header->md5));
     file.read((char*)&header->header_size, sizeof(header->header_size));
     file.read((char*)&header->compressed_block, sizeof(header->compressed_block));
+    file.read((char*)&header->lorris_rev, sizeof(header->lorris_rev));
     file.read(header->unused, sizeof(header->unused));
 
     if(header->version >= 2)
@@ -487,6 +493,7 @@ void DataFileBuilder::writeHeader(QIODevice &file, DataFileHeader *header)
     file.write(header->md5, sizeof(header->md5));
     file.write((char*)&header->header_size, sizeof(header->header_size));
     file.write((char*)&header->compressed_block, sizeof(header->compressed_block));
+    file.write((char*)&header->lorris_rev, sizeof(header->lorris_rev));
     file.write(header->unused, sizeof(header->unused));
 
     file.seek(header->header_size);
