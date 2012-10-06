@@ -60,7 +60,10 @@ void FilterTabWidget::Load(DataFileParser *file, bool skip)
     removeAll();
 
     if(file->seekToNextBlock(BLOCK_DEVICE_TABS, BLOCK_DATA))
+    {
         loadLegacy(file);
+        return;
+    }
     else if(!file->seekToNextBlock(BLOCK_FILTERS, BLOCK_DATA))
         return;
 

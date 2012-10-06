@@ -475,4 +475,3 @@ QString DraggableLabel::GetText()
 {
     return valueLabel->text();
 }
-

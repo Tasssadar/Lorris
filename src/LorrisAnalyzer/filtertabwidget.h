@@ -101,7 +101,7 @@ private slots:
     void on_bytePosBox_valueChanged(int val);
 
 private:
-    FilterTabWidget *tabWidget() const { return (FilterTabWidget*)parent(); }
+    inline FilterTabWidget *tabWidget() const { return (FilterTabWidget*)parent(); }
     QString getNewFilterName();
     void fillCondData(FilterCondition *c);
     FilterCondition *getCurrCondition();

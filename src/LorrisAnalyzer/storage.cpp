@@ -133,7 +133,6 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, FilterTabWidget *fi
         buffer.write((char*)packet->static_data.data(), packet->header->static_len);
 
         //Filters
-        buffer.writeBlockIdentifier(BLOCK_FILTERS);
         filters->Save(&buffer);
 
         //Data
