@@ -322,8 +322,7 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
 
     valueLabel = new QLabel(text, this);
     valueLabel->setAlignment(Qt::AlignCenter);
-
-    setFont(Utils::getMonospaceFont());
+    valueLabel->setFont(Utils::getMonospaceFont());
     valueLabel->setAcceptDrops(true);
 
     layout->setSpacing(0);
