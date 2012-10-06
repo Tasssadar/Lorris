@@ -14,12 +14,15 @@
 #include <QLabel>
 #include <QFile>
 #include <QMenu>
+#include <QPointer>
 
 #include "../packet.h"
 #include "../../misc/datafileparser.h"
 #include "../widgetfactory.h"
 #include "../../misc/gestureidentifier.h"
 #include "../undoactions.h"
+#include "../datafilter.h"
+#include "../../misc/qobjectpointer.h"
 
 class WidgetArea;
 
@@ -55,20 +58,33 @@ enum DragActions
 
 #define RESIZE_BORDER 8 // number of pixels from every side which counts as resize drag
 
-struct data_widget_info
+struct data_widget_infoV1 // for loading old datafiles
 {
     quint32 pos;
     qint16 device;
     qint16 command;
+};
+
+struct data_widget_info
+{
+    quint32 pos;
+    QtObjectPointer<DataFilter> filter;
+
+    const data_widget_info& operator =(const data_widget_info& other)
+    {
+        pos = other.pos;
+        filter = other.filter.data();
+        return *this;
+    }
 
     bool operator==(const data_widget_info& other)
     {
-        return (other.pos == pos && other.device == device && other.command == command);
+        return (other.pos == pos && other.filter.data() == filter.data());
     }
 
     bool operator!=(const data_widget_info& other)
     {
-        return (other.pos != pos || other.device != device || other.command != command);
+        return (other.pos != pos || other.filter.data() != filter.data());
     }
 };
 
@@ -128,10 +144,9 @@ public:
     bool isMouseIn() { return (m_state & STATE_MOUSE_IN); }
     void setHighlighted(bool highlight);
 
-    void setInfo(qint16 device, qint16 command, quint32 pos)
+    void setInfo(DataFilter *f, quint32 pos)
     {
-        m_info.device = device;
-        m_info.command = command;
+        m_info.filter = f;
         m_info.pos = pos;
     }
     const data_widget_info& getInfo() { return m_info; }
@@ -209,6 +224,10 @@ protected:
         Q_ASSERT(parent()->inherits("WidgetArea"));
         return (WidgetArea*)parent();
     }
+
+    void saveDataInfo(DataFileParser *file, data_widget_info& info);
+    void loadDataInfo(DataFileParser *file, data_widget_info& info);
+    void loadOldDataInfo(DataFileParser *file, data_widget_info& info);
 
     bool isAssigned() const { return (m_state & STATE_ASSIGNED); }
     bool isUpdating() const { return (m_state & STATE_UPDATING); }

@@ -27,6 +27,7 @@ class DeviceTabWidget;
 class WidgetArea;
 class QSpinBox;
 class QScrollArea;
+class DataFilter;
 
 enum hideable_areas
 {
@@ -57,6 +58,8 @@ class LorrisAnalyzer : public PortConnWorkTab
         bool isAreaVisible(quint8 area);
         void setAreaVisibility(quint8 area, bool visible);
         analyzer_data *getLastData(quint32& idx);
+        QByteArray *getDataAt(quint32 idx);
+        analyzer_packet *getPacket() const { return m_packet; }
 
         quint32 getCurrentIndex();
 
@@ -66,11 +69,14 @@ class LorrisAnalyzer : public PortConnWorkTab
         void saveData(DataFileParser *file);
         void loadData(DataFileParser *file);
 
+        DataFilter *getFilter(quint32 id);
+        DataFilter *getFilterByOldInfo(const data_widget_infoV1& old_info) const;
+
     public slots:
         void onTabShow(const QString& filename);
         bool onTabClose();
         void updateData();
-        void widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent);
+        void widgetMouseStatus(bool in, const data_widget_info &, qint32 parent);
         void setDataChanged(bool changed = true) { m_data_changed = changed; }
 
         void addChildTab(ChildTab *tab, const QString& name);
@@ -105,8 +111,6 @@ class LorrisAnalyzer : public PortConnWorkTab
         void setPacket(analyzer_packet *packet);
         bool askToSave();
 
-        bool highlightInfoNotNull;
-        data_widget_info highlightInfo;
         Ui::LorrisAnalyzer *ui;
         Storage m_storage;
         analyzer_packet *m_packet;

@@ -20,6 +20,7 @@
 #include "../../WorkTab/WorkTab.h"
 #include "../widgetarea.h"
 #include "../../misc/datafileparser.h"
+#include "../datafilter.h"
 
 DataWidget::DataWidget(QWidget *parent) :
     QFrame(parent), m_gestures(this)
@@ -302,7 +303,12 @@ void DataWidget::dropEvent(QDropEvent *event)
     QByteArray data = event->mimeData()->data("analyzer/dragLabel");
     QDataStream str(data);
 
-    str >> m_info.pos >> m_info.device >> m_info.command;
+    str >> m_info.pos;
+    DataFilter *f = NULL;
+    str.readRawData((char*)&f, sizeof(f));
+
+    f->connectWidget(this);
+    m_info.filter = f;
 
     m_state |= STATE_ASSIGNED;
 
@@ -483,15 +489,6 @@ void DataWidget::newData(analyzer_data *data, quint32 /*index*/)
     if(!isUpdating() || !isAssigned() || m_info.pos >= (quint32)data->getData().length())
         return;
 
-    quint8 id;
-    quint8 cmd;
-
-    if(m_info.command != -1 && (!data->getCmd(cmd) || cmd != m_info.command))
-        return;
-
-    if(m_info.device != -1 && (!data->getDeviceId(id) || id != m_info.device))
-        return;
-
     processData(data);
 }
 
@@ -523,6 +520,44 @@ void DataWidget::setTitleTriggered()
     setTitle(title);
 }
 
+void DataWidget::saveDataInfo(DataFileParser *file, data_widget_info &info)
+{
+    file->writeVal(info.pos);
+    file->writeVal(!info.filter.isNull());
+    if(!info.filter.isNull())
+        file->writeVal(info.filter->getId());
+}
+
+void DataWidget::loadDataInfo(DataFileParser *file, data_widget_info &info)
+{
+    info.pos = file->readVal<quint32>();
+
+    if(file->readVal<bool>()) // has filter
+    {
+        DataFilter *f = widgetArea()->getFilter(file->readVal<quint32>());
+        if(f)
+        {
+            info.filter = f;
+            f->connectWidget(this);
+        }
+    }
+    else
+        info.filter = NULL;
+}
+
+void DataWidget::loadOldDataInfo(DataFileParser *file, data_widget_info& info)
+{
+    data_widget_infoV1 old_info;
+    file->read((char*)&old_info.pos, sizeof(old_info));
+
+    DataFilter *f = widgetArea()->getFilterByOldInfo(old_info);
+    if(f)
+        f->connectWidget(this);
+
+    info.pos = old_info.pos;
+    info.filter = f;
+}
+
 void DataWidget::saveWidgetInfo(DataFileParser *file)
 {
     char *p = NULL;
@@ -538,9 +573,8 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
     file->write((char*)&val, sizeof(val));
 
     // data info
-    file->writeBlockIdentifier("widgetDataInfo");
-    p = (char*)&m_info.pos;
-    file->write(p, sizeof(m_info));
+    file->writeBlockIdentifier("widgetDataInfoV2");
+    saveDataInfo(file, m_info);
 
     // locked
     file->writeBlockIdentifier("widgetLocked");
@@ -562,12 +596,14 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
 void DataWidget::loadWidgetInfo(DataFileParser *file)
 {
     // data info
-    char *p = NULL;
-    if(file->seekToNextBlock("widgetDataInfo", BLOCK_WIDGET))
+    if(file->seekToNextBlock("widgetDataInfoV2", BLOCK_WIDGET))
     {
-        p = (char*)&m_info.pos;
-        file->read(p, sizeof(m_info));
-
+        loadDataInfo(file, m_info);
+        m_state |= STATE_ASSIGNED;
+    }
+    else if(file->seekToNextBlock("widgetDataInfo", BLOCK_WIDGET))
+    {
+        loadOldDataInfo(file, m_info);
         m_state |= STATE_ASSIGNED;
     }
 

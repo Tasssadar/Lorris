@@ -12,6 +12,7 @@
 #include "scripteditor.h"
 #include "engines/qtscriptengine.h"
 #include "../../../ui/terminal.h"
+#include "../../widgetarea.h"
 
 REGISTER_DATAWIDGET(WIDGET_SCRIPT, Script, NULL)
 
@@ -72,6 +73,11 @@ void ScriptWidget::setUp(Storage *storage)
 
     m_engine_type = sConfig.get(CFG_QUINT32_ANALYZER_SCRIPT_ENG);
     createEngine();
+
+    // connect to "all data" filter
+    DataFilter *f = widgetArea()->getFilter(0);
+    if(f)
+        f->connectWidget(this);
 }
 
 void ScriptWidget::createEngine()

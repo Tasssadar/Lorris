@@ -6,6 +6,6 @@
         <file alias="warning">icons/dialog-warning.png</file>
         <file alias="stop">icons/stop.png</file>
         <file alias="start">icons/start.png</file>
-        <file>icons/settings.png</file>
+        <file alias="system_dark">icons/settings.png</file>
     </qresource>
 </RCC>

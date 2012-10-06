@@ -119,7 +119,6 @@ void GraphData::dataPosChanged(quint32 pos)
 
     analyzer_data cur;
     cur.setPacket(m_storage->getPacket());
-    quint8 cmd, dev;
 
     resetMinMax();
 
@@ -129,10 +128,7 @@ void GraphData::dataPosChanged(quint32 pos)
     {
         cur.setData(m_storage->get(i));
 
-        if(m_info.command != -1 && (!cur.getCmd(cmd) || cmd != m_info.command))
-            continue;
-
-        if(m_info.device != -1 && (!cur.getDeviceId(dev) || dev != m_info.device))
+        if(m_info.filter.isNull() || !m_info.filter->isOkay(&cur))
             continue;
 
         v = DataWidget::getNumFromPacket(&cur, m_info.pos, m_data_type);

@@ -82,6 +82,9 @@ public:
 
     const std::set<DataWidget*>& getSelected() const { return m_selected; }
 
+    DataFilter *getFilter(quint32 id) const;
+    DataFilter *getFilterByOldInfo(const data_widget_infoV1& old_info) const;
+
 public slots:
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);

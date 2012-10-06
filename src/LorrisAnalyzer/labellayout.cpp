@@ -14,10 +14,9 @@
 #include "sourcedialog.h"
 #include "../common.h"
 #include "packet.h"
-#include "devicetabwidget.h"
-#include "cmdtabwidget.h"
+#include "filtertabwidget.h"
 
-LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, CmdTabWidget *cmd, DeviceTabWidget *dev, QWidget *parent) : QHBoxLayout(parent)
+LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, FilterTabWidget *filters, QWidget *parent) : QHBoxLayout(parent)
 {
     setSizeConstraint(QLayout::SetMinAndMaxSize);
 
@@ -39,8 +38,8 @@ LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enab
 
     quint16 len = m_header->hasLen() ? m_header->length : m_header->packet_length;
     lenChanged(len);
-    cmd_w = cmd;
-    dev_w = dev;
+
+    m_filterWidget = filters;
 
     QTimer *freeTimer = new QTimer(this);
     freeTimer->start(1000);
@@ -240,8 +239,8 @@ void LabelLayout::setHeader(analyzer_header *header)
 }
 
 ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
-                                   CmdTabWidget *cmd, DeviceTabWidget *dev, QWidget *parent) :
-                                   LabelLayout(header, enable_reorder, enable_drag, cmd, dev, parent)
+                                   FilterTabWidget *filters, QWidget *parent) :
+                                   LabelLayout(header, enable_reorder, enable_drag, filters, parent)
 {
     m_format = FORMAT_HEX;
 }
@@ -391,9 +390,8 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 
         if(m_drag && !m_drop && labelLayout)
         {
-            str << labelLayout->getDeviceTab()->getCurrentDevice();
-            str << labelLayout->getCmdTab()->getCurrentCmd();
-
+            DataFilter *f = labelLayout->getFilterTabs()->getCurrFilter();
+            str.writeRawData((const char*)&f, sizeof(DataFilter*));
             mimeData->setData("analyzer/dragLabel", data);
         }
         else

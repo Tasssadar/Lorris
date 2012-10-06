@@ -42,8 +42,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/sourcedialog.cpp \
     LorrisAnalyzer/labellayout.cpp \
     LorrisAnalyzer/packet.cpp \
-    LorrisAnalyzer/devicetabwidget.cpp \
-    LorrisAnalyzer/cmdtabwidget.cpp \
     LorrisAnalyzer/DataWidgets/datawidget.cpp \
     LorrisAnalyzer/DataWidgets/numberwidget.cpp \
     LorrisAnalyzer/DataWidgets/barwidget.cpp \
@@ -139,7 +137,10 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/ui/fusewidget.cpp \
     LorrisShupito/ui/minishupitoui.cpp \
     LorrisAnalyzer/undostack.cpp \
-    LorrisAnalyzer/undoactions.cpp
+    LorrisAnalyzer/undoactions.cpp \
+    LorrisAnalyzer/filtertabwidget.cpp \
+    LorrisAnalyzer/datafilter.cpp \
+    misc/qobjectpointer.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -158,8 +159,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/sourcedialog.h \
     LorrisAnalyzer/labellayout.h \
     LorrisAnalyzer/packet.h \
-    LorrisAnalyzer/devicetabwidget.h \
-    LorrisAnalyzer/cmdtabwidget.h \
     LorrisAnalyzer/DataWidgets/datawidget.h \
     LorrisAnalyzer/DataWidgets/numberwidget.h \
     LorrisAnalyzer/DataWidgets/barwidget.h \
@@ -259,7 +258,10 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/ui/fusewidget.h \
     LorrisShupito/ui/minishupitoui.h \
     LorrisAnalyzer/undostack.h \
-    LorrisAnalyzer/undoactions.h
+    LorrisAnalyzer/undoactions.h \
+    LorrisAnalyzer/filtertabwidget.h \
+    LorrisAnalyzer/datafilter.h \
+    misc/qobjectpointer.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -288,7 +290,8 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/formuladialog.ui \
     LorrisShupito/ui/fullshupitoui.ui \
     LorrisShupito/ui/overvccdialog.ui \
-    LorrisShupito/ui/minishupitoui.ui
+    LorrisShupito/ui/minishupitoui.ui \
+    LorrisAnalyzer/filterdialog.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

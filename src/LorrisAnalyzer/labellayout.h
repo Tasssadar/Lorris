@@ -12,8 +12,7 @@
 #include <QWidget>
 #include <vector>
 
-class CmdTabWidget;
-class DeviceTabWidget;
+class FilterTabWidget;
 
 struct analyzer_header;
 class analyzer_data;
@@ -38,7 +37,7 @@ Q_SIGNALS:
 
 public:
     explicit LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
-                         CmdTabWidget *cmd = NULL, DeviceTabWidget *dev = NULL, QWidget *parent = 0);
+                         FilterTabWidget *filters = NULL, QWidget *parent = 0);
     ~LabelLayout();
 
     void ClearLabels();
@@ -71,8 +70,7 @@ public:
 
     bool setHightlightLabel(quint32 pos, bool highlight);
 
-    CmdTabWidget *getCmdTab() { return cmd_w; }
-    DeviceTabWidget *getDeviceTab() { return dev_w; }
+    FilterTabWidget *getFilterTabs() { return m_filterWidget; }
 
     void setHeader(analyzer_header *header);
 
@@ -107,8 +105,7 @@ private:
     bool m_enableReorder;
     bool m_enableDrag;
 
-    CmdTabWidget *cmd_w;
-    DeviceTabWidget *dev_w;
+    FilterTabWidget *m_filterWidget;
 };
 
 class ScrollDataLayout : public LabelLayout
@@ -116,7 +113,7 @@ class ScrollDataLayout : public LabelLayout
     Q_OBJECT
 public:
     explicit ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
-                              CmdTabWidget *cmd = NULL, DeviceTabWidget *dev = NULL, QWidget *parent = 0);
+                              FilterTabWidget *filters = NULL, QWidget *parent = 0);
     ~ScrollDataLayout();
 
     void SetData(analyzer_data *data);

@@ -68,7 +68,7 @@ private:
 
     Graph *m_graph;
     GraphCurveAddDialog *m_add_dialog;
-    QString m_drop_data;
+    std::pair<quint32, DataFilter*> m_dropData;
     Storage *m_storage;
 
     QAction *m_sample_act[SAMPLE_ACT_COUNT];

@@ -94,7 +94,7 @@
     </layout>
    </item>
    <item>
-    <widget class="DeviceTabWidget" name="devTabs">
+    <widget class="FilterTabWidget" name="filterTabs">
      <property name="movable">
       <bool>false</bool>
      </property>
@@ -344,15 +344,15 @@
    <header location="global">src/ui/rotatebutton.h</header>
   </customwidget>
   <customwidget>
-   <class>DeviceTabWidget</class>
-   <extends>QTabWidget</extends>
-   <header location="global">src/LorrisAnalyzer/devicetabwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>WidgetArea</class>
    <extends>QFrame</extends>
    <header>../src/LorrisAnalyzer/widgetarea.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FilterTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>src/LorrisAnalyzer/filtertabwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

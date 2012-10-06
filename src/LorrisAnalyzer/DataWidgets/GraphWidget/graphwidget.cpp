@@ -22,6 +22,7 @@
 #include "graphcurve.h"
 #include "../../storage.h"
 #include "graphexport.h"
+#include "../../datafilter.h"
 
 REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph, NULL)
 
@@ -199,9 +200,8 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         file->write(title.data());
 
         // data info
-        file->writeBlockIdentifier("graphWCurveDataInfo");
-        char *p = (char*)&info->info;
-        file->write(p, sizeof(data_widget_info));
+        file->writeBlockIdentifier("graphWCurveDataInfoV2");
+        saveDataInfo(file, info->info);
 
         // data type
         file->writeBlockIdentifier("graphWCurveDataType");
@@ -288,25 +288,22 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         }
 
         // data info
-        if(!file->seekToNextBlock("graphWCurveDataInfo", "graphWCurve"))
+        if(file->seekToNextBlock("graphWCurveDataInfoV2", "graphWCurve"))
+            loadDataInfo(file, info);
+        else if(file->seekToNextBlock("graphWCurveDataInfo", "graphWCurve"))
+            loadOldDataInfo(file, info);
+        else
             continue;
-        {
-            file->read((char*)&info.pos, sizeof(info));
-        }
 
         // data type
         if(!file->seekToNextBlock("graphWCurveDataType", "graphWCurve"))
             continue;
-        {
-            file->read((char*)&dataType, sizeof(quint8));
-        }
+        file->read((char*)&dataType, sizeof(quint8));
 
         // color
         if(!file->seekToNextBlock("graphWCurveColor", "graphWCurve"))
             continue;
-        {
-            color = file->readString();
-        }
+        color = file->readString();
 
         GraphDataSimple *dta = new GraphData(m_storage, info, m_sample_size, dataType);
         GraphCurve *curve = new GraphCurve(name, dta);
@@ -329,7 +326,16 @@ void GraphWidget::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
 
-    m_drop_data = event->mimeData()->text();
+    quint32 pos;
+    DataFilter *f;
+
+    QByteArray data = event->mimeData()->data("analyzer/dragLabel");
+    QDataStream str(data);
+
+    str >> pos;
+    str.readRawData((char*)&f, sizeof(f));
+
+    m_dropData = std::make_pair<quint32, DataFilter*>(pos, f);
 
     if(m_add_dialog)
         delete m_add_dialog;
@@ -341,13 +347,7 @@ void GraphWidget::dropEvent(QDropEvent *event)
 void GraphWidget::addCurve()
 {
     if(!m_add_dialog->forceEdit())
-    {
-        QStringList data = m_drop_data.split(" ");
-        qint32 pos = data[0].toInt();
-        qint16 device = data[1].toInt();
-        qint16 cmd = data[2].toInt();
-        setInfo(device, cmd, pos);
-    }
+        setInfo(m_dropData.second, m_dropData.first);
 
     if(!m_add_dialog->edit())
     {
@@ -363,6 +363,8 @@ void GraphWidget::addCurve()
         m_deleteAct[m_add_dialog->getName()] = deleteCurve;
 
         m_editCurve->setEnabled(true);
+
+        m_info.filter->connectWidget(this, false);
     }
     else
     {
@@ -387,7 +389,11 @@ void GraphWidget::addCurve()
         info->curve->setTitle(m_add_dialog->getName());
         info->curve->setPen(QPen(m_add_dialog->getColor()));
         if(!m_add_dialog->forceEdit())
+        {
             info->curve->setDataInfo(m_info);
+            info->info = m_info;
+            m_info.filter->connectWidget(this, false);
+        }
         info->curve->setDataType(m_add_dialog->getDataType());
     }
 

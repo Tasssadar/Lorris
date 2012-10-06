@@ -136,11 +136,9 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
 
     m_widgets.insert(id, w);
 
-    connect(m_analyzer, SIGNAL(newData(analyzer_data*,quint32)), w, SLOT(newData(analyzer_data*,quint32)));
     connect(w,          SIGNAL(removeWidget(quint32)),              SLOT(removeWidget(quint32)));
     connect(w,          SIGNAL(updateMarker(DataWidget*)),          SLOT(updateMarker(DataWidget*)));
     connect(w,          SIGNAL(clearPlacementLines()),              SLOT(clearPlacementLines()));
-    connect(w,          SIGNAL(updateForMe()),          m_analyzer, SLOT(updateForWidget()));
     connect(w,          SIGNAL(updateData()),                       SIGNAL(updateData()));
     connect(w,   SIGNAL(mouseStatus(bool,data_widget_info,qint32)), SIGNAL(mouseStatus(bool,data_widget_info,qint32)));
     connect(w,          SIGNAL(SendData(QByteArray)),   m_analyzer, SIGNAL(SendData(QByteArray)));
@@ -449,11 +447,7 @@ void WidgetArea::updateMarker(DataWidget *w)
         if(do_update)
         {
             w->setUpdating(true);
-
-            quint32 idx = 0;
-            analyzer_data *data = m_analyzer->getLastData(idx);
-            if(data)
-                w->newData(data, idx);
+            w->updateForThis();
         }
     }
 
@@ -662,6 +656,16 @@ void WidgetArea::clearSelection()
 void WidgetArea::setShowPreview(bool show)
 {
     sConfig.set(CFG_BOOL_ANALYZER_SHOW_PREVIEW, show);
+}
+
+DataFilter *WidgetArea::getFilter(quint32 id) const
+{
+    return m_analyzer->getFilter(id);
+}
+
+DataFilter *WidgetArea::getFilterByOldInfo(const data_widget_infoV1 &old_info) const
+{
+    return m_analyzer->getFilterByOldInfo(old_info);
 }
 
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)
