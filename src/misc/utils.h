@@ -20,6 +20,14 @@ class QLayout;
         delete vec[i]; \
     vec.clear();
 
+#ifdef Q_CC_MSVC
+    #define PACK_STRUCT(structure) __pragma( pack(push, 1) ) structure __pragma( pack(pop) )
+#elif defined(Q_CC_GNU)
+    #define PACK_STRUCT(structure) structure __attribute__((packed))
+#else
+    #error PACK_STRUCT is not defined for this compiler
+#endif
+
 class Utils : public QThread
 {
     Q_OBJECT

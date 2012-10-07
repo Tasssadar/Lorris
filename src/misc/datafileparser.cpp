@@ -42,30 +42,21 @@ static const char *blockNames[] = {
 
 DataFileHeader::DataFileHeader(quint8 data_type)
 {
+    memset(&str[0], 0, sizeof(DataFileHeader));
+
     str[0] = 'L'; str[1] = 'D'; str[2] = 'T'; str[3] = 'A';
     version = 2;
-    flags = 0;
     this->data_type = data_type;
-    std::fill(md5, md5 + sizeof(md5), 0);
     header_size = 64;
     compressed_block = UINT_MAX;
     lorris_rev = REVISION;
 
-    std::fill(unused, unused + sizeof(unused), 0xFF);
+    memset(&unused[0], 0xFF, sizeof(unused));
 }
 
 DataFileHeader::DataFileHeader(const DataFileHeader& other)
 {
-    std::copy(other.str, other.str+sizeof(str), str);
-    version = other.version;
-    flags = other.flags;
-    data_type = other.data_type;
-    std::copy(other.md5, other.md5 + sizeof(md5), md5);
-    header_size = other.header_size;
-    compressed_block = other.compressed_block;
-    lorris_rev = other.lorris_rev;
-
-    std::copy(other.unused, other.unused + sizeof(unused), unused);
+    memcpy(&str[0], &other.str[0], sizeof(DataFileHeader));
 }
 
 DataFileParser::DataFileParser(QByteArray *data, QIODevice::OpenMode openMode, QString path, QString name, QObject *parent) :
@@ -468,15 +459,7 @@ void DataFileBuilder::readHeader(QFile &file, DataFileHeader *header)
 {
     file.seek(0);
 
-    file.read(header->str, 4);
-    file.read((char*)&header->version, sizeof(header->version));
-    file.read((char*)&header->flags, sizeof(header->flags));
-    file.read((char*)&header->data_type, sizeof(header->data_type));
-    file.read(header->md5, sizeof(header->md5));
-    file.read((char*)&header->header_size, sizeof(header->header_size));
-    file.read((char*)&header->compressed_block, sizeof(header->compressed_block));
-    file.read((char*)&header->lorris_rev, sizeof(header->lorris_rev));
-    file.read(header->unused, sizeof(header->unused));
+    file.read((char*)&header->str[0], sizeof(DataFileHeader));
 
     if(header->version >= 2)
         file.seek(header->header_size);
@@ -484,18 +467,10 @@ void DataFileBuilder::readHeader(QFile &file, DataFileHeader *header)
 
 void DataFileBuilder::writeHeader(QIODevice &file, DataFileHeader *header)
 {
+    Q_ASSERT(sizeof(DataFileHeader) == header->header_size);
+
     file.seek(0);
-
-    file.write(header->str, 4);
-    file.write((char*)&header->version, sizeof(header->version));
-    file.write((char*)&header->flags, sizeof(header->flags));
-    file.write((char*)&header->data_type, sizeof(header->data_type));
-    file.write(header->md5, sizeof(header->md5));
-    file.write((char*)&header->header_size, sizeof(header->header_size));
-    file.write((char*)&header->compressed_block, sizeof(header->compressed_block));
-    file.write((char*)&header->lorris_rev, sizeof(header->lorris_rev));
-    file.write(header->unused, sizeof(header->unused));
-
+    file.write((char*)header->str, sizeof(DataFileHeader));
     file.seek(header->header_size);
 }
 

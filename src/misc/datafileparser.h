@@ -15,6 +15,8 @@
 #include <QFutureWatcher>
 #include <QTimer>
 
+#include "utils.h"
+
 class QEventLoop;
 class PortConnection;
 
@@ -54,7 +56,7 @@ enum DataFileTypes
     DATAFILE_MAX
 };
 
-struct DataFileHeader
+PACK_STRUCT(struct DataFileHeader
 {
     DataFileHeader(quint8 data_type = DATAFILE_NONE);
     DataFileHeader(const DataFileHeader& other);
@@ -70,7 +72,7 @@ struct DataFileHeader
 
     // SEE: align to 64 bytes
     char unused[27];
-};
+});
 
 class DataFileParser : public QBuffer
 {
