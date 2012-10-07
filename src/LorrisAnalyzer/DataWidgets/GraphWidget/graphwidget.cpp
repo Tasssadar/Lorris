@@ -123,12 +123,12 @@ void GraphWidget::updateRemoveMapping()
 {
     delete m_deleteMap;
     m_deleteMap = new QSignalMapper(this);
-    connect(m_deleteMap, SIGNAL(mapped(QString)), SLOT(removeCurve(QString)));
+    connect(m_deleteMap, SIGNAL(mapped(QString)), SLOT(removeCurve(QString)), Qt::QueuedConnection);
 
-    for(std::map<QString, QAction*>::iterator itr = m_deleteAct.begin(); itr != m_deleteAct.end(); ++itr)
+    for(QHash<QString, QAction*>::iterator itr = m_deleteAct.begin(); itr != m_deleteAct.end(); ++itr)
     {
-        m_deleteMap->setMapping(itr->second, itr->first);
-        connect(itr->second, SIGNAL(triggered()), m_deleteMap, SLOT(map()));
+        m_deleteMap->setMapping(*itr, itr.key());
+        connect(*itr, SIGNAL(triggered()), m_deleteMap, SLOT(map()));
     }
 }
 
@@ -379,11 +379,12 @@ void GraphWidget::addCurve()
 
         QString curName = info->curve->title().text();
 
-        m_deleteCurve->removeAction(m_deleteAct[curName]);
-        delete m_deleteAct[curName];
-        m_deleteAct.erase(curName);
+        QAction *deleteCurve = m_deleteAct[curName];
+        m_deleteCurve->removeAction(deleteCurve);
+        m_deleteAct.remove(curName);
+        delete deleteCurve;
 
-        QAction *deleteCurve = m_deleteCurve->addAction(m_add_dialog->getName());
+        deleteCurve = m_deleteCurve->addAction(m_add_dialog->getName());
         m_deleteAct[m_add_dialog->getName()] = deleteCurve;
 
         info->curve->setTitle(m_add_dialog->getName());
@@ -511,7 +512,7 @@ void GraphWidget::removeCurve(QString name)
 
     m_deleteCurve->removeAction(m_deleteAct[name]);
     delete m_deleteAct[name];
-    m_deleteAct.erase(name);
+    m_deleteAct.remove(name);
 
     m_doReplot = true;
 
@@ -534,7 +535,7 @@ void GraphWidget::removeAllCurves()
 
         m_deleteCurve->removeAction(m_deleteAct[name]);
         delete m_deleteAct[name];
-        m_deleteAct.erase(name);
+        m_deleteAct.remove(name);
     }
 
     m_editCurve->setEnabled(false);

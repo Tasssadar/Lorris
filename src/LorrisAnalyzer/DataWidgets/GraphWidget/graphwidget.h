@@ -8,6 +8,7 @@
 #ifndef GRAPHWIDGET_H
 #define GRAPHWIDGET_H
 
+#include <QHash>
 #include "../datawidget.h"
 
 class QSignalMapper;
@@ -77,7 +78,7 @@ private:
     QAction *m_autoScroll;
 
     QMenu *m_deleteCurve;
-    std::map<QString, QAction*> m_deleteAct;
+    QHash<QString, QAction*> m_deleteAct;
     QSignalMapper *m_deleteMap;
 
     int m_sample_size_idx;
