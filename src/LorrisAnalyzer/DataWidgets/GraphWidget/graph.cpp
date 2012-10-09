@@ -148,7 +148,7 @@ void Graph::wheelEvent(QWheelEvent *event)
 {
     int axis = getAxisOnPos(event->pos());
     if(axis == -1)
-        return QwtPlot::wheelEvent(event);
+        return;
 
     double max = axisScaleDiv(axis)->upperBound();
     double min = axisScaleDiv(axis)->lowerBound();

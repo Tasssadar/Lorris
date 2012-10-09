@@ -668,6 +668,26 @@ DataFilter *WidgetArea::getFilterByOldInfo(const data_widget_infoV1 &old_info) c
     return m_analyzer->getFilterByOldInfo(old_info);
 }
 
+void WidgetArea::wheelEvent(QWheelEvent *ev)
+{
+    // Move area only if the mouse is not in some of the widgets
+    QPoint pos = mapFromGlobal(QCursor::pos());
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
+        if((*itr)->geometry().contains(pos))
+            return;
+
+    int move = qApp->wheelScrollLines()*10*(float(ev->delta())/120);
+    switch(ev->orientation())
+    {
+        case Qt::Vertical:
+            moveWidgets(QPoint(0, move));
+            break;
+        case Qt::Horizontal:
+            moveWidgets(QPoint(move, 0));
+            break;
+    }
+}
+
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)
 {
     m_widgetArea = area;

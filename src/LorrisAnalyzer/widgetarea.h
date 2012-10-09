@@ -98,6 +98,7 @@ protected:
     void paintEvent(QPaintEvent *event);
     void moveEvent(QMoveEvent *event);
     void resizeEvent(QResizeEvent *);
+    void wheelEvent(QWheelEvent *ev);
 
 private slots:
     void enableGrid(bool enable);
