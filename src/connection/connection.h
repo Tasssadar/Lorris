@@ -32,8 +32,9 @@ enum ConnectionType
     CONNECTION_USB_SHUPITO = 4,
     CONNECTION_USB_ACM     = 5,
     CONNECTION_PROXY_TUNNEL= 6,
+    CONNECTION_FLIP        = 7,
 
-    MAX_CON_TYPE           = 7
+    MAX_CON_TYPE           = 8
 };
 
 enum PrimaryConnectionType {
@@ -81,7 +82,7 @@ public:
     void addTabRef();
     void releaseTab();
 
-    // Emits the `destroying` singal to break all references,
+    // Emits the `destroying` signal to break all references,
     // then deletes the object.
     void releaseAll();
 

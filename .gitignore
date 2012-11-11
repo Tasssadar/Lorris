@@ -51,6 +51,7 @@ Win32/*
 *.suo
 *.aps
 *.sdf
+*.opensdf
 object_script.Lorris.*
 # MacOS
 .DS_Store

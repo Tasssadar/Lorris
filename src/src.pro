@@ -36,6 +36,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisTerminal/lorristerminalinfo.cpp \
     connection/connection.cpp \
     connection/serialport.cpp \
+    connection/flipconnection.cpp \
     LorrisTerminal/eeprom.cpp \
     LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     LorrisAnalyzer/lorrisanalyzer.cpp \
@@ -152,6 +153,7 @@ HEADERS += ui/mainwindow.h \
     LorrisTerminal/lorristerminalinfo.h \
     connection/connection.h \
     connection/serialport.h \
+    connection/flipconnection.h \
     LorrisTerminal/eeprom.h \
     LorrisAnalyzer/lorrisanalyzer.h \
     LorrisAnalyzer/lorrisanalyzerinfo.h \
@@ -333,7 +335,7 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 
 win32 {
     CONFIG -= flat
-    CONFIG += libusby libenjoy
+    CONFIG += libusby libenjoy libyb
 
     INCLUDEPATH += ../dep/SDL/include
 
@@ -415,6 +417,11 @@ libusby {
         connection/usbshupitoconn.cpp
     HEADERS += \
         connection/usbshupitoconn.h
+}
+
+libyb {
+    include(../dep/libyb/libyb.pri)
+    DEFINES += HAVE_LIBYB
 }
 
 kate_editor:unix {
