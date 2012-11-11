@@ -50,6 +50,7 @@ Win32/*
 *.sln
 *.suo
 *.aps
+*.sdf
 object_script.Lorris.*
 # MacOS
 .DS_Store
@@ -60,3 +61,9 @@ object_script.Lorris.*
 moc_*.cpp
 ui_*.h
 qrc_*.cpp
+
+dep/qwt/src/debug/
+dep/qwt/src/release/
+dep/qwt/lib/
+src/ipch/
+src/pch.h.cpp
