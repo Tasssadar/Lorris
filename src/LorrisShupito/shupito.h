@@ -13,9 +13,11 @@
 #include <QMutex>
 #include <QTimer>
 
+#include "../shared/programmer.h"
 #include "../shared/chipdefs.h"
 #include "shupitodesc.h"
 #include "../connection/connection.h"
+#include "../connection/flipconnection.h"
 
 enum Opcodes
 {
@@ -51,16 +53,6 @@ enum VerifyMode
 
 class ShupitoConnection;
 class ShupitoTunnel;
-
-// device.hpp, 122
-struct vdd_point
-{
-    QString name;
-    std::vector<QString> drives;
-    quint16 current_drive;
-};
-
-typedef std::vector<vdd_point> vdd_setup;
 
 class Shupito : public QObject
 {

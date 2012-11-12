@@ -174,27 +174,34 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
 
 ConnectionPointer<PortConnection> ChooseConnectionDlg::choosePort(ConnectionPointer<Connection> const & preselectedConn)
 {
-    m_allowedConns = pct_port;
-    this->selectConn(preselectedConn.data());
-    if (this->exec() != QDialog::Accepted)
-        return ConnectionPointer<PortConnection>();
-    return m_current.dynamicCast<PortConnection>();
+    return this->choose(pct_port, preselectedConn).dynamicCast<PortConnection>();
 }
 
 ConnectionPointer<ShupitoConnection> ChooseConnectionDlg::chooseShupito(ConnectionPointer<Connection> const & preselectedConn)
 {
-    m_allowedConns = pct_port | pct_shupito;
+    return this->choose(pct_shupito, preselectedConn).dynamicCast<ShupitoConnection>();
+}
+
+ConnectionPointer<Connection> ChooseConnectionDlg::choose(PrimaryConnectionTypes allowedConns, ConnectionPointer<Connection> const & preselectedConn)
+{
+    m_allowedConns = allowedConns;
+    if (allowedConns & pct_shupito)
+        m_allowedConns |= pct_port;
+
     this->selectConn(preselectedConn.data());
     if (this->exec() != QDialog::Accepted)
-        return ConnectionPointer<ShupitoConnection>();
+        return ConnectionPointer<Connection>();
 
     if (PortConnection * pc = dynamic_cast<PortConnection *>(m_current.data()))
     {
-        ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
-        m_current = sc;
+        if ((allowedConns & pct_port) == 0)
+        {
+            ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
+            m_current = sc;
+        }
     }
 
-    return m_current.dynamicCast<ShupitoConnection>();
+    return m_current;
 }
 
 void ChooseConnectionDlg::selectConn(Connection * conn)
@@ -346,7 +353,8 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
     Q_ASSERT(conn);
 
     bool enabled = ((m_allowedConns & pct_port) && dynamic_cast<PortConnection *>(conn))
-            || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn));
+            || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn))
+            || ((m_allowedConns & pct_flip) && dynamic_cast<FlipConnection *>(conn));
     ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(enabled);
 
     ui->connectionNameEdit->setEnabled(true);

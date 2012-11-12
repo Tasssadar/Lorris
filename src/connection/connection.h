@@ -39,7 +39,10 @@ enum ConnectionType
 
 enum PrimaryConnectionType {
     pct_port = (1<<0),
-    pct_shupito = (1<<1)
+    pct_shupito = (1<<1),
+    pct_flip = (1<<2),
+
+    pct_programmable = pct_shupito | pct_flip
 };
 
 Q_DECLARE_FLAGS(PrimaryConnectionTypes, PrimaryConnectionType)
@@ -60,7 +63,7 @@ public:
     bool persistent() const { return m_persistent; }
     void setPersistent(bool value);
 
-    quint8 getType() { return m_type; }
+    quint8 getType() const { return m_type; }
 
     void setIDString(const QString& str) { if (m_idString != str) { m_idString = str; emit changed(); } }
     QString const & GetIDString() const { return m_idString; }

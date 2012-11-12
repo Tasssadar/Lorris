@@ -69,13 +69,12 @@ public:
 
     void stopAll(bool wait);
     void createConnBtn(QToolButton *btn);
-    ShupitoMode *mode() const { return m_modes[m_cur_mode]; }
 
 public slots:
     void setConnection(ConnectionPointer<Connection> const & con);
 
 protected:
-    ConnectionPointer<ShupitoConnection> m_con;
+    ConnectionPointer<Connection> m_con;
 
     QString GetIdString();
 
@@ -88,8 +87,6 @@ private slots:
     void setMiniUi(bool mini);
 
     void connectedStatus(bool connected);
-    void readPacket(const ShupitoPacket & data);
-    void descRead(bool correct);
 
     void vccValueChanged(quint8 id, double value);
     void vddSetup(const vdd_setup& vs);
@@ -135,6 +132,7 @@ private:
     chip_definition switchToFlashAndGetId();
     void update_chip_description(chip_definition &cd);
     void initMenus();
+    void updateModeBar();
 
     void checkOvervoltage();
     void shutdownVcc();
@@ -150,26 +148,24 @@ private:
     QAction *m_start_act;
     QAction *m_stop_act;
     QAction *m_restart_act;
-    QAction *m_mode_act[MODE_COUNT];
     QAction *m_verify[VERIFY_MAX];
     QAction *m_load_flash;
     QAction *m_load_eeprom;
     QAction *m_save_flash;
     QAction *m_save_eeprom;
     QAction *m_miniUi;
+
     QMenu *m_modeBar;
+    std::vector<QAction *> m_mode_acts;
+    QSignalMapper * m_mode_act_signalmap;
 
     quint8 m_state;
-    Shupito *m_shupito;
-    ShupitoDesc *m_desc;
     quint32 m_prog_speed_hz;
     quint8 m_verify_mode;
 
     QString m_hexFilenames[MEM_FUSES];
     QDateTime m_hexWriteTimes[MEM_FUSES];
     QDateTime m_hexFlashTimes[MEM_FUSES];
-    ShupitoMode *m_modes[MODE_COUNT];
-    quint8 m_cur_mode;
 
     vdd_setup m_vdd_setup;
     double m_vcc;
@@ -178,9 +174,6 @@ private:
     bool m_enable_overvcc;
     bool m_overvcc_turnoff;
     QPointer<OverVccDialog> m_overvcc_dialog;
-
-    ShupitoDesc::config *m_vdd_config;
-    ShupitoDesc::config *m_tunnel_config;
 
     ProgressDialog *m_progress_dialog;
 
@@ -192,6 +185,8 @@ private:
     QPointer<ToolTipWarn> m_timeout_warn;
 
     bool m_buttons_enabled;
+
+    QScopedPointer<Programmer> m_programmer;
 };
 
 #endif // LORRISSHUPITO_H
