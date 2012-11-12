@@ -17,7 +17,6 @@
 #include "../shared/chipdefs.h"
 #include "shupitodesc.h"
 #include "../connection/connection.h"
-#include "../connection/flipconnection.h"
 
 enum Opcodes
 {

@@ -353,8 +353,13 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
     Q_ASSERT(conn);
 
     bool enabled = ((m_allowedConns & pct_port) && dynamic_cast<PortConnection *>(conn))
-            || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn))
-            || ((m_allowedConns & pct_flip) && dynamic_cast<FlipConnection *>(conn));
+            || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn));
+
+#ifdef HAVE_LIBYB
+    if (!enabled && ((m_allowedConns & pct_flip) && dynamic_cast<FlipConnection *>(conn)))
+        enabled = true;
+#endif
+
     ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(enabled);
 
     ui->connectionNameEdit->setEnabled(true);

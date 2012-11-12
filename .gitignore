@@ -18,6 +18,8 @@
 *.bin
 *.gz
 *.pro.user*
+*.Release
+*.Debug
 
 #
 # Top-level generic files

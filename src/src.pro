@@ -36,7 +36,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisTerminal/lorristerminalinfo.cpp \
     connection/connection.cpp \
     connection/serialport.cpp \
-    connection/flipconnection.cpp \
     LorrisTerminal/eeprom.cpp \
     LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     LorrisAnalyzer/lorrisanalyzer.cpp \
@@ -68,7 +67,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/modes/shupitopdi.cpp \
     LorrisShupito/modes/shupitomode.cpp \
     LorrisShupito/modes/shupitocc25xx.cpp \
-    LorrisShupito/programmers/flipprogrammer.cpp \
     LorrisShupito/programmers/shupitoprogrammer.cpp \
     LorrisShupito/shupitopacket.cpp \
     connection/tcpsocket.cpp \
@@ -155,7 +153,6 @@ HEADERS += ui/mainwindow.h \
     LorrisTerminal/lorristerminalinfo.h \
     connection/connection.h \
     connection/serialport.h \
-    connection/flipconnection.h \
     LorrisTerminal/eeprom.h \
     LorrisAnalyzer/lorrisanalyzer.h \
     LorrisAnalyzer/lorrisanalyzerinfo.h \
@@ -188,7 +185,6 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/modes/shupitopdi.h \
     LorrisShupito/modes/shupitomode.h \
     LorrisShupito/modes/shupitocc25xx.h \
-    LorrisShupito/programmers/flipprogrammer.h \
     LorrisShupito/programmers/shupitoprogrammer.h \
     LorrisShupito/shupitopacket.h \
     connection/tcpsocket.h \
@@ -340,7 +336,11 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 
 win32 {
     CONFIG -= flat
-    CONFIG += libusby libenjoy libyb
+    CONFIG += libusby libenjoy
+    
+    win32-msvc* {
+        CONFIG += libyb
+    }
 
     INCLUDEPATH += ../dep/SDL/include
 
@@ -427,6 +427,14 @@ libusby {
 libyb {
     include(../dep/libyb/libyb.pri)
     DEFINES += HAVE_LIBYB
+
+    SOURCES += \
+        connection/flipconnection.cpp \
+        LorrisShupito/programmers/flipprogrammer.cpp
+
+    HEADERS += \
+        connection/flipconnection.h \
+        LorrisShupito/programmers/flipprogrammer.h
 }
 
 kate_editor:unix {

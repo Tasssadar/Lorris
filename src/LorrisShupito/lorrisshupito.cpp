@@ -30,8 +30,11 @@
 #include "../ui/tooltipwarn.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../connection/connectionmgr2.h"
-#include "programmers/flipprogrammer.h"
 #include "programmers/shupitoprogrammer.h"
+
+#ifdef HAVE_LIBYB
+#include "programmers/flipprogrammer.h"
+#endif
 
 // When no packet from shupito is received for TIMEOUT_INTERVAL ms,
 // warning will appear
@@ -716,10 +719,12 @@ void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
     {
         m_programmer.reset(new ShupitoProgrammer(sc));
     }
+#ifdef HAVE_LIBYB
     else if (ConnectionPointer<FlipConnection> fc = con.dynamicCast<FlipConnection>())
     {
         m_programmer.reset(new FlipProgrammer(fc));
     }
+#endif
     else
     {
         return;
