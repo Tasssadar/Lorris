@@ -9,12 +9,14 @@ FlipConnection::FlipConnection()
 
 void FlipConnection::OpenConcurrent()
 {
-    this->SetState(st_connected);
+    if (!m_dev.empty())
+        this->SetState(st_connected);
 }
 
 void FlipConnection::Close()
 {
-    this->SetState(st_disconnected);
+    if (!m_dev.empty())
+        this->SetState(st_disconnected);
 }
 
 void FlipConnection::setDevice(yb::usb_device const & dev)

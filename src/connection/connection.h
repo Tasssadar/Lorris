@@ -120,6 +120,7 @@ private:
     QString m_idString;
     int m_refcount;
     int m_tabcount;
+    bool m_reconnectOnPlugin;
     bool m_removable;
     bool m_persistent;
     quint8 m_type;
