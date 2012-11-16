@@ -14,6 +14,7 @@
 FlipProgrammer::FlipProgrammer(ConnectionPointer<FlipConnection> const & conn)
     : m_conn(conn)
 {
+    m_flip.open(m_conn->device());
 }
 
 void FlipProgrammer::stopAll(bool wait)
@@ -22,19 +23,17 @@ void FlipProgrammer::stopAll(bool wait)
 
 void FlipProgrammer::switchToFlashMode(quint32 prog_speed_hz)
 {
-    if (!m_flip.is_open())
-        try_run(m_flip.open(m_conn->device()));
+    try_run(m_flip.clear_errors());
 }
 
 void FlipProgrammer::switchToRunMode()
 {
     try_run(m_flip.start_application());
-    m_flip.close();
 }
 
 bool FlipProgrammer::isInFlashMode()
 {
-    return m_flip.is_open();
+    return true;
 }
 
 chip_definition FlipProgrammer::readDeviceId()

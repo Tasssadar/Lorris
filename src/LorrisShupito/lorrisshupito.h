@@ -125,6 +125,7 @@ private slots:
     void timeout();
 
 private:
+    void updateProgrammer();
     bool checkVoltage(bool active);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     bool showContinueBox(const QString& title, const QString& text);

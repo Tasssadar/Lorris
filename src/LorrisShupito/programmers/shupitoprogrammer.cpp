@@ -26,6 +26,8 @@ ShupitoProgrammer::ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const 
 
     connect(m_con.data(), SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
     connect(m_con.data(), SIGNAL(packetRead(ShupitoPacket)), this, SLOT(readPacket(ShupitoPacket)));
+
+    this->connectedStatus(conn->isOpen());
 }
 
 ShupitoProgrammer::~ShupitoProgrammer()

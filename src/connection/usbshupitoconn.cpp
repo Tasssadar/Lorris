@@ -168,6 +168,12 @@ bool UsbAcmConnection::openImpl()
 
 void UsbAcmConnection::Close()
 {
+    this->closeImpl();
+    this->SetState(st_disconnected);
+}
+
+void UsbAcmConnection::closeImpl()
+{
     if (m_handle)
     {
         {
@@ -184,19 +190,17 @@ void UsbAcmConnection::Close()
         libusby_close(m_handle);
         m_handle = 0;
     }
-
-    this->SetState(st_disconnected);
 }
 
 bool UsbAcmConnection::setUsbDevice(libusby::device const & dev)
 {
-    if (this->state() == st_connected)
-        this->Close();
+    if (m_dev == dev)
+        return true;
 
-    Q_ASSERT(this->state() == st_removed || this->state() == st_disconnected);
+    this->closeImpl();
     m_dev = dev;
     if (m_dev && !this->updateStrings())
-        return false;
+        m_dev.clear();
 
     this->SetState(m_dev.get()? st_disconnected: st_removed);
     emit changed();

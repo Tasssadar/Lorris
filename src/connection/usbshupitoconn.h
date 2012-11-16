@@ -38,6 +38,7 @@ public slots:
 
 private:
     bool openImpl();
+    void closeImpl();
     bool readConfig(libusby_device_handle * handle);
     bool updateStrings();
     static void static_read_completed(libusby_transfer * t);

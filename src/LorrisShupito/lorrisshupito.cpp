@@ -213,14 +213,17 @@ void LorrisShupito::connectedStatus(bool connected)
 {
     if(connected)
     {
+        this->updateProgrammer();
         Q_ASSERT(m_programmer.data());
         m_state &= ~(STATE_DISCONNECTED);
+        updateStartStopUi(m_programmer->isInFlashMode());
 
         if (!m_programmer->supportsVdd())
             setEnableButtons(true);
     }
     else
     {
+        m_programmer.reset();
         m_state |= STATE_DISCONNECTED;
         updateStartStopUi(false);
         m_timeout_timer.stop();
@@ -707,20 +710,17 @@ void LorrisShupito::focusChanged(QWidget *prev, QWidget */*curr*/)
         tryFileReload(ui->getMemIndex());
 }
 
-void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
+void LorrisShupito::updateProgrammer()
 {
-    if (m_con)
-        m_con->releaseTab();
+    if (!m_con)
+        return;
 
-    m_con = con;
-    m_programmer.reset();
-
-    if (ConnectionPointer<ShupitoConnection> sc = con.dynamicCast<ShupitoConnection>())
+    if (ConnectionPointer<ShupitoConnection> sc = m_con.dynamicCast<ShupitoConnection>())
     {
         m_programmer.reset(new ShupitoProgrammer(sc));
     }
 #ifdef HAVE_LIBYB
-    else if (ConnectionPointer<FlipConnection> fc = con.dynamicCast<FlipConnection>())
+    else if (ConnectionPointer<FlipConnection> fc = m_con.dynamicCast<FlipConnection>())
     {
         m_programmer.reset(new FlipProgrammer(fc));
     }
@@ -730,18 +730,33 @@ void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
         return;
     }
 
+    this->updateModeBar();
+
     connect(m_programmer.data(), SIGNAL(vccValueChanged(quint8,double)),  SLOT(vccValueChanged(quint8,double)));
     connect(m_programmer.data(), SIGNAL(vddDesc(vdd_setup)),              SLOT(vddSetup(vdd_setup)));
     connect(m_programmer.data(), SIGNAL(tunnelStatus(bool)),              SLOT(tunnelStateChanged(bool)));
 
     ui->connectProgrammer(m_programmer.data());
-    this->updateModeBar();
+}
 
-    connect(m_con.data(), SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
-    m_con->addTabRef();
+void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
+{
+    if (m_con)
+        m_con->releaseTab();
 
-    m_connectButton->setConn(m_con, false);
-    connect(m_con.data(), SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
+    m_con = con;
+    m_programmer.reset();
+
+    if (m_con)
+    {
+        connect(m_con.data(), SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
+        m_con->addTabRef();
+
+        m_connectButton->setConn(m_con, false);
+        connect(m_con.data(), SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
+    }
+
+    this->connectedStatus(m_con && m_con->isOpen());
 }
 
 void LorrisShupito::checkOvervoltage()
