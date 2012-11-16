@@ -19,7 +19,8 @@
 enum ConnectionState {
     st_disconnected,
     st_connecting,
-    st_connected
+    st_connected,
+    st_removed
 };
 
 // TODO: maybe we should just remove this and use dynamic_cast?
@@ -57,8 +58,6 @@ public:
 
     bool removable() const { return m_removable; }
     void setRemovable(bool value) { m_removable = value; emit changed(); }
-
-    virtual bool present() const { return true; }
 
     bool persistent() const { return m_persistent; }
     void setPersistent(bool value);

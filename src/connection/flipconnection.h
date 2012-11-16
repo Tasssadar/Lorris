@@ -15,8 +15,6 @@ public:
     void OpenConcurrent();
     void Close();
 
-    bool present() const;
-
     void setDevice(yb::usb_device const & dev);
     void clearDevice();
     yb::usb_device device() const;

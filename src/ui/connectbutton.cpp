@@ -25,7 +25,7 @@ ConnectButton::ConnectButton(QToolButton * btn)
 
 void ConnectButton::connectTriggered()
 {
-    if (!m_conn)
+    if (!m_conn || m_conn->state() == st_removed)
     {
         this->choose();
         if (m_conn && !m_conn->isOpen())
@@ -84,6 +84,7 @@ void ConnectButton::connectionStateChanged(ConnectionState state)
     switch (state)
     {
     case st_disconnected:
+    case st_removed:
         m_connectAction->setText(tr("Connect"));
         m_connectAction->setEnabled(true);
         break;

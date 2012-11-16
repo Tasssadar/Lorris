@@ -4,6 +4,7 @@ FlipConnection::FlipConnection()
     : Connection(CONNECTION_FLIP)
 {
     this->setName("DFU: atxmega32a4u");
+    this->SetState(st_removed);
 }
 
 void FlipConnection::OpenConcurrent()
@@ -16,21 +17,19 @@ void FlipConnection::Close()
     this->SetState(st_disconnected);
 }
 
-bool FlipConnection::present() const
-{
-    return !m_dev.empty();
-}
-
 void FlipConnection::setDevice(yb::usb_device const & dev)
 {
-    m_dev = dev;
-    emit this->changed();
+    if (m_dev != dev)
+    {
+        m_dev = dev;
+        this->SetState(m_dev.empty()? st_removed: st_disconnected);
+    }
 }
 
 void FlipConnection::clearDevice()
 {
     m_dev.clear();
-    emit this->changed();
+    this->SetState(st_removed);
 }
 
 yb::usb_device FlipConnection::device() const

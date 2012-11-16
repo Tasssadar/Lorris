@@ -95,7 +95,7 @@ public:
             mode = QIcon::Selected;
         QIcon::State state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
 
-        painter->setOpacity(index.data(Qt::UserRole+3).value<bool>()? 1: 0.5);
+        painter->setOpacity(conn->state() == st_removed? 0.5: 1);
         index.data(Qt::DecorationRole).value<QIcon>().paint(painter, iconRect, opt.decorationAlignment, mode, state);
 
         QPalette::ColorGroup cg = opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
@@ -222,7 +222,6 @@ void ChooseConnectionDlg::connAdded(Connection * conn)
     item->setData(Qt::UserRole, QVariant::fromValue(conn));
     item->setData(Qt::UserRole+1, conn->details());
     item->setData(Qt::UserRole+2, (int)conn->state());
-    item->setData(Qt::UserRole+3, (bool)conn->present());
 
     m_connectionItemMap[conn] = item;
     connect(conn, SIGNAL(changed()), this, SLOT(connChanged()));
@@ -242,7 +241,6 @@ void ChooseConnectionDlg::connChanged()
     item->setText(conn->name());
     item->setData(Qt::UserRole+1, conn->details());
     item->setData(Qt::UserRole+2, (int)conn->state());
-    item->setData(Qt::UserRole+3, (bool)conn->present());
     if (conn == m_current.data())
         this->updateDetailsUi(conn);
 }

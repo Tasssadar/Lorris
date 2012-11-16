@@ -16,8 +16,6 @@ public:
     explicit UsbAcmConnection(libusby::context & ctx);
     ~UsbAcmConnection();
 
-    bool present() const { return m_dev != 0; }
-
     QString details() const;
 
     QString manufacturer() const { return m_manufacturer; }
@@ -72,8 +70,6 @@ class UsbShupitoConnection : public ShupitoConnection
 public:
     explicit UsbShupitoConnection(libusby::context & ctx);
     ~UsbShupitoConnection();
-
-    bool present() const { return m_acm_conn->present(); }
 
     QString manufacturer() const { return m_acm_conn->manufacturer(); }
     QString product() const { return m_acm_conn->product(); }
