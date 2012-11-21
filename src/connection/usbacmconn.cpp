@@ -47,12 +47,33 @@ UsbAcmConnection2::~UsbAcmConnection2()
     this->Close();
 }
 
+yb::task<void> UsbAcmConnection2::write_loop()
+{
+    m_sent = 0;
+    return yb::loop<size_t>(yb::async::value((size_t)0), [this](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
+        m_sent += r;
+        if (cl >= yb::cl_quit || m_sent == m_write_buffer.size())
+            return yb::nulltask;
+        return m_dev.bulk_write(m_outep, m_write_buffer.data() + m_sent, m_write_buffer.size() - m_sent);
+    });
+}
+
+yb::task<void> UsbAcmConnection2::send_loop()
+{
+    return m_send_channel.receive(m_write_buffer).then([this]() {
+        return this->write_loop();
+    });
+}
+
 void UsbAcmConnection2::OpenConcurrent()
 {
     if (this->state() != st_connected)
     {
         run(m_dev.claim_interface(m_intf));
         this->SetState(st_connected);
+
+        assert(m_receive_worker.empty());
+        assert(m_send_worker.empty());
 
         if (m_inep)
         {
@@ -65,6 +86,13 @@ void UsbAcmConnection2::OpenConcurrent()
                 return cl >= yb::cl_quit? yb::nulltask: m_dev.bulk_read(m_inep | 0x80, m_read_buffer, sizeof m_read_buffer);
             }));
         }
+
+        if (m_outep)
+        {
+            m_send_worker = m_runner.post(yb::loop([this](yb::cancel_level cl) -> yb::task<void> {
+                return cl >= yb::cl_quit? yb::nulltask: this->send_loop();
+            }));
+        }
     }
 }
 
@@ -75,6 +103,15 @@ void UsbAcmConnection2::Close()
         m_receive_worker.cancel(yb::cl_abort);
         m_receive_worker.try_get();
     }
+
+    if (!m_send_worker.empty())
+    {
+        m_send_worker.cancel(yb::cl_abort);
+        m_send_worker.try_get();
+    }
+
+    m_send_channel.clear();
+    m_write_buffer.clear();
 
     if (this->state() == st_connected)
     {
@@ -98,6 +135,6 @@ bool UsbAcmConnection2::event(QEvent * ev)
 
 void UsbAcmConnection2::SendData(const QByteArray & data)
 {
-    if (m_outep)
-        try_run(m_dev.bulk_write(m_outep, (uint8_t const *)data.data(), data.size()));
+    if (m_outep && this->state() == st_connected)
+        m_send_channel.send(yb::buffer_ref((uint8_t const *)data.data(), data.size()));
 }

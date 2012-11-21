@@ -3,6 +3,7 @@
 
 #include "connection.h"
 #include <libyb/async/async_runner.hpp>
+#include <libyb/async/async_channel.hpp>
 #include <libyb/usb/usb_device.hpp>
 
 class UsbAcmConnection2
@@ -33,8 +34,16 @@ private:
 
     yb::async_runner & m_runner;
     yb::async_future<void> m_receive_worker;
+    yb::async_future<void> m_send_worker;
 
     uint8_t m_read_buffer[128];
+
+    yb::async_channel<uint8_t> m_send_channel;
+    std::vector<uint8_t> m_write_buffer;
+    size_t m_sent;
+
+    yb::task<void> write_loop();
+    yb::task<void> send_loop();
 };
 
 #endif // USBACMCONN_H
