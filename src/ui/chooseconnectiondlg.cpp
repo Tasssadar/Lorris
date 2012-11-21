@@ -354,8 +354,11 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
             || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn));
 
 #ifdef HAVE_LIBYB
-    if (!enabled && ((m_allowedConns & pct_flip) && dynamic_cast<FlipConnection *>(conn)))
-        enabled = true;
+    if (!enabled && (m_allowedConns & pct_flip))
+    {
+        if (GenericUsbConnection * uc = dynamic_cast<GenericUsbConnection *>(conn))
+            enabled = uc->isFlipDevice();
+    }
 #endif
 
     ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(enabled);

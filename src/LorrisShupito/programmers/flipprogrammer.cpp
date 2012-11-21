@@ -2,16 +2,7 @@
 #include "../../shared/defmgr.h"
 #include <libyb/async/sync_runner.hpp>
 
-/*    FLASH
-    EEPROM
-    SECURITY
-    CONFIGURATION
-    BOOTLOADER
-    SIGNATURE
-    USER
-    INT_RAM*/
-
-FlipProgrammer::FlipProgrammer(ConnectionPointer<FlipConnection> const & conn)
+FlipProgrammer::FlipProgrammer(ConnectionPointer<GenericUsbConnection> const & conn)
     : m_conn(conn)
 {
     m_flip.open(m_conn->device());

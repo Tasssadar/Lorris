@@ -152,6 +152,7 @@ HEADERS += ui/mainwindow.h \
     LorrisTerminal/lorristerminal.h \
     LorrisTerminal/lorristerminalinfo.h \
     connection/connection.h \
+    connection/deviceenumerator.h \
     connection/serialport.h \
     LorrisTerminal/eeprom.h \
     LorrisAnalyzer/lorrisanalyzer.h \
@@ -429,11 +430,13 @@ libyb {
     DEFINES += HAVE_LIBYB
 
     SOURCES += \
-        connection/flipconnection.cpp \
+        connection/genericusbconn.cpp \
+        connection/usbacmconn.cpp \
         LorrisShupito/programmers/flipprogrammer.cpp
 
     HEADERS += \
-        connection/flipconnection.h \
+        connection/genericusbconn.h \
+        connection/usbacmconn.h \
         LorrisShupito/programmers/flipprogrammer.h
 }
 

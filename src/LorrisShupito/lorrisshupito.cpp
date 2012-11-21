@@ -715,20 +715,21 @@ void LorrisShupito::updateProgrammer()
     if (!m_con)
         return;
 
+    m_programmer.reset();
     if (ConnectionPointer<ShupitoConnection> sc = m_con.dynamicCast<ShupitoConnection>())
     {
         m_programmer.reset(new ShupitoProgrammer(sc));
     }
 #ifdef HAVE_LIBYB
-    else if (ConnectionPointer<FlipConnection> fc = m_con.dynamicCast<FlipConnection>())
+    else if (ConnectionPointer<GenericUsbConnection> fc = m_con.dynamicCast<GenericUsbConnection>())
     {
-        m_programmer.reset(new FlipProgrammer(fc));
+        if (fc->isFlipDevice())
+            m_programmer.reset(new FlipProgrammer(fc));
     }
 #endif
-    else
-    {
+
+    if (!m_programmer)
         return;
-    }
 
     this->updateModeBar();
 

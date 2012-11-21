@@ -308,92 +308,44 @@ LibybUsbEnumerator::LibybUsbEnumerator()
 
 LibybUsbEnumerator::~LibybUsbEnumerator()
 {
-    std::map<yb::usb_device, FlipConnection *> seen_devices;
-    seen_devices.swap(m_seen_devices);
-
-    for (std::map<yb::usb_device, FlipConnection *>::const_iterator it = seen_devices.begin(); it != seen_devices.end(); ++it)
-    {
-        if (it->second)
-            it->second->releaseAll();
-    }
-
-    // FIXME: replace with .swap() when Qt 4.8 will become broader
-    QSet<FlipConnection *> stand_by_conns = m_stand_by_conns;
-    m_stand_by_conns.clear();
-
-    for (QSet<FlipConnection *>::const_iterator it = stand_by_conns.begin(); it != stand_by_conns.end(); ++it)
-        (*it)->releaseAll();
 }
 
 void LibybUsbEnumerator::refresh()
 {
     std::vector<yb::usb_device> dev_list = m_usb_context.get_device_list();
 
-    std::map<yb::usb_device, FlipConnection *> unseen_devices = m_seen_devices;
-    for (std::size_t i = 0; i < dev_list.size(); ++i)
+    std::vector<dev_id> devs;
+    for (size_t i = 0; i < dev_list.size(); ++i)
     {
-        yb::usb_device & dev = dev_list[i];
-        if (m_seen_devices.find(dev) != m_seen_devices.end())
-        {
-            unseen_devices.erase(dev);
-            continue;
-        }
-
-        FlipConnection *& seen_conn = m_seen_devices[dev];
-        seen_conn = 0;
-
-        if (!FlipConnection::isDeviceSupported(dev))
+        if (GenericUsbConnection::isShupito20Device(dev_list[i]))
             continue;
 
-        if (!m_stand_by_conns.empty())
-        {
-            seen_conn = *m_stand_by_conns.begin();
-            seen_conn->addRef();
-            m_stand_by_conns.erase(m_stand_by_conns.begin());
-
-            seen_conn->setDevice(dev);
-            seen_conn->setRemovable(false);
-        }
-        else
-        {
-            ConnectionPointer<FlipConnection> conn(new FlipConnection());
-            connect(conn.data(), SIGNAL(destroying()), this, SLOT(connectionDestroyed()));
-
-            conn->setDevice(dev);
-
-            sConMgr2.addConnection(conn.data());
-            conn->setPersistent(true);
-
-            conn->setRemovable(false);
-            seen_conn = conn.data();
-            conn.take();
-        }
+        dev_id d;
+        d.dev = dev_list[i];
+        devs.push_back(d);
     }
 
-    for (std::map<yb::usb_device, FlipConnection *>::const_iterator it = unseen_devices.begin(); it != unseen_devices.end(); ++it)
-    {
-        FlipConnection * conn = it->second;
-
-        // The device is gone, but the connection may still have clients.
-        // Do not destroy the connection completely, let the clients keep using it.
-        // We merely make the device removable so that it can be removed by the user.
-        if (conn)
+    m_devenum.update(devs.begin(), devs.end(), [this](dev_id const & d) -> GenericUsbConnection * {
+        ConnectionPointer<GenericUsbConnection> conn(new GenericUsbConnection(m_runner, d.dev));
+        conn->setPersistent(!conn->serialNumber().isEmpty());
+        sConMgr2.addConnection(conn.data());
+        return conn.take();
+    }, [this](dev_id const & id, GenericUsbConnection * conn) {
+        conn->setDevice(id.dev);
+        conn->setRemovable(false);
+    }, [](GenericUsbConnection * conn) {
+        conn->clearDevice();
+        conn->setRemovable(true);
+    }, [](dev_id id) -> dev_id {
+        yb::usb_device_descriptor desc = id.dev.descriptor();
+        if (desc.iSerialNumber)
         {
-            conn->clearDevice();
-            conn->setRemovable(true);
-            m_stand_by_conns.insert(conn);
-            conn->release();
+            uint16_t langid = id.dev.get_default_langid();
+            std::string s = id.dev.get_string_descriptor(desc.iSerialNumber, langid);
+            id.sn = QString::fromUtf8(s.data(), s.size());
         }
-
-        m_seen_devices.erase(it->first);
-    }
-}
-
-void LibybUsbEnumerator::connectionDestroyed()
-{
-    FlipConnection * conn = static_cast<FlipConnection *>(this->sender());
-    m_seen_devices.erase(conn->device());
-    m_stand_by_conns.remove(conn);
+        return id;
+    });
 }
 
 #endif // HAVE_LIBYB
@@ -467,8 +419,8 @@ QVariant ConnectionManager2::config() const
             "proxy_tunnel",    // CONNECTION_PROXY_TUNNEL
         };
 
-        Q_ASSERT(sizeof_array(connTypes) == MAX_CON_TYPE);
-        Q_ASSERT(conn->getType() < MAX_CON_TYPE);
+        if (conn->getType() >= sizeof_array(connTypes))
+            continue;
 
         QHash<QString, QVariant> connConfig;
         connConfig["type"] = connTypes[conn->getType()];

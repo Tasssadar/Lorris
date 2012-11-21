@@ -2,7 +2,7 @@
 #define FLIP_PROGRAMMER_H
 
 #include "../../shared/programmer.h"
-#include "../../connection/flipconnection.h"
+#include "../../connection/genericusbconn.h"
 #include <libyb/libyb/shupito/flip2.hpp>
 
 class FlipProgrammer
@@ -11,7 +11,7 @@ class FlipProgrammer
     Q_OBJECT
 
 public:
-    FlipProgrammer(ConnectionPointer<FlipConnection> const & conn);
+    FlipProgrammer(ConnectionPointer<GenericUsbConnection> const & conn);
 
     virtual void stopAll(bool wait);
 
@@ -29,7 +29,7 @@ public:
     virtual void erase_device(chip_definition& chip);
 
 private:
-    ConnectionPointer<FlipConnection> m_conn;
+    ConnectionPointer<GenericUsbConnection> m_conn;
     yb::flip2 m_flip;
 };
 

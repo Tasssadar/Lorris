@@ -81,7 +81,8 @@ private:
 
 #include <libyb/usb/usb_context.hpp>
 #include <libyb/usb/usb_device.hpp>
-#include "flipconnection.h"
+#include "genericusbconn.h"
+#include "deviceenumerator.h"
 
 class LibybUsbEnumerator : public QObject
 {
@@ -94,14 +95,42 @@ public:
 public slots:
     void refresh();
 
-private slots:
-    void connectionDestroyed();
-
 private:
+    yb::async_runner m_runner;
     yb::usb_context m_usb_context;
-    std::map<yb::usb_device, FlipConnection *> m_seen_devices;
-    QSet<FlipConnection *> m_stand_by_conns;
     QTimer m_refreshTimer;
+
+    struct dev_id
+    {
+        struct standby_info_type
+        {
+            uint32_t vidpid;
+            QString sn;
+        };
+
+        standby_info_type standby_info(GenericUsbConnection * conn) const
+        {
+            standby_info_type info;
+            info.vidpid = dev.vidpid();
+            info.sn = conn->serialNumber();
+            return info;
+        }
+
+        bool compatible_with(standby_info_type const & si) const
+        {
+            return dev.vidpid() == si.vidpid && sn == si.sn;
+        }
+
+        yb::usb_device dev;
+        QString sn;
+
+        friend bool operator<(dev_id const & lhs, dev_id const & rhs)
+        {
+            return lhs.dev < rhs.dev;
+        }
+    };
+
+    DeviceEnumerator<GenericUsbConnection, dev_id> m_devenum;
 };
 
 #endif // HAVE_LIBYB
@@ -150,6 +179,7 @@ private:
 #endif // HAVE_LIBUSBY
 #ifdef HAVE_LIBYB
     QScopedPointer<LibybUsbEnumerator> m_libybUsbEnumerator;
+    yb::async_runner m_yb_runner;
 #endif // HAVE_LIBYB
     QHash<PortConnection *, ShupitoConnection *> m_autoShupitos;
     QHash<QObject *, PortConnection *> m_autoShupitosRev;

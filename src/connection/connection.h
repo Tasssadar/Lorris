@@ -34,8 +34,10 @@ enum ConnectionType
     CONNECTION_USB_ACM     = 5,
     CONNECTION_PROXY_TUNNEL= 6,
     CONNECTION_FLIP        = 7,
+    CONNECTION_LIBYB_USB   = 8,
+    CONNECTION_USB_ACM2    = 9,
 
-    MAX_CON_TYPE           = 8
+    MAX_CON_TYPE           = 10
 };
 
 enum PrimaryConnectionType {
