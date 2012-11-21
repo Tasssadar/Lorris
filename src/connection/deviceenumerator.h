@@ -21,14 +21,14 @@ public:
 
     ~DeviceEnumerator()
     {
-        std::map<Id, ConnectionPointer<Conn>> seen_devices;
+        std::map<Id, ConnectionPointer<Conn> > seen_devices;
         seen_devices.swap(m_seen_devices);
-        for (std::map<Id, ConnectionPointer<Conn>>::iterator it = seen_devices.begin(); it != seen_devices.end(); ++it)
+        for (typename std::map<Id, ConnectionPointer<Conn> >::iterator it = seen_devices.begin(); it != seen_devices.end(); ++it)
             it->second.take()->releaseAll();
 
         std::map<Conn *, standby_info_type> standby_conns;
         standby_conns.swap(m_standby_conns);
-        for (std::map<Conn *, standby_info_type>::iterator it = standby_conns.begin(); it != standby_conns.end(); ++it)
+        for (typename std::map<Conn *, standby_info_type>::iterator it = standby_conns.begin(); it != standby_conns.end(); ++it)
             it->first->releaseAll();
     }
 
@@ -44,7 +44,7 @@ public:
     {
         {
             std::set<Id> ids(first, last);
-            for (std::map<Id, ConnectionPointer<Conn>>::iterator it = m_seen_devices.begin(); it != m_seen_devices.end();)
+            for (typename std::map<Id, ConnectionPointer<Conn> >::iterator it = m_seen_devices.begin(); it != m_seen_devices.end();)
             {
                 if (ids.find(it->first) != ids.end())
                 {
@@ -56,7 +56,7 @@ public:
                 clear(it->second.data());
                 m_standby_conns[it->second.data()] = si;
 
-                std::map<Id, ConnectionPointer<Conn>>::iterator del_it = it;
+                typename std::map<Id, ConnectionPointer<Conn> >::iterator del_it = it;
                 ++it;
                 m_seen_devices.erase(del_it);
             }
@@ -66,12 +66,12 @@ public:
         {
             Id const & id = *first;
 
-            std::map<Id, ConnectionPointer<Conn>>::const_iterator it = m_seen_devices.find(id);
+            typename std::map<Id, ConnectionPointer<Conn> >::const_iterator it = m_seen_devices.find(id);
             if (it != m_seen_devices.end())
                 continue;
 
             Id id2 = update(id);
-            std::map<Conn *, standby_info_type>::iterator compat_it;
+            typename std::map<Conn *, standby_info_type>::iterator compat_it;
             for (compat_it = m_standby_conns.begin(); compat_it != m_standby_conns.end(); ++compat_it)
             {
                 if (id2.compatible_with(compat_it->second))
@@ -100,7 +100,7 @@ protected:
     {
         Conn * conn = static_cast<Conn *>(this->sender());
 
-        for (std::map<Id, ConnectionPointer<Conn>>::iterator it = m_seen_devices.begin(); it != m_seen_devices.end(); ++it)
+        for (typename std::map<Id, ConnectionPointer<Conn> >::iterator it = m_seen_devices.begin(); it != m_seen_devices.end(); ++it)
         {
             if (it->second.data() == conn)
             {
@@ -119,7 +119,7 @@ private:
         Id const & operator()(Id const & id) const { return id; }
     };
 
-    std::map<Id, ConnectionPointer<Conn>> m_seen_devices;
+    std::map<Id, ConnectionPointer<Conn> > m_seen_devices;
     std::map<Conn *, standby_info_type> m_standby_conns;
 };
 
