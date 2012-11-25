@@ -92,7 +92,7 @@
          </property>
          <property name="icon">
           <iconset resource="../shupitoicons.qrc">
-           <normaloff>:/icons/icons/settings.png</normaloff>:/icons/icons/settings.png</iconset>
+           <normaloff>:/icons/system_dark</normaloff>:/icons/system_dark</iconset>
          </property>
          <property name="iconSize">
           <size>
