@@ -769,7 +769,7 @@ void LorrisShupito::tryFileReload(quint8 memId)
     }
     catch (QString const &)
     {
-        // Ignore errors.
+        emit statusBarMsg(tr("Failed to reload file %1").arg(m_hexFilenames[memId]), 10000);
     }
 }
 
