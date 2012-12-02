@@ -9,6 +9,11 @@ GenericUsbConnection::GenericUsbConnection(yb::async_runner & runner, yb::usb_de
     this->setDevice(dev, /*updateName=*/true);
 }
 
+yb::async_runner & GenericUsbConnection::runner() const
+{
+    return m_runner;
+}
+
 void GenericUsbConnection::OpenConcurrent()
 {
     if (!m_dev.empty())
@@ -19,6 +24,11 @@ void GenericUsbConnection::Close()
 {
     if (!m_dev.empty())
         this->SetState(st_disconnected);
+}
+
+static QString fromUtf8(std::string const & s)
+{
+    return QString::fromUtf8(s.data(), s.size());
 }
 
 void GenericUsbConnection::setDevice(yb::usb_device const & dev, bool updateName)
@@ -34,31 +44,13 @@ void GenericUsbConnection::setDevice(yb::usb_device const & dev, bool updateName
         std::vector<acm_id> acm_ids;
         if (!m_dev.empty())
         {
-            std::vector<uint16_t> langids = m_dev.get_langid_list();
-            m_selected_langid = !langids.empty()? langids[0]: 0;
+            m_selected_langid = m_dev.get_default_langid();
 
             yb::usb_device_descriptor desc = m_dev.descriptor();
 
-            QString productName, manufacturerName;
-            if (desc.iProduct)
-            {
-                std::string s = m_dev.get_string_descriptor(desc.iProduct, m_selected_langid);
-                productName = QString::fromUtf8(s.data(), s.size());
-            }
-            if (desc.iManufacturer)
-            {
-                std::string s = m_dev.get_string_descriptor(desc.iManufacturer, m_selected_langid);
-                manufacturerName = QString::fromUtf8(s.data(), s.size());
-            }
-            if (desc.iSerialNumber)
-            {
-                std::string s = m_dev.get_string_descriptor(desc.iSerialNumber, m_selected_langid);
-                m_serialNumber = QString::fromUtf8(s.data(), s.size());
-            }
-            else
-            {
-                m_serialNumber.clear();
-            }
+            QString productName = fromUtf8(m_dev.product());
+            QString manufacturerName = fromUtf8(m_dev.manufacturer());
+            m_serialNumber = fromUtf8(m_dev.serial_number());
 
             if (updateName)
             {
@@ -117,7 +109,15 @@ void GenericUsbConnection::setDevice(yb::usb_device const & dev, bool updateName
                     acm_id id;
                     id.intfno = i;
                     if (intf.iInterface)
-                        id.intfname = m_dev.get_string_descriptor(intf.iInterface, m_selected_langid);
+                    { // XXX: use interface enumerator
+                        try
+                        {
+                            id.intfname = m_dev.get_string_descriptor(intf.iInterface, m_selected_langid);
+                        }
+                        catch (...)
+                        {
+                        }
+                    }
                     id.outep = outep;
                     id.inep = inep;
                     acm_ids.push_back(std::move(id));

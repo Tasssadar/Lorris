@@ -38,6 +38,7 @@ void UsbAcmConnection2::setup(yb::usb_device const & dev, uint8_t intf, uint8_t 
 
 void UsbAcmConnection2::clear()
 {
+    this->cleanupWorkers();
     m_dev.clear();
     this->SetState(st_removed);
 }
@@ -69,7 +70,9 @@ void UsbAcmConnection2::OpenConcurrent()
 {
     if (this->state() != st_connected)
     {
-        run(m_dev.claim_interface(m_intf));
+        if (!m_dev.claim_interface(m_intf))
+            return Utils::showErrorBox(tr("Cannot open the USB device."), 0);
+
         this->SetState(st_connected);
 
         assert(m_receive_worker.empty());
@@ -98,6 +101,16 @@ void UsbAcmConnection2::OpenConcurrent()
 
 void UsbAcmConnection2::Close()
 {
+    this->cleanupWorkers();
+    if (this->state() == st_connected)
+    {
+        m_dev.release_interface(m_intf);
+        this->SetState(st_disconnected);
+    }
+}
+
+void UsbAcmConnection2::cleanupWorkers()
+{
     if (!m_receive_worker.empty())
     {
         m_receive_worker.cancel(yb::cl_abort);
@@ -112,12 +125,6 @@ void UsbAcmConnection2::Close()
 
     m_send_channel.clear();
     m_write_buffer.clear();
-
-    if (this->state() == st_connected)
-    {
-        try_run(m_dev.release_interface(m_intf));
-        this->SetState(st_disconnected);
-    }
 }
 
 bool UsbAcmConnection2::event(QEvent * ev)

@@ -3,7 +3,7 @@
 #include <libyb/async/sync_runner.hpp>
 
 FlipProgrammer::FlipProgrammer(ConnectionPointer<GenericUsbConnection> const & conn)
-    : m_conn(conn)
+    : m_conn(conn), m_runner(m_conn->runner())
 {
     m_flip.open(m_conn->device());
 }
@@ -14,12 +14,12 @@ void FlipProgrammer::stopAll(bool wait)
 
 void FlipProgrammer::switchToFlashMode(quint32 prog_speed_hz)
 {
-    try_run(m_flip.clear_errors());
+    m_runner.try_run(m_flip.clear_errors());
 }
 
 void FlipProgrammer::switchToRunMode()
 {
-    try_run(m_flip.start_application());
+    m_runner.try_run(m_flip.start_application());
 }
 
 bool FlipProgrammer::isInFlashMode()
@@ -30,7 +30,7 @@ bool FlipProgrammer::isInFlashMode()
 chip_definition FlipProgrammer::readDeviceId()
 {
     uint8_t buf[3];
-    if (try_run(m_flip.read_memory(5, 0, buf, sizeof buf)).has_exception())
+    if (m_runner.try_run(m_flip.read_memory(5, 0, buf, sizeof buf)).has_exception())
         return chip_definition();
 
     QString chipid = QString("flip:%1%2%3")
@@ -58,7 +58,7 @@ QByteArray FlipProgrammer::readMemory(const QString& mem, chip_definition &chip)
     chip_definition::memorydef * md = chip.getMemDef(mem);
     res.resize(md->size);
 
-    if (try_run(m_flip.read_memory(memid, 0, (uint8_t *)res.data(), res.size())).has_exception())
+    if (m_runner.try_run(m_flip.read_memory(memid, 0, (uint8_t *)res.data(), res.size())).has_exception())
         res.clear();
     return res;
 }
@@ -83,10 +83,10 @@ void FlipProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip
     file.makePages(pages, memId, chip, 0);
 
     for (size_t i = 0; i < pages.size(); ++i)
-        try_run(m_flip.write_memory(memId - 1, pages[i].address, pages[i].data.data(), pages[i].data.size()));
+        m_runner.try_run(m_flip.write_memory(memId - 1, pages[i].address, pages[i].data.data(), pages[i].data.size()));
 }
 
 void FlipProgrammer::erase_device(chip_definition& chip)
 {
-    try_run(m_flip.chip_erase());
+    m_runner.try_run(m_flip.chip_erase());
 }

@@ -300,7 +300,8 @@ void UsbShupitoEnumerator::shupitoConnectionDestroyed()
 
 #ifdef HAVE_LIBYB
 
-LibybUsbEnumerator::LibybUsbEnumerator()
+LibybUsbEnumerator::LibybUsbEnumerator(yb::async_runner & runner)
+    : m_runner(runner), m_usb_context(m_runner)
 {
     connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
     m_refreshTimer.start(1000);
@@ -337,13 +338,8 @@ void LibybUsbEnumerator::refresh()
         conn->clearDevice();
         conn->setRemovable(true);
     }, [](dev_id id) -> dev_id {
-        yb::usb_device_descriptor desc = id.dev.descriptor();
-        if (desc.iSerialNumber)
-        {
-            uint16_t langid = id.dev.get_default_langid();
-            std::string s = id.dev.get_string_descriptor(desc.iSerialNumber, langid);
-            id.sn = QString::fromUtf8(s.data(), s.size());
-        }
+        std::string s = id.dev.serial_number();
+        id.sn = QString::fromUtf8(s.data(), s.size());
         return id;
     });
 }
@@ -361,7 +357,7 @@ ConnectionManager2::ConnectionManager2(QObject * parent)
     m_usbShupitoEnumerator.reset(new UsbShupitoEnumerator());
 #endif // HAVE_LIBUSBY
 #ifdef HAVE_LIBYB
-    m_libybUsbEnumerator.reset(new LibybUsbEnumerator());
+    m_libybUsbEnumerator.reset(new LibybUsbEnumerator(m_yb_runner));
 #endif // HAVE_LIBYB
 
     QVariant config = sConfig.get(CFG_VARIANT_CONNECTIONS);

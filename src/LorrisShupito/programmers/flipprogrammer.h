@@ -30,6 +30,7 @@ public:
 
 private:
     ConnectionPointer<GenericUsbConnection> m_conn;
+    yb::async_runner & m_runner;
     yb::flip2 m_flip;
 };
 

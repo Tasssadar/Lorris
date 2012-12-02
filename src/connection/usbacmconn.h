@@ -44,6 +44,7 @@ private:
 
     yb::task<void> write_loop();
     yb::task<void> send_loop();
+    void cleanupWorkers();
 };
 
 #endif // USBACMCONN_H

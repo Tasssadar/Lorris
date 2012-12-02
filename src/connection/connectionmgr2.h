@@ -89,14 +89,14 @@ class LibybUsbEnumerator : public QObject
     Q_OBJECT
 
 public:
-    LibybUsbEnumerator();
+	explicit LibybUsbEnumerator(yb::async_runner & runner);
     ~LibybUsbEnumerator();
 
 public slots:
     void refresh();
 
 private:
-    yb::async_runner m_runner;
+	yb::async_runner & m_runner;
     yb::usb_context m_usb_context;
     QTimer m_refreshTimer;
 

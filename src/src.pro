@@ -369,7 +369,7 @@ win32 {
     LIBS += -lsetupapi -lwinmm -lole32 -ladvapi32 -luser32
 }
 unix:!macx:!symbian {
-    CONFIG += libusby libenjoy
+    CONFIG += libusby libenjoy libyb
     LIBS += -lqextserialport_lorris
 
     system_qwt {

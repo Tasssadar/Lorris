@@ -14,6 +14,8 @@ class GenericUsbConnection : public Connection
 public:
     explicit GenericUsbConnection(yb::async_runner & runner, yb::usb_device const & dev);
 
+    yb::async_runner & runner() const;
+
     QString details() const { return m_details; }
     QString serialNumber() const { return m_serialNumber; }
 
