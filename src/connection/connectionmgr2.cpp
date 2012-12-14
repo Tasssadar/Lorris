@@ -321,7 +321,7 @@ void LibybUsbEnumerator::refresh()
     std::vector<dev_id> devs;
     for (size_t i = 0; i < dev_list.size(); ++i)
     {
-        if (GenericUsbConnection::isShupito20Device(dev_list[i]))
+        if (!GenericUsbConnection::isFlipDevice(dev_list[i]))
             continue;
 
         dev_id d;

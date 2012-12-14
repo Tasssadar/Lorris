@@ -27,6 +27,7 @@ public:
     yb::usb_device device() const;
 
     static bool isShupito20Device(yb::usb_device const & dev);
+    static bool isFlipDevice(yb::usb_device const & dev);
     bool isFlipDevice() const;
 
     static QString formatDeviceName(yb::usb_device const & dev);
