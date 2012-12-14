@@ -216,8 +216,15 @@ void ChooseConnectionDlg::connAdded(Connection * conn)
 {
     QListWidgetItem * item = new QListWidgetItem(conn->name(), ui->connectionsList);
 
-    // TODO: set icon based on the connection type
-    item->setIcon(QIcon(":/icons/icons/network-wired.png"));
+    switch (conn->getType())
+    {
+    case CONNECTION_LIBYB_USB:
+    case CONNECTION_USB_ACM2:
+        item->setIcon(QIcon(":/icons/icons/usb-conn.png"));
+        break;
+    default:
+        item->setIcon(QIcon(":/icons/icons/network-wired.png"));
+    }
 
     item->setData(Qt::UserRole, QVariant::fromValue(conn));
     item->setData(Qt::UserRole+1, conn->details());
