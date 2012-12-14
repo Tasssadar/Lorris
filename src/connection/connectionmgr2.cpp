@@ -301,7 +301,7 @@ void UsbShupitoEnumerator::shupitoConnectionDestroyed()
 #ifdef HAVE_LIBYB
 
 LibybUsbEnumerator::LibybUsbEnumerator(yb::async_runner & runner)
-    : m_runner(runner), m_usb_context(m_runner)
+    : m_runner(runner), m_usb_context(m_runner), m_devenum(this), m_acm_conns(this)
 {
     connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
     m_refreshTimer.start(1000);
@@ -313,7 +313,10 @@ LibybUsbEnumerator::~LibybUsbEnumerator()
 
 void LibybUsbEnumerator::refresh()
 {
-    std::vector<yb::usb_device> dev_list = m_usb_context.get_device_list();
+    std::vector<yb::usb_device> dev_list;
+    std::vector<yb::usb_device_interface> intf_list;
+
+    m_usb_context.get_device_list(dev_list, intf_list);
 
     std::vector<dev_id> devs;
     for (size_t i = 0; i < dev_list.size(); ++i)
@@ -326,22 +329,58 @@ void LibybUsbEnumerator::refresh()
         devs.push_back(d);
     }
 
-    m_devenum.update(devs.begin(), devs.end(), [this](dev_id const & d) -> GenericUsbConnection * {
-        ConnectionPointer<GenericUsbConnection> conn(new GenericUsbConnection(m_runner, d.dev));
-        conn->setPersistent(!conn->serialNumber().isEmpty());
-        sConMgr2.addConnection(conn.data());
-        return conn.take();
-    }, [this](dev_id const & id, GenericUsbConnection * conn) {
-        conn->setDevice(id.dev);
-        conn->setRemovable(false);
-    }, [](GenericUsbConnection * conn) {
-        conn->clearDevice();
-        conn->setRemovable(true);
-    }, [](dev_id id) -> dev_id {
-        std::string s = id.dev.serial_number();
-        id.sn = QString::fromUtf8(s.data(), s.size());
-        return id;
-    });
+    m_devenum.update(devs.begin(), devs.end());
+
+    std::vector<acm_id> acm_ids;
+    for (size_t i = 0; i < intf_list.size(); ++i)
+    {
+        std::string const & name = intf_list[i].name();
+        //if (!name.empty() && name[0] == '.')
+        //    continue;
+
+        yb::usb_interface const & uintf = intf_list[i].descriptor();
+        if (uintf.altsettings.size() != 1)
+            continue;
+
+        yb::usb_interface_descriptor const & intf = uintf.altsettings[0];
+        if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0 && intf.bInterfaceProtocol == 0)
+        {
+            // Lookup endpoints
+            bool ok = true;
+            uint8_t inep = 0, outep = 0;
+            for (size_t j = 0; ok && j < intf.endpoints.size(); ++j)
+            {
+                if (intf.endpoints[j].bEndpointAddress & 0x80)
+                {
+                    if (inep)
+                        ok = false;
+                    else
+                        inep = intf.endpoints[j].bEndpointAddress;
+                }
+                else
+                {
+                    if (outep)
+                        ok = false;
+                    else
+                        outep = intf.endpoints[j].bEndpointAddress;
+                }
+            }
+
+            if (!ok || (!inep && !outep))
+                continue;
+
+            acm_id id;
+            id.dev = intf_list[i].device();
+            id.cfg_value = intf_list[i].config_value();
+            id.intfno = intf_list[i].interface_index();
+            id.intfname = name;
+            id.outep = outep;
+            id.inep = inep;
+            acm_ids.push_back(std::move(id));
+        }
+    }
+
+    m_acm_conns.update(acm_ids.begin(), acm_ids.end());
 }
 
 #endif // HAVE_LIBYB

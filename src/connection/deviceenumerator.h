@@ -10,14 +10,19 @@ class DeviceEnumeratorBase
 
 protected slots:
     virtual void connectionDestroyed() = 0;
+
+protected:
+    void registerConn(Connection * conn);
 };
 
-template <typename Conn, typename Id>
+template <typename Conn, typename Id, typename StandbyInfo>
 class DeviceEnumerator
     : public DeviceEnumeratorBase
 {
 public:
-    typedef typename Id::standby_info_type standby_info_type;
+    typedef Conn connection_type;
+    typedef Id id_type;
+    typedef StandbyInfo standby_info_type;
 
     ~DeviceEnumerator()
     {
@@ -32,15 +37,15 @@ public:
             it->first->releaseAll();
     }
 
-    template <typename ConstIterator, typename CreateFn, typename ResurrectFn, typename ClearFn>
-    void update(ConstIterator first, ConstIterator last, CreateFn const & create, ResurrectFn const & resurrect, ClearFn const & clear)
-    {
-        empty_update update;
-        this->update(first, last, create, resurrect, clear, update);
-    }
+    virtual connection_type * create(id_type const & id) = 0;
+    virtual void resurrect(id_type const & id, connection_type * conn) = 0;
+    virtual void clear(connection_type * conn) = 0;
+    virtual standby_info_type standby_info(id_type const & id, connection_type * conn) = 0;
+    virtual void update_id(id_type &) {}
+    virtual bool is_compatible(id_type const &, standby_info_type const &) { return true; }
 
-    template <typename ConstIterator, typename CreateFn, typename ResurrectFn, typename ClearFn, typename UpdateFn>
-    void update(ConstIterator first, ConstIterator last, CreateFn const & create, ResurrectFn const & resurrect, ClearFn const & clear, UpdateFn const & update)
+    template <typename ConstIterator>
+    void update(ConstIterator first, ConstIterator last)
     {
         {
             std::set<Id> ids(first, last);
@@ -52,7 +57,7 @@ public:
                     continue;
                 }
 
-                standby_info_type si = it->first.standby_info(it->second.data());
+                standby_info_type si = standby_info(it->first, it->second.data());
                 clear(it->second.data());
                 m_standby_conns[it->second.data()] = si;
 
@@ -70,11 +75,12 @@ public:
             if (it != m_seen_devices.end())
                 continue;
 
-            Id id2 = update(id);
+            Id id2 = id;
+            update_id(id2);
             typename std::map<Conn *, standby_info_type>::iterator compat_it;
             for (compat_it = m_standby_conns.begin(); compat_it != m_standby_conns.end(); ++compat_it)
             {
-                if (id2.compatible_with(compat_it->second))
+                if (is_compatible(id2, compat_it->second))
                     break;
             }
 
@@ -88,6 +94,8 @@ public:
             else
             {
                 ConnectionPointer<Conn> new_conn(create(id2));
+                this->registerConn(new_conn.data());
+
                 resurrect(id2, new_conn.data());
                 connect(new_conn.data(), SIGNAL(destroying()), static_cast<DeviceEnumeratorBase *>(this), SLOT(connectionDestroyed())); 
                 m_seen_devices.insert(std::make_pair(id2, new_conn));
@@ -113,12 +121,6 @@ protected:
     }
 
 private:
-    struct empty_update
-    {
-        Id & operator()(Id & id) const { return id; }
-        Id const & operator()(Id const & id) const { return id; }
-    };
-
     std::map<Id, ConnectionPointer<Conn> > m_seen_devices;
     std::map<Conn *, standby_info_type> m_standby_conns;
 };

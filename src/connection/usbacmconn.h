@@ -15,7 +15,10 @@ public:
     UsbAcmConnection2(yb::async_runner & runner);
     ~UsbAcmConnection2();
 
-    void setup(yb::usb_device const & dev, uint8_t intf, uint8_t outep, uint8_t inep);
+    QString details() const { return m_details; }
+    QString serialNumber() const { return m_serialNumber; }
+
+    void setup(yb::usb_device const & dev, uint8_t cfg_value, uint8_t intf, uint8_t outep, uint8_t inep);
     void clear();
 
     void OpenConcurrent();
@@ -27,6 +30,9 @@ public slots:
     void SendData(const QByteArray & data);
 
 private:
+    QString m_serialNumber;
+    QString m_details;
+
     yb::usb_device m_dev;
     uint8_t m_intf;
     uint8_t m_outep;

@@ -1,4 +1,5 @@
 #include "usbacmconn.h"
+#include "genericusbconn.h"
 #include <libyb/async/sync_runner.hpp>
 #include <QEvent>
 #include <QCoreApplication>
@@ -27,12 +28,33 @@ UsbAcmConnection2::UsbAcmConnection2(yb::async_runner & runner)
     this->SetState(st_removed);
 }
 
-void UsbAcmConnection2::setup(yb::usb_device const & dev, uint8_t intf, uint8_t outep, uint8_t inep)
+static QString fromUtf8(std::string const & s)
+{
+    return QString::fromUtf8(s.data(), s.size());
+}
+
+void UsbAcmConnection2::setup(yb::usb_device const & dev, uint8_t cfg_value, uint8_t intf, uint8_t outep, uint8_t inep)
 {
     m_dev = dev;
     m_intf = intf;
     m_outep = outep;
     m_inep = inep;
+    m_serialNumber = fromUtf8(dev.serial_number());
+
+    yb::usb_device_descriptor const & desc = dev.descriptor();
+    QString productName = fromUtf8(dev.product());
+    QString manufacturerName = fromUtf8(dev.manufacturer());
+
+    QStringList res;
+    res.push_back(QString("USB ACM %1.%2, %3:%4").arg(cfg_value).arg(intf).arg(outep, 2, 16, QChar('0')).arg(inep, 2, 16, QChar('0')));
+    if (!productName.isEmpty())
+        res.push_back(QString("%1:%2").arg(desc.idVendor, 4, 16, QChar('0')).arg(desc.idProduct, 4, 16, QChar('0')));
+    if (!manufacturerName.isEmpty())
+        res.push_back(manufacturerName);
+    if (!m_serialNumber.isEmpty())
+        res.push_back(m_serialNumber);
+    m_details = res.join(", ");
+
     this->SetState(st_disconnected);
 }
 
@@ -68,7 +90,7 @@ yb::task<void> UsbAcmConnection2::send_loop()
 
 void UsbAcmConnection2::OpenConcurrent()
 {
-    if (this->state() != st_connected)
+    if (this->state() != st_removed && this->state() != st_connected)
     {
         if (!m_dev.claim_interface(m_intf))
             return Utils::showErrorBox(tr("Cannot open the USB device."), 0);

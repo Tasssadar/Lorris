@@ -35,6 +35,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisTerminal/lorristerminal.cpp \
     LorrisTerminal/lorristerminalinfo.cpp \
     connection/connection.cpp \
+    connection/deviceenumerator.cpp \
     connection/serialport.cpp \
     LorrisTerminal/eeprom.cpp \
     LorrisAnalyzer/lorrisanalyzerinfo.cpp \
