@@ -395,7 +395,7 @@ void StatusManager::updateItems()
     QLinkedList<StatusWidget::status>::iterator itr = states.begin();
     for(int rowItr = 0; itr != states.end(); ++itr,++rowItr)
     {
-        m_rowVals.push_back(std::make_pair<quint64, bool>((*itr).id, (*itr).mask));
+        m_rowVals.push_back(std::make_pair((*itr).id, (*itr).mask));
 
         QTableWidgetItem *item = new QTableWidgetItem();
         item->setText(QString("%1%2").arg((*itr).mask ? "&" : "").arg((*itr).id));

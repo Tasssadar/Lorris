@@ -13,6 +13,7 @@
 
 #include "../shupito.h"
 #include "../../shared/hexfile.h"
+#include "../../shared/programmer.h"
 
 class LorrisShupito;
 class QSignalMapper;
@@ -54,7 +55,7 @@ public:
     ui_type getType() const { return m_ui_type; }
 
     virtual void setupUi(LorrisShupito *widget);
-    virtual void connectShupito(Shupito *) { }
+    virtual void connectProgrammer(Programmer *) { }
 
     virtual void connectedStatus(bool connected);
     virtual void tunnelStop(bool /*stop*/) { }
@@ -105,7 +106,8 @@ protected slots:
 protected:
     ShupitoUI(ui_type type, QObject *parent = 0);
 
-    ShupitoMode *mode() const;
+    Programmer *prog() const;
+
     void disableOvervoltVDDs();
     void changeVddColor(double val);
     void status(const QString& text)

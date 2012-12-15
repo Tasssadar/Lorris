@@ -35,6 +35,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisTerminal/lorristerminal.cpp \
     LorrisTerminal/lorristerminalinfo.cpp \
     connection/connection.cpp \
+    connection/deviceenumerator.cpp \
     connection/serialport.cpp \
     LorrisTerminal/eeprom.cpp \
     LorrisAnalyzer/lorrisanalyzerinfo.cpp \
@@ -67,6 +68,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/modes/shupitopdi.cpp \
     LorrisShupito/modes/shupitomode.cpp \
     LorrisShupito/modes/shupitocc25xx.cpp \
+    LorrisShupito/programmers/shupitoprogrammer.cpp \
     LorrisShupito/shupitopacket.cpp \
     connection/tcpsocket.cpp \
     LorrisProxy/lorrisproxyinfo.cpp \
@@ -151,6 +153,7 @@ HEADERS += ui/mainwindow.h \
     LorrisTerminal/lorristerminal.h \
     LorrisTerminal/lorristerminalinfo.h \
     connection/connection.h \
+    connection/deviceenumerator.h \
     connection/serialport.h \
     LorrisTerminal/eeprom.h \
     LorrisAnalyzer/lorrisanalyzer.h \
@@ -184,6 +187,7 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/modes/shupitopdi.h \
     LorrisShupito/modes/shupitomode.h \
     LorrisShupito/modes/shupitocc25xx.h \
+    LorrisShupito/programmers/shupitoprogrammer.h \
     LorrisShupito/shupitopacket.h \
     connection/tcpsocket.h \
     LorrisProxy/lorrisproxyinfo.h \
@@ -212,6 +216,7 @@ HEADERS += ui/mainwindow.h \
     pch.h \
     shared/fuse_desc.h \
     shared/defmgr.h \
+    shared/programmer.h \
     ../dep/ecwin7/ecwin7.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.h \
@@ -334,6 +339,10 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 win32 {
     CONFIG -= flat
     CONFIG += libusby libenjoy
+    
+    win32-msvc* {
+        CONFIG += libyb
+    }
 
     INCLUDEPATH += ../dep/SDL/include
 
@@ -358,10 +367,10 @@ win32 {
         ../dep/qextserialport/src/qextserialenumerator.cpp \
         misc/updater.cpp
 
-    LIBS += -lsetupapi -lwinmm -lole32
+    LIBS += -lsetupapi -lwinmm -lole32 -ladvapi32 -luser32
 }
 unix:!macx:!symbian {
-    CONFIG += libusby libenjoy
+    CONFIG += libusby libenjoy libyb
     LIBS += -lqextserialport_lorris
 
     system_qwt {
@@ -415,6 +424,21 @@ libusby {
         connection/usbshupitoconn.cpp
     HEADERS += \
         connection/usbshupitoconn.h
+}
+
+libyb {
+    include(../dep/libyb/libyb.pri)
+    DEFINES += HAVE_LIBYB
+
+    SOURCES += \
+        connection/genericusbconn.cpp \
+        connection/usbacmconn.cpp \
+        LorrisShupito/programmers/flipprogrammer.cpp
+
+    HEADERS += \
+        connection/genericusbconn.h \
+        connection/usbacmconn.h \
+        LorrisShupito/programmers/flipprogrammer.h
 }
 
 kate_editor:unix {

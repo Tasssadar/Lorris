@@ -199,7 +199,7 @@ void ShupitoMode::readMemRange(quint8 memid, QByteArray& memory, quint32 address
     memory.append(p);
 }
 
-void ShupitoMode::cancelRequested()
+void ShupitoMode::requestCancel()
 {
     m_cancel_requested = true;
 }

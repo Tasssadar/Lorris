@@ -33,6 +33,8 @@ public:
     ConnectionPointer<PortConnection> choosePort(ConnectionPointer<Connection> const & preselectedConn);
     ConnectionPointer<ShupitoConnection> chooseShupito(ConnectionPointer<Connection> const & preselectedConn);
 
+    ConnectionPointer<Connection> choose(PrimaryConnectionTypes allowedConns, ConnectionPointer<Connection> const & preselectedConn);
+
 private slots:
     void on_actionCreateSerialPort_triggered();
     void on_actionRemoveConnection_triggered();

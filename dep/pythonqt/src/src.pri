@@ -1,4 +1,5 @@
 DEFINES +=  PYTHONQT_EXPORTS
+INCLUDEPATH += $$PWD
 
 HEADERS +=                    \
   $$PWD/PythonQt.h                  \

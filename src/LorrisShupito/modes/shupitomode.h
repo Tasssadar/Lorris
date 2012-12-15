@@ -45,14 +45,13 @@ public:
 
     virtual void erase_device(chip_definition& chip);
 
-public slots:
-    void cancelRequested();
+    void requestCancel();
 
 protected:
     virtual void prepare();
     virtual ShupitoDesc::config *getModeCfg();
     virtual void editIdArgs(QString& id, quint8& id_lenght);
-    virtual bool is_read_memory_supported(chip_definition::memorydef */*memdef*/)
+    virtual bool is_read_memory_supported(chip_definition::memorydef * /*memdef*/)
     {
         return true;
     }

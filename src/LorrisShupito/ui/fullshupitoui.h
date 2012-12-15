@@ -26,7 +26,7 @@ public:
     ~FullShupitoUI();
 
     void setupUi(LorrisShupito *widget);
-    void connectShupito(Shupito *shupito);
+    void connectProgrammer(Programmer *prog);
     void connectedStatus(bool connected);
     void tunnelStop(bool stop);
     void setTunnelActive(bool active);
