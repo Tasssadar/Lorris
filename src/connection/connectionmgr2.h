@@ -131,6 +131,7 @@ private:
         {
             ConnectionPointer<GenericUsbConnection> conn(new GenericUsbConnection(m_self->m_runner, id.dev));
             conn->setPersistent(!conn->serialNumber().isEmpty());
+            conn->setRemovable(false);
             return conn.take();
         }
 
@@ -204,14 +205,10 @@ private:
         {
         }
 
-        virtual UsbAcmConnection2 * create(acm_id const &)
+        virtual UsbAcmConnection2 * create(acm_id const & id)
         {
-            return new UsbAcmConnection2(m_self->m_runner);
-        }
-
-        virtual void resurrect(id_type const & id, UsbAcmConnection2 * conn)
-        {
-			conn->setup(id.dev, id.cfg_value, id.intfno, id.outep, id.inep);
+            ConnectionPointer<UsbAcmConnection2> conn(new UsbAcmConnection2(m_self->m_runner));
+            conn->setup(id.dev, id.cfg_value, id.intfno, id.outep, id.inep);
 
             QString deviceName = GenericUsbConnection::formatDeviceName(id.dev);
             QString name;
@@ -220,6 +217,15 @@ private:
             else
                 name = QString("%1 @ %2").arg(QString::fromUtf8(id.intfname.data(), id.intfname.size()), deviceName);
             conn->setName(name);
+
+            conn->setRemovable(false);
+            conn->setPersistent(!id.intfname.empty());
+            return conn.take();
+        }
+
+        virtual void resurrect(id_type const & id, UsbAcmConnection2 * conn)
+        {
+            conn->setup(id.dev, id.cfg_value, id.intfno, id.outep, id.inep);
             conn->setRemovable(false);
             conn->setPersistent(!id.intfname.empty());
         }

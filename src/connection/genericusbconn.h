@@ -31,7 +31,6 @@ public:
     bool isFlipDevice() const;
 
     static QString formatDeviceName(yb::usb_device const & dev);
-    static QString formatDeviceDetails(yb::usb_device const & dev);
 
 private:
     yb::async_runner & m_runner;

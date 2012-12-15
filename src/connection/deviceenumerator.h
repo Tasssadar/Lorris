@@ -96,7 +96,6 @@ public:
                 ConnectionPointer<Conn> new_conn(create(id2));
                 this->registerConn(new_conn.data());
 
-                resurrect(id2, new_conn.data());
                 connect(new_conn.data(), SIGNAL(destroying()), static_cast<DeviceEnumeratorBase *>(this), SLOT(connectionDestroyed())); 
                 m_seen_devices.insert(std::make_pair(id2, new_conn));
             }
