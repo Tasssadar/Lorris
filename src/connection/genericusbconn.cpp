@@ -171,7 +171,7 @@ bool GenericUsbConnection::isShupito20Device(yb::usb_device const & dev)
 
 bool GenericUsbConnection::isFlipDevice(yb::usb_device const & dev)
 {
-    return !dev.empty() && dev.vidpid() == 0x03eb2fe4;
+    return !dev.empty() && (dev.vidpid() & 0xffffff00) == 0x03eb2f00;
 }
 
 bool GenericUsbConnection::isFlipDevice() const
