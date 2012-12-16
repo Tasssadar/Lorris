@@ -644,9 +644,6 @@ void LorrisShupito::saveToFile(int memId)
 {
     try
     {
-        if(m_cur_def.getName().isEmpty())
-            restartChip();
-
         QString filename = QFileDialog::getSaveFileName(this, QObject::tr("Export data"),
                                                         sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
                                                         filters);
