@@ -58,7 +58,7 @@
           <widget class="QToolButton" name="createConnectionBtn">
            <property name="icon">
             <iconset resource="../icons.qrc">
-             <normaloff>:/icons/icons/list-add.png</normaloff>:/icons/icons/list-add.png</iconset>
+             <normaloff>:/icons/list-add</normaloff>:/icons/list-add</iconset>
            </property>
            <property name="popupMode">
             <enum>QToolButton::InstantPopup</enum>
@@ -75,7 +75,7 @@
           <widget class="QToolButton" name="removeConnectionBtn">
            <property name="icon">
             <iconset resource="../icons.qrc">
-             <normaloff>:/icons/icons/list-remove.png</normaloff>:/icons/icons/list-remove.png</iconset>
+             <normaloff>:/icons/list-remove</normaloff>:/icons/list-remove</iconset>
            </property>
            <property name="autoRaise">
             <bool>true</bool>
@@ -152,7 +152,7 @@
           <enum>QFrame::Plain</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="homePage">
           <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -429,7 +429,7 @@
   <action name="actionRemoveConnection">
    <property name="icon">
     <iconset resource="../icons.qrc">
-     <normaloff>:/icons/icons/list-remove.png</normaloff>:/icons/icons/list-remove.png</iconset>
+     <normaloff>:/icons/list-remove</normaloff>:/icons/list-remove</iconset>
    </property>
    <property name="text">
     <string>Remove connection</string>
@@ -465,8 +465,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>526</x>
-     <y>466</y>
+     <x>536</x>
+     <y>660</y>
     </hint>
     <hint type="destinationlabel">
      <x>351</x>
@@ -481,8 +481,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>526</x>
-     <y>466</y>
+     <x>536</x>
+     <y>660</y>
     </hint>
     <hint type="destinationlabel">
      <x>351</x>

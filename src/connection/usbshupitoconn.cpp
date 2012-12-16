@@ -31,7 +31,7 @@ struct ScopedConfigDescriptor
 
 UsbAcmConnection::UsbAcmConnection(libusby::context & ctx)
     : PortConnection(CONNECTION_USB_ACM), m_handle(0), m_read_transfer(0), m_write_buffer_pos(0)
-{
+ {
     m_read_transfer = libusby_alloc_transfer(ctx.get(), 0);
     if (!m_read_transfer)
         throw std::runtime_error("Failed to allocate a USB transfer.");
@@ -42,6 +42,8 @@ UsbAcmConnection::UsbAcmConnection(libusby::context & ctx)
         libusby_free_transfer(m_read_transfer);
         throw std::runtime_error("Failed to allocate a USB transfer.");
     }
+
+    this->SetState(st_removed);
 }
 
 UsbAcmConnection::~UsbAcmConnection()
@@ -166,6 +168,12 @@ bool UsbAcmConnection::openImpl()
 
 void UsbAcmConnection::Close()
 {
+    this->closeImpl();
+    this->SetState(st_disconnected);
+}
+
+void UsbAcmConnection::closeImpl()
+{
     if (m_handle)
     {
         {
@@ -182,20 +190,19 @@ void UsbAcmConnection::Close()
         libusby_close(m_handle);
         m_handle = 0;
     }
-
-    this->SetState(st_disconnected);
 }
 
 bool UsbAcmConnection::setUsbDevice(libusby::device const & dev)
 {
-    if (this->state() == st_connected)
-        this->Close();
+    if (m_dev == dev)
+        return true;
 
-    Q_ASSERT(this->state() == st_disconnected);
+    this->closeImpl();
     m_dev = dev;
     if (m_dev && !this->updateStrings())
-        return false;
+        m_dev.clear();
 
+    this->SetState(m_dev.get()? st_disconnected: st_removed);
     emit changed();
     return true;
 }
@@ -347,6 +354,7 @@ UsbShupitoConnection::UsbShupitoConnection(libusby::context & ctx)
     connect(m_shupito_conn.data(), SIGNAL(packetRead(ShupitoPacket)), this, SIGNAL(packetRead(ShupitoPacket)));
     connect(m_shupito_conn.data(), SIGNAL(stateChanged(ConnectionState)), this, SLOT(shupitoConnStateChanged(ConnectionState)));
     connect(m_acm_conn.data(), SIGNAL(changed()), this, SLOT(acmConnChanged()));
+    this->shupitoConnStateChanged(m_shupito_conn->state());
 }
 
 UsbShupitoConnection::~UsbShupitoConnection()

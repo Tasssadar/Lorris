@@ -95,7 +95,7 @@ public:
             mode = QIcon::Selected;
         QIcon::State state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
 
-        painter->setOpacity(index.data(Qt::UserRole+3).value<bool>()? 1: 0.5);
+        painter->setOpacity(conn->state() == st_removed? 0.5: 1);
         index.data(Qt::DecorationRole).value<QIcon>().paint(painter, iconRect, opt.decorationAlignment, mode, state);
 
         QPalette::ColorGroup cg = opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
@@ -174,27 +174,34 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
 
 ConnectionPointer<PortConnection> ChooseConnectionDlg::choosePort(ConnectionPointer<Connection> const & preselectedConn)
 {
-    m_allowedConns = pct_port;
-    this->selectConn(preselectedConn.data());
-    if (this->exec() != QDialog::Accepted)
-        return ConnectionPointer<PortConnection>();
-    return m_current.dynamicCast<PortConnection>();
+    return this->choose(pct_port, preselectedConn).dynamicCast<PortConnection>();
 }
 
 ConnectionPointer<ShupitoConnection> ChooseConnectionDlg::chooseShupito(ConnectionPointer<Connection> const & preselectedConn)
 {
-    m_allowedConns = pct_port | pct_shupito;
+    return this->choose(pct_shupito, preselectedConn).dynamicCast<ShupitoConnection>();
+}
+
+ConnectionPointer<Connection> ChooseConnectionDlg::choose(PrimaryConnectionTypes allowedConns, ConnectionPointer<Connection> const & preselectedConn)
+{
+    m_allowedConns = allowedConns;
+    if (allowedConns & pct_shupito)
+        m_allowedConns |= pct_port;
+
     this->selectConn(preselectedConn.data());
     if (this->exec() != QDialog::Accepted)
-        return ConnectionPointer<ShupitoConnection>();
+        return ConnectionPointer<Connection>();
 
     if (PortConnection * pc = dynamic_cast<PortConnection *>(m_current.data()))
     {
-        ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
-        m_current = sc;
+        if ((allowedConns & pct_port) == 0)
+        {
+            ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
+            m_current = sc;
+        }
     }
 
-    return m_current.dynamicCast<ShupitoConnection>();
+    return m_current;
 }
 
 void ChooseConnectionDlg::selectConn(Connection * conn)
@@ -209,13 +216,19 @@ void ChooseConnectionDlg::connAdded(Connection * conn)
 {
     QListWidgetItem * item = new QListWidgetItem(conn->name(), ui->connectionsList);
 
-    // TODO: set icon based on the connection type
-    item->setIcon(QIcon(":/icons/icons/network-wired.png"));
+    switch (conn->getType())
+    {
+    case CONNECTION_LIBYB_USB:
+    case CONNECTION_USB_ACM2:
+        item->setIcon(QIcon(":/icons/icons/usb-conn.png"));
+        break;
+    default:
+        item->setIcon(QIcon(":/icons/icons/network-wired.png"));
+    }
 
     item->setData(Qt::UserRole, QVariant::fromValue(conn));
     item->setData(Qt::UserRole+1, conn->details());
     item->setData(Qt::UserRole+2, (int)conn->state());
-    item->setData(Qt::UserRole+3, (bool)conn->present());
 
     m_connectionItemMap[conn] = item;
     connect(conn, SIGNAL(changed()), this, SLOT(connChanged()));
@@ -235,7 +248,6 @@ void ChooseConnectionDlg::connChanged()
     item->setText(conn->name());
     item->setData(Qt::UserRole+1, conn->details());
     item->setData(Qt::UserRole+2, (int)conn->state());
-    item->setData(Qt::UserRole+3, (bool)conn->present());
     if (conn == m_current.data())
         this->updateDetailsUi(conn);
 }
@@ -347,6 +359,15 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
 
     bool enabled = ((m_allowedConns & pct_port) && dynamic_cast<PortConnection *>(conn))
             || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn));
+
+#ifdef HAVE_LIBYB
+    if (!enabled && (m_allowedConns & pct_flip))
+    {
+        if (GenericUsbConnection * uc = dynamic_cast<GenericUsbConnection *>(conn))
+            enabled = uc->isFlipDevice();
+    }
+#endif
+
     ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(enabled);
 
     ui->connectionNameEdit->setEnabled(true);

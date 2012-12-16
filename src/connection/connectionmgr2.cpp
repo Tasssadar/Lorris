@@ -298,6 +298,93 @@ void UsbShupitoEnumerator::shupitoConnectionDestroyed()
 
 #endif // HAVE_LIBUSBY
 
+#ifdef HAVE_LIBYB
+
+LibybUsbEnumerator::LibybUsbEnumerator(yb::async_runner & runner)
+    : m_runner(runner), m_usb_context(m_runner), m_devenum(this), m_acm_conns(this)
+{
+    connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
+    m_refreshTimer.start(1000);
+}
+
+LibybUsbEnumerator::~LibybUsbEnumerator()
+{
+}
+
+void LibybUsbEnumerator::refresh()
+{
+    std::vector<yb::usb_device> dev_list;
+    std::vector<yb::usb_device_interface> intf_list;
+
+    m_usb_context.get_device_list(dev_list, intf_list);
+
+    std::vector<dev_id> devs;
+    for (size_t i = 0; i < dev_list.size(); ++i)
+    {
+        if (!GenericUsbConnection::isFlipDevice(dev_list[i]))
+            continue;
+
+        dev_id d;
+        d.dev = dev_list[i];
+        devs.push_back(d);
+    }
+
+    m_devenum.update(devs.begin(), devs.end());
+
+    std::vector<acm_id> acm_ids;
+    for (size_t i = 0; i < intf_list.size(); ++i)
+    {
+        std::string const & name = intf_list[i].name();
+        //if (!name.empty() && name[0] == '.')
+        //    continue;
+
+        yb::usb_interface const & uintf = intf_list[i].descriptor();
+        if (uintf.altsettings.size() != 1)
+            continue;
+
+        yb::usb_interface_descriptor const & intf = uintf.altsettings[0];
+        if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0 && intf.bInterfaceProtocol == 0)
+        {
+            // Lookup endpoints
+            bool ok = true;
+            uint8_t inep = 0, outep = 0;
+            for (size_t j = 0; ok && j < intf.endpoints.size(); ++j)
+            {
+                if (intf.endpoints[j].bEndpointAddress & 0x80)
+                {
+                    if (inep)
+                        ok = false;
+                    else
+                        inep = intf.endpoints[j].bEndpointAddress;
+                }
+                else
+                {
+                    if (outep)
+                        ok = false;
+                    else
+                        outep = intf.endpoints[j].bEndpointAddress;
+                }
+            }
+
+            if (!ok || (!inep && !outep))
+                continue;
+
+            acm_id id;
+            id.dev = intf_list[i].device();
+            id.cfg_value = intf_list[i].config_value();
+            id.intfno = intf_list[i].interface_index();
+            id.intfname = name;
+            id.outep = outep;
+            id.inep = inep;
+            acm_ids.push_back(std::move(id));
+        }
+    }
+
+    m_acm_conns.update(acm_ids.begin(), acm_ids.end());
+}
+
+#endif // HAVE_LIBYB
+
 ConnectionManager2::ConnectionManager2(QObject * parent)
     : QObject(parent)
 {
@@ -308,6 +395,9 @@ ConnectionManager2::ConnectionManager2(QObject * parent)
 #ifdef HAVE_LIBUSBY
     m_usbShupitoEnumerator.reset(new UsbShupitoEnumerator());
 #endif // HAVE_LIBUSBY
+#ifdef HAVE_LIBYB
+    m_libybUsbEnumerator.reset(new LibybUsbEnumerator(m_yb_runner));
+#endif // HAVE_LIBYB
 
     QVariant config = sConfig.get(CFG_VARIANT_CONNECTIONS);
     if (config.isValid())
@@ -332,6 +422,9 @@ ConnectionManager2::~ConnectionManager2()
     m_serialPortEnumerator.reset();
 #ifdef HAVE_LIBUSBY
     m_usbShupitoEnumerator.reset();
+#endif // HAVE_LIBUSBY
+#ifdef HAVE_LIBYB
+    m_libybUsbEnumerator.reset();
 #endif // HAVE_LIBUSBY
 
     // All of the remaining connections should be owned by the manager and should
@@ -361,8 +454,8 @@ QVariant ConnectionManager2::config() const
             "proxy_tunnel",    // CONNECTION_PROXY_TUNNEL
         };
 
-        Q_ASSERT(sizeof_array(connTypes) == MAX_CON_TYPE);
-        Q_ASSERT(conn->getType() < MAX_CON_TYPE);
+        if (conn->getType() >= sizeof_array(connTypes))
+            continue;
 
         QHash<QString, QVariant> connConfig;
         connConfig["type"] = connTypes[conn->getType()];
@@ -445,6 +538,10 @@ void ConnectionManager2::refresh()
 #ifdef HAVE_LIBUSBY
     m_usbShupitoEnumerator->refresh();
 #endif // HAVE_LIBUSBY
+
+#ifdef HAVE_LIBYB
+    m_libybUsbEnumerator->refresh();
+#endif // HAVE_LIBYB
 }
 
 SerialPort * ConnectionManager2::createSerialPort()

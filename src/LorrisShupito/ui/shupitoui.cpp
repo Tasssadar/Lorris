@@ -58,9 +58,9 @@ void ShupitoUI::setupUi(LorrisShupito *widget)
     connect(this,   SIGNAL(statusBarMsg(QString,int)), widget, SIGNAL(statusBarMsg(QString,int)));
 }
 
-ShupitoMode *ShupitoUI::mode() const
+Programmer *ShupitoUI::prog() const
 {
-    return m_widget->mode();
+    return m_widget->m_programmer.data();
 }
 
 void ShupitoUI::clearVCC()
@@ -179,7 +179,7 @@ void ShupitoUI::readAll()
 
     try
     {
-        bool restart = !mode()->isInFlashMode();
+        bool restart = !prog()->isInFlashMode();
         chip_definition chip = m_widget->switchToFlashAndGetId();
 
         readMem(MEM_FLASH, chip);
@@ -189,7 +189,7 @@ void ShupitoUI::readAll()
         if(restart)
         {
             log("Switching to run mode");
-            mode()->switchToRunMode();
+            prog()->switchToRunMode();
         }
 
         status(tr("Data has been successfuly read"));
@@ -208,7 +208,7 @@ void ShupitoUI::readMemInFlash(quint8 memId)
 
     try
     {
-        bool restart = !mode()->isInFlashMode();
+        bool restart = !prog()->isInFlashMode();
         chip_definition chip = m_widget->switchToFlashAndGetId();
 
         readMem(memId, chip);
@@ -216,7 +216,7 @@ void ShupitoUI::readMemInFlash(quint8 memId)
         if(restart)
         {
             log("Switching to run mode");
-            mode()->switchToRunMode();
+            prog()->switchToRunMode();
         }
 
         setActiveMem(memId);
@@ -233,9 +233,9 @@ void ShupitoUI::readMem(quint8 memId, chip_definition &chip)
 {
     log("Reading memory");
 
-    m_widget->showProgressDialog(tr("Reading memory"), mode());
+    m_widget->showProgressDialog(tr("Reading memory"), prog());
 
-    QByteArray mem = mode()->readMemory(memNames[memId], chip);
+    QByteArray mem = prog()->readMemory(memNames[memId], chip);
     setHexData(memId, mem);
     setHexColor(memId, colorFromDevice);
     m_widget->m_hexFilenames[memId].clear();
@@ -252,7 +252,7 @@ void ShupitoUI::writeAll()
 
     try
     {
-        bool restart = !mode()->isInFlashMode();
+        bool restart = !prog()->isInFlashMode();
         chip_definition chip = m_widget->switchToFlashAndGetId();
 
         writeMem(MEM_FLASH, chip);
@@ -262,7 +262,7 @@ void ShupitoUI::writeAll()
         if(restart)
         {
             log("Switching to run mode");
-            mode()->switchToRunMode();
+            prog()->switchToRunMode();
         }
 
         status(tr("Data has been successfuly written"));
@@ -283,7 +283,7 @@ void ShupitoUI::writeMemInFlash(quint8 memId)
 
     try
     {
-        bool restart = !mode()->isInFlashMode();
+        bool restart = !prog()->isInFlashMode();
         chip_definition chip = m_widget->switchToFlashAndGetId();
 
         writeMem(memId, chip);
@@ -293,7 +293,7 @@ void ShupitoUI::writeMemInFlash(quint8 memId)
         if(restart)
         {
             log("Switching to run mode");
-            mode()->switchToRunMode();
+            prog()->switchToRunMode();
         }
 
         status(tr("Data has been successfuly written"));
@@ -320,7 +320,7 @@ void ShupitoUI::writeMem(quint8 memId, chip_definition &chip)
         throw QString(tr("Somethings wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
 
     log("Writing memory");
-    m_widget->showProgressDialog(tr("Writing memory"), mode());
+    m_widget->showProgressDialog(tr("Writing memory"), prog());
 
     QDateTime lastMod = m_widget->m_hexFlashTimes[memId];
     if(!m_widget->m_hexFilenames[memId].isEmpty())
@@ -336,7 +336,7 @@ void ShupitoUI::writeMem(quint8 memId, chip_definition &chip)
     HexFile file;
     file.setData(data);
 
-    mode()->flashRaw(file, memId, chip, m_widget->m_verify_mode);
+    prog()->flashRaw(file, memId, chip, m_widget->m_verify_mode);
     setHexColor(memId, colorFromDevice);
 
     m_widget->updateProgressDialog(-1);
@@ -354,18 +354,18 @@ void ShupitoUI::eraseDevice()
 
     try
     {
-        bool restart = !mode()->isInFlashMode();
+        bool restart = !prog()->isInFlashMode();
 
         chip_definition cd = m_widget->switchToFlashAndGetId();
 
         log("Erasing device");
         m_widget->showProgressDialog(tr("Erasing chip..."));
-        mode()->erase_device(cd);
+        prog()->erase_device(cd);
 
         if(restart)
         {
             log("Switching to run mode");
-            mode()->switchToRunMode();
+            prog()->switchToRunMode();
         }
 
         m_widget->updateProgressDialog(-1);

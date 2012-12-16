@@ -74,7 +74,11 @@ void PortShupitoConnection::Close()
 
 void PortShupitoConnection::portStateChanged(ConnectionState state)
 {
-    if (state == st_disconnected)
+    if (state == st_removed)
+    {
+        this->SetState(st_removed);
+    }
+    else if (state == st_disconnected)
     {
         releasePortTabRef();
         this->SetState(st_disconnected);

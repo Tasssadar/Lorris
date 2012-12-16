@@ -30,6 +30,11 @@
 #include "../ui/tooltipwarn.h"
 #include "../WorkTab/WorkTabMgr.h"
 #include "../connection/connectionmgr2.h"
+#include "programmers/shupitoprogrammer.h"
+
+#ifdef HAVE_LIBYB
+#include "programmers/flipprogrammer.h"
+#endif
 
 // When no packet from shupito is received for TIMEOUT_INTERVAL ms,
 // warning will appear
@@ -42,7 +47,8 @@ static const QString memNames[] = { "", "flash", "eeprom" };
 
 static const QString filters = QObject::tr("Intel HEX file (*.hex)");
 
-LorrisShupito::LorrisShupito() : WorkTab()
+LorrisShupito::LorrisShupito()
+    : WorkTab()
 {
     m_connectButton = NULL;
     ui = NULL;
@@ -53,23 +59,15 @@ LorrisShupito::LorrisShupito() : WorkTab()
     m_overvcc_turnoff = false;
     m_vcc = 0;
     lastVccIndex = 0;
-    m_desc = NULL;
     m_progress_dialog = NULL;
     m_state = 0;
-    m_vdd_config = NULL;
-    m_tunnel_config = NULL;
-    m_shupito = new Shupito(this);
 
-    m_cur_mode = sConfig.get(CFG_QUINT32_SHUPITO_MODE);
-    if(m_cur_mode >= MODE_COUNT)
-        m_cur_mode = MODE_SPI;
+    m_mode_act_signalmap = new QSignalMapper(this);
+    connect(m_mode_act_signalmap, SIGNAL(mapped(int)), SLOT(modeSelected(int)));
 
     m_prog_speed_hz = sConfig.get(CFG_QUINT32_SHUPITO_PRG_SPEED);
     if(m_prog_speed_hz < 1)
         m_prog_speed_hz = 2000000;
-
-    for(quint8 i = 0; i < MODE_COUNT; ++i)
-        m_modes[i] = ShupitoMode::getMode(i, m_shupito);
 
     initMenus();
     setUiType(UI_FULL);
@@ -78,12 +76,6 @@ LorrisShupito::LorrisShupito() : WorkTab()
 
     connect(qApp,                SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*,QWidget*)));
     connect(&m_timeout_timer,    SIGNAL(timeout()),                SLOT(timeout()));
-    connect(m_shupito, SIGNAL(descRead(bool)),                  SLOT(descRead(bool)));
-    connect(m_shupito, SIGNAL(vccValueChanged(quint8,double)),  SLOT(vccValueChanged(quint8,double)));
-    connect(m_shupito, SIGNAL(vddDesc(vdd_setup)),              SLOT(vddSetup(vdd_setup)));
-    connect(m_shupito, SIGNAL(tunnelStatus(bool)),              SLOT(tunnelStateChanged(bool)));
-
-    ui->connectShupito(m_shupito);
 
     connectedStatus(false);
 }
@@ -94,13 +86,44 @@ LorrisShupito::~LorrisShupito()
         m_con->releaseTab();
 
     stopAll(false);
-    delete m_shupito;
-    delete m_desc;
-
-    for(quint8 i = 0; i < MODE_COUNT; ++i)
-        delete m_modes[i];
-
     delete ui;
+}
+
+void LorrisShupito::updateModeBar()
+{
+    Q_ASSERT(m_modeBar);
+    Q_ASSERT(!m_modeBar->actions().empty());
+
+    for (size_t i = 0; i < m_mode_acts.size(); ++i)
+        delete m_mode_acts[i];
+    m_mode_acts.clear();
+
+    if (!m_programmer)
+        return;
+
+    QStringList modeList = m_programmer->getAvailableModes();
+    if (modeList.empty())
+        return;
+
+    QAction * before = static_cast<QAction *>(m_modeBar->actions()[0]);
+
+    for(quint8 i = 0; i < modeList.size(); ++i)
+    {
+        QAction * mode_act = new QAction(modeList[i], m_modeBar);
+
+        m_modeBar->insertAction(before, mode_act);
+        mode_act->setCheckable(true);
+        m_mode_acts.push_back(mode_act);
+
+        m_mode_act_signalmap->setMapping(mode_act, i);
+        connect(mode_act, SIGNAL(triggered()), m_mode_act_signalmap, SLOT(map()));
+    }
+ 
+    int currentMode = m_programmer->getMode();
+    Q_ASSERT(currentMode < m_mode_acts.size());
+    m_mode_acts[currentMode]->setChecked(true);
+
+    m_mode_acts.push_back(m_modeBar->insertSeparator(before));
 }
 
 void LorrisShupito::initMenus()
@@ -122,23 +145,6 @@ void LorrisShupito::initMenus()
 
     m_modeBar = new QMenu(tr("Mode"), this);
     addTopMenu(m_modeBar);
-
-    static const QString modeNames[] = { "SPI", "PDI", "cc25xx" };
-
-    QSignalMapper *signalMap = new QSignalMapper(this);
-
-    for(quint8 i = 0; i < MODE_COUNT; ++i)
-    {
-        m_mode_act[i] = m_modeBar->addAction(modeNames[i]);
-        m_mode_act[i]->setCheckable(true);
-
-        signalMap->setMapping(m_mode_act[i], i);
-        connect(m_mode_act[i], SIGNAL(triggered()), signalMap, SLOT(map()));
-    }
-    m_mode_act[m_cur_mode]->setChecked(true);
-    connect(signalMap, SIGNAL(mapped(int)), SLOT(modeSelected(int)));
-
-    m_modeBar->addSeparator();
 
     QMenu *verifyMenu = m_modeBar->addMenu(tr("Verify write"));
     QSignalMapper *verifyMap = new QSignalMapper(this);
@@ -207,17 +213,17 @@ void LorrisShupito::connectedStatus(bool connected)
 {
     if(connected)
     {
+        this->updateProgrammer();
+        Q_ASSERT(m_programmer.data());
         m_state &= ~(STATE_DISCONNECTED);
-        m_tunnel_config = 0;
-        m_vdd_config = 0;
+        updateStartStopUi(m_programmer->isInFlashMode());
 
-        delete m_desc;
-        m_desc = new ShupitoDesc();
-
-        m_shupito->init(m_con.data(), m_desc);
+        if (!m_programmer->supportsVdd())
+            setEnableButtons(true);
     }
     else
     {
+        m_programmer.reset();
         m_state |= STATE_DISCONNECTED;
         updateStartStopUi(false);
         m_timeout_timer.stop();
@@ -227,38 +233,11 @@ void LorrisShupito::connectedStatus(bool connected)
     ui->connectedStatus(connected);
 }
 
-void LorrisShupito::readPacket(const ShupitoPacket & packet)
-{
-    m_shupito->readPacket(packet);
-}
-
 void LorrisShupito::stopAll(bool wait)
 {
-    if(m_tunnel_config)
-    {
-        ui->tunnelStop(true);
-
-        m_shupito->setTunnelState(false);
-        m_shupito->setTunnelPipe(0);
-
-        if(!m_tunnel_config->always_active())
-        {
-            ShupitoPacket pkt = m_tunnel_config->getStateChangeCmd(false);
-            if(wait)
-                m_shupito->waitForPacket(pkt, MSG_INFO);
-            else
-                m_con->sendPacket(pkt);
-        }
-    }
-
-    if(m_vdd_config && !m_vdd_config->always_active())
-    {
-        ShupitoPacket pkt = m_vdd_config->getStateChangeCmd(false);
-        if(wait)
-            m_shupito->waitForPacket(pkt, MSG_INFO);
-        else
-            m_con->sendPacket(pkt);
-    }
+    if (m_programmer)
+        m_programmer->stopAll(wait);
+    ui->tunnelStop(true);
 }
 
 void LorrisShupito::onTabShow(const QString& filename)
@@ -275,60 +254,6 @@ void LorrisShupito::onTabShow(const QString& filename)
 
     if(m_con && m_con->getType() == CONNECTION_SERIAL_PORT)
         sConfig.set(CFG_STRING_SHUPITO_PORT, m_con->GetIDString());
-}
-
-void LorrisShupito::descRead(bool correct)
-{
-    if(!correct)
-    {
-        ui->log("Failed to read info from shupito!");
-        return Utils::showErrorBox(tr("Failed to read info from Shupito. If you're sure "
-                        "you're connected to shupito, try to disconnect and "
-                        "connect again"));
-    }
-
-    ui->log("Device GUID: " % m_desc->getGuid());
-
-    ShupitoDesc::intf_map map = m_desc->getInterfaceMap();
-    for(ShupitoDesc::intf_map::iterator itr = map.begin(); itr != map.end(); ++itr)
-        ui->log("Got interface GUID: " % itr.key());
-
-    m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
-    m_shupito->setVddConfig(m_vdd_config);
-    if(m_vdd_config)
-    {
-        if(!m_vdd_config->always_active())
-        {
-            ShupitoPacket pkt = m_vdd_config->getStateChangeCmd(true);
-            pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
-
-            if(pkt.size() == 2 && pkt[1] == 0)
-                ui->log("VDD started!");
-            else
-                ui->log("Could not start VDD!");
-        }
-        ShupitoPacket packet = makeShupitoPacket(m_vdd_config->cmd, 2, 0, 0);
-        m_con->sendPacket(packet);
-    }
-
-    m_tunnel_config = m_desc->getConfig("356e9bf7-8718-4965-94a4-0be370c8797c");
-    m_shupito->setTunnelConfig(m_tunnel_config);
-    if(m_tunnel_config && sConfig.get(CFG_BOOL_SHUPITO_TUNNEL))
-    {
-        if(!m_tunnel_config->always_active())
-        {
-            ShupitoPacket pkt = m_tunnel_config->getStateChangeCmd(true);
-            pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
-
-            if(pkt.size() == 2 && pkt[1] == 0)
-                ui->log("Tunnel started!");
-            else
-                ui->log("Could not start tunnel!");
-        }
-
-        m_shupito->setTunnelState(true);
-    }else
-        ui->setTunnelActive(false);
 }
 
 void LorrisShupito::vccValueChanged(quint8 id, double value)
@@ -379,8 +304,8 @@ void LorrisShupito::vddIndexChanged(int index)
 
     lastVccIndex = index;
 
-    ShupitoPacket p = makeShupitoPacket(MSG_VCC, 3, 1, 2, quint8(index));
-    m_con->sendPacket(p);
+    if (m_programmer)
+        m_programmer->setVddIndex(index);
 }
 
 void LorrisShupito::tunnelSpeedChanged(const QString &text)
@@ -388,30 +313,30 @@ void LorrisShupito::tunnelSpeedChanged(const QString &text)
     bool ok = false;
     quint32 speed = 0;
     speed = text.toInt(&ok);
-    if(ok)
-        m_shupito->setTunnelSpeed(speed);
+    if(ok && m_programmer)
+        m_programmer->setTunnelSpeed(speed);
 }
 
 void LorrisShupito::tunnelToggled(bool enable)
 {
-    if(!m_tunnel_config)
+    if (m_programmer)
     {
-        if(enable)
-            Utils::showErrorBox(tr("It looks like your Shupito does not support RS232 tunnel!"));
-        return;
+        if (!m_programmer->supportsTunnel())
+        {
+            if(enable)
+                Utils::showErrorBox(tr("It looks like your Shupito does not support RS232 tunnel!"));
+            return;
+        }
+
+        m_programmer->setTunnelState(enable);
     }
 
-    m_shupito->setTunnelState(enable);
     sConfig.set(CFG_BOOL_SHUPITO_TUNNEL, enable);
 }
 
 void LorrisShupito::tunnelStateChanged(bool opened)
 {
-    if(!m_tunnel_config)
-        return;
-
     ui->tunnelStateChanged(opened);
-
     ui->log(tr("RS232 tunnel %1").arg(opened ? tr("enabled") : tr("disabled")));
 }
 
@@ -424,21 +349,20 @@ void LorrisShupito::setTunnelName()
         return;
 
     sConfig.set(CFG_STRING_SHUPITO_TUNNEL, name);
-    m_shupito->setTunnelState(false, true);
-    m_shupito->setTunnelState(true);
+    if (m_programmer)
+    {
+        m_programmer->setTunnelState(false, true);
+        m_programmer->setTunnelState(true);
+    }
 }
 
 void LorrisShupito::modeSelected(int idx)
 {
-    if(!m_modes[idx])
-        Utils::showErrorBox(tr("This mode is unsupported by Lorris, for now."));
-    else
-    {
-        m_cur_mode = idx;
-        sConfig.set(CFG_QUINT32_SHUPITO_MODE, idx);
-    }
-    for(quint8 i = 0; i < MODE_COUNT; ++i)
-        m_mode_act[i]->setChecked(i == m_cur_mode);
+    Q_ASSERT(m_programmer);
+    m_programmer->setMode(idx);
+
+    for (size_t i = 1; i < m_mode_acts.size(); ++i)
+        m_mode_acts[i-1]->setChecked(i-1 == idx);
 }
 
 void LorrisShupito::progSpeedChanged(QString text)
@@ -459,6 +383,10 @@ void LorrisShupito::status(const QString &text)
 
 bool LorrisShupito::checkVoltage(bool active)
 {
+    Q_ASSERT(m_programmer);
+    if (!m_programmer->supportsVdd())
+        return true;
+
     bool error = !active ^ (m_vcc == 0.0);
     if(error)
     {
@@ -539,14 +467,15 @@ void LorrisShupito::updateProgressLabel(const QString &text)
 
 chip_definition LorrisShupito::switchToFlashAndGetId()
 {
+    Q_ASSERT(m_programmer);
+
     ui->log("Swithing to flash mode");
 
-    m_modes[m_cur_mode]->switchToFlashMode(m_prog_speed_hz);
+    m_programmer->switchToFlashMode(m_prog_speed_hz);
 
     ui->log("Reading device id");
 
-    chip_definition chip = m_modes[m_cur_mode]->readDeviceId();
-    m_shupito->setChipId(chip);
+    chip_definition chip = m_programmer->readDeviceId();
 
     ui->log("Got device id: " % chip.getSign());
 
@@ -581,6 +510,8 @@ void LorrisShupito::startstopChip()
 
 void LorrisShupito::startChip()
 {
+    Q_ASSERT(m_programmer);
+
     if(!checkVoltage(true))
         return;
 
@@ -588,7 +519,7 @@ void LorrisShupito::startChip()
     try
     {
         ui->log("Switching to run mode");
-        m_modes[m_cur_mode]->switchToRunMode();
+        m_programmer->switchToRunMode();
 
         status(tr("Chip has been started"));
     }
@@ -779,25 +710,54 @@ void LorrisShupito::focusChanged(QWidget *prev, QWidget */*curr*/)
         tryFileReload(ui->getMemIndex());
 }
 
+void LorrisShupito::updateProgrammer()
+{
+    if (!m_con)
+        return;
+
+    m_programmer.reset();
+    if (ConnectionPointer<ShupitoConnection> sc = m_con.dynamicCast<ShupitoConnection>())
+    {
+        m_programmer.reset(new ShupitoProgrammer(sc));
+    }
+#ifdef HAVE_LIBYB
+    else if (ConnectionPointer<GenericUsbConnection> fc = m_con.dynamicCast<GenericUsbConnection>())
+    {
+        if (fc->isFlipDevice())
+            m_programmer.reset(new FlipProgrammer(fc));
+    }
+#endif
+
+    if (!m_programmer)
+        return;
+
+    this->updateModeBar();
+
+    connect(m_programmer.data(), SIGNAL(vccValueChanged(quint8,double)),  SLOT(vccValueChanged(quint8,double)));
+    connect(m_programmer.data(), SIGNAL(vddDesc(vdd_setup)),              SLOT(vddSetup(vdd_setup)));
+    connect(m_programmer.data(), SIGNAL(tunnelStatus(bool)),              SLOT(tunnelStateChanged(bool)));
+
+    ui->connectProgrammer(m_programmer.data());
+}
+
 void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
 {
-    ConnectionPointer<ShupitoConnection> sc = con.dynamicCast<ShupitoConnection>();
-
     if (m_con)
         m_con->releaseTab();
 
-    m_con = sc;
+    m_con = con;
+    m_programmer.reset();
 
-    if(!sc)
-        return;
-
-    connect(m_con.data(), SIGNAL(packetRead(ShupitoPacket)), this, SLOT(readPacket(ShupitoPacket)));
-    connect(m_con.data(), SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
-    m_con->addTabRef();
-
-    m_connectButton->setConn(sc, false);
     if (m_con)
+    {
+        connect(m_con.data(), SIGNAL(connected(bool)), this, SLOT(connectedStatus(bool)));
+        m_con->addTabRef();
+
+        m_connectButton->setConn(m_con, false);
         connect(m_con.data(), SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
+    }
+
+    this->connectedStatus(m_con && m_con->isOpen());
 }
 
 void LorrisShupito::checkOvervoltage()
@@ -923,7 +883,7 @@ void LorrisShupito::createConnBtn(QToolButton *btn)
     Q_ASSERT(!m_connectButton);
 
     m_connectButton = new ConnectButton(btn);
-    m_connectButton->setConnectionType(pct_shupito);
+    m_connectButton->setConnectionTypes(pct_programmable);
     m_connectButton->setConn(m_con, false);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 }

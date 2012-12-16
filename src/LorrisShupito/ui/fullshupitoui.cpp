@@ -112,7 +112,6 @@ void FullShupitoUI::setupUi(LorrisShupito *widget)
     ui->flashWarnBox->setChecked(sConfig.get(CFG_BOOL_SHUPITO_SHOW_FLASH_WARN));
 
     widget->createConnBtn(ui->connectButton);
-    widget->m_shupito->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
 }
 
 void FullShupitoUI::initMenus()
@@ -143,10 +142,11 @@ void FullShupitoUI::initMenus()
     bar->addWidget(btn);
 }
 
-void FullShupitoUI::connectShupito(Shupito *shupito)
+void FullShupitoUI::connectProgrammer(Programmer * prog)
 {
-    connect(ui->terminal, SIGNAL(keyPressed(QString)),   shupito,      SLOT(sendTunnelData(QString)));
-    connect(shupito,  SIGNAL(tunnelData(QByteArray)),    ui->terminal, SLOT(appendText(QByteArray)));
+    connect(ui->terminal, SIGNAL(keyPressed(QString)),   prog,      SLOT(sendTunnelData(QString)));
+    connect(prog,  SIGNAL(tunnelData(QByteArray)),    ui->terminal, SLOT(appendText(QByteArray)));
+    m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
 }
 
 void FullShupitoUI::hideLogBtn(bool checked)
@@ -266,7 +266,7 @@ void FullShupitoUI::readFusesInFlash()
 
     try
     {
-        bool restart = !mode()->isInFlashMode();
+        bool restart = !prog()->isInFlashMode();
         chip_definition chip = m_widget->switchToFlashAndGetId();
 
         readFuses(chip);
@@ -274,7 +274,7 @@ void FullShupitoUI::readFusesInFlash()
         if(restart)
         {
             log("Switching to run mode");
-            mode()->switchToRunMode();
+            prog()->switchToRunMode();
         }
         status(tr("Fuses had been succesfully read"));
     }
@@ -293,7 +293,7 @@ void FullShupitoUI::readFuses(chip_definition& chip)
     std::vector<quint8>& data = m_fuse_widget->getFuseData();
     data.clear();
 
-    mode()->readFuses(data, chip);
+    prog()->readFuses(data, chip);
     m_fuse_widget->setFuses(chip);
 
     hideFusesBtn(true);
@@ -324,7 +324,7 @@ void FullShupitoUI::writeFusesInFlash()
 
     try
     {
-        bool restart = !mode()->isInFlashMode();
+        bool restart = !prog()->isInFlashMode();
         chip_definition chip = m_widget->switchToFlashAndGetId();
 
         writeFuses(chip);
@@ -332,7 +332,7 @@ void FullShupitoUI::writeFusesInFlash()
         if(restart)
         {
             log("Switching to run mode");
-            mode()->switchToRunMode();
+            prog()->switchToRunMode();
         }
         status(tr("Fuses had been succesfully written"));
     }
@@ -349,7 +349,7 @@ void FullShupitoUI::writeFuses(chip_definition &chip)
 
     log("Writing fuses");
     std::vector<quint8>& data = m_fuse_widget->getFuseData();
-    mode()->writeFuses(data, chip, m_widget->m_verify_mode);
+    prog()->writeFuses(data, chip, m_widget->m_verify_mode);
 }
 
 void FullShupitoUI::warnSecondFlash()
@@ -430,7 +430,7 @@ void FullShupitoUI::saveData(DataFileParser *file)
 
     file->writeBlockIdentifier("LorrShupitoTunnel");
     file->writeVal(ui->tunnelCheck->isChecked());
-    file->writeVal(m_widget->m_shupito->getTunnelSpeed());
+    file->writeVal(ui->tunnelSpeedBox->itemText(0).toInt());
 
     file->writeBlockIdentifier("LorrShupitoOvervcc");
     file->writeVal(ui->over_enable->isChecked());

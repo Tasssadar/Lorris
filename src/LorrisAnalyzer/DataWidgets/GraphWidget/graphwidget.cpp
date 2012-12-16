@@ -335,7 +335,7 @@ void GraphWidget::dropEvent(QDropEvent *event)
     str >> pos;
     str.readRawData((char*)&f, sizeof(f));
 
-    m_dropData = std::make_pair<quint32, DataFilter*>(pos, f);
+    m_dropData = std::make_pair(pos, f);
 
     if(m_add_dialog)
         delete m_add_dialog;

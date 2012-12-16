@@ -1,8 +1,9 @@
 # Shupito 2.2 (ACM based)
 SUBSYSTEM=="usb", ATTR{idVendor}=="4a61", ATTR{idProduct}=="679a", MODE="0666"
 
-# Shupito 2.3
+# Shupito 2.3 (test and real)
 SUBSYSTEM=="usb", ATTR{idVendor}=="4a61", ATTR{idProduct}=="679b", MODE="0666"
+SUBSYSTEM=="usb", ATTR{idVendor}=="4a61", ATTR{idProduct}=="679c", MODE="0666"
 
 # Atmel's DFU bootloaders
 SUBSYSTEM=="usb", ATTR{idVendor}=="03eb", ATTR{idProduct}=="2f??", MODE="0666"

@@ -9,7 +9,7 @@
 #include "chooseconnectiondlg.h"
 
 ConnectButton::ConnectButton(QToolButton * btn)
-    : QObject(btn), m_btn(btn), m_conn(0), m_connType(pct_port)
+    : QObject(btn), m_btn(btn), m_conn(0), m_connTypes(pct_port)
 {
     m_connectAction = m_menu.addAction(tr("Connect"));
     m_menu.setDefaultAction(m_connectAction);
@@ -25,7 +25,7 @@ ConnectButton::ConnectButton(QToolButton * btn)
 
 void ConnectButton::connectTriggered()
 {
-    if (!m_conn)
+    if (!m_conn || m_conn->state() == st_removed)
     {
         this->choose();
         if (m_conn && !m_conn->isOpen())
@@ -43,26 +43,15 @@ void ConnectButton::connectTriggered()
 ConnectionPointer<Connection> ConnectButton::choose()
 {
     ChooseConnectionDlg dialog(m_btn);
-
-    ConnectionPointer<Connection> port;
-    switch (m_connType)
-    {
-    case pct_port:
-         port = dialog.choosePort(m_conn);
-         break;
-    case pct_shupito:
-         port = dialog.chooseShupito(m_conn);
-         break;
-    }
-
+    ConnectionPointer<Connection> port = dialog.choose(m_connTypes, m_conn);
     if (port)
         this->setConn(port);
     return port;
 }
 
-void ConnectButton::setConnectionType(PrimaryConnectionType type)
+void ConnectButton::setConnectionTypes(PrimaryConnectionTypes type)
 {
-    m_connType = type;
+    m_connTypes = type;
 }
 
 void ConnectButton::setConn(ConnectionPointer<Connection> const & conn, bool emitConnChosen)
@@ -95,6 +84,7 @@ void ConnectButton::connectionStateChanged(ConnectionState state)
     switch (state)
     {
     case st_disconnected:
+    case st_removed:
         m_connectAction->setText(tr("Connect"));
         m_connectAction->setEnabled(true);
         break;

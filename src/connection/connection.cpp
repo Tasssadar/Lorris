@@ -10,7 +10,7 @@
 #include <QStringBuilder>
 
 Connection::Connection(ConnectionType type)
-    : m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_removable(true), m_persistent(false), m_type(type)
+    : m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_reconnectOnPlugin(false), m_removable(true), m_persistent(false), m_type(type)
 {
 }
 
@@ -32,12 +32,21 @@ void Connection::SetState(ConnectionState state)
     bool oldOpen = (m_state == st_connected);
     bool newOpen = (state == st_connected);
 
+    if (m_state != st_removed && state == st_removed)
+        m_reconnectOnPlugin = (m_tabcount != 0 && m_state != st_disconnected);
+
     if(state != m_state)
     {
         m_state = state;
         if (oldOpen != newOpen)
             emit connected(newOpen);
         emit stateChanged(state);
+    }
+
+    if (m_state == st_disconnected && m_reconnectOnPlugin)
+    {
+        m_reconnectOnPlugin = false;
+        this->OpenConcurrent();
     }
 }
 
@@ -72,7 +81,10 @@ void Connection::addTabRef()
 void Connection::releaseTab()
 {
     if(--m_tabcount == 0)
+    {
+        m_reconnectOnPlugin = false;
         Close();
+    }
     release();
 }
 

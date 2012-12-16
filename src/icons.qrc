@@ -6,6 +6,7 @@
         <file alias="list-add">icons/list-add.png</file>
         <file alias="list-remove">icons/list-remove.png</file>
         <file>icons/network-wired.png</file>
+        <file>icons/usb-conn.png</file>
         <file>icons/list-add-glow.png</file>
     </qresource>
 </RCC>

@@ -18,6 +18,8 @@
 *.bin
 *.gz
 *.pro.user*
+*.Release
+*.Debug
 
 #
 # Top-level generic files
@@ -50,6 +52,8 @@ Win32/*
 *.sln
 *.suo
 *.aps
+*.sdf
+*.opensdf
 object_script.Lorris.*
 # MacOS
 .DS_Store
@@ -60,3 +64,9 @@ object_script.Lorris.*
 moc_*.cpp
 ui_*.h
 qrc_*.cpp
+
+dep/qwt/src/debug/
+dep/qwt/src/release/
+dep/qwt/lib/
+src/ipch/
+src/pch.h.cpp

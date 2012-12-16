@@ -19,7 +19,8 @@
 enum ConnectionState {
     st_disconnected,
     st_connecting,
-    st_connected
+    st_connected,
+    st_removed
 };
 
 // TODO: maybe we should just remove this and use dynamic_cast?
@@ -32,13 +33,19 @@ enum ConnectionType
     CONNECTION_USB_SHUPITO = 4,
     CONNECTION_USB_ACM     = 5,
     CONNECTION_PROXY_TUNNEL= 6,
+    CONNECTION_FLIP        = 7,
+    CONNECTION_LIBYB_USB   = 8,
+    CONNECTION_USB_ACM2    = 9,
 
-    MAX_CON_TYPE           = 7
+    MAX_CON_TYPE           = 10
 };
 
 enum PrimaryConnectionType {
     pct_port = (1<<0),
-    pct_shupito = (1<<1)
+    pct_shupito = (1<<1),
+    pct_flip = (1<<2),
+
+    pct_programmable = pct_shupito | pct_flip
 };
 
 Q_DECLARE_FLAGS(PrimaryConnectionTypes, PrimaryConnectionType)
@@ -54,12 +61,10 @@ public:
     bool removable() const { return m_removable; }
     void setRemovable(bool value) { m_removable = value; emit changed(); }
 
-    virtual bool present() const { return true; }
-
     bool persistent() const { return m_persistent; }
     void setPersistent(bool value);
 
-    quint8 getType() { return m_type; }
+    quint8 getType() const { return m_type; }
 
     void setIDString(const QString& str) { if (m_idString != str) { m_idString = str; emit changed(); } }
     QString const & GetIDString() const { return m_idString; }
@@ -81,7 +86,7 @@ public:
     void addTabRef();
     void releaseTab();
 
-    // Emits the `destroying` singal to break all references,
+    // Emits the `destroying` signal to break all references,
     // then deletes the object.
     void releaseAll();
 
@@ -117,6 +122,7 @@ private:
     QString m_idString;
     int m_refcount;
     int m_tabcount;
+    bool m_reconnectOnPlugin;
     bool m_removable;
     bool m_persistent;
     quint8 m_type;

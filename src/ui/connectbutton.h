@@ -22,7 +22,7 @@ class ConnectButton : public QObject
 public:
     ConnectButton(QToolButton * btn);
     void setConn(ConnectionPointer<Connection> const & conn, bool emitConnChosen = true);
-    void setConnectionType(PrimaryConnectionType type);
+    void setConnectionTypes(PrimaryConnectionTypes type);
 
     QToolButton *btn() const { return m_btn; }
 
@@ -44,7 +44,7 @@ private:
 
     QToolButton * m_btn;
     ConnectionPointer<Connection> m_conn;
-    PrimaryConnectionType m_connType;
+    PrimaryConnectionTypes m_connTypes;
 };
 
 #endif // UI_CONNECTBUTTON_H
