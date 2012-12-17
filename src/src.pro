@@ -433,11 +433,13 @@ libyb {
     SOURCES += \
         connection/genericusbconn.cpp \
         connection/usbacmconn.cpp \
+        connection/usbshupito23conn.cpp \
         LorrisShupito/programmers/flipprogrammer.cpp
 
     HEADERS += \
         connection/genericusbconn.h \
         connection/usbacmconn.h \
+        connection/usbshupito23conn.h \
         LorrisShupito/programmers/flipprogrammer.h
 }
 

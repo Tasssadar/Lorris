@@ -83,6 +83,8 @@ public:
     void OpenConcurrent();
     void Close();
 
+    void requestDesc();
+
     static bool isDeviceSupported(libusby::device & dev);
 
 public slots:

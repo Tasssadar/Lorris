@@ -4,7 +4,8 @@ PortShupitoConnection::PortShupitoConnection()
     : ShupitoConnection(CONNECTION_PORT_SHUPITO),
       m_port(0),
       m_holdsTabRef(false),
-      m_parserState(pst_discard)
+      m_parserState(pst_discard),
+      m_readDesc(false)
 {
 }
 
@@ -149,7 +150,7 @@ void PortShupitoConnection::portDataRead(QByteArray const & data)
             m_partialPacket.push_back(ch >> 4);
             if (m_parserLen == 0)
             {
-                emit packetRead(m_partialPacket);
+                this->handlePacket(m_partialPacket);
                 m_parserState = pst_discard;
             }
             else
@@ -162,7 +163,7 @@ void PortShupitoConnection::portDataRead(QByteArray const & data)
             m_partialPacket.push_back(ch);
             if (m_partialPacket.size() == m_parserLen + 1)
             {
-                emit packetRead(m_partialPacket);
+                this->handlePacket(m_partialPacket);
                 m_parserState = pst_discard;
             }
             break;
@@ -200,4 +201,39 @@ void PortShupitoConnection::releasePortTabRef()
 
     if(m_port)
         m_port->releaseTab();
+}
+
+void PortShupitoConnection::requestDesc()
+{
+    if (!m_readDesc)
+        this->sendPacket(makeShupitoPacket(0, 1, 0x00));
+    m_readDesc = true;
+}
+
+void PortShupitoConnection::handlePacket(ShupitoPacket const & packet)
+{
+    if (m_readDesc && packet[0] == 0)
+    {
+        m_partialDesc.append((char const *)packet.data() + 1, packet.size() - 1);
+        if (packet.size() < 16)
+        {
+            m_readDesc = false;
+
+            ShupitoDesc desc;
+            try
+            {
+                desc.AddData(m_partialDesc);
+                emit descRead(desc);
+            }
+            catch (...)
+            {
+            }
+
+            m_partialPacket.clear();
+        }
+    }
+    else
+    {
+        emit packetRead(packet);
+    }
 }

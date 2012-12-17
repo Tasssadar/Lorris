@@ -36,8 +36,9 @@ enum ConnectionType
     CONNECTION_FLIP        = 7,
     CONNECTION_LIBYB_USB   = 8,
     CONNECTION_USB_ACM2    = 9,
+    CONNECTION_SHUPITO23   = 10,
 
-    MAX_CON_TYPE           = 10
+    MAX_CON_TYPE           = 11
 };
 
 enum PrimaryConnectionType {

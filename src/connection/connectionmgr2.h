@@ -10,6 +10,7 @@
 
 #include "../connection/connection.h"
 #include "../connection/shupitoconn.h"
+#include "../connection/usbshupito23conn.h"
 #include <QString>
 #include <QTimer>
 #include <QHash>
@@ -101,25 +102,25 @@ private:
     yb::usb_context m_usb_context;
     QTimer m_refreshTimer;
 
-    struct standby_info_type
+    struct usb_dev_standby
     {
         uint32_t vidpid;
         QString sn;
     };
 
-    struct dev_id
+    struct usb_dev_id
     {
         yb::usb_device dev;
         QString sn;
 
-        friend bool operator<(dev_id const & lhs, dev_id const & rhs)
+        friend bool operator<(usb_dev_id const & lhs, usb_dev_id const & rhs)
         {
             return lhs.dev < rhs.dev;
         }
     };
 
     class GenericUsbEnumerator
-        : public DeviceEnumerator<GenericUsbConnection, dev_id, standby_info_type>
+        : public DeviceEnumerator<GenericUsbConnection, usb_dev_id, usb_dev_standby>
     {
     public:
         GenericUsbEnumerator(LibybUsbEnumerator * self)
@@ -127,7 +128,7 @@ private:
         {
         }
 
-        virtual GenericUsbConnection * create(dev_id const & id)
+        virtual GenericUsbConnection * create(usb_dev_id const & id)
         {
             ConnectionPointer<GenericUsbConnection> conn(new GenericUsbConnection(m_self->m_runner, id.dev));
             conn->setPersistent(!conn->serialNumber().isEmpty());
@@ -147,9 +148,9 @@ private:
             conn->setRemovable(true);
         }
 
-        virtual standby_info_type standby_info(id_type const & id, connection_type * conn)
+        virtual usb_dev_standby standby_info(id_type const & id, connection_type * conn)
         {
-            standby_info_type info;
+            usb_dev_standby info;
             info.vidpid = id.dev.vidpid();
             info.sn = conn->serialNumber();
             return info;
@@ -161,7 +162,7 @@ private:
             id.sn = QString::fromUtf8(s.data(), s.size());
         }
 
-        virtual bool is_compatible(id_type const & id, standby_info_type const & si)
+        virtual bool is_compatible(id_type const & id, usb_dev_standby const & si)
         {
             return id.dev.vidpid() == si.vidpid && id.sn == si.sn;
         }
@@ -174,20 +175,20 @@ private:
 
     struct acm_id_standby
     {
+        usb_dev_standby dev_standby;
         uint8_t intfno;
         std::string intfname;
     };
 
     struct acm_id
+        : usb_dev_id
     {
-		uint8_t cfg_value;
+        uint8_t cfg_value;
         uint8_t intfno;
         std::string intfname;
 
         uint8_t outep;
         uint8_t inep;
-
-        yb::usb_device dev;
 
         friend bool operator<(acm_id const & lhs, acm_id const & rhs)
         {
@@ -239,6 +240,7 @@ private:
         virtual acm_id_standby standby_info(id_type const & id, UsbAcmConnection2 *)
         {
             acm_id_standby info;
+            //info.dev_standby = 
             info.intfno = id.intfno;
             info.intfname = id.intfname;
             return info;
@@ -255,6 +257,46 @@ private:
     };
 
     UsbAcmEnumerator m_acm_conns;
+
+    class Shupito23Enumerator
+        : public DeviceEnumerator<UsbShupito23Connection, yb::usb_device_interface, yb::usb_device_interface>
+    {
+    public:
+        Shupito23Enumerator(yb::async_runner & runner)
+            : m_runner(runner)
+        {
+        }
+
+        connection_type * create(id_type const & id)
+        {
+            ConnectionPointer<UsbShupito23Connection> conn(new UsbShupito23Connection(m_runner));
+            conn->setup(id);
+            conn->setName(GenericUsbConnection::formatDeviceName(id.device()));
+            return conn.take();
+        }
+
+        void resurrect(id_type const &, connection_type *)
+        {
+        }
+
+        void clear(connection_type *)
+        {
+        }
+
+        standby_info_type standby_info(id_type const & id, connection_type *)
+        {
+            return id;
+        }
+
+        bool is_compatible(id_type const &, standby_info_type const &)
+        {
+            return false;
+        }
+
+        yb::async_runner & m_runner;
+    };
+
+    Shupito23Enumerator m_shupito23_conns;
 };
 
 #endif // HAVE_LIBYB

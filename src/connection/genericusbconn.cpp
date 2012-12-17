@@ -169,6 +169,11 @@ bool GenericUsbConnection::isShupito20Device(yb::usb_device const & dev)
     return dev.vidpid() == 0x4a61679a;
 }
 
+bool GenericUsbConnection::isShupito23Device(yb::usb_device const & dev)
+{
+    return dev.vidpid() == 0x4a61679c;
+}
+
 bool GenericUsbConnection::isFlipDevice(yb::usb_device const & dev)
 {
     return !dev.empty() && (dev.vidpid() & 0xffffff00) == 0x03eb2f00;

@@ -220,6 +220,7 @@ void ChooseConnectionDlg::connAdded(Connection * conn)
     {
     case CONNECTION_LIBYB_USB:
     case CONNECTION_USB_ACM2:
+    case CONNECTION_SHUPITO23:
         item->setIcon(QIcon(":/icons/icons/usb-conn.png"));
         break;
     default:

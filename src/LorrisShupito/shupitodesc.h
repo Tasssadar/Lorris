@@ -37,6 +37,7 @@ public:
 
     ShupitoDesc();
 
+    bool isEmpty() const { return m_guid.isEmpty(); }
     void Clear();
 
     void AddData(const QByteArray &data);

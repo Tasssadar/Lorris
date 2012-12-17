@@ -19,6 +19,10 @@
 #include "usbshupitoconn.h"
 #endif // HAVE_LIBUSBY
 
+#ifdef HAVE_LIBYB
+#include "usbshupito23conn.h"
+#endif // HAVE_LIBUSBY
+
 ConnectionManager2 * psConMgr2 = 0;
 
 SerialPortEnumerator::SerialPortEnumerator()
@@ -301,7 +305,7 @@ void UsbShupitoEnumerator::shupitoConnectionDestroyed()
 #ifdef HAVE_LIBYB
 
 LibybUsbEnumerator::LibybUsbEnumerator(yb::async_runner & runner)
-    : m_runner(runner), m_usb_context(m_runner), m_devenum(this), m_acm_conns(this)
+    : m_runner(runner), m_usb_context(m_runner), m_devenum(this), m_acm_conns(this), m_shupito23_conns(m_runner)
 {
     connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
     m_refreshTimer.start(1000);
@@ -318,33 +322,40 @@ void LibybUsbEnumerator::refresh()
 
     m_usb_context.get_device_list(dev_list, intf_list);
 
-    std::vector<dev_id> devs;
+    std::vector<usb_dev_id> devs;
     for (size_t i = 0; i < dev_list.size(); ++i)
     {
         if (!GenericUsbConnection::isFlipDevice(dev_list[i]))
             continue;
 
-        dev_id d;
+        usb_dev_id d;
         d.dev = dev_list[i];
         devs.push_back(d);
     }
 
     m_devenum.update(devs.begin(), devs.end());
 
+    std::vector<yb::usb_device_interface> shupito23_ids;
     std::vector<acm_id> acm_ids;
     for (size_t i = 0; i < intf_list.size(); ++i)
     {
         std::string const & name = intf_list[i].name();
-        //if (!name.empty() && name[0] == '.')
-        //    continue;
 
         yb::usb_interface const & uintf = intf_list[i].descriptor();
         if (uintf.altsettings.size() != 1)
             continue;
 
         yb::usb_interface_descriptor const & intf = uintf.altsettings[0];
-        if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0 && intf.bInterfaceProtocol == 0)
+        if (GenericUsbConnection::isShupito23Device(intf_list[i].device()) && intf.bInterfaceClass == 0xff
+            && intf.in_descriptor_count() > 0 && intf.out_descriptor_count() == 1)
         {
+            shupito23_ids.push_back(intf_list[i]);
+        }
+        else if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0 && intf.bInterfaceProtocol == 0)
+        {
+            //if (!name.empty() && name[0] == '.')
+            //    continue;
+
             // Lookup endpoints
             bool ok = true;
             uint8_t inep = 0, outep = 0;
@@ -381,6 +392,7 @@ void LibybUsbEnumerator::refresh()
     }
 
     m_acm_conns.update(acm_ids.begin(), acm_ids.end());
+    m_shupito23_conns.update(shupito23_ids.begin(), shupito23_ids.end());
 }
 
 #endif // HAVE_LIBYB

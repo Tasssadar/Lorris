@@ -57,7 +57,6 @@ LorrisShupito::LorrisShupito()
     m_overvcc = 0.0;
     m_enable_overvcc = false;
     m_overvcc_turnoff = false;
-    m_vcc = 0;
     lastVccIndex = 0;
     m_progress_dialog = NULL;
     m_state = 0;
@@ -213,6 +212,7 @@ void LorrisShupito::connectedStatus(bool connected)
 {
     if(connected)
     {
+        m_vcc = -1;
         this->updateProgrammer();
         Q_ASSERT(m_programmer.data());
         m_state &= ~(STATE_DISCONNECTED);

@@ -352,6 +352,7 @@ UsbShupitoConnection::UsbShupitoConnection(libusby::context & ctx)
     m_shupito_conn.reset(new PortShupitoConnection());
     m_shupito_conn->setPort(m_acm_conn);
     connect(m_shupito_conn.data(), SIGNAL(packetRead(ShupitoPacket)), this, SIGNAL(packetRead(ShupitoPacket)));
+    connect(m_shupito_conn.data(), SIGNAL(descRead(ShupitoDesc)), this, SIGNAL(descRead(ShupitoDesc)));
     connect(m_shupito_conn.data(), SIGNAL(stateChanged(ConnectionState)), this, SLOT(shupitoConnStateChanged(ConnectionState)));
     connect(m_acm_conn.data(), SIGNAL(changed()), this, SLOT(acmConnChanged()));
     this->shupitoConnStateChanged(m_shupito_conn->state());
@@ -401,4 +402,9 @@ void UsbShupitoConnection::shupitoConnStateChanged(ConnectionState state)
 void UsbShupitoConnection::acmConnChanged()
 {
     emit changed();
+}
+
+void UsbShupitoConnection::requestDesc()
+{
+    m_shupito_conn->requestDesc();
 }
