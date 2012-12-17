@@ -48,7 +48,7 @@ static const QString memNames[] = { "", "flash", "eeprom" };
 static const QString filters = QObject::tr("Intel HEX file (*.hex)");
 
 LorrisShupito::LorrisShupito()
-    : WorkTab()
+    : WorkTab(), m_logsink(this)
 {
     m_connectButton = NULL;
     ui = NULL;
@@ -718,13 +718,13 @@ void LorrisShupito::updateProgrammer()
     m_programmer.reset();
     if (ConnectionPointer<ShupitoConnection> sc = m_con.dynamicCast<ShupitoConnection>())
     {
-        m_programmer.reset(new ShupitoProgrammer(sc));
+        m_programmer.reset(new ShupitoProgrammer(sc, &m_logsink));
     }
 #ifdef HAVE_LIBYB
     else if (ConnectionPointer<GenericUsbConnection> fc = m_con.dynamicCast<GenericUsbConnection>())
     {
         if (fc->isFlipDevice())
-            m_programmer.reset(new FlipProgrammer(fc));
+            m_programmer.reset(new FlipProgrammer(fc, &m_logsink));
     }
 #endif
 

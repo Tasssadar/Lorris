@@ -12,7 +12,7 @@ class ShupitoProgrammer
     Q_OBJECT
 
 public:
-    ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn);
+    ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn, ProgrammerLogSink * logsink);
     ~ShupitoProgrammer();
 
     bool supportsVdd() const { return true; }

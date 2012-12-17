@@ -188,6 +188,24 @@ private:
     bool m_buttons_enabled;
 
     QScopedPointer<Programmer> m_programmer;
+
+    struct LogSink
+        : ProgrammerLogSink
+    {
+        explicit LogSink(LorrisShupito * self)
+            : m_self(self)
+        {
+        }
+
+        void log(QString const & msg)
+        {
+            m_self->ui->log(msg);
+        }
+
+        LorrisShupito * m_self;
+    };
+
+    LogSink m_logsink;
 };
 
 #endif // LORRISSHUPITO_H

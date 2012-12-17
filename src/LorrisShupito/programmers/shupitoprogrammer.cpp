@@ -1,8 +1,8 @@
 #include "shupitoprogrammer.h"
 #include <QStringBuilder>
 
-ShupitoProgrammer::ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn)
-    : m_con(conn), m_vdd_config(0), m_tunnel_config(0)
+ShupitoProgrammer::ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn, ProgrammerLogSink * logsink)
+    : Programmer(logsink), m_con(conn), m_vdd_config(0), m_tunnel_config(0)
 {
     m_desc = 0;
     m_shupito = new Shupito(this);
@@ -161,17 +161,17 @@ void ShupitoProgrammer::descRead(bool correct)
 {
     if(!correct)
     {
-        emit this->log("Failed to read info from shupito!");
+        this->log("Failed to read info from shupito!");
         return Utils::showErrorBox(tr("Failed to read info from Shupito. If you're sure "
             "you're connected to shupito, try to disconnect and "
             "connect again"));
     }
 
-    emit this->log("Device GUID: " % m_desc->getGuid());
+    this->log("Device GUID: " % m_desc->getGuid());
 
     ShupitoDesc::intf_map map = m_desc->getInterfaceMap();
     for(ShupitoDesc::intf_map::iterator itr = map.begin(); itr != map.end(); ++itr)
-        emit this->log("Got interface GUID: " % itr.key());
+        this->log("Got interface GUID: " % itr.key());
 
     m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
     m_shupito->setVddConfig(m_vdd_config);
@@ -183,9 +183,9 @@ void ShupitoProgrammer::descRead(bool correct)
             pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
 
             if(pkt.size() == 2 && pkt[1] == 0)
-                emit this->log("VDD started!");
+                this->log("VDD started!");
             else
-                emit this->log("Could not start VDD!");
+                this->log("Could not start VDD!");
         }
         ShupitoPacket packet = makeShupitoPacket(m_vdd_config->cmd, 2, 0, 0);
         m_con->sendPacket(packet);
@@ -201,9 +201,9 @@ void ShupitoProgrammer::descRead(bool correct)
             pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
 
             if(pkt.size() == 2 && pkt[1] == 0)
-                emit this->log("Tunnel started!");
+                this->log("Tunnel started!");
             else
-                emit this->log("Could not start tunnel!");
+                this->log("Could not start tunnel!");
         }
 
         m_shupito->setTunnelState(true);
