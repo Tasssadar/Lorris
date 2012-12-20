@@ -285,6 +285,15 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             ui->tcPortEdit->setValue(tc->port());
         }
         break;
+    case CONNECTION_USB_ACM2:
+        {
+            UsbAcmConnection2 * sp = static_cast<UsbAcmConnection2 *>(conn);
+            ui->settingsStack->setCurrentWidget(ui->serialPortPage);
+            updateEditText(ui->spBaudRateEdit->lineEdit(), QString::number((int)sp->baudRate()));
+            updateEditText(ui->spDeviceNameEdit, "");
+            ui->spDeviceNameEdit->setEnabled(false);
+        }
+        break;
     default:
         {
             ui->settingsStack->setCurrentWidget(ui->homePage);
@@ -397,14 +406,18 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
 {
     if (!m_current)
         return;
-    Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT);
 
     bool ok;
     int editValue = arg1.toInt(&ok);
     if (!ok)
         return;
 
-    static_cast<SerialPort *>(m_current.data())->setBaudRate(editValue);
+    Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT
+        || m_current->getType() == CONNECTION_USB_ACM2);
+    if (SerialPort * c = dynamic_cast<SerialPort *>(m_current.data()))
+        c->setBaudRate(editValue);
+    else if (UsbAcmConnection2 * c = dynamic_cast<UsbAcmConnection2 *>(m_current.data()))
+        c->setBaudRate(editValue);
 }
 
 void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)

@@ -18,7 +18,10 @@ public:
     QString details() const { return m_details; }
     QString serialNumber() const { return m_serialNumber; }
 
-    void setup(yb::usb_device const & dev, uint8_t cfg_value, uint8_t intf, uint8_t outep, uint8_t inep);
+    int baudRate() const { return m_baudrate; }
+    void setBaudRate(int value) { m_baudrate = value; emit changed(); }
+
+    void setup(yb::usb_device_interface const & intf, uint8_t outep, uint8_t inep);
     void clear();
 
     void OpenConcurrent();
@@ -33,10 +36,12 @@ private:
     QString m_serialNumber;
     QString m_details;
 
-    yb::usb_device m_dev;
-    uint8_t m_intf;
+    yb::usb_device_interface m_intf;
     uint8_t m_outep;
     uint8_t m_inep;
+
+    bool m_configurable;
+    int m_baudrate;
 
     yb::async_runner & m_runner;
     yb::async_future<void> m_receive_worker;

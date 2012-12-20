@@ -342,8 +342,6 @@ void LibybUsbEnumerator::refresh()
         std::string const & name = intf_list[i].name();
 
         yb::usb_interface const & uintf = intf_list[i].descriptor();
-        if (uintf.altsettings.size() != 1)
-            continue;
 
         yb::usb_interface_descriptor const & intf = uintf.altsettings[0];
         if (GenericUsbConnection::isShupito23Device(intf_list[i].device()) && intf.bInterfaceClass == 0xff
@@ -351,7 +349,7 @@ void LibybUsbEnumerator::refresh()
         {
             shupito23_ids.push_back(intf_list[i]);
         }
-        else if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0 && intf.bInterfaceProtocol == 0)
+        else if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0)
         {
             //if (!name.empty() && name[0] == '.')
             //    continue;
@@ -381,6 +379,7 @@ void LibybUsbEnumerator::refresh()
                 continue;
 
             acm_id id;
+            id.intf = intf_list[i];
             id.dev = intf_list[i].device();
             id.cfg_value = intf_list[i].config_value();
             id.intfno = intf_list[i].interface_index();

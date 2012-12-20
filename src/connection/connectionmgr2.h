@@ -183,6 +183,7 @@ private:
     struct acm_id
         : usb_dev_id
     {
+        yb::usb_device_interface intf;
         uint8_t cfg_value;
         uint8_t intfno;
         std::string intfname;
@@ -209,7 +210,7 @@ private:
         virtual UsbAcmConnection2 * create(acm_id const & id)
         {
             ConnectionPointer<UsbAcmConnection2> conn(new UsbAcmConnection2(m_self->m_runner));
-            conn->setup(id.dev, id.cfg_value, id.intfno, id.outep, id.inep);
+            conn->setup(id.intf, id.outep, id.inep);
 
             QString deviceName = GenericUsbConnection::formatDeviceName(id.dev);
             QString name;
@@ -226,7 +227,7 @@ private:
 
         virtual void resurrect(id_type const & id, UsbAcmConnection2 * conn)
         {
-            conn->setup(id.dev, id.cfg_value, id.intfno, id.outep, id.inep);
+            conn->setup(id.intf, id.outep, id.inep);
             conn->setRemovable(false);
             conn->setPersistent(!id.intfname.empty());
         }
