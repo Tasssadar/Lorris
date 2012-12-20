@@ -61,7 +61,10 @@ void ShupitoMode::switchToFlashMode(quint32 speed_hz)
     ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base, 2, (quint8)bsel, (quint8)(bsel >> 8));
 
     pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base);
-    if(pkt.size() != 2 || pkt[1] != 0)
+    if(pkt.size() != 2)
+        throw QString(QObject::tr("Failed to switch to the flash mode"));
+
+    if (pkt[1] != 0)
         throw QString(QObject::tr("Failed to switch to the flash mode (error %1)")).arg((int)pkt[1]);
 
     m_prepared = true;
