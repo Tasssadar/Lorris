@@ -11,6 +11,7 @@
 #include <QColor>
 #include <qwt_plot.h>
 #include <qwt_plot_panner.h>
+#include <qwt_plot_magnifier.h>
 
 #include "ui_graphmarkerdialog.h"
 
@@ -85,6 +86,18 @@ private slots:
 private:
     int m_lastX;
     int m_lastY;
+};
+
+class Magnifier : public QwtPlotMagnifier
+{
+    Q_OBJECT
+public:
+    explicit Magnifier(QwtPlotCanvas *canvas) : QwtPlotMagnifier(canvas)
+    {
+    }
+
+protected:
+    virtual void widgetWheelEvent(QWheelEvent *event);
 };
 
 class GraphMarkerDialog : public QDialog, private Ui::GraphMarkerDialog

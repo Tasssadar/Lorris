@@ -36,7 +36,7 @@
 Graph::Graph(QWidget *parent) : QwtPlot(parent)
 {
     // zoom in/out with the wheel
-    QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( canvas() );
+    Magnifier *magnifier = new Magnifier( canvas() );
     magnifier->setMouseButton(Qt::NoButton);
 
     // panning with the left mouse button
@@ -351,6 +351,12 @@ void Panner::moveAxes(int dx, int dy)
     moveCanvas(dx - m_lastX, dy - m_lastY);
     m_lastX = dx;
     m_lastY = dy;
+}
+
+void Magnifier::widgetWheelEvent(QWheelEvent *e)
+{
+    QWheelEvent modEv(e->pos(), -e->delta(), e->buttons(), e->modifiers(), e->orientation());
+    QwtPlotMagnifier::widgetWheelEvent(&modEv);
 }
 
 GraphMarkerDialog::GraphMarkerDialog(QWidget *parent) : QDialog(parent), ui(new Ui::GraphMarkerDialog)
