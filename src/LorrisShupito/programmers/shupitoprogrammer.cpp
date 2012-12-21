@@ -8,15 +8,7 @@ ShupitoProgrammer::ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const 
     m_shupito = new Shupito(this);
 
     for(quint8 i = 0; i < MODE_COUNT; ++i)
-    {
-        m_modes[i] = ShupitoMode::getMode(i, m_shupito);
-        connect(m_modes[i], SIGNAL(updateProgressDialog(int)), this, SIGNAL(updateProgressDialog(int)));
-        connect(m_modes[i], SIGNAL(updateProgressLabel(QString)), this, SIGNAL(updateProgressLabel(QString)));
-    }
-
-    m_cur_mode = sConfig.get(CFG_QUINT32_SHUPITO_MODE);
-    if(m_cur_mode >= MODE_COUNT)
-        m_cur_mode = MODE_SPI;
+        m_modes[i] = 0;
 
     connect(m_shupito, SIGNAL(descRead(bool)),                  SLOT(descRead(bool)));
     connect(m_shupito, SIGNAL(vccValueChanged(quint8,double)),  SIGNAL(vccValueChanged(quint8,double)));
@@ -49,20 +41,43 @@ QStringList ShupitoProgrammer::getAvailableModes()
 
     QStringList modes;
     for (int i = 0; i < MODE_COUNT; ++i)
-        modes.append(modeNames[i]);
+    {
+        if (m_modes[i])
+            modes.append(modeNames[i]);
+    }
     return modes;
 }
 
 int ShupitoProgrammer::getMode()
 {
-    return m_cur_mode;
+    int res = 0;
+    for (int i = 0; i < m_cur_mode; ++i)
+    {
+        if (m_modes[i])
+            ++res;
+    }
+    return res;
 }
 
 void ShupitoProgrammer::setMode(int mode)
 {
     Q_ASSERT(mode >= 0 && mode < MODE_COUNT);
-    m_cur_mode = mode;
-    sConfig.set(CFG_QUINT32_SHUPITO_MODE, mode);
+    for (int i = 0; i < MODE_COUNT; ++i)
+    {
+        if (!m_modes[i])
+            continue;
+
+        if (mode == 0)
+        {
+            m_cur_mode = i;
+            sConfig.set(CFG_QUINT32_SHUPITO_MODE, i);
+            return;
+        }
+
+        --mode;
+    }
+
+    m_cur_mode = 0;
 }
 
 void ShupitoProgrammer::readPacket(const ShupitoPacket & packet)
@@ -172,6 +187,28 @@ void ShupitoProgrammer::descRead(bool correct)
     ShupitoDesc::intf_map map = m_desc->getInterfaceMap();
     for(ShupitoDesc::intf_map::iterator itr = map.begin(); itr != map.end(); ++itr)
         this->log("Got interface GUID: " % itr.key());
+
+    for(quint8 i = 0; i < MODE_COUNT; ++i)
+    {
+        delete m_modes[i];
+        m_modes[i] = 0;
+    }
+
+    for(quint8 i = 0; i < MODE_COUNT; ++i)
+    {
+        m_modes[i] = ShupitoMode::getMode(i, m_shupito, m_desc);
+        if (m_modes[i])
+        {
+            connect(m_modes[i], SIGNAL(updateProgressDialog(int)), this, SIGNAL(updateProgressDialog(int)));
+            connect(m_modes[i], SIGNAL(updateProgressLabel(QString)), this, SIGNAL(updateProgressLabel(QString)));
+        }
+    }
+
+    m_cur_mode = sConfig.get(CFG_QUINT32_SHUPITO_MODE);
+    if(m_cur_mode >= MODE_COUNT)
+        m_cur_mode = MODE_SPI;
+    if (!m_modes[m_cur_mode])
+        this->setMode(0);
 
     m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
     m_shupito->setVddConfig(m_vdd_config);

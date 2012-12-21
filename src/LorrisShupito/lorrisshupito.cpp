@@ -733,6 +733,7 @@ void LorrisShupito::updateProgrammer()
 
     this->updateModeBar();
 
+    connect(m_programmer.data(), SIGNAL(modesChanged()),                  SLOT(updateModeBar()));
     connect(m_programmer.data(), SIGNAL(vccValueChanged(quint8,double)),  SLOT(vccValueChanged(quint8,double)));
     connect(m_programmer.data(), SIGNAL(vddDesc(vdd_setup)),              SLOT(vddSetup(vdd_setup)));
     connect(m_programmer.data(), SIGNAL(tunnelStatus(bool)),              SLOT(tunnelStateChanged(bool)));

@@ -29,7 +29,7 @@ Q_SIGNALS:
 public:
     ShupitoMode(Shupito *shupito);
 
-    static ShupitoMode *getMode(quint8 mode, Shupito *shupito);
+    static ShupitoMode *getMode(quint8 mode, Shupito *shupito, ShupitoDesc *desc);
 
     bool isInFlashMode() { return m_flash_mode; }
 

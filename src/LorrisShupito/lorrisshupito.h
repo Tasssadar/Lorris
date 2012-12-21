@@ -124,6 +124,8 @@ private slots:
 
     void timeout();
 
+    void updateModeBar();
+
 private:
     void updateProgrammer();
     bool checkVoltage(bool active);
@@ -133,7 +135,6 @@ private:
     chip_definition switchToFlashAndGetId();
     void update_chip_description(chip_definition &cd);
     void initMenus();
-    void updateModeBar();
 
     void checkOvervoltage();
     void shutdownVcc();

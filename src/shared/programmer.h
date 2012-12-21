@@ -24,6 +24,8 @@ class Programmer
     Q_OBJECT
 
 signals:
+    void modesChanged();
+
     void vccValueChanged(quint8 id, double value);
     void vddDesc(const vdd_setup& vs);
     void tunnelStatus(bool);
