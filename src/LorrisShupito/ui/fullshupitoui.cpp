@@ -355,7 +355,10 @@ void FullShupitoUI::writeFuses(chip_definition &chip)
 void FullShupitoUI::warnSecondFlash()
 {
     if(ui->flashWarnBox->isChecked())
+    {
         new ToolTipWarn(tr("You have flashed this file already, and it was not changed since."), ui->writeButton, m_widget);
+        Utils::playErrorSound();
+    }
 }
 
 int FullShupitoUI::getMemIndex()

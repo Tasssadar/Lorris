@@ -801,6 +801,7 @@ void LorrisShupito::timeout()
     {
         m_timeout_warn = new ToolTipWarn(tr("Shupito is not responding, try to re-plug it into computer!"),
                                          m_connectButton->btn(), this, -1);
+        Utils::playErrorSound();
     }
 }
 
