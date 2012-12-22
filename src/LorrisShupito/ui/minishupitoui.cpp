@@ -8,7 +8,6 @@
 #include "minishupitoui.h"
 #include "../../misc/utils.h"
 #include "../lorrisshupito.h"
-#include "flashbuttonmenu.h"
 #include "../../misc/datafileparser.h"
 
 MiniShupitoUI::MiniShupitoUI(QObject *parent) :
