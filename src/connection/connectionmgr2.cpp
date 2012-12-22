@@ -25,12 +25,18 @@ SerialPortEnumerator::SerialPortEnumerator()
 {
     connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
     m_refreshTimer.start(1000);
+
+    QVariant cfg = sConfig.get(CFG_VARIANT_SERIAL_CONNECTIONS);
+    if(cfg.type() == QVariant::Hash)
+        m_connCfg = cfg.toHash();
 }
 
 SerialPortEnumerator::~SerialPortEnumerator()
 {
     std::set<SerialPort *> portsToClear;
     portsToClear.swap(m_ownedPorts);
+
+    sConfig.set(CFG_VARIANT_SERIAL_CONNECTIONS, config(portsToClear));
 
     for (std::set<SerialPort *>::iterator it = portsToClear.begin(); it != portsToClear.end(); ++it)
         (*it)->releaseAll();
@@ -54,6 +60,10 @@ void SerialPortEnumerator::refresh()
             portGuard->setFriendlyName(info.friendName);
             portGuard->setBaudRate(38400);
             portGuard->setDevNameEditable(false);
+
+            QHash<QString, QVariant>::iterator cfgIt = m_connCfg.find(info.physName);
+            if(cfgIt != m_connCfg.end() && (*cfgIt).type() == QVariant::Hash)
+                portGuard->applyConfig((*cfgIt).toHash());
 
             connect(portGuard.data(), SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
             m_portMap[info.physName] = portGuard.data();
@@ -95,6 +105,15 @@ void SerialPortEnumerator::connectionDestroyed()
     SerialPort * port = static_cast<SerialPort *>(this->sender());
     Q_ASSERT(m_ownedPorts.find(port) == m_ownedPorts.end());
     m_portMap.remove(port->deviceName());
+}
+
+QHash<QString, QVariant> SerialPortEnumerator::config(const std::set<SerialPort *>& ports)
+{
+    QHash<QString, QVariant> cfg;
+    for(std::set<SerialPort *>::const_iterator itr = ports.begin(); itr != ports.end(); ++itr)
+        cfg[(*itr)->deviceName()] = (*itr)->config();
+
+    return cfg;
 }
 
 #ifdef HAVE_LIBUSBY
