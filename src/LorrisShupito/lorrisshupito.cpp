@@ -201,6 +201,11 @@ void LorrisShupito::initMenus()
     connect(m_save_flash,  SIGNAL(triggered()), signalMapSave, SLOT(map()));
     connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
 
+    m_blink_led = new QAction(tr("Blink LED"), this);
+    m_blink_led->setEnabled(false);
+    connect(m_blink_led, SIGNAL(triggered()), this, SLOT(blinkLed()));
+    addTopAction(m_blink_led);
+
     m_miniUi = new QAction(tr("Minimal UI"), this);
     m_miniUi->setCheckable(true);
     addTopAction(m_miniUi);
@@ -239,6 +244,7 @@ void LorrisShupito::connectedStatus(bool connected)
         m_timeout_timer.stop();
 
         setEnableButtons(false);
+        m_blink_led->setEnabled(false);
     }
     ui->connectedStatus(connected);
 }
@@ -749,6 +755,9 @@ void LorrisShupito::updateProgrammer()
     connect(m_programmer.data(), SIGNAL(vddDesc(vdd_setup)),              SLOT(vddSetup(vdd_setup)));
     connect(m_programmer.data(), SIGNAL(tunnelStatus(bool)),              SLOT(tunnelStateChanged(bool)));
 
+    connect(m_programmer.data(), SIGNAL(blinkLedSupport(bool)), m_blink_led, SLOT(setEnabled(bool)));
+    m_blink_led->setEnabled(m_programmer->canBlinkLed());
+
     ui->connectProgrammer(m_programmer.data());
 }
 
@@ -959,4 +968,10 @@ void LorrisShupito::buttonPressed(int btnid)
     // FIXME: the button should be ignored if an action is in progress
     if (btnid == 0 && m_buttons_enabled && m_enableHardwareButton->isChecked())
         ui->writeSelectedMem();
+}
+
+void LorrisShupito::blinkLed()
+{
+    if (m_programmer)
+        m_programmer->blinkLed();
 }

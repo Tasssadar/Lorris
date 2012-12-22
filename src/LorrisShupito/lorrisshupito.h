@@ -129,6 +129,8 @@ private slots:
     void buttonPressed(int btnid);
     void enableHardwareButtonToggled(bool checked);
 
+    void blinkLed();
+
 private:
     void updateProgrammer();
     bool checkVoltage(bool active);
@@ -158,6 +160,7 @@ private:
     QAction *m_load_eeprom;
     QAction *m_save_flash;
     QAction *m_save_eeprom;
+    QAction *m_blink_led;
     QAction *m_miniUi;
 
     QMenu *m_modeBar;

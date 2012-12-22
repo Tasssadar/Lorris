@@ -251,6 +251,11 @@ void ShupitoProgrammer::descRead(bool correct)
         emit this->tunnelActive(false);
 
     m_btn_config = m_desc->getConfig("e5e646a8-beb6-4a68-91f2-f005c72e9e57");
+
+    m_led_config = m_desc->getConfig("9034d141-c47e-406b-a6fd-3f5887729f8f");
+    if (m_led_config)
+        m_shupito->sendPacket(makeShupitoPacket(m_led_config->cmd, 1, 1));
+    emit blinkLedSupport(/*supported=*/m_led_config != 0);
 }
 
 void ShupitoProgrammer::stopAll(bool wait)
@@ -288,4 +293,14 @@ void ShupitoProgrammer::sendTunnelData(QString const & data)
 void ShupitoProgrammer::cancelRequested()
 {
     m_modes[m_cur_mode]->requestCancel();
+}
+
+bool ShupitoProgrammer::canBlinkLed()
+{
+    return m_led_config != 0;
+}
+
+void ShupitoProgrammer::blinkLed()
+{
+    m_shupito->sendPacket(makeShupitoPacket(m_led_config->cmd, 1, 2));
 }

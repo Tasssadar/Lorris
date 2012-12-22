@@ -38,6 +38,8 @@ signals:
 
     void buttonPressed(int btnid);
 
+    void blinkLedSupport(bool supported);
+
 public:
     explicit Programmer(ProgrammerLogSink * logsink)
         : m_logsink(logsink)
@@ -70,6 +72,9 @@ public:
     virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode) = 0;
 
     virtual void erase_device(chip_definition& chip) = 0;
+
+    virtual bool canBlinkLed() { return false; }
+    virtual void blinkLed() {}
 
 public slots:
     virtual void sendTunnelData(QString const &) {}
