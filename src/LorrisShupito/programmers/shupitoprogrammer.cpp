@@ -83,6 +83,9 @@ void ShupitoProgrammer::setMode(int mode)
 void ShupitoProgrammer::readPacket(const ShupitoPacket & packet)
 {
     m_shupito->readPacket(packet);
+
+    if (m_btn_config && packet.size() >= 3 && packet[0] == m_btn_config->cmd && packet[1] == 1 && (packet[2] & 1) != 0)
+        emit buttonPressed(0);
 }
 
 void ShupitoProgrammer::setVddIndex(int index)
@@ -246,6 +249,8 @@ void ShupitoProgrammer::descRead(bool correct)
         m_shupito->setTunnelState(true);
     }else
         emit this->tunnelActive(false);
+
+    m_btn_config = m_desc->getConfig("e5e646a8-beb6-4a68-91f2-f005c72e9e57");
 }
 
 void ShupitoProgrammer::stopAll(bool wait)

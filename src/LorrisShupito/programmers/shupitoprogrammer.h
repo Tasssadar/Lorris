@@ -56,6 +56,7 @@ private slots:
 private:
     ShupitoDesc::config *m_vdd_config;
     ShupitoDesc::config *m_tunnel_config;
+    ShupitoDesc::config *m_btn_config;
 
     Shupito *m_shupito;
     ShupitoMode *m_modes[MODE_COUNT];

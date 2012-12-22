@@ -36,6 +36,8 @@ public:
         return m_hexData[memid];
     }
 
+    void writeSelectedMem();
+
 protected:
     QToolButton *startStopBtn() const { return ui->startStopBtn; }
     QBoxLayout *vddLayout() const { return ui->vddLayout; }

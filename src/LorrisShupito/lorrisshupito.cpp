@@ -733,6 +733,7 @@ void LorrisShupito::updateProgrammer()
 
     this->updateModeBar();
 
+    connect(m_programmer.data(), SIGNAL(buttonPressed(int)),              SLOT(buttonPressed(int)));
     connect(m_programmer.data(), SIGNAL(modesChanged()),                  SLOT(updateModeBar()));
     connect(m_programmer.data(), SIGNAL(vccValueChanged(quint8,double)),  SLOT(vccValueChanged(quint8,double)));
     connect(m_programmer.data(), SIGNAL(vddDesc(vdd_setup)),              SLOT(vddSetup(vdd_setup)));
@@ -872,7 +873,7 @@ void LorrisShupito::loadData(DataFileParser *file)
 
 void LorrisShupito::setEnableButtons(bool enable)
 {
-    if(!(enable ^ m_buttons_enabled))
+    if(enable == m_buttons_enabled)
         return;
 
     m_buttons_enabled = enable;
@@ -941,4 +942,11 @@ void LorrisShupito::setMiniUi(bool mini)
 
     if(!m_hexFilenames[MEM_FLASH].isEmpty())
         ui->setFileAndTime(m_hexFilenames[MEM_FLASH], QFileInfo(m_hexFilenames[MEM_FLASH]).lastModified());
+}
+
+void LorrisShupito::buttonPressed(int btnid)
+{
+    // FIXME: the button should be ignored if an action is in progress
+    if (btnid == 0 && m_buttons_enabled)
+        ui->writeSelectedMem();
 }

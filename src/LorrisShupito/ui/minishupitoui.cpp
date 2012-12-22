@@ -146,3 +146,8 @@ void MiniShupitoUI::loadData(DataFileParser *file)
         m_over_val = file->readVal<double>();
     }
 }
+
+void MiniShupitoUI::writeSelectedMem()
+{
+    this->writeFlashBtn();
+}

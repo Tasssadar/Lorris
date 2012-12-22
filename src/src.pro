@@ -133,7 +133,6 @@ SOURCES += ui/mainwindow.cpp \
     misc/formulaevaluation.cpp \
     LorrisShupito/ui/shupitoui.cpp \
     LorrisShupito/ui/fullshupitoui.cpp \
-    LorrisShupito/ui/flashbuttonmenu.cpp \
     LorrisShupito/ui/progressdialog.cpp \
     LorrisShupito/ui/overvccdialog.cpp \
     LorrisShupito/ui/fusewidget.cpp \
@@ -257,7 +256,6 @@ HEADERS += ui/mainwindow.h \
     misc/formulaevaluation.h \
     LorrisShupito/ui/shupitoui.h \
     LorrisShupito/ui/fullshupitoui.h \
-    LorrisShupito/ui/flashbuttonmenu.h \
     LorrisShupito/ui/progressdialog.h \
     LorrisShupito/ui/overvccdialog.h \
     LorrisShupito/ui/fusewidget.h \

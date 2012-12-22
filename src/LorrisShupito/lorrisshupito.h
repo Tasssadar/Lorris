@@ -126,6 +126,8 @@ private slots:
 
     void updateModeBar();
 
+    void buttonPressed(int btnid);
+
 private:
     void updateProgrammer();
     bool checkVoltage(bool active);

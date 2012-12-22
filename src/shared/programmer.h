@@ -36,6 +36,8 @@ signals:
     void updateProgressDialog(int);
     void updateProgressLabel(QString const &);
 
+    void buttonPressed(int btnid);
+
 public:
     explicit Programmer(ProgrammerLogSink * logsink)
         : m_logsink(logsink)
