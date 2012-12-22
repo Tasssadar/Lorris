@@ -170,6 +170,11 @@ void LorrisShupito::initMenus()
     QAction *setTunnelName = m_modeBar->addAction(tr("Set RS232 tunnel name..."));
     connect(setTunnelName, SIGNAL(triggered()), SLOT(setTunnelName()));
 
+    m_enableHardwareButton = m_modeBar->addAction(tr("Enable hardware button"));
+    m_enableHardwareButton->setCheckable(true);
+    m_enableHardwareButton->setChecked(sConfig.get(CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON));
+    connect(m_enableHardwareButton, SIGNAL(toggled(bool)), this, SLOT(enableHardwareButtonToggled(bool)));
+
     QMenu *dataBar = new QMenu(tr("Data"), this);
     addTopMenu(dataBar);
 
@@ -201,6 +206,11 @@ void LorrisShupito::initMenus()
     addTopAction(m_miniUi);
 
     connect(m_miniUi, SIGNAL(triggered(bool)), SLOT(setMiniUi(bool)));
+}
+
+void LorrisShupito::enableHardwareButtonToggled(bool checked)
+{
+    sConfig.set(CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON, checked);
 }
 
 void LorrisShupito::connDisconnecting()
@@ -947,6 +957,6 @@ void LorrisShupito::setMiniUi(bool mini)
 void LorrisShupito::buttonPressed(int btnid)
 {
     // FIXME: the button should be ignored if an action is in progress
-    if (btnid == 0 && m_buttons_enabled)
+    if (btnid == 0 && m_buttons_enabled && m_enableHardwareButton->isChecked())
         ui->writeSelectedMem();
 }

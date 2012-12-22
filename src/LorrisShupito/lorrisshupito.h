@@ -127,6 +127,7 @@ private slots:
     void updateModeBar();
 
     void buttonPressed(int btnid);
+    void enableHardwareButtonToggled(bool checked);
 
 private:
     void updateProgrammer();
@@ -209,6 +210,8 @@ private:
     };
 
     LogSink m_logsink;
+
+    QAction * m_enableHardwareButton;
 };
 
 #endif // LORRISSHUPITO_H
