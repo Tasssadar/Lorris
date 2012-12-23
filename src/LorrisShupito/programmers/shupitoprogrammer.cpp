@@ -121,6 +121,8 @@ void ShupitoProgrammer::switchToRunMode()
 
 bool ShupitoProgrammer::isInFlashMode()
 {
+    if (!m_modes[m_cur_mode])
+        return false;
     return m_modes[m_cur_mode]->isInFlashMode();
 }
 
