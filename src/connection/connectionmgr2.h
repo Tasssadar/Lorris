@@ -83,6 +83,7 @@ private:
 
 #include <libyb/usb/usb_context.hpp>
 #include <libyb/usb/usb_device.hpp>
+#include <libyb/utils/tuple_less.hpp>
 #include "genericusbconn.h"
 #include "deviceenumerator.h"
 
@@ -91,16 +92,33 @@ class LibybUsbEnumerator : public QObject
     Q_OBJECT
 
 public:
-	explicit LibybUsbEnumerator(yb::async_runner & runner);
+    explicit LibybUsbEnumerator(yb::async_runner & runner);
     ~LibybUsbEnumerator();
+
+    yb::usb_device_interface lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName);
 
 public slots:
     void refresh();
 
 private:
-	yb::async_runner & m_runner;
+    yb::async_runner & m_runner;
     yb::usb_context m_usb_context;
     QTimer m_refreshTimer;
+
+    struct intf_id
+    {
+        int vid;
+        int pid;
+        QString serialNumber;
+        QString intfName;
+
+        friend bool operator<(intf_id const & lhs, intf_id const & rhs)
+        {
+            return yb::tuple_less(lhs.vid, rhs.vid)(lhs.pid, rhs.pid)(lhs.serialNumber, rhs.serialNumber)(lhs.intfName, rhs.intfName);
+        }
+    };
+
+    std::map<intf_id, yb::usb_device_interface> m_all_interfaces;
 
     struct usb_dev_standby
     {
@@ -188,9 +206,6 @@ private:
         uint8_t intfno;
         std::string intfname;
 
-        uint8_t outep;
-        uint8_t inep;
-
         friend bool operator<(acm_id const & lhs, acm_id const & rhs)
         {
             return lhs.intfno < rhs.intfno
@@ -210,7 +225,8 @@ private:
         virtual UsbAcmConnection2 * create(acm_id const & id)
         {
             ConnectionPointer<UsbAcmConnection2> conn(new UsbAcmConnection2(m_self->m_runner));
-            conn->setup(id.intf, id.outep, id.inep);
+            conn->setEnumerated(true);
+            conn->setIntf(id.intf);
 
             QString deviceName = GenericUsbConnection::formatDeviceName(id.dev);
             QString name;
@@ -227,7 +243,7 @@ private:
 
         virtual void resurrect(id_type const & id, UsbAcmConnection2 * conn)
         {
-            conn->setup(id.intf, id.outep, id.inep);
+            conn->setIntf(id.intf);
             conn->setRemovable(false);
             conn->setPersistent(!id.intfname.empty());
         }
@@ -271,6 +287,7 @@ private:
         connection_type * create(id_type const & id)
         {
             ConnectionPointer<UsbShupito23Connection> conn(new UsbShupito23Connection(m_runner));
+            conn->setRemovable(false);
             conn->setup(id);
             conn->setName(GenericUsbConnection::formatDeviceName(id.device()));
             return conn.take();
@@ -313,17 +330,22 @@ public:
     QList<Connection *> const & connections() const { return m_conns; }
 
     void addConnection(Connection * conn);
+    void addUserOwnedConn(Connection * conn);
     void refresh();
 
     SerialPort * createSerialPort();
     TcpSocket * createTcpSocket();
+#ifdef HAVE_LIBYB
+    UsbAcmConnection2 * createUsbAcmConn();
+    yb::usb_device_interface lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName);
+#endif
+
     ConnectionPointer<ShupitoConnection> createAutoShupito(PortConnection * parentConn);
 
     QVariant config() const;
     bool applyConfig(QVariant const & config);
 
     ConnectionPointer<PortConnection> getConnWithConfig(quint8 type, const QHash<QString, QVariant>& cfg);
-
 
 Q_SIGNALS:
     void connAdded(Connection * conn);
@@ -334,7 +356,6 @@ private slots:
     void autoShupitoDestroyed();
 
 private:
-    void addUserOwnedConn(Connection * conn);
     void clearUserOwnedConns();
 
     QList<Connection *> m_conns;

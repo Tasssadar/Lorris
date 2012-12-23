@@ -204,6 +204,15 @@ bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
     return this->Connection::applyConfig(config);
 }
 
+ConnectionPointer<Connection> SerialPort::clone()
+{
+    ConnectionPointer<SerialPort> res(new SerialPort());
+    res->setName(tr("Clone of ") + this->name());
+    res->setDeviceName(this->deviceName());
+    res->setBaudRate(this->baudRate());
+    return res;
+}
+
 SerialPortOpenThread::SerialPortOpenThread(SerialPort *conn) : QThread(NULL)
 {
     m_conn = conn;

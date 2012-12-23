@@ -65,6 +65,9 @@ public:
         m_port_mutex.unlock();
     }
 
+    bool clonable() const { return true; }
+    ConnectionPointer<Connection> clone();
+
 protected:
     ~SerialPort();
 

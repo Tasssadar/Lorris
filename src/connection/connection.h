@@ -52,6 +52,9 @@ enum PrimaryConnectionType {
 Q_DECLARE_FLAGS(PrimaryConnectionTypes, PrimaryConnectionType)
 Q_DECLARE_OPERATORS_FOR_FLAGS(PrimaryConnectionTypes)
 
+template <typename T>
+class ConnectionPointer;
+
 class Connection : public QObject
 {
     Q_OBJECT
@@ -95,6 +98,9 @@ public:
     virtual bool applyConfig(QHash<QString, QVariant> const & config);
 
     virtual bool canSaveToSession() const { return false; }
+
+    virtual bool clonable() const { return false; }
+    virtual ConnectionPointer<Connection> clone();
 
 signals:
     // XXX: remove

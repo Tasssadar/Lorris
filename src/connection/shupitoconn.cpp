@@ -55,7 +55,14 @@ void PortShupitoConnection::OpenConcurrent()
     addPortTabRef();
 
     if (m_port->state() != st_connected)
+    {
         m_port->OpenConcurrent();
+        if (m_port->state() == st_disconnected)
+        {
+            this->SetState(st_disconnected);
+            releasePortTabRef();
+        }
+    }
     else
     {
         m_parserState = pst_init0;

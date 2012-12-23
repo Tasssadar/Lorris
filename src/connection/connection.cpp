@@ -118,3 +118,8 @@ void Connection::setPersistent(bool value)
             this->release();
     }
 }
+
+ConnectionPointer<Connection> Connection::clone()
+{
+    return ConnectionPointer<Connection>();
+}

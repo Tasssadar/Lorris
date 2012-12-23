@@ -1,5 +1,6 @@
 #include "usbacmconn.h"
 #include "genericusbconn.h"
+#include "connectionmgr2.h"
 #include <libyb/async/sync_runner.hpp>
 #include <QEvent>
 #include <QCoreApplication>
@@ -24,9 +25,8 @@ public:
 }
 
 UsbAcmConnection2::UsbAcmConnection2(yb::async_runner & runner)
-    : PortConnection(CONNECTION_USB_ACM2), m_runner(runner), m_baudrate(115200)
+    : PortConnection(CONNECTION_USB_ACM2), m_runner(runner), m_enumerated(false), m_vid(0), m_pid(0), m_baudrate(115200)
 {
-    this->SetState(st_removed);
 }
 
 static QString fromUtf8(std::string const & s)
@@ -34,37 +34,67 @@ static QString fromUtf8(std::string const & s)
     return QString::fromUtf8(s.data(), s.size());
 }
 
-void UsbAcmConnection2::setup(yb::usb_device_interface const & intf, uint8_t outep, uint8_t inep)
+static void extractEndpoints(yb::usb_interface const & idesc, int & inep, int & outep)
 {
-    m_intf = intf;
-    m_outep = outep;
-    m_inep = inep;
+    inep = 0;
+    outep = 0;
 
-    yb::usb_device const & dev = intf.device();
-    m_serialNumber = fromUtf8(dev.serial_number());
+    if (idesc.altsettings.empty())
+        return;
 
-    yb::usb_device_descriptor const & desc = dev.descriptor();
-    QString productName = fromUtf8(dev.product());
-    QString manufacturerName = fromUtf8(dev.manufacturer());
+    yb::usb_interface_descriptor desc = idesc.altsettings[0];
+    for (size_t i = 0; i < desc.endpoints.size(); ++i)
+    {
+        if (inep == 0 && desc.endpoints[i].is_input())
+            inep = desc.endpoints[i].bEndpointAddress;
+        if (outep == 0 && desc.endpoints[i].is_output())
+            outep = desc.endpoints[i].bEndpointAddress;
+    }
+}
 
-    QStringList res;
-    res.push_back(QString("USB ACM %1.%2, %3:%4").arg(intf.config_value()).arg(intf.interface_index()).arg(outep, 2, 16, QChar('0')).arg(inep, 2, 16, QChar('0')));
-    if (!productName.isEmpty())
-        res.push_back(QString("%1:%2").arg(desc.idVendor, 4, 16, QChar('0')).arg(desc.idProduct, 4, 16, QChar('0')));
-    if (!manufacturerName.isEmpty())
-        res.push_back(manufacturerName);
-    if (!m_serialNumber.isEmpty())
-        res.push_back(m_serialNumber);
-    m_details = res.join(", ");
+void UsbAcmConnection2::setIntf(yb::usb_device_interface const & intf)
+{
+    m_enumerated_intf = intf;
 
-    this->SetState(st_disconnected);
+    if (!m_enumerated_intf.empty())
+    {
+        yb::usb_device const & dev = m_enumerated_intf.device();
+
+        yb::usb_device_descriptor const & desc = dev.descriptor();
+        m_vid = desc.idVendor;
+        m_pid = desc.idProduct;
+        m_serialNumber = fromUtf8(dev.serial_number());
+        m_intfName = fromUtf8(m_enumerated_intf.name());
+        if (m_intfName.isEmpty())
+            m_intfName = QString("#%1").arg(m_enumerated_intf.interface_index());
+        emit changed();
+
+        this->SetState(st_disconnected);
+
+        QString productName = fromUtf8(dev.product());
+        QString manufacturerName = fromUtf8(dev.manufacturer());
+
+        int inep, outep;
+        extractEndpoints(m_enumerated_intf.descriptor(), inep, outep);
+
+        QStringList res;
+        res.push_back(QString("USB ACM %1.%2, %3:%4").arg(intf.config_value()).arg(intf.interface_index()).arg(outep, 2, 16, QChar('0')).arg(inep, 2, 16, QChar('0')));
+        if (!productName.isEmpty())
+            res.push_back(QString("%1:%2").arg(desc.idVendor, 4, 16, QChar('0')).arg(desc.idProduct, 4, 16, QChar('0')));
+        if (!manufacturerName.isEmpty())
+            res.push_back(manufacturerName);
+        if (!m_serialNumber.isEmpty())
+            res.push_back(m_serialNumber);
+        m_details = res.join(", ");
+    }
 }
 
 void UsbAcmConnection2::clear()
 {
     this->cleanupWorkers();
     m_intf.clear();
-    this->SetState(st_removed);
+    if (m_enumerated)
+        this->SetState(st_removed);
 }
 
 UsbAcmConnection2::~UsbAcmConnection2()
@@ -72,21 +102,21 @@ UsbAcmConnection2::~UsbAcmConnection2()
     this->Close();
 }
 
-yb::task<void> UsbAcmConnection2::write_loop()
+yb::task<void> UsbAcmConnection2::write_loop(int outep)
 {
     m_sent = 0;
-    return yb::loop<size_t>(yb::async::value((size_t)0), [this](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
+    return yb::loop<size_t>(yb::async::value((size_t)0), [this, outep](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
         m_sent += r;
         if (cl >= yb::cl_quit || m_sent == m_write_buffer.size())
             return yb::nulltask;
-        return m_intf.device().bulk_write(m_outep, m_write_buffer.data() + m_sent, m_write_buffer.size() - m_sent);
+        return m_intf.device().bulk_write(outep, m_write_buffer.data() + m_sent, m_write_buffer.size() - m_sent);
     });
 }
 
-yb::task<void> UsbAcmConnection2::send_loop()
+yb::task<void> UsbAcmConnection2::send_loop(int outep)
 {
-    return m_send_channel.receive(m_write_buffer).then([this]() {
-        return this->write_loop();
+    return m_send_channel.receive(m_write_buffer).then([this, outep]() {
+        return this->write_loop(outep);
     });
 }
 
@@ -116,34 +146,45 @@ void UsbAcmConnection2::OpenConcurrent()
 {
     if (this->state() != st_removed && this->state() != st_connected)
     {
+        m_intf = m_enumerated_intf;
+        if (m_intf.empty())
+        {
+            m_intf = sConMgr2.lookupUsbAcmConn(m_vid, m_pid, m_serialNumber, m_intfName);
+            if (m_intf.empty())
+                return Utils::showErrorBox(tr("Cannot find the USB interface."), 0);
+        }
+
+        yb::usb_interface_descriptor const & desc = m_intf.descriptor().altsettings[0];
+
+        int inep, outep;
+        extractEndpoints(m_enumerated_intf.descriptor(), inep, outep);
+
         if (!m_intf.device().claim_interface(m_intf.interface_index()))
-            return Utils::showErrorBox(tr("Cannot open the USB device."), 0);
+            return Utils::showErrorBox(tr("Cannot open the USB interface."), 0);
 
         this->SetState(st_connected);
 
         assert(m_receive_worker.empty());
         assert(m_send_worker.empty());
 
-        if (m_inep)
+        if (inep)
         {
-            m_receive_worker = m_runner.post(yb::loop<size_t>(yb::async::value((size_t)0), [this](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
+            m_receive_worker = m_runner.post(yb::loop<size_t>(yb::async::value((size_t)0), [this, inep](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
                 if (r > 0)
                 {
                     QEvent * ev = new RecvEvent(yb::buffer_ref(m_read_buffer, r));
                     QCoreApplication::instance()->postEvent(this, ev);
                 }
-                return cl >= yb::cl_quit? yb::nulltask: m_intf.device().bulk_read(m_inep | 0x80, m_read_buffer, sizeof m_read_buffer);
+                return cl >= yb::cl_quit? yb::nulltask: m_intf.device().bulk_read(inep, m_read_buffer, sizeof m_read_buffer);
             }));
         }
 
-        if (m_outep)
+        if (outep)
         {
-            m_send_worker = m_runner.post(yb::loop([this](yb::cancel_level cl) -> yb::task<void> {
-                return cl >= yb::cl_quit? yb::nulltask: this->send_loop();
+            m_send_worker = m_runner.post(yb::loop([this, outep](yb::cancel_level cl) -> yb::task<void> {
+                return cl >= yb::cl_quit? yb::nulltask: this->send_loop(outep);
             }));
         }
-
-        yb::usb_interface_descriptor const & desc = m_intf.descriptor().altsettings[0];
 
         // {ea5c3c23-ea74-f841-bfa2-8e1983e796be}
         static uint8_t const sig[] = { 0xea, 0x5c, 0x3c, 0x23, 0xea, 0x74, 0xf8, 0x41, 0xbf, 0xa2, 0x8e, 0x19, 0x83, 0xe7, 0x96, 0xbe };
@@ -208,6 +249,39 @@ bool UsbAcmConnection2::event(QEvent * ev)
 
 void UsbAcmConnection2::SendData(const QByteArray & data)
 {
-    if (m_outep && this->state() == st_connected)
+    if (!m_send_worker.empty() && this->state() == st_connected)
         m_send_channel.send(yb::buffer_ref((uint8_t const *)data.data(), data.size()));
+}
+
+ConnectionPointer<Connection> UsbAcmConnection2::clone()
+{
+    ConnectionPointer<UsbAcmConnection2> conn(new UsbAcmConnection2(m_runner));
+    conn->setName(tr("Clone of ") + this->name());
+    conn->setVid(this->vid());
+    conn->setPid(this->pid());
+    conn->setSerialNumber(this->serialNumber());
+    conn->setIntfName(this->intfName());
+    conn->setBaudRate(this->baudRate());
+    return conn;
+}
+
+QHash<QString, QVariant> UsbAcmConnection2::config() const
+{
+    QHash<QString, QVariant> res = this->Connection::config();
+    res["vid"] = this->vid();
+    res["pid"] = this->pid();
+    res["serial_number"] = this->serialNumber();
+    res["intf_name"] = this->intfName();
+    res["baud_rate"] = this->baudRate();
+    return res;
+}
+
+bool UsbAcmConnection2::applyConfig(QHash<QString, QVariant> const & config)
+{
+    this->setVid(config.value("vid", 0).toInt());
+    this->setPid(config.value("pid", 0).toInt());
+    this->setSerialNumber(config.value("serial_number").toString());
+    this->setIntfName(config.value("intf_name").toString());
+    this->setBaudRate(config.value("baud_rate", 115200).toInt());
+    return this->Connection::applyConfig(config);
 }

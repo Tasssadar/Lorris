@@ -153,6 +153,7 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     QMenu * menu = new QMenu(this);
     menu->addAction(ui->actionCreateSerialPort);
     menu->addAction(ui->actionCreateTcpClient);
+    menu->addAction(ui->actionCreateUsbAcmConn);
     ui->createConnectionBtn->setMenu(menu);
 
     sConMgr2.refresh();
@@ -163,6 +164,7 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
 
     ui->connectionsList->insertAction(0, ui->actionConnect);
     ui->connectionsList->insertAction(0, ui->actionDisconnect);
+    ui->connectionsList->insertAction(0, ui->actionClone);
 
     ui->connectionsList->setItemDelegate(new ConnectionListItemDelegate(this));
 
@@ -287,11 +289,19 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
         break;
     case CONNECTION_USB_ACM2:
         {
-            UsbAcmConnection2 * sp = static_cast<UsbAcmConnection2 *>(conn);
-            ui->settingsStack->setCurrentWidget(ui->serialPortPage);
-            updateEditText(ui->spBaudRateEdit->lineEdit(), QString::number((int)sp->baudRate()));
-            updateEditText(ui->spDeviceNameEdit, "");
-            ui->spDeviceNameEdit->setEnabled(false);
+            UsbAcmConnection2 * c = static_cast<UsbAcmConnection2 *>(conn);
+            ui->settingsStack->setCurrentWidget(ui->usbAcmConnPage);
+            updateEditText(ui->usbBaudRateEdit->lineEdit(), QString::number((int)c->baudRate()));
+            updateEditText(ui->usbVidEdit, QString("%1").arg(c->vid(), 4, 16, QChar('0')));
+            updateEditText(ui->usbPidEdit, QString("%1").arg(c->pid(), 4, 16, QChar('0')));
+            updateEditText(ui->usbAcmSnEdit, c->serialNumber());
+            updateEditText(ui->usbIntfNameEdit, c->intfName());
+
+            bool enumerated = c->enumerated();
+            ui->usbVidEdit->setEnabled(!enumerated);
+            ui->usbPidEdit->setEnabled(!enumerated);
+            ui->usbAcmSnEdit->setEnabled(!enumerated);
+            ui->usbIntfNameEdit->setEnabled(!enumerated);
         }
         break;
     default:
@@ -306,14 +316,19 @@ ChooseConnectionDlg::~ChooseConnectionDlg()
     delete ui;
 }
 
+void ChooseConnectionDlg::focusNewConn(Connection * conn)
+{
+    QListWidgetItem * item = m_connectionItemMap[conn];
+    item->setSelected(true);
+    ui->connectionsList->scrollToItem(item);
+}
+
 void ChooseConnectionDlg::on_actionCreateSerialPort_triggered()
 {
     SerialPort * port = sConMgr2.createSerialPort();
     port->setName(tr("New Serial Port"));
     port->setDeviceName("COM1");
-    QListWidgetItem * item = m_connectionItemMap[port];
-    item->setSelected(true);
-    ui->connectionsList->scrollToItem(item);
+    this->focusNewConn(port);
     ui->connectionNameEdit->setFocus();
 }
 
@@ -323,9 +338,14 @@ void ChooseConnectionDlg::on_actionCreateTcpClient_triggered()
     port->setName(tr("New TCP client"));
     port->setHost("localhost");
     port->setPort(80);
-    QListWidgetItem * item = m_connectionItemMap[port];
-    item->setSelected(true);
-    ui->connectionsList->scrollToItem(item);
+    this->focusNewConn(port);
+}
+
+void ChooseConnectionDlg::on_actionCreateUsbAcmConn_triggered()
+{
+    UsbAcmConnection2 * conn = sConMgr2.createUsbAcmConn();
+    conn->setName(tr("New USB connection"));
+    this->focusNewConn(conn);
 }
 
 void ChooseConnectionDlg::on_actionRemoveConnection_triggered()
@@ -381,6 +401,7 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
     ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(enabled);
 
     ui->connectionNameEdit->setEnabled(true);
+    ui->actionClone->setEnabled(conn->clonable());
 
     this->updateDetailsUi(conn);
 
@@ -412,11 +433,8 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
     if (!ok)
         return;
 
-    Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT
-        || m_current->getType() == CONNECTION_USB_ACM2);
+    Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT);
     if (SerialPort * c = dynamic_cast<SerialPort *>(m_current.data()))
-        c->setBaudRate(editValue);
-    else if (UsbAcmConnection2 * c = dynamic_cast<UsbAcmConnection2 *>(m_current.data()))
         c->setBaudRate(editValue);
 }
 
@@ -436,6 +454,46 @@ void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
     static_cast<TcpSocket *>(m_current.data())->setPort(arg1);
 }
 
+void ChooseConnectionDlg::on_usbVidEdit_textChanged(QString const & value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
+
+    bool ok;
+    int n = value.toInt(&ok, 16);
+    if (ok)
+        static_cast<UsbAcmConnection2 *>(m_current.data())->setVid(n);
+}
+
+void ChooseConnectionDlg::on_usbPidEdit_textChanged(QString const & value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
+
+    bool ok;
+    int n = value.toInt(&ok, 16);
+    if (ok)
+        static_cast<UsbAcmConnection2 *>(m_current.data())->setPid(n);
+}
+
+void ChooseConnectionDlg::on_usbAcmSnEdit_textChanged(QString const & value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
+    static_cast<UsbAcmConnection2 *>(m_current.data())->setSerialNumber(value);
+}
+
+void ChooseConnectionDlg::on_usbIntfNameEdit_textChanged(QString const & value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
+    static_cast<UsbAcmConnection2 *>(m_current.data())->setIntfName(value);
+}
+
 void ChooseConnectionDlg::on_actionConnect_triggered()
 {
     if (!m_current)
@@ -448,4 +506,14 @@ void ChooseConnectionDlg::on_actionDisconnect_triggered()
     if (!m_current)
         return;
     m_current->Close();
+}
+
+void ChooseConnectionDlg::on_actionClone_triggered()
+{
+    if (!m_current)
+        return;
+
+    ConnectionPointer<Connection> new_conn(m_current->clone());
+    sConMgr2.addUserOwnedConn(new_conn.data());
+    this->focusNewConn(new_conn.take());
 }

@@ -315,10 +315,29 @@ LibybUsbEnumerator::~LibybUsbEnumerator()
 {
 }
 
+yb::usb_device_interface LibybUsbEnumerator::lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName)
+{
+    intf_id id;
+    id.vid = vid;
+    id.pid = pid;
+    id.serialNumber = serialNumber;
+    id.intfName = intfName;
+    std::map<intf_id, yb::usb_device_interface>::const_iterator it = m_all_interfaces.find(id);
+    if (it != m_all_interfaces.end())
+        return it->second;
+    return yb::usb_device_interface();
+}
+
+static QString fromUtf8(std::string const & s)
+{
+    return QString::fromUtf8(s.data(), s.size());
+}
+
 void LibybUsbEnumerator::refresh()
 {
     std::vector<yb::usb_device> dev_list;
     std::vector<yb::usb_device_interface> intf_list;
+    std::map<intf_id, yb::usb_device_interface> all_interfaces;
 
     m_usb_context.get_device_list(dev_list, intf_list);
 
@@ -340,6 +359,18 @@ void LibybUsbEnumerator::refresh()
     for (size_t i = 0; i < intf_list.size(); ++i)
     {
         std::string const & name = intf_list[i].name();
+        yb::usb_device dev = intf_list[i].device();
+        yb::usb_device_descriptor const & devdesc = dev.descriptor();
+
+        intf_id id;
+        id.vid = devdesc.idVendor;
+        id.pid = devdesc.idProduct;
+        id.serialNumber = fromUtf8(dev.serial_number());
+        if (name.empty())
+            id.intfName = QString("#%1").arg(intf_list[i].interface_index());
+        else
+            id.intfName = fromUtf8(name);
+        all_interfaces[id] = intf_list[i];
 
         yb::usb_interface const & uintf = intf_list[i].descriptor();
 
@@ -349,33 +380,10 @@ void LibybUsbEnumerator::refresh()
         {
             shupito23_ids.push_back(intf_list[i]);
         }
-        else if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0)
+        else if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0
+            && !intf.endpoints.empty())
         {
-            //if (!name.empty() && name[0] == '.')
-            //    continue;
-
-            // Lookup endpoints
-            bool ok = true;
-            uint8_t inep = 0, outep = 0;
-            for (size_t j = 0; ok && j < intf.endpoints.size(); ++j)
-            {
-                if (intf.endpoints[j].bEndpointAddress & 0x80)
-                {
-                    if (inep)
-                        ok = false;
-                    else
-                        inep = intf.endpoints[j].bEndpointAddress;
-                }
-                else
-                {
-                    if (outep)
-                        ok = false;
-                    else
-                        outep = intf.endpoints[j].bEndpointAddress;
-                }
-            }
-
-            if (!ok || (!inep && !outep))
+            if (name.empty() || name[0] == '.')
                 continue;
 
             acm_id id;
@@ -384,12 +392,11 @@ void LibybUsbEnumerator::refresh()
             id.cfg_value = intf_list[i].config_value();
             id.intfno = intf_list[i].interface_index();
             id.intfname = name;
-            id.outep = outep;
-            id.inep = inep;
             acm_ids.push_back(std::move(id));
         }
     }
 
+    m_all_interfaces.swap(all_interfaces);
     m_acm_conns.update(acm_ids.begin(), acm_ids.end());
     m_shupito23_conns.update(shupito23_ids.begin(), shupito23_ids.end());
 }
@@ -463,9 +470,16 @@ QVariant ConnectionManager2::config() const
             "usb_shupito",     // CONNECTION_USB_SHUPITO
             "usb_acm",         // CONNECTION_USB_ACM
             "proxy_tunnel",    // CONNECTION_PROXY_TUNNEL
+            "",                // CONNECTION_FLIP
+            "",                // CONNECTION_LIBYB_USB
+            "usb_yb_acm",      // CONNECTION_USB_ACM2
+            "",                // CONNECTION_SHUPITO23
         };
 
-        if (conn->getType() >= sizeof_array(connTypes))
+        Q_ASSERT(conn->getType() < sizeof_array(connTypes));
+
+        char const * connType = connTypes[conn->getType()];
+        if (connType[0] == 0)
             continue;
 
         QHash<QString, QVariant> connConfig;
@@ -510,6 +524,10 @@ bool ConnectionManager2::applyConfig(QVariant const & config)
             conn.reset(new SerialPort());
         else if (type == "tcp_client")
             conn.reset(new TcpSocket());
+#ifdef HAVE_LIBYB
+        else if (type == "usb_yb_acm")
+            conn.reset(new UsbAcmConnection2(m_yb_runner));
+#endif
 
         if (!conn)
             return false;
@@ -568,6 +586,20 @@ TcpSocket * ConnectionManager2::createTcpSocket()
     this->addUserOwnedConn(conn.data());
     return conn.take();
 }
+
+#ifdef HAVE_LIBYB
+UsbAcmConnection2 * ConnectionManager2::createUsbAcmConn()
+{
+    ConnectionPointer<UsbAcmConnection2> conn(new UsbAcmConnection2(m_yb_runner));
+    this->addUserOwnedConn(conn.data());
+    return conn.take();
+}
+
+yb::usb_device_interface ConnectionManager2::lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName)
+{
+    return m_libybUsbEnumerator->lookupUsbAcmConn(vid, pid, serialNumber, intfName);
+}
+#endif
 
 void ConnectionManager2::addConnection(Connection * conn)
 {
