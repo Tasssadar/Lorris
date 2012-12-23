@@ -1,4 +1,5 @@
 #include "usbshupito23conn.h"
+#include "../misc/utils.h"
 #include <stdexcept>
 #include <QEvent>
 #include <QCoreApplication>
@@ -93,7 +94,7 @@ void UsbShupito23Connection::OpenConcurrent()
 {
     yb::usb_device dev = m_intf.device();
     if (!m_intf_guard.claim(dev, m_intf.interface_index()))
-        throw std::runtime_error("Cannot claim the interface");
+        return Utils::showErrorBox("Cannot claim the interface");
 
     m_write_loop = m_runner.post(yb::loop([this](yb::cancel_level cl) -> yb::task<void> {
         return cl < yb::cl_quit? this->write_loop(): yb::nulltask;
