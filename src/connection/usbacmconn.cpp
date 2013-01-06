@@ -157,7 +157,7 @@ void UsbAcmConnection2::OpenConcurrent()
         yb::usb_interface_descriptor const & desc = m_intf.descriptor().altsettings[0];
 
         int inep, outep;
-        extractEndpoints(m_enumerated_intf.descriptor(), inep, outep);
+        extractEndpoints(m_intf.descriptor(), inep, outep);
 
         if (!m_intf.device().claim_interface(m_intf.interface_index()))
             return Utils::showErrorBox(tr("Cannot open the USB interface."), 0);
