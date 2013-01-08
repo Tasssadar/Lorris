@@ -18,21 +18,13 @@ ProxyTunnel::~ProxyTunnel()
     Close();
 }
 
-bool ProxyTunnel::Open()
-{
-    if(!m_server)
-        return false;
-
-    connect(m_server, SIGNAL(newData(QByteArray)), SIGNAL(dataRead(QByteArray)));
-
-    SetOpen(true);
-
-    return true;
-}
-
 void ProxyTunnel::OpenConcurrent()
 {
-    Open();
+    if(m_server)
+    {
+        connect(m_server, SIGNAL(newData(QByteArray)), SIGNAL(dataRead(QByteArray)));
+        SetOpen(true);
+    }
 }
 
 void ProxyTunnel::Close()

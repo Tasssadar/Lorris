@@ -78,7 +78,6 @@ public:
 
     virtual QString details() const;
 
-    virtual bool Open() { return false; }
     virtual void OpenConcurrent() = 0;
     virtual void Close() {}
 

@@ -47,11 +47,6 @@ QString TcpSocket::details() const
     return res % this->host() % ":" % QString::number(this->port());
 }
 
-bool TcpSocket::Open()
-{
-    return false;
-}
-
 void TcpSocket::Close()
 {
     if(m_future.isRunning())

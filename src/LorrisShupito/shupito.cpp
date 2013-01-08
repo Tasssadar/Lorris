@@ -336,7 +336,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket const & p)
                     m_tunnel_conn->setName("Tunnel at " + m_con->GetIDString());
                     m_tunnel_conn->setRemovable(false);
                     m_tunnel_conn->setShupito(this);
-                    m_tunnel_conn->Open();
+                    m_tunnel_conn->OpenConcurrent();
                     sConMgr2.addConnection(m_tunnel_conn.data());
 
                     emit tunnelStatus(true);

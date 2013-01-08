@@ -53,11 +53,6 @@ QString SerialPort::details() const
     return res + (m_friendlyName.isEmpty()? m_deviceName: m_friendlyName);
 }
 
-bool SerialPort::Open()
-{
-    return false;
-}
-
 void SerialPort::connectResultSer(bool opened)
 {
     this->SetOpen(opened);

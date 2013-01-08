@@ -26,22 +26,18 @@ ShupitoTunnel::~ShupitoTunnel()
     Close();
 }
 
-bool ShupitoTunnel::Open()
+void ShupitoTunnel::OpenConcurrent()
 {
-    if(!m_shupito)
-        return false;
-
-    if(this->isOpen())
-        return true;
-
-    this->SetOpen(true);
-
-    if(!dataSigConnected)
+    if(m_shupito && !this->isOpen())
     {
-        connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
-        dataSigConnected = true;
+        this->SetOpen(true);
+
+        if(!dataSigConnected)
+        {
+            connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
+            dataSigConnected = true;
+        }
     }
-    return true;
 }
 
 void ShupitoTunnel::Close()
@@ -53,11 +49,6 @@ void ShupitoTunnel::Close()
 
     dataSigConnected = false;
     this->SetOpen(false);
-}
-
-void ShupitoTunnel::OpenConcurrent()
-{
-    Open();
 }
 
 void ShupitoTunnel::setShupito(Shupito* s)

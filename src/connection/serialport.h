@@ -33,7 +33,6 @@ public:
 
     virtual QString details() const;
 
-    bool Open();
     void Close();
     void OpenConcurrent();
 

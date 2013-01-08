@@ -18,7 +18,6 @@ class ProxyTunnel : public PortConnection
 public:
     ProxyTunnel();
 
-    bool Open();
     void OpenConcurrent();
     void Close();
     void SendData(const QByteArray &data);

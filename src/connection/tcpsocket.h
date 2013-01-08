@@ -25,7 +25,6 @@ public:
 
     virtual QString details() const;
 
-    bool Open();
     void OpenConcurrent();
     void Close();
     void SendData(const QByteArray &data);

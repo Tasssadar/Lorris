@@ -20,7 +20,6 @@ class ShupitoTunnel : public PortConnection
 public:
     ShupitoTunnel();
 
-    bool Open();
     void OpenConcurrent();
     void Close();
     void SendData(const QByteArray &data);
