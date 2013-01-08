@@ -2,6 +2,7 @@
 #define USBACMCONN_H
 
 #include "connection.h"
+#include "../misc/threadchannel.h"
 #include <libyb/async/async_runner.hpp>
 #include <libyb/async/async_channel.hpp>
 #include <libyb/usb/usb_device.hpp>
@@ -41,8 +42,6 @@ public:
     void OpenConcurrent();
     void Close();
 
-    bool event(QEvent * ev);
-
     bool clonable() const { return true; }
     ConnectionPointer<Connection> clone();
 
@@ -51,6 +50,9 @@ public:
 
 public slots:
     void SendData(const QByteArray & data);
+
+private slots:
+    void incomingDataReady();
 
 private:
     bool m_enumerated;
@@ -82,6 +84,8 @@ private:
     yb::task<void> write_loop(int outep);
     yb::task<void> send_loop(int outep);
     void cleanupWorkers();
+
+    ThreadChannel<uint8_t> m_incomingDataChannel;
 };
 
 #endif // USBACMCONN_H

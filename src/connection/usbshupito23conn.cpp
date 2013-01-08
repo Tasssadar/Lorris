@@ -5,27 +5,10 @@
 
 // XXX: st_removed
 
-namespace {
-
-class RecvEvent
-    : public QEvent
-{
-public:
-    static const QEvent::Type recvType = static_cast<QEvent::Type>(2000);
-
-    RecvEvent(yb::buffer_ref const & buf)
-        : QEvent(recvType), m_packet(buf.begin(), buf.end())
-    {
-    }
-
-    ShupitoPacket m_packet;
-};
-
-}
-
 UsbShupito23Connection::UsbShupito23Connection(yb::async_runner & runner)
     : ShupitoConnection(CONNECTION_SHUPITO23), m_runner(runner)
 {
+    connect(&m_incomingPackets, SIGNAL(dataReceived()), this, SLOT(incomingPacketsReceived()));
     this->SetState(st_removed);
 }
 
@@ -159,21 +142,15 @@ yb::task<void> UsbShupito23Connection::write_packets()
 yb::task<void> UsbShupito23Connection::read_loop(uint8_t i)
 {
     return m_intf.device().bulk_read(m_in_eps[i], m_read_loops[i].read_buffer, sizeof m_read_loops[i].read_buffer).then([this, i](size_t r) -> yb::task<void> {
-        RecvEvent * ev = new RecvEvent(yb::buffer_ref(m_read_loops[i].read_buffer, r));
-        QCoreApplication::instance()->postEvent(this, ev);
+        m_incomingPackets.send(ShupitoPacket(m_read_loops[i].read_buffer, m_read_loops[i].read_buffer + r));
         return yb::async::value();
     });
 }
 
-bool UsbShupito23Connection::event(QEvent * ev)
+void UsbShupito23Connection::incomingPacketsReceived()
 {
-    if (ev->type() == RecvEvent::recvType)
-    {
-        emit this->packetRead(static_cast<RecvEvent *>(ev)->m_packet);
-        return true;
-    }
-    else
-    {
-        return this->ShupitoConnection::event(ev);
-    }
+    std::vector<ShupitoPacket> packets;
+    m_incomingPackets.receive(packets);
+    for (size_t i = 0; i < packets.size(); ++i)
+        emit this->packetRead(packets[i]);
 }

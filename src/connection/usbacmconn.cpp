@@ -6,27 +6,10 @@
 #include <QCoreApplication>
 #include <QString>
 
-namespace {
-
-class RecvEvent
-    : public QEvent
-{
-public:
-    static const QEvent::Type recvType = static_cast<QEvent::Type>(2000);
-
-    RecvEvent(yb::buffer_ref const & buf)
-        : QEvent(recvType), m_data((char const *)buf.data(), buf.size())
-    {
-    }
-
-    QByteArray m_data;
-};
-
-}
-
 UsbAcmConnection2::UsbAcmConnection2(yb::async_runner & runner)
     : PortConnection(CONNECTION_USB_ACM2), m_runner(runner), m_enumerated(false), m_vid(0), m_pid(0), m_baudrate(115200)
 {
+    connect(&m_incomingDataChannel, SIGNAL(dataReceived()), this, SLOT(incomingDataReady()));
 }
 
 static QString fromUtf8(std::string const & s)
@@ -171,10 +154,7 @@ void UsbAcmConnection2::OpenConcurrent()
         {
             m_receive_worker = m_runner.post(yb::loop<size_t>(yb::async::value((size_t)0), [this, inep](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
                 if (r > 0)
-                {
-                    QEvent * ev = new RecvEvent(yb::buffer_ref(m_read_buffer, r));
-                    QCoreApplication::instance()->postEvent(this, ev);
-                }
+                    m_incomingDataChannel.send(m_read_buffer, m_read_buffer + r);
                 return cl >= yb::cl_quit? yb::nulltask: m_intf.device().bulk_read(inep, m_read_buffer, sizeof m_read_buffer);
             }));
         }
@@ -234,17 +214,11 @@ void UsbAcmConnection2::cleanupWorkers()
     m_write_buffer.clear();
 }
 
-bool UsbAcmConnection2::event(QEvent * ev)
+void UsbAcmConnection2::incomingDataReady()
 {
-    if (ev->type() == RecvEvent::recvType)
-    {
-        emit this->dataRead(static_cast<RecvEvent *>(ev)->m_data);
-        return true;
-    }
-    else
-    {
-        return this->PortConnection::event(ev);
-    }
+    std::vector<uint8_t> data;
+    m_incomingDataChannel.receive(data);
+    emit this->dataRead(QByteArray((char const *)data.data(), data.size()));
 }
 
 void UsbAcmConnection2::SendData(const QByteArray & data)
