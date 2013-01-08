@@ -32,7 +32,7 @@ bool ProxyTunnel::Open()
 
 void ProxyTunnel::OpenConcurrent()
 {
-    emit connectResult(this, Open());
+    Open();
 }
 
 void ProxyTunnel::Close()

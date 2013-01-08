@@ -103,9 +103,6 @@ public:
     virtual ConnectionPointer<Connection> clone();
 
 signals:
-    // XXX: remove
-    void connectResult(Connection *con, bool open);
-
     void connected(bool connected);
     void stateChanged(ConnectionState state);
     void changed();

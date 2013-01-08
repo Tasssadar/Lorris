@@ -57,7 +57,7 @@ void ShupitoTunnel::Close()
 
 void ShupitoTunnel::OpenConcurrent()
 {
-    emit connectResult(this, Open());
+    Open();
 }
 
 void ShupitoTunnel::setShupito(Shupito* s)

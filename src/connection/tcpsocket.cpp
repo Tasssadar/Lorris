@@ -68,7 +68,6 @@ void TcpSocket::Close()
 void TcpSocket::connectResultSer(bool opened)
 {
     this->SetOpen(opened);
-    emit connectResult(this, opened);
 }
 
 void TcpSocket::OpenConcurrent()

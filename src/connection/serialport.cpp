@@ -61,7 +61,6 @@ bool SerialPort::Open()
 void SerialPort::connectResultSer(bool opened)
 {
     this->SetOpen(opened);
-    emit connectResult(this, opened);
 }
 
 void SerialPort::Close()
