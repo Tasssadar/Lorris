@@ -5,6 +5,8 @@
 **    See README and COPYING
 ***********************************************/
 
+#include <QResizeEvent>
+
 #include "minishupitoui.h"
 #include "../../misc/utils.h"
 #include "../lorrisshupito.h"
@@ -15,6 +17,7 @@ MiniShupitoUI::MiniShupitoUI(QObject *parent) :
     ShupitoUI(UI_MINIMAL, parent), ui(new Ui::MiniShupitoUI)
 {
     m_fileSet = false;
+    m_isVertical = true;
 }
 
 MiniShupitoUI::~MiniShupitoUI()
@@ -42,6 +45,8 @@ void MiniShupitoUI::setupUi(LorrisShupito *widget)
     emit enableButtons(widget->m_buttons_enabled);
 
     m_widget->createConnBtn(ui->connectButton);
+
+    widget->installEventFilter(this);
 }
 
 void MiniShupitoUI::setChipId(const QString &text)
@@ -145,4 +150,38 @@ void MiniShupitoUI::loadData(DataFileParser *file)
         m_over_turnoff = file->readVal<bool>();
         m_over_val = file->readVal<double>();
     }
+}
+
+void MiniShupitoUI::setVertical(bool vertical)
+{
+    if(m_isVertical == vertical)
+        return;
+
+    m_isVertical = vertical;
+
+    QBoxLayout *from = ui->horLayout;
+    QBoxLayout *to = ui->vertLayout;
+
+    if(!vertical)
+        std::swap(from, to);
+
+    while(from->count() != 0)
+    {
+        QLayoutItem *i = from->itemAt(0);
+        from->removeItem(i);
+        to->addItem(i);
+    }
+
+    to->removeItem(to->itemAt(to->count()-1));
+    to->addStretch(1);
+}
+
+bool MiniShupitoUI::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() != QEvent::Resize)
+        return QObject::eventFilter(obj, event);
+
+    QResizeEvent *e = (QResizeEvent*)event;
+    setVertical(e->size().width() < e->size().height());
+    return QObject::eventFilter(obj, event);
 }

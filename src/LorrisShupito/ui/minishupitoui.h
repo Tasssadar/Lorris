@@ -36,11 +36,16 @@ public:
         return m_hexData[memid];
     }
 
+public slots:
+    void setVertical(bool vertical);
+
 protected:
     QToolButton *startStopBtn() const { return ui->startStopBtn; }
     QBoxLayout *vddLayout() const { return ui->vddLayout; }
     QLabel *engineLabel() const { return ui->engineLabel; }
     QLabel *vccLabel() const { return ui->vccLabel; }
+
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
     void enableWrite(bool enable);
@@ -64,6 +69,7 @@ private:
     bool m_over_enable;
     bool m_over_turnoff;
     double m_over_val;
+    bool m_isVertical;
 };
 
 #endif // MINISHUPITOUI_H
