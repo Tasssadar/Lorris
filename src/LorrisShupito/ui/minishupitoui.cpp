@@ -167,9 +167,14 @@ void MiniShupitoUI::setVertical(bool vertical)
 
     while(from->count() != 0)
     {
-        QLayoutItem *i = from->itemAt(0);
-        from->removeItem(i);
-        to->addItem(i);
+        QLayoutItem *i = from->takeAt(0);
+        if(i->layout())
+        {
+            i->layout()->setParent(0);
+            to->addLayout(i->layout());
+        }
+        else
+            to->addItem(i);
     }
 
     to->removeItem(to->itemAt(to->count()-1));
