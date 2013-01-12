@@ -102,14 +102,14 @@ class StandbyDeviceList
 public:
     void add(Info const & info, Conn * conn)
     {
-        std::map<Info, Conn *>::iterator it = m_conns.insert(std::make_pair(info, conn)).first;
+        typename std::map<Info, Conn *>::iterator it = m_conns.insert(std::make_pair(info, conn)).first;
         m_inverse_map.insert(std::make_pair(conn, it));
         connect(conn, SIGNAL(destroying()), this, SLOT(connectionDestroyed()));
     }
 
     ConnectionPointer<Conn> extract(Info const & info)
     {
-        std::map<Info, Conn *>::iterator it = m_conns.find(info);
+        typename std::map<Info, Conn *>::iterator it = m_conns.find(info);
         if (it == m_conns.end())
             return ConnectionPointer<Conn>();
 
@@ -124,7 +124,7 @@ protected:
     void connectionDestroyed()
     {
         Conn * conn = static_cast<Conn *>(this->sender());
-        std::map<Conn *, std::map<Info, Conn *>::iterator>::iterator it = m_inverse_map.find(conn);
+        typename std::map<Conn *, typename std::map<Info, Conn *>::iterator>::iterator it = m_inverse_map.find(conn);
         Q_ASSERT(it != m_inverse_map.end());
         m_conns.erase(it->second);
         m_inverse_map.erase(it);

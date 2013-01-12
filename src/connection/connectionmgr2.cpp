@@ -333,18 +333,13 @@ yb::usb_device_interface LibybUsbEnumerator::lookupUsbAcmConn(int vid, int pid, 
 {
     usb_interface_standby info;
     info.dev.vidpid = (vid << 16) | pid;
-    info.dev.sn = serialNumber.toUtf8();
+    info.dev.sn.assign(serialNumber.toUtf8().data());
     info.intfname = intfName;
 
     std::map<usb_interface_standby, yb::usb_device_interface>::iterator it = m_usb_acm_devices_by_info.find(info);
     if (it == m_usb_acm_devices_by_info.end())
         return yb::usb_device_interface();
     return it->second;
-}
-
-static QString fromUtf8(std::string const & s)
-{
-    return QString::fromUtf8(s.data(), s.size());
 }
 
 void LibybUsbEnumerator::pluginEventReceived()
