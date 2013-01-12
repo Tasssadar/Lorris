@@ -285,7 +285,10 @@ void LorrisTerminal::flashButton()
     setHexName();
 
     if(actions()[1]->isChecked() && m_filedate.isValid() && m_filedate == m_flashdate)
+    {
         new ToolTipWarn(tr("You have flashed this file already, and it was not changed since."), ui->flashButton, this);
+        Utils::playErrorSound();
+    }
 
     try
     {

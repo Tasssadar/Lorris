@@ -180,8 +180,7 @@ void Utils::deleteLayoutMembers(QLayout *layout)
 {
     while(layout->count())
     {
-        QLayoutItem *item = layout->itemAt(0);
-        layout->removeItem(item);
+        QLayoutItem *item = layout->takeAt(0);
         if(item->layout())
         {
             Utils::deleteLayoutMembers(item->layout());
@@ -195,5 +194,7 @@ void Utils::deleteLayoutMembers(QLayout *layout)
         }
         else if(item->spacerItem())
             delete item->spacerItem();
+        else
+            delete item;
     }
 }

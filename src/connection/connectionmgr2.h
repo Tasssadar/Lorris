@@ -36,8 +36,12 @@ private slots:
     void connectionDestroyed();
 
 private:
+    QHash<QString, QVariant> config(const std::set<SerialPort *>& ports);
+
     std::set<SerialPort *> m_ownedPorts;
     QHash<QString, SerialPort *> m_portMap;
+
+    QHash<QString, QVariant> m_connCfg;
 
     QTimer m_refreshTimer;
 };

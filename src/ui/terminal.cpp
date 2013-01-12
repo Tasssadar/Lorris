@@ -382,7 +382,7 @@ void Terminal::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Return:
         case Qt::Key_Enter:
         {
-            key = "\r\n";
+            key = getCurrNewlineStr();
             break;
         }
         case Qt::Key_Backspace:
@@ -864,5 +864,19 @@ void Terminal::redrawAll()
     m_changed = true;
     updateScrollBars();
     pause(paused);
+}
+
+QString Terminal::getCurrNewlineStr()
+{
+    static const QString nl[] = {
+        "\r\n",   // NLS_RN
+        "\n",     // NLS_N
+        "\r",     // NLS_R
+        "\n\r",   // NLS_NR
+    };
+
+    if(m_settings.chars[SET_ENTER_SEND] >= NLS_MAX)
+        return nl[0];
+    return nl[m_settings.chars[SET_ENTER_SEND]];
 }
 

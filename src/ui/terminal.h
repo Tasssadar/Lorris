@@ -29,6 +29,7 @@ enum settings
     SET_BACKSPACE,
     SET_FORMFEED,
     SET_IGNORE_NULL,
+    SET_ENTER_SEND,
 
     SET_MAX
 };
@@ -48,6 +49,16 @@ enum newlineBehavior
     NL_NEWLINE,
     NL_RETURN,
     NL_NOTHING
+};
+
+enum newlineSend
+{
+    NLS_RN = 0,
+    NLS_N,
+    NLS_R,
+    NLS_NR,
+
+    NLS_MAX
 };
 
 enum term_fmt
@@ -76,6 +87,7 @@ struct terminal_settings
         chars[SET_NEWLINE] = NL_NEWLINE_RETURN;
         chars[SET_RETURN] = NL_RETURN;
         chars[SET_IGNORE_NULL] = 1;
+        chars[SET_ENTER_SEND] = NLS_RN;
         tabReplace = 4;
 
         colors[COLOR_BG] = Qt::black;
@@ -167,6 +179,7 @@ private:
     void addHex();
     void redrawAll();
     QPoint mouseToTextPos(const QPoint& pos);
+    QString getCurrNewlineStr();
 
     void selectAll();
 

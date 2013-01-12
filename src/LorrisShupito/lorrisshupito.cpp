@@ -60,6 +60,7 @@ LorrisShupito::LorrisShupito()
     lastVccIndex = 0;
     m_progress_dialog = NULL;
     m_state = 0;
+    m_buttons_enabled = false;
 
     m_mode_act_signalmap = new QSignalMapper(this);
     connect(m_mode_act_signalmap, SIGNAL(mapped(int)), SLOT(modeSelected(int)));
@@ -660,9 +661,6 @@ void LorrisShupito::saveToFile(int memId)
 {
     try
     {
-        if(m_cur_def.getName().isEmpty())
-            restartChip();
-
         QString filename = QFileDialog::getSaveFileName(this, QObject::tr("Export data"),
                                                         sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
                                                         filters);
@@ -825,6 +823,7 @@ void LorrisShupito::timeout()
     {
         m_timeout_warn = new ToolTipWarn(tr("Shupito is not responding, try to re-plug it into computer!"),
                                          m_connectButton->btn(), this, -1);
+        Utils::playErrorSound();
     }
 }
 

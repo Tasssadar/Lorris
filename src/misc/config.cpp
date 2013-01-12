@@ -170,6 +170,7 @@ static const QString keys_variant[] =
     "general/usb_enumerator",     // CFG_VARIANT_USB_ENUMERATOR
     "kate/kate_sett_doc",         // CFG_VARIANT_KATE_SETTINGS_DOC
     "kate/kate_sett_view",        // CFG_VARIANT_KATE_SETTINGS_VIEW
+    "general/serial_connections", // CFG_VARIANT_SERIAL_CONNECTIONS
 };
 
 static const QString keys_float[] =
