@@ -240,6 +240,7 @@ void ChooseConnectionDlg::connAdded(Connection * conn)
 
 void ChooseConnectionDlg::connRemoved(Connection * conn)
 {
+    conn->disconnect(this);
     QListWidgetItem * item = m_connectionItemMap.take(conn);
     delete item;
 }
