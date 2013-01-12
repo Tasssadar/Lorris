@@ -161,8 +161,8 @@ void Graph::wheelEvent(QWheelEvent *event)
     double newDiff = fabs(diff + (diff*(exp *event->delta())))/2;
 
     diff /= 2;
-    double newMax = (max - diff) + newDiff;
-    double newMin = (min + diff) - newDiff;
+    double newMax = (max + diff) - newDiff;
+    double newMin = (min - diff) + newDiff;
 
     if(newMin > newMax)
         return;
