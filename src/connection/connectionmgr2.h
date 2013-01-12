@@ -42,48 +42,12 @@ private:
     QTimer m_refreshTimer;
 };
 
-#ifdef HAVE_LIBUSBY
-
-#include "usbshupitoconn.h"
-#include <libusby.hpp>
-
-class UsbAcmConnection;
-
-class UsbShupitoEnumerator : public QObject
-{
-    Q_OBJECT
-
-public:
-    UsbShupitoEnumerator();
-    ~UsbShupitoEnumerator();
-
-    QVariant config() const;
-    bool applyConfig(QVariant const & config);
-
-public slots:
-    void refresh();
-
-private slots:
-    void shupitoConnectionDestroyed();
-
-private:
-    libusby::context m_usb_ctx;
-    QScopedPointer<QThread> m_eventDispatcher;
-
-    std::map<libusby::device, UsbShupitoConnection *> m_seen_devices;
-    QHash<QString, UsbShupitoConnection *> m_stand_by_conns;
-    QHash<UsbShupitoConnection *, QString> m_unique_ids;
-
-    QTimer m_refreshTimer;
-};
-
-#endif // HAVE_LIBUSBY
-
 #ifdef HAVE_LIBYB
 
 #include <libyb/usb/usb_context.hpp>
 #include <libyb/usb/usb_device.hpp>
 #include <libyb/utils/tuple_less.hpp>
+#include "../connection/usbshupito22conn.h"
 #include "genericusbconn.h"
 
 class StandbyDeviceListBase
@@ -183,6 +147,9 @@ private:
         }
     };
 
+    std::map<yb::usb_device_interface, ConnectionPointer<UsbShupito22Connection> > m_shupito22_devices;
+    StandbyDeviceList<UsbShupito22Connection, usb_interface_standby> m_standby_shupito22_devices;
+
     std::map<yb::usb_device_interface, ConnectionPointer<UsbShupito23Connection> > m_shupito23_devices;
     StandbyDeviceList<UsbShupito23Connection, usb_interface_standby> m_standby_shupito23_devices;
 
@@ -237,9 +204,6 @@ private:
 
     QSet<Connection *> m_userOwnedConns;
     QScopedPointer<SerialPortEnumerator> m_serialPortEnumerator;
-#ifdef HAVE_LIBUSBY
-    QScopedPointer<UsbShupitoEnumerator> m_usbShupitoEnumerator;
-#endif // HAVE_LIBUSBY
 #ifdef HAVE_LIBYB
     QScopedPointer<LibybUsbEnumerator> m_libybUsbEnumerator;
     yb::async_runner m_yb_runner;

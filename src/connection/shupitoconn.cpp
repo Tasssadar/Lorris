@@ -89,7 +89,7 @@ void PortShupitoConnection::portStateChanged(ConnectionState state)
         releasePortTabRef();
         this->SetState(st_disconnected);
     }
-    else if (state == st_connected && this->state() == st_connecting)
+    else if (state == st_connected)
     {
         m_parserState = pst_init0;
         this->SetState(st_connected);

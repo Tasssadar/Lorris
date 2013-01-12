@@ -52,6 +52,11 @@ void UsbAcmConnection2::setEnumeratedIntf(yb::usb_device_interface const & intf)
     this->setIntf(intf);
 }
 
+void UsbAcmConnection2::clearEnumeratedIntf()
+{
+    this->setIntf(yb::usb_device_interface());
+}
+
 void UsbAcmConnection2::setIntf(yb::usb_device_interface const & intf)
 {
     m_intf = intf;
@@ -187,8 +192,6 @@ void UsbAcmConnection2::doOpen()
     if (!m_intf.device().claim_interface(m_intf.interface_index()))
         return Utils::showErrorBox(tr("Cannot open the USB interface."), 0);
 
-    this->SetState(st_connected);
-
     assert(m_receive_worker.empty());
     assert(m_send_worker.empty());
 
@@ -219,6 +222,8 @@ void UsbAcmConnection2::doOpen()
         yb::usb_control_code_t set_line_coding = { 0x21, 0x20 };
         m_runner.try_run(m_intf.device().control_write(set_line_coding, 0, m_intf.interface_index(), payload.data(), payload.size()));
     }
+
+    this->SetState(st_connected);
 }
 
 void UsbAcmConnection2::doClose()

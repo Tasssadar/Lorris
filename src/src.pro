@@ -336,7 +336,7 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 
 win32 {
     CONFIG -= flat
-    CONFIG += libusby libenjoy
+    CONFIG += libenjoy
     
     win32-msvc* {
         CONFIG += libyb
@@ -368,7 +368,7 @@ win32 {
     LIBS += -lsetupapi -lwinmm -lole32 -ladvapi32 -luser32
 }
 unix:!macx:!symbian {
-    CONFIG += libusby libenjoy libyb
+    CONFIG += libenjoy libyb
     LIBS += -lqextserialport_lorris
 
     system_qwt {
@@ -415,15 +415,6 @@ python {
 # must be after lPythonQt, else it will not link properly on some compilers
 include(../python.pri)
 
-libusby {
-    include(../dep/libusby/libusby.pri)
-    DEFINES += HAVE_LIBUSBY
-    SOURCES += \
-        connection/usbshupitoconn.cpp
-    HEADERS += \
-        connection/usbshupitoconn.h
-}
-
 libyb {
     include(../dep/libyb/libyb.pri)
     DEFINES += HAVE_LIBYB
@@ -431,12 +422,14 @@ libyb {
     SOURCES += \
         connection/genericusbconn.cpp \
         connection/usbacmconn.cpp \
+        connection/usbshupito22conn.cpp \
         connection/usbshupito23conn.cpp \
         LorrisShupito/programmers/flipprogrammer.cpp
 
     HEADERS += \
         connection/genericusbconn.h \
         connection/usbacmconn.h \
+        connection/usbshupito22conn.h \
         connection/usbshupito23conn.h \
         LorrisShupito/programmers/flipprogrammer.h
 }

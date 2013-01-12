@@ -2,7 +2,7 @@
 #include <QStringBuilder>
 
 ShupitoProgrammer::ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn, ProgrammerLogSink * logsink)
-    : Programmer(logsink), m_con(conn), m_vdd_config(0), m_tunnel_config(0)
+    : Programmer(logsink), m_con(conn), m_vdd_config(0), m_tunnel_config(0), m_btn_config(0), m_led_config(0), m_cur_mode(0)
 {
     m_desc = 0;
     m_shupito = new Shupito(this);

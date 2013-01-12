@@ -34,6 +34,7 @@ public:
     yb::usb_device_interface intf() const { return m_intf; }
     bool enumerated() const { return m_enumerated; }
     void setEnumeratedIntf(yb::usb_device_interface const & intf);
+    void clearEnumeratedIntf();
 
     void notifyIntfPlugin(yb::usb_device_interface const & intf);
     void notifyIntfUnplug(yb::usb_device_interface const & intf);
