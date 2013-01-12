@@ -177,7 +177,7 @@ void MiniShupitoUI::setVertical(bool vertical)
             to->addItem(i);
     }
 
-    to->removeItem(to->itemAt(to->count()-1));
+    delete to->takeAt(to->count()-1);
     to->addStretch(1);
 }
 

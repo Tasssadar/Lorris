@@ -61,6 +61,7 @@ LorrisShupito::LorrisShupito()
     lastVccIndex = 0;
     m_progress_dialog = NULL;
     m_state = 0;
+    m_buttons_enabled = false;
 
     m_mode_act_signalmap = new QSignalMapper(this);
     connect(m_mode_act_signalmap, SIGNAL(mapped(int)), SLOT(modeSelected(int)));
