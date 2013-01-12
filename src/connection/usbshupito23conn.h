@@ -22,13 +22,14 @@ public:
     void setup(yb::usb_device_interface const & intf);
     void clear();
 
-    void OpenConcurrent();
-    void Close();
-
     void requestDesc();
 
 public slots:
     void sendPacket(ShupitoPacket const & packet);
+
+protected:
+    void doOpen();
+    void doClose();
 
 private slots:
     void incomingPacketsReceived();

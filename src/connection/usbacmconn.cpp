@@ -10,6 +10,7 @@ UsbAcmConnection2::UsbAcmConnection2(yb::async_runner & runner)
     : PortConnection(CONNECTION_USB_ACM2), m_runner(runner), m_enumerated(false), m_vid(0), m_pid(0), m_baudrate(115200)
 {
     connect(&m_incomingDataChannel, SIGNAL(dataReceived()), this, SLOT(incomingDataReady()));
+    this->markMissing();
 }
 
 static QString fromUtf8(std::string const & s)
@@ -35,30 +36,37 @@ static void extractEndpoints(yb::usb_interface const & idesc, int & inep, int & 
     }
 }
 
+void UsbAcmConnection2::setEnumeratedIntf(yb::usb_device_interface const & intf)
+{
+    Q_ASSERT(!intf.empty());
+    m_enumerated = true;
+
+    yb::usb_device const & dev = intf.device();
+    yb::usb_device_descriptor const & desc = dev.descriptor();
+    m_vid = desc.idVendor;
+    m_pid = desc.idProduct;
+    m_serialNumber = fromUtf8(dev.serial_number());
+    m_intfName = formatIntfName(intf);
+    emit changed();
+
+    this->setIntf(intf);
+}
+
 void UsbAcmConnection2::setIntf(yb::usb_device_interface const & intf)
 {
-    m_enumerated_intf = intf;
+    m_intf = intf;
 
-    if (!m_enumerated_intf.empty())
+    if (!m_intf.empty())
     {
-        yb::usb_device const & dev = m_enumerated_intf.device();
+        yb::usb_device const & dev = m_intf.device();
 
         yb::usb_device_descriptor const & desc = dev.descriptor();
-        m_vid = desc.idVendor;
-        m_pid = desc.idProduct;
-        m_serialNumber = fromUtf8(dev.serial_number());
-        m_intfName = fromUtf8(m_enumerated_intf.name());
-        if (m_intfName.isEmpty())
-            m_intfName = QString("#%1").arg(m_enumerated_intf.interface_index());
-        emit changed();
-
-        this->SetState(st_disconnected);
 
         QString productName = fromUtf8(dev.product());
         QString manufacturerName = fromUtf8(dev.manufacturer());
 
         int inep, outep;
-        extractEndpoints(m_enumerated_intf.descriptor(), inep, outep);
+        extractEndpoints(m_intf.descriptor(), inep, outep);
 
         QStringList res;
         res.push_back(QString("USB ACM %1.%2, %3:%4").arg(intf.config_value()).arg(intf.interface_index()).arg(outep, 2, 16, QChar('0')).arg(inep, 2, 16, QChar('0')));
@@ -68,8 +76,45 @@ void UsbAcmConnection2::setIntf(yb::usb_device_interface const & intf)
             res.push_back(manufacturerName);
         if (!m_serialNumber.isEmpty())
             res.push_back(m_serialNumber);
+
         m_details = res.join(", ");
+        this->markPresent();
     }
+    else
+    {
+        this->cleanupWorkers();
+        this->markMissing();
+    }
+}
+
+void UsbAcmConnection2::notifyIntfPlugin(yb::usb_device_interface const & intf)
+{
+    if (!m_enumerated && this->isMissing())
+    {
+        yb::usb_device const & dev = intf.device();
+        yb::usb_device_descriptor const & desc = dev.descriptor();
+
+        if (desc.idVendor == m_vid && desc.idProduct == m_pid
+            && QString::fromUtf8(intf.device().serial_number().c_str()) == m_serialNumber
+            && formatIntfName(intf) == m_intfName)
+        {
+            this->setIntf(intf);
+        }
+    }
+}
+
+void UsbAcmConnection2::notifyIntfUnplug(yb::usb_device_interface const & intf)
+{
+    if (!m_enumerated && m_intf == intf)
+        this->setIntf(yb::usb_device_interface());
+}
+
+QString UsbAcmConnection2::formatIntfName(yb::usb_device_interface const & intf)
+{
+    QString name = QString::fromUtf8(intf.name().c_str());
+    if (name.isEmpty())
+        name = QString("#%1").arg(intf.interface_index());
+    return name;
 }
 
 void UsbAcmConnection2::clear()
@@ -77,7 +122,7 @@ void UsbAcmConnection2::clear()
     this->cleanupWorkers();
     m_intf.clear();
     if (m_enumerated)
-        this->SetState(st_removed);
+        this->markMissing();
 }
 
 UsbAcmConnection2::~UsbAcmConnection2()
@@ -125,75 +170,72 @@ private:
     uint8_t m_buffer[7];
 };
 
-void UsbAcmConnection2::OpenConcurrent()
+void UsbAcmConnection2::doOpen()
 {
-    if (this->state() != st_removed && this->state() != st_connected)
+    if (m_intf.empty())
     {
-        m_intf = m_enumerated_intf;
+        m_intf = sConMgr2.lookupUsbAcmConn(m_vid, m_pid, m_serialNumber, m_intfName);
         if (m_intf.empty())
-        {
-            m_intf = sConMgr2.lookupUsbAcmConn(m_vid, m_pid, m_serialNumber, m_intfName);
-            if (m_intf.empty())
-                return Utils::showErrorBox(tr("Cannot find the USB interface."), 0);
-        }
+            return Utils::showErrorBox(tr("Cannot find the USB interface."), 0);
+    }
 
-        yb::usb_interface_descriptor const & desc = m_intf.descriptor().altsettings[0];
+    yb::usb_interface_descriptor const & desc = m_intf.descriptor().altsettings[0];
 
-        int inep, outep;
-        extractEndpoints(m_intf.descriptor(), inep, outep);
+    int inep, outep;
+    extractEndpoints(m_intf.descriptor(), inep, outep);
 
-        if (!m_intf.device().claim_interface(m_intf.interface_index()))
-            return Utils::showErrorBox(tr("Cannot open the USB interface."), 0);
+    if (!m_intf.device().claim_interface(m_intf.interface_index()))
+        return Utils::showErrorBox(tr("Cannot open the USB interface."), 0);
 
-        this->SetState(st_connected);
+    this->SetState(st_connected);
 
-        assert(m_receive_worker.empty());
-        assert(m_send_worker.empty());
+    assert(m_receive_worker.empty());
+    assert(m_send_worker.empty());
 
-        if (inep)
-        {
-            m_receive_worker = m_runner.post(yb::loop<size_t>(yb::async::value((size_t)0), [this, inep](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
-                if (r > 0)
-                    m_incomingDataChannel.send(m_read_buffer, m_read_buffer + r);
-                return cl >= yb::cl_quit? yb::nulltask: m_intf.device().bulk_read(inep, m_read_buffer, sizeof m_read_buffer);
-            }));
-        }
+    if (inep)
+    {
+        m_receive_worker = m_runner.post(yb::loop<size_t>(yb::async::value((size_t)0), [this, inep](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
+            if (r > 0)
+                m_incomingDataChannel.send(m_read_buffer, m_read_buffer + r);
+            return cl >= yb::cl_quit? yb::nulltask: m_intf.device().bulk_read(inep, m_read_buffer, sizeof m_read_buffer);
+        }));
+    }
 
-        if (outep)
-        {
-            m_send_worker = m_runner.post(yb::loop([this, outep](yb::cancel_level cl) -> yb::task<void> {
-                return cl >= yb::cl_quit? yb::nulltask: this->send_loop(outep);
-            }));
-        }
+    if (outep)
+    {
+        m_send_worker = m_runner.post(yb::loop([this, outep](yb::cancel_level cl) -> yb::task<void> {
+            return cl >= yb::cl_quit? yb::nulltask: this->send_loop(outep);
+        }));
+    }
 
-        // {ea5c3c23-ea74-f841-bfa2-8e1983e796be}
-        static uint8_t const sig[] = { 0xea, 0x5c, 0x3c, 0x23, 0xea, 0x74, 0xf8, 0x41, 0xbf, 0xa2, 0x8e, 0x19, 0x83, 0xe7, 0x96, 0xbe };
-        std::vector<uint8_t> extra_desc = desc.lookup_extra_descriptor(75, yb::buffer_ref(sig, sig + sizeof sig));
-        m_configurable = !extra_desc.empty();
+    // {ea5c3c23-ea74-f841-bfa2-8e1983e796be}
+    static uint8_t const sig[] = { 0xea, 0x5c, 0x3c, 0x23, 0xea, 0x74, 0xf8, 0x41, 0xbf, 0xa2, 0x8e, 0x19, 0x83, 0xe7, 0x96, 0xbe };
+    std::vector<uint8_t> extra_desc = desc.lookup_extra_descriptor(75, yb::buffer_ref(sig, sig + sizeof sig));
+    m_configurable = !extra_desc.empty();
 
-        if (m_configurable)
-        {
-            line_coding_struct payload(m_baudrate);
-            yb::usb_control_code_t set_line_coding = { 0x21, 0x20 };
-            m_runner.try_run(m_intf.device().control_write(set_line_coding, 0, m_intf.interface_index(), payload.data(), payload.size()));
-        }
+    if (m_configurable)
+    {
+        line_coding_struct payload(m_baudrate);
+        yb::usb_control_code_t set_line_coding = { 0x21, 0x20 };
+        m_runner.try_run(m_intf.device().control_write(set_line_coding, 0, m_intf.interface_index(), payload.data(), payload.size()));
     }
 }
 
-void UsbAcmConnection2::Close()
+void UsbAcmConnection2::doClose()
 {
+    Q_ASSERT(this->state() == st_connected);
     this->cleanupWorkers();
-    if (this->state() == st_connected)
+    if (m_configurable)
     {
-        if (m_configurable)
-        {
-            yb::usb_control_code_t set_control_line_state = { 0x21, 0x22 };
-            m_runner.try_run(m_intf.device().control_write(set_control_line_state, 0, m_intf.interface_index(), 0, 0));
-        }
-
-        m_intf.device().release_interface(m_intf.interface_index());
-        this->SetState(st_disconnected);
+        yb::usb_control_code_t set_control_line_state = { 0x21, 0x22 };
+        m_runner.try_run(m_intf.device().control_write(set_control_line_state, 0, m_intf.interface_index(), 0, 0));
     }
+
+    m_intf.device().release_interface(m_intf.interface_index());
+    this->SetState(st_disconnected);
+
+    if (!m_enumerated)
+        m_intf.clear();
 }
 
 void UsbAcmConnection2::cleanupWorkers()
@@ -258,4 +300,16 @@ bool UsbAcmConnection2::applyConfig(QHash<QString, QVariant> const & config)
     this->setIntfName(config.value("intf_name").toString());
     this->setBaudRate(config.value("baud_rate", 115200).toInt());
     return this->Connection::applyConfig(config);
+}
+
+void UsbAcmConnection2::updateIntf()
+{
+    Q_ASSERT(!m_enumerated && (this->state() == st_disconnected || this->state() == st_missing));
+    emit changed();
+
+    yb::usb_device_interface intf = sConMgr2.lookupUsbAcmConn(m_vid, m_pid, m_serialNumber, m_intfName);
+    if (!intf.empty())
+        this->markPresent();
+    else
+        this->markMissing();
 }

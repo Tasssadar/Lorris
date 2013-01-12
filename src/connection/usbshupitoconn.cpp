@@ -43,7 +43,7 @@ UsbAcmConnection::UsbAcmConnection(libusby::context & ctx)
         throw std::runtime_error("Failed to allocate a USB transfer.");
     }
 
-    this->SetState(st_removed);
+    this->markMissing();
 }
 
 UsbAcmConnection::~UsbAcmConnection()
@@ -54,14 +54,19 @@ UsbAcmConnection::~UsbAcmConnection()
     libusby_free_transfer(m_write_transfer);
 }
 
-void UsbAcmConnection::OpenConcurrent()
+void UsbAcmConnection::doOpen()
 {
-    if (this->state() != st_disconnected)
-        return;
-
+    Q_ASSERT(this->state() == st_disconnected);
     this->SetState(st_connecting);
     bool success = this->openImpl();
     this->SetState(success? st_connected: st_disconnected);
+}
+
+void UsbAcmConnection::doClose()
+{
+    Q_ASSERT(this->state() == st_connected);
+    this->closeImpl();
+    this->SetState(st_disconnected);
 }
 
 void UsbAcmConnection::static_read_completed(libusby_transfer * t)
@@ -166,12 +171,6 @@ bool UsbAcmConnection::openImpl()
     return true;
 }
 
-void UsbAcmConnection::Close()
-{
-    this->closeImpl();
-    this->SetState(st_disconnected);
-}
-
 void UsbAcmConnection::closeImpl()
 {
     if (m_handle)
@@ -202,7 +201,10 @@ bool UsbAcmConnection::setUsbDevice(libusby::device const & dev)
     if (m_dev && !this->updateStrings())
         m_dev.clear();
 
-    this->SetState(m_dev.get()? st_disconnected: st_removed);
+    if (m_dev)
+        this->markPresent();
+    else
+        this->markMissing();
     emit changed();
     return true;
 }
@@ -367,12 +369,12 @@ QString UsbShupitoConnection::details() const
     return m_acm_conn->details();
 }
 
-void UsbShupitoConnection::OpenConcurrent()
+void UsbShupitoConnection::doOpen()
 {
     m_shupito_conn->OpenConcurrent();
 }
 
-void UsbShupitoConnection::Close()
+void UsbShupitoConnection::doClose()
 {
     emit disconnecting();
     m_shupito_conn->Close();

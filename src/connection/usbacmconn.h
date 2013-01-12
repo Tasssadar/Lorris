@@ -18,9 +18,6 @@ public:
 
     QString details() const { return m_details; }
 
-    bool enumerated() const { return m_enumerated; }
-    void setEnumerated(bool value) { m_enumerated = value; }
-
     int baudRate() const { return m_baudrate; }
     void setBaudRate(int value) { m_baudrate = value; emit changed(); }
 
@@ -29,18 +26,19 @@ public:
     QString serialNumber() const { return m_serialNumber; }
     QString intfName() const { return m_intfName; }
 
-    void setVid(int value) { m_vid = value; emit changed(); }
-    void setPid(int value) { m_pid = value; emit changed(); }
-    void setSerialNumber(QString const & value) { m_serialNumber = value; emit changed(); }
-    void setIntfName(QString const & value) { m_intfName = value; emit changed(); }
+    void setVid(int value) { m_vid = value; this->updateIntf(); }
+    void setPid(int value) { m_pid = value; this->updateIntf(); }
+    void setSerialNumber(QString const & value) { m_serialNumber = value; this->updateIntf(); }
+    void setIntfName(QString const & value) { m_intfName = value; this->updateIntf(); }
 
-    yb::usb_device_interface intf() const { return m_enumerated_intf; }
-    void setIntf(yb::usb_device_interface const & intf);
+    yb::usb_device_interface intf() const { return m_intf; }
+    bool enumerated() const { return m_enumerated; }
+    void setEnumeratedIntf(yb::usb_device_interface const & intf);
+
+    void notifyIntfPlugin(yb::usb_device_interface const & intf);
+    void notifyIntfUnplug(yb::usb_device_interface const & intf);
 
     void clear();
-
-    void OpenConcurrent();
-    void Close();
 
     bool clonable() const { return true; }
     ConnectionPointer<Connection> clone();
@@ -48,13 +46,22 @@ public:
     QHash<QString, QVariant> config() const;
     bool applyConfig(QHash<QString, QVariant> const & config);
 
+    static QString formatIntfName(yb::usb_device_interface const & intf);
+
 public slots:
     void SendData(const QByteArray & data);
+
+protected:
+    void doOpen();
+    void doClose();
 
 private slots:
     void incomingDataReady();
 
 private:
+    void setIntf(yb::usb_device_interface const & intf);
+    void updateIntf();
+
     bool m_enumerated;
 
     int m_vid;
@@ -64,7 +71,6 @@ private:
 
     int m_baudrate;
 
-    yb::usb_device_interface m_enumerated_intf;
     yb::usb_device_interface m_intf;
 
     QString m_details;

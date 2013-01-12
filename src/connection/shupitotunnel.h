@@ -20,14 +20,14 @@ class ShupitoTunnel : public PortConnection
 public:
     ShupitoTunnel();
 
-    void OpenConcurrent();
-    void Close();
     void SendData(const QByteArray &data);
 
     void setShupito(Shupito* s);
 
 protected:
     ~ShupitoTunnel();
+    void doOpen();
+    void doClose();
 
 private:
     Shupito *m_shupito;

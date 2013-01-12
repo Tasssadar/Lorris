@@ -27,6 +27,8 @@ static QString connectionStateString(ConnectionState state)
         return QObject::tr("(Connecting...)");
     case st_connected:
         return QObject::tr("(Connected)");
+    case st_connect_pending:
+        return QObject::tr("(Pending)");
     default:
         return QString();
     }
@@ -95,7 +97,7 @@ public:
             mode = QIcon::Selected;
         QIcon::State state = opt.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
 
-        painter->setOpacity(conn->state() == st_removed? 0.5: 1);
+        painter->setOpacity(conn->isMissing()? 0.5: 1);
         index.data(Qt::DecorationRole).value<QIcon>().paint(painter, iconRect, opt.decorationAlignment, mode, state);
 
         QPalette::ColorGroup cg = opt.state & QStyle::State_Enabled ? QPalette::Normal : QPalette::Disabled;
@@ -267,7 +269,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
     updateEditText(ui->connectionNameEdit, conn->name());
     ui->actionRemoveConnection->setEnabled(conn->removable());
     ui->actionConnect->setEnabled(conn->state() == st_disconnected);
-    ui->actionDisconnect->setEnabled(conn->state() == st_connected);
+    ui->actionDisconnect->setEnabled(conn->state() == st_connected || conn->state() == st_connect_pending);
 
     switch (conn->getType())
     {
@@ -298,11 +300,11 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             updateEditText(ui->usbAcmSnEdit, c->serialNumber());
             updateEditText(ui->usbIntfNameEdit, c->intfName());
 
-            bool enumerated = c->enumerated();
-            ui->usbVidEdit->setEnabled(!enumerated);
-            ui->usbPidEdit->setEnabled(!enumerated);
-            ui->usbAcmSnEdit->setEnabled(!enumerated);
-            ui->usbIntfNameEdit->setEnabled(!enumerated);
+            bool editable = !c->enumerated() && (c->state() == st_disconnected || c->state() == st_missing);
+            ui->usbVidEdit->setEnabled(editable);
+            ui->usbPidEdit->setEnabled(editable);
+            ui->usbAcmSnEdit->setEnabled(editable);
+            ui->usbIntfNameEdit->setEnabled(editable);
         }
         break;
     default:

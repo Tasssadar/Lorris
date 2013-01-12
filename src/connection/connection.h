@@ -20,7 +20,8 @@ enum ConnectionState {
     st_disconnected,
     st_connecting,
     st_connected,
-    st_removed
+    st_missing,
+    st_connect_pending
 };
 
 // TODO: maybe we should just remove this and use dynamic_cast?
@@ -78,8 +79,8 @@ public:
 
     virtual QString details() const;
 
-    virtual void OpenConcurrent() = 0;
-    virtual void Close() {}
+    void OpenConcurrent();
+    void Close();
 
     bool isOpen() const { return m_state == st_connected; }
     ConnectionState state() const { return m_state; }
@@ -101,6 +102,8 @@ public:
     virtual bool clonable() const { return false; }
     virtual ConnectionPointer<Connection> clone();
 
+    bool isMissing() const;
+
 signals:
     void connected(bool connected);
     void stateChanged(ConnectionState state);
@@ -120,12 +123,17 @@ protected:
     void SetState(ConnectionState state);
     void SetOpen(bool open);
 
+    void markMissing();
+    void markPresent();
+
+    virtual void doOpen() = 0;
+    virtual void doClose() = 0;
+
 private:
     ConnectionState m_state;
     QString m_idString;
     int m_refcount;
     int m_tabcount;
-    bool m_reconnectOnPlugin;
     bool m_removable;
     bool m_persistent;
     quint8 m_type;

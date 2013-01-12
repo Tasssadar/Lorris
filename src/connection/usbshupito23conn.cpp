@@ -7,7 +7,7 @@ UsbShupito23Connection::UsbShupito23Connection(yb::async_runner & runner)
     : ShupitoConnection(CONNECTION_SHUPITO23), m_runner(runner)
 {
     connect(&m_incomingPackets, SIGNAL(dataReceived()), this, SLOT(incomingPacketsReceived()));
-    this->SetState(st_removed);
+    this->markMissing();
 }
 
 static QString fromUtf8(std::string const & s)
@@ -60,14 +60,14 @@ void UsbShupito23Connection::setup(yb::usb_device_interface const & intf)
     m_desc.Clear();
     m_desc.AddData(raw_desc);
 
-    this->SetState(st_disconnected);
+    this->markPresent();
 }
 
 void UsbShupito23Connection::clear()
 {
     this->closeImpl();
     m_intf.clear();
-    this->SetState(st_removed);
+    this->markMissing();
 }
 
 void UsbShupito23Connection::closeImpl()
@@ -83,7 +83,7 @@ void UsbShupito23Connection::closeImpl()
     m_intf_guard.release();
 }
 
-void UsbShupito23Connection::OpenConcurrent()
+void UsbShupito23Connection::doOpen()
 {
     yb::usb_device dev = m_intf.device();
     if (!m_intf_guard.claim(dev, m_intf.interface_index()))
@@ -104,7 +104,7 @@ void UsbShupito23Connection::OpenConcurrent()
     this->SetState(st_connected);
 }
 
-void UsbShupito23Connection::Close()
+void UsbShupito23Connection::doClose()
 {
     this->closeImpl();
     this->SetState(st_disconnected);

@@ -58,7 +58,7 @@ void SerialPort::connectResultSer(bool opened)
     this->SetOpen(opened);
 }
 
-void SerialPort::Close()
+void SerialPort::doClose()
 {
     if(m_port)
         emit disconnecting();
@@ -109,11 +109,8 @@ void SerialPort::SendData(const QByteArray& data)
     }
 }
 
-void SerialPort::OpenConcurrent()
+void SerialPort::doOpen()
 {
-    if(this->state() != st_disconnected)
-        return;
-
     this->SetState(st_connecting);
 
     Q_ASSERT(!m_openThread);

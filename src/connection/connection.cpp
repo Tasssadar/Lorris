@@ -10,7 +10,7 @@
 #include <QStringBuilder>
 
 Connection::Connection(ConnectionType type)
-    : m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_reconnectOnPlugin(false), m_removable(true), m_persistent(false), m_type(type)
+    : m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_removable(true), m_persistent(false), m_type(type)
 {
 }
 
@@ -32,9 +32,6 @@ void Connection::SetState(ConnectionState state)
     bool oldOpen = (m_state == st_connected);
     bool newOpen = (state == st_connected);
 
-    if (m_state != st_removed && state == st_removed)
-        m_reconnectOnPlugin = (m_tabcount != 0 && m_state != st_disconnected);
-
     if(state != m_state)
     {
         m_state = state;
@@ -42,11 +39,51 @@ void Connection::SetState(ConnectionState state)
             emit connected(newOpen);
         emit stateChanged(state);
     }
+}
 
-    if (m_state == st_disconnected && m_reconnectOnPlugin)
+bool Connection::isMissing() const
+{
+    return m_state == st_missing || m_state == st_connect_pending;
+}
+
+void Connection::markMissing()
+{
+    if (m_state == st_connected || m_state == st_connect_pending)
+        this->SetState(st_connect_pending);
+    else
+        this->SetState(st_missing);
+}
+
+void Connection::markPresent()
+{
+    if (m_state == st_connect_pending)
     {
-        m_reconnectOnPlugin = false;
+        this->SetState(st_disconnected);
         this->OpenConcurrent();
+    }
+    else if (m_state == st_missing)
+    {
+        this->SetState(st_disconnected);
+    }
+}
+
+void Connection::OpenConcurrent()
+{
+    if (m_state == st_disconnected)
+        this->doOpen();
+}
+
+void Connection::Close()
+{
+    switch (m_state)
+    {
+    case st_connect_pending:
+        this->SetState(st_missing);
+        break;
+    case st_connecting:
+    case st_connected:
+        this->doClose();
+        break;
     }
 }
 
@@ -82,10 +119,7 @@ void Connection::addTabRef()
 void Connection::releaseTab()
 {
     if(--m_tabcount == 0)
-    {
-        m_reconnectOnPlugin = false;
         Close();
-    }
     release();
 }
 

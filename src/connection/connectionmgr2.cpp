@@ -317,6 +317,18 @@ LibybUsbEnumerator::~LibybUsbEnumerator()
 {
 }
 
+void LibybUsbEnumerator::registerUserOwnedConn(UsbAcmConnection2 * conn)
+{
+    connect(conn, SIGNAL(destroying()), this, SLOT(acmConnDestroying()));
+    m_user_owned_acm_conns.insert(conn);
+}
+
+void LibybUsbEnumerator::acmConnDestroying()
+{
+    UsbAcmConnection2 * conn = static_cast<UsbAcmConnection2 *>(this->sender());
+    m_user_owned_acm_conns.erase(conn);
+}
+
 yb::usb_device_interface LibybUsbEnumerator::lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName)
 {
     usb_interface_standby info;
@@ -430,9 +442,13 @@ void LibybUsbEnumerator::pluginEventReceived()
                 {
                 case yb::usb_plugin_event::a_add:
                     m_usb_acm_devices_by_info.insert(std::make_pair(st, ev.intf));
+                    for (std::set<UsbAcmConnection2 *>::const_iterator it = m_user_owned_acm_conns.begin(); it != m_user_owned_acm_conns.end(); ++it)
+                        (*it)->notifyIntfPlugin(ev.intf);
                     break;
                 case yb::usb_plugin_event::a_remove:
                     m_usb_acm_devices_by_info.erase(st);
+                    for (std::set<UsbAcmConnection2 *>::const_iterator it = m_user_owned_acm_conns.begin(); it != m_user_owned_acm_conns.end(); ++it)
+                        (*it)->notifyIntfUnplug(ev.intf);
                     break;
                 }
 
@@ -448,10 +464,9 @@ void LibybUsbEnumerator::pluginEventReceived()
                         {
                             conn.reset(new UsbAcmConnection2(m_runner));
                             conn->setName(QString("%1 @ %2").arg(st.intfname).arg(GenericUsbConnection::formatDeviceName(ev.intf.device())));
-                            conn->setEnumerated(true);
                             sConMgr2.addConnection(conn.data());
                         }
-                        conn->setIntf(ev.intf);
+                        conn->setEnumeratedIntf(ev.intf);
                         conn->setRemovable(false);
                         m_usb_acm_devices.insert(std::make_pair(ev.intf, conn));
                     }
@@ -678,6 +693,11 @@ void ConnectionManager2::addUserOwnedConn(Connection * conn)
 {
     m_userOwnedConns.insert(conn);
     this->addConnection(conn);
+
+#ifdef HAVE_LIBYB
+    if (UsbAcmConnection2 * uc = dynamic_cast<UsbAcmConnection2 *>(conn))
+        m_libybUsbEnumerator->registerUserOwnedConn(uc);
+#endif
 }
 
 void ConnectionManager2::connectionDestroyed()

@@ -18,7 +18,7 @@ ProxyTunnel::~ProxyTunnel()
     Close();
 }
 
-void ProxyTunnel::OpenConcurrent()
+void ProxyTunnel::doOpen()
 {
     if(m_server)
     {
@@ -27,13 +27,9 @@ void ProxyTunnel::OpenConcurrent()
     }
 }
 
-void ProxyTunnel::Close()
+void ProxyTunnel::doClose()
 {
-    if(!isOpen())
-        return;
-
     disconnect(m_server, SIGNAL(newData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
-
     SetOpen(false);
 }
 

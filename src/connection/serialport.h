@@ -33,9 +33,6 @@ public:
 
     virtual QString details() const;
 
-    void Close();
-    void OpenConcurrent();
-
     void SendData(const QByteArray &data);
 
     int baudRate() const { return m_rate; }
@@ -69,6 +66,8 @@ public:
 
 protected:
     ~SerialPort();
+    void doClose();
+    void doOpen();
 
 private slots:
     void connectResultSer(bool opened);

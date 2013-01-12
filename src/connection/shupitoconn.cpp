@@ -40,11 +40,8 @@ void PortShupitoConnection::setPort(ConnectionPointer<PortConnection> const & po
     }
 }
 
-void PortShupitoConnection::OpenConcurrent()
+void PortShupitoConnection::doOpen()
 {
-    if (this->state() != st_disconnected)
-        return;
-
     if (!m_port)
         return;
 
@@ -70,21 +67,22 @@ void PortShupitoConnection::OpenConcurrent()
     }
 }
 
-void PortShupitoConnection::Close()
+void PortShupitoConnection::doClose()
 {
-    if (this->state() == st_connected)
-    {
-        emit disconnecting();
-        this->SetState(st_disconnected);
-        releasePortTabRef();
-    }
+    emit disconnecting();
+    this->SetState(st_disconnected);
+    releasePortTabRef();
 }
 
 void PortShupitoConnection::portStateChanged(ConnectionState state)
 {
-    if (state == st_removed)
+    if (state == st_missing)
     {
-        this->SetState(st_removed);
+        this->SetState(st_missing);
+    }
+    else if (state == st_connect_pending)
+    {
+        this->SetState(st_connect_pending);
     }
     else if (state == st_disconnected)
     {

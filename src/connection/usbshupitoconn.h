@@ -25,13 +25,13 @@ public:
     libusby::device const & usbDevice() const { return m_dev; }
     bool setUsbDevice(libusby::device const & dev);
 
-    void OpenConcurrent();
-    void Close();
-
     static bool isDeviceSupported(libusby::device & dev);
 
 protected:
     bool event(QEvent * ev);
+
+    void doOpen();
+    void doClose();
 
 public slots:
     virtual void SendData(const QByteArray & data);
@@ -80,8 +80,6 @@ public:
     bool setUsbDevice(libusby::device const & dev) { return m_acm_conn->setUsbDevice(dev); }
 
     QString details() const;
-    void OpenConcurrent();
-    void Close();
 
     void requestDesc();
 
@@ -89,6 +87,10 @@ public:
 
 public slots:
     void sendPacket(ShupitoPacket const & packet);
+
+protected:
+    void doOpen();
+    void doClose();
 
 private slots:
     void acmConnChanged();
