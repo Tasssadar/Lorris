@@ -85,7 +85,55 @@ private:
 #include <libyb/usb/usb_device.hpp>
 #include <libyb/utils/tuple_less.hpp>
 #include "genericusbconn.h"
-#include "deviceenumerator.h"
+
+class StandbyDeviceListBase
+    : public QObject
+{
+    Q_OBJECT
+
+public slots:
+    virtual void connectionDestroyed() = 0;
+};
+
+template <typename Conn, typename Info>
+class StandbyDeviceList
+    : private StandbyDeviceListBase
+{
+public:
+    void add(Info const & info, Conn * conn)
+    {
+        std::map<Info, Conn *>::iterator it = m_conns.insert(std::make_pair(info, conn)).first;
+        m_inverse_map.insert(std::make_pair(conn, it));
+        connect(conn, SIGNAL(destroying()), this, SLOT(connectionDestroyed()));
+    }
+
+    ConnectionPointer<Conn> extract(Info const & info)
+    {
+        std::map<Info, Conn *>::iterator it = m_conns.find(info);
+        if (it == m_conns.end())
+            return ConnectionPointer<Conn>();
+
+        Conn * res = it->second;
+        m_conns.erase(it);
+        m_inverse_map.erase(res);
+        disconnect(res, 0, this, 0);
+        return ConnectionPointer<Conn>::fromPtr(res);
+    }
+
+protected:
+    void connectionDestroyed()
+    {
+        Conn * conn = static_cast<Conn *>(this->sender());
+        std::map<Conn *, std::map<Info, Conn *>::iterator>::iterator it = m_inverse_map.find(conn);
+        Q_ASSERT(it != m_inverse_map.end());
+        m_conns.erase(it->second);
+        m_inverse_map.erase(it);
+    }
+
+private:
+    std::map<Info, Conn *> m_conns;
+    std::map<Conn *, typename std::map<Info, Conn *>::iterator> m_inverse_map;
+};
 
 class LibybUsbEnumerator : public QObject
 {
@@ -97,224 +145,48 @@ public:
 
     yb::usb_device_interface lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName);
 
-public slots:
-    void refresh();
+private slots:
+    void pluginEventReceived();
 
 private:
     yb::async_runner & m_runner;
     yb::usb_context m_usb_context;
-    QTimer m_refreshTimer;
+    ThreadChannel<yb::usb_plugin_event> m_plugin_channel;
+    yb::async_future<void> m_usb_monitor;
 
-    struct intf_id
-    {
-        int vid;
-        int pid;
-        QString serialNumber;
-        QString intfName;
-
-        friend bool operator<(intf_id const & lhs, intf_id const & rhs)
-        {
-            return yb::tuple_less(lhs.vid, rhs.vid)(lhs.pid, rhs.pid)(lhs.serialNumber, rhs.serialNumber)(lhs.intfName, rhs.intfName);
-        }
-    };
-
-    std::map<intf_id, yb::usb_device_interface> m_all_interfaces;
-
-    struct usb_dev_standby
+    struct usb_device_standby
     {
         uint32_t vidpid;
-        QString sn;
+        std::string sn;
+
+        friend bool operator<(usb_device_standby const & lhs, usb_device_standby const & rhs)
+        {
+            return lhs.vidpid < rhs.vidpid
+                || (lhs.vidpid == rhs.vidpid && lhs.sn < rhs.sn);
+        }
     };
 
-    struct usb_dev_id
+    std::map<yb::usb_device, ConnectionPointer<GenericUsbConnection> > m_usb_devices;
+    StandbyDeviceList<GenericUsbConnection, usb_device_standby> m_standby_usb_devices;
+
+    struct usb_interface_standby
     {
-        yb::usb_device dev;
-        QString sn;
+        usb_device_standby dev;
+        QString intfname;
 
-        friend bool operator<(usb_dev_id const & lhs, usb_dev_id const & rhs)
+        friend bool operator<(usb_interface_standby const & lhs, usb_interface_standby const & rhs)
         {
-            return lhs.dev < rhs.dev;
+            return lhs.intfname < rhs.intfname
+                || (lhs.intfname == rhs.intfname && lhs.dev < rhs.dev);
         }
     };
 
-    class GenericUsbEnumerator
-        : public DeviceEnumerator<GenericUsbConnection, usb_dev_id, usb_dev_standby>
-    {
-    public:
-        GenericUsbEnumerator(LibybUsbEnumerator * self)
-            : m_self(self)
-        {
-        }
+    std::map<yb::usb_device_interface, ConnectionPointer<UsbShupito23Connection> > m_shupito23_devices;
+    StandbyDeviceList<UsbShupito23Connection, usb_interface_standby> m_standby_shupito23_devices;
 
-        virtual GenericUsbConnection * create(usb_dev_id const & id)
-        {
-            ConnectionPointer<GenericUsbConnection> conn(new GenericUsbConnection(m_self->m_runner, id.dev));
-            conn->setPersistent(!conn->serialNumber().isEmpty());
-            conn->setRemovable(false);
-            return conn.take();
-        }
-
-        virtual void resurrect(id_type const & id, connection_type * conn)
-        {
-            conn->setDevice(id.dev);
-            conn->setRemovable(false);
-        }
-
-        virtual void clear(connection_type * conn)
-        {
-            conn->clearDevice();
-            conn->setRemovable(true);
-        }
-
-        virtual usb_dev_standby standby_info(id_type const & id, connection_type * conn)
-        {
-            usb_dev_standby info;
-            info.vidpid = id.dev.vidpid();
-            info.sn = conn->serialNumber();
-            return info;
-        }
-
-        virtual void update_id(id_type & id)
-        {
-            std::string s = id.dev.serial_number();
-            id.sn = QString::fromUtf8(s.data(), s.size());
-        }
-
-        virtual bool is_compatible(id_type const & id, usb_dev_standby const & si)
-        {
-            return id.dev.vidpid() == si.vidpid && id.sn == si.sn;
-        }
-
-    private:
-        LibybUsbEnumerator * m_self;
-    };
-
-    GenericUsbEnumerator m_devenum;
-
-    struct acm_id_standby
-    {
-        usb_dev_standby dev_standby;
-        uint8_t intfno;
-        std::string intfname;
-    };
-
-    struct acm_id
-        : usb_dev_id
-    {
-        yb::usb_device_interface intf;
-        uint8_t cfg_value;
-        uint8_t intfno;
-        std::string intfname;
-
-        friend bool operator<(acm_id const & lhs, acm_id const & rhs)
-        {
-            return lhs.intfno < rhs.intfno
-                || (lhs.intfno == rhs.intfno && lhs.intfname < rhs.intfname);
-        }
-    };
-
-    class UsbAcmEnumerator
-        : public DeviceEnumerator<UsbAcmConnection2, acm_id, acm_id_standby>
-    {
-    public:
-        explicit UsbAcmEnumerator(LibybUsbEnumerator * self)
-            : m_self(self)
-        {
-        }
-
-        virtual UsbAcmConnection2 * create(acm_id const & id)
-        {
-            ConnectionPointer<UsbAcmConnection2> conn(new UsbAcmConnection2(m_self->m_runner));
-            conn->setEnumerated(true);
-            conn->setIntf(id.intf);
-
-            QString deviceName = GenericUsbConnection::formatDeviceName(id.dev);
-            QString name;
-            if (id.intfname.empty())
-                name = QString("ACM%1 @ %2").arg(QString::number(id.intfno), deviceName);
-            else
-                name = QString("%1 @ %2").arg(QString::fromUtf8(id.intfname.data(), id.intfname.size()), deviceName);
-            conn->setName(name);
-
-            conn->setRemovable(false);
-            conn->setPersistent(!id.intfname.empty());
-            return conn.take();
-        }
-
-        virtual void resurrect(id_type const & id, UsbAcmConnection2 * conn)
-        {
-            conn->setIntf(id.intf);
-            conn->setRemovable(false);
-            conn->setPersistent(!id.intfname.empty());
-        }
-
-        virtual void clear(connection_type * conn)
-        {
-            conn->clear();
-            conn->setRemovable(true);
-        }
-
-        virtual acm_id_standby standby_info(id_type const & id, UsbAcmConnection2 *)
-        {
-            acm_id_standby info;
-            //info.dev_standby = 
-            info.intfno = id.intfno;
-            info.intfname = id.intfname;
-            return info;
-        }
-
-        virtual bool is_compatible(id_type const & id, acm_id_standby const & si)
-        {
-            return (!si.intfname.empty() && !id.intfname.empty() && si.intfname == id.intfname)
-                || (si.intfname.empty() && id.intfname.empty() && si.intfno == id.intfno);
-        }
-
-    private:
-        LibybUsbEnumerator * m_self;
-    };
-
-    UsbAcmEnumerator m_acm_conns;
-
-    class Shupito23Enumerator
-        : public DeviceEnumerator<UsbShupito23Connection, yb::usb_device_interface, yb::usb_device_interface>
-    {
-    public:
-        Shupito23Enumerator(yb::async_runner & runner)
-            : m_runner(runner)
-        {
-        }
-
-        connection_type * create(id_type const & id)
-        {
-            ConnectionPointer<UsbShupito23Connection> conn(new UsbShupito23Connection(m_runner));
-            conn->setRemovable(false);
-            conn->setup(id);
-            conn->setName(GenericUsbConnection::formatDeviceName(id.device()));
-            return conn.take();
-        }
-
-        void resurrect(id_type const &, connection_type *)
-        {
-        }
-
-        void clear(connection_type *)
-        {
-        }
-
-        standby_info_type standby_info(id_type const & id, connection_type *)
-        {
-            return id;
-        }
-
-        bool is_compatible(id_type const &, standby_info_type const &)
-        {
-            return false;
-        }
-
-        yb::async_runner & m_runner;
-    };
-
-    Shupito23Enumerator m_shupito23_conns;
+    std::map<yb::usb_device_interface, ConnectionPointer<UsbAcmConnection2> > m_usb_acm_devices;
+    StandbyDeviceList<UsbAcmConnection2, usb_interface_standby> m_standby_usb_acm_devices;
+    std::map<usb_interface_standby, yb::usb_device_interface> m_usb_acm_devices_by_info;
 };
 
 #endif // HAVE_LIBYB

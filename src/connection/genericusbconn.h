@@ -3,7 +3,6 @@
 
 #include "connection.h"
 #include "usbacmconn.h"
-#include "deviceenumerator.h"
 #include <libyb/async/async_runner.hpp>
 #include <libyb/usb/usb_device.hpp>
 

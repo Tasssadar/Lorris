@@ -3,8 +3,6 @@
 #include <QEvent>
 #include <QCoreApplication>
 
-// XXX: st_removed
-
 UsbShupito23Connection::UsbShupito23Connection(yb::async_runner & runner)
     : ShupitoConnection(CONNECTION_SHUPITO23), m_runner(runner)
 {
@@ -67,9 +65,22 @@ void UsbShupito23Connection::setup(yb::usb_device_interface const & intf)
 
 void UsbShupito23Connection::clear()
 {
-    m_intf_guard.release();
+    this->closeImpl();
     m_intf.clear();
     this->SetState(st_removed);
+}
+
+void UsbShupito23Connection::closeImpl()
+{
+    if (this->state() == st_connected)
+    {
+        m_write_loop.wait(yb::cl_abort);
+        for (size_t i = 0; i < m_in_eps.size(); ++i)
+            m_read_loops[i].read_loop.wait(yb::cl_abort);
+        m_read_loops.reset();
+    }
+
+    m_intf_guard.release();
 }
 
 void UsbShupito23Connection::OpenConcurrent()
@@ -95,15 +106,7 @@ void UsbShupito23Connection::OpenConcurrent()
 
 void UsbShupito23Connection::Close()
 {
-    if (this->state() == st_connected)
-    {
-        m_write_loop.wait(yb::cl_abort);
-        for (size_t i = 0; i < m_in_eps.size(); ++i)
-            m_read_loops[i].read_loop.wait(yb::cl_abort);
-        m_read_loops.reset();
-    }
-
-    m_intf_guard.release();
+    this->closeImpl();
     this->SetState(st_disconnected);
 }
 

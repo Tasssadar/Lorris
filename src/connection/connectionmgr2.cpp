@@ -305,10 +305,12 @@ void UsbShupitoEnumerator::shupitoConnectionDestroyed()
 #ifdef HAVE_LIBYB
 
 LibybUsbEnumerator::LibybUsbEnumerator(yb::async_runner & runner)
-    : m_runner(runner), m_usb_context(m_runner), m_devenum(this), m_acm_conns(this), m_shupito23_conns(m_runner)
+    : m_runner(runner), m_usb_context(m_runner)//, m_devenum(this), m_acm_conns(this), m_shupito23_conns(m_runner)
 {
-    connect(&m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
-    m_refreshTimer.start(1000);
+    connect(&m_plugin_channel, SIGNAL(dataReceived()), this, SLOT(pluginEventReceived()));
+    m_usb_monitor = m_usb_context.run([this](yb::usb_plugin_event const & p) {
+        m_plugin_channel.send(p);
+    });
 }
 
 LibybUsbEnumerator::~LibybUsbEnumerator()
@@ -317,15 +319,15 @@ LibybUsbEnumerator::~LibybUsbEnumerator()
 
 yb::usb_device_interface LibybUsbEnumerator::lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName)
 {
-    intf_id id;
-    id.vid = vid;
-    id.pid = pid;
-    id.serialNumber = serialNumber;
-    id.intfName = intfName;
-    std::map<intf_id, yb::usb_device_interface>::const_iterator it = m_all_interfaces.find(id);
-    if (it != m_all_interfaces.end())
-        return it->second;
-    return yb::usb_device_interface();
+    usb_interface_standby info;
+    info.dev.vidpid = (vid << 16) | pid;
+    info.dev.sn = serialNumber.toUtf8();
+    info.intfname = intfName;
+
+    std::map<usb_interface_standby, yb::usb_device_interface>::iterator it = m_usb_acm_devices_by_info.find(info);
+    if (it == m_usb_acm_devices_by_info.end())
+        return yb::usb_device_interface();
+    return it->second;
 }
 
 static QString fromUtf8(std::string const & s)
@@ -333,72 +335,140 @@ static QString fromUtf8(std::string const & s)
     return QString::fromUtf8(s.data(), s.size());
 }
 
-void LibybUsbEnumerator::refresh()
+void LibybUsbEnumerator::pluginEventReceived()
 {
-    std::vector<yb::usb_device> dev_list;
-    std::vector<yb::usb_device_interface> intf_list;
-    std::map<intf_id, yb::usb_device_interface> all_interfaces;
+    std::vector<yb::usb_plugin_event> events;
+    m_plugin_channel.receive(events);
 
-    m_usb_context.get_device_list(dev_list, intf_list);
-
-    std::vector<usb_dev_id> devs;
-    for (size_t i = 0; i < dev_list.size(); ++i)
+    for (size_t i = 0; i < events.size(); ++i)
     {
-        if (!GenericUsbConnection::isFlipDevice(dev_list[i]))
-            continue;
+        yb::usb_plugin_event const & ev = events[i];
 
-        usb_dev_id d;
-        d.dev = dev_list[i];
-        devs.push_back(d);
-    }
-
-    m_devenum.update(devs.begin(), devs.end());
-
-    std::vector<yb::usb_device_interface> shupito23_ids;
-    std::vector<acm_id> acm_ids;
-    for (size_t i = 0; i < intf_list.size(); ++i)
-    {
-        std::string const & name = intf_list[i].name();
-        yb::usb_device dev = intf_list[i].device();
-        yb::usb_device_descriptor const & devdesc = dev.descriptor();
-
-        intf_id id;
-        id.vid = devdesc.idVendor;
-        id.pid = devdesc.idProduct;
-        id.serialNumber = fromUtf8(dev.serial_number());
-        if (name.empty())
-            id.intfName = QString("#%1").arg(intf_list[i].interface_index());
-        else
-            id.intfName = fromUtf8(name);
-        all_interfaces[id] = intf_list[i];
-
-        yb::usb_interface const & uintf = intf_list[i].descriptor();
-
-        yb::usb_interface_descriptor const & intf = uintf.altsettings[0];
-        if (GenericUsbConnection::isShupito23Device(intf_list[i].device()) && intf.bInterfaceClass == 0xff
-            && intf.in_descriptor_count() > 0 && intf.out_descriptor_count() == 1)
+        if (!ev.dev.empty())
         {
-            shupito23_ids.push_back(intf_list[i]);
-        }
-        else if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0
-            && !intf.endpoints.empty())
-        {
-            if (name.empty() || name[0] == '.')
+            if (!GenericUsbConnection::isFlipDevice(ev.dev))
                 continue;
 
-            acm_id id;
-            id.intf = intf_list[i];
-            id.dev = intf_list[i].device();
-            id.cfg_value = intf_list[i].config_value();
-            id.intfno = intf_list[i].interface_index();
-            id.intfname = name;
-            acm_ids.push_back(std::move(id));
+            usb_device_standby st;
+            st.sn = ev.dev.serial_number();
+            st.vidpid = ev.dev.vidpid();
+
+            switch (ev.action)
+            {
+            case yb::usb_plugin_event::a_add:
+                {
+                    ConnectionPointer<GenericUsbConnection> conn = m_standby_usb_devices.extract(st);
+                    if (!conn)
+                    {
+                        conn.reset(new GenericUsbConnection(m_runner, ev.dev));
+                        sConMgr2.addConnection(conn.data());
+                    }
+
+                    conn->setRemovable(false);
+                    conn->setDevice(ev.dev);
+                    m_usb_devices.insert(std::make_pair(ev.dev, conn));
+                }
+                break;
+            case yb::usb_plugin_event::a_remove:
+                {
+                    std::map<yb::usb_device, ConnectionPointer<GenericUsbConnection> >::iterator it = m_usb_devices.find(ev.dev);
+                    it->second->clearDevice();
+                    it->second->setRemovable(true);
+                    m_standby_usb_devices.add(st, it->second.data());
+                    m_usb_devices.erase(it);
+                }
+                break;
+            }
+        }
+        else
+        {
+            yb::usb_interface_descriptor const & intf = ev.intf.descriptor().altsettings[0];
+
+            usb_interface_standby st;
+            st.dev.sn = ev.intf.device().serial_number();
+            st.dev.vidpid = ev.intf.device().vidpid();
+            st.intfname = QString::fromUtf8(ev.intf.name().c_str());
+            if (st.intfname.isEmpty())
+                st.intfname = QString("#%1").arg(ev.intf.interface_index());
+
+            if (GenericUsbConnection::isShupito23Device(ev.intf.device()) && intf.bInterfaceClass == 0xff
+                && intf.in_descriptor_count() > 0 && intf.out_descriptor_count() == 1)
+            {
+                switch (ev.action)
+                {
+                case yb::usb_plugin_event::a_add:
+                    {
+                        ConnectionPointer<UsbShupito23Connection> conn = m_standby_shupito23_devices.extract(st);
+                        if (!conn)
+                        {
+                            conn.reset(new UsbShupito23Connection(m_runner));
+                            conn->setName(GenericUsbConnection::formatDeviceName(ev.intf.device()));
+                            sConMgr2.addConnection(conn.data());
+                        }
+                        conn->setup(ev.intf);
+                        conn->setRemovable(false);
+                        m_shupito23_devices.insert(std::make_pair(ev.intf, conn));
+                    }
+                    break;
+                case yb::usb_plugin_event::a_remove:
+                    {
+                        std::map<yb::usb_device_interface, ConnectionPointer<UsbShupito23Connection> >::iterator it = m_shupito23_devices.find(ev.intf);
+                        it->second->clear();
+                        it->second->setRemovable(true);
+                        m_standby_shupito23_devices.add(st, it->second.data());
+                        m_shupito23_devices.erase(it);
+                    }
+                    break;
+                }
+            }
+            else if (intf.bInterfaceClass == 0xa && intf.bInterfaceSubClass == 0
+                && !intf.endpoints.empty())
+            {
+                Q_ASSERT(!st.intfname.isEmpty());
+
+                switch (ev.action)
+                {
+                case yb::usb_plugin_event::a_add:
+                    m_usb_acm_devices_by_info.insert(std::make_pair(st, ev.intf));
+                    break;
+                case yb::usb_plugin_event::a_remove:
+                    m_usb_acm_devices_by_info.erase(st);
+                    break;
+                }
+
+                if (st.intfname[0] == '#' || st.intfname[0] == '.')
+                    continue;
+
+                switch (ev.action)
+                {
+                case yb::usb_plugin_event::a_add:
+                    {
+                        ConnectionPointer<UsbAcmConnection2> conn = m_standby_usb_acm_devices.extract(st);
+                        if (!conn)
+                        {
+                            conn.reset(new UsbAcmConnection2(m_runner));
+                            conn->setName(QString("%1 @ %2").arg(st.intfname).arg(GenericUsbConnection::formatDeviceName(ev.intf.device())));
+                            conn->setEnumerated(true);
+                            sConMgr2.addConnection(conn.data());
+                        }
+                        conn->setIntf(ev.intf);
+                        conn->setRemovable(false);
+                        m_usb_acm_devices.insert(std::make_pair(ev.intf, conn));
+                    }
+                    break;
+                case yb::usb_plugin_event::a_remove:
+                    {
+                        std::map<yb::usb_device_interface, ConnectionPointer<UsbAcmConnection2> >::iterator it = m_usb_acm_devices.find(ev.intf);
+                        it->second->clear();
+                        it->second->setRemovable(true);
+                        m_standby_usb_acm_devices.add(st, it->second.data());
+                        m_usb_acm_devices.erase(it);
+                    }
+                    break;
+                }
+            }
         }
     }
-
-    m_all_interfaces.swap(all_interfaces);
-    m_acm_conns.update(acm_ids.begin(), acm_ids.end());
-    m_shupito23_conns.update(shupito23_ids.begin(), shupito23_ids.end());
 }
 
 #endif // HAVE_LIBYB
@@ -567,10 +637,6 @@ void ConnectionManager2::refresh()
 #ifdef HAVE_LIBUSBY
     m_usbShupitoEnumerator->refresh();
 #endif // HAVE_LIBUSBY
-
-#ifdef HAVE_LIBYB
-    m_libybUsbEnumerator->refresh();
-#endif // HAVE_LIBYB
 }
 
 SerialPort * ConnectionManager2::createSerialPort()

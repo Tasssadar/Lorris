@@ -67,6 +67,7 @@ void Connection::release()
 {
     if (--m_refcount == 0)
     {
+        this->Close();
         emit destroying();
         delete this;
     }

@@ -34,6 +34,8 @@ private slots:
     void incomingPacketsReceived();
 
 private:
+    void closeImpl();
+
     yb::async_runner & m_runner;
     yb::usb_device_interface m_intf;
     yb::usb_interface_guard m_intf_guard;

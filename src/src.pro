@@ -35,7 +35,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisTerminal/lorristerminal.cpp \
     LorrisTerminal/lorristerminalinfo.cpp \
     connection/connection.cpp \
-    connection/deviceenumerator.cpp \
     connection/serialport.cpp \
     LorrisTerminal/eeprom.cpp \
     LorrisAnalyzer/lorrisanalyzerinfo.cpp \
@@ -153,7 +152,6 @@ HEADERS += ui/mainwindow.h \
     LorrisTerminal/lorristerminal.h \
     LorrisTerminal/lorristerminalinfo.h \
     connection/connection.h \
-    connection/deviceenumerator.h \
     connection/serialport.h \
     LorrisTerminal/eeprom.h \
     LorrisAnalyzer/lorrisanalyzer.h \
