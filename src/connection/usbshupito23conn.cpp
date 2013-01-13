@@ -145,7 +145,8 @@ yb::task<void> UsbShupito23Connection::write_packets()
 yb::task<void> UsbShupito23Connection::read_loop(uint8_t i)
 {
     return m_intf.device().bulk_read(m_in_eps[i], m_read_loops[i].read_buffer, sizeof m_read_loops[i].read_buffer).then([this, i](size_t r) -> yb::task<void> {
-        m_incomingPackets.send(ShupitoPacket(m_read_loops[i].read_buffer, m_read_loops[i].read_buffer + r));
+        if (r != 0)
+			m_incomingPackets.send(ShupitoPacket(m_read_loops[i].read_buffer, m_read_loops[i].read_buffer + r));
         return yb::async::value();
     });
 }
