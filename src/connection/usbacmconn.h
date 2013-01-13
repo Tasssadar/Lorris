@@ -82,7 +82,7 @@ private:
     yb::async_future<void> m_receive_worker;
     yb::async_future<void> m_send_worker;
 
-    uint8_t m_read_buffer[128];
+    uint8_t m_read_buffer[64];
 
     yb::async_channel<uint8_t> m_send_channel;
     std::vector<uint8_t> m_write_buffer;

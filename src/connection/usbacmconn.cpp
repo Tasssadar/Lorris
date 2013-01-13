@@ -18,7 +18,7 @@ static QString fromUtf8(std::string const & s)
     return QString::fromUtf8(s.data(), s.size());
 }
 
-static void extractEndpoints(yb::usb_interface const & idesc, int & inep, int & outep)
+static void extractEndpoints(yb::usb_interface const & idesc, int & inep, size_t & inepsize, int & outep)
 {
     inep = 0;
     outep = 0;
@@ -30,7 +30,11 @@ static void extractEndpoints(yb::usb_interface const & idesc, int & inep, int & 
     for (size_t i = 0; i < desc.endpoints.size(); ++i)
     {
         if (inep == 0 && desc.endpoints[i].is_input())
+        {
             inep = desc.endpoints[i].bEndpointAddress;
+            inepsize = desc.endpoints[i].wMaxPacketSize;
+        }
+
         if (outep == 0 && desc.endpoints[i].is_output())
             outep = desc.endpoints[i].bEndpointAddress;
     }
@@ -71,7 +75,8 @@ void UsbAcmConnection2::setIntf(yb::usb_device_interface const & intf)
         QString manufacturerName = fromUtf8(dev.manufacturer());
 
         int inep, outep;
-        extractEndpoints(m_intf.descriptor(), inep, outep);
+        size_t inepsize;
+        extractEndpoints(m_intf.descriptor(), inep, inepsize, outep);
 
         QStringList res;
         res.push_back(QString("USB ACM %1.%2, %3:%4").arg(intf.config_value()).arg(intf.interface_index()).arg(outep, 2, 16, QChar('0')).arg(inep, 2, 16, QChar('0')));
@@ -187,7 +192,10 @@ void UsbAcmConnection2::doOpen()
     yb::usb_interface_descriptor const & desc = m_intf.descriptor().altsettings[0];
 
     int inep, outep;
-    extractEndpoints(m_intf.descriptor(), inep, outep);
+    size_t inepsize;
+    extractEndpoints(m_intf.descriptor(), inep, inepsize, outep);
+
+    Q_ASSERT(inepsize <= sizeof m_read_buffer);
 
     if (!m_intf.device().claim_interface(m_intf.interface_index()))
         return Utils::showErrorBox(tr("Cannot open the USB interface."), 0);
@@ -197,10 +205,10 @@ void UsbAcmConnection2::doOpen()
 
     if (inep)
     {
-        m_receive_worker = m_runner.post(yb::loop<size_t>(yb::async::value((size_t)0), [this, inep](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
+        m_receive_worker = m_runner.post(yb::loop<size_t>(yb::async::value((size_t)0), [this, inep, inepsize](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
             if (r > 0)
                 m_incomingDataChannel.send(m_read_buffer, m_read_buffer + r);
-            return cl >= yb::cl_quit? yb::nulltask: m_intf.device().bulk_read(inep, m_read_buffer, sizeof m_read_buffer);
+            return cl >= yb::cl_quit? yb::nulltask: m_intf.device().bulk_read(inep, m_read_buffer, inepsize);
         }));
     }
 
