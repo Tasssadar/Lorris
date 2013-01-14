@@ -152,6 +152,9 @@ void NumberWidget::setValue(QVariant var)
 
     if(m_eval.isActive())
     {
+        if(var.type() == QMetaType::QChar || var.type() == QMetaType::UChar)
+            var.convert(QVariant::Int);
+
         QVariant res = m_eval.evaluate(var.toString());
         if(res.isValid())
             var = res;
