@@ -20,7 +20,8 @@ enum ConnectionState {
     st_disconnected,
     st_connecting,
     st_connected,
-    st_removed
+    st_missing,
+    st_connect_pending
 };
 
 // TODO: maybe we should just remove this and use dynamic_cast?
@@ -31,13 +32,13 @@ enum ConnectionType
     CONNECTION_PORT_SHUPITO = 2,
     CONNECTION_TCP_SOCKET  = 3,
     CONNECTION_USB_SHUPITO = 4,
-    CONNECTION_USB_ACM     = 5,
     CONNECTION_PROXY_TUNNEL= 6,
     CONNECTION_FLIP        = 7,
     CONNECTION_LIBYB_USB   = 8,
     CONNECTION_USB_ACM2    = 9,
+    CONNECTION_SHUPITO23   = 10,
 
-    MAX_CON_TYPE           = 10
+    MAX_CON_TYPE           = 11
 };
 
 enum PrimaryConnectionType {
@@ -50,6 +51,9 @@ enum PrimaryConnectionType {
 
 Q_DECLARE_FLAGS(PrimaryConnectionTypes, PrimaryConnectionType)
 Q_DECLARE_OPERATORS_FOR_FLAGS(PrimaryConnectionTypes)
+
+template <typename T>
+class ConnectionPointer;
 
 class Connection : public QObject
 {
@@ -74,9 +78,8 @@ public:
 
     virtual QString details() const;
 
-    virtual bool Open() { return false; }
-    virtual void OpenConcurrent() = 0;
-    virtual void Close() {}
+    void OpenConcurrent();
+    void Close();
 
     bool isOpen() const { return m_state == st_connected; }
     ConnectionState state() const { return m_state; }
@@ -95,10 +98,12 @@ public:
 
     virtual bool canSaveToSession() const { return false; }
 
-signals:
-    // XXX: remove
-    void connectResult(Connection *con, bool open);
+    virtual bool clonable() const { return false; }
+    virtual ConnectionPointer<Connection> clone();
 
+    bool isMissing() const;
+
+signals:
     void connected(bool connected);
     void stateChanged(ConnectionState state);
     void changed();
@@ -117,12 +122,17 @@ protected:
     void SetState(ConnectionState state);
     void SetOpen(bool open);
 
+    void markMissing();
+    void markPresent();
+
+    virtual void doOpen() = 0;
+    virtual void doClose() = 0;
+
 private:
     ConnectionState m_state;
     QString m_idString;
     int m_refcount;
     int m_tabcount;
-    bool m_reconnectOnPlugin;
     bool m_removable;
     bool m_persistent;
     quint8 m_type;

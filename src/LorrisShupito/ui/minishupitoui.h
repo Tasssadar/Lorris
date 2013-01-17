@@ -36,6 +36,8 @@ public:
         return m_hexData[memid];
     }
 
+    void writeSelectedMem();
+
 public slots:
     void setVertical(bool vertical);
 

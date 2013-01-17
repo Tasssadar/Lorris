@@ -43,13 +43,31 @@ void Shupito::init(ShupitoConnection *con, ShupitoDesc *desc)
 {
     m_con = con;
     m_desc = desc;
+    desc->Clear();
 
-    ShupitoPacket getInfo = makeShupitoPacket(MSG_INFO, 1, 0x00);
-    QByteArray data = waitForStream(getInfo, MSG_INFO);
-    if(!data.isEmpty())
-        m_desc->AddData(data);
+    connect(con, SIGNAL(descRead(ShupitoDesc)), this, SLOT(descReceived(ShupitoDesc)));
+    con->requestDesc();
 
-    emit descRead(!data.isEmpty());
+    if (desc->isEmpty())
+    {
+        QTimer responseTimer;
+        QEventLoop loop;
+
+        connect(&responseTimer, SIGNAL(timeout()), &loop, SLOT(quit()));
+        responseTimer.start(1000);
+
+        connect(con, SIGNAL(descRead(ShupitoDesc)), &loop, SLOT(quit()));
+
+        // This is, of course, completely wrong.
+        loop.exec();
+    }
+
+    emit descRead(!desc->isEmpty());
+}
+
+void Shupito::descReceived(ShupitoDesc const & desc)
+{
+    *m_desc = desc;
 }
 
 void Shupito::sendPacket(const ShupitoPacket& data)
@@ -318,7 +336,7 @@ void Shupito::handleTunnelPacket(ShupitoPacket const & p)
                     m_tunnel_conn->setName("Tunnel at " + m_con->GetIDString());
                     m_tunnel_conn->setRemovable(false);
                     m_tunnel_conn->setShupito(this);
-                    m_tunnel_conn->Open();
+                    m_tunnel_conn->OpenConcurrent();
                     sConMgr2.addConnection(m_tunnel_conn.data());
 
                     emit tunnelStatus(true);

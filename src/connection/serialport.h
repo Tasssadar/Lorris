@@ -33,10 +33,6 @@ public:
 
     virtual QString details() const;
 
-    bool Open();
-    void Close();
-    void OpenConcurrent();
-
     void SendData(const QByteArray &data);
 
     int baudRate() const { return m_rate; }
@@ -65,8 +61,13 @@ public:
         m_port_mutex.unlock();
     }
 
+    bool clonable() const { return true; }
+    ConnectionPointer<Connection> clone();
+
 protected:
     ~SerialPort();
+    void doClose();
+    void doOpen();
 
 private slots:
     void connectResultSer(bool opened);

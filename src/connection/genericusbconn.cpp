@@ -62,13 +62,13 @@ yb::async_runner & GenericUsbConnection::runner() const
     return m_runner;
 }
 
-void GenericUsbConnection::OpenConcurrent()
+void GenericUsbConnection::doOpen()
 {
     if (!m_dev.empty())
         this->SetState(st_connected);
 }
 
-void GenericUsbConnection::Close()
+void GenericUsbConnection::doClose()
 {
     if (!m_dev.empty())
         this->SetState(st_disconnected);
@@ -128,9 +128,11 @@ void GenericUsbConnection::setDevice(yb::usb_device const & dev, bool updateName
     try
     {
         m_dev = dev;
-        this->SetState(m_dev.empty()? st_removed: st_disconnected);
-
-        if (!m_dev.empty())
+        if (m_dev.empty())
+        {
+            this->markMissing();
+        }
+        else
         {
             m_selected_langid = m_dev.get_default_langid();
 
@@ -145,12 +147,13 @@ void GenericUsbConnection::setDevice(yb::usb_device const & dev, bool updateName
                 this->setName(name);
 
             m_details = formatDeviceDetails(m_dev, hasRealName);
+            this->markPresent();
         }
     }
     catch (...)
     {
         m_dev.clear();
-        this->SetState(st_removed);
+        this->markMissing();
     }
 }
 
@@ -167,6 +170,11 @@ yb::usb_device GenericUsbConnection::device() const
 bool GenericUsbConnection::isShupito20Device(yb::usb_device const & dev)
 {
     return dev.vidpid() == 0x4a61679a;
+}
+
+bool GenericUsbConnection::isShupito23Device(yb::usb_device const & dev)
+{
+    return dev.vidpid() == 0x4a61679c;
 }
 
 bool GenericUsbConnection::isFlipDevice(yb::usb_device const & dev)

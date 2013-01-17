@@ -10,7 +10,6 @@
 #include "minishupitoui.h"
 #include "../../misc/utils.h"
 #include "../lorrisshupito.h"
-#include "flashbuttonmenu.h"
 #include "../../misc/datafileparser.h"
 
 MiniShupitoUI::MiniShupitoUI(QObject *parent) :
@@ -150,6 +149,11 @@ void MiniShupitoUI::loadData(DataFileParser *file)
         m_over_turnoff = file->readVal<bool>();
         m_over_val = file->readVal<double>();
     }
+}
+
+void MiniShupitoUI::writeSelectedMem()
+{
+    this->writeFlashBtn();
 }
 
 void MiniShupitoUI::setVertical(bool vertical)

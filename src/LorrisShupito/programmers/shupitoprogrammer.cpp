@@ -1,22 +1,14 @@
 #include "shupitoprogrammer.h"
 #include <QStringBuilder>
 
-ShupitoProgrammer::ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn)
-    : m_con(conn), m_vdd_config(0), m_tunnel_config(0)
+ShupitoProgrammer::ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn, ProgrammerLogSink * logsink)
+    : Programmer(logsink), m_con(conn), m_vdd_config(0), m_tunnel_config(0), m_btn_config(0), m_led_config(0), m_cur_mode(0)
 {
     m_desc = 0;
     m_shupito = new Shupito(this);
 
     for(quint8 i = 0; i < MODE_COUNT; ++i)
-    {
-        m_modes[i] = ShupitoMode::getMode(i, m_shupito);
-        connect(m_modes[i], SIGNAL(updateProgressDialog(int)), this, SIGNAL(updateProgressDialog(int)));
-        connect(m_modes[i], SIGNAL(updateProgressLabel(QString)), this, SIGNAL(updateProgressLabel(QString)));
-    }
-
-    m_cur_mode = sConfig.get(CFG_QUINT32_SHUPITO_MODE);
-    if(m_cur_mode >= MODE_COUNT)
-        m_cur_mode = MODE_SPI;
+        m_modes[i] = 0;
 
     connect(m_shupito, SIGNAL(descRead(bool)),                  SLOT(descRead(bool)));
     connect(m_shupito, SIGNAL(vccValueChanged(quint8,double)),  SIGNAL(vccValueChanged(quint8,double)));
@@ -49,25 +41,51 @@ QStringList ShupitoProgrammer::getAvailableModes()
 
     QStringList modes;
     for (int i = 0; i < MODE_COUNT; ++i)
-        modes.append(modeNames[i]);
+    {
+        if (m_modes[i])
+            modes.append(modeNames[i]);
+    }
     return modes;
 }
 
 int ShupitoProgrammer::getMode()
 {
-    return m_cur_mode;
+    int res = 0;
+    for (int i = 0; i < m_cur_mode; ++i)
+    {
+        if (m_modes[i])
+            ++res;
+    }
+    return res;
 }
 
 void ShupitoProgrammer::setMode(int mode)
 {
     Q_ASSERT(mode >= 0 && mode < MODE_COUNT);
-    m_cur_mode = mode;
-    sConfig.set(CFG_QUINT32_SHUPITO_MODE, mode);
+    for (int i = 0; i < MODE_COUNT; ++i)
+    {
+        if (!m_modes[i])
+            continue;
+
+        if (mode == 0)
+        {
+            m_cur_mode = i;
+            sConfig.set(CFG_QUINT32_SHUPITO_MODE, i);
+            return;
+        }
+
+        --mode;
+    }
+
+    m_cur_mode = 0;
 }
 
 void ShupitoProgrammer::readPacket(const ShupitoPacket & packet)
 {
     m_shupito->readPacket(packet);
+
+    if (m_btn_config && packet.size() >= 3 && packet[0] == m_btn_config->cmd && packet[1] == 1 && (packet[2] & 1) != 0)
+        emit buttonPressed(0);
 }
 
 void ShupitoProgrammer::setVddIndex(int index)
@@ -103,6 +121,8 @@ void ShupitoProgrammer::switchToRunMode()
 
 bool ShupitoProgrammer::isInFlashMode()
 {
+    if (!m_modes[m_cur_mode])
+        return false;
     return m_modes[m_cur_mode]->isInFlashMode();
 }
 
@@ -161,17 +181,39 @@ void ShupitoProgrammer::descRead(bool correct)
 {
     if(!correct)
     {
-        emit this->log("Failed to read info from shupito!");
+        this->log("Failed to read info from shupito!");
         return Utils::showErrorBox(tr("Failed to read info from Shupito. If you're sure "
             "you're connected to shupito, try to disconnect and "
             "connect again"));
     }
 
-    emit this->log("Device GUID: " % m_desc->getGuid());
+    this->log("Device GUID: " % m_desc->getGuid());
 
     ShupitoDesc::intf_map map = m_desc->getInterfaceMap();
     for(ShupitoDesc::intf_map::iterator itr = map.begin(); itr != map.end(); ++itr)
-        emit this->log("Got interface GUID: " % itr.key());
+        this->log("Got interface GUID: " % itr.key());
+
+    for(quint8 i = 0; i < MODE_COUNT; ++i)
+    {
+        delete m_modes[i];
+        m_modes[i] = 0;
+    }
+
+    for(quint8 i = 0; i < MODE_COUNT; ++i)
+    {
+        m_modes[i] = ShupitoMode::getMode(i, m_shupito, m_desc);
+        if (m_modes[i])
+        {
+            connect(m_modes[i], SIGNAL(updateProgressDialog(int)), this, SIGNAL(updateProgressDialog(int)));
+            connect(m_modes[i], SIGNAL(updateProgressLabel(QString)), this, SIGNAL(updateProgressLabel(QString)));
+        }
+    }
+
+    m_cur_mode = sConfig.get(CFG_QUINT32_SHUPITO_MODE);
+    if(m_cur_mode >= MODE_COUNT)
+        m_cur_mode = MODE_SPI;
+    if (!m_modes[m_cur_mode])
+        this->setMode(0);
 
     m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
     m_shupito->setVddConfig(m_vdd_config);
@@ -183,9 +225,9 @@ void ShupitoProgrammer::descRead(bool correct)
             pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
 
             if(pkt.size() == 2 && pkt[1] == 0)
-                emit this->log("VDD started!");
+                this->log("VDD started!");
             else
-                emit this->log("Could not start VDD!");
+                this->log("Could not start VDD!");
         }
         ShupitoPacket packet = makeShupitoPacket(m_vdd_config->cmd, 2, 0, 0);
         m_con->sendPacket(packet);
@@ -201,14 +243,21 @@ void ShupitoProgrammer::descRead(bool correct)
             pkt = m_shupito->waitForPacket(pkt, MSG_INFO);
 
             if(pkt.size() == 2 && pkt[1] == 0)
-                emit this->log("Tunnel started!");
+                this->log("Tunnel started!");
             else
-                emit this->log("Could not start tunnel!");
+                this->log("Could not start tunnel!");
         }
 
         m_shupito->setTunnelState(true);
     }else
         emit this->tunnelActive(false);
+
+    m_btn_config = m_desc->getConfig("e5e646a8-beb6-4a68-91f2-f005c72e9e57");
+
+    m_led_config = m_desc->getConfig("9034d141-c47e-406b-a6fd-3f5887729f8f");
+    if (m_led_config)
+        m_shupito->sendPacket(makeShupitoPacket(m_led_config->cmd, 1, 1));
+    emit blinkLedSupport(/*supported=*/m_led_config != 0);
 }
 
 void ShupitoProgrammer::stopAll(bool wait)
@@ -246,4 +295,14 @@ void ShupitoProgrammer::sendTunnelData(QString const & data)
 void ShupitoProgrammer::cancelRequested()
 {
     m_modes[m_cur_mode]->requestCancel();
+}
+
+bool ShupitoProgrammer::canBlinkLed()
+{
+    return m_led_config != 0;
+}
+
+void ShupitoProgrammer::blinkLed()
+{
+    m_shupito->sendPacket(makeShupitoPacket(m_led_config->cmd, 1, 2));
 }

@@ -53,18 +53,12 @@ QString SerialPort::details() const
     return res + (m_friendlyName.isEmpty()? m_deviceName: m_friendlyName);
 }
 
-bool SerialPort::Open()
-{
-    return false;
-}
-
 void SerialPort::connectResultSer(bool opened)
 {
     this->SetOpen(opened);
-    emit connectResult(this, opened);
 }
 
-void SerialPort::Close()
+void SerialPort::doClose()
 {
     if(m_port)
         emit disconnecting();
@@ -115,11 +109,8 @@ void SerialPort::SendData(const QByteArray& data)
     }
 }
 
-void SerialPort::OpenConcurrent()
+void SerialPort::doOpen()
 {
-    if(this->state() != st_disconnected)
-        return;
-
     this->SetState(st_connecting);
 
     Q_ASSERT(!m_openThread);
@@ -202,6 +193,15 @@ bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
     this->setDeviceName(config.value("device_name").toString());
     this->setBaudRate(config.value("baud_rate", 38400).toInt());
     return this->Connection::applyConfig(config);
+}
+
+ConnectionPointer<Connection> SerialPort::clone()
+{
+    ConnectionPointer<SerialPort> res(new SerialPort());
+    res->setName(tr("Clone of ") + this->name());
+    res->setDeviceName(this->deviceName());
+    res->setBaudRate(this->baudRate());
+    return res;
 }
 
 SerialPortOpenThread::SerialPortOpenThread(SerialPort *conn) : QThread(NULL)

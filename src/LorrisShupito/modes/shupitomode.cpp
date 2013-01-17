@@ -33,13 +33,19 @@ ShupitoMode::ShupitoMode(Shupito *shupito) : QObject()
     m_cancel_requested = false;
 }
 
-ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito)
+ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito, ShupitoDesc *desc)
 {
     switch(mode)
     {
-        case MODE_SPI:    return new ShupitoSPI(shupito);
-        case MODE_PDI:    return new ShupitoPDI(shupito);
-        case MODE_CC25XX: return new ShupitoCC25XX(shupito);
+    case MODE_SPI:
+        if (desc->getConfig("46dbc865-b4d0-466b-9b70-2f3f5b264e65"))
+            return new ShupitoSPI(shupito);
+    case MODE_PDI:
+        if (desc->getConfig("71efb903-3030-4fd3-8896-1946aba37efc"))
+            return new ShupitoPDI(shupito);
+    case MODE_CC25XX:
+        if (desc->getConfig("76e37480-3f61-4e7a-9b1b-37af6bd418fa"))
+            return new ShupitoCC25XX(shupito);
     }
     return NULL;
 }
@@ -61,7 +67,10 @@ void ShupitoMode::switchToFlashMode(quint32 speed_hz)
     ShupitoPacket pkt = makeShupitoPacket(m_prog_cmd_base, 2, (quint8)bsel, (quint8)(bsel >> 8));
 
     pkt = m_shupito->waitForPacket(pkt, m_prog_cmd_base);
-    if(pkt.size() != 2 || pkt[1] != 0)
+    if(pkt.size() != 2)
+        throw QString(QObject::tr("Failed to switch to the flash mode"));
+
+    if (pkt[1] != 0)
         throw QString(QObject::tr("Failed to switch to the flash mode (error %1)")).arg((int)pkt[1]);
 
     m_prepared = true;

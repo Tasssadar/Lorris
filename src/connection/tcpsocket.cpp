@@ -47,14 +47,9 @@ QString TcpSocket::details() const
     return res % this->host() % ":" % QString::number(this->port());
 }
 
-bool TcpSocket::Open()
+void TcpSocket::doClose()
 {
-    return false;
-}
-
-void TcpSocket::Close()
-{
-    if(m_future.isRunning())
+    if (m_future.isRunning())
     {
         m_future.cancel();
         m_future.waitForFinished();
@@ -62,20 +57,16 @@ void TcpSocket::Close()
 
     m_socket->close();
 
-    this->SetOpen(false);
+    this->SetState(st_disconnected);
 }
 
 void TcpSocket::connectResultSer(bool opened)
 {
     this->SetOpen(opened);
-    emit connectResult(this, opened);
 }
 
-void TcpSocket::OpenConcurrent()
+void TcpSocket::doOpen()
 {
-    if(this->isOpen())
-        return;
-
     this->SetState(st_connecting);
     m_socket->connectToHost(m_address, m_port);
 

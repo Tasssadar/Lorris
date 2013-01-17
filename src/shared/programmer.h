@@ -13,24 +13,39 @@ struct vdd_point
 
 typedef std::vector<vdd_point> vdd_setup;
 
+struct ProgrammerLogSink
+{
+    virtual void log(QString const & msg) = 0;
+};
+
 class Programmer
     : public QObject
 {
     Q_OBJECT
 
 signals:
+    void modesChanged();
+
     void vccValueChanged(quint8 id, double value);
     void vddDesc(const vdd_setup& vs);
     void tunnelStatus(bool);
 
     void tunnelData(QByteArray const &);
-    void log(QString const &);
     void tunnelActive(bool);
 
     void updateProgressDialog(int);
     void updateProgressLabel(QString const &);
 
+    void buttonPressed(int btnid);
+
+    void blinkLedSupport(bool supported);
+
 public:
+    explicit Programmer(ProgrammerLogSink * logsink)
+        : m_logsink(logsink)
+    {
+    }
+
     virtual bool supportsVdd() const { return false; }
     virtual bool supportsTunnel() const { return false; }
 
@@ -58,9 +73,22 @@ public:
 
     virtual void erase_device(chip_definition& chip) = 0;
 
+    virtual bool canBlinkLed() { return false; }
+    virtual void blinkLed() {}
+
 public slots:
     virtual void sendTunnelData(QString const &) {}
     virtual void cancelRequested() {}
+
+protected:
+    void log(QString const & msg)
+    {
+        if (m_logsink)
+            m_logsink->log(msg);
+    }
+
+private:
+    ProgrammerLogSink * m_logsink;
 };
 
 #endif // SHARED_PROGRAMMER_H
