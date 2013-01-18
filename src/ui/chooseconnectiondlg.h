@@ -12,7 +12,9 @@
 #include <QAbstractListModel>
 #include <QItemSelection>
 #include <QListWidgetItem>
+
 #include "../connection/connection.h"
+#include "../shared/programmer.h"
 
 namespace Ui {
 class ChooseConnectionDlg;
@@ -48,6 +50,7 @@ private slots:
     void on_spDeviceNameEdit_textChanged(const QString &arg1);
     void on_connectionsList_doubleClicked(const QModelIndex &index);
     void on_spBaudRateEdit_editTextChanged(const QString &arg1);
+    void progBtn_clicked(int programmer);
 
     void on_actionCreateTcpClient_triggered();
     void on_actionCreateUsbAcmConn_triggered();
@@ -68,11 +71,13 @@ private:
     void focusNewConn(Connection * conn);
     void selectConn(Connection * conn);
     void updateDetailsUi(Connection * conn);
+    void setActiveProgBtn(int type);
 
     Ui::ChooseConnectionDlg *ui;
     QHash<Connection *, QListWidgetItem *> m_connectionItemMap;
     ConnectionPointer<Connection> m_current;
     int m_allowedConns;
+    QPushButton *m_prog_btns[programmer_max];
 };
 
 #endif // CHOOSECONNECTIONDLG_H

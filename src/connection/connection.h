@@ -42,11 +42,13 @@ enum ConnectionType
 };
 
 enum PrimaryConnectionType {
-    pct_port = (1<<0),
+    pct_port_data = (1<<0),
     pct_shupito = (1<<1),
     pct_flip = (1<<2),
+    pct_port_programmable = (1<<3),
 
-    pct_programmable = pct_shupito | pct_flip
+    pct_programmable = pct_shupito | pct_flip | pct_port_programmable,
+    pct_port = pct_port_data | pct_port_programmable
 };
 
 Q_DECLARE_FLAGS(PrimaryConnectionTypes, PrimaryConnectionType)
@@ -148,10 +150,19 @@ Q_SIGNALS:
     void dataRead(const QByteArray& data);
 
 public:
-    explicit PortConnection(ConnectionType type) : Connection(type) {}
+    explicit PortConnection(ConnectionType type);
+
+    int programmerType() const { return m_programmer_type; }
+    void setProgrammerType(int type) { m_programmer_type = type; }
+
+    virtual QHash<QString, QVariant> config() const;
+    virtual bool applyConfig(QHash<QString, QVariant> const & config);
 
 public slots:
     virtual void SendData(const QByteArray & /*data*/) {}
+
+protected:
+    int m_programmer_type;
 };
 
 template <typename T>

@@ -215,10 +215,11 @@ void FullShupitoUI::initMenus()
 
     // toolbar
     QToolBar *bar = new QToolBar(m_widget);
-    ui->topLayout->insertWidget(1, bar);
+    ui->topLayout->insertWidget(3, bar);
     bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     bar->setIconSize(QSize(16, 16));
 
+    bar->addSeparator();
     bar->addAction(m_widget->m_load_flash);
     bar->addAction(m_widget->m_save_flash);
     bar->addSeparator();
@@ -234,6 +235,21 @@ void FullShupitoUI::connectProgrammer(Programmer * prog)
     connect(ui->terminal, SIGNAL(keyPressed(QString)),   prog,      SLOT(sendTunnelData(QString)));
     connect(prog,  SIGNAL(tunnelData(QByteArray)),    ui->terminal, SLOT(appendText(QByteArray)));
     m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
+
+    updateProgrammersBox(prog);
+}
+
+void FullShupitoUI::updateProgrammersBox(Programmer *prog)
+{
+    // corresponds to enum ProgrammerTypes
+    static const QString names[] = { "Shupito", "Flip", "avr232boot" };
+    static const QString icons[] = { ":/icons/symbol_triangle", ":/icons/symbol_circle", ":/icons/symbol_star" };
+
+    Q_ASSERT(sizeof_array(names) == programmer_max);
+    Q_ASSERT(sizeof_array(icons) == programmer_max);
+
+    ui->progName->setText(names[prog->getType()]);
+    ui->progIcon->setPixmap(QIcon(icons[prog->getType()]).pixmap(16, 16));
 }
 
 void FullShupitoUI::hideLogBtn(bool checked)

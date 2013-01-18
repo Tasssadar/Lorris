@@ -30,6 +30,11 @@ ShupitoProgrammer::~ShupitoProgrammer()
     delete m_shupito;
 }
 
+int ShupitoProgrammer::getType()
+{
+    return programmer_shupito;
+}
+
 bool ShupitoProgrammer::supportsTunnel() const
 {
     return m_tunnel_config != 0;

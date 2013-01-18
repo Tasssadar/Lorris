@@ -9,7 +9,7 @@
 #include "chooseconnectiondlg.h"
 
 ConnectButton::ConnectButton(QToolButton * btn)
-    : QObject(btn), m_btn(btn), m_conn(0), m_connTypes(pct_port)
+    : QObject(btn), m_btn(btn), m_conn(0), m_connTypes(pct_port_data)
 {
     m_connectAction = m_menu.addAction(tr("Connect"));
     m_menu.setDefaultAction(m_connectAction);

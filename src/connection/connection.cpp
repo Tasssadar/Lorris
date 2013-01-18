@@ -7,6 +7,7 @@
 
 #include "connection.h"
 #include "../WorkTab/WorkTab.h"
+#include "../shared/programmer.h"
 #include <QStringBuilder>
 
 Connection::Connection(ConnectionType type)
@@ -152,6 +153,24 @@ void Connection::setPersistent(bool value)
         else
             this->release();
     }
+}
+
+PortConnection::PortConnection(ConnectionType type) : Connection(type)
+{
+    m_programmer_type = programmer_avr232boot;
+}
+
+QHash<QString, QVariant> PortConnection::config() const
+{
+    QHash<QString, QVariant> res = this->Connection::config();
+    res["programmer_type"] = (int)this->programmerType();
+    return res;
+}
+
+bool PortConnection::applyConfig(QHash<QString, QVariant> const & config)
+{
+    this->setProgrammerType(config.value("programmer_type", m_programmer_type).toInt());
+    return Connection::applyConfig(config);
 }
 
 ConnectionPointer<Connection> Connection::clone()

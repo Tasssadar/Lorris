@@ -141,7 +141,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/filtertabwidget.cpp \
     LorrisAnalyzer/datafilter.cpp \
     misc/qobjectpointer.cpp \
-    misc/threadchannel.cpp
+    misc/threadchannel.cpp \
+    LorrisShupito/programmers/avr232bootprogrammer.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -264,7 +265,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/filtertabwidget.h \
     LorrisAnalyzer/datafilter.h \
     misc/qobjectpointer.h \
-    misc/threadchannel.h
+    misc/threadchannel.h \
+    LorrisShupito/programmers/avr232bootprogrammer.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

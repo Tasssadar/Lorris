@@ -18,6 +18,15 @@ struct ProgrammerLogSink
     virtual void log(QString const & msg) = 0;
 };
 
+enum ProgrammerTypes
+{
+    programmer_shupito = 0,
+    programmer_flip,
+    programmer_avr232boot,
+
+    programmer_max
+};
+
 class Programmer
     : public QObject
 {
@@ -75,6 +84,8 @@ public:
 
     virtual bool canBlinkLed() { return false; }
     virtual void blinkLed() {}
+
+    virtual int getType() = 0;
 
 public slots:
     virtual void sendTunnelData(QString const &) {}

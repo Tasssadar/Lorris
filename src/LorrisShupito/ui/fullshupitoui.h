@@ -83,6 +83,7 @@ private slots:
 
 private:
     void initMenus();
+    void updateProgrammersBox(Programmer *prog);
 
     Ui::FullShupitoUI *ui;
 

@@ -47,6 +47,8 @@ public:
     bool canBlinkLed();
     void blinkLed();
 
+    int getType();
+
 public slots:
     void sendTunnelData(QString const & data);
     void cancelRequested();

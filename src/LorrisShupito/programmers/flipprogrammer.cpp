@@ -8,6 +8,11 @@ FlipProgrammer::FlipProgrammer(ConnectionPointer<GenericUsbConnection> const & c
     m_flip.open(m_conn->device());
 }
 
+int FlipProgrammer::getType()
+{
+    return programmer_flip;
+}
+
 void FlipProgrammer::stopAll(bool wait)
 {
 }

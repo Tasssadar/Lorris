@@ -28,6 +28,8 @@ public:
 
     virtual void erase_device(chip_definition& chip);
 
+    virtual int getType();
+
 private:
     ConnectionPointer<GenericUsbConnection> m_conn;
     yb::async_runner & m_runner;

@@ -135,7 +135,7 @@ void TcpSocket::setPort(quint16 value)
 
 QHash<QString, QVariant> TcpSocket::config() const
 {
-    QHash<QString, QVariant> res = this->Connection::config();
+    QHash<QString, QVariant> res = this->PortConnection::config();
     res["host"] = this->host();
     res["port"] = this->port();
     return res;
@@ -145,5 +145,5 @@ bool TcpSocket::applyConfig(QHash<QString, QVariant> const & config)
 {
     this->setHost(config.value("host").toString());
     this->setPort(config.value("port", 80).toInt());
-    return this->Connection::applyConfig(config);
+    return this->PortConnection::applyConfig(config);
 }

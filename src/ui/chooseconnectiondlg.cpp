@@ -14,6 +14,7 @@
 #include <QPushButton>
 #include <QStyledItemDelegate>
 #include <QPainter>
+#include <QSignalMapper>
 
 #ifdef Q_WS_WIN
 #include <QWindowsVistaStyle>
@@ -170,8 +171,22 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
 
     ui->connectionsList->setItemDelegate(new ConnectionListItemDelegate(this));
 
-    connect(&sConMgr2, SIGNAL(connAdded(Connection *)), this, SLOT(connAdded(Connection *)));
+    m_prog_btns[programmer_flip] = NULL; // can't be selected
+    m_prog_btns[programmer_shupito] = ui->progShupito;
+    m_prog_btns[programmer_avr232boot] = ui->progAVR232;
+
+    QSignalMapper *map = new QSignalMapper(this);
+    for(int i = 0; i < programmer_max; ++i)
+    {
+        if(!m_prog_btns[i])
+            continue;
+        map->setMapping(m_prog_btns[i], i);
+        connect(m_prog_btns[i], SIGNAL(clicked()), map, SLOT(map()));
+    }
+
+    connect(&sConMgr2, SIGNAL(connAdded(Connection *)),   this, SLOT(connAdded(Connection *)));
     connect(&sConMgr2, SIGNAL(connRemoved(Connection *)), this, SLOT(connRemoved(Connection *)));
+    connect(map,       SIGNAL(mapped(int)),               this, SLOT(progBtn_clicked(int)));
 
     this->on_connectionsList_itemSelectionChanged();
 }
@@ -189,8 +204,6 @@ ConnectionPointer<ShupitoConnection> ChooseConnectionDlg::chooseShupito(Connecti
 ConnectionPointer<Connection> ChooseConnectionDlg::choose(PrimaryConnectionTypes allowedConns, ConnectionPointer<Connection> const & preselectedConn)
 {
     m_allowedConns = allowedConns;
-    if (allowedConns & pct_shupito)
-        m_allowedConns |= pct_port;
 
     this->selectConn(preselectedConn.data());
     if (this->exec() != QDialog::Accepted)
@@ -198,10 +211,10 @@ ConnectionPointer<Connection> ChooseConnectionDlg::choose(PrimaryConnectionTypes
 
     if (PortConnection * pc = dynamic_cast<PortConnection *>(m_current.data()))
     {
-        if ((allowedConns & pct_port) == 0)
+        if (pc->programmerType() == programmer_shupito)
         {
-            ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
-            m_current = sc;
+           ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
+           m_current = sc;
         }
     }
 
@@ -281,6 +294,8 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             updateEditText(ui->spBaudRateEdit->lineEdit(), QString::number((int)sp->baudRate()));
             updateEditText(ui->spDeviceNameEdit, sp->deviceName());
             ui->spDeviceNameEdit->setEnabled(sp->devNameEditable());
+            ui->programmerSelection->setVisible(m_allowedConns & pct_port_programmable);
+            setActiveProgBtn(sp->programmerType());
         }
         break;
     case CONNECTION_TCP_SOCKET:
@@ -289,6 +304,8 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             ui->settingsStack->setCurrentWidget(ui->tcpClientPage);
             updateEditText(ui->tcHostEdit, tc->host());
             ui->tcPortEdit->setValue(tc->port());
+            ui->programmerSelection->setVisible(m_allowedConns & pct_port_programmable);
+            setActiveProgBtn(tc->programmerType());
         }
         break;
     case CONNECTION_USB_ACM2:
@@ -325,6 +342,13 @@ void ChooseConnectionDlg::focusNewConn(Connection * conn)
     QListWidgetItem * item = m_connectionItemMap[conn];
     item->setSelected(true);
     ui->connectionsList->scrollToItem(item);
+}
+
+void ChooseConnectionDlg::setActiveProgBtn(int type)
+{
+    for(int i = 0; i < programmer_max; ++i)
+        if(m_prog_btns[i])
+            m_prog_btns[i]->setChecked(type == i);
 }
 
 void ChooseConnectionDlg::on_actionCreateSerialPort_triggered()
@@ -440,6 +464,13 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
     Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT);
     if (SerialPort * c = dynamic_cast<SerialPort *>(m_current.data()))
         c->setBaudRate(editValue);
+}
+
+void ChooseConnectionDlg::progBtn_clicked(int programmer)
+{
+    setActiveProgBtn(programmer);
+    if (SerialPort * c = dynamic_cast<SerialPort *>(m_current.data()))
+        c->setProgrammerType(programmer);
 }
 
 void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)
