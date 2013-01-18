@@ -36,7 +36,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisTerminal/lorristerminalinfo.cpp \
     connection/connection.cpp \
     connection/serialport.cpp \
-    LorrisTerminal/eeprom.cpp \
     LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     LorrisAnalyzer/lorrisanalyzer.cpp \
     LorrisAnalyzer/sourcedialog.cpp \
@@ -103,7 +102,6 @@ SOURCES += ui/mainwindow.cpp \
     ui/progressbar.cpp \
     ui/tooltipwarn.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp \
-    LorrisTerminal/avr232boot.cpp \
     connection/shupitoconn.cpp \
     misc/utils.cpp \
     misc/config.cpp \
@@ -154,7 +152,6 @@ HEADERS += ui/mainwindow.h \
     LorrisTerminal/lorristerminalinfo.h \
     connection/connection.h \
     connection/serialport.h \
-    LorrisTerminal/eeprom.h \
     LorrisAnalyzer/lorrisanalyzer.h \
     LorrisAnalyzer/lorrisanalyzerinfo.h \
     common.h \
@@ -225,7 +222,6 @@ HEADERS += ui/mainwindow.h \
     ui/progressbar.h \
     ui/tooltipwarn.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.h \
-    LorrisTerminal/avr232boot.h \
     connection/shupitoconn.h \
     misc/utils.h \
     misc/singleton.h \

@@ -64,7 +64,6 @@ static const QString keys_string[] =
 {
     "serial_port/port",           // CFG_STRING_SERIAL_PORT
     "shupito/port",               // CFG_STRING_SHUPITO_PORT
-    "terminal/hex_folder",        // CFG_STRING_HEX_FOLDER
     "analyzer/data_folder",       // CFG_STRING_ANALYZER_FOLDER
     "shupito/hex_folder",         // CFG_STRING_SHUPITO_HEX_FOLDER
     "shupito/tunnel_name",        // CFG_STRING_SHUPITO_TUNNEL
@@ -86,7 +85,6 @@ static const QString def_string[] =
 {
     "",                           // CFG_STRING_SERIAL_PORT
     "",                           // CFG_STRING_SHUPITO_PORT
-    "",                           // CFG_STRING_HEX_FOLDER
     "",                           // CFG_STRING_ANALYZER_FOLDER
     "",                           // CFG_STRING_SHUPITO_HEX_FOLDER
     "app",                        // CFG_STRING_SHUPITO_TUNNEL
@@ -116,8 +114,6 @@ static const QString keys_bool[] =
     "analyzer/enable_grid",       // CFG_BOOL_ANALYZER_ENABLE_GRID,
     "analyzer/show_grid",         // CFG_BOOL_ANALYZER_SHOW_GRID,
     "shupito/show_settings",      // CFG_BOOL_SHUPITO_SHOW_SETTINGS
-    "terminal/show_bootloader",   // CFG_BOOL_TERMINAL_SHOW_BOOTLOADER
-    "terminal/show_warn",         // CFG_BOOL_TERMINAL_SHOW_WARN
     "shupito/show_flash_warn",    // CFG_BOOL_SHUPITO_SHOW_FLASH_WARN
     "general/auto_update",        // CFG_BOOL_AUTO_UPDATE
     "general/check_for_updates",  // CFG_BOOL_CHECK_FOR_UPDATE
@@ -146,8 +142,6 @@ static const bool def_bool[] =
     true,                         // CFG_BOOL_ANALYZER_ENABLE_GRID,
     false,                        // CFG_BOOL_ANALYZER_SHOW_GRID,
     true,                         // CFG_BOOL_SHUPITO_SHOW_SETTINGS
-    false,                        // CFG_BOOL_TERMINAL_SHOW_BOOTLOADER
-    true,                         // CFG_BOOL_TERMINAL_SHOW_WARN
     true,                         // CFG_BOOL_SHUPITO_SHOW_FLASH_WARN
     false,                        // CFG_BOOL_AUTO_UPDATE
     true,                         // CFG_BOOL_CHECK_FOR_UPDATE

@@ -18,22 +18,9 @@
 #include "../ui/terminal.h"
 #include "../ui/chooseconnectiondlg.h"
 #include "../ui/connectbutton.h"
-#include "avr232boot.h"
 
 class QVBoxLayout;
 class QTextEdit;
-class HexFile;
-class EEPROM;
-class chip_definition;
-struct page;
-
-enum buttons_
-{
-    BUTTON_STOP        = 0x02,
-    BUTTON_FLASH       = 0x04,
-    BUTTON_EEPROM_READ = 0x08,
-    BUTTON_EEPROM_WRITE= 0x10
-};
 
 namespace Ui {
     class LorrisTerminal;
@@ -55,17 +42,9 @@ public:
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
 
-    void setWindowId(quint32 id);
-
 private slots:
-    //Buttons
-    void browseForHex();
-    void stopButton();
-    void flashButton();
     void pauseButton();
     void setPauseBtnText(bool pause);
-    void eepromExportButton();
-    void eepromImportButton();
     void fmtAction(int act);
     void checkFmtAct(int act);
     void loadText();
@@ -78,31 +57,17 @@ private slots:
     void sendKeyEvent(const QString& key);
     void connectedStatus(bool connected);
     void saveTermSettings();
-    void showBootloader(bool show);
-    void showWarn(bool show);
-
-    void focusChanged(QWidget *prev, QWidget *curr);
 
 private:
-    void setHexName(QString name = QString());
-    void EnableButtons(quint16 buttons, bool enable);
     void initUI();
-
-    QString m_filename;
-    QDateTime m_filedate;
-    QDateTime m_flashdate;
 
     QAction *m_export_eeprom;
     QAction *m_import_eeprom;
     QAction *m_fmt_act[FMT_MAX];
     QAction *m_input[INPUT_MAX];
 
-    bool m_stopped;
-
     ConnectButton * m_connectButton;
     Ui::LorrisTerminal *ui;
-
-    avr232boot m_bootloader;
 };
 
 #endif // LORRISTERMINAL_H
