@@ -2,8 +2,8 @@
 #include "../../shared/defmgr.h"
 #include <libyb/async/sync_runner.hpp>
 
-FlipProgrammer::FlipProgrammer(ConnectionPointer<GenericUsbConnection> const & conn)
-    : m_conn(conn), m_runner(m_conn->runner())
+FlipProgrammer::FlipProgrammer(ConnectionPointer<GenericUsbConnection> const & conn, ProgrammerLogSink * logsink)
+    : Programmer(logsink), m_conn(conn), m_runner(m_conn->runner())
 {
     m_flip.open(m_conn->device());
 }

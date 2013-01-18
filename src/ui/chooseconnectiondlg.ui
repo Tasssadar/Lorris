@@ -152,7 +152,7 @@
           <enum>QFrame::Plain</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="homePage">
           <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -327,6 +327,430 @@
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="usbAcmConnPage">
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QWidget" name="widget_6" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <layout class="QFormLayout" name="formLayout_3">
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+              </property>
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>VID:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>usbVidEdit</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_9">
+                <property name="text">
+                 <string>PID:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>usbPidEdit</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>S/N:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>usbAcmSnEdit</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="usbAcmSnEdit"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_11">
+                <property name="text">
+                 <string>Interface:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="usbIntfNameEdit"/>
+              </item>
+              <item row="0" column="1">
+               <widget class="QWidget" name="widget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLineEdit" name="usbVidEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="inputMask">
+                    <string notr="true">HHHH; </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QWidget" name="widget_4" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLineEdit" name="usbPidEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="inputMask">
+                    <string notr="true">HHHH; </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_4">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_10">
+                <property name="text">
+                 <string>Speed:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QWidget" name="widget_7" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QComboBox" name="usbBaudRateEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="editable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="currentIndex">
+                    <number>17</number>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>50</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>75</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>110</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>134</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>150</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>300</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>600</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>1200</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>1800</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>2400</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>4800</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>7200</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>9600</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>14400</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>19200</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>38400</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>57600</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>115200</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>128000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>230400</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>250000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>256000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>460800</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>500000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>512000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>921600</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>1000000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>1024000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>1250000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>1500000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>1750000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>1843200</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>2000000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>2048000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>2250000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>2500000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>2750000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>3000000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>3250000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>3500000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>3686400</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>3750000</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>4000000</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <spacer name="verticalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Preferred</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
          <widget class="QWidget" name="tcpClientPage">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <property name="leftMargin">
@@ -451,6 +875,16 @@
   <action name="actionDisconnect">
    <property name="text">
     <string>Disconnect</string>
+   </property>
+  </action>
+  <action name="actionCreateUsbAcmConn">
+   <property name="text">
+    <string>Add USB connection</string>
+   </property>
+  </action>
+  <action name="actionClone">
+   <property name="text">
+    <string>Clone</string>
    </property>
   </action>
  </widget>

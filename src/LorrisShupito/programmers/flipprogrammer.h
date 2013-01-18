@@ -11,7 +11,7 @@ class FlipProgrammer
     Q_OBJECT
 
 public:
-    FlipProgrammer(ConnectionPointer<GenericUsbConnection> const & conn);
+    FlipProgrammer(ConnectionPointer<GenericUsbConnection> const & conn, ProgrammerLogSink * logsink);
 
     virtual void stopAll(bool wait);
 

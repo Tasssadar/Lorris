@@ -18,30 +18,18 @@ ProxyTunnel::~ProxyTunnel()
     Close();
 }
 
-bool ProxyTunnel::Open()
+void ProxyTunnel::doOpen()
 {
-    if(!m_server)
-        return false;
-
-    connect(m_server, SIGNAL(newData(QByteArray)), SIGNAL(dataRead(QByteArray)));
-
-    SetOpen(true);
-
-    return true;
+    if(m_server)
+    {
+        connect(m_server, SIGNAL(newData(QByteArray)), SIGNAL(dataRead(QByteArray)));
+        SetOpen(true);
+    }
 }
 
-void ProxyTunnel::OpenConcurrent()
+void ProxyTunnel::doClose()
 {
-    emit connectResult(this, Open());
-}
-
-void ProxyTunnel::Close()
-{
-    if(!isOpen())
-        return;
-
     disconnect(m_server, SIGNAL(newData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
-
     SetOpen(false);
 }
 

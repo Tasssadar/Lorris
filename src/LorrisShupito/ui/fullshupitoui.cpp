@@ -9,7 +9,6 @@
 #include <qhexedit.h>
 
 #include "fullshupitoui.h"
-#include "flashbuttonmenu.h"
 #include "../lorrisshupito.h"
 #include "fusewidget.h"
 #include "../../misc/datafileparser.h"
@@ -20,16 +19,12 @@
 FullShupitoUI::FullShupitoUI(QObject *parent) :
     ShupitoUI(UI_FULL, parent), ui(new Ui::FullShupitoUI)
 {
-    m_readBtnMenu = NULL;
-    m_writeBtnMenu = NULL;
 }
 
 FullShupitoUI::~FullShupitoUI()
 {
     sConfig.set(CFG_QUITN32_SHUPITO_TERM_FMT, ui->terminal->getFmt());
 
-    delete m_readBtnMenu;
-    delete m_writeBtnMenu;
     Utils::deleteLayoutMembers(ui->mainLayout);
     delete ui->mainLayout;
 
@@ -41,6 +36,9 @@ void FullShupitoUI::setupUi(LorrisShupito *widget)
     ShupitoUI::setupUi(widget);
 
     ui->setupUi(widget);
+
+    m_read_menu = new QMenu(m_widget);
+    m_write_menu = new QMenu(m_widget);
 
     m_fuse_widget = new FuseWidget(widget);
     ui->mainLayout->addWidget(m_fuse_widget);
@@ -114,17 +112,106 @@ void FullShupitoUI::setupUi(LorrisShupito *widget)
     widget->createConnBtn(ui->connectButton);
 }
 
+void FullShupitoUI::createActions()
+{
+    {
+        QAction * Flash  = m_read_menu->addAction(tr("Read flash"));
+        QAction * All    = m_read_menu->addAction(tr("Read all"));
+        QAction * EEPROM = m_read_menu->addAction(tr("Read EEPROM"));
+        QAction * Fuses  = m_read_menu->addAction(tr("Read fuses"));
+
+        m_font = All->font();
+
+        connect(All,      SIGNAL(triggered()), this, SLOT(readAll()));
+        connect(Flash,    SIGNAL(triggered()), this, SLOT(readMemButton()));
+        connect(EEPROM,   SIGNAL(triggered()), this, SLOT(readEEPROMBtn()));
+        connect(Fuses,    SIGNAL(triggered()), this, SLOT(readFusesInFlash()));
+
+        m_read_menu->insertSeparator(All);
+
+        m_read_actions[ACT_ALL]    = All;
+        m_read_actions[ACT_FLASH]  = Flash;
+        m_read_actions[ACT_EEPROM] = EEPROM;
+        m_read_actions[ACT_FUSES]  = Fuses;
+
+        ui->readButton->setMenu(m_read_menu);
+    }
+
+    {
+        QAction * Flash  = m_write_menu->addAction(tr("Write flash"));
+        QAction * All    = m_write_menu->addAction(tr("Write all"));
+        QAction * EEPROM = m_write_menu->addAction(tr("Write EEPROM"));
+        QAction * Fuses  = m_write_menu->addAction(tr("Write fuses"));
+
+        connect(All,      SIGNAL(triggered()), this, SLOT(writeAll()));
+        connect(Flash,    SIGNAL(triggered()), this, SLOT(writeFlashBtn()));
+        connect(EEPROM,   SIGNAL(triggered()), this, SLOT(writeEEPROMBtn()));
+        connect(Fuses,    SIGNAL(triggered()), this, SLOT(writeFusesInFlash()));
+
+        m_write_menu->insertSeparator(All);
+
+        m_write_actions[ACT_ALL]    = All;
+        m_write_actions[ACT_FLASH]  = Flash;
+        m_write_actions[ACT_EEPROM] = EEPROM;
+        m_write_actions[ACT_FUSES]  = Fuses;
+
+        ui->writeButton->setMenu(m_write_menu);
+    }
+
+    m_boldFont = m_font;
+    m_boldFont.setBold(true);
+}
+
+void FullShupitoUI::setActiveAction(int actInt)
+{
+    ActionSlots act = actInt == TAB_EEPROM ? ACT_EEPROM : ACT_FLASH;
+
+    if(act == m_active)
+        return;
+
+    if(m_active != ACT_ALL)
+    {
+        m_read_menu->insertAction(m_read_actions[m_active], m_read_actions[act]);
+        m_read_menu->insertAction(m_read_actions[ACT_FUSES], m_read_actions[m_active]);
+        m_write_menu->insertAction(m_write_actions[m_active], m_write_actions[act]);
+        m_write_menu->insertAction(m_write_actions[ACT_FUSES], m_write_actions[m_active]);
+    }
+
+    m_read_actions[m_active]->setFont(m_font);
+    m_read_actions[act]->setFont(m_boldFont);
+    m_write_actions[m_active]->setFont(m_font);
+    m_write_actions[act]->setFont(m_boldFont);
+
+    m_active = act;
+}
+
+void FullShupitoUI::readButtonClicked()
+{
+    if (m_active == ACT_FLASH)
+        readMemButton();
+    else
+        readEEPROMBtn();
+}
+
+void FullShupitoUI::writeButtonClicked()
+{
+    if (m_active == ACT_FLASH)
+        writeFlashBtn();
+    else
+        writeEEPROMBtn();
+}
+
 void FullShupitoUI::initMenus()
 {
     // Flash/Read buttons
-    m_readBtnMenu = new FlashButtonMenu(true, ui->readButton, this, m_widget);
-    m_writeBtnMenu = new FlashButtonMenu(false, ui->writeButton, this, m_widget);
+    m_active = ACT_ALL;
+    this->createActions();
 
-    connect(ui->memTabs, SIGNAL(currentChanged(int)), m_readBtnMenu,  SLOT(setActiveAction(int)));
-    connect(ui->memTabs, SIGNAL(currentChanged(int)), m_writeBtnMenu, SLOT(setActiveAction(int)));
+    connect(ui->memTabs, SIGNAL(currentChanged(int)), this, SLOT(setActiveAction(int)));
+    this->setActiveAction(0);
 
-    m_readBtnMenu->setActiveAction(0);
-    m_writeBtnMenu->setActiveAction(0);
+    connect(ui->readButton, SIGNAL(clicked()), this, SLOT(readButtonClicked()));
+    connect(ui->writeButton, SIGNAL(clicked()), this, SLOT(writeButtonClicked()));
 
     // toolbar
     QToolBar *bar = new QToolBar(m_widget);
@@ -350,6 +437,11 @@ void FullShupitoUI::writeFuses(chip_definition &chip)
     log("Writing fuses");
     std::vector<quint8>& data = m_fuse_widget->getFuseData();
     prog()->writeFuses(data, chip, m_widget->m_verify_mode);
+}
+
+void FullShupitoUI::writeSelectedMem()
+{
+    this->writeButtonClicked();
 }
 
 void FullShupitoUI::warnSecondFlash()

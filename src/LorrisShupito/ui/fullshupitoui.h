@@ -52,6 +52,8 @@ public:
     void readFuses(chip_definition &chip);
     void writeFuses(chip_definition &chip);
 
+    void writeSelectedMem();
+
 protected:
     QToolButton *startStopBtn() const { return ui->startStopBtn; }
     QBoxLayout *vddLayout() const { return ui->vddLayout; }
@@ -74,6 +76,11 @@ private slots:
     void overvoltageChanged(double val);
     void overvoltageTurnOffVcc(bool enabled);
 
+    void setActiveAction(int actInt);
+
+    void readButtonClicked();
+    void writeButtonClicked();
+
 private:
     void initMenus();
 
@@ -81,8 +88,26 @@ private:
 
     FuseWidget *m_fuse_widget;
     QHexEdit *m_hexAreas[MEM_FUSES];
-    FlashButtonMenu *m_readBtnMenu;
-    FlashButtonMenu *m_writeBtnMenu;
+
+    QFont m_font;
+    QFont m_boldFont;
+
+    enum ActionSlots
+    {
+        ACT_FLASH  = 0,
+        ACT_EEPROM,
+        ACT_ALL,
+        ACT_FUSES
+    };
+    ActionSlots m_active;
+
+    QMenu * m_read_menu;
+    QMenu * m_write_menu;
+
+    std::map<ActionSlots, QAction*> m_read_actions;
+    std::map<ActionSlots, QAction*> m_write_actions;
+
+    void createActions();
 };
 
 #endif // FULLSHUPITOUI_H

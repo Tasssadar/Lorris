@@ -17,7 +17,6 @@
 #include "../../ui/tooltipwarn.h"
 #include "../modes/shupitomode.h"
 #include "minishupitoui.h"
-#include "flashbuttonmenu.h"
 
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";

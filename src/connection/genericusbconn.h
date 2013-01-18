@@ -3,7 +3,6 @@
 
 #include "connection.h"
 #include "usbacmconn.h"
-#include "deviceenumerator.h"
 #include <libyb/async/async_runner.hpp>
 #include <libyb/usb/usb_device.hpp>
 
@@ -19,18 +18,20 @@ public:
     QString details() const { return m_details; }
     QString serialNumber() const { return m_serialNumber; }
 
-    void OpenConcurrent();
-    void Close();
-
     void setDevice(yb::usb_device const & dev, bool updateName = false);
     void clearDevice();
     yb::usb_device device() const;
 
     static bool isShupito20Device(yb::usb_device const & dev);
+    static bool isShupito23Device(yb::usb_device const & dev);
     static bool isFlipDevice(yb::usb_device const & dev);
     bool isFlipDevice() const;
 
     static QString formatDeviceName(yb::usb_device const & dev);
+
+protected:
+    void doOpen();
+    void doClose();
 
 private:
     yb::async_runner & m_runner;

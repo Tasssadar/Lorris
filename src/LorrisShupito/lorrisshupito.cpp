@@ -48,7 +48,7 @@ static const QString memNames[] = { "", "flash", "eeprom" };
 static const QString filters = QObject::tr("Intel HEX file (*.hex)");
 
 LorrisShupito::LorrisShupito()
-    : WorkTab()
+    : WorkTab(), m_logsink(this)
 {
     m_connectButton = NULL;
     ui = NULL;
@@ -57,7 +57,6 @@ LorrisShupito::LorrisShupito()
     m_overvcc = 0.0;
     m_enable_overvcc = false;
     m_overvcc_turnoff = false;
-    m_vcc = 0;
     lastVccIndex = 0;
     m_progress_dialog = NULL;
     m_state = 0;
@@ -172,6 +171,11 @@ void LorrisShupito::initMenus()
     QAction *setTunnelName = m_modeBar->addAction(tr("Set RS232 tunnel name..."));
     connect(setTunnelName, SIGNAL(triggered()), SLOT(setTunnelName()));
 
+    m_enableHardwareButton = m_modeBar->addAction(tr("Enable hardware button"));
+    m_enableHardwareButton->setCheckable(true);
+    m_enableHardwareButton->setChecked(sConfig.get(CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON));
+    connect(m_enableHardwareButton, SIGNAL(toggled(bool)), this, SLOT(enableHardwareButtonToggled(bool)));
+
     QMenu *dataBar = new QMenu(tr("Data"), this);
     addTopMenu(dataBar);
 
@@ -198,11 +202,21 @@ void LorrisShupito::initMenus()
     connect(m_save_flash,  SIGNAL(triggered()), signalMapSave, SLOT(map()));
     connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
 
+    m_blink_led = new QAction(tr("Blink LED"), this);
+    m_blink_led->setEnabled(false);
+    connect(m_blink_led, SIGNAL(triggered()), this, SLOT(blinkLed()));
+    addTopAction(m_blink_led);
+
     m_miniUi = new QAction(tr("Minimal UI"), this);
     m_miniUi->setCheckable(true);
     addTopAction(m_miniUi);
 
     connect(m_miniUi, SIGNAL(triggered(bool)), SLOT(setMiniUi(bool)));
+}
+
+void LorrisShupito::enableHardwareButtonToggled(bool checked)
+{
+    sConfig.set(CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON, checked);
 }
 
 void LorrisShupito::connDisconnecting()
@@ -214,6 +228,7 @@ void LorrisShupito::connectedStatus(bool connected)
 {
     if(connected)
     {
+        m_vcc = -1;
         this->updateProgrammer();
         Q_ASSERT(m_programmer.data());
         m_state &= ~(STATE_DISCONNECTED);
@@ -230,6 +245,7 @@ void LorrisShupito::connectedStatus(bool connected)
         m_timeout_timer.stop();
 
         setEnableButtons(false);
+        m_blink_led->setEnabled(false);
     }
     ui->connectedStatus(connected);
 }
@@ -716,13 +732,13 @@ void LorrisShupito::updateProgrammer()
     m_programmer.reset();
     if (ConnectionPointer<ShupitoConnection> sc = m_con.dynamicCast<ShupitoConnection>())
     {
-        m_programmer.reset(new ShupitoProgrammer(sc));
+        m_programmer.reset(new ShupitoProgrammer(sc, &m_logsink));
     }
 #ifdef HAVE_LIBYB
     else if (ConnectionPointer<GenericUsbConnection> fc = m_con.dynamicCast<GenericUsbConnection>())
     {
         if (fc->isFlipDevice())
-            m_programmer.reset(new FlipProgrammer(fc));
+            m_programmer.reset(new FlipProgrammer(fc, &m_logsink));
     }
 #endif
 
@@ -731,9 +747,14 @@ void LorrisShupito::updateProgrammer()
 
     this->updateModeBar();
 
+    connect(m_programmer.data(), SIGNAL(buttonPressed(int)),              SLOT(buttonPressed(int)));
+    connect(m_programmer.data(), SIGNAL(modesChanged()),                  SLOT(updateModeBar()));
     connect(m_programmer.data(), SIGNAL(vccValueChanged(quint8,double)),  SLOT(vccValueChanged(quint8,double)));
     connect(m_programmer.data(), SIGNAL(vddDesc(vdd_setup)),              SLOT(vddSetup(vdd_setup)));
     connect(m_programmer.data(), SIGNAL(tunnelStatus(bool)),              SLOT(tunnelStateChanged(bool)));
+
+    connect(m_programmer.data(), SIGNAL(blinkLedSupport(bool)), m_blink_led, SLOT(setEnabled(bool)));
+    m_blink_led->setEnabled(m_programmer->canBlinkLed());
 
     ui->connectProgrammer(m_programmer.data());
 }
@@ -870,7 +891,7 @@ void LorrisShupito::loadData(DataFileParser *file)
 
 void LorrisShupito::setEnableButtons(bool enable)
 {
-    if(!(enable ^ m_buttons_enabled))
+    if(enable == m_buttons_enabled)
         return;
 
     m_buttons_enabled = enable;
@@ -939,4 +960,17 @@ void LorrisShupito::setMiniUi(bool mini)
 
     if(!m_hexFilenames[MEM_FLASH].isEmpty())
         ui->setFileAndTime(m_hexFilenames[MEM_FLASH], QFileInfo(m_hexFilenames[MEM_FLASH]).lastModified());
+}
+
+void LorrisShupito::buttonPressed(int btnid)
+{
+    // FIXME: the button should be ignored if an action is in progress
+    if (btnid == 0 && m_buttons_enabled && m_enableHardwareButton->isChecked())
+        ui->writeSelectedMem();
+}
+
+void LorrisShupito::blinkLed()
+{
+    if (m_programmer)
+        m_programmer->blinkLed();
 }

@@ -4,7 +4,8 @@ PortShupitoConnection::PortShupitoConnection()
     : ShupitoConnection(CONNECTION_PORT_SHUPITO),
       m_port(0),
       m_holdsTabRef(false),
-      m_parserState(pst_discard)
+      m_parserState(pst_discard),
+      m_readDesc(false)
 {
 }
 
@@ -39,11 +40,8 @@ void PortShupitoConnection::setPort(ConnectionPointer<PortConnection> const & po
     }
 }
 
-void PortShupitoConnection::OpenConcurrent()
+void PortShupitoConnection::doOpen()
 {
-    if (this->state() != st_disconnected)
-        return;
-
     if (!m_port)
         return;
 
@@ -54,7 +52,14 @@ void PortShupitoConnection::OpenConcurrent()
     addPortTabRef();
 
     if (m_port->state() != st_connected)
+    {
         m_port->OpenConcurrent();
+        if (m_port->state() == st_disconnected)
+        {
+            this->SetState(st_disconnected);
+            releasePortTabRef();
+        }
+    }
     else
     {
         m_parserState = pst_init0;
@@ -62,28 +67,29 @@ void PortShupitoConnection::OpenConcurrent()
     }
 }
 
-void PortShupitoConnection::Close()
+void PortShupitoConnection::doClose()
 {
-    if (this->state() == st_connected)
-    {
-        emit disconnecting();
-        this->SetState(st_disconnected);
-        releasePortTabRef();
-    }
+    emit disconnecting();
+    this->SetState(st_disconnected);
+    releasePortTabRef();
 }
 
 void PortShupitoConnection::portStateChanged(ConnectionState state)
 {
-    if (state == st_removed)
+    if (state == st_missing)
     {
-        this->SetState(st_removed);
+        this->SetState(st_missing);
+    }
+    else if (state == st_connect_pending)
+    {
+        this->SetState(st_connect_pending);
     }
     else if (state == st_disconnected)
     {
         releasePortTabRef();
         this->SetState(st_disconnected);
     }
-    else if (state == st_connected && this->state() == st_connecting)
+    else if (state == st_connected)
     {
         m_parserState = pst_init0;
         this->SetState(st_connected);
@@ -149,7 +155,7 @@ void PortShupitoConnection::portDataRead(QByteArray const & data)
             m_partialPacket.push_back(ch >> 4);
             if (m_parserLen == 0)
             {
-                emit packetRead(m_partialPacket);
+                this->handlePacket(m_partialPacket);
                 m_parserState = pst_discard;
             }
             else
@@ -162,7 +168,7 @@ void PortShupitoConnection::portDataRead(QByteArray const & data)
             m_partialPacket.push_back(ch);
             if (m_partialPacket.size() == m_parserLen + 1)
             {
-                emit packetRead(m_partialPacket);
+                this->handlePacket(m_partialPacket);
                 m_parserState = pst_discard;
             }
             break;
@@ -200,4 +206,39 @@ void PortShupitoConnection::releasePortTabRef()
 
     if(m_port)
         m_port->releaseTab();
+}
+
+void PortShupitoConnection::requestDesc()
+{
+    if (!m_readDesc)
+        this->sendPacket(makeShupitoPacket(0, 1, 0x00));
+    m_readDesc = true;
+}
+
+void PortShupitoConnection::handlePacket(ShupitoPacket const & packet)
+{
+    if (m_readDesc && packet[0] == 0)
+    {
+        m_partialDesc.append((char const *)packet.data() + 1, packet.size() - 1);
+        if (packet.size() < 16)
+        {
+            m_readDesc = false;
+
+            ShupitoDesc desc;
+            try
+            {
+                desc.AddData(m_partialDesc);
+                emit descRead(desc);
+            }
+            catch (...)
+            {
+            }
+
+            m_partialPacket.clear();
+        }
+    }
+    else
+    {
+        emit packetRead(packet);
+    }
 }

@@ -93,6 +93,8 @@ public:
     virtual void readFusesInFlash() { }
     virtual void writeFusesInFlash() { }
 
+    virtual void writeSelectedMem() {}
+
 protected slots:
     void readMemButton() { readMemInFlash(MEM_FLASH); }
     void readEEPROMBtn() { readMemInFlash(MEM_EEPROM); }

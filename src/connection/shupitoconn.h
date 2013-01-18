@@ -3,6 +3,7 @@
 
 #include "connection.h"
 #include "../LorrisShupito/shupitopacket.h"
+#include "../LorrisShupito/shupitodesc.h"
 
 class ShupitoConnection : public Connection
 {
@@ -11,11 +12,14 @@ class ShupitoConnection : public Connection
 public:
     ShupitoConnection(ConnectionType type) : Connection(type) {}
 
+    virtual void requestDesc() = 0;
+
 public slots:
     virtual void sendPacket(ShupitoPacket const & packet) = 0;
 
 signals:
     void packetRead(ShupitoPacket const & packet);
+    void descRead(ShupitoDesc const & desc);
 };
 
 class PortShupitoConnection : public ShupitoConnection
@@ -25,17 +29,18 @@ class PortShupitoConnection : public ShupitoConnection
 public:
     PortShupitoConnection();
 
-    void OpenConcurrent();
-    void Close();
-
     ConnectionPointer<PortConnection> const & port() const { return m_port; }
     void setPort(ConnectionPointer<PortConnection> const & port);
+
+    virtual void requestDesc();
 
 public slots:
     void sendPacket(ShupitoPacket const & packet);
 
 protected:
     ~PortShupitoConnection();
+    void doOpen();
+    void doClose();
 
 private slots:
     void portStateChanged(ConnectionState state);
@@ -46,6 +51,7 @@ private slots:
 private:
     void addPortTabRef();
     void releasePortTabRef();
+    void handlePacket(ShupitoPacket const & packet);
 
     ConnectionPointer<PortConnection> m_port;
     bool m_holdsTabRef;
@@ -54,6 +60,9 @@ private:
     size_t m_parserLen;
 
     ShupitoPacket m_partialPacket;
+
+    bool m_readDesc;
+    QByteArray m_partialDesc;
 };
 
 #endif // SHUPITOCONN_H

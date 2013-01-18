@@ -100,6 +100,7 @@ public slots:
 
 private slots:
     void tunnelDataSend();
+    void descReceived(ShupitoDesc const & desc);
 
 private:
     void handleVccPacket(ShupitoPacket const & p);

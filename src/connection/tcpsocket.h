@@ -25,9 +25,6 @@ public:
 
     virtual QString details() const;
 
-    bool Open();
-    void OpenConcurrent();
-    void Close();
     void SendData(const QByteArray &data);
     void setAddress(const QString& address, quint16 port)
     {
@@ -53,6 +50,8 @@ public slots:
 
 protected:
     ~TcpSocket();
+    void doOpen();
+    void doClose();
 
 private:
     bool connectToHost();

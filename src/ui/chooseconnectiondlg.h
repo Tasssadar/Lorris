@@ -50,16 +50,22 @@ private slots:
     void on_spBaudRateEdit_editTextChanged(const QString &arg1);
 
     void on_actionCreateTcpClient_triggered();
+    void on_actionCreateUsbAcmConn_triggered();
 
     void on_tcHostEdit_textChanged(const QString &arg1);
-
     void on_tcPortEdit_valueChanged(int arg1);
 
-    void on_actionConnect_triggered();
+    void on_usbVidEdit_textChanged(QString const & value);
+    void on_usbPidEdit_textChanged(QString const & value);
+    void on_usbAcmSnEdit_textChanged(QString const & value);
+    void on_usbIntfNameEdit_textChanged(QString const & value);
 
+    void on_actionConnect_triggered();
     void on_actionDisconnect_triggered();
+    void on_actionClone_triggered();
 
 private:
+    void focusNewConn(Connection * conn);
     void selectConn(Connection * conn);
     void updateDetailsUi(Connection * conn);
 

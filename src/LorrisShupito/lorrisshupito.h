@@ -124,6 +124,13 @@ private slots:
 
     void timeout();
 
+    void updateModeBar();
+
+    void buttonPressed(int btnid);
+    void enableHardwareButtonToggled(bool checked);
+
+    void blinkLed();
+
 private:
     void updateProgrammer();
     bool checkVoltage(bool active);
@@ -133,7 +140,6 @@ private:
     chip_definition switchToFlashAndGetId();
     void update_chip_description(chip_definition &cd);
     void initMenus();
-    void updateModeBar();
 
     void checkOvervoltage();
     void shutdownVcc();
@@ -154,6 +160,7 @@ private:
     QAction *m_load_eeprom;
     QAction *m_save_flash;
     QAction *m_save_eeprom;
+    QAction *m_blink_led;
     QAction *m_miniUi;
 
     QMenu *m_modeBar;
@@ -188,6 +195,26 @@ private:
     bool m_buttons_enabled;
 
     QScopedPointer<Programmer> m_programmer;
+
+    struct LogSink
+        : ProgrammerLogSink
+    {
+        explicit LogSink(LorrisShupito * self)
+            : m_self(self)
+        {
+        }
+
+        void log(QString const & msg)
+        {
+            m_self->ui->log(msg);
+        }
+
+        LorrisShupito * m_self;
+    };
+
+    LogSink m_logsink;
+
+    QAction * m_enableHardwareButton;
 };
 
 #endif // LORRISSHUPITO_H
