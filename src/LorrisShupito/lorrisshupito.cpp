@@ -949,6 +949,10 @@ void LorrisShupito::setUiType(int type)
     if(ui && ui->getType() == type)
         return;
 
+    QByteArray hexData[MEM_FUSES];
+    for(quint8 i = MEM_FLASH; ui && i < MEM_FUSES; ++i)
+        hexData[i] = ui->getHexData(i);
+
     delete m_connectButton;
     m_connectButton = NULL;
 
@@ -959,6 +963,18 @@ void LorrisShupito::setUiType(int type)
     ui->vddSetup(m_vdd_setup);
 
     m_miniUi->setChecked(type == UI_MINIMAL);
+
+    if(!m_hexFilenames[MEM_FLASH].isEmpty())
+        ui->setFileAndTime(m_hexFilenames[MEM_FLASH], QFileInfo(m_hexFilenames[MEM_FLASH]).lastModified());
+
+    for(quint8 i = MEM_FLASH; i < MEM_FUSES; ++i)
+    {
+        if(!hexData[i].isEmpty())
+        {
+            ui->setHexColor(i, colorFromFile);
+            ui->setHexData(i, hexData[i]);
+        }
+    }
 }
 
 void LorrisShupito::setMiniUi(bool mini)
@@ -966,10 +982,6 @@ void LorrisShupito::setMiniUi(bool mini)
     int type = mini ? UI_MINIMAL : UI_FULL;
     if(ui->getType() == type)
         return;
-
-    QByteArray hexData[MEM_FUSES];
-    for(quint8 i = MEM_FLASH; i < MEM_FUSES; ++i)
-        hexData[i] = ui->getHexData(i);
 
     QByteArray data;
     DataFileParser parser(&data, QIODevice::ReadWrite);
@@ -981,21 +993,9 @@ void LorrisShupito::setMiniUi(bool mini)
 
     ui->loadData(&parser);
 
-    for(quint8 i = MEM_FLASH; i < MEM_FUSES; ++i)
-    {
-        if(!hexData[i].isEmpty())
-        {
-            ui->setHexColor(i, colorFromFile);
-            ui->setHexData(i, hexData[i]);
-        }
-    }
-
     ui->connectedStatus(!(m_state & STATE_DISCONNECTED));
 
     emit enableButtons(m_buttons_enabled);
-
-    if(!m_hexFilenames[MEM_FLASH].isEmpty())
-        ui->setFileAndTime(m_hexFilenames[MEM_FLASH], QFileInfo(m_hexFilenames[MEM_FLASH]).lastModified());
 }
 
 void LorrisShupito::buttonPressed(int btnid)
