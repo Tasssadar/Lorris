@@ -172,6 +172,14 @@ void SerialPort::setFriendlyName(QString const & value)
     }
 }
 
+void SerialPort::setBaudRate(int value)
+{
+    m_rate = value;
+    if(isOpen())
+        m_port->setBaudRate(value);
+    emit changed();
+}
+
 void SerialPort::socketError(SocketError err)
 {
     if(err == ERR_IOCTL_FAILED && isOpen())
