@@ -269,3 +269,8 @@ void avr232bootProgrammer::dataRead(const QByteArray &data)
 
     emit tunnelData(data);
 }
+
+void avr232bootProgrammer::sendTunnelData(QString const & data)
+{
+    m_conn->SendData(data.toUtf8());
+}
