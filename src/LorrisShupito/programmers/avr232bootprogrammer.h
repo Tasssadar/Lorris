@@ -39,6 +39,7 @@ public:
 
 public slots:
     void cancelRequested();
+    void sendTunnelData(QString const & data);
 
 private slots:
     void dataRead(const QByteArray& data);

@@ -36,7 +36,7 @@ public:
     void SendData(const QByteArray &data);
 
     int baudRate() const { return m_rate; }
-    void setBaudRate(int value) { m_rate = value; emit changed(); }
+    void setBaudRate(int value);
 
     QString deviceName() const { return m_deviceName; }
     void setDeviceName(QString const & value);
