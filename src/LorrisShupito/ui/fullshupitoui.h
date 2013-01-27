@@ -84,6 +84,7 @@ private slots:
 private:
     void initMenus();
     void updateProgrammersBox(Programmer *prog);
+    void updateTunnelSupport();
 
     Ui::FullShupitoUI *ui;
 
