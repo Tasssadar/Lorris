@@ -35,7 +35,6 @@ public:
     chip_definition readDeviceId();
 
     QByteArray readMemory(const QString& mem, chip_definition &chip);
-    void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size);
     void readFuses(std::vector<quint8>& data, chip_definition &chip);
     void writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode);
     void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode);
