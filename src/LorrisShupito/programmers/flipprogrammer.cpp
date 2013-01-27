@@ -68,10 +68,6 @@ QByteArray FlipProgrammer::readMemory(const QString& mem, chip_definition &chip)
     return res;
 }
 
-void FlipProgrammer::readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size)
-{
-}
-
 void FlipProgrammer::readFuses(std::vector<quint8>&, chip_definition &)
 {
     // The fuse reading/writing is not available in DFU.

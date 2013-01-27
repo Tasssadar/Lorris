@@ -143,11 +143,6 @@ QByteArray ShupitoProgrammer::readMemory(const QString& mem, chip_definition &ch
     return m_modes[m_cur_mode]->readMemory(mem, chip);
 }
 
-void ShupitoProgrammer::readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size)
-{
-    m_modes[m_cur_mode]->readMemRange(memid, memory, address, size);
-}
-
 void ShupitoProgrammer::readFuses(std::vector<quint8>& data, chip_definition &chip)
 {
     m_modes[m_cur_mode]->readFuses(data, chip);

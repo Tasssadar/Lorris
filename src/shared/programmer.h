@@ -75,7 +75,6 @@ public:
     virtual chip_definition readDeviceId() = 0;
 
     virtual QByteArray readMemory(const QString& mem, chip_definition &chip) = 0;
-    virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size) = 0;
     virtual void readFuses(std::vector<quint8>& data, chip_definition &chip) = 0;
     virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode) = 0;
     virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode) = 0;

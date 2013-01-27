@@ -169,8 +169,9 @@ void LorrisShupito::initMenus()
     connect(verifyMap, SIGNAL(mapped(int)), SLOT(verifyChanged(int)));
     verifyChanged(sConfig.get(CFG_QUINT32_SHUPITO_VERIFY));
 
-    QAction *setTunnelName = m_modeBar->addAction(tr("Set RS232 tunnel name..."));
-    connect(setTunnelName, SIGNAL(triggered()), SLOT(setTunnelName()));
+    m_set_tunnel_name_act = m_modeBar->addAction(tr("Set RS232 tunnel name..."));
+    m_set_tunnel_name_act->setVisible(false);
+    connect(m_set_tunnel_name_act, SIGNAL(triggered()), SLOT(setTunnelName()));
 
     m_enableHardwareButton = m_modeBar->addAction(tr("Enable hardware button"));
     m_enableHardwareButton->setCheckable(true);
@@ -240,7 +241,8 @@ void LorrisShupito::connectedStatus(bool connected)
     }
     else
     {
-        m_programmer.reset();
+        this->updateProgrammer();
+
         m_state |= STATE_DISCONNECTED;
         updateStartStopUi(false);
         m_timeout_timer.stop();
@@ -727,25 +729,24 @@ void LorrisShupito::focusChanged(QWidget *prev, QWidget */*curr*/)
 
 void LorrisShupito::updateProgrammer()
 {
-    if (!m_con)
-        return;
-
     m_programmer.reset();
-    if (ConnectionPointer<ShupitoConnection> sc = m_con.dynamicCast<ShupitoConnection>())
+    if (m_con)
     {
-        m_programmer.reset(new ShupitoProgrammer(sc, &m_logsink));
-    }
-#ifdef HAVE_LIBYB
-    else if (ConnectionPointer<GenericUsbConnection> fc = m_con.dynamicCast<GenericUsbConnection>())
-    {
-        if (fc->isFlipDevice())
-            m_programmer.reset(new FlipProgrammer(fc, &m_logsink));
-    }
-#endif
-    else if(ConnectionPointer<PortConnection> con = m_con.dynamicCast<PortConnection>())
-    {
-        switch(con->programmerType())
+        if (ConnectionPointer<ShupitoConnection> sc = m_con.dynamicCast<ShupitoConnection>())
         {
+            m_programmer.reset(new ShupitoProgrammer(sc, &m_logsink));
+        }
+#ifdef HAVE_LIBYB
+        else if (ConnectionPointer<GenericUsbConnection> fc = m_con.dynamicCast<GenericUsbConnection>())
+        {
+            if (fc->isFlipDevice())
+                m_programmer.reset(new FlipProgrammer(fc, &m_logsink));
+        }
+#endif
+        else if(ConnectionPointer<PortConnection> con = m_con.dynamicCast<PortConnection>())
+        {
+            switch(con->programmerType())
+            {
             case programmer_shupito:
                 break; // morphed to ShupitoConnection in ChooseConnectionDlg::choose
             case programmer_avr232boot:
@@ -753,11 +754,15 @@ void LorrisShupito::updateProgrammer()
                 break;
             default:
                 break;
+            }
         }
     }
 
     if (!m_programmer)
+    {
+        m_set_tunnel_name_act->setVisible(false);
         return;
+    }
 
     this->updateModeBar();
 
@@ -770,6 +775,7 @@ void LorrisShupito::updateProgrammer()
     connect(m_programmer.data(), SIGNAL(blinkLedSupport(bool)), m_blink_led, SLOT(setEnabled(bool)));
     m_blink_led->setEnabled(m_programmer->canBlinkLed());
 
+    m_set_tunnel_name_act->setVisible(m_programmer->supportsTunnel());
     ui->connectProgrammer(m_programmer.data());
 }
 
