@@ -25,7 +25,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, PortConnection *con, const QStr
     QDialog(),ui(new Ui::SourceDialog)
 {
     ui->setupUi(this);
-    setFixedSize(width(), height());
+    adjustSize();
 
     if(pkt)
         m_packet.copy(pkt);
@@ -41,7 +41,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, PortConnection *con, const QStr
 
     QWidget *w = new QWidget(this);
     scroll_layout = new ScrollDataLayout(m_packet.header, false, false, NULL, w);
-    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
     ui->data_scroll->setWidget(w);
 
