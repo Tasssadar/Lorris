@@ -616,3 +616,9 @@ ConnectionPointer<PortConnection> ConnectionManager2::getConnWithConfig(quint8 t
 
     return ConnectionPointer<PortConnection>();
 }
+
+void ConnectionManager2::disconnectAll()
+{
+    for(int i = 0; i < m_conns.size(); ++i)
+        m_conns[i]->Close();
+}

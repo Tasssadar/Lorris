@@ -24,6 +24,7 @@
 #include "tooltipwarn.h"
 #include "settingsdialog.h"
 #include "mainwindow.h"
+#include "../connection/connectionmgr2.h"
 
 #ifdef Q_OS_WIN
  #include "../misc/updater.h"
@@ -46,10 +47,12 @@ TabView::TabView(MainWindow *parent) :
     QMenu *file_menu = new QMenu(tr("&File"), this);
     QMenu *session_menu = new QMenu(tr("&Sessions"), this);
     QMenu *opt_menu = new QMenu(tr("&Options"), this);
+    QAction *disconnectAll = new QAction(tr("&Close all connections"), this);
 
     m_menus.push_back(file_menu->menuAction());
     m_menus.push_back(session_menu->menuAction());
     m_menus.push_back(opt_menu->menuAction());
+    m_menus.push_back(disconnectAll);
 
     QMenu * menuFileNew = file_menu->addMenu(tr("&New"));
     {
@@ -83,6 +86,7 @@ TabView::TabView(MainWindow *parent) :
     connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeWindow()));
     connect(newW,                    SIGNAL(triggered()), &sWorkTabMgr, SLOT(newWindow()));
     connect(actCloseAll,             SIGNAL(triggered()), SLOT(closeAllTabs()));
+    connect(disconnectAll,           SIGNAL(triggered()), &sConMgr2, SLOT(disconnectAll()));
 }
 
 TabWidget *TabView::newTabWidget(QBoxLayout *l)

@@ -197,6 +197,9 @@ Q_SIGNALS:
     void connAdded(Connection * conn);
     void connRemoved(Connection * conn);
 
+public slots:
+    void disconnectAll();
+
 private slots:
     void connectionDestroyed();
     void autoShupitoDestroyed();
