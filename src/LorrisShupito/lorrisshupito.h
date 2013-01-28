@@ -162,6 +162,7 @@ private:
     QAction *m_save_eeprom;
     QAction *m_blink_led;
     QAction *m_miniUi;
+    QAction *m_set_tunnel_name_act;
 
     QMenu *m_modeBar;
     std::vector<QAction *> m_mode_acts;

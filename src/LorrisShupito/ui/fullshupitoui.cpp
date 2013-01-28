@@ -237,6 +237,7 @@ void FullShupitoUI::connectProgrammer(Programmer * prog)
     m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
 
     updateProgrammersBox(prog);
+    this->updateTunnelSupport();
 }
 
 void FullShupitoUI::updateProgrammersBox(Programmer *prog)
@@ -269,10 +270,10 @@ void FullShupitoUI::hideFusesBtn(bool checked)
 void FullShupitoUI::hideSettingsBtn(bool checked)
 {
     ui->progBox->setVisible(checked);
-    ui->tunnelBox->setVisible(checked);
     ui->overvccBox->setVisible(checked);
     ui->settingsBtn->setChecked(checked);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_SETTINGS, checked);
+    this->updateTunnelSupport();
 }
 
 void FullShupitoUI::saveTermSettings()
@@ -287,6 +288,12 @@ void FullShupitoUI::connectedStatus(bool connected)
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
     ui->progSpeedBox->setEnabled(connected);
+    this->updateTunnelSupport();
+}
+
+void FullShupitoUI::updateTunnelSupport()
+{
+    ui->tunnelBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsTunnel());
 }
 
 void FullShupitoUI::tunnelStop(bool stop)

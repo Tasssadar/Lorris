@@ -119,10 +119,6 @@ success:
     return res;
 }
 
-void avr232bootProgrammer::readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size)
-{
-}
-
 void avr232bootProgrammer::readFuses(std::vector<quint8>&, chip_definition &)
 {
     // The fuse reading/writing is not available in DFU.
