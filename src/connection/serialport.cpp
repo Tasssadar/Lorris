@@ -168,6 +168,11 @@ void SerialPort::setFriendlyName(QString const & value)
     if (m_friendlyName != value)
     {
         m_friendlyName = value;
+
+        // FIXME: better way to detect shupito?
+        if(m_friendlyName.startsWith("Shupito Programmer"))
+            m_programmer_type = programmer_shupito;
+
         emit changed();
     }
 }
