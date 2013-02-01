@@ -529,6 +529,18 @@ void ChooseConnectionDlg::on_usbIntfNameEdit_textChanged(QString const & value)
     static_cast<UsbAcmConnection2 *>(m_current.data())->setIntfName(value);
 }
 
+void ChooseConnectionDlg::on_usbBaudRateEdit_textChanged(QString const & value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
+
+    bool ok;
+    uint baud_rate = value.toUInt(&ok);
+    if (ok)
+        static_cast<UsbAcmConnection2 *>(m_current.data())->setBaudRate(baud_rate);
+}
+
 void ChooseConnectionDlg::on_actionConnect_triggered()
 {
     if (!m_current)
