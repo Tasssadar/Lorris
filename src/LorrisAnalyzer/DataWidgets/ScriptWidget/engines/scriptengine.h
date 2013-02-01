@@ -11,6 +11,7 @@
 #include <QObject>
 #include <QSize>
 #include <QHash>
+#include <QVariantList>
 
 class ScriptStorage;
 class analyzer_data;
@@ -51,7 +52,7 @@ public:
     virtual QString dataChanged(analyzer_data *data, quint32 index) = 0;
     virtual void onWidgetAdd(DataWidget *w) = 0;
     virtual void onWidgetRemove(DataWidget *w) = 0;
-    virtual void callEventHandler(const QString& eventId) = 0;
+    virtual void callEventHandler(const QString& eventId, const QVariantList& args = QVariantList()) = 0;
     virtual void onSave() = 0;
 
     virtual const QString& getSource() { return m_source; }

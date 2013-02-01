@@ -65,7 +65,7 @@ public:
     QString dataChanged(analyzer_data *data, quint32 index);
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
-    void callEventHandler(const QString& eventId);
+    void callEventHandler(const QString& eventId, const QVariantList& args = QVariantList());
     void onSave();
 
     const QString& getName() const { return m_name; }

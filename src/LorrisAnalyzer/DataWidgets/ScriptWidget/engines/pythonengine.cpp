@@ -181,9 +181,9 @@ void PythonEngine::onTitleChange(const QString& newTitle)
         m_module.addObject(name, w);
 }
 
-void PythonEngine::callEventHandler(const QString& eventId)
+void PythonEngine::callEventHandler(const QString& eventId, const QVariantList& args)
 {
-    m_module.call(eventId);
+    m_module.call(eventId, args);
 }
 
 void PythonEngine::onSave()
