@@ -23,8 +23,26 @@
 #include "../datafilter.h"
 
 DataWidget::DataWidget(QWidget *parent) :
-    QFrame(parent), m_gestures(this)
+    QFrame(parent), m_title_label(NULL), m_icon_widget(NULL),
+    m_gestures(this)
 {
+    m_dragAction = DRAG_NONE;
+    m_copy_widget = NULL;
+
+    m_lockAction = NULL;
+    m_sep_line = NULL;
+    m_error_label = NULL;
+    m_id = 0;
+
+    m_widgetType = 0;
+    m_widgetControlled = -1;
+
+    m_error_label = NULL;
+    m_error_blink_timer = NULL;
+    contextMenu = NULL;
+
+    m_state = STATE_UPDATING;
+
     layout = new QVBoxLayout(this);
     QHBoxLayout *title_bar = new QHBoxLayout();
 
@@ -38,8 +56,6 @@ DataWidget::DataWidget(QWidget *parent) :
     m_title_label->setMouseTracking(true);
 
     m_closeLabel = new CloseLabel(this);
-
-    m_error_label = NULL;
 
     m_sep_line = new QFrame(this);
     m_sep_line->setFrameStyle(QFrame::HLine | QFrame::Plain);
@@ -64,13 +80,6 @@ DataWidget::DataWidget(QWidget *parent) :
     QPalette p = palette();
     p.setColor(QPalette::Window, QColor("#FFFFFF"));
     setPalette(p);
-
-    contextMenu = NULL;
-    m_dragAction = DRAG_NONE;
-    m_copy_widget = NULL;
-    m_state = STATE_UPDATING;
-
-    m_widgetControlled = -1;
 
     setMinimumSize(20, 20);
 }

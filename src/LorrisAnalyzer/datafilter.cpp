@@ -18,6 +18,7 @@ DataFilter::DataFilter(quint8 type, quint32 id, QString name, QObject *parent) :
     m_id = id;
     m_name = name;
     m_layout = NULL;
+    m_lastIdx = 0;
 }
 
 DataFilter::~DataFilter()
