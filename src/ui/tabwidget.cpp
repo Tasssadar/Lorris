@@ -18,6 +18,7 @@
 #include <QStylePainter>
 #include <algorithm>
 #include <QShortcut>
+#include <QLabel>
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
@@ -577,6 +578,7 @@ TabBar::TabBar(quint32 id, QWidget *parent) :
     m_id = id;
     m_menu = new QMenu(this);
     m_drag_idx = -1;
+    m_drag_insert = NULL;
 
     m_newTopBottom = m_menu->addAction(tr("Split view top/bottom"));
     m_newLeftRight = m_menu->addAction(tr("Split view left/right"));
@@ -597,6 +599,11 @@ TabBar::TabBar(quint32 id, QWidget *parent) :
     connect(m_newTopBottom, SIGNAL(triggered()), SLOT(splitTop()));
     connect(m_newLeftRight, SIGNAL(triggered()), SLOT(splitLeft()));
     connect(newWindow,      SIGNAL(triggered()), SLOT(toNewWindow()));
+}
+
+TabBar::~TabBar()
+{
+    delete m_drag_insert;
 }
 
 void TabBar::mousePressEvent(QMouseEvent *event)
@@ -717,15 +724,15 @@ void TabBar::dropEvent(QDropEvent *event)
     else
         moveTab(tabId, tabId < m_drag_idx ? m_drag_idx -1 : m_drag_idx);
 
-    m_drag_insert.setRect(0, 0, 0, 0);
-    update();
+    if(m_drag_insert)
+        m_drag_insert->hide();
 }
 
 void TabBar::dragLeaveEvent(QDragLeaveEvent *event)
 {
     PlusTabBar::dragLeaveEvent(event);
-    m_drag_insert.setRect(0, 0, 0, 0);
-    update();
+    if(m_drag_insert)
+        m_drag_insert->hide();
 }
 
 void TabBar::updateDropMarker(const QPoint& pos)
@@ -734,40 +741,34 @@ void TabBar::updateDropMarker(const QPoint& pos)
     if(idx == -1)
     {
         m_drag_idx = -1;
-        m_drag_insert.setRect(0, 0, 0, 0);
-        update();
+        if(m_drag_insert)
+            m_drag_insert->hide();
         return;
     }
 
+    const int ARROW_SIZE = 32;
+    if(!m_drag_insert)
+    {
+        m_drag_insert = new QLabel(parentWidget());
+        m_drag_insert->resize(ARROW_SIZE, ARROW_SIZE);
+        m_drag_insert->setAttribute(Qt::WA_TransparentForMouseEvents);
+        m_drag_insert->setPixmap(QIcon(":/icons/arrow-down").pixmap(ARROW_SIZE, ARROW_SIZE));
+    }
+
+    QPoint p;
     QRect rect = tabRect(idx);
-    m_drag_insert.setTop(rect.top());
-    m_drag_insert.setBottom(rect.bottom()-3);
     if(pos.x() - rect.left() >= rect.width()/2)
     {
         m_drag_idx = idx+1;
-        m_drag_insert.setRight(rect.right()+2);
-        m_drag_insert.setLeft(rect.right()-3);
+        p = mapToParent(rect.topRight());
     }
     else
     {
         m_drag_idx = idx;
-        m_drag_insert.setRight(rect.left()+3);
-        m_drag_insert.setLeft(rect.left()-2);
+        p = mapToParent(rect.topLeft());
     }
-    update();
-}
-
-void TabBar::paintEvent(QPaintEvent *event)
-{
-    PlusTabBar::paintEvent(event);
-
-    if(m_drag_insert.isEmpty())
-        return;
-
-    QPainter p(this);
-    p.setPen(Qt::red);
-    p.setBrush(QBrush(Qt::red, Qt::SolidPattern));
-    p.drawRect(m_drag_insert);
+    m_drag_insert->move(p - QPoint(ARROW_SIZE/2, ARROW_SIZE/2));
+    m_drag_insert->show();
 }
 
 void TabBar::renameTab()
