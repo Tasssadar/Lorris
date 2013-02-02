@@ -326,3 +326,19 @@ void UsbAcmConnection2::updateIntf()
     else
         this->markMissing();
 }
+
+void UsbAcmConnection2::setBaudRate(int value)
+{
+    if (m_baudrate != value)
+    {
+        m_baudrate = value;
+        emit changed();
+
+        if (m_configurable && this->state() == st_connected)
+        {
+            line_coding_struct payload(m_baudrate);
+            yb::usb_control_code_t set_line_coding = { 0x21, 0x20 };
+            m_runner.try_run(m_intf.device().control_write(set_line_coding, 0, m_intf.interface_index(), payload.data(), payload.size()));
+        }
+    }
+}

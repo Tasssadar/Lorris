@@ -19,7 +19,7 @@ public:
     QString details() const { return m_details; }
 
     int baudRate() const { return m_baudrate; }
-    void setBaudRate(int value) { m_baudrate = value; emit changed(); }
+    void setBaudRate(int value);
 
     int vid() const { return m_vid; }
     int pid() const { return m_pid; }
