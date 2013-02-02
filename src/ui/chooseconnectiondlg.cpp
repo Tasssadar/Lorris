@@ -312,7 +312,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
         {
             UsbAcmConnection2 * c = static_cast<UsbAcmConnection2 *>(conn);
             ui->settingsStack->setCurrentWidget(ui->usbAcmConnPage);
-            updateEditText(ui->usbBaudRateEdit->lineEdit(), QString::number((int)c->baudRate()));
+            ui->usbBaudRateEdit->setEditText(QString::number((int)c->baudRate()));
             updateEditText(ui->usbVidEdit, QString("%1").arg(c->vid(), 4, 16, QChar('0')));
             updateEditText(ui->usbPidEdit, QString("%1").arg(c->pid(), 4, 16, QChar('0')));
             updateEditText(ui->usbAcmSnEdit, c->serialNumber());
