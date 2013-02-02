@@ -14,7 +14,7 @@ ShupitoPDI::ShupitoPDI(Shupito *shupito) : ShupitoMode(shupito)
 {
 }
 
-ShupitoDesc::config *ShupitoPDI::getModeCfg()
+ShupitoDesc::config const *ShupitoPDI::getModeCfg()
 {
     return m_shupito->getDesc()->getConfig("71efb903-3030-4fd3-8896-1946aba37efc");
 }

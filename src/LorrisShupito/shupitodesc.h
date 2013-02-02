@@ -30,7 +30,7 @@ public:
         bool always_active() const { return (flags & 1) != 0; }
         bool default_active() const { return (flags & 2) != 0; }
 
-        ShupitoPacket getStateChangeCmd(bool activate);
+        ShupitoPacket getStateChangeCmd(bool activate) const;
     };
 
     typedef QHash<QString, config> intf_map;
@@ -46,9 +46,9 @@ public:
     void parseConfig(quint8 *& first, quint8 *& last, quint8& base_cmd, std::vector<quint8>& actseq);
 
     const QString& getGuid() { return m_guid; }
-    config *getConfig(const QString& guid)
+    config const *getConfig(const QString& guid) const
     {
-        intf_map::iterator itr = m_interface_map.find(guid);
+        intf_map::const_iterator itr = m_interface_map.find(guid);
         if(itr == m_interface_map.end())
             return NULL;
         return &(*itr);
