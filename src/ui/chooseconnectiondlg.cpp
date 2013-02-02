@@ -325,6 +325,22 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             ui->usbIntfNameEdit->setEnabled(editable);
         }
         break;
+    case CONNECTION_SHUPITO23:
+        {
+            UsbShupito23Connection * c = static_cast<UsbShupito23Connection *>(conn);
+            ShupitoFirmwareDetails fd;
+            if (c->getFirmwareDetails(fd))
+            {
+                ui->shupito23HardwareLabel->setText(QString("%1.%2").arg(fd.hw_major).arg(fd.hw_minor));
+                ui->shupito23FirmwareLabel->setText(fd.firmwareFilename());
+                ui->settingsStack->setCurrentWidget(ui->shupito23Page);
+            }
+            else
+            {
+                ui->settingsStack->setCurrentWidget(ui->homePage);
+            }
+        }
+        break;
     default:
         {
             ui->settingsStack->setCurrentWidget(ui->homePage);
