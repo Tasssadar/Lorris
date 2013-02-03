@@ -2,6 +2,7 @@
 #include "genericusbconn.h"
 #include "connectionmgr2.h"
 #include <libyb/async/sync_runner.hpp>
+#include <libyb/async/double_buffer.hpp>
 #include <QEvent>
 #include <QCoreApplication>
 #include <QString>
@@ -195,7 +196,7 @@ void UsbAcmConnection2::doOpen()
     size_t inepsize;
     extractEndpoints(m_intf.descriptor(), inep, inepsize, outep);
 
-    Q_ASSERT(inepsize <= sizeof m_read_buffer);
+    Q_ASSERT(inepsize <= sizeof m_read_buffers[0]);
 
     if (!m_intf.device().claim_interface(m_intf.interface_index()))
         return Utils::showErrorBox(tr("Cannot open the USB interface."), 0);
@@ -205,11 +206,24 @@ void UsbAcmConnection2::doOpen()
 
     if (inep)
     {
+#if 1
+        // Note that double buffering seems to work, but
+        // quadruple buffering will sometimes kill the driver (a bug perhaps?)
+        // so that no more transactions on the pipe go through
+        // until the device is reconnected.
+        m_receive_worker = m_runner.post(yb::double_buffer<size_t>([this, inep, inepsize](size_t i) {
+            return m_intf.device().bulk_read(inep, m_read_buffers[i], inepsize);
+        }, [this](size_t i, size_t r) {
+            if (r > 0)
+                m_incomingDataChannel.send(m_read_buffers[i], m_read_buffers[i] + r);
+        }, read_buffer_count));
+#else
         m_receive_worker = m_runner.post(yb::loop<size_t>(yb::async::value((size_t)0), [this, inep, inepsize](size_t r, yb::cancel_level cl) -> yb::task<size_t> {
             if (r > 0)
-                m_incomingDataChannel.send(m_read_buffer, m_read_buffer + r);
-            return cl >= yb::cl_quit? yb::nulltask: m_intf.device().bulk_read(inep, m_read_buffer, inepsize);
+                m_incomingDataChannel.send(m_read_buffers[0], m_read_buffers[0] + r);
+            return cl >= yb::cl_quit? yb::nulltask: m_intf.device().bulk_read(inep, m_read_buffers[0], inepsize);
         }));
+#endif
     }
 
     if (outep)
