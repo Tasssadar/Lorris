@@ -321,10 +321,13 @@ QHash<QString, QVariant> UsbAcmConnection2::config() const
 
 bool UsbAcmConnection2::applyConfig(QHash<QString, QVariant> const & config)
 {
-    this->setVid(config.value("vid", 0).toInt());
-    this->setPid(config.value("pid", 0).toInt());
-    this->setSerialNumber(config.value("serial_number").toString());
-    this->setIntfName(config.value("intf_name").toString());
+    if (!m_enumerated)
+    {
+        this->setVid(config.value("vid", 0).toInt());
+        this->setPid(config.value("pid", 0).toInt());
+        this->setSerialNumber(config.value("serial_number").toString());
+        this->setIntfName(config.value("intf_name").toString());
+    }
     this->setBaudRate(config.value("baud_rate", 115200).toInt());
     return this->Connection::applyConfig(config);
 }
