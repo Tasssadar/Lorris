@@ -50,6 +50,7 @@ private slots:
     void rememberFuses();
     void translateFuses(bool checked);
     void hideReserved(bool checked);
+    void enableButtons(bool enable);
 
 private:
     struct fuse_line
@@ -61,23 +62,26 @@ private:
 
     void translateFuseName(fuse_line *line);
     bool addFuseOpt(fuse_line *line, const QString& bin, std::vector<std::pair<QString, QVariant> > &list);
+    void createReadFusesBtn();
 
     QVBoxLayout *m_layout;
     QFormLayout *m_fuse_layout;
-    QPushButton *readFusesBtn;
+    QPushButton *m_readFusesBtn;
 
     chip_definition m_chip;
 
     std::vector<fuse_line*> m_fuses;
     std::vector<quint8> m_fuse_data;
 
-    QMenu *contextMenu;
-    QAction *rememberAct;
-    QAction *writeAct;
-    QAction *translateFuseAct;
-    QAction *hideReservedAct;
+    QMenu *m_contextMenu;
+    QAction *m_rememberAct;
+    QAction *m_readAct;
+    QAction *m_writeAct;
+    QAction *m_translateFuseAct;
+    QAction *m_hideReservedAct;
 
     bool m_changed;
+    bool m_enableButtons;
 };
 
 #endif // FUSEWIDGET_H

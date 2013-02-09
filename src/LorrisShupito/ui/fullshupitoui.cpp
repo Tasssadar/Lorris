@@ -73,6 +73,8 @@ void FullShupitoUI::setupUi(LorrisShupito *widget)
     for(const QWidget **itr = buttons; *itr; ++itr)
         connect(this, SIGNAL(enableButtons(bool)), *itr, SLOT(setEnabled(bool)));
 
+    connect(this, SIGNAL(enableButtons(bool)), m_fuse_widget, SLOT(enableButtons(bool)));
+
     emit enableButtons(widget->m_buttons_enabled);
 
     int w = ui->hideFusesBtn->fontMetrics().height()+10;
