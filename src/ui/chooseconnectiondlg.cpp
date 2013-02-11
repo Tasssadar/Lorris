@@ -174,6 +174,7 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     m_prog_btns[programmer_flip] = NULL; // can't be selected
     m_prog_btns[programmer_shupito] = ui->progShupito;
     m_prog_btns[programmer_avr232boot] = ui->progAVR232;
+    m_prog_btns[programmer_atsam] = ui->progAtsam;
 
     QSignalMapper *map = new QSignalMapper(this);
     for(int i = 0; i < programmer_max; ++i)

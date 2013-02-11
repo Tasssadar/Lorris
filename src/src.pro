@@ -67,6 +67,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisShupito/modes/shupitomode.cpp \
     LorrisShupito/modes/shupitocc25xx.cpp \
     LorrisShupito/programmers/shupitoprogrammer.cpp \
+    LorrisShupito/programmers/atsamprogrammer.cpp \
     LorrisShupito/shupitopacket.cpp \
     connection/tcpsocket.cpp \
     LorrisProxy/lorrisproxyinfo.cpp \
@@ -185,6 +186,7 @@ HEADERS += ui/mainwindow.h \
     LorrisShupito/modes/shupitomode.h \
     LorrisShupito/modes/shupitocc25xx.h \
     LorrisShupito/programmers/shupitoprogrammer.h \
+    LorrisShupito/programmers/atsamprogrammer.h \
     LorrisShupito/shupitopacket.h \
     connection/tcpsocket.h \
     LorrisProxy/lorrisproxyinfo.h \
