@@ -8,7 +8,8 @@
 #include <QString>
 
 UsbAcmConnection2::UsbAcmConnection2(yb::async_runner & runner)
-    : PortConnection(CONNECTION_USB_ACM2), m_runner(runner), m_enumerated(false), m_vid(0), m_pid(0), m_baudrate(115200)
+    : PortConnection(CONNECTION_USB_ACM2), m_runner(runner), m_enumerated(false), m_vid(0), m_pid(0),
+    m_baudrate(115200), m_parity(pp_none), m_stop_bits(sb_one), m_data_bits(8)
 {
     connect(&m_incomingDataChannel, SIGNAL(dataReceived()), this, SLOT(incomingDataReady()));
     this->markMissing();
@@ -162,7 +163,7 @@ yb::task<void> UsbAcmConnection2::send_loop(int outep)
 struct line_coding_struct
 {
 public:
-    explicit line_coding_struct(uint32_t dwDTERate, uint8_t bCharFormat = 0, uint8_t bParityType = 0, uint8_t bDataBits = 8)
+    explicit line_coding_struct(uint32_t dwDTERate, uint8_t bCharFormat, uint8_t bParityType, uint8_t bDataBits)
     {
         m_buffer[0] = dwDTERate;
         m_buffer[1] = dwDTERate >> 8;
@@ -237,15 +238,9 @@ void UsbAcmConnection2::doOpen()
     static uint8_t const sig[] = { 0xea, 0x5c, 0x3c, 0x23, 0xea, 0x74, 0xf8, 0x41, 0xbf, 0xa2, 0x8e, 0x19, 0x83, 0xe7, 0x96, 0xbe };
     std::vector<uint8_t> extra_desc = desc.lookup_extra_descriptor(75, yb::buffer_ref(sig, sig + sizeof sig));
     m_configurable = !extra_desc.empty();
-
-    if (m_configurable)
-    {
-        line_coding_struct payload(m_baudrate);
-        yb::usb_control_code_t set_line_coding = { 0x21, 0x20 };
-        m_runner.try_run(m_intf.device().control_write(set_line_coding, 0, m_intf.interface_index(), payload.data(), payload.size()));
-    }
-
     this->SetState(st_connected);
+
+    this->update_line_control();
 }
 
 void UsbAcmConnection2::doClose()
@@ -304,7 +299,10 @@ ConnectionPointer<Connection> UsbAcmConnection2::clone()
     conn->setPid(this->pid());
     conn->setSerialNumber(this->serialNumber());
     conn->setIntfName(this->intfName());
-    conn->setBaudRate(this->baudRate());
+    conn->m_baudrate = m_baudrate;
+    conn->m_data_bits = m_data_bits;
+    conn->m_parity = m_parity;
+    conn->m_stop_bits = m_stop_bits;
     return conn;
 }
 
@@ -316,6 +314,9 @@ QHash<QString, QVariant> UsbAcmConnection2::config() const
     res["serial_number"] = this->serialNumber();
     res["intf_name"] = this->intfName();
     res["baud_rate"] = this->baudRate();
+    res["stop_bits"] = (int)this->stopBits();
+    res["parity"] = (int)this->parity();
+    res["data_bits"] = this->dataBits();
     return res;
 }
 
@@ -328,7 +329,14 @@ bool UsbAcmConnection2::applyConfig(QHash<QString, QVariant> const & config)
         this->setSerialNumber(config.value("serial_number").toString());
         this->setIntfName(config.value("intf_name").toString());
     }
-    this->setBaudRate(config.value("baud_rate", 115200).toInt());
+
+    m_baudrate = config.value("baud_rate", 115200).toInt();
+    m_stop_bits = (stop_bits_t)config.value("stop_bits", 0).toInt();
+    m_parity = (parity_t)config.value("parity", 0).toInt();
+    m_data_bits = config.value("data_bits", 0).toInt();
+    emit changed();
+    this->update_line_control();
+
     return this->Connection::applyConfig(config);
 }
 
@@ -350,12 +358,46 @@ void UsbAcmConnection2::setBaudRate(int value)
     {
         m_baudrate = value;
         emit changed();
+        this->update_line_control();
+    }
+}
 
-        if (m_configurable && this->state() == st_connected)
-        {
-            line_coding_struct payload(m_baudrate);
-            yb::usb_control_code_t set_line_coding = { 0x21, 0x20 };
-            m_runner.try_run(m_intf.device().control_write(set_line_coding, 0, m_intf.interface_index(), payload.data(), payload.size()));
-        }
+void UsbAcmConnection2::setStopBits(stop_bits_t value)
+{
+    if (m_stop_bits != value)
+    {
+        m_stop_bits = value;
+        emit changed();
+        this->update_line_control();
+    }
+}
+
+void UsbAcmConnection2::setParity(parity_t value)
+{
+    if (m_parity != value)
+    {
+        m_parity = value;
+        emit changed();
+        this->update_line_control();
+    }
+}
+
+void UsbAcmConnection2::setDataBits(int value)
+{
+    if (m_data_bits != value)
+    {
+        m_data_bits = value;
+        emit changed();
+        this->update_line_control();
+    }
+}
+
+void UsbAcmConnection2::update_line_control()
+{
+    if (m_configurable && this->state() == st_connected)
+    {
+        line_coding_struct payload(m_baudrate, (uint8_t)m_stop_bits, (uint8_t)m_parity, (uint8_t)m_data_bits);
+        yb::usb_control_code_t set_line_coding = { 0x21, 0x20 };
+        m_runner.try_run(m_intf.device().control_write(set_line_coding, 0, m_intf.interface_index(), payload.data(), payload.size()));
     }
 }

@@ -13,6 +13,20 @@ class UsbAcmConnection2
     Q_OBJECT
 
 public:
+    enum stop_bits_t
+    {
+        sb_one,
+        sb_one_and_half,
+        sb_two
+    };
+
+    enum parity_t
+    {
+        pp_none,
+        pp_odd,
+        pp_even
+    };
+
     UsbAcmConnection2(yb::async_runner & runner);
     ~UsbAcmConnection2();
 
@@ -20,6 +34,15 @@ public:
 
     int baudRate() const { return m_baudrate; }
     void setBaudRate(int value);
+
+    stop_bits_t stopBits() const { return m_stop_bits; }
+    void setStopBits(stop_bits_t value);
+
+    parity_t parity() const { return m_parity; }
+    void setParity(parity_t value);
+
+    int dataBits() const { return m_data_bits; }
+    void setDataBits(int value);
 
     int vid() const { return m_vid; }
     int pid() const { return m_pid; }
@@ -71,6 +94,10 @@ private:
     QString m_intfName;
 
     int m_baudrate;
+    stop_bits_t m_stop_bits;
+    parity_t m_parity;
+    int m_data_bits;
+    void update_line_control();
 
     yb::usb_device_interface m_intf;
 

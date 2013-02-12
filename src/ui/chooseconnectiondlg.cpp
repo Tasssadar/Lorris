@@ -279,6 +279,23 @@ static void updateEditText(QLineEdit * w, QString const & value)
         w->setText(value);
 }
 
+static void updateComboText(QComboBox * w, QString const & value)
+{
+    if (w->currentText() != value)
+    {
+        int idx = w->findText(value);
+        w->setCurrentIndex(idx);
+        if (idx < 0)
+            w->setEditText(value);
+    }
+}
+
+static void updateComboIndex(QComboBox * w, int value)
+{
+    if (w->currentIndex() != value)
+        w->setCurrentIndex(value);
+}
+
 void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
 {
     updateEditText(ui->connectionNameEdit, conn->name());
@@ -314,11 +331,10 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             UsbAcmConnection2 * c = static_cast<UsbAcmConnection2 *>(conn);
             ui->settingsStack->setCurrentWidget(ui->usbAcmConnPage);
 
-            QString baudRateStr = QString::number((int)c->baudRate());
-            int baudRatePos = ui->usbBaudRateEdit->findText(baudRateStr);
-            ui->usbBaudRateEdit->setCurrentIndex(baudRatePos);
-            if (baudRatePos < 0)
-                ui->usbBaudRateEdit->setEditText(baudRateStr);
+            updateComboText(ui->usbBaudRateEdit, QString::number((int)c->baudRate()));
+            updateComboIndex(ui->usbParityCombo, (int)c->parity());
+            updateComboIndex(ui->usbStopBitsCombo, (int)c->stopBits());
+            updateComboText(ui->usbDataBitsCombo, QString::number(c->dataBits()));
 
             updateEditText(ui->usbVidEdit, QString("%1").arg(c->vid(), 4, 16, QChar('0')));
             updateEditText(ui->usbPidEdit, QString("%1").arg(c->pid(), 4, 16, QChar('0')));
@@ -562,6 +578,33 @@ void ChooseConnectionDlg::on_usbBaudRateEdit_textChanged(QString const & value)
     uint baud_rate = value.toUInt(&ok);
     if (ok)
         static_cast<UsbAcmConnection2 *>(m_current.data())->setBaudRate(baud_rate);
+}
+
+void ChooseConnectionDlg::on_usbDataBitsCombo_currentIndexChanged(int value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
+
+    static_cast<UsbAcmConnection2 *>(m_current.data())->setDataBits(ui->usbDataBitsCombo->itemText(value).toInt());
+}
+
+void ChooseConnectionDlg::on_usbParityCombo_currentIndexChanged(int value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
+
+    static_cast<UsbAcmConnection2 *>(m_current.data())->setParity((UsbAcmConnection2::parity_t)value);
+}
+
+void ChooseConnectionDlg::on_usbStopBitsCombo_currentIndexChanged(int value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
+
+    static_cast<UsbAcmConnection2 *>(m_current.data())->setStopBits((UsbAcmConnection2::stop_bits_t)value);
 }
 
 void ChooseConnectionDlg::on_actionConnect_triggered()
