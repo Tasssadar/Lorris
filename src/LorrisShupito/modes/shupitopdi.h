@@ -17,7 +17,7 @@ public:
     ShupitoPDI(Shupito *shupito);
 
 protected:
-    ShupitoDesc::config *getModeCfg();
+    ShupitoDesc::config const *getModeCfg();
     void editIdArgs(QString& id, quint8& id_lenght);
 };
 

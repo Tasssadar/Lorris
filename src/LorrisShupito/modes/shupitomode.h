@@ -49,7 +49,7 @@ public:
 
 protected:
     virtual void prepare();
-    virtual ShupitoDesc::config *getModeCfg();
+    virtual ShupitoDesc::config const *getModeCfg() = 0;
     virtual void editIdArgs(QString& id, quint8& id_lenght);
     virtual bool is_read_memory_supported(chip_definition::memorydef * /*memdef*/)
     {

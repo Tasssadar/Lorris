@@ -126,10 +126,57 @@ LibybUsbEnumerator::LibybUsbEnumerator(yb::async_runner & runner)
     m_usb_monitor = m_usb_context.run([this](yb::usb_plugin_event const & p) {
         m_plugin_channel.send(p);
     });
+
+    QVariant cfg = sConfig.get(CFG_VARIANT_USB_ENUMERATOR);
+    if(cfg.type() == QVariant::List)
+        m_connConfigs = cfg.toList();
 }
 
 LibybUsbEnumerator::~LibybUsbEnumerator()
 {
+    for (auto it = m_usb_acm_devices.begin(); it != m_usb_acm_devices.end(); ++it)
+        this->updateConfig(it->second.data());
+    sConfig.set(CFG_VARIANT_USB_ENUMERATOR, m_connConfigs);
+}
+
+void LibybUsbEnumerator::updateConfig(UsbAcmConnection2 * conn)
+{
+    for (int i = 0; i < m_connConfigs.size(); ++i)
+    {
+        QHash<QString, QVariant> settings = m_connConfigs[i].toHash();
+
+        int vid = settings["vid"].toInt();
+        int pid = settings["pid"].toInt();
+        QString sn = settings["serial_number"].toString();
+        QString intf = settings["intf_name"].toString();
+
+        if (conn->vid() == vid && conn->pid() == pid && conn->serialNumber() == sn && conn->intfName() == intf)
+        {
+            m_connConfigs[i] = conn->config();
+            return;
+        }
+    }
+
+    m_connConfigs.push_back(conn->config());
+}
+
+void LibybUsbEnumerator::applyConfig(UsbAcmConnection2 * conn)
+{
+    for (int i = 0; i < m_connConfigs.size(); ++i)
+    {
+        QHash<QString, QVariant> settings = m_connConfigs[i].toHash();
+
+        int vid = settings["vid"].toInt();
+        int pid = settings["pid"].toInt();
+        QString sn = settings["serial_number"].toString();
+        QString intf = settings["intf_name"].toString();
+
+        if (conn->vid() == vid && conn->pid() == pid && conn->serialNumber() == sn && conn->intfName() == intf)
+        {
+            conn->applyConfig(settings);
+            break;
+        }
+    }
 }
 
 void LibybUsbEnumerator::registerUserOwnedConn(UsbAcmConnection2 * conn)
@@ -306,12 +353,14 @@ void LibybUsbEnumerator::pluginEventReceived()
                             }
                             conn->setEnumeratedIntf(ev.intf);
                             conn->setRemovable(false);
+                            this->applyConfig(conn.data());
                             m_usb_acm_devices.insert(std::make_pair(ev.intf, conn));
                         }
                         break;
                     case yb::usb_plugin_event::a_remove:
                         {
                             std::map<yb::usb_device_interface, ConnectionPointer<UsbAcmConnection2> >::iterator it = m_usb_acm_devices.find(ev.intf);
+                            this->updateConfig(it->second.data());
                             it->second->clear();
                             it->second->setRemovable(true);
                             m_standby_usb_acm_devices.add(st, it->second.data());

@@ -58,10 +58,10 @@ private slots:
     void descRead(bool correct);
 
 private:
-    ShupitoDesc::config *m_vdd_config;
-    ShupitoDesc::config *m_tunnel_config;
-    ShupitoDesc::config *m_btn_config;
-    ShupitoDesc::config *m_led_config;
+    ShupitoDesc::config const *m_vdd_config;
+    ShupitoDesc::config const *m_tunnel_config;
+    ShupitoDesc::config const *m_btn_config;
+    ShupitoDesc::config const *m_led_config;
 
     Shupito *m_shupito;
     ShupitoMode *m_modes[MODE_COUNT];

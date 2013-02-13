@@ -147,7 +147,7 @@ yb::task<void> UsbShupito23Connection::read_loop(uint8_t i)
 {
     return m_intf.device().bulk_read(m_in_eps[i], m_read_loops[i].read_buffer, sizeof m_read_loops[i].read_buffer).then([this, i](size_t r) -> yb::task<void> {
         if (r != 0)
-			m_incomingPackets.send(ShupitoPacket(m_read_loops[i].read_buffer, m_read_loops[i].read_buffer + r));
+            m_incomingPackets.send(ShupitoPacket(m_read_loops[i].read_buffer, m_read_loops[i].read_buffer + r));
         return yb::async::value();
     });
 }
@@ -158,4 +158,36 @@ void UsbShupito23Connection::incomingPacketsReceived()
     m_incomingPackets.receive(packets);
     for (size_t i = 0; i < packets.size(); ++i)
         emit this->packetRead(packets[i]);
+}
+
+bool UsbShupito23Connection::getFirmwareDetails(ShupitoFirmwareDetails & details) const
+{
+    if (ShupitoDesc::config const * c = m_desc.getConfig("c49124d9-4629-4aef-ae35-ddc32c21b279"))
+    {
+        if (c->data.size() != 15 || c->data[0] != 1)
+            return false;
+
+        details.hw_major = c->data[1];
+        details.hw_minor = c->data[2];
+        uint32_t fw_timestamp = c->data[3] | (c->data[4] << 8) | (c->data[5] << 16) | (c->data[6] << 24);
+        details.fw_timestamp.setTimeSpec(Qt::UTC);
+        details.fw_timestamp.setTime_t(fw_timestamp);
+        details.fw_zone_offset = (int16_t)(c->data[7] | (c->data[8] << 8));
+        details.fw_timestamp = details.fw_timestamp.addSecs(details.fw_zone_offset * 60);
+
+        QByteArray fw_revision((char const *)c->data.data() + 9, 6);
+        details.fw_revision = fw_revision.toHex();
+        return true;
+    }
+
+    return false;
+}
+
+QString ShupitoFirmwareDetails::firmwareFilename() const
+{
+    QDate d = fw_timestamp.date();
+    return QString("shupito%1%2_%3_%4_%5_%6.hex")
+        .arg(hw_major).arg(hw_minor)
+        .arg(d.year(), 4, 10, QChar('0')).arg(d.month(), 2, 10, QChar('0')).arg(d.day(), 2, 10, QChar('0'))
+        .arg(fw_revision.left(7));
 }

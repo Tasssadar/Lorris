@@ -12,7 +12,7 @@ ShupitoSPI::ShupitoSPI(Shupito *shupito) : ShupitoMode(shupito)
 {
 }
 
-ShupitoDesc::config *ShupitoSPI::getModeCfg()
+ShupitoDesc::config const *ShupitoSPI::getModeCfg()
 {
     return m_shupito->getDesc()->getConfig("46dbc865-b4d0-466b-9b70-2f3f5b264e65");
 }

@@ -14,7 +14,7 @@ ShupitoCC25XX::ShupitoCC25XX(Shupito *shupito) : ShupitoMode(shupito)
 {
 }
 
-ShupitoDesc::config *ShupitoCC25XX::getModeCfg()
+ShupitoDesc::config const *ShupitoCC25XX::getModeCfg()
 {
     return m_shupito->getDesc()->getConfig("76e37480-3f61-4e7a-9b1b-37af6bd418fa");
 }
