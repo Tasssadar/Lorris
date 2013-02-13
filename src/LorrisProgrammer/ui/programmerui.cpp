@@ -11,19 +11,19 @@
 #include <QMessageBox>
 #include <QStringBuilder>
 
-#include "shupitoui.h"
-#include "fullshupitoui.h"
-#include "../lorrisshupito.h"
+#include "programmerui.h"
+#include "fullprogrammerui.h"
+#include "../lorrisprogrammer.h"
 #include "../../ui/tooltipwarn.h"
 #include "../modes/shupitomode.h"
-#include "minishupitoui.h"
+#include "miniprogrammerui.h"
 
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
 static const QString colorSavedToFile= "#FFE0E0";
 static const QString memNames[] = { "", "flash", "eeprom", "fuses", "sdram" };
 
-ShupitoUI::ShupitoUI(ui_type type, QObject *parent) :
+ProgrammerUI::ProgrammerUI(ui_type type, QObject *parent) :
     QObject(parent)
 {
     m_ui_type = type;
@@ -31,38 +31,38 @@ ShupitoUI::ShupitoUI(ui_type type, QObject *parent) :
     m_color = VDD_BLACK;
 }
 
-ShupitoUI::~ShupitoUI()
+ProgrammerUI::~ProgrammerUI()
 {
 
 }
 
-ShupitoUI *ShupitoUI::createUI(ui_type type, QObject *parent)
+ProgrammerUI *ProgrammerUI::createUI(ui_type type, QObject *parent)
 {
     switch(type)
     {
         case UI_FULL:
-            return new FullShupitoUI(parent);
+            return new FullProgrammerUI(parent);
         case UI_MINIMAL:
-            return new MiniShupitoUI(parent);
+            return new MiniProgrammerUI(parent);
         default:
             break;
     }
     return NULL;
 }
 
-void ShupitoUI::setupUi(LorrisShupito *widget)
+void ProgrammerUI::setupUi(LorrisProgrammer *widget)
 {
     m_widget = widget;
     connect(widget, SIGNAL(enableButtons(bool)),               SIGNAL(enableButtons(bool)));
     connect(this,   SIGNAL(statusBarMsg(QString,int)), widget, SIGNAL(statusBarMsg(QString,int)));
 }
 
-Programmer *ShupitoUI::prog() const
+Programmer *ProgrammerUI::prog() const
 {
     return m_widget->m_programmer.data();
 }
 
-void ShupitoUI::clearVCC()
+void ProgrammerUI::clearVCC()
 {
     for(quint8 i = 0; i < m_vdd_radios.size(); ++i)
         delete m_vdd_radios[i];
@@ -72,7 +72,7 @@ void ShupitoUI::clearVCC()
     engineLabel()->clear();
 }
 
-void ShupitoUI::vccValChanged(double val)
+void ProgrammerUI::vccValChanged(double val)
 {
     static const QString base = "%1V";
     vccLabel()->setText(base.arg(val, 3, 'f', 2, '0'));
@@ -80,7 +80,7 @@ void ShupitoUI::vccValChanged(double val)
     changeVddColor(val);
 }
 
-void ShupitoUI::changeVddColor(double val)
+void ProgrammerUI::changeVddColor(double val)
 {
     VddColor newClr;
     if     (val == 0)                newClr = VDD_BLACK;
@@ -103,7 +103,7 @@ void ShupitoUI::changeVddColor(double val)
     m_color = newClr;
 }
 
-void ShupitoUI::vddSetup(const vdd_setup &vs)
+void ProgrammerUI::vddSetup(const vdd_setup &vs)
 {
     if(vs.empty())
         return;
@@ -136,7 +136,7 @@ void ShupitoUI::vddSetup(const vdd_setup &vs)
     connect(m_vdd_signals, SIGNAL(mapped(int)), m_widget, SLOT(vddIndexChanged(int)));
 }
 
-void ShupitoUI::disableOvervoltVDDs()
+void ProgrammerUI::disableOvervoltVDDs()
 {
     bool ok = false;
     for(std::vector<QRadioButton*>::iterator itr = m_vdd_radios.begin(); itr != m_vdd_radios.end(); ++itr)
@@ -155,7 +155,7 @@ void ShupitoUI::disableOvervoltVDDs()
     }
 }
 
-void ShupitoUI::vddIndexChanged(quint32 idx)
+void ProgrammerUI::vddIndexChanged(quint32 idx)
 {
     if(idx >= m_vdd_radios.size())
         return;
@@ -163,13 +163,13 @@ void ShupitoUI::vddIndexChanged(quint32 idx)
     m_vdd_radios[idx]->setChecked(true);
 }
 
-void ShupitoUI::connectedStatus(bool connected)
+void ProgrammerUI::connectedStatus(bool connected)
 {
     if(!connected)
         clearVCC();
 }
 
-void ShupitoUI::readAll()
+void ProgrammerUI::readAll()
 {
     if(!m_widget->checkVoltage(true))
         return;
@@ -200,7 +200,7 @@ void ShupitoUI::readAll()
     }
 }
 
-void ShupitoUI::readMemInFlash(quint8 memId)
+void ProgrammerUI::readMemInFlash(quint8 memId)
 {
     if(!m_widget->checkVoltage(true))
         return;
@@ -228,7 +228,7 @@ void ShupitoUI::readMemInFlash(quint8 memId)
     }
 }
 
-void ShupitoUI::readMem(quint8 memId, chip_definition &chip)
+void ProgrammerUI::readMem(quint8 memId, chip_definition &chip)
 {
     log("Reading memory");
 
@@ -242,7 +242,7 @@ void ShupitoUI::readMem(quint8 memId, chip_definition &chip)
     m_widget->updateProgressDialog(-1);
 }
 
-void ShupitoUI::writeAll()
+void ProgrammerUI::writeAll()
 {
     if(!m_widget->checkVoltage(true))
         return;
@@ -273,7 +273,7 @@ void ShupitoUI::writeAll()
     }
 }
 
-void ShupitoUI::writeMemInFlash(quint8 memId)
+void ProgrammerUI::writeMemInFlash(quint8 memId)
 {
     if(!m_widget->checkVoltage(true))
         return;
@@ -305,7 +305,7 @@ void ShupitoUI::writeMemInFlash(quint8 memId)
 }
 
 
-void ShupitoUI::writeMem(quint8 memId, chip_definition &chip)
+void ProgrammerUI::writeMem(quint8 memId, chip_definition &chip)
 {
     m_widget->tryFileReload(memId);
 
@@ -343,7 +343,7 @@ void ShupitoUI::writeMem(quint8 memId, chip_definition &chip)
     m_widget->m_hexFlashTimes[memId] = lastMod;
 }
 
-void ShupitoUI::eraseDevice()
+void ProgrammerUI::eraseDevice()
 {
     if(!m_widget->checkVoltage(true))
         return;
@@ -380,18 +380,19 @@ void ShupitoUI::eraseDevice()
     w->toRightBottom();
 }
 
-void ShupitoUI::saveData(DataFileParser *file)
+void ProgrammerUI::saveData(DataFileParser *file)
 {
+    // keep as LorrisShupito because of saved sessions
     file->writeBlockIdentifier("LorrShupitoUItype");
     file->writeVal((int)m_ui_type);
 }
 
-void ShupitoUI::loadData(DataFileParser *)
+void ProgrammerUI::loadData(DataFileParser *)
 {
 
 }
 
-void ShupitoUI::setStartStopBtn(bool start)
+void ProgrammerUI::setStartStopBtn(bool start)
 {
     if(start)
     {

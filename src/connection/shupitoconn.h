@@ -2,8 +2,8 @@
 #define SHUPITOCONN_H
 
 #include "connection.h"
-#include "../LorrisShupito/shupitopacket.h"
-#include "../LorrisShupito/shupitodesc.h"
+#include "../LorrisProgrammer/shupitopacket.h"
+#include "../LorrisProgrammer/shupitodesc.h"
 
 class ShupitoConnection : public Connection
 {

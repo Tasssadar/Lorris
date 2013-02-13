@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MiniShupitoUI</class>
- <widget class="QWidget" name="MiniShupitoUI">
+ <class>MiniProgrammerUI</class>
+ <widget class="QWidget" name="MiniProgrammerUI">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -114,7 +114,7 @@
           <string>Stop</string>
          </property>
          <property name="icon">
-          <iconset resource="../shupitoicons.qrc">
+          <iconset resource="../programmericons.qrc">
            <normaloff>:/icons/stop</normaloff>
            <normalon>:/icons/stop</normalon>
            <activeon>:/icons/stop</activeon>:/icons/stop</iconset>
@@ -169,7 +169,7 @@
           <string>Write flash</string>
          </property>
          <property name="icon">
-          <iconset resource="../shupitoicons.qrc">
+          <iconset resource="../programmericons.qrc">
            <normaloff>:/icons/write_chip.png</normaloff>:/icons/write_chip.png</iconset>
          </property>
          <property name="iconSize">
@@ -291,7 +291,7 @@
  </widget>
  <resources>
   <include location="../../actions.qrc"/>
-  <include location="../shupitoicons.qrc"/>
+  <include location="../programmericons.qrc"/>
  </resources>
  <connections/>
 </ui>

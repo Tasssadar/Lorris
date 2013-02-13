@@ -8,20 +8,20 @@
 #include <QToolBar>
 #include <qhexedit.h>
 
-#include "fullshupitoui.h"
-#include "../lorrisshupito.h"
+#include "fullprogrammerui.h"
+#include "../lorrisprogrammer.h"
 #include "fusewidget.h"
 #include "../../misc/datafileparser.h"
 #include "../modes/shupitomode.h"
 #include "../../ui/tooltipwarn.h"
 #include "overvccdialog.h"
 
-FullShupitoUI::FullShupitoUI(QObject *parent) :
-    ShupitoUI(UI_FULL, parent), ui(new Ui::FullShupitoUI)
+FullProgrammerUI::FullProgrammerUI(QObject *parent) :
+    ProgrammerUI(UI_FULL, parent), ui(new Ui::FullProgrammerUI)
 {
 }
 
-FullShupitoUI::~FullShupitoUI()
+FullProgrammerUI::~FullProgrammerUI()
 {
     sConfig.set(CFG_QUITN32_SHUPITO_TERM_FMT, ui->terminal->getFmt());
 
@@ -31,9 +31,9 @@ FullShupitoUI::~FullShupitoUI()
     delete ui;
 }
 
-void FullShupitoUI::setupUi(LorrisShupito *widget)
+void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
 {
-    ShupitoUI::setupUi(widget);
+    ProgrammerUI::setupUi(widget);
 
     ui->setupUi(widget);
 
@@ -114,7 +114,7 @@ void FullShupitoUI::setupUi(LorrisShupito *widget)
     widget->createConnBtn(ui->connectButton);
 }
 
-void FullShupitoUI::createActions()
+void FullProgrammerUI::createActions()
 {
     {
         QAction * Flash  = m_read_menu->addAction(tr("Read flash"));
@@ -164,7 +164,7 @@ void FullShupitoUI::createActions()
     m_boldFont.setBold(true);
 }
 
-void FullShupitoUI::setActiveAction(int actInt)
+void FullProgrammerUI::setActiveAction(int actInt)
 {
     ActionSlots act = actInt == TAB_EEPROM ? ACT_EEPROM : ACT_FLASH;
 
@@ -187,7 +187,7 @@ void FullShupitoUI::setActiveAction(int actInt)
     m_active = act;
 }
 
-void FullShupitoUI::readButtonClicked()
+void FullProgrammerUI::readButtonClicked()
 {
     if (m_active == ACT_FLASH)
         readMemButton();
@@ -195,7 +195,7 @@ void FullShupitoUI::readButtonClicked()
         readEEPROMBtn();
 }
 
-void FullShupitoUI::writeButtonClicked()
+void FullProgrammerUI::writeButtonClicked()
 {
     if (m_active == ACT_FLASH)
         writeFlashBtn();
@@ -203,7 +203,7 @@ void FullShupitoUI::writeButtonClicked()
         writeEEPROMBtn();
 }
 
-void FullShupitoUI::initMenus()
+void FullProgrammerUI::initMenus()
 {
     // Flash/Read buttons
     m_active = ACT_ALL;
@@ -232,7 +232,7 @@ void FullShupitoUI::initMenus()
     bar->addWidget(btn);
 }
 
-void FullShupitoUI::connectProgrammer(Programmer * prog)
+void FullProgrammerUI::connectProgrammer(Programmer * prog)
 {
     connect(ui->terminal, SIGNAL(keyPressed(QString)),   prog,      SLOT(sendTunnelData(QString)));
     connect(prog,  SIGNAL(tunnelData(QByteArray)),    ui->terminal, SLOT(appendText(QByteArray)));
@@ -242,7 +242,7 @@ void FullShupitoUI::connectProgrammer(Programmer * prog)
     this->updateTunnelSupport();
 }
 
-void FullShupitoUI::updateProgrammersBox(Programmer *prog)
+void FullProgrammerUI::updateProgrammersBox(Programmer *prog)
 {
     // corresponds to enum ProgrammerTypes
     static const QString names[] = { "Shupito", "Flip", "avr232boot", "atsam" };
@@ -255,21 +255,21 @@ void FullShupitoUI::updateProgrammersBox(Programmer *prog)
     ui->progIcon->setPixmap(QIcon(icons[prog->getType()]).pixmap(16, 16));
 }
 
-void FullShupitoUI::hideLogBtn(bool checked)
+void FullProgrammerUI::hideLogBtn(bool checked)
 {
     ui->hideLogBtn->setChecked(checked);
     ui->logText->setVisible(checked);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_LOG, checked);
 }
 
-void FullShupitoUI::hideFusesBtn(bool checked)
+void FullProgrammerUI::hideFusesBtn(bool checked)
 {
     ui->hideFusesBtn->setChecked(checked);
     m_fuse_widget->setVisible(checked);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_FUSES, checked);
 }
 
-void FullShupitoUI::hideSettingsBtn(bool checked)
+void FullProgrammerUI::hideSettingsBtn(bool checked)
 {
     ui->progBox->setVisible(checked);
     ui->overvccBox->setVisible(checked);
@@ -278,14 +278,14 @@ void FullShupitoUI::hideSettingsBtn(bool checked)
     this->updateTunnelSupport();
 }
 
-void FullShupitoUI::saveTermSettings()
+void FullProgrammerUI::saveTermSettings()
 {
     sConfig.set(CFG_STRING_SHUPITO_TERM_SET, ui->terminal->getSettingsData());
 }
 
-void FullShupitoUI::connectedStatus(bool connected)
+void FullProgrammerUI::connectedStatus(bool connected)
 {
-    ShupitoUI::connectedStatus(connected);
+    ProgrammerUI::connectedStatus(connected);
 
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
@@ -293,14 +293,14 @@ void FullShupitoUI::connectedStatus(bool connected)
     this->updateTunnelSupport();
 }
 
-void FullShupitoUI::updateTunnelSupport()
+void FullProgrammerUI::updateTunnelSupport()
 {
     ui->tunnelBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsTunnel());
 }
 
-void FullShupitoUI::tunnelStop(bool stop)
+void FullProgrammerUI::tunnelStop(bool stop)
 {
-    ShupitoUI::tunnelStop(stop);
+    ProgrammerUI::tunnelStop(stop);
 
     if(stop)
     {
@@ -309,12 +309,12 @@ void FullShupitoUI::tunnelStop(bool stop)
     }
 }
 
-void FullShupitoUI::setTunnelActive(bool active)
+void FullProgrammerUI::setTunnelActive(bool active)
 {
     ui->tunnelCheck->setChecked(active);
 }
 
-void FullShupitoUI::tunnelStateChanged(bool opened)
+void FullProgrammerUI::tunnelStateChanged(bool opened)
 {
     if(opened)
     {
@@ -328,48 +328,48 @@ void FullShupitoUI::tunnelStateChanged(bool opened)
     ui->tunnelCheck->setChecked(opened);
 }
 
-void FullShupitoUI::log(const QString &text)
+void FullProgrammerUI::log(const QString &text)
 {
     ui->logText->appendPlainText(text);
 }
 
-void FullShupitoUI::postFlashSwitchCheck(chip_definition &chip)
+void FullProgrammerUI::postFlashSwitchCheck(chip_definition &chip)
 {
     if(m_fuse_widget->getChipDef().getSign() != chip.getSign())
         m_fuse_widget->clear(true);
 }
 
-void FullShupitoUI::setHexData(quint32 memid, const QByteArray &data)
+void FullProgrammerUI::setHexData(quint32 memid, const QByteArray &data)
 {
     m_hexAreas[memid]->setData(data);
 }
 
-void FullShupitoUI::setHexColor(quint32 memid, const QString &clr)
+void FullProgrammerUI::setHexColor(quint32 memid, const QString &clr)
 {
     m_hexAreas[memid]->setBackgroundColor(clr);
 }
 
-QByteArray FullShupitoUI::getHexData(quint32 memid) const
+QByteArray FullProgrammerUI::getHexData(quint32 memid) const
 {
     return m_hexAreas[memid]->data();
 }
 
-void FullShupitoUI::clearHexChanged(quint32 memid)
+void FullProgrammerUI::clearHexChanged(quint32 memid)
 {
     m_hexAreas[memid]->clearDataChanged();
 }
 
-bool FullShupitoUI::hasHexChanged(quint32 memid)
+bool FullProgrammerUI::hasHexChanged(quint32 memid)
 {
     return m_hexAreas[memid]->hasDataChanged();
 }
 
-void FullShupitoUI::setActiveMem(quint32 memId)
+void FullProgrammerUI::setActiveMem(quint32 memId)
 {
     ui->memTabs->setCurrentIndex(memId);
 }
 
-void FullShupitoUI::readFusesInFlash()
+void FullProgrammerUI::readFusesInFlash()
 {
     if(!m_widget->checkVoltage(true))
         return;
@@ -396,7 +396,7 @@ void FullShupitoUI::readFusesInFlash()
     }
 }
 
-void FullShupitoUI::readFuses(chip_definition& chip)
+void FullProgrammerUI::readFuses(chip_definition& chip)
 {
     log("Reading fuses");
 
@@ -412,7 +412,7 @@ void FullShupitoUI::readFuses(chip_definition& chip)
 }
 
 
-void FullShupitoUI::writeFusesInFlash()
+void FullProgrammerUI::writeFusesInFlash()
 {
     if(!m_widget->checkVoltage(true))
         return;
@@ -454,7 +454,7 @@ void FullShupitoUI::writeFusesInFlash()
     }
 }
 
-void FullShupitoUI::writeFuses(chip_definition &chip)
+void FullProgrammerUI::writeFuses(chip_definition &chip)
 {
     if(!m_fuse_widget->isLoaded())
         throw QString(tr("Fuses had not been read yet"));
@@ -464,12 +464,12 @@ void FullShupitoUI::writeFuses(chip_definition &chip)
     prog()->writeFuses(data, chip, m_widget->m_verify_mode);
 }
 
-void FullShupitoUI::writeSelectedMem()
+void FullProgrammerUI::writeSelectedMem()
 {
     this->writeButtonClicked();
 }
 
-void FullShupitoUI::warnSecondFlash()
+void FullProgrammerUI::warnSecondFlash()
 {
     if(ui->flashWarnBox->isChecked())
     {
@@ -478,7 +478,7 @@ void FullShupitoUI::warnSecondFlash()
     }
 }
 
-int FullShupitoUI::getMemIndex()
+int FullProgrammerUI::getMemIndex()
 {
     switch(ui->memTabs->currentIndex())
     {
@@ -491,7 +491,7 @@ int FullShupitoUI::getMemIndex()
     }
 }
 
-void FullShupitoUI::overvoltageSwitched(bool enabled)
+void FullProgrammerUI::overvoltageSwitched(bool enabled)
 {
     sConfig.set(CFG_BOOL_SHUPITO_OVERVOLTAGE, enabled);
     m_widget->m_enable_overvcc = enabled;
@@ -500,7 +500,7 @@ void FullShupitoUI::overvoltageSwitched(bool enabled)
         delete m_widget->m_overvcc_dialog;
 }
 
-void FullShupitoUI::overvoltageChanged(double val)
+void FullProgrammerUI::overvoltageChanged(double val)
 {
     sConfig.set(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL, val);
     m_widget->m_overvcc = val;
@@ -508,21 +508,21 @@ void FullShupitoUI::overvoltageChanged(double val)
     disableOvervoltVDDs();
 }
 
-void FullShupitoUI::overvoltageTurnOffVcc(bool enabled)
+void FullProgrammerUI::overvoltageTurnOffVcc(bool enabled)
 {
     sConfig.set(CFG_BOOL_SHUPITO_TURNOFF_VCC, enabled);
     m_widget->m_overvcc_turnoff = enabled;
 }
 
-void FullShupitoUI::flashWarnBox(bool checked)
+void FullProgrammerUI::flashWarnBox(bool checked)
 {
     ui->flashWarnBox->setChecked(checked);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_FLASH_WARN, checked);
 }
 
-void FullShupitoUI::saveData(DataFileParser *file)
+void FullProgrammerUI::saveData(DataFileParser *file)
 {
-    ShupitoUI::saveData(file);
+    ProgrammerUI::saveData(file);
 
     file->writeBlockIdentifier("LorrShupitoTermSett");
     file->writeString(ui->terminal->getSettingsData());
@@ -558,9 +558,9 @@ void FullShupitoUI::saveData(DataFileParser *file)
     file->writeVal(ui->over_val->value());
 }
 
-void FullShupitoUI::loadData(DataFileParser *file)
+void FullProgrammerUI::loadData(DataFileParser *file)
 {
-    ShupitoUI::loadData(file);
+    ProgrammerUI::loadData(file);
 
     if(file->seekToNextBlock("LorrShupitoTermSett", BLOCK_WORKTAB))
     {
@@ -604,7 +604,7 @@ void FullShupitoUI::loadData(DataFileParser *file)
     }
 }
 
-void FullShupitoUI::setFileAndTime(const QString &file, const QDateTime &time)
+void FullProgrammerUI::setFileAndTime(const QString &file, const QDateTime &time)
 {
     ui->filename->setText(file);
     ui->filename->setToolTip(file);
@@ -614,7 +614,7 @@ void FullShupitoUI::setFileAndTime(const QString &file, const QDateTime &time)
     ui->filedate->setToolTip(str);
 }
 
-void FullShupitoUI::setChipId(const QString &text)
+void FullProgrammerUI::setChipId(const QString &text)
 {
     ui->chipIdLabel->setText(text);
     ui->chipIdLabel->setToolTip(text);

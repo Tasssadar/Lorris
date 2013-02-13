@@ -5,21 +5,21 @@
 **    See README and COPYING
 ***********************************************/
 
-#ifndef MINISHUPITOUI_H
-#define MINISHUPITOUI_H
+#ifndef MINIPROGRAMMERUI_H
+#define MINIPROGRAMMERUI_H
 
-#include "shupitoui.h"
+#include "programmerui.h"
 
-#include "ui_minishupitoui.h"
+#include "ui_miniprogrammerui.h"
 
-class MiniShupitoUI : public ShupitoUI
+class MiniProgrammerUI : public ProgrammerUI
 {
     Q_OBJECT
 public:
-    explicit MiniShupitoUI(QObject *parent = 0);
-    ~MiniShupitoUI();
+    explicit MiniProgrammerUI(QObject *parent = 0);
+    ~MiniProgrammerUI();
 
-    void setupUi(LorrisShupito *widget);
+    void setupUi(LorrisProgrammer *widget);
     void setChipId(const QString &text);
     void setFileAndTime(const QString &file, const QDateTime &time);
 
@@ -53,7 +53,7 @@ private slots:
     void enableWrite(bool enable);
 
 private:
-    Ui::MiniShupitoUI *ui;
+    Ui::MiniProgrammerUI *ui;
 
     QByteArray m_hexData[MEM_FUSES];
     bool m_fileSet;
@@ -74,4 +74,4 @@ private:
     bool m_isVertical;
 };
 
-#endif // MINISHUPITOUI_H
+#endif // MINIPROGRAMMERUI_H

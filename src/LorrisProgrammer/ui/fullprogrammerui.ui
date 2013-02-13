@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LorrisShupito</class>
- <widget class="QWidget" name="LorrisShupito">
+ <class>FullProgrammerUI</class>
+ <widget class="QWidget" name="FullProgrammerUI">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,7 +17,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QHBoxLayout" name="topLayout">
+      <layout class="QHBoxLayout" name="topLayout" stretch="0,0,0,0,0">
        <item>
         <widget class="QToolButton" name="connectButton">
          <property name="sizePolicy">
@@ -40,6 +40,44 @@
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextOnly</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="progIcon">
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Programmer type</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="progName">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Programmer type</string>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -91,8 +129,8 @@
           <string>Settings</string>
          </property>
          <property name="icon">
-          <iconset resource="shupitoicons.qrc">
-           <normaloff>:/icons/icons/settings.png</normaloff>:/icons/icons/settings.png</iconset>
+          <iconset resource="../programmericons.qrc">
+           <normaloff>:/icons/system_dark</normaloff>:/icons/system_dark</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -142,7 +180,7 @@
           <string>Read</string>
          </property>
          <property name="icon">
-          <iconset resource="shupitoicons.qrc">
+          <iconset resource="../programmericons.qrc">
            <normaloff>:/icons/read_chip.png</normaloff>:/icons/read_chip.png</iconset>
          </property>
          <property name="iconSize">
@@ -183,7 +221,7 @@
           <string>Write</string>
          </property>
          <property name="icon">
-          <iconset resource="shupitoicons.qrc">
+          <iconset resource="../programmericons.qrc">
            <normaloff>:/icons/write_chip.png</normaloff>:/icons/write_chip.png</iconset>
          </property>
          <property name="iconSize">
@@ -221,7 +259,7 @@
           <string>Erase</string>
          </property>
          <property name="icon">
-          <iconset resource="shupitoicons.qrc">
+          <iconset resource="../programmericons.qrc">
            <normaloff>:/icons/erase_chip.png</normaloff>:/icons/erase_chip.png</iconset>
          </property>
          <property name="iconSize">
@@ -324,7 +362,7 @@
           <string>Stop</string>
          </property>
          <property name="icon">
-          <iconset resource="shupitoicons.qrc">
+          <iconset resource="../programmericons.qrc">
            <normaloff>:/icons/stop</normaloff>
            <normalon>:/icons/stop</normalon>
            <activeon>:/icons/stop</activeon>:/icons/stop</iconset>
@@ -899,7 +937,7 @@ flashing same file twice:</string>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="shupitoicons.qrc"/>
+  <include location="../programmericons.qrc"/>
  </resources>
  <connections/>
 </ui>

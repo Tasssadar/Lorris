@@ -5,15 +5,15 @@
 **    See README and COPYING
 ***********************************************/
 
-#ifndef LORRISSHUPITOINFO_H
-#define LORRISSHUPITOINFO_H
+#ifndef LORRISPROGRAMMERINFO_H
+#define LORRISPROGRAMMERINFO_H
 
 #include "../WorkTab/WorkTabInfo.h"
 
-class LorrisShupitoInfo : public WorkTabInfo
+class LorrisProgrammerInfo : public WorkTabInfo
 {
 public:
-    explicit LorrisShupitoInfo();
+    explicit LorrisProgrammerInfo();
 
     WorkTab *GetNewTab();
     QString GetName();
@@ -22,4 +22,4 @@ public:
     QString GetIdString();
 };
 
-#endif // LORRISSHUPITOINFO_H
+#endif // LORRISPROGRAMMERINFO_H

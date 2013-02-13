@@ -10,7 +10,7 @@
 #include <QEventLoop>
 
 #include "shupito.h"
-#include "lorrisshupito.h"
+#include "lorrisprogrammer.h"
 #include "shupitodesc.h"
 #include "../connection/shupitotunnel.h"
 #include "../connection/connectionmgr2.h"

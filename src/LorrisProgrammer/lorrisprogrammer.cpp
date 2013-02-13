@@ -21,7 +21,7 @@
 
 #include "ui/progressdialog.h"
 #include "shupito.h"
-#include "lorrisshupito.h"
+#include "lorrisprogrammer.h"
 #include "modes/shupitomode.h"
 #include "../shared/hexfile.h"
 #include "../shared/chipdefs.h"
@@ -49,7 +49,7 @@ static const QString memNames[] = { "", "flash", "eeprom" };
 
 static const QString filters = QObject::tr("Intel HEX file (*.hex)");
 
-LorrisShupito::LorrisShupito()
+LorrisProgrammer::LorrisProgrammer()
     : WorkTab(), m_logsink(this)
 {
     m_connectButton = NULL;
@@ -82,7 +82,7 @@ LorrisShupito::LorrisShupito()
     connectedStatus(false);
 }
 
-LorrisShupito::~LorrisShupito()
+LorrisProgrammer::~LorrisProgrammer()
 {
     if (m_con)
         m_con->releaseTab();
@@ -91,7 +91,7 @@ LorrisShupito::~LorrisShupito()
     delete ui;
 }
 
-void LorrisShupito::updateModeBar()
+void LorrisProgrammer::updateModeBar()
 {
     Q_ASSERT(m_modeBar);
     Q_ASSERT(!m_modeBar->actions().empty());
@@ -128,7 +128,7 @@ void LorrisShupito::updateModeBar()
     m_mode_acts.push_back(m_modeBar->insertSeparator(before));
 }
 
-void LorrisShupito::initMenus()
+void LorrisProgrammer::initMenus()
 {
     // top menu bar
     QMenu *chipBar = new QMenu(tr("Chip"), this);
@@ -217,17 +217,17 @@ void LorrisShupito::initMenus()
     connect(m_miniUi, SIGNAL(triggered(bool)), SLOT(setMiniUi(bool)));
 }
 
-void LorrisShupito::enableHardwareButtonToggled(bool checked)
+void LorrisProgrammer::enableHardwareButtonToggled(bool checked)
 {
     sConfig.set(CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON, checked);
 }
 
-void LorrisShupito::connDisconnecting()
+void LorrisProgrammer::connDisconnecting()
 {
     stopAll(false);
 }
 
-void LorrisShupito::connectedStatus(bool connected)
+void LorrisProgrammer::connectedStatus(bool connected)
 {
     if(connected)
     {
@@ -254,14 +254,14 @@ void LorrisShupito::connectedStatus(bool connected)
     ui->connectedStatus(connected);
 }
 
-void LorrisShupito::stopAll(bool wait)
+void LorrisProgrammer::stopAll(bool wait)
 {
     if (m_programmer)
         m_programmer->stopAll(wait);
     ui->tunnelStop(true);
 }
 
-void LorrisShupito::onTabShow(const QString& filename)
+void LorrisProgrammer::onTabShow(const QString& filename)
 {
     if(!filename.isEmpty())
         openFile(filename);
@@ -277,7 +277,7 @@ void LorrisShupito::onTabShow(const QString& filename)
         sConfig.set(CFG_STRING_SHUPITO_PORT, m_con->GetIDString());
 }
 
-void LorrisShupito::vccValueChanged(quint8 id, double value)
+void LorrisProgrammer::vccValueChanged(quint8 id, double value)
 {
     m_timeout_timer.start();
     if(m_timeout_warn)
@@ -297,7 +297,7 @@ void LorrisShupito::vccValueChanged(quint8 id, double value)
 }
 
 //void do_vdd_setup(avrflash::device<comm>::vdd_setup const & vs)
-void LorrisShupito::vddSetup(const vdd_setup &vs)
+void LorrisProgrammer::vddSetup(const vdd_setup &vs)
 {
     m_vdd_setup = vs;
 
@@ -311,7 +311,7 @@ void LorrisShupito::vddSetup(const vdd_setup &vs)
     lastVccIndex = vs[0].current_drive;
 }
 
-void LorrisShupito::vddIndexChanged(int index)
+void LorrisProgrammer::vddIndexChanged(int index)
 {
     if(index == -1)
         return;
@@ -329,7 +329,7 @@ void LorrisShupito::vddIndexChanged(int index)
         m_programmer->setVddIndex(index);
 }
 
-void LorrisShupito::tunnelSpeedChanged(const QString &text)
+void LorrisProgrammer::tunnelSpeedChanged(const QString &text)
 {
     bool ok = false;
     quint32 speed = 0;
@@ -338,7 +338,7 @@ void LorrisShupito::tunnelSpeedChanged(const QString &text)
         m_programmer->setTunnelSpeed(speed);
 }
 
-void LorrisShupito::tunnelToggled(bool enable)
+void LorrisProgrammer::tunnelToggled(bool enable)
 {
     if (m_programmer)
     {
@@ -355,13 +355,13 @@ void LorrisShupito::tunnelToggled(bool enable)
     sConfig.set(CFG_BOOL_SHUPITO_TUNNEL, enable);
 }
 
-void LorrisShupito::tunnelStateChanged(bool opened)
+void LorrisProgrammer::tunnelStateChanged(bool opened)
 {
     ui->tunnelStateChanged(opened);
     ui->log(tr("RS232 tunnel %1").arg(opened ? tr("enabled") : tr("disabled")));
 }
 
-void LorrisShupito::setTunnelName()
+void LorrisProgrammer::setTunnelName()
 {
     QString name = QInputDialog::getText(this, tr("Set tunnel name"), tr("Tunnel name:"),
                               QLineEdit::Normal, sConfig.get(CFG_STRING_SHUPITO_TUNNEL));
@@ -377,7 +377,7 @@ void LorrisShupito::setTunnelName()
     }
 }
 
-void LorrisShupito::modeSelected(int idx)
+void LorrisProgrammer::modeSelected(int idx)
 {
     Q_ASSERT(m_programmer);
     m_programmer->setMode(idx);
@@ -386,7 +386,7 @@ void LorrisShupito::modeSelected(int idx)
         m_mode_acts[i-1]->setChecked(i-1 == idx);
 }
 
-void LorrisShupito::progSpeedChanged(QString text)
+void LorrisProgrammer::progSpeedChanged(QString text)
 {
     bool ok;
     quint32 speed = text.toInt(&ok);
@@ -397,12 +397,12 @@ void LorrisShupito::progSpeedChanged(QString text)
     sConfig.set(CFG_QUINT32_SHUPITO_PRG_SPEED, m_prog_speed_hz);
 }
 
-void LorrisShupito::status(const QString &text)
+void LorrisProgrammer::status(const QString &text)
 {
     emit statusBarMsg(text, 5000);
 }
 
-bool LorrisShupito::checkVoltage(bool active)
+bool LorrisProgrammer::checkVoltage(bool active)
 {
     Q_ASSERT(m_programmer);
     if (!m_programmer->supportsVdd())
@@ -420,7 +420,7 @@ bool LorrisShupito::checkVoltage(bool active)
 }
 
 // avrflash::chip_definition update_chip_description(std::string const & chip_id), avr232client.cpp
-void LorrisShupito::update_chip_description(chip_definition& cd)
+void LorrisProgrammer::update_chip_description(chip_definition& cd)
 {
     if(cd.getName().isEmpty())
     {
@@ -447,7 +447,7 @@ void LorrisShupito::update_chip_description(chip_definition& cd)
     }
 }
 
-void LorrisShupito::showProgressDialog(const QString& text, QObject *sender)
+void LorrisProgrammer::showProgressDialog(const QString& text, QObject *sender)
 {
     Q_ASSERT(!m_progress_dialog);
 
@@ -462,7 +462,7 @@ void LorrisShupito::showProgressDialog(const QString& text, QObject *sender)
     }
 }
 
-void LorrisShupito::updateProgressDialog(int value)
+void LorrisProgrammer::updateProgressDialog(int value)
 {
     if(!m_progress_dialog)
         return;
@@ -479,14 +479,14 @@ void LorrisShupito::updateProgressDialog(int value)
     m_progress_dialog->setValue(value);
 }
 
-void LorrisShupito::updateProgressLabel(const QString &text)
+void LorrisProgrammer::updateProgressLabel(const QString &text)
 {
     if(!m_progress_dialog)
         return;
     m_progress_dialog->setLabelText(text);
 }
 
-chip_definition LorrisShupito::switchToFlashAndGetId()
+chip_definition LorrisProgrammer::switchToFlashAndGetId()
 {
     Q_ASSERT(m_programmer);
 
@@ -510,7 +510,7 @@ chip_definition LorrisShupito::switchToFlashAndGetId()
     return chip;
 }
 
-bool LorrisShupito::showContinueBox(const QString &title, const QString &text)
+bool LorrisProgrammer::showContinueBox(const QString &title, const QString &text)
 {
     QMessageBox box(this);
     box.setWindowTitle(title);
@@ -521,7 +521,7 @@ bool LorrisShupito::showContinueBox(const QString &title, const QString &text)
     return !((bool)box.exec());
 }
 
-void LorrisShupito::startstopChip()
+void LorrisProgrammer::startstopChip()
 {
     if (m_chipStopped)
         startChip();
@@ -529,7 +529,7 @@ void LorrisShupito::startstopChip()
         stopChip();
 }
 
-void LorrisShupito::startChip()
+void LorrisProgrammer::startChip()
 {
     Q_ASSERT(m_programmer);
 
@@ -552,7 +552,7 @@ void LorrisShupito::startChip()
     updateStartStopUi(false);
 }
 
-void LorrisShupito::stopChip()
+void LorrisProgrammer::stopChip()
 {
     if(!checkVoltage(true))
         return;
@@ -577,7 +577,7 @@ void LorrisShupito::stopChip()
     updateStartStopUi(true);
 }
 
-void LorrisShupito::updateStartStopUi(bool stopped)
+void LorrisProgrammer::updateStartStopUi(bool stopped)
 {
     ui->setStartStopBtn(stopped);
 
@@ -587,7 +587,7 @@ void LorrisShupito::updateStartStopUi(bool stopped)
     m_chipStopped = stopped;
 }
 
-void LorrisShupito::restartChip()
+void LorrisProgrammer::restartChip()
 {
     if(!checkVoltage(true))
         return;
@@ -598,7 +598,7 @@ void LorrisShupito::restartChip()
     startChip();
 }
 
-void LorrisShupito::loadFromFile(int memId)
+void LorrisProgrammer::loadFromFile(int memId)
 {
     try
     {
@@ -618,7 +618,7 @@ void LorrisShupito::loadFromFile(int memId)
     }
 }
 
-void LorrisShupito::loadFromFile(int memId, const QString& filename)
+void LorrisProgrammer::loadFromFile(int memId, const QString& filename)
 {
     status("");
 
@@ -648,7 +648,7 @@ void LorrisShupito::loadFromFile(int memId, const QString& filename)
     status(tr("File loaded"));
 }
 
-void LorrisShupito::openFile(const QString &filename)
+void LorrisProgrammer::openFile(const QString &filename)
 {
     try
     {
@@ -661,7 +661,7 @@ void LorrisShupito::openFile(const QString &filename)
     }
 }
 
-void LorrisShupito::saveToFile(int memId)
+void LorrisProgrammer::saveToFile(int memId)
 {
     try
     {
@@ -693,7 +693,7 @@ void LorrisShupito::saveToFile(int memId)
 }
 
 
-void LorrisShupito::verifyChanged(int mode)
+void LorrisProgrammer::verifyChanged(int mode)
 {
     for(quint8 i = 0; i < VERIFY_MAX; ++i)
         m_verify[i]->setChecked(i == mode);
@@ -703,7 +703,7 @@ void LorrisShupito::verifyChanged(int mode)
     m_verify_mode = mode;
 }
 
-void LorrisShupito::tryFileReload(quint8 memId)
+void LorrisProgrammer::tryFileReload(quint8 memId)
 {
     if (m_hexFilenames[memId].isEmpty() || ui->hasHexChanged(memId))
         return;
@@ -722,13 +722,13 @@ void LorrisShupito::tryFileReload(quint8 memId)
     }
 }
 
-void LorrisShupito::focusChanged(QWidget *prev, QWidget */*curr*/)
+void LorrisProgrammer::focusChanged(QWidget *prev, QWidget */*curr*/)
 {
     if(prev == NULL)
         tryFileReload(ui->getMemIndex());
 }
 
-void LorrisShupito::updateProgrammer()
+void LorrisProgrammer::updateProgrammer()
 {
     m_programmer.reset();
     if (m_con)
@@ -783,7 +783,7 @@ void LorrisShupito::updateProgrammer()
     ui->connectProgrammer(m_programmer.data());
 }
 
-void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
+void LorrisProgrammer::setConnection(ConnectionPointer<Connection> const & con)
 {
     if (m_con)
     {
@@ -807,7 +807,7 @@ void LorrisShupito::setConnection(ConnectionPointer<Connection> const & con)
     this->connectedStatus(m_con && m_con->isOpen());
 }
 
-void LorrisShupito::checkOvervoltage()
+void LorrisProgrammer::checkOvervoltage()
 {
     if(!m_enable_overvcc)
         return;
@@ -828,7 +828,7 @@ void LorrisShupito::checkOvervoltage()
     }
 }
 
-void LorrisShupito::shutdownVcc()
+void LorrisProgrammer::shutdownVcc()
 {
     if(m_vdd_setup.empty())
         return;
@@ -844,7 +844,7 @@ void LorrisShupito::shutdownVcc()
     }
 }
 
-void LorrisShupito::timeout()
+void LorrisProgrammer::timeout()
 {
     m_timeout_timer.stop();
     if(!m_timeout_warn)
@@ -855,12 +855,13 @@ void LorrisShupito::timeout()
     }
 }
 
-QString LorrisShupito::GetIdString()
+QString LorrisProgrammer::GetIdString()
 {
+    // Keep as LorrisShupito because of saved sessions
     return "LorrisShupito";
 }
 
-void LorrisShupito::saveData(DataFileParser *file)
+void LorrisProgrammer::saveData(DataFileParser *file)
 {
     WorkTab::saveData(file);
 
@@ -885,7 +886,7 @@ void LorrisShupito::saveData(DataFileParser *file)
     }
 }
 
-void LorrisShupito::loadData(DataFileParser *file)
+void LorrisProgrammer::loadData(DataFileParser *file)
 {
     WorkTab::loadData(file);
 
@@ -939,7 +940,7 @@ void LorrisShupito::loadData(DataFileParser *file)
     }
 }
 
-void LorrisShupito::setEnableButtons(bool enable)
+void LorrisProgrammer::setEnableButtons(bool enable)
 {
     if(enable == m_buttons_enabled)
         return;
@@ -948,7 +949,7 @@ void LorrisShupito::setEnableButtons(bool enable)
     emit enableButtons(enable);
 }
 
-void LorrisShupito::createConnBtn(QToolButton *btn)
+void LorrisProgrammer::createConnBtn(QToolButton *btn)
 {
     Q_ASSERT(!m_connectButton);
 
@@ -958,7 +959,7 @@ void LorrisShupito::createConnBtn(QToolButton *btn)
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 }
 
-void LorrisShupito::setUiType(int type)
+void LorrisProgrammer::setUiType(int type)
 {
     if(ui && ui->getType() == type)
         return;
@@ -972,7 +973,7 @@ void LorrisShupito::setUiType(int type)
 
     delete ui;
 
-    ui = ShupitoUI::createUI((ui_type)type, this);
+    ui = ProgrammerUI::createUI((ui_type)type, this);
     ui->setupUi(this);
     ui->vddSetup(m_vdd_setup);
 
@@ -991,7 +992,7 @@ void LorrisShupito::setUiType(int type)
     }
 }
 
-void LorrisShupito::setMiniUi(bool mini)
+void LorrisProgrammer::setMiniUi(bool mini)
 {
     int type = mini ? UI_MINIMAL : UI_FULL;
     if(ui->getType() == type)
@@ -1012,14 +1013,14 @@ void LorrisShupito::setMiniUi(bool mini)
     emit enableButtons(m_buttons_enabled);
 }
 
-void LorrisShupito::buttonPressed(int btnid)
+void LorrisProgrammer::buttonPressed(int btnid)
 {
     // FIXME: the button should be ignored if an action is in progress
     if (btnid == 0 && m_buttons_enabled && m_enableHardwareButton->isChecked())
         ui->writeSelectedMem();
 }
 
-void LorrisShupito::blinkLed()
+void LorrisProgrammer::blinkLed()
 {
     if (m_programmer)
         m_programmer->blinkLed();

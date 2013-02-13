@@ -7,28 +7,28 @@
 
 #include <QResizeEvent>
 
-#include "minishupitoui.h"
+#include "miniprogrammerui.h"
 #include "../../misc/utils.h"
-#include "../lorrisshupito.h"
+#include "../lorrisprogrammer.h"
 #include "../../misc/datafileparser.h"
 
-MiniShupitoUI::MiniShupitoUI(QObject *parent) :
-    ShupitoUI(UI_MINIMAL, parent), ui(new Ui::MiniShupitoUI)
+MiniProgrammerUI::MiniProgrammerUI(QObject *parent) :
+    ProgrammerUI(UI_MINIMAL, parent), ui(new Ui::MiniProgrammerUI)
 {
     m_fileSet = false;
     m_isVertical = true;
 }
 
-MiniShupitoUI::~MiniShupitoUI()
+MiniProgrammerUI::~MiniProgrammerUI()
 {
     Utils::deleteLayoutMembers(ui->mainLayout);
     delete ui->mainLayout;
     delete ui;
 }
 
-void MiniShupitoUI::setupUi(LorrisShupito *widget)
+void MiniProgrammerUI::setupUi(LorrisProgrammer *widget)
 {
-    ShupitoUI::setupUi(widget);
+    ProgrammerUI::setupUi(widget);
 
     ui->setupUi(widget);
 
@@ -48,7 +48,7 @@ void MiniShupitoUI::setupUi(LorrisShupito *widget)
     widget->installEventFilter(this);
 }
 
-void MiniShupitoUI::setChipId(const QString &text)
+void MiniProgrammerUI::setChipId(const QString &text)
 {
     QString str = text;
     if(str.size() >= 15)
@@ -57,7 +57,7 @@ void MiniShupitoUI::setChipId(const QString &text)
     ui->chipIdLabel->setToolTip(text);
 }
 
-void MiniShupitoUI::setFileAndTime(const QString &file, const QDateTime &time)
+void MiniProgrammerUI::setFileAndTime(const QString &file, const QDateTime &time)
 {
     m_fileSet = true;
     enableWrite(true);
@@ -69,14 +69,14 @@ void MiniShupitoUI::setFileAndTime(const QString &file, const QDateTime &time)
     ui->filedate->setToolTip("Changed on " + str);
 }
 
-void MiniShupitoUI::enableWrite(bool enable)
+void MiniProgrammerUI::enableWrite(bool enable)
 {
     ui->writeButton->setEnabled(enable && m_fileSet && m_widget->m_buttons_enabled);
 }
 
-void MiniShupitoUI::saveData(DataFileParser *file)
+void MiniProgrammerUI::saveData(DataFileParser *file)
 {
-    ShupitoUI::saveData(file);
+    ProgrammerUI::saveData(file);
 
     file->writeBlockIdentifier("LorrShupitoTermSett");
     file->writeString(m_termSett);
@@ -106,9 +106,9 @@ void MiniShupitoUI::saveData(DataFileParser *file)
     file->writeVal(m_over_val);
 }
 
-void MiniShupitoUI::loadData(DataFileParser *file)
+void MiniProgrammerUI::loadData(DataFileParser *file)
 {
-    ShupitoUI::loadData(file);
+    ProgrammerUI::loadData(file);
 
     if(file->seekToNextBlock("LorrShupitoTermSett", BLOCK_WORKTAB))
     {
@@ -151,12 +151,12 @@ void MiniShupitoUI::loadData(DataFileParser *file)
     }
 }
 
-void MiniShupitoUI::writeSelectedMem()
+void MiniProgrammerUI::writeSelectedMem()
 {
     this->writeFlashBtn();
 }
 
-void MiniShupitoUI::setVertical(bool vertical)
+void MiniProgrammerUI::setVertical(bool vertical)
 {
     if(m_isVertical == vertical)
         return;
@@ -185,7 +185,7 @@ void MiniShupitoUI::setVertical(bool vertical)
     to->addStretch(1);
 }
 
-bool MiniShupitoUI::eventFilter(QObject *obj, QEvent *event)
+bool MiniProgrammerUI::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() != QEvent::Resize)
         return QObject::eventFilter(obj, event);

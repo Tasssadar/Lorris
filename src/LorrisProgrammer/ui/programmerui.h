@@ -5,8 +5,8 @@
 **    See README and COPYING
 ***********************************************/
 
-#ifndef SHUPITOUI_H
-#define SHUPITOUI_H
+#ifndef PROGRAMMERUI_H
+#define PROGRAMMERUI_H
 
 #include <QObject>
 #include <vector>
@@ -15,7 +15,7 @@
 #include "../../shared/hexfile.h"
 #include "../../shared/programmer.h"
 
-class LorrisShupito;
+class LorrisProgrammer;
 class QSignalMapper;
 class QRadioButton;
 class ShupitoMode;
@@ -39,7 +39,7 @@ enum VddColor
     VDD_ORANGE
 };
 
-class ShupitoUI : public QObject
+class ProgrammerUI : public QObject
 {
     Q_OBJECT
 
@@ -48,13 +48,13 @@ Q_SIGNALS:
     void statusBarMsg(const QString& text, int time);
 
 public:   
-     ~ShupitoUI();
+     ~ProgrammerUI();
 
-    static ShupitoUI *createUI(ui_type type, QObject *parent);
+    static ProgrammerUI *createUI(ui_type type, QObject *parent);
 
     ui_type getType() const { return m_ui_type; }
 
-    virtual void setupUi(LorrisShupito *widget);
+    virtual void setupUi(LorrisProgrammer *widget);
     virtual void connectProgrammer(Programmer *) { }
 
     virtual void connectedStatus(bool connected);
@@ -106,7 +106,7 @@ protected slots:
     void eraseDevice();
 
 protected:
-    ShupitoUI(ui_type type, QObject *parent = 0);
+    ProgrammerUI(ui_type type, QObject *parent = 0);
 
     Programmer *prog() const;
 
@@ -122,7 +122,7 @@ protected:
     virtual QLabel *engineLabel() const = 0;
     virtual QLabel *vccLabel() const = 0;
 
-    LorrisShupito *m_widget;
+    LorrisProgrammer *m_widget;
     std::vector<QRadioButton*> m_vdd_radios;
     QSignalMapper *m_vdd_signals;
 
@@ -132,4 +132,4 @@ private:
     ui_type m_ui_type;
 };
 
-#endif // SHUPITOUI_H
+#endif // PROGRAMMERUI_H

@@ -5,27 +5,27 @@
 **    See README and COPYING
 ***********************************************/
 
-#ifndef FULLSHUPITOUI_H
-#define FULLSHUPITOUI_H
+#ifndef FULLPROGRAMMERUI_H
+#define FULLPROGRAMMERUI_H
 
 #include <QObject>
-#include "shupitoui.h"
+#include "programmerui.h"
 #include "../../shared/hexfile.h"
 
-#include "ui_fullshupitoui.h"
+#include "ui_fullprogrammerui.h"
 
 class FuseWidget;
 class FlashButtonMenu;
 class QHexEdit;
 
-class FullShupitoUI : public ShupitoUI
+class FullProgrammerUI : public ProgrammerUI
 {
     Q_OBJECT
 public:
-    explicit FullShupitoUI(QObject *parent = 0);
-    ~FullShupitoUI();
+    explicit FullProgrammerUI(QObject *parent = 0);
+    ~FullProgrammerUI();
 
-    void setupUi(LorrisShupito *widget);
+    void setupUi(LorrisProgrammer *widget);
     void connectProgrammer(Programmer *prog);
     void connectedStatus(bool connected);
     void tunnelStop(bool stop);
@@ -86,7 +86,7 @@ private:
     void updateProgrammersBox(Programmer *prog);
     void updateTunnelSupport();
 
-    Ui::FullShupitoUI *ui;
+    Ui::FullProgrammerUI *ui;
 
     FuseWidget *m_fuse_widget;
     QHexEdit *m_hexAreas[MEM_FUSES];
@@ -112,4 +112,4 @@ private:
     void createActions();
 };
 
-#endif // FULLSHUPITOUI_H
+#endif // FULLPROGRAMMERUI_H

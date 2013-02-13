@@ -5,8 +5,8 @@
 **    See README and COPYING
 ***********************************************/
 
-#ifndef LORRISSHUPITO_H
-#define LORRISSHUPITO_H
+#ifndef LORRISPROGRAMMER_H
+#define LORRISPROGRAMMER_H
 
 #include "../WorkTab/WorkTab.h"
 #include "shupito.h"
@@ -14,7 +14,7 @@
 #include "../shared/hexfile.h"
 #include "../ui/terminal.h"
 #include "../ui/connectbutton.h"
-#include "ui/shupitoui.h"
+#include "ui/programmerui.h"
 
 #include <QDateTime>
 #include <QPointer>
@@ -53,19 +53,19 @@ class ProgressDialog;
 class OverVccDialog;
 class ToolTipWarn;
 
-class LorrisShupito : public WorkTab
+class LorrisProgrammer : public WorkTab
 {
     Q_OBJECT
 Q_SIGNALS:
     void responseChanged();
     void enableButtons(bool enable);
 
-    friend class FullShupitoUI;
-    friend class MiniShupitoUI;
-    friend class ShupitoUI;
+    friend class FullProgrammerUI;
+    friend class MiniProgrammerUI;
+    friend class ProgrammerUI;
 public:
-    LorrisShupito();
-    ~LorrisShupito();
+    LorrisProgrammer();
+    ~LorrisProgrammer();
 
     void stopAll(bool wait);
     void createConnBtn(QToolButton *btn);
@@ -148,7 +148,7 @@ private:
 
     void setEnableButtons(bool enable);
 
-    ShupitoUI *ui;
+    ProgrammerUI *ui;
 
     bool m_chipStopped;
 
@@ -200,7 +200,7 @@ private:
     struct LogSink
         : ProgrammerLogSink
     {
-        explicit LogSink(LorrisShupito * self)
+        explicit LogSink(LorrisProgrammer * self)
             : m_self(self)
         {
         }
@@ -210,7 +210,7 @@ private:
             m_self->ui->log(msg);
         }
 
-        LorrisShupito * m_self;
+        LorrisProgrammer * m_self;
     };
 
     LogSink m_logsink;
