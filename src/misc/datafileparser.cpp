@@ -239,6 +239,9 @@ void DataFileParser::writeConn(PortConnection *conn)
             case QVariant::UInt:
                 writeVal((*itr).value<int>());
                 break;
+            case QVariant::LongLong:
+                writeVal((*itr).value<qint64>());
+                break;
             default:
                 break;
         }
@@ -268,6 +271,9 @@ bool DataFileParser::readConn(quint8 &type, QHash<QString, QVariant> &cfg)
             case QVariant::UInt:
                 val = readVal<int>();
                 val.convert((QVariant::Type)val_type);
+                break;
+            case QVariant::LongLong:
+                val = readVal<qint64>();
                 break;
             default:
                 break;

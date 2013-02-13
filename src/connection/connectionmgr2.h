@@ -193,6 +193,9 @@ public:
 
     ConnectionPointer<PortConnection> getConnWithConfig(quint8 type, const QHash<QString, QVariant>& cfg);
 
+    qint64 generateCompanionId();
+    Connection *getCompanionConnection(Connection *toConn);
+
 Q_SIGNALS:
     void connAdded(Connection * conn);
     void connRemoved(Connection * conn);
@@ -217,6 +220,7 @@ private:
 #endif // HAVE_LIBYB
     QHash<PortConnection *, ShupitoConnection *> m_autoShupitos;
     QHash<QObject *, PortConnection *> m_autoShupitosRev;
+    QSet<qint64> m_companionConnIds;
 };
 
 extern ConnectionManager2 * psConMgr2;

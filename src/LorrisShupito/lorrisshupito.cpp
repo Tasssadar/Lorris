@@ -869,8 +869,9 @@ void LorrisShupito::saveData(DataFileParser *file)
     if(ConnectionPointer<PortShupitoConnection> sc = m_con.dynamicCast<PortShupitoConnection>())
     {
         file->writeBlockIdentifier("LorrShupitoConn2");
-        file->writeString("Shupito");
+        file->writeString("Shupito2");
         file->writeConn(sc->port().data());
+        file->writeVal<qint64>(sc->getCompanionId());
     }
     else if(ConnectionPointer<PortConnection> con = m_con.dynamicCast<PortConnection>())
     {
@@ -912,10 +913,13 @@ void LorrisShupito::loadData(DataFileParser *file)
             if(pc)
             {
                 ConnectionPointer<Connection> con;
-                if(typeStr == "Shupito")
+                if(typeStr == "Shupito" || typeStr == "Shupito2")
                 {
                     ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc.data());
                     con = sc;
+
+                    if(typeStr == "Shupito2")
+                        sc->setCompanionId(file->readVal<qint64>());
                 }
                 else if(typeStr == "Port")
                     con = pc;

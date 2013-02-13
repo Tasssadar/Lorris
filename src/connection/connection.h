@@ -78,6 +78,9 @@ public:
     QString const & name() const { return m_idString; }
     void setName(const QString& str) { this->setIDString(str); }
 
+    qint64 getCompanionId() const { return m_companionId; }
+    void setCompanionId(qint64 id) { m_companionId = id; }
+
     virtual QString details() const;
 
     void OpenConcurrent();
@@ -138,6 +141,7 @@ private:
     bool m_removable;
     bool m_persistent;
     quint8 m_type;
+    qint64 m_companionId;
 };
 
 Q_DECLARE_METATYPE(Connection *)

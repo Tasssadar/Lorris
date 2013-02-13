@@ -24,6 +24,8 @@ public:
 
     void setShupito(Shupito* s);
 
+    bool canSaveToSession() const { return m_shupito != NULL; }
+
 protected:
     ~ShupitoTunnel();
     void doOpen();

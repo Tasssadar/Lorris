@@ -7,11 +7,13 @@
 
 #include <qextserialenumerator.h>
 #include <QStringBuilder>
+#include <QDateTime>
 
 #include "connectionmgr2.h"
 #include "serialport.h"
 #include "tcpsocket.h"
 #include "proxytunnel.h"
+#include "shupitotunnel.h"
 #include "../misc/config.h"
 #include "../misc/utils.h"
 
@@ -603,6 +605,16 @@ ConnectionPointer<PortConnection> ConnectionManager2::getConnWithConfig(quint8 t
                     return ConnectionPointer<PortConnection>::fromPtr(tunnel);
                 break;
             }
+            case CONNECTION_SHUPITO_TUNNEL:
+            {
+                qint64 id = cfg.value("companion", 0).toLongLong();
+                if(id == 0)
+                    return ConnectionPointer<PortConnection>();
+
+                if(id == m_conns[i]->getCompanionId())
+                    return ConnectionPointer<PortConnection>::fromPtr((ShupitoTunnel*)m_conns[i]);
+                break;
+            }
             default:
                 return ConnectionPointer<PortConnection>();
         }
@@ -614,6 +626,19 @@ ConnectionPointer<PortConnection> ConnectionManager2::getConnWithConfig(quint8 t
         return ConnectionPointer<PortConnection>::fromPtr(enumCon);
     }
 
+    if(type == CONNECTION_SHUPITO_TUNNEL)
+    {
+        qint64 id = cfg.value("companion", 0).toLongLong();
+        if(id == 0)
+            return ConnectionPointer<PortConnection>();
+
+        ConnectionPointer<PortConnection> tunnel(new ShupitoTunnel());
+        tunnel->applyConfig(cfg);
+        tunnel->setRemovable(false);
+        this->addConnection(tunnel.data());
+        return tunnel;
+    }
+
     return ConnectionPointer<PortConnection>();
 }
 
@@ -621,4 +646,27 @@ void ConnectionManager2::disconnectAll()
 {
     for(int i = 0; i < m_conns.size(); ++i)
         m_conns[i]->Close();
+}
+
+qint64 ConnectionManager2::generateCompanionId()
+{
+    qint64 id = QDateTime::currentMSecsSinceEpoch();
+    while(m_companionConnIds.contains(id))
+        ++id;
+    m_companionConnIds.insert(id);
+    return id;
+}
+
+Connection *ConnectionManager2::getCompanionConnection(Connection *toConn)
+{
+    if(!toConn || toConn->getCompanionId() == 0)
+        return NULL;
+
+    for(int i = 0; i < m_conns.size(); ++i)
+    {
+        Connection *c = m_conns[i];
+        if(c != toConn && c->getCompanionId() == toConn->getCompanionId())
+            return c;
+    }
+    return NULL;
 }

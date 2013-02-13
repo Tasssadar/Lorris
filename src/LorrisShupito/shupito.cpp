@@ -35,7 +35,7 @@ Shupito::Shupito(QObject *parent) :
 
 Shupito::~Shupito()
 {
-    if(m_tunnel_conn != NULL)
+    if(m_tunnel_conn)
         m_tunnel_conn->setShupito(NULL);
 }
 
@@ -332,13 +332,6 @@ void Shupito::handleTunnelPacket(ShupitoPacket const & p)
 
                     SendSetComSpeed();
 
-                    m_tunnel_conn.reset(new ShupitoTunnel());
-                    m_tunnel_conn->setName("Tunnel at " + m_con->GetIDString());
-                    m_tunnel_conn->setRemovable(false);
-                    m_tunnel_conn->setShupito(this);
-                    m_tunnel_conn->OpenConcurrent();
-                    sConMgr2.addConnection(m_tunnel_conn.data());
-
                     emit tunnelStatus(true);
 
                     m_tunnel_data.clear();
@@ -355,7 +348,6 @@ void Shupito::handleTunnelPacket(ShupitoPacket const & p)
                 {
                     m_tunnel_pipe = 0;
 
-                    m_tunnel_conn.reset();
                     emit tunnelStatus(false);
 
                     disconnect(&m_tunnel_timer, SIGNAL(timeout()), this, SLOT(tunnelDataSend()));
@@ -398,6 +390,43 @@ void Shupito::SendSetComSpeed()
     ShupitoPacket pkt = makeShupitoPacket(m_tunnel_config->cmd, 5, 0, 3, m_tunnel_pipe,
                                       (quint8)res, (quint8)(res >> 8));
     m_con->sendPacket(pkt);
+}
+
+void Shupito::setTunnelConfig(ShupitoDesc::config *cfg)
+{
+    m_tunnel_config = cfg;
+    if(m_tunnel_config && !m_tunnel_conn)
+    {
+        qint64 id = m_con->getCompanionId();
+        Connection *c = sConMgr2.getCompanionConnection(m_con);
+        if(id && c && c->getType() == CONNECTION_SHUPITO_TUNNEL)
+            m_tunnel_conn = ConnectionPointer<ShupitoTunnel>::fromPtr((ShupitoTunnel*)c);
+        else
+        {
+            c = NULL;
+            id = sConMgr2.generateCompanionId();
+
+            m_tunnel_conn.reset(new ShupitoTunnel());
+            m_tunnel_conn->setCompanionId(id);
+            m_con->setCompanionId(id);
+        }
+
+        m_tunnel_conn->setName("Tunnel at " + m_con->GetIDString());
+        m_tunnel_conn->setRemovable(false);
+        m_tunnel_conn->setShupito(this);
+        m_tunnel_conn->OpenConcurrent();
+
+        if(!c)
+            sConMgr2.addConnection(m_tunnel_conn.data());
+    }
+    else if(!m_tunnel_config && m_tunnel_conn)
+    {
+        m_tunnel_conn->Close();
+        m_tunnel_conn->setShupito(NULL);
+        m_tunnel_conn.reset();
+
+        m_con->setCompanionId(0);
+    }
 }
 
 void Shupito::setTunnelSpeed(quint32 speed, bool send)

@@ -77,7 +77,7 @@ public:
     QByteArray waitForStream(ShupitoPacket const & pkt, quint8 cmd, quint16 max_packets = 1024);
 
     void setVddConfig(ShupitoDesc::config *cfg) { m_vdd_config = cfg; }
-    void setTunnelConfig(ShupitoDesc::config *cfg) { m_tunnel_config = cfg; }
+    void setTunnelConfig(ShupitoDesc::config *cfg);
 
     void setTunnelSpeed(quint32 speed, bool send = true);
     quint32 getTunnelSpeed() const { return m_tunnel_speed; }
