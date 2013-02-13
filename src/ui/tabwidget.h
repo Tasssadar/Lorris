@@ -25,6 +25,7 @@ class Tab;
 class ChildTab;
 class TabView;
 class TabSwitchWidget;
+class QLabel;
 
 class TabWidget : public QTabWidget
 {
@@ -140,6 +141,7 @@ Q_SIGNALS:
 
 public:
     explicit TabBar(quint32 id, QWidget * parent = 0);
+    ~TabBar();
 
     void enableSplit(bool enable);
 
@@ -150,7 +152,6 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
-    void paintEvent(QPaintEvent *event);
 
 private slots:
     void renameTab();
@@ -163,7 +164,7 @@ private:
     inline TabView* tabView() const { return (TabView*)(parent()->parent()); }
 
     int m_cur_menu_tab;
-    QRect m_drag_insert;
+    QLabel *m_drag_insert;
     int m_drag_idx;
 
     quint32 m_id;

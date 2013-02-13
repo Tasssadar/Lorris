@@ -24,6 +24,9 @@
 FuseWidget::FuseWidget(QWidget *parent) :
     QFrame(parent)
 {
+    m_enableButtons = true;
+    m_readFusesBtn = NULL;
+
     m_layout = new QVBoxLayout(this);
     m_fuse_layout = new QFormLayout();
     m_fuse_layout->setFormAlignment(Qt::AlignLeft);
@@ -35,43 +38,41 @@ FuseWidget::FuseWidget(QWidget *parent) :
     QFrame *line = new QFrame(this);
     line->setFrameStyle(QFrame::HLine | QFrame::Raised);
 
-    readFusesBtn = new QPushButton(tr("Read fuses"), this);
-
     QSpacerItem *spacer = new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     m_layout->addWidget(fuses);
     m_layout->addWidget(line);
-    m_layout->addWidget(readFusesBtn);
     m_layout->addLayout(m_fuse_layout);
     m_layout->addItem(spacer);
+
+    createReadFusesBtn();
 
     setFrameStyle(QFrame::Panel | QFrame::Plain);
     setContextMenuPolicy(Qt::DefaultContextMenu);
 
-    contextMenu = new QMenu(this);
-    QAction *read = contextMenu->addAction(tr("Read fuses"));
+    m_contextMenu = new QMenu(this);
+    m_readAct = m_contextMenu->addAction(tr("Read fuses"));
 
-    contextMenu->addSeparator();
+    m_contextMenu->addSeparator();
 
-    rememberAct = contextMenu->addAction(tr("Remember fuses"));
-    rememberAct->setEnabled(false);
+    m_rememberAct = m_contextMenu->addAction(tr("Remember fuses"));
+    m_rememberAct->setEnabled(false);
 
-    writeAct = contextMenu->addAction(tr("Write fuses"));
-    writeAct->setEnabled(false);
+    m_writeAct = m_contextMenu->addAction(tr("Write fuses"));
+    m_writeAct->setEnabled(false);
 
-    contextMenu->addSeparator();
+    m_contextMenu->addSeparator();
 
-    translateFuseAct = contextMenu->addAction(tr("Translate fuse values"));
-    hideReservedAct = contextMenu->addAction(tr("Hide reserved values"));
-    translateFuseAct->setCheckable(true);
-    hideReservedAct->setCheckable(true);
+    m_translateFuseAct = m_contextMenu->addAction(tr("Translate fuse values"));
+    m_hideReservedAct = m_contextMenu->addAction(tr("Hide reserved values"));
+    m_translateFuseAct->setCheckable(true);
+    m_hideReservedAct->setCheckable(true);
 
-    connect(read,             SIGNAL(triggered()),      SIGNAL(readFuses()));
-    connect(writeAct,         SIGNAL(triggered()),      SIGNAL(writeFuses()));
-    connect(rememberAct,      SIGNAL(triggered()),      SLOT(rememberFuses()));
-    connect(readFusesBtn,     SIGNAL(clicked()),        SIGNAL(readFuses()));
-    connect(translateFuseAct, SIGNAL(triggered(bool)),  SLOT(translateFuses(bool)));
-    connect(hideReservedAct,  SIGNAL(triggered(bool)),  SLOT(hideReserved(bool)));
+    connect(m_readAct,             SIGNAL(triggered()),      SIGNAL(readFuses()));
+    connect(m_writeAct,         SIGNAL(triggered()),      SIGNAL(writeFuses()));
+    connect(m_rememberAct,      SIGNAL(triggered()),      SLOT(rememberFuses()));
+    connect(m_translateFuseAct, SIGNAL(triggered(bool)),  SLOT(translateFuses(bool)));
+    connect(m_hideReservedAct,  SIGNAL(triggered(bool)),  SLOT(hideReserved(bool)));
 
     m_changed = false;
 
@@ -102,17 +103,13 @@ void FuseWidget::clear(bool addButton, bool widgetsOnly)
     if(!widgetsOnly)
         m_fuse_data.clear();
 
-    if(addButton && !readFusesBtn)
-    {
-        readFusesBtn = new QPushButton(tr("Read fuses"), this);
-        m_layout->insertWidget(2, readFusesBtn);
-        connect(readFusesBtn, SIGNAL(clicked()), this, SIGNAL(readFuses()));
-    }
+    if(addButton && !m_readFusesBtn)
+        createReadFusesBtn();
 }
 
 void FuseWidget::contextMenuEvent( QContextMenuEvent * event )
 {
-    contextMenu->exec(event->globalPos());
+    m_contextMenu->exec(event->globalPos());
 }
 
 static bool compareBoxVals(const std::pair<QString, QVariant>& first, const std::pair<QString, QVariant>& second)
@@ -131,15 +128,15 @@ void FuseWidget::setFuses(chip_definition &chip)
 
     std::vector<chip_definition::fuse>& fuses = chip.getFuses();
 
-    if(readFusesBtn)
+    if(m_readFusesBtn)
     {
-        delete readFusesBtn;
-        readFusesBtn = NULL;
+        delete m_readFusesBtn;
+        m_readFusesBtn = NULL;
     }
 
     disconnect(this, SLOT(changed(int)));
 
-    bool hideRes = hideReservedAct->isChecked();
+    bool hideRes = m_hideReservedAct->isChecked();
 
     for(quint16 i = 0; i < fuses.size(); ++i)
     {
@@ -151,7 +148,7 @@ void FuseWidget::setFuses(chip_definition &chip)
         line->box = new QComboBox(this);
         line->box->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
-        if(translateFuseAct->isChecked())
+        if(m_translateFuseAct->isChecked())
             translateFuseName(line);
 
         int fuse_value = chip_definition::get_fuse_value(m_fuse_data.begin(), m_fuse_data.end(), f);
@@ -210,8 +207,8 @@ void FuseWidget::setFuses(chip_definition &chip)
         m_fuses.push_back(line);
     }
 
-    rememberAct->setEnabled(true);
-    writeAct->setEnabled(true);
+    m_rememberAct->setEnabled(true);
+    m_writeAct->setEnabled(true);
     m_changed = false;
 }
 
@@ -253,7 +250,7 @@ bool FuseWidget::addFuseOpt(fuse_line *line, const QString &bin, std::vector<std
 {
     fuse_desc *desc = NULL;
 
-    if(translateFuseAct->isChecked())
+    if(m_translateFuseAct->isChecked())
         desc = sDefMgr.findFuse_desc(line->fuse.name, m_chip.getSign());
 
     QString text = desc ? desc->getOptDesc(bin) : "";
@@ -263,20 +260,42 @@ bool FuseWidget::addFuseOpt(fuse_line *line, const QString &bin, std::vector<std
 
 void FuseWidget::translateFuses(bool checked)
 {
-    translateFuseAct->setChecked(checked);
+    m_translateFuseAct->setChecked(checked);
     sConfig.set(CFG_BOOL_SHUPITO_TRANSLATE_FUSES, checked);
 
     clear(false, true);
     setFuses(m_chip);
 
-    hideReservedAct->setEnabled(checked);
+    m_hideReservedAct->setEnabled(checked);
 }
 
 void FuseWidget::hideReserved(bool checked)
 {
-    hideReservedAct->setChecked(checked);
+    m_hideReservedAct->setChecked(checked);
     sConfig.set(CFG_BOOL_SHUPITO_HIDE_RESERVED, checked);
 
     clear(false, true);
     setFuses(m_chip);
+}
+
+void FuseWidget::createReadFusesBtn()
+{
+    if(m_readFusesBtn)
+        return;
+
+    m_readFusesBtn = new QPushButton(tr("Read fuses"), this);
+    m_layout->insertWidget(2, m_readFusesBtn);
+    connect(m_readFusesBtn, SIGNAL(clicked()), this, SIGNAL(readFuses()));
+
+    m_readFusesBtn->setEnabled(m_enableButtons);
+}
+
+void FuseWidget::enableButtons(bool enable)
+{
+    m_enableButtons = enable;
+    m_writeAct->setEnabled(enable && !m_readFusesBtn);
+    m_readAct->setEnabled(enable);
+
+    if(m_readFusesBtn)
+        m_readFusesBtn->setEnabled(enable);
 }
