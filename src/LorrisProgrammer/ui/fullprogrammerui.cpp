@@ -246,7 +246,7 @@ void FullProgrammerUI::updateProgrammersBox(Programmer *prog)
 {
     // corresponds to enum ProgrammerTypes
     static const QString names[] = { "Shupito", "Flip", "avr232boot", "atsam" };
-    static const QString icons[] = { ":/icons/symbol_triangle", ":/icons/symbol_circle", ":/icons/symbol_star", ":/icons/symbol_star" };
+    static const QString icons[] = { ":/icons/symbol_triangle", ":/icons/symbol_circle", ":/icons/symbol_star", ":/icons/symbol_circle" };
 
     Q_ASSERT(sizeof_array(names) == programmer_max);
     Q_ASSERT(sizeof_array(icons) == programmer_max);
