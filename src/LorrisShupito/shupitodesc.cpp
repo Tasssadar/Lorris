@@ -123,7 +123,7 @@ void ShupitoDesc::parseConfig(quint8 *& first, quint8 *& last, quint8& base_cmd,
     m_interface_map[cfg.guid] = cfg;
 }
 
-ShupitoPacket ShupitoDesc::config::getStateChangeCmd(bool activate)
+ShupitoPacket ShupitoDesc::config::getStateChangeCmd(bool activate) const
 {
     ShupitoPacket pkt;
     pkt.push_back(0);

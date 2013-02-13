@@ -392,7 +392,7 @@ void Shupito::SendSetComSpeed()
     m_con->sendPacket(pkt);
 }
 
-void Shupito::setTunnelConfig(ShupitoDesc::config *cfg)
+void Shupito::setTunnelConfig(ShupitoDesc::config const *cfg)
 {
     m_tunnel_config = cfg;
     if(m_tunnel_config && !m_tunnel_conn)

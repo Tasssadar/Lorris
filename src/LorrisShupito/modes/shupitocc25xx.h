@@ -27,7 +27,7 @@ public:
 
 
 protected:
-    ShupitoDesc::config *getModeCfg();
+    ShupitoDesc::config const *getModeCfg();
 
 private:
     quint8 read_xdata(quint16 addr);

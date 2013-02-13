@@ -100,7 +100,7 @@ void ShupitoMode::prepare()
     m_bsel_min = 1;
     m_bsel_max = 255;
 
-    ShupitoDesc::config *prog_cfg = getModeCfg();
+    ShupitoDesc::config const *prog_cfg = getModeCfg();
     if(!prog_cfg)
         throw QString(QObject::tr("The device can't program these types of chips."));
 
@@ -119,11 +119,6 @@ void ShupitoMode::prepare()
 
     m_prog_cmd_base = prog_cfg->cmd;
     m_prepared = true;
-}
-
-ShupitoDesc::config *ShupitoMode::getModeCfg()
-{
-    return NULL;
 }
 
 // std::string read_device_id(), device_shupito.hpp

@@ -161,7 +161,7 @@ static const bool def_bool[] =
 static const QString keys_variant[] =
 {
     "general/connections",        // CFG_VARIANT_CONNECTIONS
-    "general/usb_enumerator",     // CFG_VARIANT_USB_ENUMERATOR
+    "general/usb_yb_enumerator",  // CFG_VARIANT_USB_ENUMERATOR
     "kate/kate_sett_doc",         // CFG_VARIANT_KATE_SETTINGS_DOC
     "kate/kate_sett_view",        // CFG_VARIANT_KATE_SETTINGS_VIEW
     "general/serial_connections", // CFG_VARIANT_SERIAL_CONNECTIONS

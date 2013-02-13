@@ -161,6 +161,10 @@ private:
     StandbyDeviceList<UsbAcmConnection2, usb_interface_standby> m_standby_usb_acm_devices;
     std::map<usb_interface_standby, yb::usb_device_interface> m_usb_acm_devices_by_info;
     std::set<UsbAcmConnection2 *> m_user_owned_acm_conns;
+
+    QList<QVariant> m_connConfigs;
+    void updateConfig(UsbAcmConnection2 * conn);
+    void applyConfig(UsbAcmConnection2 * conn);
 };
 
 #endif // HAVE_LIBYB

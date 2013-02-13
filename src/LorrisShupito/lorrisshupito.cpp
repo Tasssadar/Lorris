@@ -32,6 +32,7 @@
 #include "../connection/connectionmgr2.h"
 #include "programmers/shupitoprogrammer.h"
 #include "programmers/avr232bootprogrammer.h"
+#include "programmers/atsamprogrammer.h"
 
 #ifdef HAVE_LIBYB
 #include "programmers/flipprogrammer.h"
@@ -751,6 +752,9 @@ void LorrisShupito::updateProgrammer()
                 break; // morphed to ShupitoConnection in ChooseConnectionDlg::choose
             case programmer_avr232boot:
                 m_programmer.reset(new avr232bootProgrammer(con, &m_logsink));
+                break;
+            case programmer_atsam:
+                m_programmer.reset(new AtsamProgrammer(con, &m_logsink));
                 break;
             default:
                 break;

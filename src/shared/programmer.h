@@ -23,6 +23,7 @@ enum ProgrammerTypes
     programmer_shupito = 0,
     programmer_flip,
     programmer_avr232boot,
+    programmer_atsam,
 
     programmer_max
 };
