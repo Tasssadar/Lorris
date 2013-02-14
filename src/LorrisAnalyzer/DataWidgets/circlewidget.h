@@ -12,19 +12,22 @@
 
 class CircleDraw;
 
-enum angleType
-{
-    ANG_RAD = 0,
-    ANG_DEG,
-    ANG_RANGE,
-
-    ANG_MAX
-};
-
 class CircleWidget : public DataWidget
 {
     Q_OBJECT
 public:
+    /// \brief To be used with \c setAngType()
+    enum angleType
+    {
+        ANG_RAD = 0,
+        ANG_DEG,
+        ANG_RANGE,
+
+        ANG_MAX
+    };
+
+    static void addEnum();
+
     explicit CircleWidget(QWidget *parent = 0);    
     ~CircleWidget();
 

@@ -14,7 +14,14 @@
 
 static const double pi = 3.1415926535897932384626433832795;
 
-REGISTER_DATAWIDGET(WIDGET_CIRCLE, Circle, NULL)
+void CircleWidget::addEnum()
+{
+    REGISTER_ENUM(ANG_RAD);
+    REGISTER_ENUM(ANG_DEG);
+    REGISTER_ENUM(ANG_RANGE);
+}
+
+REGISTER_DATAWIDGET(WIDGET_CIRCLE, Circle, &CircleWidget::addEnum)
 
 CircleWidget::CircleWidget(QWidget *parent) :
     DataWidget(parent)

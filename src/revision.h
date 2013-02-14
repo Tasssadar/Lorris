@@ -8,5 +8,5 @@
 #ifndef REVISION_H
 #define REVISION_H
  #define VERSION "0.7.0-dev"
- #define REVISION 725
+ #define REVISION 726
 #endif // REVISION_H
