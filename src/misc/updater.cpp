@@ -126,7 +126,7 @@ bool Updater::startUpdater()
 void Updater::showNotification()
 {
     ToolTipWarn *w = new ToolTipWarn(QObject::tr("New update for Lorris is available"),
-                                     NULL, NULL, -1, ":/actions/update");
+                                     NULL, NULL, 30000, ":/actions/update");
     QPushButton *btn = new QPushButton(QObject::tr("Download"));
     w->setButton(btn);
     w->toRightBottom();
