@@ -94,6 +94,8 @@ public:
     void addTabRef();
     void releaseTab();
 
+    bool isUsedByTab() const { return m_tabcount > 0; }
+
     // Emits the `destroying` signal to break all references,
     // then deletes the object.
     void releaseAll();

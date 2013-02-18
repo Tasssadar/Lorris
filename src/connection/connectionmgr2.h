@@ -205,6 +205,7 @@ Q_SIGNALS:
     void connRemoved(Connection * conn);
 
 public slots:
+    void connectAll();
     void disconnectAll();
 
 private slots:
