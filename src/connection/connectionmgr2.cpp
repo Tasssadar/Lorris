@@ -379,7 +379,7 @@ void LibybUsbEnumerator::pluginEventReceived()
 #endif // HAVE_LIBYB
 
 ConnectionManager2::ConnectionManager2(QObject * parent)
-    : QObject(parent)
+    : QObject(parent), m_lastCompanionId(0)
 {
     Q_ASSERT(psConMgr2 == 0);
     psConMgr2 = this;
@@ -700,9 +700,9 @@ void ConnectionManager2::disconnectAll()
 qint64 ConnectionManager2::generateCompanionId()
 {
     qint64 id = QDateTime::currentMSecsSinceEpoch();
-    while(m_companionConnIds.contains(id))
+    while(id <= m_lastCompanionId)
         ++id;
-    m_companionConnIds.insert(id);
+    m_lastCompanionId = id;
     return id;
 }
 
