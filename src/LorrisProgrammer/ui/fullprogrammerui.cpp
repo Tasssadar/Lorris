@@ -240,7 +240,7 @@ void FullProgrammerUI::connectProgrammer(Programmer * prog)
     connect(ui->bootseqEdit, SIGNAL(textEdited(QString)),    prog,         SLOT(setBootseq(QString)));
     connect(prog,            SIGNAL(tunnelData(QByteArray)), ui->terminal, SLOT(appendText(QByteArray)));
 
-    m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
+    m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->currentText().toInt(), false);
     ui->bootseqEdit->setText(prog->getBootseq());
 
     updateProgrammersBox(prog);
@@ -565,7 +565,7 @@ void FullProgrammerUI::saveData(DataFileParser *file)
 
     file->writeBlockIdentifier("LorrShupitoTunnel");
     file->writeVal(ui->tunnelCheck->isChecked());
-    file->writeVal(ui->tunnelSpeedBox->itemText(0).toInt());
+    file->writeVal(ui->tunnelSpeedBox->currentText().toInt());
 
     file->writeBlockIdentifier("LorrShupitoOvervcc");
     file->writeVal(ui->over_enable->isChecked());
