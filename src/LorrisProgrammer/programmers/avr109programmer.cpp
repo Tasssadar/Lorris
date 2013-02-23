@@ -129,11 +129,13 @@ QByteArray avr109Programmer::readMemory(const QString& mem, chip_definition &chi
 void avr109Programmer::readFuses(std::vector<quint8>&, chip_definition &)
 {
     // NYI
+    throw tr("Fuses are not yet implemented");
 }
 
 void avr109Programmer::writeFuses(std::vector<quint8>&, chip_definition &, quint8)
 {
     // NYI
+    throw tr("Fuses are not yet implemented");
 }
 
 void avr109Programmer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
