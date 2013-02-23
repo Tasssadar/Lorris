@@ -18,6 +18,8 @@ class chip_definition;
 
 enum MemoryTypes
 {
+    MEM_NONE    = 0,
+
     MEM_FLASH   = 1,
     MEM_EEPROM  = 2,
     MEM_FUSES   = 3,

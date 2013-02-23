@@ -33,6 +33,7 @@
 #include "programmers/shupitoprogrammer.h"
 #include "programmers/avr232bootprogrammer.h"
 #include "programmers/atsamprogrammer.h"
+#include "programmers/avr109programmer.h"
 
 #ifdef HAVE_LIBYB
 #include "programmers/flipprogrammer.h"
@@ -755,6 +756,9 @@ void LorrisProgrammer::updateProgrammer()
                 break;
             case programmer_atsam:
                 m_programmer.reset(new AtsamProgrammer(con, &m_logsink));
+                break;
+            case programmer_avr109:
+                m_programmer.reset(new avr109Programmer(con, &m_logsink));
                 break;
             default:
                 break;

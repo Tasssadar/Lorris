@@ -79,6 +79,7 @@ static const QString keys_string[] =
     "general/font",               // CFG_STRING_APP_FONT
     "analyzer/script_wnd_params", // CFG_STRING_SCRIPT_WND_PARAMS
     "proxy/tunnel_name",          // CFG_STRING_PROXY_TUNNEL_NAME
+    "shupito/avr109_bootseq",     // CFG_STRING_AVR109_BOOTSEQ
 };
 
 static const QString def_string[] =
@@ -100,6 +101,7 @@ static const QString def_string[] =
     "",                           // CFG_STRING_APP_FONT
     "",                           // CFG_STRING_SCRIPT_WND_PARAMS
     "Proxy tunnel",               // CFG_STRING_PROXY_TUNNEL_NAME
+    "0x74 0x7E 0x7A 0x33",        // CFG_STRING_AVR109_BOOTSEQ
 };
 
 static const QString keys_bool[] =

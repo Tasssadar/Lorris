@@ -15,6 +15,7 @@
 #include "../modes/shupitomode.h"
 #include "../../ui/tooltipwarn.h"
 #include "overvccdialog.h"
+#include "../../ui/bytevalidator.h"
 
 FullProgrammerUI::FullProgrammerUI(QObject *parent) :
     ProgrammerUI(UI_FULL, parent), ui(new Ui::FullProgrammerUI)
@@ -88,6 +89,7 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
 
     ui->tunnelSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
     ui->progSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
+    ui->bootseqEdit->setValidator(new ByteValidator(this));
 
     initMenus();
 
@@ -234,19 +236,28 @@ void FullProgrammerUI::initMenus()
 
 void FullProgrammerUI::connectProgrammer(Programmer * prog)
 {
-    connect(ui->terminal, SIGNAL(keyPressed(QString)),   prog,      SLOT(sendTunnelData(QString)));
-    connect(prog,  SIGNAL(tunnelData(QByteArray)),    ui->terminal, SLOT(appendText(QByteArray)));
+    connect(ui->terminal,    SIGNAL(keyPressed(QString)),    prog,         SLOT(sendTunnelData(QString)));
+    connect(ui->bootseqEdit, SIGNAL(textEdited(QString)),    prog,         SLOT(setBootseq(QString)));
+    connect(prog,            SIGNAL(tunnelData(QByteArray)), ui->terminal, SLOT(appendText(QByteArray)));
+
     m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->itemText(0).toInt(), false);
+    ui->bootseqEdit->setText(prog->getBootseq());
 
     updateProgrammersBox(prog);
-    this->updateTunnelSupport();
+    this->updateProgrammerFeatures();
 }
 
 void FullProgrammerUI::updateProgrammersBox(Programmer *prog)
 {
     // corresponds to enum ProgrammerTypes
-    static const QString names[] = { "Shupito", "Flip", "avr232boot", "atsam" };
-    static const QString icons[] = { ":/icons/symbol_triangle", ":/icons/symbol_circle", ":/icons/symbol_star", ":/icons/symbol_circle" };
+    static const QString names[] = { "Shupito", "Flip", "avr232boot", "atsam", "avr109" };
+    static const QString icons[] = {
+        ":/icons/symbol_triangle",
+        ":/icons/symbol_circle",
+        ":/icons/symbol_star",
+        ":/icons/symbol_cross",
+        ":/icons/symbol_moon"
+    };
 
     Q_ASSERT(sizeof_array(names) == programmer_max);
     Q_ASSERT(sizeof_array(icons) == programmer_max);
@@ -275,7 +286,7 @@ void FullProgrammerUI::hideSettingsBtn(bool checked)
     ui->overvccBox->setVisible(checked);
     ui->settingsBtn->setChecked(checked);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_SETTINGS, checked);
-    this->updateTunnelSupport();
+    this->updateProgrammerFeatures();
 }
 
 void FullProgrammerUI::saveTermSettings()
@@ -290,12 +301,16 @@ void FullProgrammerUI::connectedStatus(bool connected)
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
     ui->progSpeedBox->setEnabled(connected);
-    this->updateTunnelSupport();
+    this->updateProgrammerFeatures();
 }
 
-void FullProgrammerUI::updateTunnelSupport()
+void FullProgrammerUI::updateProgrammerFeatures()
 {
     ui->tunnelBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsTunnel());
+
+    bool bootseq = ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsBootseq();
+    ui->bootseqLabel->setVisible(bootseq);
+    ui->bootseqEdit->setVisible(bootseq);
 }
 
 void FullProgrammerUI::tunnelStop(bool stop)

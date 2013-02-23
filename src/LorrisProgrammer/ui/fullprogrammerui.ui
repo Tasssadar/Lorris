@@ -562,6 +562,23 @@ flashing same file twice:</string>
             </property>
            </spacer>
           </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="bootseqLabel">
+            <property name="toolTip">
+             <string>Bytes which cause running program to restart into bootloader. Hex or normal numbers separateed by spaces.</string>
+            </property>
+            <property name="text">
+             <string>Bootloader entry sequence:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLineEdit" name="bootseqEdit">
+            <property name="toolTip">
+             <string>Bytes which cause running program to restart into bootloader. Hex or normal numbers separateed by spaces.</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

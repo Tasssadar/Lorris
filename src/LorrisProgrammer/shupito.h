@@ -42,14 +42,6 @@ enum WaitTypes
     WAIT_STREAM
 };
 
-enum VerifyMode
-{
-    VERIFY_NONE,
-    VERIFY_ONLY_NON_EMPTY,
-    VERIFY_ALL_PAGES,
-    VERIFY_MAX
-};
-
 class ShupitoConnection;
 class ShupitoTunnel;
 

@@ -142,7 +142,9 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/ui/overvccdialog.cpp \
     LorrisProgrammer/ui/miniprogrammerui.cpp \
     LorrisProgrammer/ui/fusewidget.cpp \
-    LorrisProgrammer/ui/fullprogrammerui.cpp
+    LorrisProgrammer/ui/fullprogrammerui.cpp \
+    LorrisProgrammer/programmers/avr109programmer.cpp \
+    ui/bytevalidator.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -266,7 +268,9 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/ui/overvccdialog.h \
     LorrisProgrammer/ui/miniprogrammerui.h \
     LorrisProgrammer/ui/fusewidget.h \
-    LorrisProgrammer/ui/fullprogrammerui.h
+    LorrisProgrammer/ui/fullprogrammerui.h \
+    LorrisProgrammer/programmers/avr109programmer.h \
+    ui/bytevalidator.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

@@ -106,6 +106,12 @@ void HexFile::LoadFromFile(const QString &path)
                 addRegion(base + address, rec_nums.data() + 4, rec_nums.data() + rec_nums.size() - 1, lineno);
                 break;
             case 1: // EOF
+                for(regionMap::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
+                {
+                    quint32 offset = itr->first;
+                    std::vector<quint8>& data = itr->second;
+                    qDebug("Region start 0x%x size %u", offset, data.size());
+                }
                 return;
             case 2: // Extended Segment Address Record
             case 4: // Extended Linear Address Record

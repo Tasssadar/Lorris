@@ -2,6 +2,7 @@
 #define SHARED_PROGRAMMER_H
 
 #include <QObject>
+#include <vector>
 
 // device.hpp, 122
 struct vdd_point
@@ -24,8 +25,17 @@ enum ProgrammerTypes
     programmer_flip,
     programmer_avr232boot,
     programmer_atsam,
+    programmer_avr109,
 
     programmer_max
+};
+
+enum VerifyMode
+{
+    VERIFY_NONE,
+    VERIFY_ONLY_NON_EMPTY,
+    VERIFY_ALL_PAGES,
+    VERIFY_MAX
 };
 
 class Programmer
@@ -58,6 +68,9 @@ public:
 
     virtual bool supportsVdd() const { return false; }
     virtual bool supportsTunnel() const { return false; }
+    virtual bool supportsBootseq() const { return false; }
+
+    virtual QString getBootseq() const { return QString(); }
 
     virtual QStringList getAvailableModes() { return QStringList(); }
     virtual int getMode() { return 0; }
@@ -90,6 +103,7 @@ public:
 public slots:
     virtual void sendTunnelData(QString const &) {}
     virtual void cancelRequested() {}
+    virtual void setBootseq(const QString& /*seq*/) {}
 
 protected:
     void log(QString const & msg)

@@ -34,6 +34,25 @@ QString Utils::parseChar(char c)
     }
 }
 
+QByteArray Utils::convertByteStr(QString str)
+{
+    QByteArray res;
+
+    QStringList tok = str.split(' ', QString::SkipEmptyParts);
+    if(tok.isEmpty())
+        return res;
+
+    bool ok = false;
+    int num;
+    for(int i = 0; i < tok.size(); ++i)
+    {
+        num = tok[i].toInt(&ok, 0);
+        if(ok && (num & 0xFF) <= 255)
+            res.append((char)num);
+    }
+    return res;
+}
+
 QString Utils::toBase16(quint8 const * first, quint8 const * last)
 {
     QString res;

@@ -10,6 +10,7 @@
 #include "../connection/connectionmgr2.h"
 #include "../connection/serialport.h"
 #include "../connection/tcpsocket.h"
+#include "../connection/shupitotunnel.h"
 #include <QMenu>
 #include <QPushButton>
 #include <QStyledItemDelegate>
@@ -175,6 +176,9 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     m_prog_btns[programmer_shupito] = ui->progShupito;
     m_prog_btns[programmer_avr232boot] = ui->progAVR232;
     m_prog_btns[programmer_atsam] = ui->progAtsam;
+    m_prog_btns[programmer_avr109] = ui->progAVR109;
+
+    ui->programmerSelection->setVisible(false);
 
     QSignalMapper *map = new QSignalMapper(this);
     for(int i = 0; i < programmer_max; ++i)
@@ -302,6 +306,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
     ui->actionRemoveConnection->setEnabled(conn->removable());
     ui->actionConnect->setEnabled(conn->state() == st_disconnected);
     ui->actionDisconnect->setEnabled(conn->state() == st_connected || conn->state() == st_connect_pending);
+    ui->programmerSelection->setVisible(false);
 
     switch (conn->getType())
     {
@@ -360,14 +365,24 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             }
             else
             {
-                ui->settingsStack->setCurrentWidget(ui->homePage);
+                ui->settingsStack->setCurrentWidget(ui->noSettingsPage);
             }
+        }
+        break;
+    case CONNECTION_SHUPITO_TUNNEL:
+        {
+            ShupitoTunnel * st = static_cast<ShupitoTunnel *>(conn);
+            ui->programmerSelection->setVisible(m_allowedConns & pct_port_programmable);
+            setActiveProgBtn(st->programmerType());
+
+            ui->settingsStack->setCurrentWidget(ui->noSettingsPage);
         }
         break;
     default:
         {
-            ui->settingsStack->setCurrentWidget(ui->homePage);
+            ui->settingsStack->setCurrentWidget(ui->noSettingsPage);
         }
+        break;
     }
 }
 
@@ -508,7 +523,7 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
 void ChooseConnectionDlg::progBtn_clicked(int programmer)
 {
     setActiveProgBtn(programmer);
-    if (SerialPort * c = dynamic_cast<SerialPort *>(m_current.data()))
+    if (PortConnection * c = dynamic_cast<PortConnection *>(m_current.data()))
         c->setProgrammerType(programmer);
 }
 

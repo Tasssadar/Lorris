@@ -14,5 +14,6 @@
         <file alias="symbol_triangle">icons/symbol_triangle.png</file>
         <file alias="arrow-up">icons/arrow-up.png</file>
         <file alias="arrow-down">icons/arrow-down.png</file>
+        <file alias="symbol_moon">icons/symbol_moon.png</file>
     </qresource>
 </RCC>
