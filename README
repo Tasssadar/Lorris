@@ -2,7 +2,7 @@ Lorris - GUI tool for robotics (at least until I think of
          something which suits more)
        - https://github.com/Tasssadar/Lorris
 
-Copyright (C) 2012 Vojtěch Boček
+Copyright (C) 2013 Vojtěch Boček
 Contact: <vbocek@gmail.com>
         https://github.com/Tasssadar
 
@@ -50,10 +50,19 @@ Lorris uses following libraries:
     QScintilla2 (http://www.riverbankcomputing.co.uk/software/qscintilla/intro),
         which is released under the GNU GPL v2 and v3
 
-    libusby (https://github.com/avakar/libusby),
-        library that provides access to USB devices and is released
-        under the Boost Software License
-
     libenjoy (https://github.com/Tasssadar/libenjoy), simple joystick library,
         which is released under the GNU LGPLv2.1
+
+    PythonQt (http://pythonqt.sourceforge.net/), dynamic Pythin binding
+        for Qt Framework, released under the GNU LGPLv2.1
+
+    Python 2.7 (http://www.python.org/), the programming language,
+        which is released under the PSF license agreement
+        (GPL-compatible, see http://docs.python.org/2/license.html)
+
+    Qt Solutions (http://qt.gitorious.org/qt-solutions), a collection of
+        minor Qt add-ons, released under the BSD License
+
+    libyb (https://github.com/avakar/libyb),  library that provides access
+        to USB devices and is released under the Boost Software License
 
