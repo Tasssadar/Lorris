@@ -333,7 +333,7 @@ bool UsbAcmConnection2::applyConfig(QHash<QString, QVariant> const & config)
     m_baudrate = config.value("baud_rate", 115200).toInt();
     m_stop_bits = (stop_bits_t)config.value("stop_bits", 0).toInt();
     m_parity = (parity_t)config.value("parity", 0).toInt();
-    m_data_bits = config.value("data_bits", 0).toInt();
+    m_data_bits = config.value("data_bits", 8).toInt();
     emit changed();
     this->update_line_control();
 
