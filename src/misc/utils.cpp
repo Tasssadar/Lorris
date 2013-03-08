@@ -217,3 +217,19 @@ void Utils::deleteLayoutMembers(QLayout *layout)
             delete item;
     }
 }
+
+bool Utils::isInRect(const QPoint& p, int rx, int ry, int rw, int rh)
+{
+    return p.x() >= rx && p.y() >= ry && p.x() <= rx+rw && p.y() <= ry+rh;
+}
+
+bool Utils::isInRect(const QPoint& p, const QPoint& rp, const QPoint& rs)
+{
+    return  p.x() >= rp.x() && p.y() >= rp.y() &&
+            p.x() <= rp.x()+rs.x() && p.y() <= rp.y()+rs.y();
+}
+
+bool Utils::isInRect(int px, int py, int rx, int ry, int rw, int rh)
+{
+    return px >= rx && py >= ry && px <= rx+rw && py <= ry+rh;
+}

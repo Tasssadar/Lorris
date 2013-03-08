@@ -29,10 +29,26 @@ void ShortcutInputBox::keyPressEvent(QKeyEvent *event)
     if(event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter)
         return QLineEdit::keyPressEvent(event);
 
-    if(event->text().isEmpty())
-        return;
+    // FIXME: we don't want this, do we?
+    //if(event->text().isEmpty())
+    //    return;
 
-    m_sequence = QKeySequence(event->key() | event->modifiers());
+    switch(event->key())
+    {
+        case 0:
+        case Qt::Key_unknown:
+        case Qt::Key_Control: // modifier keycodes are not
+        case Qt::Key_Shift:   // handled by QKeySequence::toString()
+        case Qt::Key_Alt:
+        case Qt::Key_AltGr:
+        case Qt::Key_Meta:
+            m_sequence = QKeySequence(event->modifiers());
+            break;
+        default:
+            m_sequence = QKeySequence(event->key() | event->modifiers());
+            break;
+    }
+
     setText(m_sequence.toString(QKeySequence::NativeText));
 }
 
