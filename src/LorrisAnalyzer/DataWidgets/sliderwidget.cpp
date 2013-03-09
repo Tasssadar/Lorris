@@ -141,6 +141,12 @@ void SliderWidget::loadWidgetInfo(DataFileParser *file)
         setShortcut(file->readString());
 }
 
+void SliderWidget::setRange(double min, double max)
+{
+    minEdit()->setText(QString::number(min));
+    maxEdit()->setText(QString::number(max));
+}
+
 double SliderWidget::getValue()
 {
     return slider()->value();
@@ -195,7 +201,7 @@ void SliderWidget::setType(bool isDouble)
         maxEdit()->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
         curEdit()->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
 
-        setRange(m_min, m_max, 1.0);
+        p_setRange(m_min, m_max, 1.0);
         slider()->setValue(floor(slider()->value() + 0.5));
     }
     else
@@ -205,7 +211,7 @@ void SliderWidget::setType(bool isDouble)
         curEdit()->setValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this));
 
         double step = (m_max - m_min)/slider()->width();
-        setRange(m_min, m_max, step);
+        p_setRange(m_min, m_max, step);
     }
 
     emit scriptEvent(getTitle() + "_typeChanged");
@@ -239,8 +245,8 @@ void SliderWidget::parseMinMax(bool isMax, const QString& text)
 {
     double val = text.toDouble();
     double step = m_int_act->isChecked() ? 1.0 : (slider()->maxValue() - slider()->minValue())/slider()->width();
-    if(isMax) setRange(m_min, val, step);
-    else      setRange(val, m_max, step);
+    if(isMax) p_setRange(m_min, val, step);
+    else      p_setRange(val, m_max, step);
 }
 
 QString SliderWidget::fixValueToInt(const QString& val)
@@ -331,7 +337,7 @@ void SliderWidget::setOrientation(int ori)
     }
 
     slider()->setBackgroundStyle(QwtSlider::Groove);
-    setRange(m_min, m_max);
+    p_setRange(m_min, m_max);
     slider()->setValue(value);
     minEdit()->setText(QString::number(m_min));
     maxEdit()->setText(QString::number(m_max));
@@ -350,7 +356,7 @@ void SliderWidget::setOrientation(int ori)
     emit scriptEvent(getTitle() + "_orientationChanged");
 }
 
-void SliderWidget::setRange(double min, double max, double step)
+void SliderWidget::p_setRange(double min, double max, double step)
 {
     m_min = min;
     m_max = max;
