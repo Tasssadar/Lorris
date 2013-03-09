@@ -345,6 +345,8 @@ void WidgetArea::loadSettings(DataFileParser *file)
     if(file->seekToNextBlock("areaBookmark", BLOCK_DATA_INDEX))
     {
         m_show_bookmk = file->readVal<bool>();
+        m_actShowBookmk->setChecked(m_show_bookmk);
+
         quint32 cnt = file->readVal<quint32>();
         for(quint32 i = 0; i < cnt; ++i)
         {
@@ -838,8 +840,10 @@ void WidgetArea::jumpToBookmark(int id)
         anim->setStartValue(QPoint(0, 0));
         anim->setEndValue(QPoint(0, 0) - b.main);
         anim->setDuration(100);
-        anim->start();
 
+        connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+
+        anim->start();
         break;
     }
 }
@@ -859,6 +863,8 @@ void WidgetArea::removeBookmark()
         m_bookmarks.erase(itr);
         update();
         m_active_bookmk = NULL;
+
+        m_analyzer->setDataChanged();
         break;
     }
 }
@@ -911,8 +917,9 @@ void WidgetArea::addBookmark()
     m_active_bookmk = &(*itr);
 
     changeBookmarkSeq();
-
     update();
+
+    m_analyzer->setDataChanged();
 }
 
 void WidgetArea::setShowBookmarks(bool show)
