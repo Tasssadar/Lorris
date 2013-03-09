@@ -1,4 +1,59 @@
 #include "shupitoconn.h"
+#include <stdint.h>
+
+ShupitoConnection::ShupitoConnection(ConnectionType type)
+    : Connection(type), m_renameConfig(nullptr)
+{
+    connect(this, SIGNAL(descRead(ShupitoDesc)), this, SLOT(descriptorChanged(ShupitoDesc)));
+    connect(this, SIGNAL(stateChanged(ConnectionState)), this, SLOT(connectionStateChanged(ConnectionState)));
+}
+
+bool ShupitoConnection::isNamePersistable() const
+{
+    return m_renameConfig != nullptr;
+}
+
+void ShupitoConnection::persistName()
+{
+    Q_ASSERT(m_renameConfig);
+
+    // TODO: how can we improve UX in here?
+    if (!this->isOpen())
+    {
+        m_persistScheduled = true;
+        this->OpenConcurrent();
+    }
+    else
+    {
+        this->doPersist();
+    }
+}
+
+void ShupitoConnection::connectionStateChanged(ConnectionState state)
+{
+    if (state == st_connected && m_persistScheduled)
+    {
+        m_persistScheduled = false;
+        this->doPersist();
+        // FIXME: we should call `this->Close();` here, but we need to flush the write queue first
+    }
+}
+
+void ShupitoConnection::doPersist()
+{
+    Q_ASSERT(this->isOpen());
+
+    QString name = this->name();
+    ShupitoPacket p = makeShupitoPacket(m_renameConfig->cmd, 1, 0);
+    p.insert(p.end(), (uint8_t const *)name.data(), (uint8_t const *)(name.data() + name.size()));
+    this->sendPacket(p);
+    this->setName(name, /*isDefault=*/true);
+}
+
+void ShupitoConnection::descriptorChanged(ShupitoDesc const & desc)
+{
+    m_renameConfig = desc.getConfig("64d5bf39-468a-4fbb-80bb-334d8ca3ad81");
+}
 
 PortShupitoConnection::PortShupitoConnection()
     : ShupitoConnection(CONNECTION_PORT_SHUPITO),
