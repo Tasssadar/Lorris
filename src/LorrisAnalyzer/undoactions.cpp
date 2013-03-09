@@ -32,7 +32,7 @@ UndoAction *RestoreAction::restore(WidgetArea *area)
 {
     DataFileParser p(&m_data, QIODevice::ReadOnly);
 
-    if(DataWidget *w = area->LoadOneWidget(&p))
+    if(DataWidget *w = area->loadOneWidget(&p))
     {
         w->move(m_pos);
         w->updateForThis();

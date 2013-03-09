@@ -272,8 +272,8 @@ private:
 
     QAction *m_lockAction;
     CloseLabel *m_closeLabel;
-    QLabel *m_icon_widget;
     QLabel *m_title_label;
+    QLabel *m_icon_widget;
     QFrame *m_sep_line;
     quint32 m_id;
     GestureIdentifier m_gestures;

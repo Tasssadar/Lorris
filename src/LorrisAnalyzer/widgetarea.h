@@ -11,6 +11,8 @@
 #include <QFrame>
 #include <QHash>
 #include <set>
+#include <QSignalMapper>
+#include <QVariantAnimation>
 
 #include "DataWidgets/datawidget.h"
 #include "undostack.h"
@@ -20,6 +22,7 @@ class Storage;
 class LorrisAnalyzer;
 class ChildTab;
 class WidgetAreaPreview;
+class QShortcut;
 
 #define PLACEMENT_SHOW 20
 #define PLACEMENT_STICK 7
@@ -53,11 +56,11 @@ public:
 
     void clear();
 
-    void SaveWidgets(DataFileParser *file);
-    void LoadWidgets(DataFileParser *file, bool skip);
-    DataWidget *LoadOneWidget(DataFileParser *file, bool skip = false);
-    void SaveSettings(DataFileParser *file);
-    void LoadSettings(DataFileParser *file);
+    void saveWidgets(DataFileParser *file);
+    void loadWidgets(DataFileParser *file, bool skip);
+    DataWidget *loadOneWidget(DataFileParser *file, bool skip = false);
+    void saveSettings(DataFileParser *file);
+    void loadSettings(DataFileParser *file);
 
     DataWidget *addWidget(QPoint pos, quint8 type, bool show = true);
     void moveWidgets(QPoint diff);
@@ -113,6 +116,11 @@ private slots:
     void toggleSelection(bool select);
     void clearSelection();
     void setShowPreview(bool show);
+    void jumpToBookmark(int id);
+    void removeBookmark();
+    void changeBookmarkSeq();
+    void addBookmark();
+    void setShowBookmarks(bool show);
 
 private:
     void getMarkPos(int &x, int &y, QSize &size);
@@ -134,6 +142,7 @@ private:
     bool m_show_grid;
 
     QMenu *m_menu;
+    QAction *m_actShowBookmk;
     QAction *m_actEnableGrid;
     QAction *m_actShowGrid;
     QAction *m_titleVisibility;
@@ -145,6 +154,22 @@ private:
 
     UndoStack m_undoStack;
     std::set<DataWidget*> m_selected;
+
+    struct area_bookmark
+    {
+        int id;
+        QPoint main;
+        QPoint text;
+        QString keyseq;
+        QShortcut *shortcut;
+    };
+
+    std::vector<area_bookmark> m_bookmarks;
+    QSignalMapper m_bookmk_mapper;
+    area_bookmark *m_active_bookmk;
+    QMenu *m_bookmk_menu;
+    int m_bookmk_ids;
+    bool m_show_bookmk;
 };
 
 class WidgetAreaPreview : public QWidget
@@ -164,6 +189,22 @@ private:
     QRegion m_region;
     QRect m_visible;
     bool m_smooth;
+};
+
+class BookmarkMoveAnimation : public QVariantAnimation
+{
+    Q_OBJECT
+public:
+    BookmarkMoveAnimation(WidgetArea *area);
+
+    void setStartValue(const QPoint &value);
+
+protected:
+    void updateCurrentValue(const QVariant& value);
+
+private:
+    WidgetArea *m_area;
+    QPoint m_last_point;
 };
 
 #endif // WIDGETAREA_H

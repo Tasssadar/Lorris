@@ -130,6 +130,7 @@ static const QString keys_bool[] =
     "analyzer/placement_lines",   // CFG_BOOL_ANALYZER_PLACEMENT_LINES
     "analyzer/show_preview",      // CFG_BOOL_ANALYZER_SHOW_PREVIEW
     "shupito/enable_hw_button",   // CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON
+    "analyzer/show_bookmarks",    // CFG_BOOL_ANALYZER_SHOW_BOOKMARKS
 };
 
 static const bool def_bool[] =
@@ -158,6 +159,7 @@ static const bool def_bool[] =
     true,                         // CFG_BOOL_ANALYZER_PLACEMENT_LINES
     true,                         // CFG_BOOL_ANALYZER_SHOW_PREVIEW
     true,                         // CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON
+    true,                         // CFG_BOOL_ANALYZER_SHOW_BOOKMARKS
 };
 
 static const QString keys_variant[] =

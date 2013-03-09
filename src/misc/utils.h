@@ -60,6 +60,10 @@ public:
     static void loadWindowParams(QWidget *w, const QString& param);
 
     static void deleteLayoutMembers(QLayout *layout);
+
+    static bool isInRect(int px, int py, int rx, int ry, int rw, int rh);
+    static bool isInRect(const QPoint& p, int rx, int ry, int rw, int rh);
+    static bool isInRect(const QPoint& p, const QPoint& rp, const QPoint& rs);
 };
 
 template <typename T>

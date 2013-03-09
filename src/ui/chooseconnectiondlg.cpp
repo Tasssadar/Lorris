@@ -353,6 +353,9 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             ui->usbPidEdit->setEnabled(editable);
             ui->usbAcmSnEdit->setEnabled(editable);
             ui->usbIntfNameEdit->setEnabled(editable);
+
+            ui->programmerSelection->setVisible(m_allowedConns & pct_port_programmable);
+            setActiveProgBtn(c->programmerType());
         }
         break;
     case CONNECTION_SHUPITO23:

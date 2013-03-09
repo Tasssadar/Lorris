@@ -12,12 +12,16 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QApplication>
+#include <QShortcut>
+#include <QDialog>
+#include <QDialogButtonBox>
 
 #include "widgetarea.h"
 #include "lorrisanalyzer.h"
 #include "../misc/datafileparser.h"
 #include "storage.h"
 #include "widgetfactory.h"
+#include "../ui/shortcutinputbox.h"
 
 QPoint& operator %=(QPoint& a, const int& b)
 {
@@ -35,9 +39,19 @@ WidgetArea::WidgetArea(QWidget *parent) :
     m_show_grid = sConfig.get(CFG_BOOL_ANALYZER_SHOW_GRID);
     m_grid = sConfig.get(CFG_BOOL_ANALYZER_ENABLE_GRID) ? sConfig.get(CFG_QUINT32_ANALYZER_GRID_SIZE) : 1;
     m_enablePlacementLines = sConfig.get(CFG_BOOL_ANALYZER_PLACEMENT_LINES);
+    m_active_bookmk = NULL;
+    m_bookmk_ids = 0;
+    m_show_bookmk = sConfig.get(CFG_BOOL_ANALYZER_SHOW_BOOKMARKS);
 
     setCursor(Qt::OpenHandCursor);
     m_draggin = false;
+
+    QAction *addPoint = m_menu->addAction(tr("Add bookmark..."));
+    m_actShowBookmk = m_menu->addAction(tr("Show bookmarks"));
+    m_actShowBookmk->setCheckable(true);
+    m_actShowBookmk->setChecked(m_show_bookmk);
+
+    m_menu->addSeparator();
 
     QMenu *gridMenu = m_menu->addMenu(tr("Grid"));
 
@@ -75,6 +89,10 @@ WidgetArea::WidgetArea(QWidget *parent) :
     addAction(undo);
     addAction(redo);
 
+    m_bookmk_menu = new QMenu(this);
+    QAction *keyseqAct = m_bookmk_menu->addAction(tr("Change shortcut"));
+    QAction *rmPntAct = m_bookmk_menu->addAction(tr("Remove"));
+
     connect(m_actEnableGrid, SIGNAL(toggled(bool)),                SLOT(enableGrid(bool)));
     connect(m_actEnableGrid, SIGNAL(toggled(bool)), m_actShowGrid, SLOT(setEnabled(bool)));
     connect(m_actEnableGrid, SIGNAL(toggled(bool)), gridSize,      SLOT(setEnabled(bool)));
@@ -88,6 +106,11 @@ WidgetArea::WidgetArea(QWidget *parent) :
     connect(unlockAll,       SIGNAL(triggered()),                  SLOT(unlockAll()));
     connect(&m_undoStack,    SIGNAL(undoAvailable(bool)),    undo, SLOT(setEnabled(bool)));
     connect(&m_undoStack,    SIGNAL(redoAvailable(bool)),    redo, SLOT(setEnabled(bool)));
+    connect(&m_bookmk_mapper,SIGNAL(mapped(int)),                  SLOT(jumpToBookmark(int)));
+    connect(keyseqAct,       SIGNAL(triggered()),                  SLOT(changeBookmarkSeq()));
+    connect(rmPntAct,        SIGNAL(triggered()),                  SLOT(removeBookmark()));
+    connect(addPoint,        SIGNAL(triggered()),                  SLOT(addBookmark()));
+    connect(m_actShowBookmk, SIGNAL(toggled(bool)),                SLOT(setShowBookmarks(bool)));
 }
 
 WidgetArea::~WidgetArea()
@@ -97,14 +120,16 @@ WidgetArea::~WidgetArea()
 
 void WidgetArea::clear()
 {
-    w_map::iterator itr = m_widgets.begin();
-    while(itr != m_widgets.end())
-    {
+    for(w_map::iterator itr = m_widgets.begin(); itr != m_widgets.end(); ++itr)
         delete *itr;
-        itr = m_widgets.erase(itr);
-    }
+    m_widgets.clear();
+
     m_marks.clear();
     m_undoStack.clear();
+
+    for(size_t i = 0; i < m_bookmarks.size(); ++i)
+        delete m_bookmarks[i].shortcut;
+    m_bookmarks.clear();
 }
 
 void WidgetArea::dropEvent(QDropEvent *event)
@@ -199,7 +224,7 @@ DataWidget *WidgetArea::getWidget(quint32 id)
     return *itr;
 }
 
-void WidgetArea::SaveWidgets(DataFileParser *file)
+void WidgetArea::saveWidgets(DataFileParser *file)
 {
     // We want widgets saved in same order as they were created. It does not have to be super-fast,
     // so I am using std::map to sort them.
@@ -219,7 +244,7 @@ void WidgetArea::SaveWidgets(DataFileParser *file)
     }
 }
 
-void WidgetArea::LoadWidgets(DataFileParser *file, bool skip)
+void WidgetArea::loadWidgets(DataFileParser *file, bool skip)
 {
     clear();
 
@@ -231,13 +256,13 @@ void WidgetArea::LoadWidgets(DataFileParser *file, bool skip)
         if(!file->seekToNextBlock(BLOCK_WIDGET, 0))
             break;
 
-        if(!LoadOneWidget(file, skip))
+        if(!loadOneWidget(file, skip))
             break;
     }
     update();
 }
 
-DataWidget* WidgetArea::LoadOneWidget(DataFileParser *file, bool skip)
+DataWidget* WidgetArea::loadOneWidget(DataFileParser *file, bool skip)
 {
     // type
     if(!file->seekToNextBlock("widgetType", BLOCK_WIDGET))
@@ -267,7 +292,7 @@ DataWidget* WidgetArea::LoadOneWidget(DataFileParser *file, bool skip)
     return w;
 }
 
-void WidgetArea::SaveSettings(DataFileParser *file)
+void WidgetArea::saveSettings(DataFileParser *file)
 {
     file->writeBlockIdentifier("areaGridSettings");
     file->write((char*)&m_grid, sizeof(m_grid));
@@ -280,9 +305,24 @@ void WidgetArea::SaveSettings(DataFileParser *file)
         file->write((char*)&x, sizeof(x));
         file->write((char*)&y, sizeof(y));
     }
+
+    file->writeBlockIdentifier("areaBookmark");
+    file->writeVal(m_show_bookmk);
+    file->writeVal((quint32)m_bookmarks.size());
+    for(size_t i = 0; i < m_bookmarks.size(); ++i)
+    {
+        const area_bookmark& b = m_bookmarks[i];
+        file->writeVal(b.main.x());
+        file->writeVal(b.main.y());
+
+        file->writeVal(b.text.x());
+        file->writeVal(b.text.y());
+
+        file->writeString(b.keyseq);
+    }
 }
 
-void WidgetArea::LoadSettings(DataFileParser *file)
+void WidgetArea::loadSettings(DataFileParser *file)
 {
     if(file->seekToNextBlock("areaGridSettings", BLOCK_DATA_INDEX))
     {
@@ -301,13 +341,42 @@ void WidgetArea::LoadSettings(DataFileParser *file)
         m_grid_offset = QPoint(x, y);
         update();
     }
+
+    if(file->seekToNextBlock("areaBookmark", BLOCK_DATA_INDEX))
+    {
+        m_show_bookmk = file->readVal<bool>();
+        m_actShowBookmk->setChecked(m_show_bookmk);
+
+        quint32 cnt = file->readVal<quint32>();
+        for(quint32 i = 0; i < cnt; ++i)
+        {
+            area_bookmark b;
+            b.id = m_bookmk_ids++;
+
+            b.main.rx() = file->readVal<int>();
+            b.main.ry() = file->readVal<int>();
+
+            b.text.rx() = file->readVal<int>();
+            b.text.ry() = file->readVal<int>();
+
+            b.keyseq = file->readString();
+
+            b.shortcut = new QShortcut(QKeySequence(b.keyseq), this);
+            m_bookmk_mapper.setMapping(b.shortcut, b.id);
+            connect(b.shortcut, SIGNAL(activated()),            &m_bookmk_mapper, SLOT(map()));
+            connect(b.shortcut, SIGNAL(activatedAmbiguously()), &m_bookmk_mapper, SLOT(map()));
+
+            m_bookmarks.push_back(b);
+        }
+    }
 }
 
 void WidgetArea::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
 
-    if(!m_show_grid && m_grid == 1 && m_marks.empty() && m_placementLines.isEmpty())
+    if (!m_show_grid && m_grid == 1 && !m_show_bookmk && m_marks.empty() &&
+        m_placementLines.isEmpty() && m_bookmarks.empty())
         return;
 
     QPainter painter(this);
@@ -338,19 +407,77 @@ void WidgetArea::paintEvent(QPaintEvent *event)
 
         painter.drawLines(m_placementLines);
     }
+
+    if(m_show_bookmk && !m_bookmarks.empty())
+    {
+        QPen penBlack(Qt::black);
+        QPen penYellow(QColor("#FFFFA3"));
+        penYellow.setWidth(2);
+
+        QBrush noBrush(Qt::NoBrush);
+        QBrush fill(penYellow.color(), Qt::SolidPattern);
+
+        QRect r = rect();
+        r.setWidth(r.width() - penYellow.width()*2);
+        r.setHeight(r.height() - penYellow.width()*2);
+
+        QFont f = painter.font();
+        f.setBold(true);
+        painter.setFont(f);
+
+        for(size_t i = 0; i < m_bookmarks.size(); ++i)
+        {
+            area_bookmark& p = m_bookmarks[i];
+
+            if(p.text.x() == -1)
+            {
+                p.text.rx() = painter.fontMetrics().width(p.keyseq)*1.5;
+                p.text.ry() = painter.fontMetrics().height();
+            }
+
+            QPoint base(p.main.x()+penYellow.width(), p.main.y()+penYellow.width());
+
+            painter.setPen(penYellow);
+            painter.setBrush(noBrush);
+            painter.drawRect(base.x(), base.y(), r.width(), r.height());
+
+            painter.setBrush(fill);
+            painter.drawRect(base.x(), base.y(), p.text.x(), p.text.y());
+
+            painter.setPen(penBlack);
+            painter.drawText(base.x(), base.y(), p.text.x(), p.text.y(), Qt::AlignCenter, p.keyseq);
+        }
+    }
 }
 
 void WidgetArea::mousePressEvent(QMouseEvent *event)
 {
+    if(event->button() != Qt::LeftButton && event->button() != Qt::RightButton)
+        return;
+
+    m_active_bookmk = NULL;
+    for(size_t i = 0; !m_active_bookmk && i < m_bookmarks.size(); ++i)
+    {
+        area_bookmark& pnt = m_bookmarks[i];
+        if(!Utils::isInRect(event->pos(), pnt.main, pnt.text))
+            continue;
+
+        m_active_bookmk = &pnt;
+    }
+
     switch(event->button())
     {
         case Qt::LeftButton:
             m_mouse_orig = event->globalPos();
             setCursor(Qt::ClosedHandCursor);
             m_draggin = false;
+            // drag type is selected by m_active_bookmk
             break;
         case Qt::RightButton:
-            m_menu->exec(event->globalPos());
+            if(m_active_bookmk)
+                m_bookmk_menu->exec(event->globalPos());
+            else
+                m_menu->exec(event->globalPos());
             break;
         default:
             break;
@@ -370,12 +497,21 @@ void WidgetArea::mouseMoveEvent(QMouseEvent *event)
     }
 
     QPoint n = event->globalPos() - m_mouse_orig;
-    moveWidgets(n);
 
-    if(m_prev)
-        m_prev->prepareRender();
-    else if(m_showPreview->isChecked())
-        m_prev = new WidgetAreaPreview(this, (QWidget*)parent());
+    if(!m_active_bookmk)
+    {
+        moveWidgets(n);
+
+        if(m_prev)
+            m_prev->prepareRender();
+        else if(m_showPreview->isChecked())
+            m_prev = new WidgetAreaPreview(this, (QWidget*)parent());
+    }
+    else
+    {
+        m_active_bookmk->main += n;
+        update();
+    }
 
     m_mouse_orig = event->globalPos();
 }
@@ -389,6 +525,7 @@ void WidgetArea::mouseReleaseEvent(QMouseEvent *event)
         m_draggin = false;
         delete m_prev;
         m_prev = NULL;
+        m_active_bookmk = NULL;
         setCursor(Qt::OpenHandCursor);
     }
 }
@@ -405,6 +542,9 @@ void WidgetArea::moveWidgets(QPoint diff)
 
         updateMarker(*itr);
     }
+
+    for(size_t i = 0; i < m_bookmarks.size(); ++i)
+        m_bookmarks[i].main += diff;
 
     m_undoStack.areaMoved(diff);
 
@@ -688,6 +828,107 @@ void WidgetArea::wheelEvent(QWheelEvent *ev)
     }
 }
 
+void WidgetArea::jumpToBookmark(int id)
+{
+    for(size_t i = 0; i < m_bookmarks.size(); ++i)
+    {
+        const area_bookmark& b = m_bookmarks[i];
+        if(b.id != id)
+            continue;
+
+        BookmarkMoveAnimation *anim = new BookmarkMoveAnimation(this);
+        anim->setStartValue(QPoint(0, 0));
+        anim->setEndValue(QPoint(0, 0) - b.main);
+        anim->setDuration(100);
+
+        connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+
+        anim->start();
+        break;
+    }
+}
+
+void WidgetArea::removeBookmark()
+{
+    if(!m_active_bookmk)
+        return;
+
+    for(std::vector<area_bookmark>::iterator itr = m_bookmarks.begin(); itr != m_bookmarks.end(); ++itr)
+    {
+        if((*itr).id != m_active_bookmk->id)
+            continue;
+
+        delete m_active_bookmk->shortcut;
+
+        m_bookmarks.erase(itr);
+        update();
+        m_active_bookmk = NULL;
+
+        m_analyzer->setDataChanged();
+        break;
+    }
+}
+
+void WidgetArea::changeBookmarkSeq()
+{
+    if(!m_active_bookmk)
+        return;
+
+    QDialog d(this);
+    d.setWindowFlags(d.windowFlags() & ~(Qt::WindowMaximizeButtonHint | Qt::WindowContextHelpButtonHint));
+    d.setWindowTitle(tr("Set bookmark shortcut"));
+
+    QVBoxLayout *l = new QVBoxLayout(&d);
+
+    ShortcutInputBox *box = new ShortcutInputBox(QKeySequence(m_active_bookmk->keyseq), &d);
+    QDialogButtonBox *btn = new QDialogButtonBox((QDialogButtonBox::Ok |QDialogButtonBox::Cancel), Qt::Horizontal, &d);
+
+    l->addWidget(box);
+    l->addWidget(btn);
+
+    connect(btn, SIGNAL(accepted()), &d, SLOT(accept()));
+    connect(btn, SIGNAL(rejected()), &d, SLOT(reject()));
+
+    if(d.exec() == QDialog::Accepted)
+    {
+        QKeySequence s = box->getKeySequence();
+        m_active_bookmk->shortcut->setKey(s);
+        m_active_bookmk->keyseq = s.toString(QKeySequence::NativeText);
+        m_active_bookmk->text.rx() = -1;
+        update();
+    }
+
+    m_active_bookmk = NULL;
+}
+
+void WidgetArea::addBookmark()
+{
+    area_bookmark b;
+    b.id = m_bookmk_ids++;
+    b.text.rx() = -1;
+    b.keyseq = "(None)";
+
+    b.shortcut = new QShortcut(this);
+    m_bookmk_mapper.setMapping(b.shortcut, b.id);
+    connect(b.shortcut, SIGNAL(activated()),            &m_bookmk_mapper, SLOT(map()));
+    connect(b.shortcut, SIGNAL(activatedAmbiguously()), &m_bookmk_mapper, SLOT(map()));
+
+    std::vector<area_bookmark>::iterator itr = m_bookmarks.insert(m_bookmarks.end(), b);
+    m_active_bookmk = &(*itr);
+
+    changeBookmarkSeq();
+    update();
+
+    m_analyzer->setDataChanged();
+}
+
+void WidgetArea::setShowBookmarks(bool show)
+{
+    m_show_bookmk = show;
+    sConfig.set(CFG_BOOL_ANALYZER_SHOW_BOOKMARKS, m_show_bookmk);
+    update();
+}
+
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)
 {
     m_widgetArea = area;
@@ -733,4 +974,25 @@ void WidgetAreaPreview::paintEvent(QPaintEvent *)
     pen.setWidth(2);
     p.setPen(pen);
     p.drawRect(m_visible);
+}
+
+BookmarkMoveAnimation::BookmarkMoveAnimation(WidgetArea *area) : QVariantAnimation(area)
+{
+    m_area = area;
+}
+
+void BookmarkMoveAnimation::setStartValue(const QPoint &value)
+{
+    m_last_point = value;
+    QVariantAnimation::setStartValue(value);
+}
+
+void BookmarkMoveAnimation::updateCurrentValue(const QVariant& value)
+{
+    QPoint cur = value.value<QPoint>();
+
+    QPoint diff = cur - m_last_point;
+    m_area->moveWidgets(diff);
+
+    m_last_point = cur;
 }
