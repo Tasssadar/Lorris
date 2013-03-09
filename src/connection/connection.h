@@ -76,7 +76,8 @@ public:
     QString const & GetIDString() const { return m_idString; }
 
     QString const & name() const { return m_idString; }
-    void setName(const QString& str) { this->setIDString(str); }
+    void setName(const QString& str, bool isDefault = false);
+    bool hasDefaultName() const { return m_defaultName; }
 
     qint64 getCompanionId() const { return m_companionId; }
     void setCompanionId(qint64 id) { m_companionId = id; }
@@ -110,6 +111,9 @@ public:
 
     bool isMissing() const;
 
+    virtual bool isNamePersistable() const { return false; }
+    virtual void persistName() {}
+
 signals:
     void connected(bool connected);
     void stateChanged(ConnectionState state);
@@ -138,6 +142,7 @@ protected:
 private:
     ConnectionState m_state;
     QString m_idString;
+    bool m_defaultName;
     int m_refcount;
     int m_tabcount;
     bool m_removable;

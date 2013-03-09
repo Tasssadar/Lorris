@@ -71,6 +71,8 @@ private slots:
     void on_actionDisconnect_triggered();
     void on_actionClone_triggered();
 
+    void on_persistNameButton_clicked();
+
 private:
     void focusNewConn(Connection * conn);
     void selectConn(Connection * conn);

@@ -58,7 +58,7 @@ void SerialPortEnumerator::refresh()
         if (it == m_portMap.end())
         {
             ConnectionPointer<SerialPort> portGuard(new SerialPort());
-            portGuard->setName(info.portName);
+            portGuard->setName(info.portName, /*isDefault=*/true);
             portGuard->setDeviceName(info.physName);
             portGuard->setFriendlyName(info.friendName);
             portGuard->setBaudRate(38400);
@@ -273,7 +273,7 @@ void LibybUsbEnumerator::pluginEventReceived()
                         if (!conn)
                         {
                             conn.reset(new UsbShupito23Connection(m_runner));
-                            conn->setName(GenericUsbConnection::formatDeviceName(ev.intf.device()));
+                            conn->setName(GenericUsbConnection::formatDeviceName(ev.intf.device()), /*isDefault=*/true);
                             sConMgr2.addConnection(conn.data());
                         }
                         conn->setup(ev.intf);
@@ -321,7 +321,7 @@ void LibybUsbEnumerator::pluginEventReceived()
                             if (!conn)
                             {
                                 conn.reset(new UsbShupito22Connection(m_runner));
-                                conn->setName(GenericUsbConnection::formatDeviceName(ev.intf.device()));
+                                conn->setName(GenericUsbConnection::formatDeviceName(ev.intf.device()), /*isDefault=*/true);
                                 sConMgr2.addConnection(conn.data());
                             }
                             conn->setup(ev.intf);
@@ -350,7 +350,7 @@ void LibybUsbEnumerator::pluginEventReceived()
                             if (!conn)
                             {
                                 conn.reset(new UsbAcmConnection2(m_runner));
-                                conn->setName(QString("%1 @ %2").arg(st.intfname).arg(GenericUsbConnection::formatDeviceName(ev.intf.device())));
+                                conn->setName(QString("%1 @ %2").arg(st.intfname).arg(GenericUsbConnection::formatDeviceName(ev.intf.device())), /*isDefault=*/true);
                                 sConMgr2.addConnection(conn.data());
                             }
                             conn->setEnumeratedIntf(ev.intf);
@@ -591,7 +591,7 @@ ConnectionPointer<ShupitoConnection> ConnectionManager2::createAutoShupito(PortC
     }
 
     ConnectionPointer<PortShupitoConnection> res(new PortShupitoConnection());
-    res->setName("Shupito at " % parentConn->name());
+    res->setName("Shupito at " % parentConn->name(), /*isDefault=*/true);
     res->setPort(ConnectionPointer<PortConnection>::fromPtr(parentConn));
     this->addConnection(res.data());
     connect(res.data(), SIGNAL(destroying()), this, SLOT(autoShupitoDestroyed()));

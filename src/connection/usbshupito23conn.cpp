@@ -60,6 +60,7 @@ void UsbShupito23Connection::setup(yb::usb_device_interface const & intf)
 
     m_desc.Clear();
     m_desc.AddData(raw_desc);
+    emit descRead(m_desc);
 
     this->markPresent();
 }
