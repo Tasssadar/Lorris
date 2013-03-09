@@ -307,6 +307,8 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
     ui->actionConnect->setEnabled(conn->state() == st_disconnected);
     ui->actionDisconnect->setEnabled(conn->state() == st_connected || conn->state() == st_connect_pending);
     ui->programmerSelection->setVisible(false);
+    ui->persistNameButton->setVisible(conn->isNamePersistable());
+    ui->persistNameButton->setEnabled(!conn->hasDefaultName());
 
     switch (conn->getType())
     {
@@ -462,6 +464,7 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
         ui->confirmBox->button(QDialogButtonBox::Ok)->setEnabled(false);
         ui->connectionNameEdit->setText(QString());
         ui->connectionNameEdit->setEnabled(false);
+        ui->persistNameButton->setVisible(false);
         return;
     }
 
@@ -644,4 +647,10 @@ void ChooseConnectionDlg::on_actionClone_triggered()
     ConnectionPointer<Connection> new_conn(m_current->clone());
     sConMgr2.addUserOwnedConn(new_conn.data());
     this->focusNewConn(new_conn.take());
+}
+
+void ChooseConnectionDlg::on_persistNameButton_clicked()
+{
+    Q_ASSERT(m_current && m_current->isNamePersistable());
+    m_current->persistName();
 }

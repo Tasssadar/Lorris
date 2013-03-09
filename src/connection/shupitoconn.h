@@ -10,7 +10,10 @@ class ShupitoConnection : public Connection
     Q_OBJECT
 
 public:
-    ShupitoConnection(ConnectionType type) : Connection(type) {}
+    ShupitoConnection(ConnectionType type);
+
+    bool isNamePersistable() const;
+    void persistName();
 
     virtual void requestDesc() = 0;
 
@@ -20,6 +23,16 @@ public slots:
 signals:
     void packetRead(ShupitoPacket const & packet);
     void descRead(ShupitoDesc const & desc);
+
+private slots:
+    void connectionStateChanged(ConnectionState state);
+    void descriptorChanged(ShupitoDesc const & desc);
+
+private:
+    void doPersist();
+
+    ShupitoDesc::config const * m_renameConfig;
+    bool m_persistScheduled;
 };
 
 class PortShupitoConnection : public ShupitoConnection
