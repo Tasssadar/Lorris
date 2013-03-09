@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 ShupitoConnection::ShupitoConnection(ConnectionType type)
-    : Connection(type), m_renameConfig(nullptr)
+    : Connection(type), m_renameConfig(nullptr), m_persistScheduled(false)
 {
     connect(this, SIGNAL(descRead(ShupitoDesc)), this, SLOT(descriptorChanged(ShupitoDesc)));
     connect(this, SIGNAL(stateChanged(ConnectionState)), this, SLOT(connectionStateChanged(ConnectionState)));
