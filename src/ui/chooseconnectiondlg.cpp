@@ -216,7 +216,7 @@ ConnectionPointer<Connection> ChooseConnectionDlg::choose(PrimaryConnectionTypes
 
     if (PortConnection * pc = dynamic_cast<PortConnection *>(m_current.data()))
     {
-        if (pc->programmerType() == programmer_shupito)
+        if (pc->programmerType() == programmer_shupito && (m_allowedConns & pct_port_data) == 0)
         {
            ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
            m_current = sc;
