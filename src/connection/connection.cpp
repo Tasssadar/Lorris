@@ -96,14 +96,6 @@ void Connection::Close()
     }
 }
 
-void Connection::SetOpen(bool open)
-{
-    if (open)
-        this->SetState(st_connected);
-    else
-        this->SetState(st_disconnected);
-}
-
 void Connection::addRef()
 {
     ++m_refcount;

@@ -131,7 +131,6 @@ signals:
 protected:
     ~Connection();
     void SetState(ConnectionState state);
-    void SetOpen(bool open);
 
     void markMissing();
     void markPresent();

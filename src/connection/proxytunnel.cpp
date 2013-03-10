@@ -23,14 +23,14 @@ void ProxyTunnel::doOpen()
     if(m_server)
     {
         connect(m_server, SIGNAL(newData(QByteArray)), SIGNAL(dataRead(QByteArray)));
-        SetOpen(true);
+        this->SetState(st_connected);
     }
 }
 
 void ProxyTunnel::doClose()
 {
     disconnect(m_server, SIGNAL(newData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
-    SetOpen(false);
+    this->SetState(st_disconnected);
 }
 
 void ProxyTunnel::setTcpServer(TcpServer *server)
