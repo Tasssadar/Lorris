@@ -107,19 +107,22 @@ void PortShupitoConnection::doOpen()
     // with this PortConnection calls releaseTab();
     addPortTabRef();
 
-    if (m_port->state() != st_connected)
+    switch (m_port->state())
     {
+    case st_connected:
+        m_parserState = pst_init0;
+        this->SetState(st_connected);
+        break;
+    case st_disconnecting:
+        this->SetState(st_disconnected);
+        break;
+    default:
         m_port->OpenConcurrent();
         if (m_port->state() == st_disconnected)
         {
             this->SetState(st_disconnected);
             releasePortTabRef();
         }
-    }
-    else
-    {
-        m_parserState = pst_init0;
-        this->SetState(st_connected);
     }
 }
 
@@ -132,23 +135,25 @@ void PortShupitoConnection::doClose()
 
 void PortShupitoConnection::portStateChanged(ConnectionState state)
 {
-    if (state == st_missing)
+    switch (state)
     {
+    case st_missing:
         this->SetState(st_missing);
-    }
-    else if (state == st_connect_pending)
-    {
+        break;
+    case st_connect_pending:
         this->SetState(st_connect_pending);
-    }
-    else if (state == st_disconnected)
-    {
+        break;
+    case st_disconnected:
         releasePortTabRef();
         this->SetState(st_disconnected);
-    }
-    else if (state == st_connected)
-    {
+        break;
+    case st_disconnecting:
+        this->SetState(st_disconnecting);
+        break;
+    case st_connected:
         m_parserState = pst_init0;
         this->SetState(st_connected);
+        break;
     }
 }
 

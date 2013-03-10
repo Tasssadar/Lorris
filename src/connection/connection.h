@@ -20,6 +20,7 @@ enum ConnectionState {
     st_disconnected,
     st_connecting,
     st_connected,
+    st_disconnecting,
     st_missing,
     st_connect_pending
 };

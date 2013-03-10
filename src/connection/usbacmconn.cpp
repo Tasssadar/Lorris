@@ -12,6 +12,7 @@ UsbAcmConnection2::UsbAcmConnection2(yb::async_runner & runner)
     m_baudrate(115200), m_parity(pp_none), m_stop_bits(sb_one), m_data_bits(8)
 {
     connect(&m_incomingDataChannel, SIGNAL(dataReceived()), this, SLOT(incomingDataReady()));
+    connect(&m_sendCompleted, SIGNAL(dataReceived()), this, SLOT(sendCompleted()));
     this->markMissing();
 }
 
@@ -155,7 +156,7 @@ yb::task<void> UsbAcmConnection2::write_loop(int outep)
 
 yb::task<void> UsbAcmConnection2::send_loop(int outep)
 {
-    return m_send_channel.receive(m_write_buffer).then([this, outep]() {
+    return m_send_channel.receive(m_write_buffer).finish_on(yb::cl_quit).then([this, outep]() {
         return this->write_loop(outep);
     });
 }
@@ -231,7 +232,12 @@ void UsbAcmConnection2::doOpen()
     if (outep)
     {
         m_send_worker = m_runner.post(yb::loop([this, outep](yb::cancel_level cl) -> yb::task<void> {
-            return cl >= yb::cl_quit? yb::nulltask: this->send_loop(outep);
+            if (cl >= yb::cl_abort || (cl >= yb::cl_quit && m_send_channel.empty()))
+            {
+                m_sendCompleted.send();
+                return yb::nulltask;
+            }
+            return this->send_loop(outep);
         }));
     }
 
@@ -246,19 +252,31 @@ void UsbAcmConnection2::doOpen()
 
 void UsbAcmConnection2::doClose()
 {
-    Q_ASSERT(this->state() == st_connected);
-    this->cleanupWorkers();
-    if (m_configurable)
+    if (this->state() == st_disconnecting)
     {
-        yb::usb_control_code_t set_control_line_state = { 0x21, 0x22 };
-        m_runner.try_run(m_intf.device().control_write(set_control_line_state, 0, m_intf.interface_index(), 0, 0));
+        this->cleanupWorkers();
+        if (m_configurable)
+        {
+            yb::usb_control_code_t set_control_line_state = { 0x21, 0x22 };
+            m_runner.try_run(m_intf.device().control_write(set_control_line_state, 0, m_intf.interface_index(), 0, 0));
+        }
+
+        m_intf.device().release_interface(m_intf.interface_index());
+        this->SetState(st_disconnected);
+
+        if (!m_enumerated)
+            m_intf.clear();
     }
-
-    m_intf.device().release_interface(m_intf.interface_index());
-    this->SetState(st_disconnected);
-
-    if (!m_enumerated)
-        m_intf.clear();
+    else
+    {
+        Q_ASSERT(this->state() == st_connected);
+        this->SetState(st_disconnecting);
+        emit disconnecting();
+        if (!m_receive_worker.empty())
+            m_receive_worker.cancel(yb::cl_abort);
+        if (!m_send_worker.empty())
+            m_send_worker.cancel(yb::cl_quit);
+    }
 }
 
 void UsbAcmConnection2::cleanupWorkers()
@@ -401,4 +419,10 @@ void UsbAcmConnection2::update_line_control(bool force)
         yb::usb_control_code_t set_line_coding = { 0x21, 0x20 };
         m_runner.try_run(m_intf.device().control_write(set_line_coding, 0, m_intf.interface_index(), payload.data(), payload.size()));
     }
+}
+
+void UsbAcmConnection2::sendCompleted()
+{
+    if (this->state() == st_disconnecting)
+        this->Close();
 }

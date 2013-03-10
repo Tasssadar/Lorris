@@ -31,6 +31,8 @@ static QString connectionStateString(ConnectionState state)
         return QObject::tr("(Connected)");
     case st_connect_pending:
         return QObject::tr("(Pending)");
+    case st_disconnecting:
+        return QObject::tr("(Disconnecting...)");
     default:
         return QString();
     }
@@ -305,7 +307,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
     updateEditText(ui->connectionNameEdit, conn->name());
     ui->actionRemoveConnection->setEnabled(conn->removable());
     ui->actionConnect->setEnabled(conn->state() == st_disconnected);
-    ui->actionDisconnect->setEnabled(conn->state() == st_connected || conn->state() == st_connect_pending);
+    ui->actionDisconnect->setEnabled(conn->state() == st_connected || conn->state() == st_connect_pending || conn->state() == st_disconnecting);
     ui->programmerSelection->setVisible(false);
     ui->persistNameButton->setVisible(conn->isNamePersistable());
     ui->persistNameButton->setEnabled(!conn->hasDefaultName());

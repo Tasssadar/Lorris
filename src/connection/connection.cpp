@@ -91,6 +91,7 @@ void Connection::Close()
         break;
     case st_connecting:
     case st_connected:
+    case st_disconnecting:
         this->doClose();
         break;
     }
