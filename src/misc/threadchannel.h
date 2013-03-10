@@ -60,4 +60,15 @@ private:
     std::vector<T> m_data;
 };
 
+template <>
+class ThreadChannel<void>
+    : public ThreadChannelBase
+{
+public:
+    void send()
+    {
+        this->notifyDataReady();
+    }
+};
+
 #endif // LORRIS_MISC_THREADCHANNEL_H
