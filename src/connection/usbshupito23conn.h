@@ -47,6 +47,7 @@ protected:
 
 private slots:
     void incomingPacketsReceived();
+    void sendCompleted();
 
 private:
     void closeImpl();
@@ -83,6 +84,7 @@ private:
     yb::task<void> read_loop(uint8_t i);
 
     ThreadChannel<ShupitoPacket> m_incomingPackets;
+    ThreadChannel<void> m_sendCompleted;
 };
 
 #endif // LORRIS_CONNECTION_USBSHUPITO23CONN_H

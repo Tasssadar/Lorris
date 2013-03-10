@@ -8,6 +8,7 @@ UsbShupito23Connection::UsbShupito23Connection(yb::async_runner & runner)
     : ShupitoConnection(CONNECTION_SHUPITO23), m_runner(runner)
 {
     connect(&m_incomingPackets, SIGNAL(dataReceived()), this, SLOT(incomingPacketsReceived()));
+    connect(&m_sendCompleted, SIGNAL(dataReceived()), this, SLOT(sendCompleted()));
     this->markMissing();
 }
 
@@ -92,7 +93,12 @@ void UsbShupito23Connection::doOpen()
         return Utils::showErrorBox("Cannot claim the interface");
 
     m_write_loop = m_runner.post(yb::loop([this](yb::cancel_level cl) -> yb::task<void> {
-        return cl < yb::cl_quit? this->write_loop(): yb::nulltask;
+        if (cl >= yb::cl_abort || (cl >= yb::cl_quit && m_write_channel.empty()))
+        {
+            m_sendCompleted.send();
+            return yb::nulltask;
+        }
+        return this->write_loop();
     }));
 
     m_read_loops.reset(new read_loop_ctx[m_in_eps.size()]);
@@ -108,8 +114,17 @@ void UsbShupito23Connection::doOpen()
 
 void UsbShupito23Connection::doClose()
 {
-    this->closeImpl();
-    this->SetState(st_disconnected);
+    if (this->state() == st_disconnecting)
+    {
+        this->closeImpl();
+        this->SetState(st_disconnected);
+    }
+    else
+    {
+        emit disconnecting();
+        this->SetState(st_disconnecting);
+        m_write_loop.cancel(yb::cl_quit);
+    }
 }
 
 void UsbShupito23Connection::sendPacket(ShupitoPacket const & packet)
@@ -125,7 +140,7 @@ void UsbShupito23Connection::requestDesc()
 yb::task<void> UsbShupito23Connection::write_loop()
 {
     m_write_loop_ctx.packet_index = 0;
-    return m_write_channel.receive(m_write_loop_ctx.packets).then([this]() -> yb::task<void> {
+    return m_write_channel.receive(m_write_loop_ctx.packets).finish_on(yb::cl_quit).then([this]() -> yb::task<void> {
         return this->write_packets();
     });
 }
@@ -191,4 +206,10 @@ QString ShupitoFirmwareDetails::firmwareFilename() const
         .arg(hw_major).arg(hw_minor)
         .arg(d.year(), 4, 10, QChar('0')).arg(d.month(), 2, 10, QChar('0')).arg(d.day(), 2, 10, QChar('0'))
         .arg(fw_revision.left(7));
+}
+
+void UsbShupito23Connection::sendCompleted()
+{
+    if (this->state() == st_disconnecting)
+        this->Close();
 }
