@@ -35,7 +35,7 @@ void ShupitoConnection::connectionStateChanged(ConnectionState state)
     {
         m_persistScheduled = false;
         this->doPersist();
-        // FIXME: we should call `this->Close();` here, but we need to flush the write queue first
+        this->Close();
     }
 }
 
