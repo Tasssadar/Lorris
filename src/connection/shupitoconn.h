@@ -5,6 +5,22 @@
 #include "../LorrisProgrammer/shupitopacket.h"
 #include "../LorrisProgrammer/shupitodesc.h"
 
+#include <QString>
+#include <QDateTime>
+#include <stdint.h>
+
+struct ShupitoFirmwareDetails
+{
+    uint8_t hw_major;
+    uint8_t hw_minor;
+    QDateTime fw_timestamp;
+    int16_t fw_zone_offset;
+    QString fw_revision;
+
+    bool empty() const;
+    QString firmwareFilename() const;
+};
+
 class ShupitoConnection : public Connection
 {
     Q_OBJECT
@@ -16,6 +32,8 @@ public:
     void persistName();
 
     virtual void requestDesc() = 0;
+
+    bool getFirmwareDetails(ShupitoFirmwareDetails & details) const;
 
 public slots:
     virtual void sendPacket(ShupitoPacket const & packet) = 0;
@@ -32,6 +50,7 @@ private:
     void doPersist();
 
     ShupitoDesc::config const * m_renameConfig;
+    ShupitoFirmwareDetails m_fwDetails;
     bool m_persistScheduled;
 };
 

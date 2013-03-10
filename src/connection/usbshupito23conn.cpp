@@ -199,15 +199,6 @@ bool UsbShupito23Connection::getFirmwareDetails(ShupitoFirmwareDetails & details
     return false;
 }
 
-QString ShupitoFirmwareDetails::firmwareFilename() const
-{
-    QDate d = fw_timestamp.date();
-    return QString("shupito%1%2_%3_%4_%5_%6.hex")
-        .arg(hw_major).arg(hw_minor)
-        .arg(d.year(), 4, 10, QChar('0')).arg(d.month(), 2, 10, QChar('0')).arg(d.day(), 2, 10, QChar('0'))
-        .arg(fw_revision.left(7));
-}
-
 void UsbShupito23Connection::sendCompleted()
 {
     if (this->state() == st_disconnecting)

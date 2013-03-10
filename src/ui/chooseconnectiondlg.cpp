@@ -360,9 +360,10 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             setActiveProgBtn(c->programmerType());
         }
         break;
+    case CONNECTION_USB_SHUPITO:
     case CONNECTION_SHUPITO23:
         {
-            UsbShupito23Connection * c = static_cast<UsbShupito23Connection *>(conn);
+            ShupitoConnection * c = static_cast<ShupitoConnection *>(conn);
             ShupitoFirmwareDetails fd;
             if (c->getFirmwareDetails(fd))
             {

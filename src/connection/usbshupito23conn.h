@@ -8,18 +8,6 @@
 #include <libyb/usb/interface_guard.hpp>
 #include <libyb/async/async_channel.hpp>
 #include <libyb/async/async_runner.hpp>
-#include <QDateTime>
-
-struct ShupitoFirmwareDetails
-{
-    uint8_t hw_major;
-    uint8_t hw_minor;
-    QDateTime fw_timestamp;
-    int16_t fw_zone_offset;
-    QString fw_revision;
-
-    QString firmwareFilename() const;
-};
 
 class UsbShupito23Connection
     : public ShupitoConnection
