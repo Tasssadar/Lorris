@@ -238,9 +238,9 @@ void UsbAcmConnection2::doOpen()
     static uint8_t const sig[] = { 0xea, 0x5c, 0x3c, 0x23, 0xea, 0x74, 0xf8, 0x41, 0xbf, 0xa2, 0x8e, 0x19, 0x83, 0xe7, 0x96, 0xbe };
     std::vector<uint8_t> extra_desc = desc.lookup_extra_descriptor(75, yb::buffer_ref(sig, sig + sizeof sig));
     m_configurable = !extra_desc.empty();
-    this->SetState(st_connected);
+    this->update_line_control(/*force=*/true);
 
-    this->update_line_control();
+    this->SetState(st_connected);
 }
 
 void UsbAcmConnection2::doClose()
@@ -392,9 +392,9 @@ void UsbAcmConnection2::setDataBits(int value)
     }
 }
 
-void UsbAcmConnection2::update_line_control()
+void UsbAcmConnection2::update_line_control(bool force)
 {
-    if (m_configurable && this->state() == st_connected)
+    if (m_configurable && (force || this->state() == st_connected))
     {
         line_coding_struct payload(m_baudrate, (uint8_t)m_stop_bits, (uint8_t)m_parity, (uint8_t)m_data_bits);
         yb::usb_control_code_t set_line_coding = { 0x21, 0x20 };

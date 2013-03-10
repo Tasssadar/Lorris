@@ -97,7 +97,7 @@ private:
     stop_bits_t m_stop_bits;
     parity_t m_parity;
     int m_data_bits;
-    void update_line_control();
+    void update_line_control(bool force = false);
 
     yb::usb_device_interface m_intf;
 
