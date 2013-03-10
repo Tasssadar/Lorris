@@ -100,6 +100,7 @@ void PortShupitoConnection::doOpen()
     if (!m_port)
         return;
 
+    m_readDesc = false;
     this->SetState(st_connecting);
 
     // add TabRef so that connection is not closed when another tab
