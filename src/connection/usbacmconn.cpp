@@ -66,10 +66,10 @@ void UsbAcmConnection2::clearEnumeratedIntf()
 
 void UsbAcmConnection2::setIntf(yb::usb_device_interface const & intf)
 {
-    m_intf = intf;
-
-    if (!m_intf.empty())
+    if (!intf.empty())
     {
+        m_intf = intf;
+
         yb::usb_device const & dev = m_intf.device();
 
         yb::usb_device_descriptor const & desc = dev.descriptor();
@@ -97,6 +97,7 @@ void UsbAcmConnection2::setIntf(yb::usb_device_interface const & intf)
     {
         this->cleanupWorkers();
         this->markMissing();
+        m_intf = intf;
     }
 }
 
