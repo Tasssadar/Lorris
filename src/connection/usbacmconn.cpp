@@ -207,11 +207,12 @@ void UsbAcmConnection2::doOpen()
 
     if (inep)
     {
-#if 1
+#if 0
         // Note that double buffering seems to work, but
         // quadruple buffering will sometimes kill the driver (a bug perhaps?)
         // so that no more transactions on the pipe go through
         // until the device is reconnected.
+        // EDIT: actually, double buffering seems to kill the driver just as well...
         m_receive_worker = m_runner.post(yb::double_buffer<size_t>([this, inep, inepsize](size_t i) {
             return m_intf.device().bulk_read(inep, m_read_buffers[i], inepsize);
         }, [this](size_t i, size_t r) {
