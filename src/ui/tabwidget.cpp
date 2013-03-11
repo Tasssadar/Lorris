@@ -38,6 +38,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     m_tab_bar = new TabBar(m_id, this);
     setTabBar(m_tab_bar);
     m_menuBtn = new QPushButton(tr("&Menu"), this);
+    m_menuBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     m_menuBtn->setMenu(m_menu);
     m_menuBtn->setFlat(true);
     m_menuBtn->installEventFilter(this);
