@@ -140,6 +140,7 @@ void UsbShupito23Connection::requestDesc()
 yb::task<void> UsbShupito23Connection::write_loop()
 {
     m_write_loop_ctx.packet_index = 0;
+    m_write_loop_ctx.packets.clear();
     return m_write_channel.receive(m_write_loop_ctx.packets).finish_on(yb::cl_quit).then([this]() -> yb::task<void> {
         return this->write_packets();
     });

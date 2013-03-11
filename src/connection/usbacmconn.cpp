@@ -157,6 +157,7 @@ yb::task<void> UsbAcmConnection2::write_loop(int outep)
 
 yb::task<void> UsbAcmConnection2::send_loop(int outep)
 {
+    m_write_buffer.clear();
     return m_send_channel.receive(m_write_buffer).finish_on(yb::cl_quit).then([this, outep]() {
         return this->write_loop(outep);
     });
