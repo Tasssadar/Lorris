@@ -25,6 +25,8 @@ public:
         COLOR_RGB_10_UINT,
         COLOR_GRAY_8,
         COLOR_GRAY_10,
+        COLOR_RGBA_8,
+        COLOR_ARGB_8,
 
         COLOR_MAX
     };
@@ -40,6 +42,8 @@ public:
 public slots:
     /// Format of `color` depends on the color type
     /// \li <tt>COLOR_RGB_8:</tt> ((R << 16) | (G << 8) | B), channel values 0 to 255
+    /// \li <tt>COLOR_RGBA_8:</tt> ((R << 24) | (G << 16) | (B << 8) | A), channel values 0 to 255, alpha is ignored
+    /// \li <tt>COLOR_ARGB_8:</tt> ((A << 24) | (R << 16) | (G << 8) | B), channel values 0 to 255, alpha is ignored
     /// \li <tt>COLOR_RGB_10 and COLOR_RGB_10_UINT:</tt> ((R << 20) | (G << 10) | B), channel values 0 to 1023
     /// \li <tt>COLOR_GRAY_8:</tt> value from 0 to 255
     /// \li <tt>COLOR_GRAY_10:</tt> value from 0 to 1023
