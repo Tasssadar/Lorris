@@ -22,6 +22,8 @@ enum NumberFormats
     FMT_COUNT
 };
 
+#define PREC_COUNT 8
+
 class NumberWidget : public DataWidget
 {
     Q_OBJECT
@@ -37,6 +39,7 @@ public slots:
     void setValue(QVariant var);
     void setDataType(int i);
     void setFormula(const QString& formula);
+    void setPrecision(quint8 digits);
 
     void showFormulaDialog();
 
@@ -47,6 +50,7 @@ protected:
 private slots:
      void fmtSelected(int i);
      void levelSelected();
+     void setPrecisionAct(int idx);
 
 private:
      void prependZeros(QString& n, quint8 len);
@@ -55,9 +59,11 @@ private:
      quint8 numberType;
      quint8 format;
      bool level;
+     quint8 m_digits;
 
      QAction *bitsAction[NUM_COUNT];
      QAction *fmtAction[FMT_COUNT];
+     QAction *m_precAct[PREC_COUNT];
      QAction *levelAction;
 
      FormulaEvaluation m_eval;
