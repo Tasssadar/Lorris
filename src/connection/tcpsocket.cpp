@@ -62,7 +62,7 @@ void TcpSocket::doClose()
 
 void TcpSocket::connectResultSer(bool opened)
 {
-    this->SetOpen(opened);
+    this->SetState(opened? st_connected: st_disconnected);
 }
 
 void TcpSocket::doOpen()

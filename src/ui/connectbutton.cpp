@@ -33,7 +33,7 @@ void ConnectButton::connectTriggered()
     }
     else
     {
-        if (m_conn->isOpen())
+        if (m_conn->state() == st_connected || m_conn->state() == st_disconnecting)
             m_conn->Close();
         else
             m_conn->OpenConcurrent();
@@ -95,6 +95,10 @@ void ConnectButton::connectionStateChanged(ConnectionState state)
         break;
     case st_connected:
         m_connectAction->setText(tr("Disconnect"));
+        m_connectAction->setEnabled(true);
+        break;
+    case st_disconnecting:
+        m_connectAction->setText(tr("Disconnecting..."));
         m_connectAction->setEnabled(true);
         break;
     }

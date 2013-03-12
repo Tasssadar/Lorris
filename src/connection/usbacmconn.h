@@ -81,6 +81,7 @@ protected:
 
 private slots:
     void incomingDataReady();
+    void sendCompleted();
 
 private:
     void setIntf(yb::usb_device_interface const & intf);
@@ -97,7 +98,7 @@ private:
     stop_bits_t m_stop_bits;
     parity_t m_parity;
     int m_data_bits;
-    void update_line_control();
+    void update_line_control(bool force = false);
 
     yb::usb_device_interface m_intf;
 
@@ -121,6 +122,7 @@ private:
     void cleanupWorkers();
 
     ThreadChannel<uint8_t> m_incomingDataChannel;
+    ThreadChannel<void> m_sendCompleted;
 };
 
 #endif // USBACMCONN_H

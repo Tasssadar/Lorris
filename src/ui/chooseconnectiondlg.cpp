@@ -31,6 +31,8 @@ static QString connectionStateString(ConnectionState state)
         return QObject::tr("(Connected)");
     case st_connect_pending:
         return QObject::tr("(Pending)");
+    case st_disconnecting:
+        return QObject::tr("(Disconnecting...)");
     default:
         return QString();
     }
@@ -216,7 +218,7 @@ ConnectionPointer<Connection> ChooseConnectionDlg::choose(PrimaryConnectionTypes
 
     if (PortConnection * pc = dynamic_cast<PortConnection *>(m_current.data()))
     {
-        if (pc->programmerType() == programmer_shupito)
+        if (pc->programmerType() == programmer_shupito && (m_allowedConns & pct_port_data) == 0)
         {
            ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
            m_current = sc;
@@ -305,7 +307,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
     updateEditText(ui->connectionNameEdit, conn->name());
     ui->actionRemoveConnection->setEnabled(conn->removable());
     ui->actionConnect->setEnabled(conn->state() == st_disconnected);
-    ui->actionDisconnect->setEnabled(conn->state() == st_connected || conn->state() == st_connect_pending);
+    ui->actionDisconnect->setEnabled(conn->state() == st_connected || conn->state() == st_connect_pending || conn->state() == st_disconnecting);
     ui->programmerSelection->setVisible(false);
     ui->persistNameButton->setVisible(conn->isNamePersistable());
     ui->persistNameButton->setEnabled(!conn->hasDefaultName());
@@ -358,9 +360,10 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             setActiveProgBtn(c->programmerType());
         }
         break;
+    case CONNECTION_USB_SHUPITO:
     case CONNECTION_SHUPITO23:
         {
-            UsbShupito23Connection * c = static_cast<UsbShupito23Connection *>(conn);
+            ShupitoConnection * c = static_cast<ShupitoConnection *>(conn);
             ShupitoFirmwareDetails fd;
             if (c->getFirmwareDetails(fd))
             {
