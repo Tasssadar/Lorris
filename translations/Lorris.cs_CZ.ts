@@ -227,7 +227,7 @@
 <context>
     <name>ButtonWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="167"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/buttonwidget.cpp" line="177"/>
         <source>Button</source>
         <translation>Tlačítko</translation>
     </message>
@@ -256,157 +256,157 @@
         <translation>Zvolte připojení</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="130"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="124"/>
         <source>Name:</source>
         <translation>Jméno:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="168"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="179"/>
         <source>Select a connection to edit its settings.</source>
         <translation>Po zvolení připojení můžete měnit jeho nastavení.</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="184"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="195"/>
         <source>Physical device name:</source>
         <translation>Jméno fyzického zařízení:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="194"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="538"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="205"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="549"/>
         <source>Speed:</source>
         <translation>Rychlost:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="211"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="564"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="222"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="575"/>
         <source>50</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="216"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="569"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="227"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="580"/>
         <source>75</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="221"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="574"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="232"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="585"/>
         <source>110</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="226"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="579"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="237"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="590"/>
         <source>134</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="231"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="584"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="242"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="595"/>
         <source>150</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="236"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="247"/>
         <source>200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="241"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="589"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="252"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="600"/>
         <source>300</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="246"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="594"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="257"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="605"/>
         <source>600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="251"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="599"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="262"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="610"/>
         <source>1200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="256"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="604"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="267"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="615"/>
         <source>1800</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="261"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="609"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="272"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="620"/>
         <source>2400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="266"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="614"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="277"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="625"/>
         <source>4800</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="271"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="624"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="282"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="635"/>
         <source>9600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="276"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="629"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="287"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="640"/>
         <source>14400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="281"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="634"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="292"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="645"/>
         <source>19200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="286"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="639"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="297"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="650"/>
         <source>38400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="291"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="302"/>
         <source>56000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="296"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="644"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="307"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="655"/>
         <source>57600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="301"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="312"/>
         <source>76800</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="306"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="649"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="317"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="660"/>
         <source>115200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="311"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="654"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="322"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="665"/>
         <source>128000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="316"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="669"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="327"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="680"/>
         <source>256000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1116"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1127"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -419,313 +419,323 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Typ programátoru:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1138"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1149"/>
         <source>Shupito</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1190"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1201"/>
         <source>avr232boot</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1164"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1175"/>
         <source>atsam</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="343"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="356"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="134"/>
+        <source>Store on the device</source>
+        <translation>Uložit do zařízení</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="137"/>
+        <source>...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="354"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="367"/>
         <source>TextLabel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="376"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="387"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://technika.junior.cz/trac/wiki/shupito#shupito23_firmware&quot;&gt;Check for updates&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://technika.junior.cz/trac/wiki/shupito#shupito23_firmware&quot;&gt;Zkontrolovat aktualizace&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="392"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="403"/>
         <source>Hardware:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="399"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="410"/>
         <source>Firmware:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="425"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="436"/>
         <source>VID:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="435"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="446"/>
         <source>PID:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="445"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="456"/>
         <source>S/N:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="458"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="469"/>
         <source>Interface:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="619"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="630"/>
         <source>7200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="659"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="670"/>
         <source>230400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="664"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="675"/>
         <source>250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="674"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="685"/>
         <source>460800</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="679"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="690"/>
         <source>500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="684"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="695"/>
         <source>512000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="689"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="700"/>
         <source>921600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="694"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="705"/>
         <source>1000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="699"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="710"/>
         <source>1024000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="704"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="715"/>
         <source>1250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="709"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="720"/>
         <source>1500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="714"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="725"/>
         <source>1750000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="719"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="730"/>
         <source>1843200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="724"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="735"/>
         <source>2000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="729"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="740"/>
         <source>2048000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="734"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="745"/>
         <source>2250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="739"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="750"/>
         <source>2500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="744"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="755"/>
         <source>2750000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="749"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="760"/>
         <source>3000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="754"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="765"/>
         <source>3250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="759"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="770"/>
         <source>3500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="764"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="775"/>
         <source>3686400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="769"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="780"/>
         <source>3750000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="774"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="785"/>
         <source>4000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="814"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="825"/>
         <source>Stop bits:</source>
         <translation>Stop bity:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="837"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="848"/>
         <source>1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="842"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="853"/>
         <source>1.5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="847"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="858"/>
         <source>2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="871"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="882"/>
         <source>Parity:</source>
         <translation>Parita:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="894"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="905"/>
         <source>None</source>
         <translation>Žádná</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="899"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="910"/>
         <source>Odd</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="904"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="915"/>
         <source>Even</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="928"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="939"/>
         <source>Data bits:</source>
         <translation>Data bity:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="951"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="962"/>
         <source>5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="956"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="967"/>
         <source>6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="961"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="972"/>
         <source>7</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="966"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="977"/>
         <source>8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1027"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1038"/>
         <source>Host:</source>
         <translation>Adresa:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1050"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1061"/>
         <source>Port:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1086"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1097"/>
         <source>This connection has no settings.</source>
         <translation>Toto připojení nemá žádná nastavení. </translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1216"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1227"/>
         <source>avr109</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1256"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1267"/>
         <source>Add serial port</source>
         <translation>Přidat sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1265"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1276"/>
         <source>Remove connection</source>
         <translation>Odebrat připojení</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1273"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1284"/>
         <source>Add TCP client</source>
         <translation>Přidat TCP clienta</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1278"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1289"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1283"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1294"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1288"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1299"/>
         <source>Add USB connection</source>
         <translation>Přidat USB spojení</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1293"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1304"/>
         <source>Clone</source>
         <translation>Duplikovat</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="414"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="419"/>
         <source>New Serial Port</source>
         <translation>Nový sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="423"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="428"/>
         <source>New TCP client</source>
         <translation>Nový TCP client</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="432"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="437"/>
         <source>New USB connection</source>
         <translation>Nové USB spojení</translation>
     </message>
@@ -847,57 +857,67 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ColorWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="30"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="32"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="64"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="66"/>
         <source>Color type</source>
         <translation>Typ barvy</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="68"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="70"/>
         <source>RGB (8b/channel, 3 uint8s)</source>
         <translation>RGB (8b/kanál, 3 uint8)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="69"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="71"/>
         <source>RGB (10b/channel, 3 uint16s)</source>
         <translation>RGB (10b/kanál, 3 uint16)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="70"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="72"/>
         <source>RGB (10b/channel, 1 uint32)</source>
         <translation>RGB (10b/kanál, 1 uint32)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="71"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="73"/>
         <source>Shades of gray (8b/channel, 1 uint8)</source>
         <translation>Odstníny šedé (8b/kanál, 1 uint8)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="72"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="74"/>
         <source>Shades of gray (10b/channel, 1 uint16)</source>
         <translation>Odstníny šedé (10b/kanál, 1 uint16)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="81"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="75"/>
+        <source>RGBA (8b/channel, 1 uint32)</source>
+        <translation>RGBA (8b/kanál, 1 uint32)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="76"/>
+        <source>ARGB (8b/channel, 1 uint32)</source>
+        <translation>ARGB (8b/kanál, 1 uint32)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="85"/>
         <source>Show RGB values</source>
         <translation>Zobrazit RGB hodnoty</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="85"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="89"/>
         <source>Brightness correction</source>
         <translation>Úprava jasu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="89"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="93"/>
         <source>Color correction</source>
         <translation>Úprava barev</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="331"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="357"/>
         <source>Brightness: </source>
         <translation>Jas:</translation>
     </message>
@@ -905,7 +925,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ColorWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="471"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/colorwidget.cpp" line="497"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
@@ -926,12 +946,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/ui/connectbutton.cpp" line="93"/>
         <source>Connecting...</source>
-        <translation>Připojuji...</translation>
+        <translation>Připojujování...</translation>
     </message>
     <message>
         <location filename="../src/ui/connectbutton.cpp" line="97"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/connectbutton.cpp" line="101"/>
+        <source>Disconnecting...</source>
+        <translation>Odpojování...</translation>
     </message>
 </context>
 <context>
@@ -2328,12 +2353,12 @@ stejného souboru vícekrát:</translation>
         <translation>Chyba při načítání souboru %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="845"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="847"/>
         <source>VCC was turned off due to overvoltage!</source>
         <translation>VCC bylo vypnuto kvůli přepětí!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="856"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="858"/>
         <source>Shupito is not responding, try to re-plug it into computer!</source>
         <translation>Shupito neodpovídá, zkuste ho odpojit a znovu připojit!</translation>
     </message>
@@ -2662,113 +2687,143 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Napětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/miniprogrammerui.cpp" line="67"/>
+        <location filename="../src/LorrisProgrammer/ui/miniprogrammerui.cpp" line="68"/>
         <source>h:mm:ss M.d.yyyy</source>
         <translation>h:mm:ss d.M.yyyy</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/miniprogrammerui.cpp" line="203"/>
+        <source>You have flashed this file already, and it was not changed since.</source>
+        <translation>Tento soubor se od posledního flashnutí nezměnil!</translation>
     </message>
 </context>
 <context>
     <name>NumberWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="73"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="77"/>
         <source>Format</source>
         <translation>Formát</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="72"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="76"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="40"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="41"/>
         <source>Number</source>
         <translation>Číslo</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="77"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="78"/>
+        <source>Precision</source>
+        <translation>Přesnost</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="82"/>
         <source>unsigned 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="78"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="83"/>
         <source>unsigned 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="79"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="84"/>
         <source>unsigned 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="80"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="85"/>
         <source>unsigned 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="82"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="87"/>
         <source>signed 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="83"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="88"/>
         <source>signed 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="84"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="89"/>
         <source>signed 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="85"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="90"/>
         <source>signed 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="87"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="92"/>
         <source>float (4 bytes)</source>
         <translation>float (4 byty)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="88"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="93"/>
         <source>double (8 bytes)</source>
         <translation>double (8 bytů)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="109"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="114"/>
         <source>Decimal</source>
         <translation>Desítkový</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="110"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="115"/>
         <source>Decimal (w/ exponent)</source>
         <translation>Desítkový (s exponentem)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="111"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="116"/>
         <source>Hex</source>
         <translation>Hexadecimální</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="112"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="117"/>
         <source>Binary</source>
         <translation>Binární</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="128"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="136"/>
+        <source>%1 digits</source>
+        <translation>%1 číslic</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="146"/>
+        <source>Set precision...</source>
+        <translation>Nastavit přesnost...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="151"/>
         <source>Level off</source>
         <translation>Zarovnat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="133"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="156"/>
         <source>Set formula...</source>
         <translation>Nastavit výraz...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="399"/>
+        <source>Number precision</source>
+        <translation>Přesnost čísla</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="399"/>
+        <source>Enter number of digits</source>
+        <translation>Zadejte počet desetinných míst</translation>
     </message>
 </context>
 <context>
     <name>NumberWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="338"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="413"/>
         <source>Number</source>
         <translation>Číslo</translation>
     </message>
@@ -3117,7 +3172,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
     </message>
     <message>
         <location filename="../src/shared/hexfile.cpp" line="56"/>
-        <location filename="../src/shared/hexfile.cpp" line="163"/>
+        <location filename="../src/shared/hexfile.cpp" line="157"/>
         <source>Can&apos;t open file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
     </message>
@@ -3142,28 +3197,28 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Chybná délka záznamu (lajna %1)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="120"/>
+        <location filename="../src/shared/hexfile.cpp" line="114"/>
         <source>Invalid type %1 record (line %2)</source>
         <translation>Chybný záznam typu %1 (lajna %2)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="128"/>
+        <location filename="../src/shared/hexfile.cpp" line="122"/>
         <source>Invalid record type %1 (line %2)</source>
         <translation>Chybný typ záznamu: %1 (lajna %2)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="150"/>
-        <location filename="../src/shared/hexfile.cpp" line="154"/>
+        <location filename="../src/shared/hexfile.cpp" line="144"/>
+        <location filename="../src/shared/hexfile.cpp" line="148"/>
         <source>Memory location was defined twice (line %1)</source>
         <translation>Oblast paměti byla definována dvakrát (lajna %1)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="284"/>
+        <location filename="../src/shared/hexfile.cpp" line="278"/>
         <source>This chip does not have memory type %1</source>
         <translation>Tento čip nemá paměť %1</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="287"/>
+        <location filename="../src/shared/hexfile.cpp" line="281"/>
         <source>Program is too large.</source>
         <translation>Program je příliš velký.</translation>
     </message>
@@ -3258,7 +3313,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
     <message>
         <location filename="../src/ui/chooseconnectiondlg.cpp" line="29"/>
         <source>(Connecting...)</source>
-        <translation>(Připojuji...)</translation>
+        <translation>(Připojování...)</translation>
     </message>
     <message>
         <location filename="../src/ui/chooseconnectiondlg.cpp" line="31"/>
@@ -3269,6 +3324,11 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <location filename="../src/ui/chooseconnectiondlg.cpp" line="33"/>
         <source>(Pending)</source>
         <translation>(Čekajicí)</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="35"/>
+        <source>(Disconnecting...)</source>
+        <translation>(Odpojování...)</translation>
     </message>
     <message>
         <location filename="../src/misc/datafileparser.cpp" line="300"/>
@@ -4114,7 +4174,7 @@ p, li { white-space: pre-wrap; }
         <translation>Nastavit zkratku pro focus...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="402"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="413"/>
         <source>Slider focus shortcut</source>
         <translation>Zkratka pro focus slideru</translation>
     </message>
@@ -4127,7 +4187,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SliderWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="421"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/sliderwidget.cpp" line="432"/>
         <source>Slider</source>
         <translation></translation>
     </message>
@@ -4638,32 +4698,32 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
 <context>
     <name>TabBar</name>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="583"/>
+        <location filename="../src/ui/tabwidget.cpp" line="594"/>
         <source>Split view top/bottom</source>
         <translation>Rozdělit na vrch a spodek</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="584"/>
+        <location filename="../src/ui/tabwidget.cpp" line="595"/>
         <source>Split view left/right</source>
         <translation>Rozdělit napravo a nalevo</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="590"/>
+        <location filename="../src/ui/tabwidget.cpp" line="601"/>
         <source>To new window</source>
         <translation>Do nového okna</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="594"/>
+        <location filename="../src/ui/tabwidget.cpp" line="605"/>
         <source>Rename...</source>
         <translation>Přejmenovat...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="784"/>
+        <location filename="../src/ui/tabwidget.cpp" line="808"/>
         <source>Rename tab</source>
         <translation>Přejmenovat panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="784"/>
+        <location filename="../src/ui/tabwidget.cpp" line="808"/>
         <source>New name:</source>
         <translation>Nové jméno:</translation>
     </message>
@@ -4760,7 +4820,7 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
 <context>
     <name>TabWidget</name>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="40"/>
+        <location filename="../src/ui/tabwidget.cpp" line="43"/>
         <source>&amp;Menu</source>
         <translation></translation>
     </message>
@@ -5125,17 +5185,17 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
 <context>
     <name>UsbAcmConnection2</name>
     <message>
-        <location filename="../src/connection/usbacmconn.cpp" line="191"/>
+        <location filename="../src/connection/usbacmconn.cpp" line="194"/>
         <source>Cannot find the USB interface.</source>
         <translation>Nemůžu najít USB rozhraní.</translation>
     </message>
     <message>
-        <location filename="../src/connection/usbacmconn.cpp" line="203"/>
+        <location filename="../src/connection/usbacmconn.cpp" line="206"/>
         <source>Cannot open the USB interface.</source>
         <translation>Nemůžu otevřít USB rozhraní.</translation>
     </message>
     <message>
-        <location filename="../src/connection/usbacmconn.cpp" line="297"/>
+        <location filename="../src/connection/usbacmconn.cpp" line="318"/>
         <source>Clone of </source>
         <translation>Kopie </translation>
     </message>
@@ -5231,17 +5291,17 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
         <translation>Odstranit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="630"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="632"/>
         <source>Grid size</source>
         <translation>Rozteč sítě</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="630"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="632"/>
         <source>Enter grid size in pixels</source>
         <translation>Zadejte rozteč sítě v pixelech</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="873"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="879"/>
         <source>Set bookmark shortcut</source>
         <translation>Zkratka pro záložku</translation>
     </message>
