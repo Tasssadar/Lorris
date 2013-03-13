@@ -24,8 +24,11 @@
 #include "tabwidget.h"
 #include "../misc/datafileparser.h"
 #include "../WorkTab/childtab.h"
+#include "HomeTab.h"
 
 #include "ui_tabswitchwidget.h"
+
+#define HOME_TAB QVariant('H')
 
 TabWidget::TabWidget(quint32 id, QWidget *parent) :
     QTabWidget(parent)
@@ -59,6 +62,13 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     sWorkTabMgr.registerTabWidget(this);
+}
+
+int TabWidget::addTab(HomeTab *tab, const QString& name)
+{
+    int idx = QTabWidget::addTab(tab, name);
+    m_tab_bar->setTabData(idx, HOME_TAB);
+    return idx;
 }
 
 int TabWidget::addTab(Tab *widget, const QString &name, quint32 tabId)
@@ -626,7 +636,7 @@ void TabBar::mousePressEvent(QMouseEvent *event)
         case Qt::RightButton:
         {
             int tab = tabAt(event->pos());
-            if(tab == -1 || tabText(tab) == "Home")
+            if(tab == -1 || tabData(tab) == HOME_TAB)
                 break;
 
             m_cur_menu_tab = tab;
@@ -638,6 +648,19 @@ void TabBar::mousePressEvent(QMouseEvent *event)
             PlusTabBar::mousePressEvent(event);
             break;
     }
+}
+
+void TabBar::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if(event->button() != Qt::LeftButton)
+        return PlusTabBar::mouseDoubleClickEvent(event);
+
+    int tab = tabAt(event->pos());
+    if(tab == -1 || tabData(tab) == HOME_TAB)
+        return PlusTabBar::mouseDoubleClickEvent(event);
+
+    m_cur_menu_tab = tab;
+    renameTab();
 }
 
 void TabBar::mouseMoveEvent(QMouseEvent *event)
