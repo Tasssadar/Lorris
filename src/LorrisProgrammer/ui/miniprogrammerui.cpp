@@ -11,6 +11,7 @@
 #include "../../misc/utils.h"
 #include "../lorrisprogrammer.h"
 #include "../../misc/datafileparser.h"
+#include "../../ui/tooltipwarn.h"
 
 MiniProgrammerUI::MiniProgrammerUI(QObject *parent) :
     ProgrammerUI(UI_MINIMAL, parent), ui(new Ui::MiniProgrammerUI)
@@ -193,4 +194,13 @@ bool MiniProgrammerUI::eventFilter(QObject *obj, QEvent *event)
     QResizeEvent *e = (QResizeEvent*)event;
     setVertical(e->size().width() < e->size().height());
     return QObject::eventFilter(obj, event);
+}
+
+void MiniProgrammerUI::warnSecondFlash()
+{
+    if(m_warnBox)
+    {
+        new ToolTipWarn(tr("You have flashed this file already, and it was not changed since."), ui->writeButton, m_widget);
+        Utils::playErrorSound();
+    }
 }

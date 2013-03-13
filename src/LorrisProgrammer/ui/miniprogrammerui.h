@@ -37,6 +37,7 @@ public:
     }
 
     void writeSelectedMem();
+    void warnSecondFlash();
 
 public slots:
     void setVertical(bool vertical);
