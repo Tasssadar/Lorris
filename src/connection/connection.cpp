@@ -94,6 +94,7 @@ void Connection::Close()
     case st_disconnecting:
         this->doClose();
         break;
+    default: break;
     }
 }
 

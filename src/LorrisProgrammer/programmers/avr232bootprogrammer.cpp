@@ -92,7 +92,7 @@ QByteArray avr232bootProgrammer::readMemory(const QString& mem, chip_definition 
     quint16 itr = 0;
     do
     {
-        if(m_rec_buff.size() >= md->size)
+        if((quint32)m_rec_buff.size() >= md->size)
             goto success;
 
         QByteArray cmd(1, 0x13);

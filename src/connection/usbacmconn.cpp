@@ -9,7 +9,7 @@
 
 UsbAcmConnection2::UsbAcmConnection2(yb::async_runner & runner)
     : PortConnection(CONNECTION_USB_ACM2), m_runner(runner), m_enumerated(false), m_vid(0), m_pid(0),
-    m_baudrate(115200), m_parity(pp_none), m_stop_bits(sb_one), m_data_bits(8)
+    m_baudrate(115200), m_stop_bits(sb_one), m_parity(pp_none), m_data_bits(8)
 {
     connect(&m_incomingDataChannel, SIGNAL(dataReceived()), this, SLOT(incomingDataReady()));
     connect(&m_sendCompleted, SIGNAL(dataReceived()), this, SLOT(sendCompleted()));

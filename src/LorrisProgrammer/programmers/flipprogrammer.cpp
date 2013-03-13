@@ -13,11 +13,11 @@ int FlipProgrammer::getType()
     return programmer_flip;
 }
 
-void FlipProgrammer::stopAll(bool wait)
+void FlipProgrammer::stopAll(bool /*wait*/)
 {
 }
 
-void FlipProgrammer::switchToFlashMode(quint32 prog_speed_hz)
+void FlipProgrammer::switchToFlashMode(quint32 /*prog_speed_hz*/)
 {
     m_runner.try_run(m_flip.clear_errors());
 }
@@ -78,7 +78,7 @@ void FlipProgrammer::writeFuses(std::vector<quint8>&, chip_definition &, quint8)
     // The fuse reading/writing is not available in DFU.
 }
 
-void FlipProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
+void FlipProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 /*verifyMode*/)
 {
     std::vector<page> pages;
     file.makePages(pages, memId, chip, 0);
@@ -87,7 +87,7 @@ void FlipProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip
         m_runner.try_run(m_flip.write_memory(memId - 1, pages[i].address, pages[i].data.data(), pages[i].data.size()));
 }
 
-void FlipProgrammer::erase_device(chip_definition& chip)
+void FlipProgrammer::erase_device(chip_definition& /*chip*/)
 {
     m_runner.try_run(m_flip.chip_erase());
 }

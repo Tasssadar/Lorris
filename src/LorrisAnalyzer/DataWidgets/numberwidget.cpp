@@ -180,7 +180,10 @@ void NumberWidget::setValue(QVariant var)
 
     if(m_eval.isActive())
     {
-        if(var.type() == QMetaType::QChar || var.type() == QMetaType::UChar)
+        // .toString() on char type makes one
+        // character string instead of value transcript
+        if ((int)var.type() == QMetaType::QChar ||
+            (int)var.type() == QMetaType::UChar)
             var.convert(QVariant::Int);
 
         QVariant res = m_eval.evaluate(var.toString());

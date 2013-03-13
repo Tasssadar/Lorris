@@ -198,6 +198,7 @@ void PortShupitoConnection::portStateChanged(ConnectionState state)
         m_parserState = pst_init0;
         this->SetState(st_connected);
         break;
+    default: break;
     }
 }
 

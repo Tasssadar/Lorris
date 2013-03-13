@@ -87,6 +87,10 @@ private:
     void setIntf(yb::usb_device_interface const & intf);
     void updateIntf();
 
+    yb::async_runner & m_runner;
+    yb::async_future<void> m_receive_worker;
+    yb::async_future<void> m_send_worker;
+
     bool m_enumerated;
 
     int m_vid;
@@ -105,10 +109,6 @@ private:
     QString m_details;
 
     bool m_configurable;
-
-    yb::async_runner & m_runner;
-    yb::async_future<void> m_receive_worker;
-    yb::async_future<void> m_send_worker;
 
     static size_t const read_buffer_count = 2;
     uint8_t m_read_buffers[read_buffer_count][64];

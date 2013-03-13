@@ -34,7 +34,7 @@ chip_definition::memorydef *chip_definition::getMemDef(quint8 memId)
 
 quint8 chip_definition::memNameToId(const QString& name)
 {
-    for(int i = 0; i < sizeof_array(memNames); ++i)
+    for(size_t i = 0; i < sizeof_array(memNames); ++i)
         if(name == memNames[i])
             return i;
 

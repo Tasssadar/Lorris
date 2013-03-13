@@ -141,6 +141,11 @@ void SliderWidget::loadWidgetInfo(DataFileParser *file)
         setShortcut(file->readString());
 }
 
+void SliderWidget::setRange(double min, double max, double /*step*/)
+{
+    setRange(min, max);
+}
+
 void SliderWidget::setRange(double min, double max)
 {
     minEdit()->setText(QString::number(min));

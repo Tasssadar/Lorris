@@ -196,7 +196,7 @@ void avr109Programmer::flashRaw(HexFile& file, quint8 memId, chip_definition& ch
             block = readMem(memId, p.address, p.data.size());
         } catch(QString) {}
 
-        if (block.size() != p.data.size() ||
+        if ((size_t)block.size() != p.data.size() ||
             !std::equal(p.data.data(), p.data.data()+p.data.size(), (quint8*)block.data()))
         {
             throw tr("Verification failed!");

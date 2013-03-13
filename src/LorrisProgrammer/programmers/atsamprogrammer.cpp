@@ -110,7 +110,7 @@ void AtsamProgrammer::readFuses(std::vector<quint8>& data, chip_definition &chip
     data[0] = (uint8_t)value;
 }
 
-void AtsamProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode)
+void AtsamProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 /*verifyMode*/)
 {
     (void)chip;
 
@@ -127,7 +127,7 @@ void AtsamProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chi
     }
 }
 
-void AtsamProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
+void AtsamProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 /*verifyMode*/)
 {
     chip_definition::memorydef * md = chip.getMemDef(memId);
     if (!md)
