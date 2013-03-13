@@ -326,7 +326,7 @@ QByteArray avr109Programmer::readFlashMemBlock(quint32 start, quint32 size, int 
 {
     Q_ASSERT((start % block_size) == 0);
 
-    quint32 address = 0;
+    quint32 address = start;
     setAddress(address >> 1);
 
     QByteArray res;
