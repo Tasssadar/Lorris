@@ -20,6 +20,7 @@ enum ConnectionState {
     st_disconnected,
     st_connecting,
     st_connected,
+    st_disconnecting,
     st_missing,
     st_connect_pending
 };
@@ -131,7 +132,6 @@ signals:
 protected:
     ~Connection();
     void SetState(ConnectionState state);
-    void SetOpen(bool open);
 
     void markMissing();
     void markPresent();

@@ -30,7 +30,7 @@ void ShupitoTunnel::doOpen()
 {
     if(m_shupito && !this->isOpen())
     {
-        this->SetOpen(true);
+        this->SetState(st_connected);
 
         if(!dataSigConnected)
         {

@@ -1,8 +1,22 @@
 #include "shupitoconn.h"
 #include <stdint.h>
 
+bool ShupitoFirmwareDetails::empty() const
+{
+    return fw_revision.isEmpty();
+}
+
+QString ShupitoFirmwareDetails::firmwareFilename() const
+{
+    QDate d = fw_timestamp.date();
+    return QString("shupito%1%2_%3_%4_%5_%6.hex")
+        .arg(hw_major).arg(hw_minor)
+        .arg(d.year(), 4, 10, QChar('0')).arg(d.month(), 2, 10, QChar('0')).arg(d.day(), 2, 10, QChar('0'))
+        .arg(fw_revision.left(7));
+}
+
 ShupitoConnection::ShupitoConnection(ConnectionType type)
-    : Connection(type), m_renameConfig(nullptr),m_persistScheduled(false)
+    : Connection(type), m_renameConfig(nullptr), m_persistScheduled(false)
 {
     connect(this, SIGNAL(descRead(ShupitoDesc)), this, SLOT(descriptorChanged(ShupitoDesc)));
     connect(this, SIGNAL(stateChanged(ConnectionState)), this, SLOT(connectionStateChanged(ConnectionState)));
@@ -35,7 +49,7 @@ void ShupitoConnection::connectionStateChanged(ConnectionState state)
     {
         m_persistScheduled = false;
         this->doPersist();
-        // FIXME: we should call `this->Close();` here, but we need to flush the write queue first
+        this->Close();
     }
 }
 
@@ -53,6 +67,36 @@ void ShupitoConnection::doPersist()
 void ShupitoConnection::descriptorChanged(ShupitoDesc const & desc)
 {
     m_renameConfig = desc.getConfig("64d5bf39-468a-4fbb-80bb-334d8ca3ad81");
+
+    if (ShupitoDesc::config const * c = desc.getConfig("c49124d9-4629-4aef-ae35-ddc32c21b279"))
+    {
+        if (c->data.size() == 15 && c->data[0] == 1)
+        {
+            m_fwDetails.hw_major = c->data[1];
+            m_fwDetails.hw_minor = c->data[2];
+            uint32_t fw_timestamp = c->data[3] | (c->data[4] << 8) | (c->data[5] << 16) | (c->data[6] << 24);
+            m_fwDetails.fw_timestamp.setTimeSpec(Qt::UTC);
+            m_fwDetails.fw_timestamp.setTime_t(fw_timestamp);
+            m_fwDetails.fw_zone_offset = (int16_t)(c->data[7] | (c->data[8] << 8));
+            m_fwDetails.fw_timestamp = m_fwDetails.fw_timestamp.addSecs(m_fwDetails.fw_zone_offset * 60);
+
+            QByteArray fw_revision((char const *)c->data.data() + 9, 6);
+            m_fwDetails.fw_revision = fw_revision.toHex();
+        }
+    }
+    else
+    {
+        m_fwDetails.fw_revision.clear();
+    }
+}
+
+bool ShupitoConnection::getFirmwareDetails(ShupitoFirmwareDetails & details) const
+{
+    if (m_fwDetails.empty())
+        return false;
+
+    details = m_fwDetails;
+    return true;
 }
 
 PortShupitoConnection::PortShupitoConnection()
@@ -100,25 +144,29 @@ void PortShupitoConnection::doOpen()
     if (!m_port)
         return;
 
+    m_readDesc = false;
     this->SetState(st_connecting);
 
     // add TabRef so that connection is not closed when another tab
     // with this PortConnection calls releaseTab();
     addPortTabRef();
 
-    if (m_port->state() != st_connected)
+    switch (m_port->state())
     {
+    case st_connected:
+        m_parserState = pst_init0;
+        this->SetState(st_connected);
+        break;
+    case st_disconnecting:
+        this->SetState(st_disconnected);
+        break;
+    default:
         m_port->OpenConcurrent();
         if (m_port->state() == st_disconnected)
         {
             this->SetState(st_disconnected);
             releasePortTabRef();
         }
-    }
-    else
-    {
-        m_parserState = pst_init0;
-        this->SetState(st_connected);
     }
 }
 
@@ -131,23 +179,25 @@ void PortShupitoConnection::doClose()
 
 void PortShupitoConnection::portStateChanged(ConnectionState state)
 {
-    if (state == st_missing)
+    switch (state)
     {
+    case st_missing:
         this->SetState(st_missing);
-    }
-    else if (state == st_connect_pending)
-    {
+        break;
+    case st_connect_pending:
         this->SetState(st_connect_pending);
-    }
-    else if (state == st_disconnected)
-    {
+        break;
+    case st_disconnected:
         releasePortTabRef();
         this->SetState(st_disconnected);
-    }
-    else if (state == st_connected)
-    {
+        break;
+    case st_disconnecting:
+        this->SetState(st_disconnecting);
+        break;
+    case st_connected:
         m_parserState = pst_init0;
         this->SetState(st_connected);
+        break;
     }
 }
 

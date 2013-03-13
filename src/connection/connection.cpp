@@ -91,17 +91,10 @@ void Connection::Close()
         break;
     case st_connecting:
     case st_connected:
+    case st_disconnecting:
         this->doClose();
         break;
     }
-}
-
-void Connection::SetOpen(bool open)
-{
-    if (open)
-        this->SetState(st_connected);
-    else
-        this->SetState(st_disconnected);
 }
 
 void Connection::addRef()

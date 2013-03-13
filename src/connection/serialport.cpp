@@ -56,7 +56,7 @@ QString SerialPort::details() const
 
 void SerialPort::connectResultSer(bool opened)
 {
-    this->SetOpen(opened);
+    this->SetState(opened? st_connected: st_disconnected);
 }
 
 void SerialPort::doClose()
@@ -98,7 +98,7 @@ void SerialPort::doClose()
         }
     }
 
-    this->SetOpen(false);
+    this->SetState(st_disconnected);
 }
 
 void SerialPort::SendData(const QByteArray& data)
