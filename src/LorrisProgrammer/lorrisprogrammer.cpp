@@ -796,6 +796,8 @@ void LorrisProgrammer::setConnection(ConnectionPointer<Connection> const & con)
         m_con->releaseTab();
     }
 
+    emit setConnId(con ? con->GetIDString() : QString(), m_con != NULL);
+
     m_con = con;
     m_programmer.reset();
 
