@@ -23,6 +23,7 @@ public:
     void clear();
 
     void requestDesc();
+    size_t maxPacketSize() const { return 255; }
 
     bool getFirmwareDetails(ShupitoFirmwareDetails & details) const;
 
@@ -48,8 +49,10 @@ private:
     QString m_details;
     ShupitoDesc m_desc;
 
+    ThreadChannel<ShupitoPacket> m_incomingPackets;
+    ThreadChannel<void> m_sendCompleted;
+
     yb::async_channel<std::vector<uint8_t> > m_write_channel;
-    yb::async_future<void> m_write_loop;
 
     struct write_loop_ctx
     {
@@ -58,6 +61,7 @@ private:
     };
 
     write_loop_ctx m_write_loop_ctx;
+    yb::async_future<void> m_write_loop;
 
     yb::task<void> write_loop();
     yb::task<void> write_packets();
@@ -70,9 +74,6 @@ private:
 
     std::unique_ptr<read_loop_ctx[]> m_read_loops;
     yb::task<void> read_loop(uint8_t i);
-
-    ThreadChannel<ShupitoPacket> m_incomingPackets;
-    ThreadChannel<void> m_sendCompleted;
 };
 
 #endif // LORRIS_CONNECTION_USBSHUPITO23CONN_H
