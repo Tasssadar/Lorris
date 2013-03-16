@@ -8,7 +8,8 @@
 #include "../shupito.h"
 #include "shupitospi.h"
 
-ShupitoSPI::ShupitoSPI(Shupito *shupito) : ShupitoMode(shupito)
+ShupitoSPI::ShupitoSPI(Shupito *shupito)
+    : ShupitoModeCommon(shupito)
 {
 }
 

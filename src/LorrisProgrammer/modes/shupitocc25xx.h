@@ -11,7 +11,7 @@
 #include "../shupitopacket.h"
 #include "shupitomode.h"
 
-class ShupitoCC25XX : public ShupitoMode
+class ShupitoCC25XX : public ShupitoModeCommon
 {
     Q_OBJECT
 public:

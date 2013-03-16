@@ -11,6 +11,7 @@
 #include <QString>
 #include <QThread>
 #include <QFont>
+#include <stdint.h>
 
 class QLayout;
 
@@ -42,6 +43,7 @@ public:
 
     static QString toBase16(quint8 const * first, quint8 const * last);
     static QString toBinary(std::size_t width, int value);
+    static void toBase16(char * ptr, uint8_t v);
 
     static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
     static void sleep (unsigned long secs)  { QThread::sleep(secs); }
@@ -64,6 +66,7 @@ public:
     static bool isInRect(int px, int py, int rx, int ry, int rw, int rh);
     static bool isInRect(const QPoint& p, int rx, int ry, int rw, int rh);
     static bool isInRect(const QPoint& p, const QPoint& rp, const QPoint& rs);
+
 };
 
 template <typename T>
@@ -71,6 +74,19 @@ void Utils::swapEndian(char *val)
 {
     for(qint8 i = sizeof(T); i > 0; i -= 2, ++val)
         std::swap(*val, *(val + i - 1));
+}
+
+template <typename T>
+T deserialize_le(uint8_t const * p, size_t size = sizeof(T))
+{
+    T r = 0;
+    for (size_t i = size; i != 0; --i)
+    {
+        r <<= 8;
+        r |= p[i-1];
+    }
+
+    return r;
 }
 
 #endif // NUM_FUNC_H

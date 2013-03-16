@@ -14,10 +14,12 @@
 #include "shupitospi.h"
 #include "shupitopdi.h"
 #include "shupitocc25xx.h"
+#include "shupitospiflash.h"
 #include "../../shared/defmgr.h"
 #include "../../shared/hexfile.h"
 
-ShupitoMode::ShupitoMode(Shupito *shupito) : QObject()
+ShupitoMode::ShupitoMode(Shupito *shupito)
+    : m_cancel_requested(false), m_shupito(shupito)
 {
     m_prepared = false;
     m_flash_mode = false;
@@ -27,10 +29,6 @@ ShupitoMode::ShupitoMode(Shupito *shupito) : QObject()
     m_bsel_max = 0;
 
     m_prog_cmd_base = 0;
-
-    m_shupito = shupito;
-
-    m_cancel_requested = false;
 }
 
 ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito, ShupitoDesc *desc)
@@ -40,14 +38,32 @@ ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito, ShupitoDesc *de
     case MODE_SPI:
         if (desc->getConfig("46dbc865-b4d0-466b-9b70-2f3f5b264e65"))
             return new ShupitoSPI(shupito);
+        return nullptr;
     case MODE_PDI:
         if (desc->getConfig("71efb903-3030-4fd3-8896-1946aba37efc"))
             return new ShupitoPDI(shupito);
+        return nullptr;
     case MODE_CC25XX:
         if (desc->getConfig("76e37480-3f61-4e7a-9b1b-37af6bd418fa"))
             return new ShupitoCC25XX(shupito);
+        return nullptr;
+    case MODE_SPIFLASH:
+        if (desc->getConfig("633125ab-32e0-49ec-b240-7d845bb70b2d"))
+            return new ShupitoSpiFlash(shupito);
+        return nullptr;
     }
-    return NULL;
+
+    return nullptr;
+}
+
+void ShupitoMode::requestCancel()
+{
+    m_cancel_requested = true;
+}
+
+ShupitoModeCommon::ShupitoModeCommon(Shupito *shupito)
+    : ShupitoMode(shupito)
+{
 }
 
 // void switch_to_flash_mode(boost::uint32_t speed_hz), device_shupito.hpp
@@ -121,8 +137,18 @@ void ShupitoMode::prepare()
     m_prepared = true;
 }
 
+void ShupitoMode::readFuses(std::vector<quint8>& data, chip_definition &chip)
+{
+    throw QString(tr("The device does not have fuses."));
+}
+
+void ShupitoMode::writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode)
+{
+    throw QString(tr("The device does not have fuses."));
+}
+
 // std::string read_device_id(), device_shupito.hpp
-chip_definition ShupitoMode::readDeviceId()
+chip_definition ShupitoModeCommon::readDeviceId()
 {
     m_prepared = false;
 
@@ -143,14 +169,14 @@ chip_definition ShupitoMode::readDeviceId()
     return sDefMgr.findChipdef(id);
 }
 
-void ShupitoMode::editIdArgs(QString &id, quint8 &/*id_lenght*/)
+void ShupitoModeCommon::editIdArgs(QString &id, quint8 &/*id_lenght*/)
 {
     id = "unk:";
 }
 
 // virtual void read_memory(std::ostream & s, std::string const & memid, avrflash::chip_definition const & chip)
 // device.hpp
-QByteArray ShupitoMode::readMemory(const QString &mem, chip_definition &chip)
+QByteArray ShupitoModeCommon::readMemory(const QString &mem, chip_definition &chip)
 {
     m_cancel_requested = false;
 
@@ -183,7 +209,7 @@ QByteArray ShupitoMode::readMemory(const QString &mem, chip_definition &chip)
 }
 // void read_memory_range(int memid, unsigned char * memory, size_t address, size_t size)
 // device_shupito.hpp
-void ShupitoMode::readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size)
+void ShupitoModeCommon::readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size)
 {
     Q_ASSERT(size < 65536);
 
@@ -203,13 +229,8 @@ void ShupitoMode::readMemRange(quint8 memid, QByteArray& memory, quint32 address
     memory.append(p);
 }
 
-void ShupitoMode::requestCancel()
-{
-    m_cancel_requested = true;
-}
-
 //void erase_device(avrflash::chip_definition const & chip), device_shupito.hpp
-void ShupitoMode::erase_device(chip_definition& /*chip*/)
+void ShupitoModeCommon::erase_device(chip_definition& /*chip*/)
 {
     m_prepared = false;
     m_flash_mode = false;
@@ -229,7 +250,7 @@ void ShupitoMode::erase_device(chip_definition& /*chip*/)
 
 // void read_fuses(std::vector<boost::uint8_t> & data, avrflash::chip_definition const & chip)
 // device_shupito.hpp
-void ShupitoMode::readFuses(std::vector<quint8> &data, chip_definition &chip)
+void ShupitoModeCommon::readFuses(std::vector<quint8> &data, chip_definition &chip)
 {
     chip_definition::memorydef *memdef = chip.getMemDef("fuses");
     if(!memdef)
@@ -247,7 +268,7 @@ void ShupitoMode::readFuses(std::vector<quint8> &data, chip_definition &chip)
 
 //void write_fuses(std::vector<boost::uint8_t> const & data, avrflash::chip_definition const & chip, bool verify)
 //device.hpp
-void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, quint8 verifyMode)
+void ShupitoModeCommon::writeFuses(std::vector<quint8> &data, chip_definition &chip, quint8 verifyMode)
 {
     HexFile file;
     file.addRegion(0, &data[0], &data[0] + data.size(), 0);
@@ -256,7 +277,7 @@ void ShupitoMode::writeFuses(std::vector<quint8> &data, chip_definition &chip, q
 
 //void flash_raw(avrflash::memory const & mem, std::string const & memid, avrflash::chip_definition const & chip, bool verify)
 //device.hpp
-void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
+void ShupitoModeCommon::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
 {
     m_cancel_requested = false;
 
@@ -339,7 +360,7 @@ void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, q
 
 //void prepare_memory_for_writing(chip_definition::memorydef const * memdef, avrflash::chip_definition const & chip)
 //device_shupito.hpp
-void ShupitoMode::prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& /*chip*/)
+void ShupitoModeCommon::prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& /*chip*/)
 {
     m_prepared = false;
     m_flash_mode = false;
@@ -356,7 +377,7 @@ void ShupitoMode::prepareMemForWriting(chip_definition::memorydef *memdef, chip_
 
 //void flash_page(chip_definition::memorydef const * memdef, const unsigned char * memory, size_t address, size_t size)
 //device_shupito.hpp
-void ShupitoMode::flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address)
+void ShupitoModeCommon::flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address)
 {
     m_prepared = false;
     m_flash_mode = false;
@@ -409,7 +430,7 @@ void ShupitoMode::flashPage(chip_definition::memorydef *memdef, std::vector<quin
     m_prepared = true;
 }
 
-bool ShupitoMode::canSkipPages(quint8 memId)
+bool ShupitoModeCommon::canSkipPages(quint8 memId)
 {
     return (memId == MEM_FLASH);
 }

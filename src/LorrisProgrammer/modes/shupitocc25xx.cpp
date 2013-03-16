@@ -10,7 +10,8 @@
 #include "shupitocc25xx.h"
 #include "../../shared/hexfile.h"
 
-ShupitoCC25XX::ShupitoCC25XX(Shupito *shupito) : ShupitoMode(shupito)
+ShupitoCC25XX::ShupitoCC25XX(Shupito *shupito)
+    : ShupitoModeCommon(shupito)
 {
 }
 

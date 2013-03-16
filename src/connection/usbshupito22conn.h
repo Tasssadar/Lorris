@@ -24,6 +24,7 @@ public:
     QString details() const;
 
     void requestDesc();
+    size_t maxPacketSize() const { return m_shupito_conn->maxPacketSize(); }
 
 public slots:
     void sendPacket(ShupitoPacket const & packet);

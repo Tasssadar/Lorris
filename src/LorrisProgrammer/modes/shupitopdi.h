@@ -10,7 +10,7 @@
 
 #include "shupitomode.h"
 
-class ShupitoPDI : public ShupitoMode
+class ShupitoPDI : public ShupitoModeCommon
 {
     Q_OBJECT
 public:

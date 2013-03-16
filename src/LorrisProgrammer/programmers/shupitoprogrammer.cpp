@@ -42,7 +42,7 @@ bool ShupitoProgrammer::supportsTunnel() const
 
 QStringList ShupitoProgrammer::getAvailableModes()
 {
-    static const QString modeNames[] = { "SPI", "PDI", "cc25xx" };
+    static const QString modeNames[] = { "SPI", "PDI", "cc25xx", "SPI flash" };
 
     QStringList modes;
     for (int i = 0; i < MODE_COUNT; ++i)

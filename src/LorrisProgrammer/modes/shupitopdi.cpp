@@ -10,7 +10,8 @@
 #include "../shupito.h"
 #include "shupitopdi.h"
 
-ShupitoPDI::ShupitoPDI(Shupito *shupito) : ShupitoMode(shupito)
+ShupitoPDI::ShupitoPDI(Shupito *shupito)
+    : ShupitoModeCommon(shupito)
 {
 }
 

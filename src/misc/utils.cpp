@@ -65,6 +65,13 @@ QString Utils::toBase16(quint8 const * first, quint8 const * last)
     return res;
 }
 
+void Utils::toBase16(char * ptr, uint8_t v)
+{
+    static char const digits[] = "0123456789abcdef";
+    ptr[0] = digits[v >> 4];
+    ptr[1] = digits[v & 0xf];
+}
+
 QString Utils::toBinary(std::size_t width, int value)
 {
     QString res("0b");

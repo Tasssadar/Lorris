@@ -32,6 +32,7 @@ public:
     void persistName();
 
     virtual void requestDesc() = 0;
+    virtual size_t maxPacketSize() const = 0;
 
     bool getFirmwareDetails(ShupitoFirmwareDetails & details) const;
 
@@ -65,6 +66,7 @@ public:
     void setPort(ConnectionPointer<PortConnection> const & port);
 
     virtual void requestDesc();
+    virtual size_t maxPacketSize() const { return 15; }
 
 public slots:
     void sendPacket(ShupitoPacket const & packet);

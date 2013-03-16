@@ -134,6 +134,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/programmers/avr232bootprogrammer.cpp \
     LorrisProgrammer/programmers/atsamprogrammer.cpp \
     LorrisProgrammer/modes/shupitospi.cpp \
+    LorrisProgrammer/modes/shupitospiflash.cpp \
     LorrisProgrammer/modes/shupitopdi.cpp \
     LorrisProgrammer/modes/shupitomode.cpp \
     LorrisProgrammer/modes/shupitocc25xx.cpp \
@@ -260,6 +261,7 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/programmers/avr232bootprogrammer.h \
     LorrisProgrammer/programmers/atsamprogrammer.h \
     LorrisProgrammer/modes/shupitospi.h \
+    LorrisProgrammer/modes/shupitospiflash.h \
     LorrisProgrammer/modes/shupitopdi.h \
     LorrisProgrammer/modes/shupitomode.h \
     LorrisProgrammer/modes/shupitocc25xx.h \

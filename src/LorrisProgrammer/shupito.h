@@ -16,7 +16,7 @@
 #include "../shared/programmer.h"
 #include "../shared/chipdefs.h"
 #include "shupitodesc.h"
-#include "../connection/connection.h"
+#include "../connection/shupitoconn.h"
 
 enum Opcodes
 {
@@ -31,6 +31,7 @@ enum Modes
     MODE_PDI,
     //MODE_JTAG,
     MODE_CC25XX,
+    MODE_SPIFLASH,
 
     MODE_COUNT
 };
@@ -42,7 +43,6 @@ enum WaitTypes
     WAIT_STREAM
 };
 
-class ShupitoConnection;
 class ShupitoTunnel;
 
 class Shupito : public QObject
@@ -81,6 +81,8 @@ public:
     ShupitoDesc *getDesc() { return m_desc; }
     void setChipId(chip_definition cd) { m_chip_def = cd; }
     const chip_definition& getChipId() { return m_chip_def; }
+
+    size_t maxPacketSize() const { return m_con->maxPacketSize(); }
 
 public slots:
     void sendTunnelData(const QString& data)
