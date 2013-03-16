@@ -98,7 +98,6 @@ chip_definition ShupitoSpiFlash::readDeviceId()
     chip_definition::memorydef & md = mds["flash"];
     md.memid = 1;
     md.size = flash_size_bytes;
-    //md.size = 0;
     md.pagesize = 256;
 
     sDefMgr.update(cd);
