@@ -36,8 +36,8 @@ public:
 
     QByteArray readMemory(const QString& mem, chip_definition &chip);
     void readFuses(std::vector<quint8>& data, chip_definition &chip);
-    void writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode);
-    void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode);
+    void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode);
+    void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode);
 
     void erase_device(chip_definition& chip);
 

@@ -142,7 +142,7 @@ void ShupitoMode::readFuses(std::vector<quint8>& data, chip_definition &chip)
     throw QString(tr("The device does not have fuses."));
 }
 
-void ShupitoMode::writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode)
+void ShupitoMode::writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode)
 {
     throw QString(tr("The device does not have fuses."));
 }
@@ -268,7 +268,7 @@ void ShupitoModeCommon::readFuses(std::vector<quint8> &data, chip_definition &ch
 
 //void write_fuses(std::vector<boost::uint8_t> const & data, avrflash::chip_definition const & chip, bool verify)
 //device.hpp
-void ShupitoModeCommon::writeFuses(std::vector<quint8> &data, chip_definition &chip, quint8 verifyMode)
+void ShupitoModeCommon::writeFuses(std::vector<quint8> &data, chip_definition &chip, VerifyMode verifyMode)
 {
     HexFile file;
     file.addRegion(0, &data[0], &data[0] + data.size(), 0);
@@ -277,7 +277,7 @@ void ShupitoModeCommon::writeFuses(std::vector<quint8> &data, chip_definition &c
 
 //void flash_raw(avrflash::memory const & mem, std::string const & memid, avrflash::chip_definition const & chip, bool verify)
 //device.hpp
-void ShupitoModeCommon::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
+void ShupitoModeCommon::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
 {
     m_cancel_requested = false;
 

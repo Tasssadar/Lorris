@@ -90,8 +90,8 @@ public:
 
     virtual QByteArray readMemory(const QString& mem, chip_definition &chip) = 0;
     virtual void readFuses(std::vector<quint8>& data, chip_definition &chip) = 0;
-    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode) = 0;
-    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode) = 0;
+    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode) = 0;
+    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode) = 0;
 
     virtual void erase_device(chip_definition& chip) = 0;
 

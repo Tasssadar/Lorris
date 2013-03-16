@@ -132,13 +132,13 @@ void avr109Programmer::readFuses(std::vector<quint8>&, chip_definition &)
     throw tr("Fuses are not yet implemented");
 }
 
-void avr109Programmer::writeFuses(std::vector<quint8>&, chip_definition &, quint8)
+void avr109Programmer::writeFuses(std::vector<quint8>&, chip_definition &, VerifyMode)
 {
     // NYI
     throw tr("Fuses are not yet implemented");
 }
 
-void avr109Programmer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
+void avr109Programmer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
 {
     if(memId != MEM_FLASH && memId != MEM_EEPROM)
         throw tr("Unsupported memory type: %1").arg(memId);

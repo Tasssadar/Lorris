@@ -150,7 +150,7 @@ QByteArray ShupitoSpiFlash::readMemory(const QString& mem, chip_definition &chip
     return res;
 }
 
-void ShupitoSpiFlash::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
+void ShupitoSpiFlash::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
 {
     m_cancel_requested = false;
 

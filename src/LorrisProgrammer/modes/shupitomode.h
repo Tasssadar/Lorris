@@ -14,6 +14,7 @@
 
 #include "../shupitodesc.h"
 #include "../../shared/chipdefs.h"
+#include "../../shared/programmer.h"
 
 class Shupito;
 class HexFile;
@@ -41,8 +42,8 @@ public:
 
     virtual QByteArray readMemory(const QString& mem, chip_definition &chip) = 0;
     virtual void readFuses(std::vector<quint8>& data, chip_definition &chip);
-    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode);
-    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode) = 0;
+    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode);
+    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode) = 0;
 
     virtual void erase_device(chip_definition& chip) = 0;
 
@@ -77,8 +78,8 @@ public:
     virtual QByteArray readMemory(const QString& mem, chip_definition &chip);
     virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size);
     virtual void readFuses(std::vector<quint8>& data, chip_definition &chip);
-    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode);
-    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode);
+    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode);
+    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode);
 
     virtual void erase_device(chip_definition& chip);
 

@@ -20,7 +20,7 @@ public:
     virtual chip_definition readDeviceId();
 
     virtual QByteArray readMemory(const QString& mem, chip_definition &chip);
-    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode);
+    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode);
 
     virtual void erase_device(chip_definition& chip);
 

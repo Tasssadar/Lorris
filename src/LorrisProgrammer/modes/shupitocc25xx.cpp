@@ -134,7 +134,7 @@ void ShupitoCC25XX::readFuses(std::vector<quint8> &/*data*/, chip_definition &/*
     throw QString(QObject::tr("Reading fuses is not supported for this device."));
 }
 
-void ShupitoCC25XX::writeFuses(std::vector<quint8> &/*data*/, chip_definition &/*chip*/, quint8 /*verifyMode*/)
+void ShupitoCC25XX::writeFuses(std::vector<quint8> &/*data*/, chip_definition &/*chip*/, VerifyMode /*verifyMode*/)
 {
     throw QString(QObject::tr("Writing fuses is not supported for this device."));
 }

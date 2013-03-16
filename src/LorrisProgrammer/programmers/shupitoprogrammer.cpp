@@ -148,12 +148,12 @@ void ShupitoProgrammer::readFuses(std::vector<quint8>& data, chip_definition &ch
     m_modes[m_cur_mode]->readFuses(data, chip);
 }
 
-void ShupitoProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode)
+void ShupitoProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode)
 {
     m_modes[m_cur_mode]->writeFuses(data, chip, verifyMode);
 }
 
-void ShupitoProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
+void ShupitoProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
 {
     m_modes[m_cur_mode]->flashRaw(file, memId, chip, verifyMode);
 }

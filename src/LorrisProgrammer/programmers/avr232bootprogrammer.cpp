@@ -124,12 +124,12 @@ void avr232bootProgrammer::readFuses(std::vector<quint8>&, chip_definition &)
     // The fuse reading/writing is not available in DFU.
 }
 
-void avr232bootProgrammer::writeFuses(std::vector<quint8>&, chip_definition &, quint8)
+void avr232bootProgrammer::writeFuses(std::vector<quint8>&, chip_definition &, VerifyMode)
 {
     // The fuse reading/writing is not available in DFU.
 }
 
-void avr232bootProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 /*verifyMode*/)
+void avr232bootProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode /*verifyMode*/)
 {
     if(memId != MEM_FLASH && memId != MEM_EEPROM)
         throw tr("avr232boot can only write to flash and EEPROM");

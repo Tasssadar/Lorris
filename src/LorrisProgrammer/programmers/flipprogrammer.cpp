@@ -73,12 +73,12 @@ void FlipProgrammer::readFuses(std::vector<quint8>&, chip_definition &)
     // The fuse reading/writing is not available in DFU.
 }
 
-void FlipProgrammer::writeFuses(std::vector<quint8>&, chip_definition &, quint8)
+void FlipProgrammer::writeFuses(std::vector<quint8>&, chip_definition &, VerifyMode)
 {
     // The fuse reading/writing is not available in DFU.
 }
 
-void FlipProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
+void FlipProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
 {
     std::vector<page> pages;
     file.makePages(pages, memId, chip, 0);

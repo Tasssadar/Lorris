@@ -170,7 +170,7 @@ private:
 
     quint8 m_state;
     quint32 m_prog_speed_hz;
-    quint8 m_verify_mode;
+    VerifyMode m_verify_mode;
 
     QString m_hexFilenames[MEM_FUSES];
     QDateTime m_hexWriteTimes[MEM_FUSES];

@@ -701,7 +701,7 @@ void LorrisProgrammer::verifyChanged(int mode)
 
     sConfig.set(CFG_QUINT32_SHUPITO_VERIFY, mode);
 
-    m_verify_mode = mode;
+    m_verify_mode = (VerifyMode)mode;
 }
 
 void LorrisProgrammer::tryFileReload(quint8 memId)
