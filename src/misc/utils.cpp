@@ -240,3 +240,13 @@ bool Utils::isInRect(int px, int py, int rx, int ry, int rw, int rh)
 {
     return px >= rx && py >= ry && px <= rx+rw && py <= ry+rh;
 }
+
+size_t Utils::align(size_t & offset, size_t & size, size_t alignment)
+{
+    size_t aligned_offset = offset & ~(alignment - 1);
+    size_t front_padding = offset - aligned_offset;
+    size += front_padding;
+    size = (size + alignment - 1) & ~(alignment - 1);
+    offset = aligned_offset;
+    return front_padding;
+}

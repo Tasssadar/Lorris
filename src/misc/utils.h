@@ -67,6 +67,7 @@ public:
     static bool isInRect(const QPoint& p, int rx, int ry, int rw, int rh);
     static bool isInRect(const QPoint& p, const QPoint& rp, const QPoint& rs);
 
+    static size_t align(size_t & offset, size_t & size, size_t alignment);
 };
 
 template <typename T>
@@ -76,17 +77,22 @@ void Utils::swapEndian(char *val)
         std::swap(*val, *(val + i - 1));
 }
 
+#ifdef Q_LITTLE_ENDIAN
+
 template <typename T>
 T deserialize_le(uint8_t const * p, size_t size = sizeof(T))
 {
-    T r = 0;
-    for (size_t i = size; i != 0; --i)
-    {
-        r <<= 8;
-        r |= p[i-1];
-    }
-
-    return r;
+    T res = 0;
+    memcpy(&res, p, size);
+    return res;
 }
+
+template <typename T>
+void serialize_le(uint8_t * p, T const & t, size_t size = sizeof(T))
+{
+    memcpy(p, &t, size);
+}
+
+#endif // Q_LITTLE_ENDIAN
 
 #endif // NUM_FUNC_H
