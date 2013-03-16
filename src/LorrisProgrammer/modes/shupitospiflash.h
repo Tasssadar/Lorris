@@ -18,14 +18,12 @@ public:
     ShupitoSpiFlash(Shupito *shupito);
 
     virtual chip_definition readDeviceId() override;
-
-    virtual QByteArray readMemory(const QString& mem, chip_definition &chip) override;
-    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode) override;
-
     virtual void erase_device(chip_definition& chip) override;
 
 protected:
     virtual ShupitoDesc::config const *getModeCfg() override;
+    virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size) override;
+    virtual void flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address) override;
 
 private:
     void writeEnable();

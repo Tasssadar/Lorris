@@ -104,17 +104,8 @@ chip_definition ShupitoSpiFlash::readDeviceId()
     return cd;
 }
 
-QByteArray ShupitoSpiFlash::readMemory(const QString& mem, chip_definition &chip)
+void ShupitoSpiFlash::readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size)
 {
-    QByteArray res;
-
-    chip_definition::memorydef const * md = chip.getMemDef(mem);
-    if (!md)
-        return res;
-
-    m_cancel_requested = false;
-    emit updateProgressDialog(0);
-
     ShupitoPacket out;
     out.push_back(m_prog_cmd_base + 2);
     out.push_back(0);
@@ -123,7 +114,7 @@ QByteArray ShupitoSpiFlash::readMemory(const QString& mem, chip_definition &chip
     out.push_back(0);
     out.push_back(0);
 
-    size_t size = md->size;
+    memory.clear();
     while (size && !m_cancel_requested)
     {
         size_t offset = out.size() - 2;
@@ -138,56 +129,29 @@ QByteArray ShupitoSpiFlash::readMemory(const QString& mem, chip_definition &chip
         if (in.size() != out.size())
             throw QString(tr("Invalid response."));
 
-        res.append((char *)in.data() + offset + 2, in.size() - offset - 2);
-        emit updateProgressDialog(((md->size - size)*100)/md->size);
+        memory.append((char *)in.data() + offset + 2, in.size() - offset - 2);
 
         out.clear();
         out.push_back(m_prog_cmd_base + 2);
         out.push_back(0);
     }
-
-    emit updateProgressDialog(-1);
-    return res;
 }
 
-void ShupitoSpiFlash::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
+void ShupitoSpiFlash::flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address)
 {
-    m_cancel_requested = false;
-
-    chip_definition::memorydef *memdef = chip.getMemDef(memId);
-    if(!memdef)
-        throw QString(QObject::tr("Chip does not have mem id %1")).arg(memId);
-
-    std::vector<page> pages;
-    std::set<quint32> skips;
-    file.makePages(pages, memId, chip, &skips);
+    this->writeEnable();
 
     std::vector<uint8_t> out;
-    for(size_t i = 0; !m_cancel_requested && i < pages.size(); ++i)
+    out.push_back(2);
+    out.push_back(address >> 16);
+    out.push_back(address >> 8);
+    out.push_back(address);
+    out.insert(out.end(), memory.begin(), memory.end());
+    this->transfer(out.data(), 0, out.size());
+
+    while (this->readStatus() & (1<<0))
     {
-        if (skips.find(i) != skips.end())
-            continue;
-
-        page & p = pages[i];
-
-        this->writeEnable();
-
-        out.clear();
-        out.push_back(2);
-        out.push_back(p.address >> 16);
-        out.push_back(p.address >> 8);
-        out.push_back(p.address);
-        out.insert(out.end(), p.data.begin(), p.data.end());
-        this->transfer(out.data(), 0, out.size());
-
-        while (this->readStatus() & (1<<0))
-        {
-        }
-
-        emit updateProgressDialog(i * 100 / pages.size());
     }
-
-    // XXX: verify
 }
 
 void ShupitoSpiFlash::erase_device(chip_definition& chip)

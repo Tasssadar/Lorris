@@ -176,7 +176,7 @@ void ShupitoModeCommon::editIdArgs(QString &id, quint8 &/*id_lenght*/)
 
 // virtual void read_memory(std::ostream & s, std::string const & memid, avrflash::chip_definition const & chip)
 // device.hpp
-QByteArray ShupitoModeCommon::readMemory(const QString &mem, chip_definition &chip)
+QByteArray ShupitoMode::readMemory(const QString &mem, chip_definition &chip)
 {
     m_cancel_requested = false;
 
@@ -275,9 +275,13 @@ void ShupitoModeCommon::writeFuses(std::vector<quint8> &data, chip_definition &c
     flashRaw(file, MEM_FUSES, chip, verifyMode);
 }
 
+void ShupitoMode::prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& chip)
+{
+}
+
 //void flash_raw(avrflash::memory const & mem, std::string const & memid, avrflash::chip_definition const & chip, bool verify)
 //device.hpp
-void ShupitoModeCommon::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
+void ShupitoMode::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
 {
     m_cancel_requested = false;
 
@@ -430,7 +434,7 @@ void ShupitoModeCommon::flashPage(chip_definition::memorydef *memdef, std::vecto
     m_prepared = true;
 }
 
-bool ShupitoModeCommon::canSkipPages(quint8 memId)
+bool ShupitoMode::canSkipPages(quint8 memId)
 {
     return (memId == MEM_FLASH);
 }
