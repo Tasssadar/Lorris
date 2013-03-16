@@ -17,15 +17,15 @@ class ShupitoSpiFlash : public ShupitoMode
 public:
     ShupitoSpiFlash(Shupito *shupito);
 
-    virtual chip_definition readDeviceId();
+    virtual chip_definition readDeviceId() override;
 
-    virtual QByteArray readMemory(const QString& mem, chip_definition &chip);
-    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode);
+    virtual QByteArray readMemory(const QString& mem, chip_definition &chip) override;
+    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode) override;
 
-    virtual void erase_device(chip_definition& chip);
+    virtual void erase_device(chip_definition& chip) override;
 
 protected:
-    virtual ShupitoDesc::config const *getModeCfg();
+    virtual ShupitoDesc::config const *getModeCfg() override;
 
 private:
     void writeEnable();

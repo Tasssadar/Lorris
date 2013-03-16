@@ -15,38 +15,38 @@ public:
     ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn, ProgrammerLogSink * logsink);
     ~ShupitoProgrammer();
 
-    bool supportsVdd() const { return true; }
-    bool supportsTunnel() const;
+    bool supportsVdd() const override { return true; }
+    bool supportsTunnel() const override;
 
-    QStringList getAvailableModes();
-    int getMode();
-    void setMode(int mode);
+    QStringList getAvailableModes() override;
+    int getMode() override;
+    void setMode(int mode) override;
 
-    void stopAll(bool wait);
+    void stopAll(bool wait) override;
 
-    void setVddIndex(int index);
-    void setTunnelSpeed(quint32 speed, bool send);
-    void setTunnelState(bool enable, bool wait);
-    quint32 getTunnelSpeed() const;
+    void setVddIndex(int index) override;
+    void setTunnelSpeed(quint32 speed, bool send) override;
+    void setTunnelState(bool enable, bool wait) override;
+    quint32 getTunnelSpeed() const override;
 
-    void switchToFlashMode(quint32 prog_speed_hz);
-    void switchToRunMode();
-    bool isInFlashMode();
-    chip_definition readDeviceId();
+    void switchToFlashMode(quint32 prog_speed_hz) override;
+    void switchToRunMode() override;
+    bool isInFlashMode() override;
+    chip_definition readDeviceId() override;
 
-    QByteArray readMemory(const QString& mem, chip_definition &chip);
-    void readFuses(std::vector<quint8>& data, chip_definition &chip);
-    void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode);
-    void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode);
+    QByteArray readMemory(const QString& mem, chip_definition &chip) override;
+    void readFuses(std::vector<quint8>& data, chip_definition &chip) override;
+    void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode) override;
+    void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode) override;
 
-    void erase_device(chip_definition& chip);
+    void erase_device(chip_definition& chip) override;
 
     ShupitoMode *mode() const { return m_modes[m_cur_mode]; }
 
-    bool canBlinkLed();
-    void blinkLed();
+    bool canBlinkLed() override;
+    void blinkLed() override;
 
-    int getType();
+    int getType() override;
 
 public slots:
     void sendTunnelData(QString const & data);

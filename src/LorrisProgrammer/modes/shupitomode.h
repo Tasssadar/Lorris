@@ -73,19 +73,19 @@ class ShupitoModeCommon : public ShupitoMode
 public:
     ShupitoModeCommon(Shupito *shupito);
 
-    virtual chip_definition readDeviceId();
+    virtual chip_definition readDeviceId() override;
 
-    virtual QByteArray readMemory(const QString& mem, chip_definition &chip);
+    virtual QByteArray readMemory(const QString& mem, chip_definition &chip) override;
+    virtual void readFuses(std::vector<quint8>& data, chip_definition &chip) override;
+    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode) override;
+    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode) override;
+
+    virtual void erase_device(chip_definition& chip) override;
+
     virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size);
-    virtual void readFuses(std::vector<quint8>& data, chip_definition &chip);
-    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode);
-    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode);
-
-    virtual void erase_device(chip_definition& chip);
-
 
 protected:
-    virtual void editIdArgs(QString& id, quint8& id_lenght);
+    virtual void editIdArgs(QString& id, quint8& id_length);
     virtual bool is_read_memory_supported(chip_definition::memorydef * /*memdef*/)
     {
         return true;
@@ -93,6 +93,8 @@ protected:
     virtual void prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& chip);
     virtual void flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address);
     virtual bool canSkipPages(quint8 memId);
+
+private:
 };
 
 #endif // SHUPITOMODE_H

@@ -17,17 +17,17 @@ class ShupitoCC25XX : public ShupitoModeCommon
 public:
     ShupitoCC25XX(Shupito *shupito);
 
-    chip_definition readDeviceId();
-    void prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& chip);
-    void erase_device(chip_definition& chip);
-    void readMemRange(quint8, QByteArray& memory, quint32 address, quint32 size);
-    void readFuses(std::vector<quint8> &data, chip_definition &chip);
-    void writeFuses(std::vector<quint8> &data, chip_definition &chip, VerifyMode verifyMode);
-    void flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address);
+    chip_definition readDeviceId() override;
+    void prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& chip) override;
+    void erase_device(chip_definition& chip) override;
+    void readMemRange(quint8, QByteArray& memory, quint32 address, quint32 size) override;
+    void readFuses(std::vector<quint8> &data, chip_definition &chip) override;
+    void writeFuses(std::vector<quint8> &data, chip_definition &chip, VerifyMode verifyMode) override;
+    void flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address) override;
 
 
 protected:
-    ShupitoDesc::config const *getModeCfg();
+    ShupitoDesc::config const *getModeCfg() override;
 
 private:
     quint8 read_xdata(quint16 addr);
