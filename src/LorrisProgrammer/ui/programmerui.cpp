@@ -315,8 +315,8 @@ void ProgrammerUI::writeMem(quint8 memId, chip_definition &chip)
         throw QString(tr("Unknown memory id"));
 
     QByteArray data = getHexData(memId);
-    if((quint32)data.size() > memdef->size)
-        throw QString(tr("Somethings wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
+    if (memdef->size != 0 && (quint32)data.size() > memdef->size)
+        throw QString(tr("Something's wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
 
     log("Writing memory");
     m_widget->showProgressDialog(tr("Writing memory"), prog());
@@ -348,7 +348,7 @@ void ProgrammerUI::eraseDevice()
     if(!m_widget->checkVoltage(true))
         return;
 
-    if(!m_widget->showContinueBox(tr("Erase chip?"), tr("Do you really wanna to erase WHOLE chip?")))
+    if(!m_widget->showContinueBox(tr("Erase chip?"), tr("Do you really want to erase the WHOLE chip?")))
         return;
 
     try

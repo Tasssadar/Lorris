@@ -436,7 +436,7 @@ void LorrisProgrammer::update_chip_description(chip_definition& cd)
 
         chip_definition::memorydef *mem = cd.getMemDef("flash");
         if(mem)
-            name += " flash: " % QString::number(mem->size/1024) % " kb, page: " %
+            name += " flash: " % QString::number(mem->size/1024) % " kB, page: " %
                     QString::number(mem->pagesize) % " bytes";
 
         mem = cd.getMemDef("eeprom");
