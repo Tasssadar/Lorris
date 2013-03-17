@@ -50,6 +50,11 @@ struct ProgrammerCapabilities
         : terminal(false), flash(false), eeprom(false), svf(false), fuses(false)
     {
     }
+
+    bool supports_erase() const
+    {
+        return flash || eeprom || fuses;
+    }
 };
 
 class Programmer
@@ -108,6 +113,8 @@ public:
     virtual void readFuses(std::vector<quint8>& data, chip_definition &chip) = 0;
     virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode) = 0;
     virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode) = 0;
+
+    virtual void executeText(QByteArray const & data, quint8 memId, chip_definition & chip);
 
     virtual void erase_device(chip_definition& chip) = 0;
 

@@ -29,9 +29,9 @@ enum Modes
 {
     MODE_SPI = 0,
     MODE_PDI,
-    //MODE_JTAG,
     MODE_CC25XX,
     MODE_SPIFLASH,
+    MODE_JTAG,
 
     MODE_COUNT
 };

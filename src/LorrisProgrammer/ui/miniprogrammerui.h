@@ -26,17 +26,12 @@ public:
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
 
-    void setHexData(quint32 memid, const QByteArray& data)
-    {
-        m_hexData[memid] = data;
-    }
-
-    QByteArray getHexData(quint32 memid) const
-    {
-        return m_hexData[memid];
-    }
+    void setHexData(quint32 memid, const QByteArray& data);
+    QByteArray getHexData(quint32 memid) const;
 
     void writeSelectedMem();
+
+    void enableButtons(bool enable) override;
 
 public slots:
     void setVertical(bool vertical);
@@ -56,6 +51,7 @@ private:
     Ui::MiniProgrammerUI *ui;
 
     QByteArray m_hexData[MEM_FUSES];
+    QByteArray m_svfData;
     bool m_fileSet;
 
     QString m_termSett;

@@ -83,6 +83,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/storage.cpp \
     shared/fuse_desc.cpp \
     shared/defmgr.cpp \
+    shared/programmer.cpp \
     ../dep/ecwin7/ecwin7.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp \
@@ -135,6 +136,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/programmers/atsamprogrammer.cpp \
     LorrisProgrammer/modes/shupitospi.cpp \
     LorrisProgrammer/modes/shupitospiflash.cpp \
+    LorrisProgrammer/modes/shupitojtag.cpp \
     LorrisProgrammer/modes/shupitopdi.cpp \
     LorrisProgrammer/modes/shupitomode.cpp \
     LorrisProgrammer/modes/shupitocc25xx.cpp \
@@ -262,6 +264,7 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/programmers/atsamprogrammer.h \
     LorrisProgrammer/modes/shupitospi.h \
     LorrisProgrammer/modes/shupitospiflash.h \
+    LorrisProgrammer/modes/shupitojtag.h \
     LorrisProgrammer/modes/shupitopdi.h \
     LorrisProgrammer/modes/shupitomode.h \
     LorrisProgrammer/modes/shupitocc25xx.h \

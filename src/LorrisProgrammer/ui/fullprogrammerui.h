@@ -54,6 +54,8 @@ public:
 
     void writeSelectedMem();
 
+    void enableButtons(bool enable) override;
+
 protected:
     QToolButton *startStopBtn() const { return ui->startStopBtn; }
     QBoxLayout *vddLayout() const { return ui->vddLayout; }
@@ -91,6 +93,7 @@ private:
 
     FuseWidget *m_fuse_widget;
     QHexEdit *m_hexAreas[MEM_FUSES];
+    QTextEdit * m_svfEdit;
     ProgrammerCapabilities m_sources;
     void applySources();
 
@@ -113,7 +116,8 @@ private:
         ACT_FLASH  = 0,
         ACT_EEPROM,
         ACT_ALL,
-        ACT_FUSES
+        ACT_FUSES,
+        ACT_SVF,
     };
     ActionSlots m_active;
 

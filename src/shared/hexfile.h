@@ -24,7 +24,9 @@ enum MemoryTypes
     MEM_EEPROM  = 2,
     MEM_FUSES   = 3,
     MEM_SDRAM   = 4,
-    MEM_COUNT   = 5
+    MEM_JTAG    = 5,
+
+    MEM_COUNT   = 6
 };
 
 struct page

@@ -42,6 +42,8 @@ public:
 
     chip_definition& getChipDef() { return m_chip; }
 
+    void enableButtons(bool enable);
+
 protected:
     void contextMenuEvent( QContextMenuEvent * event );
 
@@ -50,7 +52,6 @@ private slots:
     void rememberFuses();
     void translateFuses(bool checked);
     void hideReserved(bool checked);
-    void enableButtons(bool enable);
 
 private:
     struct fuse_line

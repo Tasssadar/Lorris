@@ -37,7 +37,7 @@ int ShupitoProgrammer::getType()
 
 QStringList ShupitoProgrammer::getAvailableModes()
 {
-    static const QString modeNames[] = { "SPI", "PDI", "cc25xx", "SPI flash" };
+    static const QString modeNames[] = { "SPI", "PDI", "cc25xx", "SPI flash", "JTAG" };
 
     QStringList modes;
     for (int i = 0; i < MODE_COUNT; ++i)
@@ -318,4 +318,9 @@ ProgrammerCapabilities ShupitoProgrammer::capabilities() const
     }
     caps.terminal = m_tunnel_config != 0;
     return caps;
+}
+
+void ShupitoProgrammer::executeText(QByteArray const & data, quint8 memId, chip_definition & chip)
+{
+    m_modes[m_cur_mode]->executeText(data, memId, chip);
 }
