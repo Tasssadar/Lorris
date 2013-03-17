@@ -32,14 +32,6 @@ enum responses
     RESPONSE_BAD
 };
 
-enum TabIndex
-{
-    TAB_TERMINAL = 0,
-    TAB_FLASH,
-    TAB_EEPROM,
-    TAB_MAX
-};
-
 class QLabel;
 class QComboBox;
 class QHexEdit;

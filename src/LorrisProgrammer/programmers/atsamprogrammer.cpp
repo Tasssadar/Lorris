@@ -229,3 +229,12 @@ void AtsamProgrammer::write_word(uint32_t address, uint32_t data)
 {
     this->transact(QString("W%1,%2#").arg(address, 0, 16).arg(data, 0, 16));
 }
+
+ProgrammerCapabilities AtsamProgrammer::capabilities() const
+{
+    ProgrammerCapabilities ps;
+    ps.flash = true;
+    ps.eeprom = true;
+    ps.fuses = true;
+    return ps;
+}

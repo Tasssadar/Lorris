@@ -47,6 +47,8 @@ public:
 
     virtual void erase_device(chip_definition& chip) = 0;
 
+    virtual ProgrammerCapabilities capabilities() const = 0;
+
 protected:
     virtual ShupitoDesc::config const *getModeCfg() = 0;
     virtual void flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address) = 0;
@@ -83,6 +85,8 @@ public:
     virtual void readFuses(std::vector<quint8>& data, chip_definition &chip) override;
     virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode) override;
     virtual void erase_device(chip_definition& chip) override;
+
+    ProgrammerCapabilities capabilities() const override;
 
 protected:
     virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size) override;

@@ -438,3 +438,11 @@ bool ShupitoMode::canSkipPages(quint8 memId)
 {
     return (memId == MEM_FLASH);
 }
+
+ProgrammerCapabilities ShupitoModeCommon::capabilities() const
+{
+    ProgrammerCapabilities ps;
+    ps.flash = true;
+    ps.eeprom = true;
+    return ps;
+}

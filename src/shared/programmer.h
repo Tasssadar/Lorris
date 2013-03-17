@@ -38,6 +38,20 @@ enum VerifyMode
     VERIFY_MAX
 };
 
+struct ProgrammerCapabilities
+{
+    bool terminal;
+    bool flash;
+    bool eeprom;
+    bool svf;
+    bool fuses;
+
+    ProgrammerCapabilities()
+        : terminal(false), flash(false), eeprom(false), svf(false), fuses(false)
+    {
+    }
+};
+
 class Programmer
     : public QObject
 {
@@ -60,6 +74,8 @@ signals:
 
     void blinkLedSupport(bool supported);
 
+    void capabilitiesChanged();
+
 public:
     explicit Programmer(ProgrammerLogSink * logsink)
         : m_logsink(logsink)
@@ -67,8 +83,8 @@ public:
     }
 
     virtual bool supportsVdd() const { return false; }
-    virtual bool supportsTunnel() const { return false; }
     virtual bool supportsBootseq() const { return false; }
+    bool supportsTunnel() const { return this->capabilities().terminal; }
 
     virtual QString getBootseq() const { return QString(); }
 
@@ -99,6 +115,8 @@ public:
     virtual void blinkLed() {}
 
     virtual int getType() = 0;
+
+    virtual ProgrammerCapabilities capabilities() const = 0;
 
 public slots:
     virtual void sendTunnelData(QString const &) {}

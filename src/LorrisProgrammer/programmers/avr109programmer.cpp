@@ -649,3 +649,12 @@ void avr109Programmer::sendTunnelData(QString const & data)
 {
     m_conn->SendData(data.toUtf8());
 }
+
+ProgrammerCapabilities avr109Programmer::capabilities() const
+{
+    ProgrammerCapabilities ps;
+    ps.terminal = true;
+    ps.flash = true;
+    ps.eeprom = true;
+    return ps;
+}

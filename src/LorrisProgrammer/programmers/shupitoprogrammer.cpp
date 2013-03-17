@@ -35,11 +35,6 @@ int ShupitoProgrammer::getType()
     return programmer_shupito;
 }
 
-bool ShupitoProgrammer::supportsTunnel() const
-{
-    return m_tunnel_config != 0;
-}
-
 QStringList ShupitoProgrammer::getAvailableModes()
 {
     static const QString modeNames[] = { "SPI", "PDI", "cc25xx", "SPI flash" };
@@ -76,6 +71,7 @@ void ShupitoProgrammer::setMode(int mode)
         {
             m_cur_mode = i;
             sConfig.set(CFG_QUINT32_SHUPITO_MODE, i);
+            emit capabilitiesChanged();
             return;
         }
 
@@ -83,6 +79,7 @@ void ShupitoProgrammer::setMode(int mode)
     }
 
     m_cur_mode = 0;
+    emit capabilitiesChanged();
 }
 
 void ShupitoProgrammer::readPacket(const ShupitoPacket & packet)
@@ -305,4 +302,20 @@ bool ShupitoProgrammer::canBlinkLed()
 void ShupitoProgrammer::blinkLed()
 {
     m_shupito->sendPacket(makeShupitoPacket(m_led_config->cmd, 1, 2));
+}
+
+ProgrammerCapabilities ShupitoProgrammer::capabilities() const
+{
+    ProgrammerCapabilities caps;
+    if (m_modes[m_cur_mode])
+    {
+        caps = m_modes[m_cur_mode]->capabilities();
+    }
+    else
+    {
+        caps.flash = true;
+        caps.eeprom = true;
+    }
+    caps.terminal = m_tunnel_config != 0;
+    return caps;
 }

@@ -91,3 +91,11 @@ void FlipProgrammer::erase_device(chip_definition& chip)
 {
     m_runner.try_run(m_flip.chip_erase());
 }
+
+ProgrammerCapabilities FlipProgrammer::capabilities() const
+{
+    ProgrammerCapabilities sources;
+    sources.flash = true;
+    sources.eeprom = true;
+    return sources;
+}

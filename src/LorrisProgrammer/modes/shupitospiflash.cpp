@@ -186,3 +186,9 @@ ShupitoDesc::config const * ShupitoSpiFlash::getModeCfg()
     return m_shupito->getDesc()->getConfig("633125ab-32e0-49ec-b240-7d845bb70b2d");
 }
 
+ProgrammerCapabilities ShupitoSpiFlash::capabilities() const
+{
+    ProgrammerCapabilities ps;
+    ps.flash = true;
+    return ps;
+}

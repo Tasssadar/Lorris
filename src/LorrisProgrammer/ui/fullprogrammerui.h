@@ -81,15 +81,29 @@ private slots:
     void readButtonClicked();
     void writeButtonClicked();
 
+    void updateProgrammerFeatures();
+
 private:
     void initMenus();
     void updateProgrammersBox(Programmer *prog);
-    void updateProgrammerFeatures();
 
     Ui::FullProgrammerUI *ui;
 
     FuseWidget *m_fuse_widget;
     QHexEdit *m_hexAreas[MEM_FUSES];
+    ProgrammerCapabilities m_sources;
+    void applySources();
+
+    enum tabs_t
+    {
+        tab_terminal,
+        tab_flash,
+        tab_eeprom,
+        tab_svf
+    };
+
+    tabs_t currentTab() const;
+    void setCurrentTab(tabs_t t);
 
     QFont m_font;
     QFont m_boldFont;

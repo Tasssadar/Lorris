@@ -1,7 +1,7 @@
 #ifndef SHUPITO_PROGRAMMER_H
 #define SHUPITO_PROGRAMMER_H
 
-#include "../shupito.h" // XXX
+#include "../shupito.h"
 #include "../../connection/shupitoconn.h"
 #include "../modes/shupitomode.h"
 #include "../../shared/programmer.h"
@@ -16,7 +16,6 @@ public:
     ~ShupitoProgrammer();
 
     bool supportsVdd() const override { return true; }
-    bool supportsTunnel() const override;
 
     QStringList getAvailableModes() override;
     int getMode() override;
@@ -47,6 +46,8 @@ public:
     void blinkLed() override;
 
     int getType() override;
+
+    virtual ProgrammerCapabilities capabilities() const override;
 
 public slots:
     void sendTunnelData(QString const & data);

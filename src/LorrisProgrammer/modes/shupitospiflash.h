@@ -20,6 +20,8 @@ public:
     virtual chip_definition readDeviceId() override;
     virtual void erase_device(chip_definition& chip) override;
 
+    ProgrammerCapabilities capabilities() const override;
+
 protected:
     virtual ShupitoDesc::config const *getModeCfg() override;
     virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size) override;

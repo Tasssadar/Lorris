@@ -37,6 +37,8 @@ public:
 
     virtual int getType() override;
 
+    ProgrammerCapabilities capabilities() const override;
+
 public slots:
     void cancelRequested();
     void sendTunnelData(QString const & data);

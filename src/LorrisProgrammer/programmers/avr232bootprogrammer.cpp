@@ -270,3 +270,12 @@ void avr232bootProgrammer::sendTunnelData(QString const & data)
 {
     m_conn->SendData(data.toUtf8());
 }
+
+ProgrammerCapabilities avr232bootProgrammer::capabilities() const
+{
+    ProgrammerCapabilities ps;
+    ps.terminal = true;
+    ps.flash = true;
+    ps.eeprom = true;
+    return ps;
+}

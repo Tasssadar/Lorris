@@ -30,6 +30,8 @@ public:
 
     virtual int getType() override;
 
+    virtual ProgrammerCapabilities capabilities() const override;
+
 public slots:
     virtual void cancelRequested() { m_cancelled = true; }
 

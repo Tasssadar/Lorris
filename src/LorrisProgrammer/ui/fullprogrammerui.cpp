@@ -41,8 +41,8 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
     m_read_menu = new QMenu(m_widget);
     m_write_menu = new QMenu(m_widget);
 
-    m_fuse_widget = new FuseWidget(widget);
-    ui->mainLayout->addWidget(m_fuse_widget);
+    m_fuse_widget = new FuseWidget();
+    ui->fuseContainer->layout()->addWidget(m_fuse_widget);
 
     ui->progSpeedBox->setEditText(QString::number(widget->m_prog_speed_hz));
 
@@ -91,21 +91,23 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
     ui->progSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
     ui->bootseqEdit->setValidator(new ByteValidator(this));
 
-    initMenus();
-
-    ui->terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
-    ui->terminal->loadSettings(sConfig.get(CFG_STRING_SHUPITO_TERM_SET));
-
     QByteArray data = QByteArray(1024, (char)0xFF);
-    static const QString memNames[] = { tr("Program memory"), tr("EEPROM") };
     m_hexAreas[0] = NULL;
-    for(quint8 i = 1; i < TAB_MAX; ++i)
+    for(quint8 i = 1; i < 3; ++i)
     {
         QHexEdit *h = new QHexEdit(widget);
         h->setData(data);
         m_hexAreas[i] = h;
-        ui->memTabs->addTab(h, memNames[i-1]);
     }
+
+    m_sources.flash = true;
+    m_sources.eeprom = true;
+    this->applySources();
+
+    initMenus();
+
+    ui->terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
+    ui->terminal->loadSettings(sConfig.get(CFG_STRING_SHUPITO_TERM_SET));
 
     ui->over_enable->setChecked(sConfig.get(CFG_BOOL_SHUPITO_OVERVOLTAGE));
     ui->over_val->setValue(sConfig.get(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL));
@@ -168,7 +170,7 @@ void FullProgrammerUI::createActions()
 
 void FullProgrammerUI::setActiveAction(int actInt)
 {
-    ActionSlots act = actInt == TAB_EEPROM ? ACT_EEPROM : ACT_FLASH;
+    ActionSlots act = this->currentTab() == tab_eeprom? ACT_EEPROM: ACT_FLASH;
 
     if(act == m_active)
         return;
@@ -239,6 +241,7 @@ void FullProgrammerUI::connectProgrammer(Programmer * prog)
     connect(ui->terminal,    SIGNAL(keyPressed(QString)),    prog,         SLOT(sendTunnelData(QString)));
     connect(ui->bootseqEdit, SIGNAL(textEdited(QString)),    prog,         SLOT(setBootseq(QString)));
     connect(prog,            SIGNAL(tunnelData(QByteArray)), ui->terminal, SLOT(appendText(QByteArray)));
+    connect(prog,            SIGNAL(capabilitiesChanged()),  this,         SLOT(updateProgrammerFeatures()));
 
     m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->currentText().toInt(), false);
     ui->bootseqEdit->setText(prog->getBootseq());
@@ -304,8 +307,33 @@ void FullProgrammerUI::connectedStatus(bool connected)
     this->updateProgrammerFeatures();
 }
 
+void FullProgrammerUI::applySources()
+{
+    ui->fuseContainer->setVisible(m_sources.fuses);
+
+    tabs_t tab = this->currentTab();
+
+    bool prevBlock = ui->memTabs->blockSignals(true);
+    ui->memTabs->clear();
+    if (m_sources.terminal)
+        ui->memTabs->addTab(ui->terminal, tr("Terminal"));
+    if (m_sources.flash)
+        ui->memTabs->addTab(m_hexAreas[MEM_FLASH], tr("Program memory"));
+    if (m_sources.eeprom)
+        ui->memTabs->addTab(m_hexAreas[MEM_EEPROM], tr("EEPROM"));
+    ui->memTabs->blockSignals(prevBlock);
+
+    this->setCurrentTab(tab);
+}
+
 void FullProgrammerUI::updateProgrammerFeatures()
 {
+    if (this->prog())
+    {
+        m_sources = this->prog()->capabilities();
+        this->applySources();
+    }
+
     ui->tunnelBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsTunnel());
 
     bool bootseq = ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsBootseq();
@@ -381,7 +409,54 @@ bool FullProgrammerUI::hasHexChanged(quint32 memid)
 
 void FullProgrammerUI::setActiveMem(quint32 memId)
 {
-    ui->memTabs->setCurrentIndex(memId);
+    switch (memId)
+    {
+    case MEM_FLASH:
+        this->setCurrentTab(tab_flash);
+        break;
+    case MEM_EEPROM:
+        this->setCurrentTab(tab_eeprom);
+        break;
+    }
+}
+
+FullProgrammerUI::tabs_t FullProgrammerUI::currentTab() const
+{
+    int idx = ui->memTabs->currentIndex();
+    if (m_sources.terminal && idx == 0)
+        return tab_terminal;
+    if (m_sources.flash && idx == (int)m_sources.terminal)
+        return tab_flash;
+    if (m_sources.eeprom && idx == m_sources.terminal + m_sources.eeprom)
+        return tab_eeprom;
+    if (m_sources.svf && idx == m_sources.terminal + m_sources.eeprom + m_sources.svf)
+        return tab_svf;
+
+    Q_ASSERT(0);
+    return tab_terminal;
+}
+
+void FullProgrammerUI::setCurrentTab(tabs_t t)
+{
+    switch (t)
+    {
+    case tab_terminal:
+        if (m_sources.terminal)
+            ui->memTabs->setCurrentIndex(0);
+        break;
+    case tab_flash:
+        if (m_sources.flash)
+            ui->memTabs->setCurrentIndex(m_sources.terminal);
+        break;
+    case tab_eeprom:
+        if (m_sources.eeprom)
+            ui->memTabs->setCurrentIndex(m_sources.terminal + m_sources.flash);
+        break;
+    case tab_svf:
+        if (m_sources.svf)
+            ui->memTabs->setCurrentIndex(m_sources.terminal + m_sources.flash + m_sources.eeprom);
+        break;
+    }
 }
 
 void FullProgrammerUI::readFusesInFlash()
@@ -495,15 +570,7 @@ void FullProgrammerUI::warnSecondFlash()
 
 int FullProgrammerUI::getMemIndex()
 {
-    switch(ui->memTabs->currentIndex())
-    {
-        default:
-        case TAB_TERMINAL:
-        case TAB_FLASH:
-            return MEM_FLASH;
-        case TAB_EEPROM:
-            return MEM_EEPROM;
-    }
+    return this->currentTab() == tab_eeprom? MEM_EEPROM: MEM_FLASH;
 }
 
 void FullProgrammerUI::overvoltageSwitched(bool enabled)
@@ -552,8 +619,7 @@ void FullProgrammerUI::saveData(DataFileParser *file)
 
     file->writeBlockIdentifier("LorrShupitoSett");
     {
-        file->writeVal(ui->memTabs->currentIndex());
-
+        file->writeVal((int)this->currentTab());
         file->writeVal(ui->hideLogBtn->isChecked());
         file->writeVal(ui->hideFusesBtn->isChecked());
         file->writeVal(ui->settingsBtn->isChecked());
@@ -592,7 +658,7 @@ void FullProgrammerUI::loadData(DataFileParser *file)
 
     if(file->seekToNextBlock("LorrShupitoSett", BLOCK_WORKTAB))
     {
-        ui->memTabs->setCurrentIndex(file->readVal<int>());
+        this->setCurrentTab((tabs_t)file->readVal<int>());
 
         hideLogBtn(file->readVal<bool>());
         hideFusesBtn(file->readVal<bool>());

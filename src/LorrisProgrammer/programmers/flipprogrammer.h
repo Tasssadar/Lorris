@@ -29,6 +29,8 @@ public:
 
     virtual int getType() override;
 
+    virtual ProgrammerCapabilities capabilities() const override;
+
 private:
     ConnectionPointer<GenericUsbConnection> m_conn;
     yb::async_runner & m_runner;
