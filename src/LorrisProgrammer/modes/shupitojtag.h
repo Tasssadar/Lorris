@@ -9,6 +9,7 @@
 #define SHUPITOJTAG_H
 
 #include "shupitomode.h"
+#include <libyb/utils/svf_file.hpp>
 #include <stdint.h>
 
 class ShupitoJtag : public ShupitoMode
@@ -19,6 +20,7 @@ public:
     ShupitoJtag(Shupito *shupito);
     ProgrammerCapabilities capabilities() const override;
 
+    bool isInFlashMode() override { return m_flash_mode; }
     void switchToFlashMode(quint32 speed_hz) override;
     void switchToRunMode() override;
 
@@ -31,6 +33,16 @@ public:
 
 protected:
     ShupitoDesc::config const * getModeCfg() override;
+
+private:
+    struct cost_visitor;
+    struct play_visitor;
+
+    void cmd_frequency(uint32_t speed_hz);
+
+    bool m_flash_mode;
+    uint32_t m_freq_base;
+    uint32_t m_max_freq_hz;
 };
 
 #endif // SHUPITOJTAG_H

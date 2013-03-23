@@ -66,6 +66,7 @@ public:
     void readPacket(const ShupitoPacket& data);
     void sendPacket(const ShupitoPacket& data);
     ShupitoPacket waitForPacket(ShupitoPacket const & pkt, quint8 cmd);
+    ShupitoPacket waitForPacket(quint8 cmd);
     QByteArray waitForStream(ShupitoPacket const & pkt, quint8 cmd, quint16 max_packets = 1024);
 
     void setVddConfig(ShupitoDesc::config const *cfg) { m_vdd_config = cfg; }
