@@ -255,6 +255,13 @@ struct ShupitoJtag::play_visitor
         }
     }
 
+    void operator()(yb::svf_trst const & stmt)
+    {
+        ShupitoPacket resp = parent.m_shupito->waitForPacket(makeShupitoPacket(parent.m_prog_cmd_base + 4, 1, stmt.mode), parent.m_prog_cmd_base + 4);
+        if (resp.size() != 2 || resp[1] != 0)
+            throw QObject::tr("Something went wrong while executing TRST command.");
+    }
+
 #if 0
     void operator()(yb::svf_comment const & stmt)
     {
@@ -266,10 +273,6 @@ struct ShupitoJtag::play_visitor
         }
     }
 
-    void operator()(yb::svf_trst const & stmt)
-    {
-        (void)stmt;
-    }
 #endif
 
     template <typename T>
