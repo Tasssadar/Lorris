@@ -12,7 +12,7 @@
 #include <cassert>
 
 ShupitoJtag::ShupitoJtag(Shupito *shupito)
-    : ShupitoMode(shupito), m_flash_mode(false)
+    : ShupitoMode(shupito)
 {
 }
 
@@ -25,7 +25,7 @@ ProgrammerCapabilities ShupitoJtag::capabilities() const
 
 ShupitoDesc::config const * ShupitoJtag::getModeCfg()
 {
-    return m_shupito->getDesc()->getConfig("ee047e35-dec8-48ab-b194-e3762c8f6b66");
+    return m_shupito->getDesc()->getConfig("fe047e35-dec8-48ab-b194-e3762c8f6b66");
 }
 
 void ShupitoJtag::switchToFlashMode(quint32 speed_hz)
@@ -62,6 +62,7 @@ void ShupitoJtag::switchToRunMode()
     ShupitoDesc::config const *prog_cfg = getModeCfg();
     Q_ASSERT(prog_cfg != 0);
     m_shupito->sendPacket(prog_cfg->getStateChangeCmd(false));
+    m_flash_mode = false;
 }
 
 chip_definition ShupitoJtag::readDeviceId()
@@ -147,32 +148,38 @@ struct ShupitoJtag::play_visitor
         while (length_bits && !parent.m_cancel_requested)
         {
             size_t chunk_bits = (std::min)(length_bits, (ms - 1) * 8);
-            if (chunk_bits > 248)
-                chunk_bits = 248;
-
             size_t chunk_bytes = (chunk_bits + 7) / 8;
+
+            bool verify = !stmt.tdo.empty();
 
             ShupitoPacket pkt;
             pkt.push_back(parent.m_prog_cmd_base + 1);
-            pkt.push_back(chunk_bits);
+            pkt.push_back(chunk_bits & 0x07);
+            if (!verify)
+                pkt.back() |= 0x10;
             pkt.insert(pkt.end(), tdi, tdi + chunk_bytes);
 
             pkt = parent.m_shupito->waitForPacket(pkt, parent.m_prog_cmd_base + 1);
-            if (pkt.size() != chunk_bytes + 2 || pkt[1] != chunk_bits)
+            if (pkt.size() != (!verify? 2: chunk_bytes + 2) || pkt[1] != 0)
                 throw QObject::tr("Invalid response received from Shupito");
-            if (chunk_bits % 8)
-                pkt.back() >>= (8-(chunk_bits%8));
 
-            for (size_t i = 0; i < chunk_bytes; ++i)
+            if (verify)
             {
-                if ((pkt[i+2] & mask[i]) != tdo[i])
-                    throw QObject::tr("Verification failed!");
+                if (chunk_bits % 8)
+                    pkt.back() >>= (8-(chunk_bits%8));
+
+                for (size_t i = 0; i < chunk_bytes; ++i)
+                {
+                    if ((pkt[i+2] & mask[i]) != tdo[i])
+                        throw QObject::tr("Verification failed!");
+                }
+
+                tdo += chunk_bytes;
+                mask += chunk_bytes;
             }
 
             length_bits -= chunk_bits;
             tdi += chunk_bytes;
-            tdo += chunk_bytes;
-            mask += chunk_bytes;
 
             current_cost += chunk_bits * current_bit_period;
             emit parent.updateProgressDialog((int)(current_cost * 100 / total_cost));
@@ -211,7 +218,7 @@ struct ShupitoJtag::play_visitor
     void operator()(yb::svf_runtest const & stmt)
     {
         uint32_t clocks = (uint32_t)(std::min)(stmt.max_time / current_bit_period, (std::max)((double)stmt.run_count, stmt.min_time / current_bit_period));
-        uint32_t max_chunk = 0.1 / current_bit_period;
+        uint32_t max_chunk = 1 / current_bit_period;
 
         while (clocks && !parent.m_cancel_requested)
         {
@@ -226,17 +233,15 @@ struct ShupitoJtag::play_visitor
             {
                 if (resp.size() == 2)
                 {
-                    uint8_t last = resp[1];
-                    if (last)
-                        break;
+                    uint8_t error = resp[1];
+                    if (error)
+                        throw QObject::tr("Something went wrong while executing RUNTEST command.");
+                    break;
                 }
                 else if (resp.size() == 5)
                 {
                     uint32_t remaining_clocks = deserialize_le<uint32_t>(resp.data() + 1);
-
                     emit parent.updateProgressDialog((int)((current_cost + (chunk - remaining_clocks) * current_bit_period) * 100 / total_cost));
-                    if (!remaining_clocks)
-                        break;
                 }
                 else
                 {

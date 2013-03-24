@@ -40,7 +40,6 @@ private:
 
     void cmd_frequency(uint32_t speed_hz);
 
-    bool m_flash_mode;
     uint32_t m_freq_base;
     uint32_t m_max_freq_hz;
 };
