@@ -155,6 +155,8 @@ public slots:
     void setInput(quint8 input);
     void showSettings();
     void applySettings(const terminal_settings& set);
+    void blink(const QColor& color);
+    void blink(const QString& color) { blink(QColor(color)); }
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -170,6 +172,7 @@ private slots:
     void copyToClipboard();
     void pasteFromClipboard();
     void updateScrollBars();
+    void endBlink();
 
 private:
     void handleInput(const QString &data, int key = 0);

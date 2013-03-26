@@ -161,6 +161,8 @@ void LorrisTerminal::sendKeyEvent(const QString &key)
 {
     if(m_con && m_con->isOpen())
         m_con->SendData(key.toUtf8());
+    else
+        ui->terminal->blink(Qt::darkRed);
 }
 
 void LorrisTerminal::fmtAction(int act)

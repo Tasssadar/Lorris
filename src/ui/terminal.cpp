@@ -880,3 +880,25 @@ QString Terminal::getCurrNewlineStr()
     return nl[m_settings.chars[SET_ENTER_SEND]];
 }
 
+void Terminal::blink(const QColor &color)
+{
+    if(!color.isValid())
+        return;
+
+    QTimer::singleShot(100, this, SLOT(endBlink()));
+
+    QPalette p = palette();
+    p.setColor(QPalette::Base, color);
+    setPalette(p);
+
+    update();
+}
+
+void Terminal::endBlink()
+{
+    QPalette p = palette();
+    p.setColor(QPalette::Base, m_settings.colors[COLOR_BG]);
+    setPalette(p);
+
+    update();
+}
