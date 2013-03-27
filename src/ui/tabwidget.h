@@ -26,6 +26,7 @@ class ChildTab;
 class TabView;
 class TabSwitchWidget;
 class QLabel;
+class HomeTab;
 
 class TabWidget : public QTabWidget
 {
@@ -46,10 +47,7 @@ public:
 
     quint32 getId() const { return m_id; }
 
-    int addTab(QWidget *widget, const QString& name)
-    {
-        return QTabWidget::addTab(widget, name);
-    }
+    int addTab(HomeTab *tab, const QString& name);
 
     int addTab(Tab *widget, const QString& name, quint32 tabId);
     QWidget* unregisterTab(int index);
@@ -146,8 +144,9 @@ public:
     void enableSplit(bool enable);
 
 protected:
-    void mousePressEvent(QMouseEvent * event);
+    void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);

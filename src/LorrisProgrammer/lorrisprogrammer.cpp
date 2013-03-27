@@ -122,7 +122,7 @@ void LorrisProgrammer::updateModeBar()
         connect(mode_act, SIGNAL(triggered()), m_mode_act_signalmap, SLOT(map()));
     }
  
-    int currentMode = m_programmer->getMode();
+    size_t currentMode = m_programmer->getMode();
     Q_ASSERT(currentMode < m_mode_acts.size());
     m_mode_acts[currentMode]->setChecked(true);
 
@@ -384,7 +384,7 @@ void LorrisProgrammer::modeSelected(int idx)
     m_programmer->setMode(idx);
 
     for (size_t i = 1; i < m_mode_acts.size(); ++i)
-        m_mode_acts[i-1]->setChecked(i-1 == idx);
+        m_mode_acts[i-1]->setChecked(i-1 == (size_t)idx);
 }
 
 void LorrisProgrammer::progSpeedChanged(QString text)
@@ -795,6 +795,8 @@ void LorrisProgrammer::setConnection(ConnectionPointer<Connection> const & con)
         this->disconnect(m_con.data());
         m_con->releaseTab();
     }
+
+    emit setConnId(con ? con->GetIDString() : QString(), m_con != NULL);
 
     m_con = con;
     m_programmer.reset();

@@ -208,7 +208,7 @@ void FilterCondition::save(DataFileParser *file)
     file->writeVal(m_type);
 }
 
-void FilterCondition::load(DataFileParser *file)
+void FilterCondition::load(DataFileParser* /*file*/)
 {
 
 }

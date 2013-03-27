@@ -57,11 +57,7 @@ public slots:
     void setMax(double max);
 
     /// \deprecated Use setRange(min, max);
-    void setRange(double min, double max, double step)
-    {
-        setRange(min, max);
-    }
-
+    void setRange(double min, double max, double step);
     void setRange(double min, double max);
 
     void setOrientation(int ori);

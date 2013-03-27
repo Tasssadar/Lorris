@@ -225,7 +225,7 @@ private:
 #endif // HAVE_LIBYB
     QHash<PortConnection *, ShupitoConnection *> m_autoShupitos;
     QHash<QObject *, PortConnection *> m_autoShupitosRev;
-    quint64 m_lastCompanionId;
+    qint64 m_lastCompanionId;
 };
 
 extern ConnectionManager2 * psConMgr2;

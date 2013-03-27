@@ -59,6 +59,8 @@ private slots:
     void descRead(bool correct);
 
 private:
+    ConnectionPointer<ShupitoConnection> m_con;
+
     ShupitoDesc::config const *m_vdd_config;
     ShupitoDesc::config const *m_tunnel_config;
     ShupitoDesc::config const *m_btn_config;
@@ -69,8 +71,6 @@ private:
     quint8 m_cur_mode;
 
     ShupitoDesc *m_desc;
-
-    ConnectionPointer<ShupitoConnection> m_con;
 };
 
 #endif
