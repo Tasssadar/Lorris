@@ -23,3 +23,10 @@ void ShupitoSPI::editIdArgs(QString &id, quint8 &/*id_lenght*/)
 {
     id = "avr:";
 }
+
+ProgrammerCapabilities ShupitoSPI::capabilities() const
+{
+    ProgrammerCapabilities res = ShupitoModeCommon::capabilities();
+    res.fuses = true;
+    return res;
+}
