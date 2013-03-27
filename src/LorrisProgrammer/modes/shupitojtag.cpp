@@ -133,7 +133,7 @@ struct ShupitoJtag::play_visitor
     {
         current_bit_period = (std::max)(1.0 / stmt.cycles_hz, min_bit_period);
 
-        uint32_t cycles_hz = (std::min)((size_t)stmt.cycles_hz, parent.m_max_freq_hz);
+        uint32_t cycles_hz = (std::min)((uint32_t)stmt.cycles_hz, parent.m_max_freq_hz);
         parent.cmd_frequency(cycles_hz);
     }
 

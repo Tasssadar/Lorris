@@ -118,7 +118,7 @@ void ShupitoSpiFlash::readMemRange(quint8 memid, QByteArray& memory, quint32 add
     while (size && !m_cancel_requested)
     {
         size_t offset = out.size() - 2;
-        size_t chunk = (std::min)(size, m_shupito->maxPacketSize() - (out.size() - 1));
+        size_t chunk = (std::min)((size_t)size, m_shupito->maxPacketSize() - (out.size() - 1));
         size -= chunk;
 
         if (size == 0)
