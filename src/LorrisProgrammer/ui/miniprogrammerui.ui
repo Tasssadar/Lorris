@@ -57,7 +57,7 @@
             <string>No file currently opened</string>
            </property>
            <property name="text">
-            <string>Load hex</string>
+            <string>Load</string>
            </property>
            <property name="icon">
             <iconset resource="../../actions.qrc">
@@ -166,7 +166,7 @@
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Write flash</string>
+          <string>Write</string>
          </property>
          <property name="icon">
           <iconset resource="../programmericons.qrc">

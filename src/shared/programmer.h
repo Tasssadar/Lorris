@@ -38,6 +38,25 @@ enum VerifyMode
     VERIFY_MAX
 };
 
+struct ProgrammerCapabilities
+{
+    bool terminal;
+    bool flash;
+    bool eeprom;
+    bool svf;
+    bool fuses;
+
+    ProgrammerCapabilities()
+        : terminal(false), flash(false), eeprom(false), svf(false), fuses(false)
+    {
+    }
+
+    bool supports_erase() const
+    {
+        return flash || eeprom || fuses;
+    }
+};
+
 class Programmer
     : public QObject
 {
@@ -60,6 +79,8 @@ signals:
 
     void blinkLedSupport(bool supported);
 
+    void capabilitiesChanged();
+
 public:
     explicit Programmer(ProgrammerLogSink * logsink)
         : m_logsink(logsink)
@@ -67,8 +88,8 @@ public:
     }
 
     virtual bool supportsVdd() const { return false; }
-    virtual bool supportsTunnel() const { return false; }
     virtual bool supportsBootseq() const { return false; }
+    bool supportsTunnel() const { return this->capabilities().terminal; }
 
     virtual QString getBootseq() const { return QString(); }
 
@@ -90,8 +111,10 @@ public:
 
     virtual QByteArray readMemory(const QString& mem, chip_definition &chip) = 0;
     virtual void readFuses(std::vector<quint8>& data, chip_definition &chip) = 0;
-    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode) = 0;
-    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode) = 0;
+    virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode) = 0;
+    virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode) = 0;
+
+    virtual void executeText(QByteArray const & data, quint8 memId, chip_definition & chip);
 
     virtual void erase_device(chip_definition& chip) = 0;
 
@@ -99,6 +122,8 @@ public:
     virtual void blinkLed() {}
 
     virtual int getType() = 0;
+
+    virtual ProgrammerCapabilities capabilities() const = 0;
 
 public slots:
     virtual void sendTunnelData(QString const &) {}

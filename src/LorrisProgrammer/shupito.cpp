@@ -133,6 +133,14 @@ ShupitoPacket Shupito::waitForPacket(const ShupitoPacket & data, quint8 cmd)
 {
     Q_ASSERT(responseTimer == NULL);
 
+    m_con->sendPacket(data);
+    return this->waitForPacket(cmd);
+}
+
+ShupitoPacket Shupito::waitForPacket(quint8 cmd)
+{
+    Q_ASSERT(responseTimer == NULL);
+
     responseTimer = new QTimer;
     responseTimer->start(1000);
     connect(responseTimer, SIGNAL(timeout()), this, SIGNAL(packetReveived()));
@@ -143,9 +151,6 @@ ShupitoPacket Shupito::waitForPacket(const ShupitoPacket & data, quint8 cmd)
 
     QEventLoop loop;
     loop.connect(this, SIGNAL(packetReveived()), SLOT(quit()));
-
-    m_con->sendPacket(data);
-
     loop.exec();
 
     delete responseTimer;

@@ -46,9 +46,9 @@
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
 static const QString colorSavedToFile= "#FFE0E0";
-static const QString memNames[] = { "", "flash", "eeprom" };
 
-static const QString filters = QObject::tr("Intel HEX file (*.hex)");
+static const QString hex_filters = QObject::tr("Intel HEX file (*.hex)");
+static const QString svf_filters = QObject::tr("Serial Vector Format file (*.svf)");
 
 LorrisProgrammer::LorrisProgrammer()
     : WorkTab(), m_logsink(this)
@@ -180,31 +180,15 @@ void LorrisProgrammer::initMenus()
     m_enableHardwareButton->setChecked(sConfig.get(CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON));
     connect(m_enableHardwareButton, SIGNAL(toggled(bool)), this, SLOT(enableHardwareButtonToggled(bool)));
 
-    QMenu *dataBar = new QMenu(tr("Data"), this);
-    addTopMenu(dataBar);
-
-    m_load_flash = dataBar->addAction(QIcon(":/actions/open"), tr("Load data into flash"));
+    m_load_flash = new QAction(QIcon(":/actions/open"), tr("Load..."), this);
     m_load_flash->setShortcut(QKeySequence("Ctrl+O"));
-    m_load_eeprom = dataBar->addAction(tr("Load data into EEPROM"));
-    dataBar->addSeparator();
+    connect(m_load_flash,  SIGNAL(triggered()), this, SLOT(loadFromFile()));
+    addTopAction(m_load_flash);
 
-    m_save_flash = dataBar->addAction(QIcon(":/actions/save"), tr("Save flash memory"));
+    m_save_flash = new QAction(QIcon(":/actions/save"), tr("Save..."), this);
     m_save_flash->setShortcut(QKeySequence("Ctrl+S"));
-    m_save_eeprom = dataBar->addAction(tr("Save EERPOM"));
-
-    QSignalMapper *signalMapLoad = new QSignalMapper(this);
-    signalMapLoad->setMapping(m_load_flash,  MEM_FLASH);
-    signalMapLoad->setMapping(m_load_eeprom, MEM_EEPROM);
-    connect(signalMapLoad, SIGNAL(mapped(int)), this,          SLOT(loadFromFile(int)));
-    connect(m_load_flash,  SIGNAL(triggered()), signalMapLoad, SLOT(map()));
-    connect(m_load_eeprom, SIGNAL(triggered()), signalMapLoad, SLOT(map()));
-
-    QSignalMapper *signalMapSave = new QSignalMapper(this);
-    signalMapSave->setMapping(m_save_flash,  MEM_FLASH);
-    signalMapSave->setMapping(m_save_eeprom, MEM_EEPROM);
-    connect(signalMapSave, SIGNAL(mapped(int)), this,          SLOT(saveToFile(int)));
-    connect(m_save_flash,  SIGNAL(triggered()), signalMapSave, SLOT(map()));
-    connect(m_save_eeprom, SIGNAL(triggered()), signalMapSave, SLOT(map()));
+    connect(m_save_flash,  SIGNAL(triggered()), this, SLOT(saveToFile()));
+    addTopAction(m_save_flash);
 
     m_blink_led = new QAction(tr("Blink LED"), this);
     m_blink_led->setEnabled(false);
@@ -265,7 +249,16 @@ void LorrisProgrammer::stopAll(bool wait)
 void LorrisProgrammer::onTabShow(const QString& filename)
 {
     if(!filename.isEmpty())
-        openFile(filename);
+    {
+        try
+        {
+            loadFromFile(MEM_FLASH, filename);
+            sConfig.set(CFG_STRING_SHUPITO_HEX_FOLDER, filename);
+        }
+        catch(QString ex)
+        {
+        }
+    }
 
     if (!m_con)
     {
@@ -436,7 +429,7 @@ void LorrisProgrammer::update_chip_description(chip_definition& cd)
 
         chip_definition::memorydef *mem = cd.getMemDef("flash");
         if(mem)
-            name += " flash: " % QString::number(mem->size/1024) % " kb, page: " %
+            name += " flash: " % QString::number(mem->size/1024) % " kB, page: " %
                     QString::number(mem->pagesize) % " bytes";
 
         mem = cd.getMemDef("eeprom");
@@ -599,19 +592,21 @@ void LorrisProgrammer::restartChip()
     startChip();
 }
 
-void LorrisProgrammer::loadFromFile(int memId)
+void LorrisProgrammer::loadFromFile()
 {
     try
     {
+        int memid = ui->getMemIndex();
+
         QString filename = QFileDialog::getOpenFileName(this, QObject::tr("Import data"),
                                                         sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
-                                                        filters);
+                                                        memid == MEM_JTAG? svf_filters: hex_filters);
         if(filename.isEmpty())
             return;
 
         sConfig.set(CFG_STRING_SHUPITO_HEX_FOLDER, filename);
 
-        loadFromFile(memId, filename);
+        loadFromFile(memid, filename);
     }
     catch(QString ex)
     {
@@ -625,20 +620,29 @@ void LorrisProgrammer::loadFromFile(int memId, const QString& filename)
 
     QDateTime loadTimestamp = QDateTime::currentDateTime();
 
-    HexFile file;
-
-    file.LoadFromFile(filename);
-
-    quint32 len = 0;
-    if(!m_cur_def.getName().isEmpty())
+    if (memId != MEM_JTAG)
     {
-        chip_definition::memorydef *memdef = m_cur_def.getMemDef(memId);
-        if(memdef)
-            len = memdef->size;
-    }
+        HexFile file;
+        file.LoadFromFile(filename);
 
-    ui->setHexData(memId, file.getDataArray(len));
-    ui->setHexColor(memId, colorFromFile);
+        quint32 len = 0;
+        if(!m_cur_def.getName().isEmpty())
+        {
+            chip_definition::memorydef *memdef = m_cur_def.getMemDef(memId);
+            if(memdef)
+                len = memdef->size;
+        }
+
+        ui->setHexData(memId, file.getDataArray(len));
+        ui->setHexColor(memId, colorFromFile);
+    }
+    else
+    {
+        QFile fin(filename);
+        if (!fin.open(QIODevice::ReadOnly))
+            throw QString(QObject::tr("Can't open file \"%1\"!")).arg(filename);
+        ui->setHexData(MEM_JTAG, fin.readAll());
+    }
 
     m_hexFilenames[memId] = filename;
     m_hexWriteTimes[memId] = loadTimestamp;
@@ -649,26 +653,14 @@ void LorrisProgrammer::loadFromFile(int memId, const QString& filename)
     status(tr("File loaded"));
 }
 
-void LorrisProgrammer::openFile(const QString &filename)
+void LorrisProgrammer::saveToFile()
 {
     try
     {
-        loadFromFile(MEM_FLASH, filename);
-        sConfig.set(CFG_STRING_SHUPITO_HEX_FOLDER, filename);
-    }
-    catch(QString ex)
-    {
-        Utils::showErrorBox(ex);
-    }
-}
-
-void LorrisProgrammer::saveToFile(int memId)
-{
-    try
-    {
+        int memId = ui->getMemIndex();
         QString filename = QFileDialog::getSaveFileName(this, QObject::tr("Export data"),
                                                         sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
-                                                        filters);
+                                                        memId == MEM_JTAG? svf_filters: hex_filters);
         if(filename.isEmpty())
             return;
 
@@ -701,7 +693,7 @@ void LorrisProgrammer::verifyChanged(int mode)
 
     sConfig.set(CFG_QUINT32_SHUPITO_VERIFY, mode);
 
-    m_verify_mode = mode;
+    m_verify_mode = (VerifyMode)mode;
 }
 
 void LorrisProgrammer::tryFileReload(quint8 memId)
@@ -952,7 +944,7 @@ void LorrisProgrammer::setEnableButtons(bool enable)
         return;
 
     m_buttons_enabled = enable;
-    emit enableButtons(enable);
+    ui->enableButtons(enable);
 }
 
 void LorrisProgrammer::createConnBtn(QToolButton *btn)
@@ -996,6 +988,9 @@ void LorrisProgrammer::setUiType(int type)
             ui->setHexData(i, hexData[i]);
         }
     }
+
+    if (m_programmer)
+        ui->connectProgrammer(m_programmer.data());
 }
 
 void LorrisProgrammer::setMiniUi(bool mini)
@@ -1015,8 +1010,7 @@ void LorrisProgrammer::setMiniUi(bool mini)
     ui->loadData(&parser);
 
     ui->connectedStatus(!(m_state & STATE_DISCONNECTED));
-
-    emit enableButtons(m_buttons_enabled);
+    ui->enableButtons(m_buttons_enabled);
 }
 
 void LorrisProgrammer::buttonPressed(int btnid)

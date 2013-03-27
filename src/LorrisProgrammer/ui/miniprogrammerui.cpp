@@ -39,10 +39,8 @@ void MiniProgrammerUI::setupUi(LorrisProgrammer *widget)
     connect(ui->writeButton,  SIGNAL(clicked()),         SLOT(writeFlashBtn()));
     connect(ui->startStopBtn, SIGNAL(clicked()), widget, SLOT(startstopChip()));
     connect(ui->loadBtn,      SIGNAL(clicked()), widget, SLOT(loadFromFile()));
-    connect(this, SIGNAL(enableButtons(bool)),           SLOT(enableWrite(bool)));
-    connect(this, SIGNAL(enableButtons(bool)), ui->startStopBtn, SLOT(setEnabled(bool)));
 
-    emit enableButtons(widget->m_buttons_enabled);
+    this->enableButtons(widget->m_buttons_enabled);
 
     m_widget->createConnBtn(ui->connectButton);
 
@@ -203,4 +201,26 @@ void MiniProgrammerUI::warnSecondFlash()
         new ToolTipWarn(tr("You have flashed this file already, and it was not changed since."), ui->writeButton, m_widget);
         Utils::playErrorSound();
     }
+}
+
+void MiniProgrammerUI::setHexData(quint32 memid, const QByteArray& data)
+{
+    if (memid == MEM_JTAG)
+        m_svfData = data;
+    else
+        m_hexData[memid] = data;
+}
+
+QByteArray MiniProgrammerUI::getHexData(quint32 memid) const
+{
+    if (memid == MEM_JTAG)
+        return m_svfData;
+    else
+        return m_hexData[memid];
+}
+
+void MiniProgrammerUI::enableButtons(bool enable)
+{
+    this->enableWrite(enable);
+    ui->startStopBtn->setEnabled(enable);
 }
