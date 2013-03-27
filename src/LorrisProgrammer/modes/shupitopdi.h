@@ -15,6 +15,7 @@ class ShupitoPDI : public ShupitoModeCommon
     Q_OBJECT
 public:
     ShupitoPDI(Shupito *shupito);
+    ProgrammerCapabilities capabilities() const override;
 
 protected:
     ShupitoDesc::config const *getModeCfg() override;

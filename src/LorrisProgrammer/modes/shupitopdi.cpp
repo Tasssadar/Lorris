@@ -26,3 +26,9 @@ void ShupitoPDI::editIdArgs(QString &id, quint8 &id_lenght)
     id_lenght = std::min(id_lenght, (quint8)3);
 }
 
+ProgrammerCapabilities ShupitoPDI::capabilities() const
+{
+    ProgrammerCapabilities res = ShupitoModeCommon::capabilities();
+    res.fuses = true;
+    return res;
+}
