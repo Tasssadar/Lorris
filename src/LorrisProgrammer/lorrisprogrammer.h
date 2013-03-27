@@ -48,9 +48,9 @@ class ToolTipWarn;
 class LorrisProgrammer : public WorkTab
 {
     Q_OBJECT
+
 Q_SIGNALS:
     void responseChanged();
-    void enableButtons(bool enable);
 
     friend class FullProgrammerUI;
     friend class MiniProgrammerUI;
@@ -103,15 +103,9 @@ private slots:
     void modeSelected(int idx);
     void status(const QString& text);
 
-    void openFile(const QString &filename);
-    void loadFromFile()
-    {
-        loadFromFile(MEM_FLASH);
-    }
-
-    void loadFromFile(int memId);
+    void loadFromFile();
     void loadFromFile(int memId, const QString& filename);
-    void saveToFile(int memId);
+    void saveToFile();
     void focusChanged(QWidget *prev, QWidget *curr);
 
     void timeout();
@@ -149,9 +143,7 @@ private:
     QAction *m_restart_act;
     QAction *m_verify[VERIFY_MAX];
     QAction *m_load_flash;
-    QAction *m_load_eeprom;
     QAction *m_save_flash;
-    QAction *m_save_eeprom;
     QAction *m_blink_led;
     QAction *m_miniUi;
     QAction *m_set_tunnel_name_act;
@@ -164,9 +156,9 @@ private:
     quint32 m_prog_speed_hz;
     VerifyMode m_verify_mode;
 
-    QString m_hexFilenames[MEM_FUSES];
-    QDateTime m_hexWriteTimes[MEM_FUSES];
-    QDateTime m_hexFlashTimes[MEM_FUSES];
+    QString m_hexFilenames[MEM_COUNT];
+    QDateTime m_hexWriteTimes[MEM_COUNT];
+    QDateTime m_hexFlashTimes[MEM_COUNT];
 
     vdd_setup m_vdd_setup;
     double m_vcc;

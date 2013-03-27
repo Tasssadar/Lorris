@@ -40,12 +40,12 @@ ProgrammerUI *ProgrammerUI::createUI(ui_type type, QObject *parent)
 {
     switch(type)
     {
-        case UI_FULL:
-            return new FullProgrammerUI(parent);
-        case UI_MINIMAL:
-            return new MiniProgrammerUI(parent);
-        default:
-            break;
+    case UI_FULL:
+        return new FullProgrammerUI(parent);
+    case UI_MINIMAL:
+        return new MiniProgrammerUI(parent);
+    default:
+        break;
     }
     return NULL;
 }
@@ -53,7 +53,6 @@ ProgrammerUI *ProgrammerUI::createUI(ui_type type, QObject *parent)
 void ProgrammerUI::setupUi(LorrisProgrammer *widget)
 {
     m_widget = widget;
-    connect(widget, SIGNAL(enableButtons(bool)),               SIGNAL(enableButtons(bool)));
     connect(this,   SIGNAL(statusBarMsg(QString,int)), widget, SIGNAL(statusBarMsg(QString,int)));
 }
 
@@ -309,14 +308,16 @@ void ProgrammerUI::writeMem(quint8 memId, chip_definition &chip)
 {
     m_widget->tryFileReload(memId);
 
-    chip_definition::memorydef *memdef = chip.getMemDef(memId);
-
-    if(!memdef)
-        throw QString(tr("Unknown memory id"));
-
     QByteArray data = getHexData(memId);
-    if (memdef->size != 0 && (quint32)data.size() > memdef->size)
-        throw QString(tr("Something's wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
+
+    if (memId != MEM_JTAG)
+    {
+        chip_definition::memorydef *memdef = chip.getMemDef(memId);
+        if(!memdef)
+            throw QString(tr("Unknown memory id"));
+        if (memdef->size != 0 && (quint32)data.size() > memdef->size)
+            throw QString(tr("Something's wrong, data in tab: %1, chip size: %2")).arg(data.size()).arg(memdef->size);
+    }
 
     log("Writing memory");
     m_widget->showProgressDialog(tr("Writing memory"), prog());
@@ -332,11 +333,18 @@ void ProgrammerUI::writeMem(quint8 memId, chip_definition &chip)
         lastMod = info.lastModified();
     }
 
-    HexFile file;
-    file.setData(data);
+    if (memId != MEM_JTAG)
+    {
+        HexFile file;
+        file.setData(data);
 
-    prog()->flashRaw(file, memId, chip, m_widget->m_verify_mode);
-    setHexColor(memId, colorFromDevice);
+        prog()->flashRaw(file, memId, chip, m_widget->m_verify_mode);
+        setHexColor(memId, colorFromDevice);
+    }
+    else
+    {
+        prog()->executeText(data, memId, chip);
+    }
 
     m_widget->updateProgressDialog(-1);
 

@@ -38,6 +38,8 @@ public:
     void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode) override;
     void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode) override;
 
+    void executeText(QByteArray const & data, quint8 memId, chip_definition & chip) override;
+
     void erase_device(chip_definition& chip) override;
 
     ShupitoMode *mode() const { return m_modes[m_cur_mode]; }

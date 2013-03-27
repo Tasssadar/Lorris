@@ -45,6 +45,8 @@ public:
     virtual void writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode);
     virtual void flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode);
 
+    virtual void executeText(QByteArray const & data, quint8 memId, chip_definition & chip);
+
     virtual void erase_device(chip_definition& chip) = 0;
 
     virtual ProgrammerCapabilities capabilities() const = 0;
