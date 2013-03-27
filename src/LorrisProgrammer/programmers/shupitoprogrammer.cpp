@@ -35,14 +35,9 @@ int ShupitoProgrammer::getType()
     return programmer_shupito;
 }
 
-bool ShupitoProgrammer::supportsTunnel() const
-{
-    return m_tunnel_config != 0;
-}
-
 QStringList ShupitoProgrammer::getAvailableModes()
 {
-    static const QString modeNames[] = { "SPI", "PDI", "cc25xx" };
+    static const QString modeNames[] = { "SPI", "PDI", "cc25xx", "SPI flash", "JTAG" };
 
     QStringList modes;
     for (int i = 0; i < MODE_COUNT; ++i)
@@ -76,6 +71,7 @@ void ShupitoProgrammer::setMode(int mode)
         {
             m_cur_mode = i;
             sConfig.set(CFG_QUINT32_SHUPITO_MODE, i);
+            emit capabilitiesChanged();
             return;
         }
 
@@ -83,6 +79,7 @@ void ShupitoProgrammer::setMode(int mode)
     }
 
     m_cur_mode = 0;
+    emit capabilitiesChanged();
 }
 
 void ShupitoProgrammer::readPacket(const ShupitoPacket & packet)
@@ -148,12 +145,12 @@ void ShupitoProgrammer::readFuses(std::vector<quint8>& data, chip_definition &ch
     m_modes[m_cur_mode]->readFuses(data, chip);
 }
 
-void ShupitoProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 verifyMode)
+void ShupitoProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode)
 {
     m_modes[m_cur_mode]->writeFuses(data, chip, verifyMode);
 }
 
-void ShupitoProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 verifyMode)
+void ShupitoProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
 {
     m_modes[m_cur_mode]->flashRaw(file, memId, chip, verifyMode);
 }
@@ -305,4 +302,25 @@ bool ShupitoProgrammer::canBlinkLed()
 void ShupitoProgrammer::blinkLed()
 {
     m_shupito->sendPacket(makeShupitoPacket(m_led_config->cmd, 1, 2));
+}
+
+ProgrammerCapabilities ShupitoProgrammer::capabilities() const
+{
+    ProgrammerCapabilities caps;
+    if (m_modes[m_cur_mode])
+    {
+        caps = m_modes[m_cur_mode]->capabilities();
+    }
+    else
+    {
+        caps.flash = true;
+        caps.eeprom = true;
+    }
+    caps.terminal = m_tunnel_config != 0;
+    return caps;
+}
+
+void ShupitoProgrammer::executeText(QByteArray const & data, quint8 memId, chip_definition & chip)
+{
+    m_modes[m_cur_mode]->executeText(data, memId, chip);
 }

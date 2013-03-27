@@ -25,7 +25,8 @@ public:
 
     chip_definition findChipdef(const QString& sign);
     fuse_desc *findFuse_desc(const QString& name, const QString& chipSign);
-    
+    void update(chip_definition & cd);
+
 private:
     void loadChipdefs();
     void loadFusedesc();

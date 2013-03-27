@@ -8,7 +8,8 @@
 #include "../shupito.h"
 #include "shupitospi.h"
 
-ShupitoSPI::ShupitoSPI(Shupito *shupito) : ShupitoMode(shupito)
+ShupitoSPI::ShupitoSPI(Shupito *shupito)
+    : ShupitoModeCommon(shupito)
 {
 }
 
@@ -21,4 +22,11 @@ ShupitoDesc::config const *ShupitoSPI::getModeCfg()
 void ShupitoSPI::editIdArgs(QString &id, quint8 &/*id_lenght*/)
 {
     id = "avr:";
+}
+
+ProgrammerCapabilities ShupitoSPI::capabilities() const
+{
+    ProgrammerCapabilities res = ShupitoModeCommon::capabilities();
+    res.fuses = true;
+    return res;
 }

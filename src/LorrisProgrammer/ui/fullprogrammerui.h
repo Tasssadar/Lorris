@@ -54,6 +54,8 @@ public:
 
     void writeSelectedMem();
 
+    void enableButtons(bool enable) override;
+
 protected:
     QToolButton *startStopBtn() const { return ui->startStopBtn; }
     QBoxLayout *vddLayout() const { return ui->vddLayout; }
@@ -81,15 +83,30 @@ private slots:
     void readButtonClicked();
     void writeButtonClicked();
 
+    void updateProgrammerFeatures();
+
 private:
     void initMenus();
     void updateProgrammersBox(Programmer *prog);
-    void updateProgrammerFeatures();
 
     Ui::FullProgrammerUI *ui;
 
     FuseWidget *m_fuse_widget;
     QHexEdit *m_hexAreas[MEM_FUSES];
+    QTextEdit * m_svfEdit;
+    ProgrammerCapabilities m_sources;
+    void applySources();
+
+    enum tabs_t
+    {
+        tab_terminal,
+        tab_flash,
+        tab_eeprom,
+        tab_svf
+    };
+
+    tabs_t currentTab() const;
+    void setCurrentTab(tabs_t t);
 
     QFont m_font;
     QFont m_boldFont;
@@ -99,7 +116,8 @@ private:
         ACT_FLASH  = 0,
         ACT_EEPROM,
         ACT_ALL,
-        ACT_FUSES
+        ACT_FUSES,
+        ACT_SVF,
     };
     ActionSlots m_active;
 

@@ -44,7 +44,6 @@ class ProgrammerUI : public QObject
     Q_OBJECT
 
 Q_SIGNALS:
-    void enableButtons(bool enable);
     void statusBarMsg(const QString& text, int time);
 
 public:   
@@ -94,6 +93,8 @@ public:
     virtual void writeFusesInFlash() { }
 
     virtual void writeSelectedMem() {}
+
+    virtual void enableButtons(bool enable) = 0;
 
 protected slots:
     void readMemButton() { readMemInFlash(MEM_FLASH); }

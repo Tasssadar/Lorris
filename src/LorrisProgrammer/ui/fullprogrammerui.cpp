@@ -38,11 +38,27 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
 
     ui->setupUi(widget);
 
+    QByteArray data = QByteArray(1024, (char)0xFF);
+    m_hexAreas[0] = NULL;
+    for(quint8 i = 1; i < 3; ++i)
+    {
+        QHexEdit *h = new QHexEdit(widget);
+        h->setData(data);
+        m_hexAreas[i] = h;
+    }
+
+    m_svfEdit = new QTextEdit(widget);
+    m_svfEdit->setReadOnly(true);
+    m_svfEdit->setVisible(false);
+
+    m_sources.flash = true;
+    m_sources.eeprom = true;
+
     m_read_menu = new QMenu(m_widget);
     m_write_menu = new QMenu(m_widget);
 
-    m_fuse_widget = new FuseWidget(widget);
-    ui->mainLayout->addWidget(m_fuse_widget);
+    m_fuse_widget = new FuseWidget();
+    ui->fuseContainer->layout()->addWidget(m_fuse_widget);
 
     ui->progSpeedBox->setEditText(QString::number(widget->m_prog_speed_hz));
 
@@ -70,18 +86,14 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
     connect(ui->pauseBtn,        SIGNAL(clicked(bool)),    ui->terminal, SLOT(pause(bool)));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          widget, SLOT(status(QString)));
 
-    const QWidget *buttons[] = { ui->readButton, ui->writeButton, ui->eraseButton, ui->startStopBtn, NULL };
-    for(const QWidget **itr = buttons; *itr; ++itr)
-        connect(this, SIGNAL(enableButtons(bool)), *itr, SLOT(setEnabled(bool)));
-
-    connect(this, SIGNAL(enableButtons(bool)), m_fuse_widget, SLOT(enableButtons(bool)));
-
-    emit enableButtons(widget->m_buttons_enabled);
+    this->enableButtons(widget->m_buttons_enabled);
 
     int w = ui->hideFusesBtn->fontMetrics().height()+10;
     ui->hideLogBtn->setFixedHeight(w);
     ui->hideFusesBtn->setFixedWidth(w);
     ui->hideFusesBtn->setRotation(ROTATE_90);
+
+    initMenus();
 
     hideLogBtn(sConfig.get(CFG_BOOL_SHUPITO_SHOW_LOG));
     hideFusesBtn(sConfig.get(CFG_BOOL_SHUPITO_SHOW_FUSES));
@@ -91,21 +103,8 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
     ui->progSpeedBox->setValidator(new QIntValidator(1, INT_MAX, this));
     ui->bootseqEdit->setValidator(new ByteValidator(this));
 
-    initMenus();
-
     ui->terminal->setFmt(sConfig.get(CFG_QUITN32_SHUPITO_TERM_FMT));
     ui->terminal->loadSettings(sConfig.get(CFG_STRING_SHUPITO_TERM_SET));
-
-    QByteArray data = QByteArray(1024, (char)0xFF);
-    static const QString memNames[] = { tr("Program memory"), tr("EEPROM") };
-    m_hexAreas[0] = NULL;
-    for(quint8 i = 1; i < TAB_MAX; ++i)
-    {
-        QHexEdit *h = new QHexEdit(widget);
-        h->setData(data);
-        m_hexAreas[i] = h;
-        ui->memTabs->addTab(h, memNames[i-1]);
-    }
 
     ui->over_enable->setChecked(sConfig.get(CFG_BOOL_SHUPITO_OVERVOLTAGE));
     ui->over_val->setValue(sConfig.get(CFG_FLOAT_SHUPITO_OVERVOLTAGE_VAL));
@@ -113,7 +112,17 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
 
     ui->flashWarnBox->setChecked(sConfig.get(CFG_BOOL_SHUPITO_SHOW_FLASH_WARN));
 
+    this->applySources();
     widget->createConnBtn(ui->connectButton);
+}
+
+void FullProgrammerUI::enableButtons(bool enable)
+{
+    ui->readButton->setEnabled(enable && (m_sources.flash || m_sources.eeprom || m_sources.fuses));
+    ui->writeButton->setEnabled(enable);
+    ui->eraseButton->setEnabled(enable && m_sources.supports_erase());
+    ui->startStopBtn->setEnabled(enable);
+    m_fuse_widget->enableButtons(enable);
 }
 
 void FullProgrammerUI::createActions()
@@ -166,27 +175,37 @@ void FullProgrammerUI::createActions()
     m_boldFont.setBold(true);
 }
 
-void FullProgrammerUI::setActiveAction(int actInt)
+void FullProgrammerUI::setActiveAction(int)
 {
-    ActionSlots act = actInt == TAB_EEPROM ? ACT_EEPROM : ACT_FLASH;
-
-    if(act == m_active)
-        return;
-
-    if(m_active != ACT_ALL)
+    if (this->currentTab() == tab_svf)
     {
-        m_read_menu->insertAction(m_read_actions[m_active], m_read_actions[act]);
-        m_read_menu->insertAction(m_read_actions[ACT_FUSES], m_read_actions[m_active]);
-        m_write_menu->insertAction(m_write_actions[m_active], m_write_actions[act]);
-        m_write_menu->insertAction(m_write_actions[ACT_FUSES], m_write_actions[m_active]);
+        ui->writeButton->setMenu(0);
+        ui->writeButton->setPopupMode(QToolButton::DelayedPopup);
     }
+    else
+    {
+        ui->writeButton->setMenu(m_write_menu);
+        ui->writeButton->setPopupMode(QToolButton::MenuButtonPopup);
 
-    m_read_actions[m_active]->setFont(m_font);
-    m_read_actions[act]->setFont(m_boldFont);
-    m_write_actions[m_active]->setFont(m_font);
-    m_write_actions[act]->setFont(m_boldFont);
+        ActionSlots act = this->currentTab() == tab_eeprom? ACT_EEPROM: ACT_FLASH;
+        if(act == m_active)
+            return;
 
-    m_active = act;
+        if(m_active != ACT_ALL)
+        {
+            m_read_menu->insertAction(m_read_actions[m_active], m_read_actions[act]);
+            m_read_menu->insertAction(m_read_actions[ACT_FUSES], m_read_actions[m_active]);
+            m_write_menu->insertAction(m_write_actions[m_active], m_write_actions[act]);
+            m_write_menu->insertAction(m_write_actions[ACT_FUSES], m_write_actions[m_active]);
+        }
+
+        m_read_actions[m_active]->setFont(m_font);
+        m_read_actions[act]->setFont(m_boldFont);
+        m_write_actions[m_active]->setFont(m_font);
+        m_write_actions[act]->setFont(m_boldFont);
+
+        m_active = act;
+    }
 }
 
 void FullProgrammerUI::readButtonClicked()
@@ -199,10 +218,17 @@ void FullProgrammerUI::readButtonClicked()
 
 void FullProgrammerUI::writeButtonClicked()
 {
-    if (m_active == ACT_FLASH)
-        writeFlashBtn();
+    if (this->currentTab() == tab_svf)
+    {
+        writeMemInFlash(MEM_JTAG);
+    }
     else
-        writeEEPROMBtn();
+    {
+        if (m_active == ACT_FLASH)
+            writeFlashBtn();
+        else
+            writeEEPROMBtn();
+    }
 }
 
 void FullProgrammerUI::initMenus()
@@ -239,6 +265,7 @@ void FullProgrammerUI::connectProgrammer(Programmer * prog)
     connect(ui->terminal,    SIGNAL(keyPressed(QString)),    prog,         SLOT(sendTunnelData(QString)));
     connect(ui->bootseqEdit, SIGNAL(textEdited(QString)),    prog,         SLOT(setBootseq(QString)));
     connect(prog,            SIGNAL(tunnelData(QByteArray)), ui->terminal, SLOT(appendText(QByteArray)));
+    connect(prog,            SIGNAL(capabilitiesChanged()),  this,         SLOT(updateProgrammerFeatures()));
 
     m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->currentText().toInt(), false);
     ui->bootseqEdit->setText(prog->getBootseq());
@@ -304,13 +331,41 @@ void FullProgrammerUI::connectedStatus(bool connected)
     this->updateProgrammerFeatures();
 }
 
+void FullProgrammerUI::applySources()
+{
+    ui->fuseContainer->setVisible(m_sources.fuses);
+
+    tabs_t tab = this->currentTab();
+
+    bool prevBlock = ui->memTabs->blockSignals(true);
+    ui->memTabs->clear();
+    if (m_sources.terminal)
+        ui->memTabs->addTab(ui->terminal, tr("Terminal"));
+    if (m_sources.flash)
+        ui->memTabs->addTab(m_hexAreas[MEM_FLASH], tr("Program memory"));
+    if (m_sources.eeprom)
+        ui->memTabs->addTab(m_hexAreas[MEM_EEPROM], tr("EEPROM"));
+    if (m_sources.svf)
+        ui->memTabs->addTab(m_svfEdit, tr("SVF"));
+    ui->memTabs->blockSignals(prevBlock);
+
+    this->setCurrentTab(tab);
+}
+
 void FullProgrammerUI::updateProgrammerFeatures()
 {
+    if (this->prog())
+    {
+        m_sources = this->prog()->capabilities();
+        this->applySources();
+    }
+
     ui->tunnelBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsTunnel());
 
     bool bootseq = ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsBootseq();
     ui->bootseqLabel->setVisible(bootseq);
     ui->bootseqEdit->setVisible(bootseq);
+    this->enableButtons(m_widget->m_buttons_enabled);
 }
 
 void FullProgrammerUI::tunnelStop(bool stop)
@@ -356,32 +411,94 @@ void FullProgrammerUI::postFlashSwitchCheck(chip_definition &chip)
 
 void FullProgrammerUI::setHexData(quint32 memid, const QByteArray &data)
 {
-    m_hexAreas[memid]->setData(data);
+    if (memid == MEM_JTAG)
+        m_svfEdit->setText(QString::fromUtf8(data.data(), data.size()));
+    else
+        m_hexAreas[memid]->setData(data);
 }
 
 void FullProgrammerUI::setHexColor(quint32 memid, const QString &clr)
 {
-    m_hexAreas[memid]->setBackgroundColor(clr);
+    if (memid != MEM_JTAG)
+        m_hexAreas[memid]->setBackgroundColor(clr);
 }
 
 QByteArray FullProgrammerUI::getHexData(quint32 memid) const
 {
-    return m_hexAreas[memid]->data();
+    if (memid == MEM_JTAG)
+        return m_svfEdit->toPlainText().toUtf8();
+    else
+        return m_hexAreas[memid]->data();
 }
 
 void FullProgrammerUI::clearHexChanged(quint32 memid)
 {
-    m_hexAreas[memid]->clearDataChanged();
+    if (memid != MEM_JTAG)
+        m_hexAreas[memid]->clearDataChanged();
 }
 
 bool FullProgrammerUI::hasHexChanged(quint32 memid)
 {
+    if (memid == MEM_JTAG)
+        return false;
     return m_hexAreas[memid]->hasDataChanged();
 }
 
 void FullProgrammerUI::setActiveMem(quint32 memId)
 {
-    ui->memTabs->setCurrentIndex(memId);
+    switch (memId)
+    {
+    case MEM_FLASH:
+        this->setCurrentTab(tab_flash);
+        break;
+    case MEM_EEPROM:
+        this->setCurrentTab(tab_eeprom);
+        break;
+    case MEM_JTAG:
+        this->setCurrentTab(tab_svf);
+        break;
+    }
+}
+
+FullProgrammerUI::tabs_t FullProgrammerUI::currentTab() const
+{
+    int idx = ui->memTabs->currentIndex();
+    if (m_sources.terminal && idx == 0)
+        return tab_terminal;
+    if (m_sources.flash && idx == (int)m_sources.terminal)
+        return tab_flash;
+    if (m_sources.eeprom && idx == m_sources.terminal + m_sources.flash)
+        return tab_eeprom;
+    if (m_sources.svf && idx == m_sources.terminal + m_sources.flash + m_sources.eeprom)
+        return tab_svf;
+
+    Q_ASSERT(0);
+    return tab_terminal;
+}
+
+void FullProgrammerUI::setCurrentTab(tabs_t t)
+{
+    switch (t)
+    {
+    case tab_terminal:
+        if (m_sources.terminal)
+            ui->memTabs->setCurrentIndex(0);
+        break;
+    case tab_flash:
+        if (m_sources.flash)
+            ui->memTabs->setCurrentIndex(m_sources.terminal);
+        break;
+    case tab_eeprom:
+        if (m_sources.eeprom)
+            ui->memTabs->setCurrentIndex(m_sources.terminal + m_sources.flash);
+        break;
+    case tab_svf:
+        if (m_sources.svf)
+            ui->memTabs->setCurrentIndex(m_sources.terminal + m_sources.flash + m_sources.eeprom);
+        break;
+    }
+
+    this->setActiveAction(0);
 }
 
 void FullProgrammerUI::readFusesInFlash()
@@ -495,14 +612,16 @@ void FullProgrammerUI::warnSecondFlash()
 
 int FullProgrammerUI::getMemIndex()
 {
-    switch(ui->memTabs->currentIndex())
+    switch (this->currentTab())
     {
-        default:
-        case TAB_TERMINAL:
-        case TAB_FLASH:
-            return MEM_FLASH;
-        case TAB_EEPROM:
-            return MEM_EEPROM;
+    case tab_terminal:
+        return m_sources.flash? MEM_FLASH: MEM_JTAG;
+    case tab_flash:
+        return MEM_FLASH;
+    case tab_eeprom:
+        return MEM_EEPROM;
+    case tab_svf:
+        return MEM_JTAG;
     }
 }
 
@@ -552,8 +671,7 @@ void FullProgrammerUI::saveData(DataFileParser *file)
 
     file->writeBlockIdentifier("LorrShupitoSett");
     {
-        file->writeVal(ui->memTabs->currentIndex());
-
+        file->writeVal((int)this->currentTab());
         file->writeVal(ui->hideLogBtn->isChecked());
         file->writeVal(ui->hideFusesBtn->isChecked());
         file->writeVal(ui->settingsBtn->isChecked());
@@ -592,7 +710,7 @@ void FullProgrammerUI::loadData(DataFileParser *file)
 
     if(file->seekToNextBlock("LorrShupitoSett", BLOCK_WORKTAB))
     {
-        ui->memTabs->setCurrentIndex(file->readVal<int>());
+        this->setCurrentTab((tabs_t)file->readVal<int>());
 
         hideLogBtn(file->readVal<bool>());
         hideFusesBtn(file->readVal<bool>());

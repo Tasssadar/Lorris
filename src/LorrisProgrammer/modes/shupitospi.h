@@ -10,15 +10,16 @@
 
 #include "shupitomode.h"
 
-class ShupitoSPI : public ShupitoMode
+class ShupitoSPI : public ShupitoModeCommon
 {
     Q_OBJECT
 public:
     ShupitoSPI(Shupito *shupito);
+    ProgrammerCapabilities capabilities() const override;
 
 protected:
-    ShupitoDesc::config const *getModeCfg();
-    void editIdArgs(QString& id, quint8& id_lenght);
+    ShupitoDesc::config const *getModeCfg() override;
+    void editIdArgs(QString& id, quint8& id_length) override;
 };
 
 #endif // SHUPITOSPI_H

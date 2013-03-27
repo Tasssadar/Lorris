@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 AtsamProgrammer::AtsamProgrammer(ConnectionPointer<PortConnection> const & conn, ProgrammerLogSink * logsink)
-	: Programmer(logsink), m_conn(conn)
+    : Programmer(logsink), m_conn(conn)
 {
     connect(m_conn.data(), SIGNAL(dataRead(QByteArray)), this, SLOT(dataRead(QByteArray)));
 }
@@ -110,7 +110,7 @@ void AtsamProgrammer::readFuses(std::vector<quint8>& data, chip_definition &chip
     data[0] = (uint8_t)value;
 }
 
-void AtsamProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, quint8 /*verifyMode*/)
+void AtsamProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode /*verifyMode*/)
 {
     (void)chip;
 
@@ -127,7 +127,7 @@ void AtsamProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chi
     }
 }
 
-void AtsamProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, quint8 /*verifyMode*/)
+void AtsamProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode /*verifyMode*/)
 {
     chip_definition::memorydef * md = chip.getMemDef(memId);
     if (!md)
@@ -228,4 +228,13 @@ uint32_t AtsamProgrammer::read_word(uint32_t address)
 void AtsamProgrammer::write_word(uint32_t address, uint32_t data)
 {
     this->transact(QString("W%1,%2#").arg(address, 0, 16).arg(data, 0, 16));
+}
+
+ProgrammerCapabilities AtsamProgrammer::capabilities() const
+{
+    ProgrammerCapabilities ps;
+    ps.flash = true;
+    ps.eeprom = true;
+    ps.fuses = true;
+    return ps;
 }
