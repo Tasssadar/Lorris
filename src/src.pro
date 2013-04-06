@@ -304,7 +304,8 @@ FORMS += \
     LorrisAnalyzer/filterdialog.ui \
     LorrisProgrammer/ui/overvccdialog.ui \
     LorrisProgrammer/ui/miniprogrammerui.ui \
-    LorrisProgrammer/ui/fullprogrammerui.ui
+    LorrisProgrammer/ui/fullprogrammerui.ui \
+    ui/sessionsavedialog.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
