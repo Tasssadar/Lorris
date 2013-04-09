@@ -6,6 +6,7 @@
 ***********************************************/
 
 #include <QScrollArea>
+#include <QApplication>
 
 #include "datafilter.h"
 #include "../misc/utils.h"
@@ -112,7 +113,7 @@ void DataFilter::widgetMouseStatus(bool in, const data_widget_info& info, qint32
         return;
 
     m_layout->setHightlightLabel(info.pos, in);
-    if(in)
+    if(in && (qApp->keyboardModifiers() & Qt::ShiftModifier))
         emit activateTab();
 }
 
