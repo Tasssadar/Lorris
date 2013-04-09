@@ -131,6 +131,7 @@ static const QString keys_bool[] =
     "analyzer/show_preview",      // CFG_BOOL_ANALYZER_SHOW_PREVIEW
     "shupito/enable_hw_button",   // CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON
     "analyzer/show_bookmarks",    // CFG_BOOL_ANALYZER_SHOW_BOOKMARKS
+    "general/connect_on_new_tab", // CFG_BOOL_CONN_ON_NEW_TAB
 };
 
 static const bool def_bool[] =
@@ -160,6 +161,7 @@ static const bool def_bool[] =
     true,                         // CFG_BOOL_ANALYZER_SHOW_PREVIEW
     true,                         // CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON
     true,                         // CFG_BOOL_ANALYZER_SHOW_BOOKMARKS
+    true,                         // CFG_BOOL_CONN_ON_NEW_TAB
 };
 
 static const QString keys_variant[] =

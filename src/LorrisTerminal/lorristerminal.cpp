@@ -125,7 +125,7 @@ void LorrisTerminal::onTabShow(const QString&)
 {
     this->connectedStatus(m_con && m_con->isOpen());
 
-    if (!m_con)
+    if (!m_con && sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB))
     {
         m_connectButton->choose();
         if (m_con && !m_con->isOpen())

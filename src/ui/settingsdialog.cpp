@@ -56,6 +56,7 @@ void SettingsDialog::loadSettings()
     ui->cmprBlock->setValue(sConfig.get(CFG_QUINT32_COMPRESS_BLOCK)/1024/1024);
 
     ui->instanceBox->setChecked(sConfig.get(CFG_BOOL_ONE_INSTANCE));
+    ui->connDlgBox->setChecked(sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB));
 }
 
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *btn)
@@ -84,6 +85,7 @@ void SettingsDialog::applySettings()
     sConfig.set(CFG_QUINT32_COMPRESS_BLOCK, ui->cmprBlock->value()*1024*1024);
 
     sConfig.set(CFG_BOOL_ONE_INSTANCE, ui->instanceBox->isChecked());
+    sConfig.set(CFG_BOOL_CONN_ON_NEW_TAB, ui->connDlgBox->isChecked());
 }
 
 void SettingsDialog::setPortable(bool portable)
