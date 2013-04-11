@@ -12,6 +12,7 @@
 #include <QDialog>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QNetworkRequest>
 
 #include "ui_updatecheck.h"
 
@@ -23,10 +24,11 @@ public:
     static bool startUpdater();
 
 private:
-    static bool checkForUpdate(bool autoCheck);
+    static bool checkForUpdate();
     static bool askForUpdate();
     static bool copyUpdater();
     static void showNotification();
+    static QNetworkRequest getNetworkRequest(const QUrl &url);
 };
 
 class UpdaterDialog : public QDialog, private Ui::UpdateCheck

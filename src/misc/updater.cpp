@@ -27,26 +27,53 @@
 
 #define MANIFEST_URL "http://dl.dropbox.com/u/54372958/lorris.txt"
 
-bool Updater::checkForUpdate(bool autoCheck)
+QNetworkRequest Updater::getNetworkRequest(const QUrl& url)
 {
-    QNetworkAccessManager manager;
-    QNetworkRequest request(QUrl(MANIFEST_URL));
-    request.setRawHeader( "User-Agent", "Mozilla/5.0 (X11; U; Linux i686 (x86_64); "
+    QNetworkRequest req(url);
+    req.setRawHeader( "User-Agent", "Mozilla/5.0 (X11; U; Linux i686 (x86_64); "
                           "en-US; rv:1.9.0.1) Gecko/2008070206 Firefox/3.0.1" );
-    request.setRawHeader( "Accept-Charset", "win1251,utf-8;q=0.7,*;q=0.7" );
-    request.setRawHeader( "charset", "utf-8" );
-    request.setRawHeader( "Connection", "keep-alive" );
+    req.setRawHeader( "Accept-Charset", "win1251,utf-8;q=0.7,*;q=0.7" );
+    req.setRawHeader( "charset", "utf-8" );
+    req.setRawHeader( "Connection", "keep-alive" );
+    return req;
+}
 
+bool Updater::checkForUpdate()
+{
+    QUrl baseUrl(MANIFEST_URL);
+    QNetworkAccessManager manager;
+    QNetworkRequest request = getNetworkRequest(baseUrl);
     QNetworkReply *rep = manager.get(request);
 
     while(rep->error() == QNetworkReply::NoError && !rep->isFinished())
         QCoreApplication::processEvents();
 
+    while(true)
+    {
+        while(!rep->isFinished())
+            QCoreApplication::processEvents();
+
+        if(rep->error() != QNetworkReply::NoError)
+            return false;
+
+        QVariant redirect = rep->attribute(QNetworkRequest::RedirectionTargetAttribute);
+        if(redirect.type() != QVariant::Url)
+            break;
+
+        // redirect
+        baseUrl = baseUrl.resolved(redirect.toUrl());
+        request = getNetworkRequest(baseUrl);
+        rep = manager.get(request);
+    }
+
     if(rep->isFinished() && rep->size() != 0)
     {
+        QString s;
         QString ver(VERSION);
-        for(QString s = rep->readLine(); !s.isNull(); s = rep->readLine())
+        while(!rep->atEnd())
         {
+            s = rep->readLine();
+
             QStringList parts = s.split(' ', QString::SkipEmptyParts);
             if(parts.size() < 3 || !ver.contains(parts[0]))
                 continue;
@@ -82,14 +109,14 @@ bool Updater::doUpdate(bool autoCheck)
     bool update = false;
     if(autoCheck && !sConfig.get(CFG_BOOL_AUTO_UPDATE))
     {
-        QFuture<bool> f = QtConcurrent::run(&Updater::checkForUpdate, autoCheck);
+        QFuture<bool> f = QtConcurrent::run(&Updater::checkForUpdate);
         UpdateHandler *h = new UpdateHandler(NULL);
         h->createWatcher(f);
         return false;
     }
     else
     {
-        if(!checkForUpdate(autoCheck))
+        if(!checkForUpdate())
             return false;
 
         if(!autoCheck)
