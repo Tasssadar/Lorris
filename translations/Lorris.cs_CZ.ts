@@ -836,7 +836,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>CircleWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="335"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="328"/>
         <source>Circle</source>
         <translation>Kolo</translation>
     </message>
@@ -3313,21 +3313,11 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Importovat binární data</translation>
     </message>
     <message>
-        <location filename="../src/misc/updater.cpp" line="119"/>
+        <location filename="../src/misc/updater.cpp" line="125"/>
         <source>Could not start updater.exe, you have to download new version manually!
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Nemůžu spustit updater.exe, musíte provést aktualizaci ručně.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/misc/updater.cpp" line="128"/>
-        <source>New update for Lorris is available</source>
-        <translation>Nová aktualizace Lorris je dostupná</translation>
-    </message>
-    <message>
-        <location filename="../src/misc/updater.cpp" line="130"/>
-        <source>Download</source>
-        <translation>Stáhnout</translation>
     </message>
     <message>
         <location filename="../src/ui/chooseconnectiondlg.cpp" line="29"/>
@@ -3393,22 +3383,22 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="224"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="225"/>
         <source>Device == 0x%1</source>
         <translation>Zařízení == 0x%1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="251"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="252"/>
         <source>Command == 0x%1</source>
         <translation>Příkaz == 0x%1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="282"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="283"/>
         <source>Byte at idx %1 == 0x%2</source>
         <translation>Byte na pozici %1 == 0x%2</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="308"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="309"/>
         <source>// Return true if okay, false to filter out
 function dataPass(data, dev, cmd) {
     return false;
@@ -3421,12 +3411,12 @@ function dataPass(data, dev, cmd) {
 </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="333"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="334"/>
         <source>Could not find dataPass function!</source>
         <translation>Nemůžu najít fci dataPass!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="378"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="379"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -3925,27 +3915,27 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
         <translation>Hlavní</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="81"/>
+        <location filename="../src/ui/settingsdialog.ui" line="89"/>
         <source>Language</source>
         <translation>Jazyk</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="89"/>
+        <location filename="../src/ui/settingsdialog.ui" line="97"/>
         <source>Choose language:</source>
         <translation>Zvolte jazyk:</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="105"/>
+        <location filename="../src/ui/settingsdialog.ui" line="113"/>
         <source>Note: you need to restart Lorris for this change to take effect</source>
         <translation>Poznámka: tato změna se projeví až po restartování Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="140"/>
+        <location filename="../src/ui/settingsdialog.ui" line="148"/>
         <source>Font</source>
         <translation>Písmo</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="172"/>
+        <location filename="../src/ui/settingsdialog.ui" line="180"/>
         <source>Set font for whole application</source>
         <translation>Nastaví písmo pro celou aplikaci</translation>
     </message>
@@ -3957,12 +3947,12 @@ Handy for USB flash drives.</source>
 Užitečné při použití z USB flash disku.</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="205"/>
+        <location filename="../src/ui/settingsdialog.ui" line="213"/>
         <source>Performance</source>
         <translation>Výkon</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="211"/>
+        <location filename="../src/ui/settingsdialog.ui" line="219"/>
         <source>Visual</source>
         <translation>Vzhled</translation>
     </message>
@@ -3972,18 +3962,18 @@ Užitečné při použití z USB flash disku.</translation>
         <translation>Přenostelný mód</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="468"/>
-        <location filename="../src/ui/settingsdialog.cpp" line="151"/>
+        <location filename="../src/ui/settingsdialog.ui" line="476"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="149"/>
         <source>Reset settings</source>
         <translation>Reset nastavení</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="465"/>
+        <location filename="../src/ui/settingsdialog.ui" line="473"/>
         <source>Resets all settings to their default values.</source>
         <translation>Resetuje všechna nastavení na jejich výchozí hodnoty.</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="217"/>
+        <location filename="../src/ui/settingsdialog.ui" line="225"/>
         <source>Use smooth scaling (better quality, but slower) for previews in Analyzer and ctrl+tab preview</source>
         <translation>Použít jemné škálování (kvalitnější, ale pomalejší) při zmenšování náhledů v Analyzéru a ctrl+tab menu</translation>
     </message>
@@ -4003,49 +3993,54 @@ Užitečné při použití z USB flash disku.</translation>
         <translation>Zobrazit dialog připojení po otevření nové záložky</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="75"/>
+        <location filename="../src/ui/settingsdialog.ui" line="58"/>
+        <source>Automatically check for updates</source>
+        <translation>Automaticky kontrolovat aktualizace</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/settingsdialog.ui" line="83"/>
         <source>User interface</source>
         <translation>Uživatelské prostředí</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="220"/>
+        <location filename="../src/ui/settingsdialog.ui" line="228"/>
         <source>Smooth scaling of previews</source>
         <translation>Jemné škálování pro náhledy</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="230"/>
+        <location filename="../src/ui/settingsdialog.ui" line="238"/>
         <source>Data files</source>
         <translation>Datové soubory</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="238"/>
-        <location filename="../src/ui/settingsdialog.ui" line="248"/>
+        <location filename="../src/ui/settingsdialog.ui" line="246"/>
+        <location filename="../src/ui/settingsdialog.ui" line="256"/>
         <source>When saving compressed data files, data will be split to X mb blocks so that compression uses less memory.</source>
         <translation>Při ukládání komprimovaných datových souborů budou data rozdělena do X MB bloků,
 takže se při komprimaci použije méně paměti.</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="241"/>
+        <location filename="../src/ui/settingsdialog.ui" line="249"/>
         <source>Compress block size: </source>
         <translation>Velikost bloků při komprimaci:</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="251"/>
+        <location filename="../src/ui/settingsdialog.ui" line="259"/>
         <source> MB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="296"/>
+        <location filename="../src/ui/settingsdialog.ui" line="304"/>
         <source>About</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="322"/>
+        <location filename="../src/ui/settingsdialog.ui" line="330"/>
         <source>Lorris</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="358"/>
+        <location filename="../src/ui/settingsdialog.ui" line="366"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -4064,7 +4059,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Tahle aplikace je vydaná pod GNU GPLv3.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="418"/>
+        <location filename="../src/ui/settingsdialog.ui" line="426"/>
         <source>Check for update</source>
         <translation>Zkontrolovat aktualizace</translation>
     </message>
@@ -4084,29 +4079,19 @@ p, li { white-space: pre-wrap; }
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="132"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="134"/>
         <source>Unable to copy settings files!</source>
         <translation>Nemůžu zkopírovat soubor s nastavením!</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="138"/>
-        <source>Checking for update...</source>
-        <translation>Kontroluji aktualizace...</translation>
-    </message>
-    <message>
         <location filename="../src/ui/settingsdialog.cpp" line="142"/>
-        <source>No update available</source>
-        <translation>Žádná aktualizace není dostupná</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="144"/>
         <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="151"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="149"/>
         <source>Do you really wanna to reset all settings to their default values? This will not affect already loaded settings.</source>
         <translation>Opravdu chcete resetovat nastavení na výchozí hodnoty? Toto neovlivní již načtená nastavení.</translation>
     </message>
@@ -4579,13 +4564,13 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
 <context>
     <name>SplitOverlay</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="684"/>
-        <location filename="../src/ui/tabview.cpp" line="687"/>
+        <location filename="../src/ui/tabview.cpp" line="676"/>
+        <location filename="../src/ui/tabview.cpp" line="679"/>
         <source>Split</source>
         <translation>Rozdělit</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="690"/>
+        <location filename="../src/ui/tabview.cpp" line="682"/>
         <source>New window</source>
         <translation>Nové okno</translation>
     </message>
@@ -4850,18 +4835,7 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
         <translation>Zkontrolovat aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="534"/>
-        <source>Checking for update...</source>
-        <translation>Kontroluji aktualizace...</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/tabview.cpp" line="539"/>
-        <location filename="../src/ui/tabview.cpp" line="540"/>
-        <source>No update available</source>
-        <translation>Žádná aktualizace není dostupná</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/tabview.cpp" line="544"/>
+        <location filename="../src/ui/tabview.cpp" line="536"/>
         <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
@@ -5211,26 +5185,32 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
     </message>
 </context>
 <context>
-    <name>UpdateCheck</name>
+    <name>UpdateHandler</name>
     <message>
-        <location filename="../src/updatecheck.ui" line="20"/>
-        <source>Update available</source>
-        <translation>Aktualizace</translation>
+        <location filename="../src/misc/updater.cpp" line="137"/>
+        <location filename="../src/misc/updater.cpp" line="138"/>
+        <source>Checking for updates...</source>
+        <translation>Hledám aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/updatecheck.ui" line="66"/>
-        <source>New version of Lorris is available. Should I update to this version?</source>
-        <translation>Je dostupná nová verze Lorris. Přejete si ji stáhnout a nainstalovat?</translation>
+        <location filename="../src/misc/updater.cpp" line="172"/>
+        <source>Update check has failed!</source>
+        <translation>Chyba při hledání aktualizací!</translation>
     </message>
     <message>
-        <location filename="../src/updatecheck.ui" line="73"/>
-        <source>Update without asking</source>
-        <translation>Neptat se při aktualizaci</translation>
+        <location filename="../src/misc/updater.cpp" line="173"/>
+        <source>No update available</source>
+        <translation>Žádná aktualizace není dostupná</translation>
     </message>
     <message>
-        <location filename="../src/updatecheck.ui" line="80"/>
-        <source>Don&apos;t check for updates</source>
-        <translation>Nekontrolovat aktualizace</translation>
+        <location filename="../src/misc/updater.cpp" line="174"/>
+        <source>New update for Lorris is available</source>
+        <translation>Je dostupná nová aktualizace Lorris</translation>
+    </message>
+    <message>
+        <location filename="../src/misc/updater.cpp" line="199"/>
+        <source>Download</source>
+        <translation>Stáhnout</translation>
     </message>
 </context>
 <context>
