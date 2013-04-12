@@ -14,36 +14,27 @@
 #include <QFutureWatcher>
 #include <QNetworkRequest>
 
-#include "ui_updatecheck.h"
+#include "../ui/tooltipwarn.h"
+#include "qtobjectpointer.h"
+
+enum
+{
+    RES_CHECK_FAILED     = 0,
+    RES_NO_UPDATE,
+    RES_UPDATE_AVAILABLE
+};
 
 class Updater
 {
     friend class UpdateHandler;
 public:
-    static bool doUpdate(bool autoCheck);
+    static void checkForUpdate(bool autoCheck);
     static bool startUpdater();
 
 private:
-    static bool checkForUpdate();
-    static bool askForUpdate();
+    static int checkManifest();
     static bool copyUpdater();
-    static void showNotification();
     static QNetworkRequest getNetworkRequest(const QUrl &url);
-};
-
-class UpdaterDialog : public QDialog, private Ui::UpdateCheck
-{
-    Q_OBJECT
-public:
-    UpdaterDialog(QWidget *paren = 0);
-    ~UpdaterDialog();
-
-private slots:
-    void on_noAskBox_clicked(bool checked);
-    void on_noCheckBox_clicked(bool checked);
-
-private:
-    Ui::UpdateCheck *ui;
 };
 
 class UpdateHandler : public QObject
@@ -52,16 +43,18 @@ class UpdateHandler : public QObject
 
     friend class Updater;
 protected:
-    UpdateHandler(QObject *parent);
+    UpdateHandler(bool autoCheck, QObject *parent = NULL);
 
-    void createWatcher(const QFuture<bool>& f);
+    void createWatcher(const QFuture<int>& f);
 
 protected slots:
     void updateBtn();
     void updateCheckResult();
 
 private:
-    QFutureWatcher<bool> *m_watcher;
+    QFutureWatcher<int> *m_watcher;
+    QtObjectPointer<ToolTipWarn> m_progress;
+    bool m_autoCheck;
 };
 
 #endif // UPDATER_H

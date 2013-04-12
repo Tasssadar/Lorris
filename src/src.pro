@@ -123,7 +123,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/undoactions.cpp \
     LorrisAnalyzer/filtertabwidget.cpp \
     LorrisAnalyzer/datafilter.cpp \
-    misc/qobjectpointer.cpp \
     misc/threadchannel.cpp \
     ui/hookedlineedit.cpp \
     LorrisProgrammer/shupitopacket.cpp \
@@ -147,7 +146,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/ui/fusewidget.cpp \
     LorrisProgrammer/ui/fullprogrammerui.cpp \
     LorrisProgrammer/programmers/avr109programmer.cpp \
-    ui/bytevalidator.cpp
+    ui/bytevalidator.cpp \
+    misc/qtobjectpointer.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -251,7 +251,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/undoactions.h \
     LorrisAnalyzer/filtertabwidget.h \
     LorrisAnalyzer/datafilter.h \
-    misc/qobjectpointer.h \
     misc/threadchannel.h \
     ui/hookedlineedit.h \
     LorrisProgrammer/shupitopacket.h \
@@ -275,7 +274,8 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/ui/fusewidget.h \
     LorrisProgrammer/ui/fullprogrammerui.h \
     LorrisProgrammer/programmers/avr109programmer.h \
-    ui/bytevalidator.h
+    ui/bytevalidator.h \
+    misc/qtobjectpointer.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -290,7 +290,6 @@ FORMS += \
     LorrisAnalyzer/playback.ui \
     ui/chooseconnectiondlg.ui \
     ui/rangeselectdialog.ui \
-    updatecheck.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
     ui/terminalsettings.ui \
     misc/sessiondialog.ui \

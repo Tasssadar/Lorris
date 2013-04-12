@@ -53,6 +53,13 @@ Handy for USB flash drives.</string>
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="updateBox">
+         <property name="text">
+          <string>Automatically check for updates</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_7">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -69,6 +76,7 @@ Handy for USB flash drives.</string>
       <zorder>portableBox</zorder>
       <zorder>instanceBox</zorder>
       <zorder>connDlgBox</zorder>
+      <zorder>updateBox</zorder>
      </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">

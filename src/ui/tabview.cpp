@@ -531,15 +531,7 @@ void TabView::showSettings()
 void TabView::checkForUpdate()
 {
 #ifdef Q_OS_WIN
-    emit statusBarMsg(tr("Checking for update..."), 0);
-    if(Updater::doUpdate(false))
-        qApp->closeAllWindows();
-    else
-    {
-        emit statusBarMsg(tr("No update available"), 3000);
-        ToolTipWarn *w = new ToolTipWarn(tr("No update available"), NULL, this, 3000, ":/actions/info");
-        w->toRightBottom();
-    }
+    Updater::checkForUpdate(false);
 #else
     Utils::showErrorBox(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                              "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));

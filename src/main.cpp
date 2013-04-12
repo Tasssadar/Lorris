@@ -135,8 +135,7 @@ int main(int argc, char *argv[])
     installTranslator(a);
 
 #ifdef Q_OS_WIN
-    if(Updater::doUpdate(true))
-        return 0;
+    Updater::checkForUpdate(true);
 #endif
 
     registerMetaTypes();

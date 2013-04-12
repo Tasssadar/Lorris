@@ -22,7 +22,7 @@
 #include "../../misc/gestureidentifier.h"
 #include "../undoactions.h"
 #include "../datafilter.h"
-#include "../../misc/qobjectpointer.h"
+#include "../../misc/qtobjectpointer.h"
 
 class WidgetArea;
 
