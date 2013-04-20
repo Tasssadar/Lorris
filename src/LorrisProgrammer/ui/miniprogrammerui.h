@@ -21,7 +21,7 @@ public:
 
     void setupUi(LorrisProgrammer *widget);
     void setChipId(const QString &text);
-    void setFileAndTime(const QString &file, const QDateTime &time);
+    void setFileAndTime(const QString &file, const QDateTime &time) override;
 
     void saveData(DataFileParser *file);
     void loadData(DataFileParser *file);
@@ -29,10 +29,12 @@ public:
     void setHexData(quint32 memid, const QByteArray& data);
     QByteArray getHexData(quint32 memid) const;
 
-    void writeSelectedMem();
+    void writeSelectedMem() override;
     void warnSecondFlash();
 
     void enableButtons(bool enable) override;
+
+    int getMemIndex() override;
 
 public slots:
     void setVertical(bool vertical);
@@ -53,7 +55,6 @@ private:
 
     QByteArray m_hexData[MEM_FUSES];
     QByteArray m_svfData;
-    bool m_fileSet;
 
     QString m_termSett;
     int m_termFmt;

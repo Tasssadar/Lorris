@@ -56,6 +56,12 @@ void ProgrammerUI::setupUi(LorrisProgrammer *widget)
     connect(this,   SIGNAL(statusBarMsg(QString,int)), widget, SIGNAL(statusBarMsg(QString,int)));
 }
 
+void ProgrammerUI::connectProgrammer(Programmer * prog)
+{
+    connect(prog, SIGNAL(capabilitiesChanged()), this, SLOT(updateProgrammerCaps()));
+    m_programmer_caps = prog->capabilities();
+}
+
 Programmer *ProgrammerUI::prog() const
 {
     return m_widget->m_programmer.data();
@@ -386,6 +392,14 @@ void ProgrammerUI::eraseDevice()
 
     ToolTipWarn *w = new ToolTipWarn(tr("Chip was succesfuly erased!"), NULL, NULL, 3000, ":/actions/info");
     w->toRightBottom();
+}
+
+void ProgrammerUI::updateProgrammerCaps()
+{
+    if (this->prog())
+        m_programmer_caps = this->prog()->capabilities();
+
+    this->programmerCapsChanged();
 }
 
 void ProgrammerUI::saveData(DataFileParser *file)

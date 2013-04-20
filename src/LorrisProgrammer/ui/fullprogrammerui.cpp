@@ -51,8 +51,8 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
     m_svfEdit->setReadOnly(true);
     m_svfEdit->setVisible(false);
 
-    m_sources.flash = true;
-    m_sources.eeprom = true;
+    m_programmer_caps.flash = true;
+    m_programmer_caps.eeprom = true;
 
     m_read_menu = new QMenu(m_widget);
     m_write_menu = new QMenu(m_widget);
@@ -118,9 +118,9 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
 
 void FullProgrammerUI::enableButtons(bool enable)
 {
-    ui->readButton->setEnabled(enable && (m_sources.flash || m_sources.eeprom || m_sources.fuses));
+    ui->readButton->setEnabled(enable && (m_programmer_caps.flash || m_programmer_caps.eeprom || m_programmer_caps.fuses));
     ui->writeButton->setEnabled(enable);
-    ui->eraseButton->setEnabled(enable && m_sources.supports_erase());
+    ui->eraseButton->setEnabled(enable && m_programmer_caps.supports_erase());
     ui->startStopBtn->setEnabled(enable);
     m_fuse_widget->enableButtons(enable);
 }
@@ -225,7 +225,7 @@ void FullProgrammerUI::writeButtonClicked()
     else
     {
         if (m_active == ACT_FLASH)
-            writeFlashBtn();
+            writeMemInFlash(MEM_FLASH);
         else
             writeEEPROMBtn();
     }
@@ -262,16 +262,17 @@ void FullProgrammerUI::initMenus()
 
 void FullProgrammerUI::connectProgrammer(Programmer * prog)
 {
+    ProgrammerUI::connectProgrammer(prog);
+
     connect(ui->terminal,    SIGNAL(keyPressed(QString)),    prog,         SLOT(sendTunnelData(QString)));
     connect(ui->bootseqEdit, SIGNAL(textEdited(QString)),    prog,         SLOT(setBootseq(QString)));
     connect(prog,            SIGNAL(tunnelData(QByteArray)), ui->terminal, SLOT(appendText(QByteArray)));
-    connect(prog,            SIGNAL(capabilitiesChanged()),  this,         SLOT(updateProgrammerFeatures()));
 
     m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->currentText().toInt(), false);
     ui->bootseqEdit->setText(prog->getBootseq());
 
     updateProgrammersBox(prog);
-    this->updateProgrammerFeatures();
+    this->programmerCapsChanged();
 }
 
 void FullProgrammerUI::updateProgrammersBox(Programmer *prog)
@@ -313,7 +314,7 @@ void FullProgrammerUI::hideSettingsBtn(bool checked)
     ui->overvccBox->setVisible(checked);
     ui->settingsBtn->setChecked(checked);
     sConfig.set(CFG_BOOL_SHUPITO_SHOW_SETTINGS, checked);
-    this->updateProgrammerFeatures();
+    this->programmerCapsChanged();
 }
 
 void FullProgrammerUI::saveTermSettings()
@@ -328,37 +329,34 @@ void FullProgrammerUI::connectedStatus(bool connected)
     ui->tunnelCheck->setEnabled(connected);
     ui->tunnelSpeedBox->setEnabled(connected);
     ui->progSpeedBox->setEnabled(connected);
-    this->updateProgrammerFeatures();
+    this->programmerCapsChanged();
 }
 
 void FullProgrammerUI::applySources()
 {
-    ui->fuseContainer->setVisible(m_sources.fuses);
+    ui->fuseContainer->setVisible(m_programmer_caps.fuses);
 
     tabs_t tab = this->currentTab();
 
     bool prevBlock = ui->memTabs->blockSignals(true);
     ui->memTabs->clear();
-    if (m_sources.terminal)
+    if (m_programmer_caps.terminal)
         ui->memTabs->addTab(ui->terminal, tr("Terminal"));
-    if (m_sources.flash)
+    if (m_programmer_caps.flash)
         ui->memTabs->addTab(m_hexAreas[MEM_FLASH], tr("Program memory"));
-    if (m_sources.eeprom)
+    if (m_programmer_caps.eeprom)
         ui->memTabs->addTab(m_hexAreas[MEM_EEPROM], tr("EEPROM"));
-    if (m_sources.svf)
+    if (m_programmer_caps.svf)
         ui->memTabs->addTab(m_svfEdit, tr("SVF"));
     ui->memTabs->blockSignals(prevBlock);
 
     this->setCurrentTab(tab);
 }
 
-void FullProgrammerUI::updateProgrammerFeatures()
+void FullProgrammerUI::programmerCapsChanged()
 {
     if (this->prog())
-    {
-        m_sources = this->prog()->capabilities();
         this->applySources();
-    }
 
     ui->tunnelBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsTunnel());
 
@@ -463,13 +461,13 @@ void FullProgrammerUI::setActiveMem(quint32 memId)
 FullProgrammerUI::tabs_t FullProgrammerUI::currentTab() const
 {
     int idx = ui->memTabs->currentIndex();
-    if (m_sources.terminal && idx == 0)
+    if (m_programmer_caps.terminal && idx == 0)
         return tab_terminal;
-    if (m_sources.flash && idx == (int)m_sources.terminal)
+    if (m_programmer_caps.flash && idx == (int)m_programmer_caps.terminal)
         return tab_flash;
-    if (m_sources.eeprom && idx == m_sources.terminal + m_sources.flash)
+    if (m_programmer_caps.eeprom && idx == m_programmer_caps.terminal + m_programmer_caps.flash)
         return tab_eeprom;
-    if (m_sources.svf && idx == m_sources.terminal + m_sources.flash + m_sources.eeprom)
+    if (m_programmer_caps.svf && idx == m_programmer_caps.terminal + m_programmer_caps.flash + m_programmer_caps.eeprom)
         return tab_svf;
 
     Q_ASSERT(0);
@@ -481,20 +479,20 @@ void FullProgrammerUI::setCurrentTab(tabs_t t)
     switch (t)
     {
     case tab_terminal:
-        if (m_sources.terminal)
+        if (m_programmer_caps.terminal)
             ui->memTabs->setCurrentIndex(0);
         break;
     case tab_flash:
-        if (m_sources.flash)
-            ui->memTabs->setCurrentIndex(m_sources.terminal);
+        if (m_programmer_caps.flash)
+            ui->memTabs->setCurrentIndex(m_programmer_caps.terminal);
         break;
     case tab_eeprom:
-        if (m_sources.eeprom)
-            ui->memTabs->setCurrentIndex(m_sources.terminal + m_sources.flash);
+        if (m_programmer_caps.eeprom)
+            ui->memTabs->setCurrentIndex(m_programmer_caps.terminal + m_programmer_caps.flash);
         break;
     case tab_svf:
-        if (m_sources.svf)
-            ui->memTabs->setCurrentIndex(m_sources.terminal + m_sources.flash + m_sources.eeprom);
+        if (m_programmer_caps.svf)
+            ui->memTabs->setCurrentIndex(m_programmer_caps.terminal + m_programmer_caps.flash + m_programmer_caps.eeprom);
         break;
     }
 
@@ -615,7 +613,7 @@ int FullProgrammerUI::getMemIndex()
     switch (this->currentTab())
     {
     case tab_terminal:
-        return m_sources.flash? MEM_FLASH: MEM_JTAG;
+        return m_programmer_caps.flash? MEM_FLASH: MEM_JTAG;
     case tab_flash:
         return MEM_FLASH;
     case tab_eeprom:
@@ -623,6 +621,8 @@ int FullProgrammerUI::getMemIndex()
     case tab_svf:
         return MEM_JTAG;
     }
+
+    return MEM_NONE;
 }
 
 void FullProgrammerUI::overvoltageSwitched(bool enabled)

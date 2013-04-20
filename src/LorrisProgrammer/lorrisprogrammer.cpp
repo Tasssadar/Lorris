@@ -647,7 +647,7 @@ void LorrisProgrammer::loadFromFile(int memId, const QString& filename)
     m_hexFilenames[memId] = filename;
     m_hexWriteTimes[memId] = loadTimestamp;
 
-    if(memId == MEM_FLASH)
+    if(memId == MEM_FLASH || memId == MEM_JTAG)
         ui->setFileAndTime(filename, QFileInfo(filename).lastModified());
 
     status(tr("File loaded"));
@@ -962,9 +962,13 @@ void LorrisProgrammer::setUiType(int type)
     if(ui && ui->getType() == type)
         return;
 
-    QByteArray hexData[MEM_FUSES];
-    for(quint8 i = MEM_FLASH; ui && i < MEM_FUSES; ++i)
-        hexData[i] = ui->getHexData(i);
+    QByteArray hexData[MEM_FUSES], svfData;
+    if (ui)
+    {
+        for(quint8 i = MEM_FLASH; i < MEM_FUSES; ++i)
+            hexData[i] = ui->getHexData(i);
+        svfData = ui->getHexData(MEM_JTAG);
+    }
 
     delete m_connectButton;
     m_connectButton = NULL;
@@ -988,6 +992,7 @@ void LorrisProgrammer::setUiType(int type)
             ui->setHexData(i, hexData[i]);
         }
     }
+    ui->setHexData(MEM_JTAG, svfData);
 
     if (m_programmer)
         ui->connectProgrammer(m_programmer.data());
