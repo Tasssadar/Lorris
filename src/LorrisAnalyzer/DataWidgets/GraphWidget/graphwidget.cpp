@@ -215,6 +215,10 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         // formula
         file->writeBlockIdentifier("graphWCurveFormula");
         file->writeString(info->curve->getFormula());
+
+        // visibility
+        file->writeBlockIdentifier("graphWCurveVisible");
+        file->writeVal(info->curve->isVisible());
     }
 }
 
@@ -325,6 +329,9 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
 
         if(file->seekToNextBlock("graphWCurveFormula", "graphWCurve"))
             curve->setFormula(file->readString());
+
+        if(file->seekToNextBlock("graphWCurveVisible", "graphWCurve"))
+            m_graph->showCurve(curve, file->readVal<bool>());
     }
     updateRemoveMapping();
 }
