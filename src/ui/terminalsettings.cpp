@@ -23,6 +23,7 @@ TerminalSettings::TerminalSettings(const terminal_settings &set, QWidget *parent
     ui->newBox->setCurrentIndex(set.chars[SET_NEWLINE]);
     ui->returnBox->setCurrentIndex(set.chars[SET_RETURN]);
     ui->nullBox->setChecked(set.chars[SET_IGNORE_NULL]);
+    ui->enterSendBox->setCurrentIndex(set.chars[SET_ENTER_SEND]);
 
     ui->widthBox->setValue(set.tabReplace);
     ui->fontBox->setCurrentFont(set.font);
@@ -46,6 +47,7 @@ terminal_settings TerminalSettings::getSettings()
     set.chars[SET_NEWLINE] = ui->newBox->currentIndex();
     set.chars[SET_RETURN] = ui->returnBox->currentIndex();
     set.chars[SET_IGNORE_NULL] = ui->nullBox->isChecked();
+    set.chars[SET_ENTER_SEND] = ui->enterSendBox->currentIndex();
 
     set.tabReplace = ui->widthBox->value();
     set.font = ui->fontBox->currentFont();

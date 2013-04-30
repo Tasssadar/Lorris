@@ -9,7 +9,7 @@
 #include <QComboBox>
 
 #include "shupitotunnel.h"
-#include "../LorrisShupito/shupito.h"
+#include "../LorrisProgrammer/shupito.h"
 
 #include "../WorkTab/WorkTab.h"
 #include "../WorkTab/WorkTabInfo.h"
@@ -26,38 +26,25 @@ ShupitoTunnel::~ShupitoTunnel()
     Close();
 }
 
-bool ShupitoTunnel::Open()
+void ShupitoTunnel::doOpen()
 {
-    if(!m_shupito)
-        return false;
-
-    if(this->isOpen())
-        return true;
-
-    this->SetOpen(true);
-
-    if(!dataSigConnected)
+    if(m_shupito && !this->isOpen())
     {
-        connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
-        dataSigConnected = true;
+        this->SetState(st_connected);
+
+        if(!dataSigConnected)
+        {
+            connect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, SIGNAL(dataRead(QByteArray)));
+            dataSigConnected = true;
+        }
     }
-    return true;
 }
 
-void ShupitoTunnel::Close()
+void ShupitoTunnel::doClose()
 {
-    if(!this->isOpen())
-        return;
-
     disconnect(m_shupito, SIGNAL(tunnelData(QByteArray)), this, NULL);
-
     dataSigConnected = false;
-    this->SetOpen(false);
-}
-
-void ShupitoTunnel::OpenConcurrent()
-{
-    emit connectResult(this, Open());
+    this->SetState(st_disconnected);
 }
 
 void ShupitoTunnel::setShupito(Shupito* s)

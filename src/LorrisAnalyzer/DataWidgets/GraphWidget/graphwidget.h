@@ -8,6 +8,7 @@
 #ifndef GRAPHWIDGET_H
 #define GRAPHWIDGET_H
 
+#include <QHash>
 #include "../datawidget.h"
 
 class QSignalMapper;
@@ -52,7 +53,8 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private slots:
-    void addCurve();
+    void applyCurveChanges();
+    void acceptCurveChanges();
     void newData(analyzer_data *data, quint32 index);
     void sampleSizeChanged(int val);
     void editCurve();
@@ -68,7 +70,7 @@ private:
 
     Graph *m_graph;
     GraphCurveAddDialog *m_add_dialog;
-    QString m_drop_data;
+    std::pair<quint32, DataFilter*> m_dropData;
     Storage *m_storage;
 
     QAction *m_sample_act[SAMPLE_ACT_COUNT];
@@ -77,7 +79,7 @@ private:
     QAction *m_autoScroll;
 
     QMenu *m_deleteCurve;
-    std::map<QString, QAction*> m_deleteAct;
+    QHash<QString, QAction*> m_deleteAct;
     QSignalMapper *m_deleteMap;
 
     int m_sample_size_idx;

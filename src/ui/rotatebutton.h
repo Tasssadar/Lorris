@@ -30,6 +30,8 @@ public:
     Rotations getRotation() { return m_rotation; }
     void setRotation(Rotations rot) { m_rotation = rot; }
 
+    QSize sizeHint() const;
+
 protected:
     void paintEvent(QPaintEvent *);
 

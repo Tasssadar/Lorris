@@ -19,7 +19,10 @@
 enum ConnectionState {
     st_disconnected,
     st_connecting,
-    st_connected
+    st_connected,
+    st_disconnecting,
+    st_missing,
+    st_connect_pending
 };
 
 // TODO: maybe we should just remove this and use dynamic_cast?
@@ -30,19 +33,30 @@ enum ConnectionType
     CONNECTION_PORT_SHUPITO = 2,
     CONNECTION_TCP_SOCKET  = 3,
     CONNECTION_USB_SHUPITO = 4,
-    CONNECTION_USB_ACM     = 5,
     CONNECTION_PROXY_TUNNEL= 6,
+    CONNECTION_FLIP        = 7,
+    CONNECTION_LIBYB_USB   = 8,
+    CONNECTION_USB_ACM2    = 9,
+    CONNECTION_SHUPITO23   = 10,
 
-    MAX_CON_TYPE           = 7
+    MAX_CON_TYPE           = 11
 };
 
 enum PrimaryConnectionType {
-    pct_port = (1<<0),
-    pct_shupito = (1<<1)
+    pct_port_data = (1<<0),
+    pct_shupito = (1<<1),
+    pct_flip = (1<<2),
+    pct_port_programmable = (1<<3),
+
+    pct_programmable = pct_shupito | pct_flip | pct_port_programmable,
+    pct_port = pct_port_data | pct_port_programmable
 };
 
 Q_DECLARE_FLAGS(PrimaryConnectionTypes, PrimaryConnectionType)
 Q_DECLARE_OPERATORS_FOR_FLAGS(PrimaryConnectionTypes)
+
+template <typename T>
+class ConnectionPointer;
 
 class Connection : public QObject
 {
@@ -54,24 +68,25 @@ public:
     bool removable() const { return m_removable; }
     void setRemovable(bool value) { m_removable = value; emit changed(); }
 
-    virtual bool present() const { return true; }
-
     bool persistent() const { return m_persistent; }
     void setPersistent(bool value);
 
-    quint8 getType() { return m_type; }
+    quint8 getType() const { return m_type; }
 
     void setIDString(const QString& str) { if (m_idString != str) { m_idString = str; emit changed(); } }
     QString const & GetIDString() const { return m_idString; }
 
     QString const & name() const { return m_idString; }
-    void setName(const QString& str) { this->setIDString(str); }
+    void setName(const QString& str, bool isDefault = false);
+    bool hasDefaultName() const { return m_defaultName; }
+
+    qint64 getCompanionId() const { return m_companionId; }
+    void setCompanionId(qint64 id) { m_companionId = id; }
 
     virtual QString details() const;
 
-    virtual bool Open() { return false; }
-    virtual void OpenConcurrent() = 0;
-    virtual void Close() {}
+    void OpenConcurrent();
+    void Close();
 
     bool isOpen() const { return m_state == st_connected; }
     ConnectionState state() const { return m_state; }
@@ -81,7 +96,9 @@ public:
     void addTabRef();
     void releaseTab();
 
-    // Emits the `destroying` singal to break all references,
+    bool isUsedByTab() const { return m_tabcount > 0; }
+
+    // Emits the `destroying` signal to break all references,
     // then deletes the object.
     void releaseAll();
 
@@ -90,10 +107,15 @@ public:
 
     virtual bool canSaveToSession() const { return false; }
 
-signals:
-    // XXX: remove
-    void connectResult(Connection *con, bool open);
+    virtual bool clonable() const { return false; }
+    virtual ConnectionPointer<Connection> clone();
 
+    bool isMissing() const;
+
+    virtual bool isNamePersistable() const { return false; }
+    virtual void persistName() {}
+
+signals:
     void connected(bool connected);
     void stateChanged(ConnectionState state);
     void changed();
@@ -110,16 +132,23 @@ signals:
 protected:
     ~Connection();
     void SetState(ConnectionState state);
-    void SetOpen(bool open);
+
+    void markMissing();
+    void markPresent();
+
+    virtual void doOpen() = 0;
+    virtual void doClose() = 0;
 
 private:
     ConnectionState m_state;
     QString m_idString;
+    bool m_defaultName;
     int m_refcount;
     int m_tabcount;
     bool m_removable;
     bool m_persistent;
     quint8 m_type;
+    qint64 m_companionId;
 };
 
 Q_DECLARE_METATYPE(Connection *)
@@ -132,10 +161,19 @@ Q_SIGNALS:
     void dataRead(const QByteArray& data);
 
 public:
-    explicit PortConnection(ConnectionType type) : Connection(type) {}
+    explicit PortConnection(ConnectionType type);
+
+    int programmerType() const { return m_programmer_type; }
+    void setProgrammerType(int type) { m_programmer_type = type; }
+
+    virtual QHash<QString, QVariant> config() const;
+    virtual bool applyConfig(QHash<QString, QVariant> const & config);
 
 public slots:
     virtual void SendData(const QByteArray & /*data*/) {}
+
+protected:
+    int m_programmer_type;
 };
 
 template <typename T>

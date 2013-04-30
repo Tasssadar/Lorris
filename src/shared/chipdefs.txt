@@ -16,6 +16,11 @@ atxmega64a avr:1e9646 flash=69632:256,eeprom=2048:32,fuses=8 jtaguid:0,1,2,3,4,5
 atxmega32a avr:1e9541 flash=36864:256,eeprom=1024:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
 atxmega16a avr:1e9441 flash=20480:256,eeprom=1024:32,fuses=8 jtaguid:0,1,2,3,4,5,6,7 wdper:8,9,10,11 wdwper:12,13,14,15 bodpd:16,17 bootrst:22 jtagen:32 wdlock:33 startuptime:34,35 rstdisbl:36:1 bodlevel:40,41,42 eesave:43 bodact:44,45 lb:56,57 blbat:58,59 blba:60,61 blbb:62,63
 
+atxmega128au flip:1e9746 flash=131072:512,eeprom=2048:32
+atxmega64au flip:1e9646 flash=65536:256,eeprom=2048:32
+atxmega32au flip:1e9541 flash=32768:256,eeprom=1024:32
+atxmega16au flip:1e9441 flash=16384:256,eeprom=1024:32
+
 atmega48 avr232boot:m48 flash=3840:64,eeprom=256:2 !avr232boot_patch=3838
 atmega88 avr232boot:m88 flash=7936:64,eeprom=512:2
 atmega168 avr232boot:m168 flash=16128:128,eeprom=512:2
@@ -31,3 +36,7 @@ cc2530 cc25xx:a5
 cc2531 cc25xx:b5
 cc2533 cc25xx:99
 cc2540 cc25xx:8d
+
+S25FL004K spiflash:ef4013
+S25FL008K spiflash:ef4014
+S25FL016K spiflash:ef4015

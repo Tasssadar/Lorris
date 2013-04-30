@@ -317,14 +317,49 @@ void QtScriptEngine::onTitleChange(const QString& newTitle)
         m_global.setProperty(name, m_engine->newQObject(w));
 }
 
-void QtScriptEngine::callEventHandler(const QString& eventId)
+void QtScriptEngine::callEventHandler(const QString& eventId, const QVariantList& args)
 {
     QScriptValue handler = m_global.property(eventId);
 
     if(!handler.isFunction())
         return;
 
-    handler.call();
+    QScriptValueList script_args;
+    for(int i = 0; i < args.size(); ++i)
+    {
+        const QVariant& val = args[i];
+        QScriptValue add;
+        switch(val.type())
+        {
+            case QVariant::Char:
+                add = QScriptValue(val.toChar());
+                break;
+            case QVariant::Int:
+            case QVariant::LongLong:
+                add = QScriptValue(val.toInt());
+                break;
+            case QVariant::ULongLong:
+            case QVariant::UInt:
+                add = QScriptValue(val.toUInt());
+                break;
+            case QVariant::Bool:
+                add = QScriptValue(val.toBool());
+                break;
+            case QVariant::Double:
+                add = QScriptValue(val.toDouble());
+                break;
+            case QVariant::String:
+                add = QScriptValue(val.toString());
+                break;
+            default:
+                qWarning("Unknown QVariant type %u!", (quint32)val.type());
+                Q_ASSERT(false);
+                continue;
+        }
+        script_args << add;
+    }
+
+    handler.call(QScriptValue(), script_args);
 }
 
 void QtScriptEngine::onSave()

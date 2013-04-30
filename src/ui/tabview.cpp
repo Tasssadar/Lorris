@@ -24,6 +24,7 @@
 #include "tooltipwarn.h"
 #include "settingsdialog.h"
 #include "mainwindow.h"
+#include "../connection/connectionmgr2.h"
 
 #ifdef Q_OS_WIN
  #include "../misc/updater.h"
@@ -46,10 +47,14 @@ TabView::TabView(MainWindow *parent) :
     QMenu *file_menu = new QMenu(tr("&File"), this);
     QMenu *session_menu = new QMenu(tr("&Sessions"), this);
     QMenu *opt_menu = new QMenu(tr("&Options"), this);
+    QAction *connectAll = new QAction(tr("&Open all connections"), this);
+    QAction *disconnectAll = new QAction(tr("&Close all connections"), this);
 
     m_menus.push_back(file_menu->menuAction());
     m_menus.push_back(session_menu->menuAction());
     m_menus.push_back(opt_menu->menuAction());
+    m_menus.push_back(connectAll);
+    m_menus.push_back(disconnectAll);
 
     QMenu * menuFileNew = file_menu->addMenu(tr("&New"));
     {
@@ -83,6 +88,8 @@ TabView::TabView(MainWindow *parent) :
     connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeWindow()));
     connect(newW,                    SIGNAL(triggered()), &sWorkTabMgr, SLOT(newWindow()));
     connect(actCloseAll,             SIGNAL(triggered()), SLOT(closeAllTabs()));
+    connect(connectAll,              SIGNAL(triggered()), &sConMgr2, SLOT(connectAll()));
+    connect(disconnectAll,           SIGNAL(triggered()), &sConMgr2, SLOT(disconnectAll()));
 }
 
 TabWidget *TabView::newTabWidget(QBoxLayout *l)
@@ -524,15 +531,7 @@ void TabView::showSettings()
 void TabView::checkForUpdate()
 {
 #ifdef Q_OS_WIN
-    emit statusBarMsg(tr("Checking for update..."), 0);
-    if(Updater::doUpdate(false))
-        qApp->closeAllWindows();
-    else
-    {
-        emit statusBarMsg(tr("No update available"), 3000);
-        ToolTipWarn *w = new ToolTipWarn(tr("No update available"), NULL, this, 3000, ":/actions/info");
-        w->toRightBottom();
-    }
+    Updater::checkForUpdate(false);
 #else
     Utils::showErrorBox(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                              "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));

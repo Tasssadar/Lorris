@@ -99,7 +99,13 @@ void ButtonWidget::setColors()
         return;
 
     QPalette p = m_button->palette();
+
+#ifdef Q_OS_WIN
+    m_button->setStyleSheet("background-color: " + m_colors[0].name());
+#else
     p.setColor(QPalette::Button, m_colors[0]);
+#endif
+
     p.setColor(QPalette::ButtonText, m_colors[1]);
     m_button->setPalette(p);
 }
@@ -112,9 +118,13 @@ void ButtonWidget::setColor(const QString& color)
 
     m_colors[0] = c;
 
+#ifdef Q_OS_WIN
+    m_button->setStyleSheet("background-color: " + c.name());
+#else
     QPalette p = m_button->palette();
     p.setColor(QPalette::Button, c);
     m_button->setPalette(p);
+#endif
 }
 
 void ButtonWidget::setTextColor(const QString& color)

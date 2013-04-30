@@ -131,7 +131,7 @@ void SessionMgr::saveSession(QString name)
 
 void SessionMgr::saveSessionAct()
 {
-    QString name = QInputDialog::getText(NULL, tr("Session name"), tr("Enter new session name:"));
+    QString name = SessionSaveDialog::getSessionName(this);
     if(name.isEmpty())
         return;
 
@@ -286,4 +286,32 @@ void SessionDialog::on_loadLastBox_clicked(bool checked)
 void SessionDialog::on_autoConnBox_clicked(bool checked)
 {
     sConfig.set(CFG_BOOL_SESSION_CONNECT, checked);
+}
+
+SessionSaveDialog::SessionSaveDialog(SessionMgr *mgr, QWidget *parent) :
+    QDialog(parent), ui(new Ui::SessionSaveDialog)
+{
+    ui->setupUi(this);
+
+    ui->nameBox->addItems(mgr->getSessions());
+    ui->nameBox->clearEditText();
+}
+
+SessionSaveDialog::~SessionSaveDialog()
+{
+    delete ui;
+}
+
+void SessionSaveDialog::on_nameBox_editTextChanged(const QString &text)
+{
+    ui->buttonBox->button(QDialogButtonBox::Save)->setEnabled(!text.isEmpty());
+}
+
+QString SessionSaveDialog::getSessionName(SessionMgr *mgr)
+{
+    SessionSaveDialog d(mgr);
+    if(d.exec() == QDialog::Accepted)
+        return d.ui->nameBox->currentText();
+    else
+        return QString();
 }

@@ -4,3 +4,6 @@
 [submodule "dep/libenjoy"]
 	path = dep/libenjoy
 	url = git://github.com/Tasssadar/libenjoy.git
+[submodule "dep/libyb"]
+	path = dep/libyb
+	url = git://github.com/avakar/libyb.git

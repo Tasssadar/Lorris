@@ -21,6 +21,7 @@
 #include "../WorkTab/WorkTabMgr.h"
 #include "../WorkTab/WorkTab.h"
 #include "../WorkTab/WorkTabInfo.h"
+#include "../shared/programmer.h"
 
 SerialPort::SerialPort()
     : PortConnection(CONNECTION_SERIAL_PORT),
@@ -53,18 +54,12 @@ QString SerialPort::details() const
     return res + (m_friendlyName.isEmpty()? m_deviceName: m_friendlyName);
 }
 
-bool SerialPort::Open()
-{
-    return false;
-}
-
 void SerialPort::connectResultSer(bool opened)
 {
-    this->SetOpen(opened);
-    emit connectResult(this, opened);
+    this->SetState(opened? st_connected: st_disconnected);
 }
 
-void SerialPort::Close()
+void SerialPort::doClose()
 {
     if(m_port)
         emit disconnecting();
@@ -103,7 +98,7 @@ void SerialPort::Close()
         }
     }
 
-    this->SetOpen(false);
+    this->SetState(st_disconnected);
 }
 
 void SerialPort::SendData(const QByteArray& data)
@@ -115,11 +110,8 @@ void SerialPort::SendData(const QByteArray& data)
     }
 }
 
-void SerialPort::OpenConcurrent()
+void SerialPort::doOpen()
 {
-    if(this->state() != st_disconnected)
-        return;
-
     this->SetState(st_connecting);
 
     Q_ASSERT(!m_openThread);
@@ -176,8 +168,21 @@ void SerialPort::setFriendlyName(QString const & value)
     if (m_friendlyName != value)
     {
         m_friendlyName = value;
+
+        // FIXME: better way to detect shupito?
+        if(m_friendlyName.startsWith("Shupito Programmer"))
+            m_programmer_type = programmer_shupito;
+
         emit changed();
     }
+}
+
+void SerialPort::setBaudRate(int value)
+{
+    m_rate = value;
+    if(isOpen())
+        m_port->setBaudRate(value);
+    emit changed();
 }
 
 void SerialPort::socketError(SocketError err)
@@ -191,7 +196,7 @@ void SerialPort::socketError(SocketError err)
 
 QHash<QString, QVariant> SerialPort::config() const
 {
-    QHash<QString, QVariant> res = this->Connection::config();
+    QHash<QString, QVariant> res = this->PortConnection::config();
     res["device_name"] = this->deviceName();
     res["baud_rate"] = (int)this->baudRate();
     return res;
@@ -201,7 +206,17 @@ bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
 {
     this->setDeviceName(config.value("device_name").toString());
     this->setBaudRate(config.value("baud_rate", 38400).toInt());
-    return this->Connection::applyConfig(config);
+    return this->PortConnection::applyConfig(config);
+}
+
+ConnectionPointer<Connection> SerialPort::clone()
+{
+    ConnectionPointer<SerialPort> res(new SerialPort());
+    res->setName(tr("Clone of ") + this->name());
+    res->setDeviceName(this->deviceName());
+    res->setBaudRate(this->baudRate());
+    res->setProgrammerType(this->programmerType());
+    return res;
 }
 
 SerialPortOpenThread::SerialPortOpenThread(SerialPort *conn) : QThread(NULL)

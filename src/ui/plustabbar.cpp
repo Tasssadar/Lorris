@@ -20,7 +20,7 @@ PlusTabBar::PlusTabBar(QWidget *parent) :
     m_disabled = false;
     m_hover = false;
 
-    QIcon icon(":/icons/icons/list-add.png");
+    QIcon icon(":/icons/list-add");
     m_pixmap = icon.pixmap(16, 16);
 
     icon = QIcon(":/icons/icons/list-add-glow.png");

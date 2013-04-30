@@ -3,9 +3,19 @@
         <file alias="icon.png">icons/icon.png</file>
         <file alias="split_left.png">icons/split_left.png</file>
         <file alias="split_top.png">icons/split_top.png</file>
-        <file>icons/list-add.png</file>
-        <file>icons/list-remove.png</file>
+        <file alias="list-add">icons/list-add.png</file>
+        <file alias="list-remove">icons/list-remove.png</file>
         <file>icons/network-wired.png</file>
+        <file>icons/usb-conn.png</file>
         <file>icons/list-add-glow.png</file>
+        <file alias="symbol_cross">icons/symbol_cross.png</file>
+        <file alias="symbol_circle">icons/symbol_circle.png</file>
+        <file alias="symbol_star">icons/symbol_star.png</file>
+        <file alias="symbol_triangle">icons/symbol_triangle.png</file>
+        <file alias="arrow-up">icons/arrow-up.png</file>
+        <file alias="arrow-down">icons/arrow-down.png</file>
+        <file alias="symbol_moon">icons/symbol_moon.png</file>
+        <file alias="arrow-right">icons/go-next.png</file>
+        <file alias="arrow-left">icons/go-previous.png</file>
     </qresource>
 </RCC>

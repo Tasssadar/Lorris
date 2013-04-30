@@ -32,8 +32,6 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent)
     static bool initialized = false;
     if(!initialized)
     {
-        qRegisterMetaType<GraphCurve>("GraphCurve");
-
         PythonQt::init();
         PythonQt::self()->registerClass(&QTimer::staticMetaObject);
         PythonQt::self()->registerClass(&GraphCurve::staticMetaObject);
@@ -183,9 +181,9 @@ void PythonEngine::onTitleChange(const QString& newTitle)
         m_module.addObject(name, w);
 }
 
-void PythonEngine::callEventHandler(const QString& eventId)
+void PythonEngine::callEventHandler(const QString& eventId, const QVariantList& args)
 {
-    m_module.call(eventId);
+    m_module.call(eventId, args);
 }
 
 void PythonEngine::onSave()
@@ -230,6 +228,15 @@ PythonFunctions::PythonFunctions(PythonEngine *engine, QObject *parent) :
 void PythonFunctions::sendData(const QByteArray &data)
 {
     emit m_engine->SendData(data);
+}
+
+void PythonFunctions::sendData(const QList<int> &data)
+{
+    QByteArray send;
+    send.resize(data.size());
+    for(int i = 0; i < data.size(); ++i)
+        send[i] = data[i];
+    emit m_engine->SendData(send);
 }
 
 void PythonFunctions::sendData(const QString& str)

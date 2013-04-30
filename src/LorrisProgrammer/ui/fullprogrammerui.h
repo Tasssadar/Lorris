@@ -1,0 +1,133 @@
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
+**
+**    See README and COPYING
+***********************************************/
+
+#ifndef FULLPROGRAMMERUI_H
+#define FULLPROGRAMMERUI_H
+
+#include <QObject>
+#include "programmerui.h"
+#include "../../shared/hexfile.h"
+
+#include "ui_fullprogrammerui.h"
+
+class FuseWidget;
+class FlashButtonMenu;
+class QHexEdit;
+
+class FullProgrammerUI : public ProgrammerUI
+{
+    Q_OBJECT
+public:
+    explicit FullProgrammerUI(QObject *parent = 0);
+    ~FullProgrammerUI();
+
+    void setupUi(LorrisProgrammer *widget);
+    void connectProgrammer(Programmer *prog);
+    void connectedStatus(bool connected);
+    void tunnelStop(bool stop);
+    void setTunnelActive(bool active);
+    void tunnelStateChanged(bool opened);
+    void log(const QString& text);
+    void setChipId(const QString &text);
+    void postFlashSwitchCheck(chip_definition &chip);
+    void setStartStopBtn(bool start);
+    void setFileAndTime(const QString &file, const QDateTime &time);
+    void setActiveMem(quint32 memId);
+    void warnSecondFlash();
+    int getMemIndex();
+
+    void saveData(DataFileParser *file);
+    void loadData(DataFileParser *file);
+
+    void setHexData(quint32 memid, const QByteArray& data);
+    void setHexColor(quint32 memid, const QString &clr);
+    QByteArray getHexData(quint32 memid) const;
+    void clearHexChanged(quint32 memid);
+    bool hasHexChanged(quint32 memid);
+
+    void readFuses(chip_definition &chip);
+    void writeFuses(chip_definition &chip);
+
+    void writeSelectedMem();
+
+    void enableButtons(bool enable) override;
+
+protected:
+    QToolButton *startStopBtn() const { return ui->startStopBtn; }
+    QBoxLayout *vddLayout() const { return ui->vddLayout; }
+    QLabel *engineLabel() const { return ui->engineLabel; }
+    QLabel *vccLabel() const { return ui->vccLabel; }
+
+private slots:
+    void hideLogBtn(bool checked);
+    void hideFusesBtn(bool checked);
+    void hideSettingsBtn(bool checked);
+
+    void saveTermSettings();
+
+    void readFusesInFlash();
+    void writeFusesInFlash();
+
+    void flashWarnBox(bool checked);
+
+    void overvoltageSwitched(bool enabled);
+    void overvoltageChanged(double val);
+    void overvoltageTurnOffVcc(bool enabled);
+
+    void setActiveAction(int actInt);
+
+    void readButtonClicked();
+    void writeButtonClicked();
+
+    void updateProgrammerFeatures();
+
+private:
+    void initMenus();
+    void updateProgrammersBox(Programmer *prog);
+
+    Ui::FullProgrammerUI *ui;
+
+    FuseWidget *m_fuse_widget;
+    QHexEdit *m_hexAreas[MEM_FUSES];
+    QTextEdit * m_svfEdit;
+    ProgrammerCapabilities m_sources;
+    void applySources();
+
+    enum tabs_t
+    {
+        tab_terminal,
+        tab_flash,
+        tab_eeprom,
+        tab_svf
+    };
+
+    tabs_t currentTab() const;
+    void setCurrentTab(tabs_t t);
+
+    QFont m_font;
+    QFont m_boldFont;
+
+    enum ActionSlots
+    {
+        ACT_FLASH  = 0,
+        ACT_EEPROM,
+        ACT_ALL,
+        ACT_FUSES,
+        ACT_SVF,
+    };
+    ActionSlots m_active;
+
+    QMenu * m_read_menu;
+    QMenu * m_write_menu;
+
+    std::map<ActionSlots, QAction*> m_read_actions;
+    std::map<ActionSlots, QAction*> m_write_actions;
+
+    void createActions();
+};
+
+#endif // FULLPROGRAMMERUI_H

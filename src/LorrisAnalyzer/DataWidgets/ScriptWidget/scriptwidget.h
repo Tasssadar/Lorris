@@ -13,13 +13,13 @@
 
 #include "../datawidget.h"
 #include "../../../misc/qtpointerarray.h"
+#include "../../../ui/hookedlineedit.h"
 
 class QLabel;
 class ScriptEditor;
 class ScriptEngine;
 class Terminal;
 class ExamplePreviewTab;
-class QLineEdit;
 
 class ScriptWidget : public DataWidget
 {
@@ -38,7 +38,7 @@ public:
     void loadWidgetInfo(DataFileParser *file);
 
     Terminal *getTerminal() const { return m_terminal; }
-    QLineEdit *getInputEdit() const { return m_inputEdit; }
+    HookedLineEdit *getInputEdit() const { return m_inputEdit; }
 
 public slots:
     void onWidgetAdd(DataWidget *w);
@@ -53,6 +53,8 @@ protected slots:
      void addExampleTab(const QString& name);
      void inputShowAct(bool show);
      void setSourceDirect(const QString& source);
+     void inputLineKeyPressed(int keyCode);
+     void inputLineKeyReleased(int keyCode);
 
 protected:
      void newData(analyzer_data *data, quint32 index);
@@ -68,7 +70,7 @@ protected:
      ScriptEngine *m_engine;
      int m_engine_type;
      Terminal *m_terminal;
-     QLineEdit *m_inputEdit;
+     HookedLineEdit *m_inputEdit;
      QAction *m_inputAct;
      QString m_filename;
      QString m_errors;

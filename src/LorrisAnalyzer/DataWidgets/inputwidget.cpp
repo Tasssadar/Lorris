@@ -7,6 +7,7 @@
 
 #include <QSpacerItem>
 #include <QtUiTools/QUiLoader>
+#include "../../ui/colorbutton.h"
 
 #include "inputwidget.h"
 
@@ -19,9 +20,6 @@ InputWidget::InputWidget(QWidget *parent) :
 
     setTitle(tr("Input"));
     setIcon(":/dataWidgetIcons/input.png");
-
-    adjustSize();
-    setMinimumSize(width(), height());
 
     m_layout = new QVBoxLayout;
     m_layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -39,10 +37,16 @@ QWidget *InputWidget::newWidget(const QString &name, int stretch)
     static QUiLoader loader;
     QWidget *w = loader.createWidget(name, this);
     if(!w)
+    {
+        int id = QMetaType::type(name.toStdString().c_str());
+        if(id)
+            w = (QWidget*)QMetaType::construct(id);
+    }
+
+    if(!w)
         return NULL;
 
     m_layout->insertWidget(m_layout->count()-1, w, stretch);
-
     return w;
 }
 

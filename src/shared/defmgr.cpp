@@ -144,6 +144,26 @@ void DefMgr::parseChipdefs(QTextStream &ss)
     }
 }
 
+void DefMgr::update(chip_definition & cd)
+{
+    chip_definition templ = this->findChipdef(cd.getSign());
+    if (!templ.getName().isEmpty())
+    {
+        cd.setName(templ.getName());
+        QHash<QString, chip_definition::memorydef> const & mems = templ.getMems();
+        for (auto it = mems.begin(); it != mems.end(); ++it)
+            cd.getMems()[it.key()] = it.value();
+
+        auto const & fuses = templ.getFuses();
+        if (!fuses.empty())
+            cd.getFuses() = fuses;
+
+        QHash<QString, QString> const & opts = templ.getOptions();
+        for (auto it = opts.begin(); it != opts.end(); ++it)
+            cd.getOptions()[it.key()] = it.value();
+    }
+}
+
 void DefMgr::parseFusedesc(QTextStream &ss)
 {
     QStringList chipSign;

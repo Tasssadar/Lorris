@@ -14,12 +14,15 @@
 #include <QLabel>
 #include <QFile>
 #include <QMenu>
+#include <QPointer>
 
 #include "../packet.h"
 #include "../../misc/datafileparser.h"
 #include "../widgetfactory.h"
 #include "../../misc/gestureidentifier.h"
 #include "../undoactions.h"
+#include "../datafilter.h"
+#include "../../misc/qtobjectpointer.h"
 
 class WidgetArea;
 
@@ -55,20 +58,33 @@ enum DragActions
 
 #define RESIZE_BORDER 8 // number of pixels from every side which counts as resize drag
 
-struct data_widget_info
+struct data_widget_infoV1 // for loading old datafiles
 {
     quint32 pos;
     qint16 device;
     qint16 command;
+};
+
+struct data_widget_info
+{
+    quint32 pos;
+    QtObjectPointer<DataFilter> filter;
+
+    const data_widget_info& operator =(const data_widget_info& other)
+    {
+        pos = other.pos;
+        filter = other.filter.data();
+        return *this;
+    }
 
     bool operator==(const data_widget_info& other)
     {
-        return (other.pos == pos && other.device == device && other.command == command);
+        return (other.pos == pos && other.filter.data() == filter.data());
     }
 
     bool operator!=(const data_widget_info& other)
     {
-        return (other.pos != pos || other.device != device || other.command != command);
+        return (other.pos != pos || other.filter.data() != filter.data());
     }
 };
 
@@ -92,7 +108,9 @@ protected:
         STATE_UPDATING   = 0x04,
         STATE_MOUSE_IN   = 0x08,
         STATE_BLOCK_MOVE = 0x10,
-        STATE_SCALED_UP  = 0x20
+        STATE_SCALED_UP  = 0x20,
+        STATE_SELECTED   = 0x40,
+        STATE_HIGHLIGHTED= 0x80
     };
 
 Q_SIGNALS:
@@ -112,6 +130,7 @@ Q_SIGNALS:
     void rawData(const QByteArray& data);
 
     void addUndoAct(UndoAction *act);
+    void toggleSelection(bool selected);
 
 public:
     explicit DataWidget(QWidget *parent = 0);
@@ -123,11 +142,11 @@ public:
     quint32 getId() { return m_id; }
 
     bool isMouseIn() { return (m_state & STATE_MOUSE_IN); }
+    void setHighlighted(bool highlight);
 
-    void setInfo(qint16 device, qint16 command, quint32 pos)
+    void setInfo(DataFilter *f, quint32 pos)
     {
-        m_info.device = device;
-        m_info.command = command;
+        m_info.filter = f;
         m_info.pos = pos;
     }
     const data_widget_info& getInfo() { return m_info; }
@@ -152,15 +171,16 @@ public:
     qint32 getWidgetControlled() { return m_widgetControlled; }
 
     QString getTitle();
-
     quint8 getWidgetType() const { return m_widgetType; }
-
     void align();
 
     void updateForThis()
     {
         emit updateForMe();
     }
+
+    void showSelectFrame(bool show);
+    void dragMove(QMouseEvent* e, DataWidget *widget);
 
 public slots:
     virtual void newData(analyzer_data *data, quint32);
@@ -171,6 +191,7 @@ public slots:
     void setLocked(bool locked);
     bool isLocked() const { return (m_state & STATE_LOCKED); }
     void setError(bool error, QString tooltip = QString());
+    void setSelected(bool selected);
 
     //events
     virtual void onWidgetAdd(DataWidget *w);
@@ -190,6 +211,7 @@ protected:
     void childEvent(QChildEvent *event);
     bool eventFilter(QObject *, QEvent *ev);
     void focusInEvent(QFocusEvent *event);
+    void paintEvent(QPaintEvent *ev);
 
     virtual void titleDoubleClick();
 
@@ -203,9 +225,15 @@ protected:
         return (WidgetArea*)parent();
     }
 
+    void saveDataInfo(DataFileParser *file, data_widget_info& info);
+    void loadDataInfo(DataFileParser *file, data_widget_info& info);
+    void loadOldDataInfo(DataFileParser *file, data_widget_info& info);
+
     bool isAssigned() const { return (m_state & STATE_ASSIGNED); }
     bool isUpdating() const { return (m_state & STATE_UPDATING); }
     bool isMoveBlocked() const { return (m_state & STATE_BLOCK_MOVE); }
+    bool isSelected() const { return (m_state & STATE_SELECTED); }
+    bool isHighlighted() const { return (m_state & STATE_HIGHLIGHTED); }
 
     void setUseErrorLabel(bool use);
 
@@ -232,7 +260,6 @@ private:
 
     quint8 getDragAction(QMouseEvent* ev);
     void dragResize(QMouseEvent* e);
-    void dragMove(QMouseEvent* e, DataWidget *widget);
     static Qt::CursorShape getCursor(quint8 act);
     void startAnimation(const QRect& target);
 
@@ -245,8 +272,9 @@ private:
 
     QAction *m_lockAction;
     CloseLabel *m_closeLabel;
-    QLabel *m_icon_widget;
     QLabel *m_title_label;
+    QLabel *m_icon_widget;
+    QFrame *m_sep_line;
     quint32 m_id;
     GestureIdentifier m_gestures;
     QRect m_orig_geometry;
@@ -258,6 +286,11 @@ class DataWidgetAddBtn : public QPushButton
 public:
     explicit DataWidgetAddBtn(QWidget *parent);
     ~DataWidgetAddBtn();
+
+    void setText(const QString &text);
+
+public slots:
+    void setTiny(bool tiny);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

@@ -90,7 +90,7 @@ public:
 
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
-    void callEventHandler(const QString& eventId);
+    void callEventHandler(const QString& eventId, const QVariantList& args = QVariantList());
     void onSave();
 
     void handleException(const QString& text)

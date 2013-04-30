@@ -17,7 +17,8 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>You can use %v or %h in status' text. It will be replaced by (hexadecimal) value of the status.</string>
+      <string>You can use %v or %h in status' text. It will be replaced by (hexadecimal) value of the status.
+If you put character &quot;&amp;&quot; before number in  Value field, input data will be checked using bit AND, eg. (in &amp; Value) != 0</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

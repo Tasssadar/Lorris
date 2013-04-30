@@ -32,7 +32,7 @@ UndoAction *RestoreAction::restore(WidgetArea *area)
 {
     DataFileParser p(&m_data, QIODevice::ReadOnly);
 
-    if(DataWidget *w = area->LoadOneWidget(&p))
+    if(DataWidget *w = area->loadOneWidget(&p))
     {
         w->move(m_pos);
         w->updateForThis();
@@ -93,4 +93,53 @@ bool MoveAction::valid(WidgetArea *area)
 void MoveAction::move(const QPoint &diff)
 {
     m_pos += diff;
+}
+
+MoveGroupAction::MoveGroupAction(const std::set<DataWidget*> &widgets) :
+    UndoAction(UNDO_WGROUP_MOVE, 0)
+{
+    for(std::set<DataWidget*>::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
+        m_positions.insert((*itr)->getId(), (*itr)->pos());
+}
+
+void MoveGroupAction::addWidget(DataWidget *w)
+{
+    m_positions.insert(w->getId(), w->pos());
+}
+
+UndoAction *MoveGroupAction::restore(WidgetArea *area)
+{
+    MoveGroupAction *opposite = new MoveGroupAction(std::set<DataWidget*>());
+
+    for(QHash<quint32, QPoint>::iterator itr = m_positions.begin(); itr != m_positions.end(); ++itr)
+    {
+        DataWidget *w = area->getWidget(itr.key());
+        if(!w)
+            continue;
+
+        opposite->addWidget(w);
+        w->move(*itr);
+    }
+
+    if(opposite->empty())
+    {
+        delete opposite;
+        return NULL;
+    }
+
+    return opposite;
+}
+
+bool MoveGroupAction::valid(WidgetArea *area)
+{
+    for(QHash<quint32, QPoint>::iterator itr = m_positions.begin(); itr != m_positions.end(); ++itr)
+        if(area->getWidget(itr.key()))
+            return true;
+    return false;
+}
+
+void MoveGroupAction::move(const QPoint &diff)
+{
+    for(QHash<quint32, QPoint>::iterator itr = m_positions.begin(); itr != m_positions.end(); ++itr)
+        (*itr) += diff;
 }

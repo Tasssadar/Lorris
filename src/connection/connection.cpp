@@ -7,10 +7,12 @@
 
 #include "connection.h"
 #include "../WorkTab/WorkTab.h"
+#include "../shared/programmer.h"
 #include <QStringBuilder>
 
 Connection::Connection(ConnectionType type)
-    : m_state(st_disconnected), m_refcount(1), m_tabcount(0), m_removable(true), m_persistent(false), m_type(type)
+    : m_state(st_disconnected), m_defaultName(true), m_refcount(1), m_tabcount(0), m_removable(true),
+      m_persistent(false), m_type(type), m_companionId(0)
 {
 }
 
@@ -41,12 +43,59 @@ void Connection::SetState(ConnectionState state)
     }
 }
 
-void Connection::SetOpen(bool open)
+bool Connection::isMissing() const
 {
-    if (open)
-        this->SetState(st_connected);
+    return m_state == st_missing || m_state == st_connect_pending;
+}
+
+void Connection::markMissing()
+{
+    if (m_state == st_connected || m_state == st_connect_pending)
+        this->SetState(st_connect_pending);
     else
+        this->SetState(st_missing);
+}
+
+void Connection::markPresent()
+{
+    if (m_state == st_connect_pending)
+    {
         this->SetState(st_disconnected);
+        this->OpenConcurrent();
+    }
+    else if (m_state == st_missing)
+    {
+        this->SetState(st_disconnected);
+    }
+}
+
+void Connection::setName(const QString& str, bool isDefault)
+{
+    this->setIDString(str);
+    m_defaultName = isDefault;
+    emit changed();
+}
+
+void Connection::OpenConcurrent()
+{
+    if (m_state == st_disconnected)
+        this->doOpen();
+}
+
+void Connection::Close()
+{
+    switch (m_state)
+    {
+    case st_connect_pending:
+        this->SetState(st_missing);
+        break;
+    case st_connecting:
+    case st_connected:
+    case st_disconnecting:
+        this->doClose();
+        break;
+    default: break;
+    }
 }
 
 void Connection::addRef()
@@ -58,6 +107,7 @@ void Connection::release()
 {
     if (--m_refcount == 0)
     {
+        this->Close();
         emit destroying();
         delete this;
     }
@@ -79,13 +129,17 @@ void Connection::releaseTab()
 QHash<QString, QVariant> Connection::config() const
 {
     QHash<QString, QVariant> res;
-    res["name"] = this->name();
+    if (!this->hasDefaultName())
+        res["name"] = this->name();
+    res["companion"] = this->getCompanionId();
     return res;
 }
 
 bool Connection::applyConfig(QHash<QString, QVariant> const & config)
 {
-    this->setName(config.value("name").toString());
+    if (config.contains("name"))
+        this->setName(config.value("name").toString());
+    this->setCompanionId(config.value("companion", m_companionId).toLongLong());
     return true;
 }
 
@@ -105,4 +159,27 @@ void Connection::setPersistent(bool value)
         else
             this->release();
     }
+}
+
+PortConnection::PortConnection(ConnectionType type) : Connection(type)
+{
+    m_programmer_type = programmer_avr232boot;
+}
+
+QHash<QString, QVariant> PortConnection::config() const
+{
+    QHash<QString, QVariant> res = this->Connection::config();
+    res["programmer_type"] = (int)this->programmerType();
+    return res;
+}
+
+bool PortConnection::applyConfig(QHash<QString, QVariant> const & config)
+{
+    this->setProgrammerType(config.value("programmer_type", m_programmer_type).toInt());
+    return Connection::applyConfig(config);
+}
+
+ConnectionPointer<Connection> Connection::clone()
+{
+    return ConnectionPointer<Connection>();
 }

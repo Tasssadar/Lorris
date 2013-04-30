@@ -14,6 +14,9 @@
 
 #include "../common.h"
 #include "chipdefs.h"
+#include "hexfile.h"
+
+static const QString memNames[] = { "", "flash", "eeprom", "fuses", "sdram" };
 
 chip_definition::chip_definition()
 {
@@ -26,8 +29,16 @@ chip_definition::chip_definition(const QString &sign)
 
 chip_definition::memorydef *chip_definition::getMemDef(quint8 memId)
 {
-    static const QString memNames[] = { "", "flash", "eeprom", "fuses", "sdram" };
     return getMemDef(memNames[memId]);
+}
+
+quint8 chip_definition::memNameToId(const QString& name)
+{
+    for(size_t i = 0; i < sizeof_array(memNames); ++i)
+        if(name == memNames[i])
+            return i;
+
+    return MEM_NONE;
 }
 
 void chip_definition::copy(chip_definition &cd)

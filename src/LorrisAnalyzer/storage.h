@@ -24,7 +24,7 @@ enum StorageDataType
 };
 
 class WidgetArea;
-class DeviceTabWidget;
+class FilterTabWidget;
 class QFile;
 class LorrisAnalyzer;
 class DataFileParser;
@@ -44,19 +44,19 @@ public:
 
     void Clear();
 
-    void addData(const QByteArray& data);
+    QByteArray *addData(const QByteArray& data);
     quint32 getSize() const { return m_size; }
     quint32 getMaxIdx() const { return m_size ? m_size -1 : 0; }
     bool isEmpty() const { return m_size == 0; }
     QByteArray *get(quint32 index) { return &m_data[index]; }
-    analyzer_packet *loadFromFile(QString *name, quint8 load, WidgetArea *area, DeviceTabWidget *devices, quint32 &data_idx);
+    analyzer_packet *loadFromFile(QString *name, quint8 load, WidgetArea *area, FilterTabWidget *filters, quint32 &data_idx);
 
     const QString& getFilename() { return m_filename; }
     void clearFilename() { m_filename.clear(); }
 
 public slots:
-    void SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *devices);
-    void SaveToFile(WidgetArea *area, DeviceTabWidget *devices);
+    void SaveToFile(QString filename, WidgetArea *area, FilterTabWidget *filters);
+    void SaveToFile(WidgetArea *area, FilterTabWidget *filters);
     void ExportToBin(const QString& filename);
 
 private:

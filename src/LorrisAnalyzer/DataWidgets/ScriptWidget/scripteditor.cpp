@@ -30,7 +30,7 @@ static const QString filters[ENGINE_MAX] =
 };
 
 ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int type) :
-    ChildTab(NULL), ui(new Ui::ScriptEditor), m_editor(NULL)
+    ChildTab(NULL), ui(new Ui::ScriptEditor), m_language(ENGINE_QTSCRIPT), m_editor(NULL)
 {
     ui->setupUi(this);
 

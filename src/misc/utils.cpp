@@ -34,6 +34,25 @@ QString Utils::parseChar(char c)
     }
 }
 
+QByteArray Utils::convertByteStr(QString str)
+{
+    QByteArray res;
+
+    QStringList tok = str.split(' ', QString::SkipEmptyParts);
+    if(tok.isEmpty())
+        return res;
+
+    bool ok = false;
+    int num;
+    for(int i = 0; i < tok.size(); ++i)
+    {
+        num = tok[i].toInt(&ok, 0);
+        if(ok && (num & 0xFF) <= 255)
+            res.append((char)num);
+    }
+    return res;
+}
+
 QString Utils::toBase16(quint8 const * first, quint8 const * last)
 {
     QString res;
@@ -44,6 +63,13 @@ QString Utils::toBase16(quint8 const * first, quint8 const * last)
         res.append(digits[(*first & 0xF)]);
     }
     return res;
+}
+
+void Utils::toBase16(char * ptr, uint8_t v)
+{
+    static char const digits[] = "0123456789abcdef";
+    ptr[0] = digits[v >> 4];
+    ptr[1] = digits[v & 0xf];
 }
 
 QString Utils::toBinary(std::size_t width, int value)
@@ -180,8 +206,7 @@ void Utils::deleteLayoutMembers(QLayout *layout)
 {
     while(layout->count())
     {
-        QLayoutItem *item = layout->itemAt(0);
-        layout->removeItem(item);
+        QLayoutItem *item = layout->takeAt(0);
         if(item->layout())
         {
             Utils::deleteLayoutMembers(item->layout());
@@ -195,5 +220,33 @@ void Utils::deleteLayoutMembers(QLayout *layout)
         }
         else if(item->spacerItem())
             delete item->spacerItem();
+        else
+            delete item;
     }
+}
+
+bool Utils::isInRect(const QPoint& p, int rx, int ry, int rw, int rh)
+{
+    return p.x() >= rx && p.y() >= ry && p.x() <= rx+rw && p.y() <= ry+rh;
+}
+
+bool Utils::isInRect(const QPoint& p, const QPoint& rp, const QPoint& rs)
+{
+    return  p.x() >= rp.x() && p.y() >= rp.y() &&
+            p.x() <= rp.x()+rs.x() && p.y() <= rp.y()+rs.y();
+}
+
+bool Utils::isInRect(int px, int py, int rx, int ry, int rw, int rh)
+{
+    return px >= rx && py >= ry && px <= rx+rw && py <= ry+rh;
+}
+
+size_t Utils::align(size_t & offset, size_t & size, size_t alignment)
+{
+    size_t aligned_offset = offset & ~(alignment - 1);
+    size_t front_padding = offset - aligned_offset;
+    size += front_padding;
+    size = (size + alignment - 1) & ~(alignment - 1);
+    offset = aligned_offset;
+    return front_padding;
 }

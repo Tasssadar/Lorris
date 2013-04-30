@@ -12,9 +12,9 @@
 
 #include "storage.h"
 #include "widgetarea.h"
-#include "devicetabwidget.h"
 #include "../misc/datafileparser.h"
 #include "lorrisanalyzer.h"
+#include "filtertabwidget.h"
 
 static const char *ANALYZER_DATA_FORMAT = "v7";
 static const char ANALYZER_DATA_MAGIC[] = { (char)0xFF, (char)0x80, 0x68 };
@@ -47,18 +47,19 @@ void Storage::Clear()
     m_data.clear();
 }
 
-void Storage::addData(const QByteArray& data)
+QByteArray *Storage::addData(const QByteArray& data)
 {
     if(!m_packet)
-        return;
+        return NULL;
     m_data.push_back(data);
     ++m_size;
+    return &m_data.back();
 }
 
-void Storage::SaveToFile(WidgetArea *area, DeviceTabWidget *devices)
+void Storage::SaveToFile(WidgetArea *area, FilterTabWidget *filters)
 {
     if(m_filename.isEmpty())
-        return SaveToFile(m_filename, area, devices);
+        return SaveToFile(m_filename, area, filters);
 
     // Check md5
     QFile file(m_filename);
@@ -84,10 +85,10 @@ void Storage::SaveToFile(WidgetArea *area, DeviceTabWidget *devices)
         if(box.exec() == QMessageBox::Cancel)
             return;
     }
-    SaveToFile(m_filename, area, devices);
+    SaveToFile(m_filename, area, filters);
 }
 
-void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *devices)
+void Storage::SaveToFile(QString filename, WidgetArea *area, FilterTabWidget *filters)
 {
     analyzer_packet *packet = m_packet;
     if(!m_packet)
@@ -132,9 +133,8 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
         buffer.write((char*)&packet->header->static_len, sizeof(packet->header->static_len));
         buffer.write((char*)packet->static_data.data(), packet->header->static_len);
 
-        //Devices and commands
-        buffer.writeBlockIdentifier(BLOCK_DEVICE_TABS);
-        devices->Save(&buffer);
+        //Filters
+        filters->Save(&buffer);
 
         //Data
         buffer.writeBlockIdentifier(BLOCK_DATA);
@@ -151,10 +151,10 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
 
         //Widgets
         buffer.writeBlockIdentifier(BLOCK_WIDGETS);
-        area->SaveWidgets(&buffer);
+        area->saveWidgets(&buffer);
 
         // Area settings
-        area->SaveSettings(&buffer);
+        area->saveSettings(&buffer);
 
         // Data index
         buffer.writeBlockIdentifier(BLOCK_DATA_INDEX);
@@ -177,7 +177,7 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, DeviceTabWidget *de
     }
 }
 
-analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *area, DeviceTabWidget *devices, quint32 &data_idx)
+analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *area, FilterTabWidget *filters, quint32 &data_idx)
 {
     QString filename;
     if(name)
@@ -323,9 +323,8 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
     }
 
     //Devices and commands
-    devices->setHeader(header.data());
-    if(buffer.seekToNextBlock(BLOCK_DEVICE_TABS, BLOCK_DATA))
-        devices->Load(&buffer, !(load & STORAGE_STRUCTURE));
+    filters->setHeader(header.data());
+    filters->Load(&buffer, !(load & STORAGE_STRUCTURE));
 
     //Data
     if(buffer.seekToNextBlock(BLOCK_DATA, 0))
@@ -347,10 +346,10 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
 
     //Widgets
     if(buffer.seekToNextBlock(BLOCK_WIDGETS, 0))
-        area->LoadWidgets(&buffer, !(load & STORAGE_WIDGETS));
+        area->loadWidgets(&buffer, !(load & STORAGE_WIDGETS));
 
     // Area settings
-    area->LoadSettings(&buffer);
+    area->loadSettings(&buffer);
 
     // Data index
     if((load & STORAGE_DATA) && buffer.seekToNextBlock(BLOCK_DATA_INDEX, 0))

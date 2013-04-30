@@ -21,6 +21,8 @@ void ColorWidget::addEnum()
     REGISTER_ENUM(COLOR_RGB_10_UINT);
     REGISTER_ENUM(COLOR_GRAY_8);
     REGISTER_ENUM(COLOR_GRAY_10);
+    REGISTER_ENUM(COLOR_RGBA_8);
+    REGISTER_ENUM(COLOR_ARGB_8);
 }
 
 REGISTER_DATAWIDGET(WIDGET_COLOR, Color, &ColorWidget::addEnum)
@@ -44,6 +46,7 @@ ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
     m_brightness = 0;
     m_color_layout[0] = m_color_layout[1] = m_color_layout[2] = NULL;
     m_color_cor[0] = m_color_cor[1] = m_color_cor[2] = 0;
+    m_color_type = COLOR_RGB_8;
 
     updateColor();
 }
@@ -68,7 +71,9 @@ void ColorWidget::setUp(Storage *storage)
             tr("RGB (10b/channel, 3 uint16s)"),
             tr("RGB (10b/channel, 1 uint32)"),
             tr("Shades of gray (8b/channel, 1 uint8)"),
-            tr("Shades of gray (10b/channel, 1 uint16)")
+            tr("Shades of gray (10b/channel, 1 uint16)"),
+            tr("RGBA (8b/channel, 1 uint32)"),
+            tr("ARGB (8b/channel, 1 uint32)"),
         };
 
         colorType[i] = typeMenu->addAction(name[i], map, SLOT(map()));
@@ -124,6 +129,22 @@ void ColorWidget::processData(analyzer_data *data)
             case COLOR_GRAY_10:
                 m_widget->setAll(data->getUInt16(m_info.pos));
                 break;
+            case COLOR_RGBA_8:
+            {
+                quint32 color = data->getUInt32(m_info.pos);
+                m_widget->color()[0] = ((color >> 24) & 0xFF);
+                m_widget->color()[1] = ((color >> 16) & 0xFF);
+                m_widget->color()[2] = ((color >> 8) & 0xFF);
+                break;
+            }
+            case COLOR_ARGB_8:
+            {
+                quint32 color = data->getUInt32(m_info.pos);
+                m_widget->color()[0] = ((color >> 16) & 0xFF);
+                m_widget->color()[1] = ((color >> 8) & 0xFF);
+                m_widget->color()[2] = ((color) & 0xFF);
+                break;
+            }
             default:
                 return;
         }
@@ -177,6 +198,7 @@ void ColorWidget::setValue(quint32 color)
     int r, g, b;
     switch(m_color_type)
     {
+        case COLOR_ARGB_8:
         case COLOR_RGB_8:
             r = (color >> 16) & 0xFF;
             g = (color >> 8) & 0xFF;
@@ -193,6 +215,11 @@ void ColorWidget::setValue(quint32 color)
             break;
         case COLOR_GRAY_10:
             r = g = b = (color & 0x3FF);
+            break;
+        case COLOR_RGBA_8:
+            r = (color >> 24) & 0xFF;
+            g = (color >> 16) & 0xFF;
+            b = (color >> 8) & 0xFF;
             break;
         default:
             Q_ASSERT(false);

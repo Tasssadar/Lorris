@@ -12,6 +12,7 @@
 #include "scripteditor.h"
 #include "engines/qtscriptengine.h"
 #include "../../../ui/terminal.h"
+#include "../../widgetarea.h"
 
 REGISTER_DATAWIDGET(WIDGET_SCRIPT, Script, NULL)
 
@@ -26,7 +27,7 @@ ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
     m_terminal = new Terminal(this);
     layout->addWidget(m_terminal, 4);
 
-    m_inputEdit = new QLineEdit(this);
+    m_inputEdit = new HookedLineEdit(this);
     m_inputEdit->setToolTip(tr("Interactive input.\nAvailable in script as \"inputLine\" (class QLineEdit) object."));
     m_inputEdit->hide();
     layout->addWidget(m_inputEdit);
@@ -64,6 +65,8 @@ void ScriptWidget::setUp(Storage *storage)
     m_inputAct->setCheckable(true);
 
     connect(m_inputAct,           SIGNAL(triggered(bool)), SLOT(inputShowAct(bool)));
+    connect(m_inputEdit,          SIGNAL(keyPressed(int)), SLOT(inputLineKeyPressed(int)));
+    connect(m_inputEdit,          SIGNAL(keyReleased(int)), SLOT(inputLineKeyReleased(int)));
     connect(src_act,              SIGNAL(triggered()), SLOT(setSourceTriggered()));
     connect(this, SIGNAL(closeEdit()), SLOT(closeEditor()), Qt::QueuedConnection);
     connect(this, SIGNAL(setSourceDelayed(QString)), SLOT(setSourceDirect(QString)), Qt::QueuedConnection);
@@ -72,6 +75,11 @@ void ScriptWidget::setUp(Storage *storage)
 
     m_engine_type = sConfig.get(CFG_QUINT32_ANALYZER_SCRIPT_ENG);
     createEngine();
+
+    // connect to "all data" filter
+    DataFilter *f = widgetArea()->getFilter(0);
+    if(f)
+        f->connectWidget(this);
 }
 
 void ScriptWidget::createEngine()
@@ -329,6 +337,18 @@ void ScriptWidget::inputShowAct(bool show)
     m_inputAct->setChecked(show);
     m_inputEdit->setVisible(show);
     sConfig.set(CFG_BOOL_SCRIPT_SHOW_INPUT, show);
+}
+
+void ScriptWidget::inputLineKeyPressed(int keyCode)
+{
+    if(m_engine)
+        m_engine->callEventHandler("inputLineKeyPressed", (QVariantList() << keyCode));
+}
+
+void ScriptWidget::inputLineKeyReleased(int keyCode)
+{
+    if(m_engine)
+        m_engine->callEventHandler("inputLineKeyReleased", (QVariantList() << keyCode));
 }
 
 ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

@@ -25,7 +25,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, PortConnection *con, const QStr
     QDialog(),ui(new Ui::SourceDialog)
 {
     ui->setupUi(this);
-    setFixedSize(width(), height());
+    adjustSize();
 
     if(pkt)
         m_packet.copy(pkt);
@@ -40,13 +40,13 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, PortConnection *con, const QStr
         connect(con, SIGNAL(dataRead(QByteArray)), m_parser, SLOT(newData(QByteArray)));
 
     QWidget *w = new QWidget(this);
-    scroll_layout = new ScrollDataLayout(m_packet.header, false, false, NULL, NULL, w);
-    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    scroll_layout = new ScrollDataLayout(m_packet.header, false, false, NULL, w);
+    w->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
     ui->data_scroll->setWidget(w);
 
     w = new QWidget(this);
-    scroll_header = new LabelLayout(m_packet.header, true, true, NULL, NULL, w);
+    scroll_header = new LabelLayout(m_packet.header, true, true, NULL, w);
     connect(scroll_header, SIGNAL(orderChanged()), scroll_layout, SLOT(UpdateTypes()));
     connect(scroll_header, SIGNAL(orderChanged()), m_parser,      SLOT(resetCurPacket()));
 

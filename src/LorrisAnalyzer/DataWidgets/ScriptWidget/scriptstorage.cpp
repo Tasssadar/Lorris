@@ -146,46 +146,46 @@ void ScriptStorage::setFloatArray(const QString &key, const QVariantList &val)
     setArrayType<float>(key, val);
 }
 
-bool ScriptStorage::getBool(const QString &key)
+bool ScriptStorage::getBool(const QString &key, bool def)
 {
-    return getBaseType<bool>(key);
+    return getBaseType<bool>(key, def);
 }
 
-quint32 ScriptStorage::getUInt32(const QString &key)
+quint32 ScriptStorage::getUInt32(const QString &key, quint32 def)
 {
-    return getBaseType<quint32>(key);
+    return getBaseType<quint32>(key, def);
 }
 
-qint32 ScriptStorage::getInt32(const QString &key)
+qint32 ScriptStorage::getInt32(const QString &key, qint32 def)
 {
-    return getBaseType<qint32>(key);
+    return getBaseType<qint32>(key, def);
 }
 
-float ScriptStorage::getFloat(const QString &key)
+float ScriptStorage::getFloat(const QString &key, float def)
 {
-    return getBaseType<float>(key);
+    return getBaseType<float>(key, def);
 }
 
-QString ScriptStorage::getString(const QString &key)
+QString ScriptStorage::getString(const QString &key, QString def)
 {
     ScriptData *sc_data = findKey(key);
     if(!sc_data)
-        return "";
+        return def;
 
     return QString::fromUtf8(sc_data->data, sc_data->len);
 }
 
-QVariantList ScriptStorage::getInt32Array(const QString &key)
+QVariantList ScriptStorage::getInt32Array(const QString &key, QVariantList def)
 {
-    return getArrayType<qint32>(key);
+    return getArrayType<qint32>(key, def);
 }
 
-QVariantList ScriptStorage::getUInt32Array(const QString &key)
+QVariantList ScriptStorage::getUInt32Array(const QString &key, QVariantList def)
 {
-    return getArrayType<quint32>(key);
+    return getArrayType<quint32>(key, def);
 }
 
-QVariantList ScriptStorage::getFloatArray(const QString &key)
+QVariantList ScriptStorage::getFloatArray(const QString &key, QVariantList def)
 {
-    return getArrayType<float>(key);
+    return getArrayType<float>(key, def);
 }

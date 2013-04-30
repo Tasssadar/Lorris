@@ -476,7 +476,7 @@ void QwtPainter::drawFocusRect( QPainter *painter, QWidget *widget )
 }
 
 //! Draw a focus rectangle on a widget using its style.
-void QwtPainter::drawFocusRect( QPainter *painter, QWidget *widget,
+void QwtPainter::drawFocusRect( QPainter *painter, QWidget* /*widget*/,
     const QRect &rect )
 {
     // Lorris change - the original code does nothing on Windows 7

@@ -15,6 +15,8 @@
 #include <QFutureWatcher>
 #include <QTimer>
 
+#include "utils.h"
+
 class QEventLoop;
 class PortConnection;
 
@@ -31,9 +33,12 @@ enum DataBlocks
     BLOCK_WIDGETS,
     BLOCK_WIDGET,
     BLOCK_DATA_INDEX,
+    BLOCK_FILTERS,
 
     BLOCK_TABWIDGET,
-    BLOCK_WORKTAB
+    BLOCK_WORKTAB,
+
+    BLOCK_MAX
 };
 
 enum DataFileFlags
@@ -51,7 +56,7 @@ enum DataFileTypes
     DATAFILE_MAX
 };
 
-struct DataFileHeader
+PACK_STRUCT(struct DataFileHeader
 {
     DataFileHeader(quint8 data_type = DATAFILE_NONE);
     DataFileHeader(const DataFileHeader& other);
@@ -63,15 +68,18 @@ struct DataFileHeader
     char md5[16];            // md5 hash of data which follows the header
     quint16 header_size;     // header size, for compatibility. Should be 64 for version >= 2
     quint32 compressed_block;
+    quint32 lorris_rev;
 
     // SEE: align to 64 bytes
-    char unused[31];
-};
+    char unused[27];
+});
 
 class DataFileParser : public QBuffer
 {
     Q_OBJECT
 public:
+    typedef QScopedPointer<char, QScopedPointerArrayDeleter<char> > pStr;
+
     DataFileParser(QByteArray *data, QIODevice::OpenMode openMode, QString path = QString(),
                    QString name = QString(), QObject *parent = 0);
     ~DataFileParser();
@@ -85,8 +93,6 @@ public:
 
     void writeBlockIdentifier(DataBlocks block);
     void writeBlockIdentifier(const char* block);
-
-    char* getBlockName(DataBlocks block);
 
     void writeString(const QString& str);
     QString readString();

@@ -382,7 +382,7 @@ void Terminal::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Return:
         case Qt::Key_Enter:
         {
-            key = "\r\n";
+            key = getCurrNewlineStr();
             break;
         }
         case Qt::Key_Backspace:
@@ -776,6 +776,9 @@ QString Terminal::getSettingsData()
 
     for(int i = 0; i < COLOR_MAX; ++i)
         res += QString("%1;").arg(m_settings.colors[i].name());
+
+    res += "|" + QString::number(m_fmt);
+    res += "|" + QString::number(m_input);
     return res;
 }
 
@@ -806,6 +809,12 @@ void Terminal::loadSettings(const QString& data)
         p.setColor(QPalette::Text, m_settings.colors[COLOR_TEXT]);
         setPalette(p);
     }
+
+    if(lst.size() >= 5)
+        setFmt(lst[4].toUInt());
+
+    if(lst.size() >= 6)
+        setInput(lst[5].toUInt());
 }
 
 void Terminal::setFont(const QFont &f)
@@ -866,3 +875,39 @@ void Terminal::redrawAll()
     pause(paused);
 }
 
+QString Terminal::getCurrNewlineStr()
+{
+    static const QString nl[] = {
+        "\r\n",   // NLS_RN
+        "\n",     // NLS_N
+        "\r",     // NLS_R
+        "\n\r",   // NLS_NR
+    };
+
+    if(m_settings.chars[SET_ENTER_SEND] >= NLS_MAX)
+        return nl[0];
+    return nl[m_settings.chars[SET_ENTER_SEND]];
+}
+
+void Terminal::blink(const QColor &color)
+{
+    if(!color.isValid())
+        return;
+
+    QTimer::singleShot(100, this, SLOT(endBlink()));
+
+    QPalette p = palette();
+    p.setColor(QPalette::Base, color);
+    setPalette(p);
+
+    update();
+}
+
+void Terminal::endBlink()
+{
+    QPalette p = palette();
+    p.setColor(QPalette::Base, m_settings.colors[COLOR_BG]);
+    setPalette(p);
+
+    update();
+}

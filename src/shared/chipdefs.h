@@ -43,6 +43,8 @@ public:
     template <typename Iter>
     static void set_fuse_value(Iter first, Iter last, fuse const & f, int value);
 
+    static quint8 memNameToId(const QString& name);
+
     chip_definition();
     chip_definition(const QString& sign);
 

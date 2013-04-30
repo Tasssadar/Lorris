@@ -36,22 +36,15 @@ SOURCES += ui/mainwindow.cpp \
     LorrisTerminal/lorristerminalinfo.cpp \
     connection/connection.cpp \
     connection/serialport.cpp \
-    LorrisTerminal/eeprom.cpp \
     LorrisAnalyzer/lorrisanalyzerinfo.cpp \
     LorrisAnalyzer/lorrisanalyzer.cpp \
     LorrisAnalyzer/sourcedialog.cpp \
     LorrisAnalyzer/labellayout.cpp \
     LorrisAnalyzer/packet.cpp \
-    LorrisAnalyzer/devicetabwidget.cpp \
-    LorrisAnalyzer/cmdtabwidget.cpp \
     LorrisAnalyzer/DataWidgets/datawidget.cpp \
     LorrisAnalyzer/DataWidgets/numberwidget.cpp \
     LorrisAnalyzer/DataWidgets/barwidget.cpp \
     LorrisAnalyzer/sourceselectdialog.cpp \
-    LorrisShupito/lorrisshupito.cpp \
-    LorrisShupito/lorrisshupitoinfo.cpp \
-    LorrisShupito/shupito.cpp \
-    LorrisShupito/shupitodesc.cpp \
     LorrisAnalyzer/DataWidgets/colorwidget.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp \
@@ -65,11 +58,6 @@ SOURCES += ui/mainwindow.cpp \
     shared/chipdefs.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.cpp \
-    LorrisShupito/modes/shupitospi.cpp \
-    LorrisShupito/modes/shupitopdi.cpp \
-    LorrisShupito/modes/shupitomode.cpp \
-    LorrisShupito/modes/shupitocc25xx.cpp \
-    LorrisShupito/shupitopacket.cpp \
     connection/tcpsocket.cpp \
     LorrisProxy/lorrisproxyinfo.cpp \
     LorrisProxy/lorrisproxy.cpp \
@@ -95,6 +83,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/storage.cpp \
     shared/fuse_desc.cpp \
     shared/defmgr.cpp \
+    shared/programmer.cpp \
     ../dep/ecwin7/ecwin7.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp \
@@ -104,7 +93,6 @@ SOURCES += ui/mainwindow.cpp \
     ui/progressbar.cpp \
     ui/tooltipwarn.cpp \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp \
-    LorrisTerminal/avr232boot.cpp \
     connection/shupitoconn.cpp \
     misc/utils.cpp \
     misc/config.cpp \
@@ -131,15 +119,35 @@ SOURCES += ui/mainwindow.cpp \
     ui/resettablelineedit.cpp \
     ui/formuladialog.cpp \
     misc/formulaevaluation.cpp \
-    LorrisShupito/ui/shupitoui.cpp \
-    LorrisShupito/ui/fullshupitoui.cpp \
-    LorrisShupito/ui/flashbuttonmenu.cpp \
-    LorrisShupito/ui/progressdialog.cpp \
-    LorrisShupito/ui/overvccdialog.cpp \
-    LorrisShupito/ui/fusewidget.cpp \
-    LorrisShupito/ui/minishupitoui.cpp \
     LorrisAnalyzer/undostack.cpp \
     LorrisAnalyzer/undoactions.cpp \
+    LorrisAnalyzer/filtertabwidget.cpp \
+    LorrisAnalyzer/datafilter.cpp \
+    misc/threadchannel.cpp \
+    ui/hookedlineedit.cpp \
+    LorrisProgrammer/shupitopacket.cpp \
+    LorrisProgrammer/shupitodesc.cpp \
+    LorrisProgrammer/shupito.cpp \
+    LorrisProgrammer/lorrisprogrammerinfo.cpp \
+    LorrisProgrammer/lorrisprogrammer.cpp \
+    LorrisProgrammer/programmers/shupitoprogrammer.cpp \
+    LorrisProgrammer/programmers/avr232bootprogrammer.cpp \
+    LorrisProgrammer/programmers/atsamprogrammer.cpp \
+    LorrisProgrammer/modes/shupitospi.cpp \
+    LorrisProgrammer/modes/shupitospiflash.cpp \
+    LorrisProgrammer/modes/shupitojtag.cpp \
+    LorrisProgrammer/modes/shupitopdi.cpp \
+    LorrisProgrammer/modes/shupitomode.cpp \
+    LorrisProgrammer/modes/shupitocc25xx.cpp \
+    LorrisProgrammer/ui/progressdialog.cpp \
+    LorrisProgrammer/ui/programmerui.cpp \
+    LorrisProgrammer/ui/overvccdialog.cpp \
+    LorrisProgrammer/ui/miniprogrammerui.cpp \
+    LorrisProgrammer/ui/fusewidget.cpp \
+    LorrisProgrammer/ui/fullprogrammerui.cpp \
+    LorrisProgrammer/programmers/avr109programmer.cpp \
+    ui/bytevalidator.cpp \
+    misc/qtobjectpointer.cpp \
     LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp \
     LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.cpp \
     LorrisAnalyzer/DataWidgets/GLWidget/glmodel.cpp \
@@ -156,23 +164,16 @@ HEADERS += ui/mainwindow.h \
     LorrisTerminal/lorristerminalinfo.h \
     connection/connection.h \
     connection/serialport.h \
-    LorrisTerminal/eeprom.h \
     LorrisAnalyzer/lorrisanalyzer.h \
     LorrisAnalyzer/lorrisanalyzerinfo.h \
     common.h \
     LorrisAnalyzer/sourcedialog.h \
     LorrisAnalyzer/labellayout.h \
     LorrisAnalyzer/packet.h \
-    LorrisAnalyzer/devicetabwidget.h \
-    LorrisAnalyzer/cmdtabwidget.h \
     LorrisAnalyzer/DataWidgets/datawidget.h \
     LorrisAnalyzer/DataWidgets/numberwidget.h \
     LorrisAnalyzer/DataWidgets/barwidget.h \
     LorrisAnalyzer/sourceselectdialog.h \
-    LorrisShupito/lorrisshupito.h \
-    LorrisShupito/lorrisshupitoinfo.h \
-    LorrisShupito/shupito.h \
-    LorrisShupito/shupitodesc.h \
     LorrisAnalyzer/DataWidgets/colorwidget.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graph.h \
@@ -186,11 +187,6 @@ HEADERS += ui/mainwindow.h \
     shared/chipdefs.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphdata.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphcurve.h \
-    LorrisShupito/modes/shupitospi.h \
-    LorrisShupito/modes/shupitopdi.h \
-    LorrisShupito/modes/shupitomode.h \
-    LorrisShupito/modes/shupitocc25xx.h \
-    LorrisShupito/shupitopacket.h \
     connection/tcpsocket.h \
     LorrisProxy/lorrisproxyinfo.h \
     LorrisProxy/lorrisproxy.h \
@@ -218,6 +214,7 @@ HEADERS += ui/mainwindow.h \
     pch.h \
     shared/fuse_desc.h \
     shared/defmgr.h \
+    shared/programmer.h \
     ../dep/ecwin7/ecwin7.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.h \
     LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.h \
@@ -227,7 +224,6 @@ HEADERS += ui/mainwindow.h \
     ui/progressbar.h \
     ui/tooltipwarn.h \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.h \
-    LorrisTerminal/avr232boot.h \
     connection/shupitoconn.h \
     misc/utils.h \
     misc/singleton.h \
@@ -256,15 +252,35 @@ HEADERS += ui/mainwindow.h \
     ui/resettablelineedit.h \
     ui/formuladialog.h \
     misc/formulaevaluation.h \
-    LorrisShupito/ui/shupitoui.h \
-    LorrisShupito/ui/fullshupitoui.h \
-    LorrisShupito/ui/flashbuttonmenu.h \
-    LorrisShupito/ui/progressdialog.h \
-    LorrisShupito/ui/overvccdialog.h \
-    LorrisShupito/ui/fusewidget.h \
-    LorrisShupito/ui/minishupitoui.h \
     LorrisAnalyzer/undostack.h \
     LorrisAnalyzer/undoactions.h \
+    LorrisAnalyzer/filtertabwidget.h \
+    LorrisAnalyzer/datafilter.h \
+    misc/threadchannel.h \
+    ui/hookedlineedit.h \
+    LorrisProgrammer/shupitopacket.h \
+    LorrisProgrammer/shupitodesc.h \
+    LorrisProgrammer/shupito.h \
+    LorrisProgrammer/lorrisprogrammerinfo.h \
+    LorrisProgrammer/lorrisprogrammer.h \
+    LorrisProgrammer/programmers/shupitoprogrammer.h \
+    LorrisProgrammer/programmers/avr232bootprogrammer.h \
+    LorrisProgrammer/programmers/atsamprogrammer.h \
+    LorrisProgrammer/modes/shupitospi.h \
+    LorrisProgrammer/modes/shupitospiflash.h \
+    LorrisProgrammer/modes/shupitojtag.h \
+    LorrisProgrammer/modes/shupitopdi.h \
+    LorrisProgrammer/modes/shupitomode.h \
+    LorrisProgrammer/modes/shupitocc25xx.h \
+    LorrisProgrammer/ui/progressdialog.h \
+    LorrisProgrammer/ui/programmerui.h \
+    LorrisProgrammer/ui/overvccdialog.h \
+    LorrisProgrammer/ui/miniprogrammerui.h \
+    LorrisProgrammer/ui/fusewidget.h \
+    LorrisProgrammer/ui/fullprogrammerui.h \
+    LorrisProgrammer/programmers/avr109programmer.h \
+    ui/bytevalidator.h \
+    misc/qtobjectpointer.h \
     LorrisAnalyzer/DataWidgets/GLWidget/glwidget.h \
     LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.h \
     LorrisAnalyzer/DataWidgets/GLWidget/glmodel.h \
@@ -275,7 +291,6 @@ FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
     LorrisAnalyzer/lorrisanalyzer.ui \
     LorrisAnalyzer/sourceselectdialog.ui \
-    LorrisShupito/lorrisshupito.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveadddialog.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui \
     LorrisTerminal/lorristerminal.ui \
@@ -285,7 +300,6 @@ FORMS += \
     LorrisAnalyzer/playback.ui \
     ui/chooseconnectiondlg.ui \
     ui/rangeselectdialog.ui \
-    updatecheck.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
     ui/terminalsettings.ui \
     misc/sessiondialog.ui \
@@ -296,17 +310,19 @@ FORMS += \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui \
     LorrisAnalyzer/DataWidgets/statusmanager.ui \
     LorrisAnalyzer/DataWidgets/formuladialog.ui \
-    LorrisShupito/ui/fullshupitoui.ui \
-    LorrisShupito/ui/overvccdialog.ui \
-    LorrisShupito/ui/minishupitoui.ui
+    LorrisAnalyzer/filterdialog.ui \
+    LorrisProgrammer/ui/overvccdialog.ui \
+    LorrisProgrammer/ui/miniprogrammerui.ui \
+    LorrisProgrammer/ui/fullprogrammerui.ui \
+    ui/sessionsavedialog.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
-    LorrisShupito/shupitoicons.qrc \
     icons.qrc \
     actions.qrc \
     shared/definitions.qrc \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc \
+    LorrisProgrammer/programmericons.qrc
 
 include(../dep/qtsingleapplication/qtsingleapplication.pri)
 
@@ -340,7 +356,11 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 
 win32 {
     CONFIG -= flat
-    CONFIG += libusby libenjoy
+    CONFIG += libenjoy
+    
+    win32-msvc* {
+        CONFIG += libyb
+    }
 
     INCLUDEPATH += ../dep/SDL/include
 
@@ -365,10 +385,10 @@ win32 {
         ../dep/qextserialport/src/qextserialenumerator.cpp \
         misc/updater.cpp
 
-    LIBS += -lsetupapi -lwinmm -lole32
+    LIBS += -lsetupapi -lwinmm -lole32 -ladvapi32 -luser32
 }
 unix:!macx:!symbian {
-    CONFIG += libusby libenjoy
+    CONFIG += libenjoy libyb
     LIBS += -lqextserialport_lorris
 
     system_qwt {
@@ -415,13 +435,23 @@ python {
 # must be after lPythonQt, else it will not link properly on some compilers
 include(../python.pri)
 
-libusby {
-    include(../dep/libusby/libusby.pri)
-    DEFINES += HAVE_LIBUSBY
+libyb {
+    include(../dep/libyb/libyb.pri)
+    DEFINES += HAVE_LIBYB
+
     SOURCES += \
-        connection/usbshupitoconn.cpp
+        connection/genericusbconn.cpp \
+        connection/usbacmconn.cpp \
+        connection/usbshupito22conn.cpp \
+        connection/usbshupito23conn.cpp \
+        LorrisProgrammer/programmers/flipprogrammer.cpp
+
     HEADERS += \
-        connection/usbshupitoconn.h
+        connection/genericusbconn.h \
+        connection/usbacmconn.h \
+        connection/usbshupito22conn.h \
+        connection/usbshupito23conn.h \
+        LorrisProgrammer/programmers/flipprogrammer.h
 }
 
 kate_editor:unix {

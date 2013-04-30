@@ -56,7 +56,9 @@
 QextSerialPortPrivate::QextSerialPortPrivate(QextSerialPort *q)
     :lock(QReadWriteLock::Recursive), q_ptr(q)
 {
+    _queryMode = QextSerialPort::Polling;
     lastErr = E_NO_ERROR;
+
     Settings.BaudRate = 9600;
     Settings.Parity = PAR_NONE;
     Settings.FlowControl = FLOW_OFF;

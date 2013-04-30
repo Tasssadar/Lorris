@@ -28,6 +28,8 @@ Q_SIGNALS:
 public:
     explicit Playback(QWidget *parent = 0);
     ~Playback();
+
+    void setOuterButtons(QPushButton *play, QPushButton *stop);
     
 public slots:
     void rangeChanged(int min, int max);
@@ -50,6 +52,8 @@ private:
 
     QTimer *m_timer;
     Ui::Playback *ui;
+    QPushButton *m_playBtn;
+    QPushButton *m_stopBtn;
 };
 
 #endif // PLAYBACK_H

@@ -22,6 +22,7 @@
 #include "graphcurve.h"
 #include "../../storage.h"
 #include "graphexport.h"
+#include "../../datafilter.h"
 
 REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph, NULL)
 
@@ -122,12 +123,12 @@ void GraphWidget::updateRemoveMapping()
 {
     delete m_deleteMap;
     m_deleteMap = new QSignalMapper(this);
-    connect(m_deleteMap, SIGNAL(mapped(QString)), SLOT(removeCurve(QString)));
+    connect(m_deleteMap, SIGNAL(mapped(QString)), SLOT(removeCurve(QString)), Qt::QueuedConnection);
 
-    for(std::map<QString, QAction*>::iterator itr = m_deleteAct.begin(); itr != m_deleteAct.end(); ++itr)
+    for(QHash<QString, QAction*>::iterator itr = m_deleteAct.begin(); itr != m_deleteAct.end(); ++itr)
     {
-        m_deleteMap->setMapping(itr->second, itr->first);
-        connect(itr->second, SIGNAL(triggered()), m_deleteMap, SLOT(map()));
+        m_deleteMap->setMapping(*itr, itr.key());
+        connect(*itr, SIGNAL(triggered()), m_deleteMap, SLOT(map()));
     }
 }
 
@@ -199,9 +200,8 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         file->write(title.data());
 
         // data info
-        file->writeBlockIdentifier("graphWCurveDataInfo");
-        char *p = (char*)&info->info;
-        file->write(p, sizeof(data_widget_info));
+        file->writeBlockIdentifier("graphWCurveDataInfoV2");
+        saveDataInfo(file, info->info);
 
         // data type
         file->writeBlockIdentifier("graphWCurveDataType");
@@ -211,6 +211,14 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         // color
         file->writeBlockIdentifier("graphWCurveColor");
         file->writeString(info->curve->pen().color().name());
+
+        // formula
+        file->writeBlockIdentifier("graphWCurveFormula");
+        file->writeString(info->curve->getFormula());
+
+        // visibility
+        file->writeBlockIdentifier("graphWCurveVisible");
+        file->writeVal(info->curve->isVisible());
     }
 }
 
@@ -288,25 +296,22 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         }
 
         // data info
-        if(!file->seekToNextBlock("graphWCurveDataInfo", "graphWCurve"))
+        if(file->seekToNextBlock("graphWCurveDataInfoV2", "graphWCurve"))
+            loadDataInfo(file, info);
+        else if(file->seekToNextBlock("graphWCurveDataInfo", "graphWCurve"))
+            loadOldDataInfo(file, info);
+        else
             continue;
-        {
-            file->read((char*)&info.pos, sizeof(info));
-        }
 
         // data type
         if(!file->seekToNextBlock("graphWCurveDataType", "graphWCurve"))
             continue;
-        {
-            file->read((char*)&dataType, sizeof(quint8));
-        }
+        file->read((char*)&dataType, sizeof(quint8));
 
         // color
         if(!file->seekToNextBlock("graphWCurveColor", "graphWCurve"))
             continue;
-        {
-            color = file->readString();
-        }
+        color = file->readString();
 
         GraphDataSimple *dta = new GraphData(m_storage, info, m_sample_size, dataType);
         GraphCurve *curve = new GraphCurve(name, dta);
@@ -321,6 +326,12 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         m_deleteAct[name] = deleteCurve;
 
         m_editCurve->setEnabled(true);
+
+        if(file->seekToNextBlock("graphWCurveFormula", "graphWCurve"))
+            curve->setFormula(file->readString());
+
+        if(file->seekToNextBlock("graphWCurveVisible", "graphWCurve"))
+            m_graph->showCurve(curve, file->readVal<bool>());
     }
     updateRemoveMapping();
 }
@@ -329,7 +340,16 @@ void GraphWidget::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
 
-    m_drop_data = event->mimeData()->text();
+    quint32 pos;
+    DataFilter *f;
+
+    QByteArray data = event->mimeData()->data("analyzer/dragLabel");
+    QDataStream str(data);
+
+    str >> pos;
+    str.readRawData((char*)&f, sizeof(f));
+
+    m_dropData = std::make_pair(pos, f);
 
     if(m_add_dialog)
         delete m_add_dialog;
@@ -338,16 +358,10 @@ void GraphWidget::dropEvent(QDropEvent *event)
     m_add_dialog->open();
 }
 
-void GraphWidget::addCurve()
+void GraphWidget::applyCurveChanges()
 {
     if(!m_add_dialog->forceEdit())
-    {
-        QStringList data = m_drop_data.split(" ");
-        qint32 pos = data[0].toInt();
-        qint16 device = data[1].toInt();
-        qint16 cmd = data[2].toInt();
-        setInfo(device, cmd, pos);
-    }
+        setInfo(m_dropData.second, m_dropData.first);
 
     if(!m_add_dialog->edit())
     {
@@ -355,6 +369,7 @@ void GraphWidget::addCurve()
         GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), data);
         curve->setPen(QPen(m_add_dialog->getColor()));
         curve->attach(m_graph);
+        data->setFormula(m_add_dialog->getFormula());
         m_graph->showCurve(curve, true);
         m_curves.push_back(new GraphCurveInfo(curve, m_info));
 
@@ -363,6 +378,8 @@ void GraphWidget::addCurve()
         m_deleteAct[m_add_dialog->getName()] = deleteCurve;
 
         m_editCurve->setEnabled(true);
+
+        m_info.filter->connectWidget(this, false);
     }
     else
     {
@@ -377,29 +394,40 @@ void GraphWidget::addCurve()
 
         QString curName = info->curve->title().text();
 
-        m_deleteCurve->removeAction(m_deleteAct[curName]);
-        delete m_deleteAct[curName];
-        m_deleteAct.erase(curName);
+        QAction *deleteCurve = m_deleteAct[curName];
+        m_deleteCurve->removeAction(deleteCurve);
+        m_deleteAct.remove(curName);
+        delete deleteCurve;
 
-        QAction *deleteCurve = m_deleteCurve->addAction(m_add_dialog->getName());
+        deleteCurve = m_deleteCurve->addAction(m_add_dialog->getName());
         m_deleteAct[m_add_dialog->getName()] = deleteCurve;
 
         info->curve->setTitle(m_add_dialog->getName());
         info->curve->setPen(QPen(m_add_dialog->getColor()));
         if(!m_add_dialog->forceEdit())
+        {
             info->curve->setDataInfo(m_info);
+            info->info = m_info;
+            m_info.filter->connectWidget(this, false);
+        }
         info->curve->setDataType(m_add_dialog->getDataType());
+        info->curve->setFormula(m_add_dialog->getFormula());
     }
 
     updateRemoveMapping();
     updateVisibleArea();
 
+    emit updateForMe();
+}
+
+void GraphWidget::acceptCurveChanges()
+{
+    applyCurveChanges();
+
     delete m_add_dialog;
     m_add_dialog = NULL;
 
     m_state |= STATE_ASSIGNED;
-
-    emit updateForMe();
 }
 
 void GraphWidget::updateVisibleArea()
@@ -481,7 +509,8 @@ void GraphWidget::editCurve()
     m_add_dialog = new GraphCurveAddDialog(this, &m_curves, true);
     m_add_dialog->open();
 
-    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(addCurve()));
+    connect(m_add_dialog, SIGNAL(accepted()), SLOT(addCurve()));
+    connect(m_add_dialog, SIGNAL(apply()),    SLOT(applyCurveChanges()));
 }
 
 void GraphWidget::removeCurve(QString name)
@@ -505,7 +534,7 @@ void GraphWidget::removeCurve(QString name)
 
     m_deleteCurve->removeAction(m_deleteAct[name]);
     delete m_deleteAct[name];
-    m_deleteAct.erase(name);
+    m_deleteAct.remove(name);
 
     m_doReplot = true;
 
@@ -528,7 +557,7 @@ void GraphWidget::removeAllCurves()
 
         m_deleteCurve->removeAction(m_deleteAct[name]);
         delete m_deleteAct[name];
-        m_deleteAct.erase(name);
+        m_deleteAct.remove(name);
     }
 
     m_editCurve->setEnabled(false);

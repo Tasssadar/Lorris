@@ -14,10 +14,9 @@
 #include "sourcedialog.h"
 #include "../common.h"
 #include "packet.h"
-#include "devicetabwidget.h"
-#include "cmdtabwidget.h"
+#include "filtertabwidget.h"
 
-LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, CmdTabWidget *cmd, DeviceTabWidget *dev, QWidget *parent) : QHBoxLayout(parent)
+LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enable_drag, FilterTabWidget *filters, QWidget *parent) : QHBoxLayout(parent)
 {
     setSizeConstraint(QLayout::SetMinAndMaxSize);
 
@@ -39,8 +38,8 @@ LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enab
 
     quint16 len = m_header->hasLen() ? m_header->length : m_header->packet_length;
     lenChanged(len);
-    cmd_w = cmd;
-    dev_w = dev;
+
+    m_filterWidget = filters;
 
     QTimer *freeTimer = new QTimer(this);
     freeTimer->start(1000);
@@ -196,9 +195,37 @@ void LabelLayout::SetLabelType(DraggableLabel *label, quint8 type)
 quint8 LabelLayout::GetTypeForPos(quint32 pos)
 {
     if(pos < m_header->length)
-        return (DATA_HEADER | m_header->order[pos]);
-    else
-        return DATA_BODY;
+    {
+        quint8 type = DATA_HEADER;
+        quint8 pos_h = 0;
+        for(quint8 i = 0; i < 4; ++i)
+        {
+            switch(m_header->order[i])
+            {
+                case DATA_STATIC:
+                    pos_h += m_header->static_len;
+                    break;
+                case DATA_LEN:
+                    pos_h += (1 << m_header->len_fmt);
+                    break;
+                case DATA_DEVICE_ID:
+                case DATA_OPCODE:
+                case DATA_AVAKAR:
+                    ++pos_h;
+                    break;
+                default:
+                    return type;
+            }
+            if(pos < pos_h)
+            {
+                type |= m_header->order[i];
+                break;
+            }
+        }
+
+        return type;
+    }
+    return DATA_BODY;
 }
 
 void LabelLayout::UpdateTypes()
@@ -240,8 +267,8 @@ void LabelLayout::setHeader(analyzer_header *header)
 }
 
 ScrollDataLayout::ScrollDataLayout(analyzer_header *header, bool enable_reorder, bool enable_drag,
-                                   CmdTabWidget *cmd, DeviceTabWidget *dev, QWidget *parent) :
-                                   LabelLayout(header, enable_reorder, enable_drag, cmd, dev, parent)
+                                   FilterTabWidget *filters, QWidget *parent) :
+                                   LabelLayout(header, enable_reorder, enable_drag, filters, parent)
 {
     m_format = FORMAT_HEX;
 }
@@ -254,42 +281,6 @@ ScrollDataLayout::~ScrollDataLayout()
 void ScrollDataLayout::fmtChanged(int len)
 {
     m_format = len;
-}
-
-quint8 ScrollDataLayout::GetTypeForPos(quint32 pos)
-{
-    if(pos < m_header->length)
-    {
-        quint8 type = DATA_HEADER;
-        quint8 pos_h = 0;
-        for(quint8 i = 0; i < 4; ++i)
-        {
-            switch(m_header->order[i])
-            {
-                case DATA_STATIC:
-                    pos_h += m_header->static_len;
-                    break;
-                case DATA_LEN:
-                    pos_h += (1 << m_header->len_fmt);
-                    break;
-                case DATA_DEVICE_ID:
-                case DATA_OPCODE:
-                case DATA_AVAKAR:
-                    ++pos_h;
-                    break;
-                default:
-                    return type;
-            }
-            if(pos < pos_h)
-            {
-                type |= m_header->order[i];
-                break;
-            }
-        }
-
-        return type;
-    }
-    return DATA_BODY;
 }
 
 void ScrollDataLayout::SetData(analyzer_data *data)
@@ -323,8 +314,7 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
 
     valueLabel = new QLabel(text, this);
     valueLabel->setAlignment(Qt::AlignCenter);
-
-    setFont(Utils::getMonospaceFont());
+    valueLabel->setFont(Utils::getMonospaceFont());
     valueLabel->setAcceptDrops(true);
 
     layout->setSpacing(0);
@@ -391,9 +381,8 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 
         if(m_drag && !m_drop && labelLayout)
         {
-            str << labelLayout->getDeviceTab()->getCurrentDevice();
-            str << labelLayout->getCmdTab()->getCurrentCmd();
-
+            DataFilter *f = labelLayout->getFilterTabs()->getCurrFilter();
+            str.writeRawData((const char*)&f, sizeof(DataFilter*));
             mimeData->setData("analyzer/dragLabel", data);
         }
         else
@@ -477,4 +466,3 @@ QString DraggableLabel::GetText()
 {
     return valueLabel->text();
 }
-

@@ -18,9 +18,6 @@ class ProxyTunnel : public PortConnection
 public:
     ProxyTunnel();
 
-    bool Open();
-    void OpenConcurrent();
-    void Close();
     void SendData(const QByteArray &data);
 
     void setTcpServer(TcpServer *server);
@@ -30,6 +27,8 @@ public:
 
 protected:
     ~ProxyTunnel();
+    void doOpen();
+    void doClose();
 
 private:
     TcpServer *m_server;

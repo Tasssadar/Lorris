@@ -14,15 +14,35 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QPropertyAnimation>
+#include <QPainter>
 
 #include "datawidget.h"
 #include "../../WorkTab/WorkTab.h"
 #include "../widgetarea.h"
 #include "../../misc/datafileparser.h"
+#include "../datafilter.h"
 
 DataWidget::DataWidget(QWidget *parent) :
-    QFrame(parent), m_gestures(this)
+    QFrame(parent), m_title_label(NULL), m_icon_widget(NULL),
+    m_gestures(this)
 {
+    m_dragAction = DRAG_NONE;
+    m_copy_widget = NULL;
+
+    m_lockAction = NULL;
+    m_sep_line = NULL;
+    m_error_label = NULL;
+    m_id = 0;
+
+    m_widgetType = 0;
+    m_widgetControlled = -1;
+
+    m_error_label = NULL;
+    m_error_blink_timer = NULL;
+    contextMenu = NULL;
+
+    m_state = STATE_UPDATING;
+
     layout = new QVBoxLayout(this);
     QHBoxLayout *title_bar = new QHBoxLayout();
 
@@ -32,17 +52,14 @@ DataWidget::DataWidget(QWidget *parent) :
 
     m_title_label = new QLabel(this);
     m_title_label->setObjectName("titleLabel");
-    m_title_label->setStyleSheet("border-right: 1px solid black; border-bottom: 1px solid black");
     m_title_label->setAlignment(Qt::AlignVCenter);
     m_title_label->setMouseTracking(true);
 
     m_closeLabel = new CloseLabel(this);
 
-    m_error_label = NULL;
-
-    QFrame *sepV = new QFrame(this);
-    sepV->setFrameStyle(QFrame::HLine | QFrame::Plain);
-    sepV->setLineWidth(1);
+    m_sep_line = new QFrame(this);
+    m_sep_line->setFrameStyle(QFrame::HLine | QFrame::Plain);
+    m_sep_line->setLineWidth(1);
 
     title_bar->addWidget(m_icon_widget);
     title_bar->addWidget(m_title_label, 1);
@@ -52,7 +69,7 @@ DataWidget::DataWidget(QWidget *parent) :
     layout->setContentsMargins(5, 0, 5, 5);
 
     layout->addLayout(title_bar);
-    layout->addWidget(sepV);
+    layout->addWidget(m_sep_line);
 
     setFrameStyle(QFrame::Box | QFrame::Plain);
     setLineWidth(1);
@@ -64,13 +81,6 @@ DataWidget::DataWidget(QWidget *parent) :
     p.setColor(QPalette::Window, QColor("#FFFFFF"));
     setPalette(p);
 
-    contextMenu = NULL;
-    m_dragAction = DRAG_NONE;
-    m_copy_widget = NULL;
-    m_state = STATE_UPDATING;
-
-    m_widgetControlled = -1;
-
     setMinimumSize(20, 20);
 }
 
@@ -79,6 +89,8 @@ DataWidget::~DataWidget()
     // Remove highlight from top data widget
     if(m_state & STATE_MOUSE_IN)
         emit mouseStatus(false, m_info, m_widgetControlled);
+
+    emit toggleSelection(false);
 
     Utils::deleteLayoutMembers(layout);
     delete layout;
@@ -118,6 +130,15 @@ void DataWidget::setTitleVisibility(bool visible)
     m_closeLabel->setVisible(visible);
     m_title_label->setVisible(visible);
     m_icon_widget->setVisible(visible);
+    m_sep_line->setVisible(visible);
+
+    if(visible)
+        layout->setContentsMargins(5, 0, 5, 5);
+    else
+        layout->setContentsMargins(5, 5, 5, 5);
+
+    if(m_error_label)
+        m_error_label->setVisible(visible);
 }
 
 void DataWidget::setTitle(QString title)
@@ -185,14 +206,22 @@ void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
 void DataWidget::mousePressEvent( QMouseEvent* e )
 {
     if(e->button() != Qt::LeftButton)
-        return;
+        return; // must not call QFrame::mousePressEvent(e);
 
     m_dragAction = getDragAction(e);
     mOrigin = e->globalPos();
     m_clickPos = e->pos();
 
+    if(e->modifiers() & Qt::ShiftModifier)
+        setSelected(!bool(m_state & STATE_SELECTED));
+
     if(m_dragAction == DRAG_MOVE || (m_dragAction & DRAG_RESIZE))
-        emit addUndoAct(new MoveAction(this));
+    {
+        if(m_dragAction == DRAG_MOVE && isSelected())
+            emit addUndoAct(new MoveGroupAction(widgetArea()->getSelected()));
+        else
+            emit addUndoAct(new MoveAction(this));
+    }
 }
 
 void DataWidget::mouseMoveEvent( QMouseEvent* e )
@@ -217,7 +246,9 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
                     if(!isLocked() && !isMoveBlocked())
                     {
                         dragMove(e, this);
-                        m_gestures.moveEvent(e->globalPos());
+
+                        if(!isSelected())
+                            m_gestures.moveEvent(e->globalPos());
                     }
                     break;
                 case (DRAG_MOVE | DRAG_COPY):
@@ -236,7 +267,7 @@ void DataWidget::mouseMoveEvent( QMouseEvent* e )
     }
 }
 
-void DataWidget::mouseReleaseEvent(QMouseEvent *ev)
+void DataWidget::mouseReleaseEvent(QMouseEvent *)
 {
     emit clearPlacementLines();
     m_copy_widget = NULL;
@@ -244,8 +275,6 @@ void DataWidget::mouseReleaseEvent(QMouseEvent *ev)
     m_gestures.clear();
 
     m_state &= ~(STATE_BLOCK_MOVE);
-
-    QWidget::mouseReleaseEvent(ev);
 }
 
 void DataWidget::enterEvent(QEvent *)
@@ -283,7 +312,12 @@ void DataWidget::dropEvent(QDropEvent *event)
     QByteArray data = event->mimeData()->data("analyzer/dragLabel");
     QDataStream str(data);
 
-    str >> m_info.pos >> m_info.device >> m_info.command;
+    str >> m_info.pos;
+    DataFilter *f = NULL;
+    str.readRawData((char*)&f, sizeof(f));
+
+    f->connectWidget(this);
+    m_info.filter = f;
 
     m_state |= STATE_ASSIGNED;
 
@@ -442,6 +476,18 @@ void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
             p.ry() = ly - widget->height();
     }
 
+    if(widget == this && (m_state & STATE_SELECTED))
+    {
+        QPoint diff = (p - pos());
+        const std::set<DataWidget*>& sel = widgetArea()->getSelected();
+        for(std::set<DataWidget*>::const_iterator itr = sel.begin(); itr != sel.end(); ++itr)
+        {
+            if(*itr == this)
+                continue;
+            (*itr)->move((*itr)->pos() + diff);
+        }
+    }
+
     widget->move(p);
 
     emit updateMarker(widget);
@@ -450,15 +496,6 @@ void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
 void DataWidget::newData(analyzer_data *data, quint32 /*index*/)
 {
     if(!isUpdating() || !isAssigned() || m_info.pos >= (quint32)data->getData().length())
-        return;
-
-    quint8 id;
-    quint8 cmd;
-
-    if(m_info.command != -1 && (!data->getCmd(cmd) || cmd != m_info.command))
-        return;
-
-    if(m_info.device != -1 && (!data->getDeviceId(id) || id != m_info.device))
         return;
 
     processData(data);
@@ -492,6 +529,44 @@ void DataWidget::setTitleTriggered()
     setTitle(title);
 }
 
+void DataWidget::saveDataInfo(DataFileParser *file, data_widget_info &info)
+{
+    file->writeVal(info.pos);
+    file->writeVal(!info.filter.isNull());
+    if(!info.filter.isNull())
+        file->writeVal(info.filter->getId());
+}
+
+void DataWidget::loadDataInfo(DataFileParser *file, data_widget_info &info)
+{
+    info.pos = file->readVal<quint32>();
+
+    if(file->readVal<bool>()) // has filter
+    {
+        DataFilter *f = widgetArea()->getFilter(file->readVal<quint32>());
+        if(f)
+        {
+            info.filter = f;
+            f->connectWidget(this);
+        }
+    }
+    else
+        info.filter = NULL;
+}
+
+void DataWidget::loadOldDataInfo(DataFileParser *file, data_widget_info& info)
+{
+    data_widget_infoV1 old_info;
+    file->read((char*)&old_info.pos, sizeof(old_info));
+
+    DataFilter *f = widgetArea()->getFilterByOldInfo(old_info);
+    if(f)
+        f->connectWidget(this);
+
+    info.pos = old_info.pos;
+    info.filter = f;
+}
+
 void DataWidget::saveWidgetInfo(DataFileParser *file)
 {
     char *p = NULL;
@@ -507,9 +582,8 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
     file->write((char*)&val, sizeof(val));
 
     // data info
-    file->writeBlockIdentifier("widgetDataInfo");
-    p = (char*)&m_info.pos;
-    file->write(p, sizeof(m_info));
+    file->writeBlockIdentifier("widgetDataInfoV2");
+    saveDataInfo(file, m_info);
 
     // locked
     file->writeBlockIdentifier("widgetLocked");
@@ -531,12 +605,14 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
 void DataWidget::loadWidgetInfo(DataFileParser *file)
 {
     // data info
-    char *p = NULL;
-    if(file->seekToNextBlock("widgetDataInfo", BLOCK_WIDGET))
+    if(file->seekToNextBlock("widgetDataInfoV2", BLOCK_WIDGET))
     {
-        p = (char*)&m_info.pos;
-        file->read(p, sizeof(m_info));
-
+        loadDataInfo(file, m_info);
+        m_state |= STATE_ASSIGNED;
+    }
+    else if(file->seekToNextBlock("widgetDataInfo", BLOCK_WIDGET))
+    {
+        loadOldDataInfo(file, m_info);
         m_state |= STATE_ASSIGNED;
     }
 
@@ -669,7 +745,7 @@ void DataWidget::focusInEvent(QFocusEvent *event)
 
 Qt::CursorShape DataWidget::getCursor(quint8 act)
 {
-    switch(act)
+    switch(act & ~(DRAG_RESIZE))
     {
         case DRAG_NONE:
         default:
@@ -786,6 +862,60 @@ void DataWidget::setError(bool error, QString tooltip)
     }
 }
 
+void DataWidget::setSelected(bool selected)
+{
+    if(!(selected ^ bool(m_state & STATE_SELECTED)))
+        return;
+
+    if(selected) m_state |= STATE_SELECTED;
+    else         m_state &= ~(STATE_SELECTED);
+
+    update();
+
+    emit toggleSelection(selected);
+}
+
+void DataWidget::paintEvent(QPaintEvent *ev)
+{
+    QFrame::paintEvent(ev);
+
+    if(!isSelected() && !isHighlighted())
+        return;
+
+    QPainter p(this);
+
+    QPen pen;
+    pen.setWidth(2);
+    pen.setJoinStyle(Qt::MiterJoin);
+
+    QRect prect = rect();
+
+    if(isSelected())
+    {
+        prect.adjust(2, 2, -2, -2);
+        pen.setColor(Qt::blue);
+        p.setPen(pen);
+        p.drawRect(prect);
+    }
+
+    if(isHighlighted())
+    {
+        prect.adjust(2, 2, -2, -2);
+        pen.setColor(Qt::red);
+        p.setPen(pen);
+        p.drawRect(prect);
+    }
+}
+
+void DataWidget::setHighlighted(bool highlight)
+{
+    if(highlight)
+        m_state |= STATE_HIGHLIGHTED;
+    else
+        m_state &= ~(STATE_HIGHLIGHTED);
+    update();
+}
+
 DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 {
     setFlat(true);
@@ -796,6 +926,12 @@ DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
 DataWidgetAddBtn::~DataWidgetAddBtn()
 {
     delete m_pixmap;
+}
+
+void DataWidgetAddBtn::setText(const QString &text)
+{
+    QPushButton::setText(text);
+    QPushButton::setToolTip(text);
 }
 
 void DataWidgetAddBtn::mousePressEvent(QMouseEvent *event)
@@ -830,12 +966,27 @@ const QPixmap& DataWidgetAddBtn::getRender()
     return *m_pixmap;
 }
 
+void DataWidgetAddBtn::setTiny(bool tiny)
+{
+    if(tiny)
+    {
+        QPushButton::setText("");
+        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        setStyleSheet("padding-left: 0px; padding-right: 0px");
+    }
+    else
+    {
+        QPushButton::setText(toolTip());
+        setStyleSheet("text-align: left");
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    }
+}
+
 CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)
 {
     m_state = CLOSE_NONE;
 
     setObjectName("closeLabel");
-    setStyleSheet("border-bottom: 1px solid black");
     setAlignment(Qt::AlignVCenter);
     setLocked(false);
 

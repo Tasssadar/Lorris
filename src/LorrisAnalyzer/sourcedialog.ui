@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>722</width>
-    <height>558</height>
+    <height>592</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,7 +32,7 @@
       <item>
        <widget class="QScrollArea" name="data_scroll">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -84,7 +84,11 @@
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QSpinBox" name="len_box"/>
+         <widget class="QSpinBox" name="len_box">
+          <property name="maximum">
+           <number>2147483647</number>
+          </property>
+         </widget>
         </item>
         <item row="0" column="4">
          <widget class="QLabel" name="label_2">
@@ -456,8 +460,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>318</width>
-                   <height>56</height>
+                   <width>317</width>
+                   <height>90</height>
                   </rect>
                  </property>
                 </widget>
@@ -652,6 +656,22 @@ That means it cannot be set in standard UI yet, hence this special option.</stri
     <hint type="destinationlabel">
      <x>188</x>
      <y>290</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>len_static</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>len_box</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>134</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>244</x>
+     <y>134</y>
     </hint>
    </hints>
   </connection>

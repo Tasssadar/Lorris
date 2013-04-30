@@ -11,6 +11,8 @@
 #include <QByteArray>
 #include <QPoint>
 #include <QSize>
+#include <set>
+#include <QHash>
 
 class WidgetArea;
 class DataWidget;
@@ -20,6 +22,7 @@ enum UndoActType
     UNDO_WIDGET_DELETE = 0,
     UNDO_WIDGET_RESTORE,
     UNDO_WIDGET_MOVE,
+    UNDO_WGROUP_MOVE,
 
     UNDO_MAX
 };
@@ -79,6 +82,21 @@ private:
     QPoint m_pos;
     QSize m_size;
     bool m_scaledUp;
+};
+
+class MoveGroupAction : public UndoAction
+{
+public:
+    MoveGroupAction(const std::set<DataWidget*>& widgets);
+
+    UndoAction *restore(WidgetArea *area);
+    bool valid(WidgetArea *area);
+    void move(const QPoint& diff);
+    void addWidget(DataWidget *w);
+    bool empty() const { return m_positions.isEmpty(); }
+
+private:
+    QHash<quint32, QPoint> m_positions;
 };
 
 #endif // UNDOACTIONS_H

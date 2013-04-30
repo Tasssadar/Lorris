@@ -56,6 +56,8 @@ void SettingsDialog::loadSettings()
     ui->cmprBlock->setValue(sConfig.get(CFG_QUINT32_COMPRESS_BLOCK)/1024/1024);
 
     ui->instanceBox->setChecked(sConfig.get(CFG_BOOL_ONE_INSTANCE));
+    ui->connDlgBox->setChecked(sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB));
+    ui->updateBox->setChecked(sConfig.get(CFG_BOOL_CHECK_FOR_UPDATE));
 }
 
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *btn)
@@ -84,6 +86,8 @@ void SettingsDialog::applySettings()
     sConfig.set(CFG_QUINT32_COMPRESS_BLOCK, ui->cmprBlock->value()*1024*1024);
 
     sConfig.set(CFG_BOOL_ONE_INSTANCE, ui->instanceBox->isChecked());
+    sConfig.set(CFG_BOOL_CONN_ON_NEW_TAB, ui->connDlgBox->isChecked());
+    sConfig.set(CFG_BOOL_CHECK_FOR_UPDATE, ui->updateBox->isChecked());
 }
 
 void SettingsDialog::setPortable(bool portable)
@@ -133,11 +137,7 @@ fail:
 void SettingsDialog::on_updateBtn_clicked()
 {
 #ifdef Q_OS_WIN
-    ui->updateBtn->setText(tr("Checking for update..."));
-    if(Updater::doUpdate(false))
-        emit closeLorris();
-    else
-        ui->updateBtn->setText(tr("No update available"));
+    Updater::checkForUpdate(false);
 #else
     Utils::showErrorBox(tr("Update feature is available on Windows only, you have to rebuild Lorris by yourself.\n"
                              "<a href='http://tasssadar.github.com/Lorris'>http://tasssadar.github.com/Lorris</a>"));

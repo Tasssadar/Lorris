@@ -13,6 +13,7 @@
 #include <set>
 
 #include "ui_sessiondialog.h"
+#include "ui_sessionsavedialog.h"
 
 class QMenu;
 class QSignalMapper;
@@ -66,6 +67,22 @@ private slots:
 private:
     Ui::SessionDialog *ui;
     SessionMgr *m_mgr;
+};
+
+class SessionSaveDialog : public QDialog, private Ui::SessionSaveDialog
+{
+    Q_OBJECT
+public:
+    SessionSaveDialog(SessionMgr *mgr, QWidget *parent = NULL);
+    ~SessionSaveDialog();
+
+    static QString getSessionName(SessionMgr *mgr);
+
+private slots:
+    void on_nameBox_editTextChanged(const QString& text);
+
+private:
+    Ui::SessionSaveDialog *ui;
 };
 
 #endif // SESSIONMGR_H

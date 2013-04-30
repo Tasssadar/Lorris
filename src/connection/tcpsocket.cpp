@@ -47,14 +47,9 @@ QString TcpSocket::details() const
     return res % this->host() % ":" % QString::number(this->port());
 }
 
-bool TcpSocket::Open()
+void TcpSocket::doClose()
 {
-    return false;
-}
-
-void TcpSocket::Close()
-{
-    if(m_future.isRunning())
+    if (m_future.isRunning())
     {
         m_future.cancel();
         m_future.waitForFinished();
@@ -62,20 +57,16 @@ void TcpSocket::Close()
 
     m_socket->close();
 
-    this->SetOpen(false);
+    this->SetState(st_disconnected);
 }
 
 void TcpSocket::connectResultSer(bool opened)
 {
-    this->SetOpen(opened);
-    emit connectResult(this, opened);
+    this->SetState(opened? st_connected: st_disconnected);
 }
 
-void TcpSocket::OpenConcurrent()
+void TcpSocket::doOpen()
 {
-    if(this->isOpen())
-        return;
-
     this->SetState(st_connecting);
     m_socket->connectToHost(m_address, m_port);
 
@@ -144,7 +135,7 @@ void TcpSocket::setPort(quint16 value)
 
 QHash<QString, QVariant> TcpSocket::config() const
 {
-    QHash<QString, QVariant> res = this->Connection::config();
+    QHash<QString, QVariant> res = this->PortConnection::config();
     res["host"] = this->host();
     res["port"] = this->port();
     return res;
@@ -154,5 +145,5 @@ bool TcpSocket::applyConfig(QHash<QString, QVariant> const & config)
 {
     this->setHost(config.value("host").toString());
     this->setPort(config.value("port", 80).toInt());
-    return this->Connection::applyConfig(config);
+    return this->PortConnection::applyConfig(config);
 }

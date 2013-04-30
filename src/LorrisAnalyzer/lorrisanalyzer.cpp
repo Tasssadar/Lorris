@@ -27,21 +27,20 @@
 
 #include "lorrisanalyzer.h"
 #include "sourcedialog.h"
-#include "ui_lorrisanalyzer.h"
 #include "packet.h"
 #include "storage.h"
-#include "devicetabwidget.h"
 #include "widgetarea.h"
 #include "sourceselectdialog.h"
 #include "packetparser.h"
 #include "../WorkTab/WorkTabMgr.h"
-
 #include "DataWidgets/datawidget.h"
 #include "widgetfactory.h"
 
+#include "ui_lorrisanalyzer.h"
+
 static bool sortDataWidget(DataWidgetAddBtn *a, DataWidgetAddBtn *b)
 {
-    return a->text().localeAwareCompare(a->text(), b->text()) < 0;
+    return QString::localeAwareCompare(a->text(), b->text()) < 0;
 }
 
 LorrisAnalyzer::LorrisAnalyzer()
@@ -61,11 +60,10 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
     connect(ui->dataArea,        SIGNAL(updateData()),      SLOT(updateData()));
-    connect(ui->devTabs,         SIGNAL(updateData()),      SLOT(updateData()));
     connect(&m_parser,           SIGNAL(packetReceived(analyzer_data*,quint32)), SIGNAL(newData(analyzer_data*,quint32)));
     connect(ui->dataArea,        SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
                                  SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
-    connect(this,                SIGNAL(newData(analyzer_data*,quint32)), ui->devTabs,
+    connect(this,                SIGNAL(newData(analyzer_data*,quint32)), ui->filterTabs,
                                  SLOT(handleData(analyzer_data*, quint32)));
 
 
@@ -74,7 +72,11 @@ LorrisAnalyzer::LorrisAnalyzer()
     ui->collapseRight->setFixedWidth(h);
     ui->collapseTop->setFixedHeight(h);
     ui->collapseLeft->setRotation(ROTATE_270);
-    ui->collapseRight->setRotation(ROTATE_90);
+
+    ui->playBtn->setFixedWidth(h);
+    ui->stopBtn->setFixedWidth(h);
+
+    ui->playFrame->setOuterButtons(ui->playBtn, ui->stopBtn);
 
     QMenu* menuData = new QMenu(tr("&Data"), this);
 
@@ -133,23 +135,27 @@ LorrisAnalyzer::LorrisAnalyzer()
 #endif
 
     ui->dataArea->setAnalyzerAndStorage(this, &m_storage);
-    ui->devTabs->addDevice();
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
+    widgetBtnL->setContentsMargins(0, 0, 0, 0);
 
     std::vector<DataWidgetAddBtn*> buttons = sWidgetFactory.getButtons(tmp);
     std::sort(buttons.begin(), buttons.end(), sortDataWidget);
 
     for(quint32 i = 0; i < buttons.size(); ++i)
+    {
         widgetBtnL->addWidget(buttons[i]);
+        connect(this, SIGNAL(tinyWidgetBtn(bool)), buttons[i], SLOT(setTiny(bool)));
+    }
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);
+    tmp->setAutoFillBackground(false);
 
     m_packet = NULL;
-    highlightInfoNotNull = false;
     m_curIndex = 0;
+    m_rightVisible = true;
 
     setAreaVisibility(AREA_LEFT, false);
     setAreaVisibility(AREA_RIGHT, true);
@@ -168,7 +174,7 @@ LorrisAnalyzer::~LorrisAnalyzer()
         delete m_packet->header;
         delete m_packet;
     }
-    delete ui->devTabs;
+    delete ui->filterTabs;
     delete ui->dataArea;
     delete ui;
 }
@@ -206,7 +212,7 @@ void LorrisAnalyzer::onTabShow(const QString& filename)
     if(!filename.isEmpty())
         openFile(filename);
 
-    if (!m_con)
+    if (!m_con && sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB))
     {
         m_connectButton->choose();
         if (m_con && !m_con->isOpen())
@@ -289,7 +295,7 @@ void LorrisAnalyzer::importBinary(const QString& filename, bool reset)
         resetDevAndStorage(packet);
     else
     {
-        ui->devTabs->setHeader(packet->header);
+        ui->filterTabs->setHeader(packet->header);
         m_parser.setPacket(packet);
         m_storage.setPacket(packet);
     }
@@ -391,10 +397,18 @@ analyzer_data *LorrisAnalyzer::getLastData(quint32 &idx)
     return &m_curData;
 }
 
+QByteArray *LorrisAnalyzer::getDataAt(quint32 idx)
+{
+    if(idx >= m_storage.getSize())
+        return NULL;
+
+    return m_storage.get(idx);
+}
+
 bool LorrisAnalyzer::load(QString &name, quint8 mask)
 {
     quint32 idx = 0;
-    analyzer_packet *packet = m_storage.loadFromFile(&name, mask, ui->dataArea, ui->devTabs, idx);
+    analyzer_packet *packet = m_storage.loadFromFile(&name, mask, ui->dataArea, ui->filterTabs, idx);
     if(!packet)
         return false;
 
@@ -402,8 +416,8 @@ bool LorrisAnalyzer::load(QString &name, quint8 mask)
     setPacket(packet);
     m_parser.setPacket(packet);
 
-    if(!ui->devTabs->count())
-        ui->devTabs->reset(packet->header);
+    if(!ui->filterTabs->count())
+        ui->filterTabs->reset(packet->header);
 
     if(!idx)
         idx = m_storage.getMaxIdx();
@@ -417,13 +431,14 @@ bool LorrisAnalyzer::load(QString &name, quint8 mask)
     m_parser.setPaused(false);
 
     updateData();
+    ui->filterTabs->sendLastData();
     m_data_changed = false;
     return true;
 }
 
 void LorrisAnalyzer::saveButton()
 {
-    m_storage.SaveToFile(ui->dataArea, ui->devTabs);
+    m_storage.SaveToFile(ui->dataArea, ui->filterTabs);
 
     if(m_storage.getFilename().isEmpty())
         return;
@@ -435,7 +450,7 @@ void LorrisAnalyzer::saveButton()
 
 void LorrisAnalyzer::saveAsButton()
 {
-    m_storage.SaveToFile("", ui->dataArea, ui->devTabs);
+    m_storage.SaveToFile("", ui->dataArea, ui->filterTabs);
     if(m_storage.getFilename().isEmpty())
         return;
 
@@ -478,47 +493,14 @@ void LorrisAnalyzer::importBinAct()
     importBinary(filename, false);
 }
 
-void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent)
+void LorrisAnalyzer::widgetMouseStatus(bool in, const data_widget_info &, qint32 parent)
 {
     if(parent != -1)
     {
         DataWidget *w = ui->dataArea->getWidget(parent);
         if(!w)
             return;
-
-        if(in)
-        {
-            w->setStyleSheet("color: red");
-            w->setLineWidth(2);
-        }
-        else
-        {
-            w->setLineWidth(1);
-            w->setStyleSheet("");
-        }
-    }
-    else
-    {
-        if(in)
-        {
-            if(highlightInfoNotNull && highlightInfo != info)
-                ui->devTabs->setHighlightPos(highlightInfo, false);
-
-            bool found = ui->devTabs->setHighlightPos(info, true);
-
-            if(found)
-            {
-                highlightInfo = info;
-                highlightInfoNotNull = true;
-                return;
-            }
-        }
-
-        if(highlightInfoNotNull)
-        {
-            ui->devTabs->setHighlightPos(highlightInfo, false);
-            highlightInfoNotNull = false;
-        }
+        w->setHighlighted(in);
     }
 }
 
@@ -541,8 +523,8 @@ bool LorrisAnalyzer::isAreaVisible(quint8 area)
 {
     switch(area)
     {
-        case AREA_TOP:   return ui->devTabs->isVisible();
-        case AREA_RIGHT: return ui->widgetsScrollArea->isVisible();
+        case AREA_TOP:   return ui->filterTabs->isVisible();
+        case AREA_RIGHT: return m_rightVisible;
         case AREA_LEFT:  return ui->playFrame->isVisible();
     }
     return false;
@@ -551,10 +533,25 @@ bool LorrisAnalyzer::isAreaVisible(quint8 area)
 void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
 {
     if(area & AREA_TOP)
-        ui->devTabs->setVisible(visible);
+        ui->filterTabs->setVisible(visible);
 
     if(area & AREA_RIGHT)
-        ui->widgetsScrollArea->setVisible(visible);
+    {
+        m_rightVisible = visible;
+        emit tinyWidgetBtn(!visible);
+        if(visible)
+        {
+            ui->collapseRight->setIcon(QIcon(":/icons/arrow-right"));
+            ui->widgetsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+            ui->widgetsScrollArea->setMaximumWidth(0x00FFFFFF);
+        }
+        else
+        {
+            ui->collapseRight->setIcon(QIcon(":/icons/arrow-left"));
+            ui->widgetsScrollArea->setMaximumWidth(ui->collapseRight->width());
+            ui->widgetsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        }
+    }
 
     if(area & AREA_LEFT)
         ui->playFrame->setVisible(visible);
@@ -612,7 +609,7 @@ void LorrisAnalyzer::clearDataButton()
 
 void LorrisAnalyzer::resetDevAndStorage(analyzer_packet *packet)
 {
-    ui->devTabs->reset(packet ? packet->header : NULL);
+    ui->filterTabs->reset(packet ? packet->header : NULL);
 
     ui->dataArea->clear();
 
@@ -657,12 +654,12 @@ void LorrisAnalyzer::editStruture()
             delete m_packet->header;
             delete m_packet;
         }
-        ui->devTabs->setHeader(packet->header);
+        ui->filterTabs->setHeader(packet->header);
 
         if(!m_packet)
         {
-            ui->devTabs->removeAll();
-            ui->devTabs->addDevice();
+            //ui->filterTabs->removeAll();
+            //ui->filterTabs->addDevice();
         }
 
         m_storage.setPacket(packet);
@@ -727,7 +724,7 @@ void LorrisAnalyzer::saveData(DataFileParser *file)
         if(!filename.isEmpty())
         {
             QString cfg_name = sConfig.get(CFG_STRING_ANALYZER_FOLDER);
-            m_storage.SaveToFile(filename, ui->dataArea, ui->devTabs);
+            m_storage.SaveToFile(filename, ui->dataArea, ui->filterTabs);
             m_storage.clearFilename();
             sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
 
@@ -767,4 +764,14 @@ void LorrisAnalyzer::setPacket(analyzer_packet *packet)
 {
     m_packet = packet;
     m_curData.setPacket(packet);
+}
+
+DataFilter *LorrisAnalyzer::getFilter(quint32 id)
+{
+    return ui->filterTabs->getFilter(id);
+}
+
+DataFilter *LorrisAnalyzer::getFilterByOldInfo(const data_widget_infoV1 &old_info) const
+{
+    return ui->filterTabs->getFilterByOldInfo(old_info);
 }

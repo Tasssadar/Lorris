@@ -17,6 +17,7 @@ namespace Ui {
 
 class QwtSlider;
 class QLineEdit;
+class QShortcut;
 
 enum orientation
 {
@@ -55,13 +56,18 @@ public slots:
     void setMin(double min);
     void setMax(double max);
 
-    void setRange(double min, double max, double step = 0.0);
+    /// \deprecated Use setRange(min, max);
+    void setRange(double min, double max, double step);
+    void setRange(double min, double max);
 
     void setOrientation(int ori);
     int getOrientation() const { return m_orientation; }
 
     void hideMinMax(bool hide);
     bool isMinMaxVisible() const;
+
+    void setShortcut(const QString& shortcut);
+    void showShortcutDialog();
 
 private slots:
     void on_minEdit_textChanged(const QString& text);
@@ -73,6 +79,8 @@ private slots:
     void doubleAct(bool checked);
 
 private:
+    void p_setRange(double min, double max, double step = 0.0);
+
     QwtSlider *slider() const;
     QLineEdit *maxEdit() const;
     QLineEdit *minEdit() const;
@@ -87,6 +95,7 @@ private:
     QWidget *m_widget;
     double m_min;
     double m_max;
+    QShortcut *m_shortcut;
 
     QAction *m_int_act;
     QAction *m_double_act;

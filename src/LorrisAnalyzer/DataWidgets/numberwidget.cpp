@@ -14,6 +14,7 @@
 #include <QSignalMapper>
 #include <QStringBuilder>
 #include <QScriptEngine>
+#include <QInputDialog>
 
 #include "numberwidget.h"
 
@@ -44,14 +45,19 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 
     num = new QLabel("0", this);
     num->setAlignment(Qt::AlignCenter);
+
+    m_digits = 2;
+
     // FIXME
     //num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
     QFont font = Utils::getMonospaceFont(20);
     num->setFont(font);
     layout->addWidget(num);
+
     adjustSize();
     setMinimumSize(size());
+    resize(150, 80);
 }
 
 NumberWidget::~NumberWidget()
@@ -71,6 +77,7 @@ void NumberWidget::setUp(Storage *storage)
 
     QMenu *bitsMenu = contextMenu->addMenu(tr("Data type"));
     QMenu *formatMenu = contextMenu->addMenu(tr("Format"));
+    QMenu *precMenu = contextMenu->addMenu(tr("Precision"));
 
     static const QString dataTypes[] =
     {
@@ -125,6 +132,24 @@ void NumberWidget::setUp(Storage *storage)
     fmtAction[FMT_EXPONENT]->setEnabled(false);
     connect(signalMapFmt, SIGNAL(mapped(int)), SLOT(fmtSelected(int)));
 
+    QSignalMapper *signalMapPrec = new QSignalMapper(this);
+    for(int i = 0; i < PREC_COUNT-1; ++i)
+    {
+        m_precAct[i] = precMenu->addAction(tr("%1 digits").arg(i));
+        m_precAct[i]->setCheckable(true);
+        signalMapPrec->setMapping(m_precAct[i], i);
+        connect(m_precAct[i], SIGNAL(triggered()), signalMapPrec, SLOT(map()));
+    }
+
+    connect(signalMapPrec, SIGNAL(mapped(int)), this, SLOT(setPrecisionAct(int)));
+
+    m_precAct[m_digits]->setChecked(true);
+    precMenu->addSeparator();
+    m_precAct[PREC_COUNT-1] = precMenu->addAction(tr("Set precision..."));
+    m_precAct[PREC_COUNT-1]->setCheckable(true);
+    signalMapPrec->setMapping(m_precAct[PREC_COUNT-1], PREC_COUNT-1);
+    connect(m_precAct[PREC_COUNT-1], SIGNAL(triggered()), signalMapPrec, SLOT(map()));
+
     levelAction = new QAction(tr("Level off"), this);
     levelAction->setCheckable(true);
     contextMenu->addAction(levelAction);
@@ -150,21 +175,42 @@ void NumberWidget::setValue(QVariant var)
         return;
     }
 
-    if(m_eval.isActive())
-    {
-        QVariant res = m_eval.evaluate(var.toString());
-        if(res.isValid())
-            var = res;
-    }
-
     QString n;
 
     static const char fmt[] = { 'f', 'e' };
     static const quint8 base[] = { 10, 10, 16, 2 };
 
-    if(numberType < NUM_INT8)        n.setNum(var.toULongLong(), base[format]);
-    else if(numberType < NUM_FLOAT)  n = var.toString();
-    else                             n.setNum(var.toDouble(), fmt[format]);
+    if(m_eval.isActive())
+    {
+        // .toString() on char type makes one
+        // character string instead of value transcript
+        if ((int)var.type() == QMetaType::QChar ||
+            (int)var.type() == QMetaType::UChar)
+            var.convert(QVariant::Int);
+
+        QVariant res = m_eval.evaluate(var.toString());
+        if(res.isValid())
+        {
+            switch(res.type())
+            {
+                case QVariant::Int:
+                    n.setNum(res.toInt(), base[format]);
+                    break;
+                case QVariant::Double:
+                    n.setNum(res.toDouble(), fmt[format], m_digits);
+                    break;
+                default:
+                    n = res.toString();
+                    break;
+            }
+        }
+    }
+    else
+    {
+        if(numberType < NUM_INT8)        n.setNum(var.toULongLong(), base[format]);
+        else if(numberType < NUM_FLOAT)  n = var.toString();
+        else                             n.setNum(var.toDouble(), fmt[format], m_digits);
+    }
 
     switch(format)
     {
@@ -272,6 +318,10 @@ void NumberWidget::saveWidgetInfo(DataFileParser *file)
     // formula
     file->writeBlockIdentifier("numWFormula");
     file->writeString(m_eval.getFormula());
+
+    // precision
+    file->writeBlockIdentifier("numWPrec");
+    file->writeVal(m_digits);
 }
 
 void NumberWidget::loadWidgetInfo(DataFileParser *file)
@@ -302,6 +352,15 @@ void NumberWidget::loadWidgetInfo(DataFileParser *file)
     // Formula
     if(file->seekToNextBlock("numWFormula", BLOCK_WIDGET))
         m_eval.setFormula(file->readString());
+
+    // Precision
+    if(file->seekToNextBlock("numWPrec", BLOCK_WIDGET))
+    {
+        m_digits = file->readVal<quint8>();
+        int idx = std::min((int)m_digits, PREC_COUNT-1);
+        for(int i = 0; i < PREC_COUNT; ++i)
+            m_precAct[i]->setChecked(idx == i);
+    }
 }
 
 void NumberWidget::prependZeros(QString &n, quint8 len)
@@ -327,6 +386,27 @@ void NumberWidget::setFormula(const QString &formula)
 void NumberWidget::showFormulaDialog()
 {
     m_eval.showFormulaDialog();
+    emit updateForMe();
+}
+
+void NumberWidget::setPrecisionAct(int idx)
+{
+    for(int i = 0; i < PREC_COUNT; ++i)
+        m_precAct[i]->setChecked(idx == i);
+
+    if(idx < PREC_COUNT-1)
+        setPrecision(idx);
+    else
+    {
+        int res = QInputDialog::getInt(this, tr("Number precision"), tr("Enter number of digits"), m_digits, 0, 255);
+        if(res != m_digits)
+            setPrecision(res);
+    }
+}
+
+void NumberWidget::setPrecision(quint8 digits)
+{
+    m_digits = digits;
     emit updateForMe();
 }
 

@@ -20,6 +20,12 @@ void analyzer_data::clear()
         m_data->clear();
 }
 
+void analyzer_data::copy(analyzer_data *other)
+{
+    m_data = other->m_data;
+    m_packet = other->m_packet;
+}
+
 quint32 analyzer_data::addData(char *d_itr, char *d_end, quint32 &itr)
 {
     if(!m_packet)
