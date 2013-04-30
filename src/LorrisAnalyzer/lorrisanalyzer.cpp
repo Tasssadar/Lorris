@@ -138,6 +138,7 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
+    widgetBtnL->setContentsMargins(0, 0, 0, 0);
 
     std::vector<DataWidgetAddBtn*> buttons = sWidgetFactory.getButtons(tmp);
     std::sort(buttons.begin(), buttons.end(), sortDataWidget);
@@ -150,6 +151,7 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);
+    tmp->setAutoFillBackground(false);
 
     m_packet = NULL;
     m_curIndex = 0;
