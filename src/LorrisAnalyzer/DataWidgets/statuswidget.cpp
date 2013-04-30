@@ -24,9 +24,10 @@ StatusWidget::StatusWidget(QWidget *parent) :
     m_curUnknown = false;
     m_lastVal = 0;
 
-    resize(200, 60);
+    resize(200, 80);
 
     m_emptyLabel = new QLabel(tr("NONE"), this);
+    m_emptyLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(m_emptyLabel);
     layout->addStretch(1);
 
@@ -225,6 +226,7 @@ void StatusWidget::removeStatus(quint64 id, bool mask)
         Q_ASSERT(m_active.isEmpty() || m_curUnknown);
 
         m_emptyLabel->show();
+        updateLabels();
     }
     else if(active)
     {
