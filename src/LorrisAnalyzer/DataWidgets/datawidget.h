@@ -287,6 +287,11 @@ public:
     explicit DataWidgetAddBtn(QWidget *parent);
     ~DataWidgetAddBtn();
 
+    void setText(const QString &text);
+
+public slots:
+    void setTiny(bool tiny);
+
 protected:
     void mousePressEvent(QMouseEvent *event);
 

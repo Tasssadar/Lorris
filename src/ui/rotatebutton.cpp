@@ -76,3 +76,11 @@ QStyleOptionButton RotateButton::getStyleOption() const
     opt.iconSize = iconSize();
     return opt;
 }
+
+QSize RotateButton::sizeHint() const
+{
+    QSize s = QPushButton::sizeHint();
+    if(m_rotation == ROTATE_90 || m_rotation == ROTATE_270)
+        s.transpose();
+    return s;
+}

@@ -54,8 +54,10 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
     QFont font = Utils::getMonospaceFont(20);
     num->setFont(font);
     layout->addWidget(num);
+
     adjustSize();
     setMinimumSize(size());
+    resize(150, 80);
 }
 
 NumberWidget::~NumberWidget()

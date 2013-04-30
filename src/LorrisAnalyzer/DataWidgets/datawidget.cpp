@@ -928,6 +928,12 @@ DataWidgetAddBtn::~DataWidgetAddBtn()
     delete m_pixmap;
 }
 
+void DataWidgetAddBtn::setText(const QString &text)
+{
+    QPushButton::setText(text);
+    QPushButton::setToolTip(text);
+}
+
 void DataWidgetAddBtn::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
@@ -958,6 +964,22 @@ const QPixmap& DataWidgetAddBtn::getRender()
             m_pixmap = new QPixmap();
     }
     return *m_pixmap;
+}
+
+void DataWidgetAddBtn::setTiny(bool tiny)
+{
+    if(tiny)
+    {
+        QPushButton::setText("");
+        setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        setStyleSheet("padding-left: 0px; padding-right: 0px");
+    }
+    else
+    {
+        QPushButton::setText(toolTip());
+        setStyleSheet("text-align: left");
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    }
 }
 
 CloseLabel::CloseLabel(QWidget *parent) : QLabel(parent)

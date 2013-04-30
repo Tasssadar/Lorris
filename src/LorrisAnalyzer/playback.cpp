@@ -21,6 +21,8 @@ Playback::Playback(QWidget *parent) :
     m_timer = new QTimer(this);
     m_index = 0;
     m_pause = false;
+    m_playBtn = NULL;
+    m_stopBtn = NULL;
 
     ui->delayBox->setValue(sConfig.get(CFG_QUINT32_ANALYZER_PLAY_DEL));
 
@@ -58,6 +60,7 @@ void Playback::startBtn()
 
         ui->startBtn->setText(tr("Pause"));
         m_playing = true;
+        m_pause = false;
 
         m_index = ui->startBox->value();
 
@@ -82,6 +85,14 @@ void Playback::startBtn()
             m_timer->start();
         }
     }
+
+    if(m_playBtn)
+    {
+        if(!m_pause)
+            m_playBtn->setIcon(QIcon(":/actions/pause"));
+        else
+            m_playBtn->setIcon(QIcon(":/actions/start"));
+    }
 }
 
 void Playback::stopPlayback()
@@ -91,6 +102,9 @@ void Playback::stopPlayback()
 
     emit enablePosSet(true);
     ui->startBtn->setText(tr("Start"));
+
+    if(m_playBtn)
+        m_playBtn->setIcon(QIcon(":/actions/start"));
 
     enableUi(true);
 }
@@ -102,6 +116,9 @@ void Playback::enableUi(bool enable)
     ui->repeatBox->setEnabled(enable);
     ui->reverseBox->setEnabled(enable);
     ui->stopButton->setEnabled(!enable);
+
+    if(m_stopBtn)
+        m_stopBtn->setEnabled(!enable);
 }
 
 void Playback::timeout()
@@ -153,4 +170,16 @@ void Playback::delayChanged(int val)
         m_timer->start(val);
     else
         m_timer->setInterval(val);
+}
+
+void Playback::setOuterButtons(QPushButton *play, QPushButton *stop)
+{
+    m_playBtn = play;
+    m_stopBtn = stop;
+
+    if(!m_playing)
+        m_stopBtn->setEnabled(false);
+
+    connect(play, SIGNAL(clicked()), SLOT(startBtn()));
+    connect(stop, SIGNAL(clicked()), SLOT(stopPlayback()));
 }
