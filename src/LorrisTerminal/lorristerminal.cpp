@@ -280,10 +280,6 @@ void LorrisTerminal::saveData(DataFileParser *file)
 
     file->writeBlockIdentifier("LorrTermSettings");
     file->writeString(ui->terminal->getSettingsData());
-
-    file->writeBlockIdentifier("LorrTermFmtInput");
-    file->writeVal(ui->terminal->getFmt());
-    file->writeVal(ui->terminal->getInput());
 }
 
 void LorrisTerminal::loadData(DataFileParser *file)

@@ -776,6 +776,9 @@ QString Terminal::getSettingsData()
 
     for(int i = 0; i < COLOR_MAX; ++i)
         res += QString("%1;").arg(m_settings.colors[i].name());
+
+    res += "|" + QString::number(m_fmt);
+    res += "|" + QString::number(m_input);
     return res;
 }
 
@@ -806,6 +809,12 @@ void Terminal::loadSettings(const QString& data)
         p.setColor(QPalette::Text, m_settings.colors[COLOR_TEXT]);
         setPalette(p);
     }
+
+    if(lst.size() >= 5)
+        setFmt(lst[4].toUInt());
+
+    if(lst.size() >= 6)
+        setInput(lst[5].toUInt());
 }
 
 void Terminal::setFont(const QFont &f)
