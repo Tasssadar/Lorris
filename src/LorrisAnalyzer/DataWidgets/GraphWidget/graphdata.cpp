@@ -132,11 +132,12 @@ void GraphData::dataPosChanged(quint32 pos)
             continue;
 
         v = DataWidget::getNumFromPacket(&cur, m_info.pos, m_data_type);
-
         if(!v.isValid())
             continue;
 
         qreal val = v.toReal();
+        if(m_eval.isActive())
+            val = m_eval.evaluate(QString::number(val, 'f')).toReal();
         m_data.push_back(new graph_data_st(val, i));
         setMinMax(val);
     }

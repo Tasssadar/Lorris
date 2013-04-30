@@ -62,6 +62,9 @@ GraphCurveAddDialog::GraphCurveAddDialog(QWidget *parent, std::vector<GraphCurve
         ui->setRadio->setChecked(true);
         ui->setRadio->setVisible(false);
         ui->newRadio->setVisible(false);
+
+        ui->buttonBox->addButton(QDialogButtonBox::Apply);
+        connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), SLOT(buttonBoxClicked(QAbstractButton*)));
     }
 }
 
@@ -97,9 +100,9 @@ QColor GraphCurveAddDialog::getColor()
     return m_color;
 }
 
-QString GraphCurveAddDialog::getCurrentCurve()
+QString GraphCurveAddDialog::getFormula()
 {
-    return "";
+    return edit_widget_ui->formulaEdit->text();
 }
 
 quint8 GraphCurveAddDialog::getDataType()
@@ -158,6 +161,7 @@ void GraphCurveAddDialog::curveChanged(int idx)
     GraphCurve* curve = m_curves->at(idx)->curve;
     edit_widget_ui->nameEdit->setText(curve->title().text());
     edit_widget_ui->dataTypeBox->setCurrentIndex(curve->getDataType());
+    edit_widget_ui->formulaEdit->setText(curve->getFormula());
 
     setButtonColor(curve->pen().color());
 }
@@ -178,4 +182,10 @@ void GraphCurveAddDialog::setButtonColor(const QColor& clr)
     map.fill(clr);
     m_color = clr;
     edit_widget_ui->colorBtn->setIcon(QIcon(map));
+}
+
+void GraphCurveAddDialog::buttonBoxClicked(QAbstractButton *btn)
+{
+    if(ui->buttonBox->buttonRole(btn) == QDialogButtonBox::ApplyRole)
+        emit apply();
 }

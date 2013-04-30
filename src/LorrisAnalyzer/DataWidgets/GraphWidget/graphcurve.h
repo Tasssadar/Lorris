@@ -45,6 +45,9 @@ public:
 
     quint8 getDataType() { return m_data->getDataType(); }
 
+    QString getFormula() { return m_data->getFormula(); }
+    void setFormula(const QString& f) { m_data->setFormula(f); }
+
 public slots:
     void addPoint(quint32 index, qreal val);
     void clear();
