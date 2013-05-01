@@ -40,7 +40,11 @@ public slots:
     void setClockwise(bool clockwise);
     void drawAngle(bool draw);
     void setDataType(int i);
-    void setAngType(int i, int min = -1, int max = -1);
+    void setAngType(int i, double min, double max);
+    void setAngType(int i)
+    {
+        setAngType(i, m_range_min, m_range_max);
+    }
 
 protected:
      void processData(analyzer_data *data);
@@ -56,8 +60,8 @@ private:
      QAction *m_bits_act[NUM_COUNT];
      QAction *m_clockwiseAct;
      QAction *m_drawAngAct;
-     qint32 m_range_min;
-     qint32 m_range_max;
+     double m_range_min;
+     double m_range_max;
      quint8 m_ang_type;
      quint8 m_num_type;
 };

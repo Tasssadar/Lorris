@@ -116,24 +116,18 @@ void CircleWidget::saveWidgetInfo(DataFileParser *file)
     DataWidget::saveWidgetInfo(file);
 
     file->writeBlockIdentifier("circleWtype");
-    file->write((char*)&m_ang_type, sizeof(m_ang_type));
-    file->write((char*)&m_num_type, sizeof(m_num_type));
+    file->writeVal(m_ang_type);
+    file->writeVal(m_num_type);
 
-    file->writeBlockIdentifier("circleWrange");
-    file->write((char*)&m_range_min, sizeof(m_range_min));
-    file->write((char*)&m_range_max, sizeof(m_range_max));
+    file->writeBlockIdentifier("circleWrangeDouble");
+    file->writeVal(m_range_min);
+    file->writeVal(m_range_max);
 
     file->writeBlockIdentifier("circleWclockwise");
-    {
-        bool clockwise = m_clockwiseAct->isChecked();
-        file->write((char*)&clockwise, sizeof(clockwise));
-    }
+    file->writeVal(m_clockwiseAct->isChecked());
 
     file->writeBlockIdentifier("circleWdrawAngText");
-    {
-        bool draw = m_drawAngAct->isChecked();
-        file->write((char*)&draw, sizeof(draw));
-    }
+    file->writeVal(m_drawAngAct->isChecked());
 }
 
 void CircleWidget::loadWidgetInfo(DataFileParser *file)
@@ -142,28 +136,31 @@ void CircleWidget::loadWidgetInfo(DataFileParser *file)
 
     if(file->seekToNextBlock("circleWtype", BLOCK_WIDGET))
     {
-        file->read((char*)&m_ang_type, sizeof(m_ang_type));
-        file->read((char*)&m_num_type, sizeof(m_num_type));
+        m_ang_type = file->readVal<quint8>();
+        m_num_type = file->readVal<quint8>();
     }
 
-    if(file->seekToNextBlock("circleWrange", BLOCK_WIDGET))
+    if(file->seekToNextBlock("circleWrangeDouble", BLOCK_WIDGET))
     {
-        file->read((char*)&m_range_min, sizeof(m_range_min));
-        file->read((char*)&m_range_max, sizeof(m_range_max));
+        m_range_min = file->readVal<double>();
+        m_range_max = file->readVal<double>();
+    }
+    else if(file->seekToNextBlock("circleWrange", BLOCK_WIDGET))
+    {
+        m_range_min = file->readVal<quint32>();
+        m_range_max = file->readVal<quint32>();
     }
 
     if(file->seekToNextBlock("circleWclockwise", BLOCK_WIDGET))
     {
-        bool clockwise = false;
-        file->read((char*)&clockwise, sizeof(clockwise));
+        bool clockwise = file->readVal<bool>();
         m_clockwiseAct->setChecked(clockwise);
         m_circle->setClockwise(clockwise);
     }
 
     if(file->seekToNextBlock("circleWdrawAngText", BLOCK_WIDGET))
     {
-        bool draw = false;
-        file->read((char*)&draw, sizeof(draw));
+        bool draw = file->readVal<bool>();
         drawAngle(draw);
     }
 
@@ -189,7 +186,7 @@ void CircleWidget::angTypeChanged(int i)
 {
     if(i == ANG_RANGE)
     {
-        RangeSelectDialog dialog(m_range_min, m_range_max, true, this);
+        RangeSelectDialog dialog(m_range_min, m_range_max, false, this);
         if(dialog.exec())
         {
             m_range_min = dialog.getMin();
@@ -199,18 +196,14 @@ void CircleWidget::angTypeChanged(int i)
     setAngType(i, m_range_min, m_range_max);
 }
 
-void CircleWidget::setAngType(int i, int min, int max)
+void CircleWidget::setAngType(int i, double min, double max)
 {
     for(int y = 0; y < ANG_MAX; ++y)
         m_type_act[y]->setChecked(y == i);
 
     m_ang_type = i;
-
-    if(min != -1 || max != -1)
-    {
-        m_range_min = min;
-        m_range_max = max;
-    }
+    m_range_min = min;
+    m_range_max = max;
 
     if(i != ANG_RANGE)
         m_circle->userVal() = QVariant();
@@ -235,7 +228,7 @@ float CircleWidget::toRad(const QVariant& var)
         case ANG_RANGE:
         {
             m_circle->userVal() = var;
-            ret = var.toFloat()-m_range_min;
+            ret = var.toDouble()-m_range_min;
             ret = (ret * pi*2) / (m_range_max-m_range_min);
             break;
         }

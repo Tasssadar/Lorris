@@ -53,7 +53,8 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private slots:
-    void addCurve();
+    void applyCurveChanges();
+    void acceptCurveChanges();
     void newData(analyzer_data *data, quint32 index);
     void sampleSizeChanged(int val);
     void editCurve();

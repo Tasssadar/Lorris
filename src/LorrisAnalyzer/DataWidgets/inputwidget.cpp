@@ -50,6 +50,16 @@ QWidget *InputWidget::newWidget(const QString &name, int stretch)
     return w;
 }
 
+QWidget *InputWidget::newWidget(const QString &name, const QString &idString, int stretch)
+{
+    QWidget *w = newWidget(name, stretch);
+    if(!w)
+        return NULL;
+
+    m_namedWidgets[idString] = w;
+    return w;
+}
+
 void InputWidget::setHorizontal(bool horizontal)
 {
     if(horizontal ^ m_layout->inherits("QVBoxLayout"))
@@ -77,6 +87,7 @@ void InputWidget::clear()
         delete i;
     }
     m_layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_namedWidgets.clear();
 }
 
 void InputWidget::removeWidget(QWidget *widget)
@@ -84,8 +95,36 @@ void InputWidget::removeWidget(QWidget *widget)
     if(!widget)
         return;
 
+    for(QHash<QString, QWidget*>::iterator itr = m_namedWidgets.begin(); itr != m_namedWidgets.end(); ++itr)
+    {
+        if(*itr == widget)
+        {
+            m_namedWidgets.erase(itr);
+            break;
+        }
+    }
+
     m_layout->removeWidget(widget);
     delete widget;
+}
+
+void InputWidget::removeWidget(const QString &idString)
+{
+    QHash<QString, QWidget*>::iterator itr = m_namedWidgets.find(idString);
+    if(itr == m_namedWidgets.end())
+        return;
+
+    m_layout->removeWidget(*itr);
+    delete *itr;
+    m_namedWidgets.erase(itr);
+}
+
+QWidget *InputWidget::get(const QString& idString)
+{
+    QHash<QString, QWidget*>::iterator itr = m_namedWidgets.find(idString);
+    if(itr == m_namedWidgets.end())
+        return NULL;
+    return *itr;
 }
 
 InputWidgetAddBtn::InputWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)

@@ -72,7 +72,11 @@ LorrisAnalyzer::LorrisAnalyzer()
     ui->collapseRight->setFixedWidth(h);
     ui->collapseTop->setFixedHeight(h);
     ui->collapseLeft->setRotation(ROTATE_270);
-    ui->collapseRight->setRotation(ROTATE_90);
+
+    ui->playBtn->setFixedWidth(h);
+    ui->stopBtn->setFixedWidth(h);
+
+    ui->playFrame->setOuterButtons(ui->playBtn, ui->stopBtn);
 
     QMenu* menuData = new QMenu(tr("&Data"), this);
 
@@ -134,18 +138,24 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
+    widgetBtnL->setContentsMargins(0, 0, 0, 0);
 
     std::vector<DataWidgetAddBtn*> buttons = sWidgetFactory.getButtons(tmp);
     std::sort(buttons.begin(), buttons.end(), sortDataWidget);
 
     for(quint32 i = 0; i < buttons.size(); ++i)
+    {
         widgetBtnL->addWidget(buttons[i]);
+        connect(this, SIGNAL(tinyWidgetBtn(bool)), buttons[i], SLOT(setTiny(bool)));
+    }
 
     widgetBtnL->addWidget(new QWidget(tmp), 4);
     ui->widgetsScrollArea->setWidget(tmp);
+    tmp->setAutoFillBackground(false);
 
     m_packet = NULL;
     m_curIndex = 0;
+    m_rightVisible = true;
 
     setAreaVisibility(AREA_LEFT, false);
     setAreaVisibility(AREA_RIGHT, true);
@@ -202,7 +212,7 @@ void LorrisAnalyzer::onTabShow(const QString& filename)
     if(!filename.isEmpty())
         openFile(filename);
 
-    if (!m_con)
+    if (!m_con && sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB))
     {
         m_connectButton->choose();
         if (m_con && !m_con->isOpen())
@@ -514,7 +524,7 @@ bool LorrisAnalyzer::isAreaVisible(quint8 area)
     switch(area)
     {
         case AREA_TOP:   return ui->filterTabs->isVisible();
-        case AREA_RIGHT: return ui->widgetsScrollArea->isVisible();
+        case AREA_RIGHT: return m_rightVisible;
         case AREA_LEFT:  return ui->playFrame->isVisible();
     }
     return false;
@@ -526,7 +536,22 @@ void LorrisAnalyzer::setAreaVisibility(quint8 area, bool visible)
         ui->filterTabs->setVisible(visible);
 
     if(area & AREA_RIGHT)
-        ui->widgetsScrollArea->setVisible(visible);
+    {
+        m_rightVisible = visible;
+        emit tinyWidgetBtn(!visible);
+        if(visible)
+        {
+            ui->collapseRight->setIcon(QIcon(":/icons/arrow-right"));
+            ui->widgetsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+            ui->widgetsScrollArea->setMaximumWidth(0x00FFFFFF);
+        }
+        else
+        {
+            ui->collapseRight->setIcon(QIcon(":/icons/arrow-left"));
+            ui->widgetsScrollArea->setMaximumWidth(ui->collapseRight->width());
+            ui->widgetsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        }
+    }
 
     if(area & AREA_LEFT)
         ui->playFrame->setVisible(visible);

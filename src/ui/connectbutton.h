@@ -13,7 +13,6 @@
 #include <QAction>
 #include <QToolButton>
 #include "../connection/connection.h"
-#include "../connection/shupitoconn.h"
 
 class ConnectButton : public QObject
 {

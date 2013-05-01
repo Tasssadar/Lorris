@@ -5,7 +5,7 @@
 **    See README and COPYING
 ***********************************************/
 
-#include "qobjectpointer.h"
+#include "qtobjectpointer.h"
 
 QtObjectHolder::QtObjectHolder(QObject *p) : QObject()
 {

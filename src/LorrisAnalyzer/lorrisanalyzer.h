@@ -48,6 +48,7 @@ class LorrisAnalyzer : public PortConnWorkTab
         void newData(analyzer_data *data, quint32 index);
         void SendData(const QByteArray& data);
         void rawData(const QByteArray& data);
+        void tinyWidgetBtn(bool tiny);
 
     public:
         explicit LorrisAnalyzer();
@@ -121,6 +122,7 @@ class LorrisAnalyzer : public PortConnWorkTab
 
         ConnectButton * m_connectButton;
         analyzer_data m_curData;
+        bool m_rightVisible;
 };
 
 #endif // LORRISANALYZER_H

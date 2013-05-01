@@ -125,7 +125,7 @@ void LorrisTerminal::onTabShow(const QString&)
 {
     this->connectedStatus(m_con && m_con->isOpen());
 
-    if (!m_con)
+    if (!m_con && sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB))
     {
         m_connectButton->choose();
         if (m_con && !m_con->isOpen())
@@ -280,10 +280,6 @@ void LorrisTerminal::saveData(DataFileParser *file)
 
     file->writeBlockIdentifier("LorrTermSettings");
     file->writeString(ui->terminal->getSettingsData());
-
-    file->writeBlockIdentifier("LorrTermFmtInput");
-    file->writeVal(ui->terminal->getFmt());
-    file->writeVal(ui->terminal->getInput());
 }
 
 void LorrisTerminal::loadData(DataFileParser *file)

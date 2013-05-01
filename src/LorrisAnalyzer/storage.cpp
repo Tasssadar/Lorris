@@ -47,12 +47,13 @@ void Storage::Clear()
     m_data.clear();
 }
 
-void Storage::addData(const QByteArray& data)
+QByteArray *Storage::addData(const QByteArray& data)
 {
     if(!m_packet)
-        return;
+        return NULL;
     m_data.push_back(data);
     ++m_size;
+    return &m_data.back();
 }
 
 void Storage::SaveToFile(WidgetArea *area, FilterTabWidget *filters)

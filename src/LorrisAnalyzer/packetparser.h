@@ -42,6 +42,7 @@ public slots:
 private:
     bool m_paused;
     analyzer_data m_curData;
+    analyzer_data m_emitSigData;
     QByteArray m_curByteArray;
     analyzer_packet *m_packet;
     Storage *m_storage;

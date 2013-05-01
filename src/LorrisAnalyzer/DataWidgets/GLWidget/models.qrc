@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/models">
+        <file>default.obj</file>
+        <file>default.mtl</file>
+    </qresource>
+</RCC>

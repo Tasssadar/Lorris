@@ -208,7 +208,6 @@ class analyzer_data
 public:
     analyzer_data(QByteArray *data = NULL);
     void clear();
-
     void copy(analyzer_data *other);
 
     void setPacket(analyzer_packet *packet) { m_packet = packet; }
@@ -216,6 +215,7 @@ public:
 
     quint32 addData(char *d_itr, char *d_end, quint32& itr);
     const QByteArray& getData() { return *m_data; }
+    QByteArray *getDataPtr() { return m_data; }
     bool hasData() const { return m_data != NULL; }
     void setData(QByteArray *data)
     {

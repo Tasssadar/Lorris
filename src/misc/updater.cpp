@@ -24,81 +24,87 @@
 #include "utils.h"
 #include "config.h"
 #include "../ui/tooltipwarn.h"
+#include "../WorkTab/WorkTabMgr.h"
 
-#define MANIFEST_URL "http://dl.dropbox.com/u/54372958/lorris.txt"
+#define MANIFEST_URL "http://technika.junior.cz/trac/raw-attachment/wiki/lorris/updater_manifest.txt"
 
-bool Updater::checkForUpdate(bool autoCheck)
+QNetworkRequest Updater::getNetworkRequest(const QUrl& url)
 {
-    QNetworkAccessManager manager;
-    QNetworkRequest request(QUrl(MANIFEST_URL));
-    request.setRawHeader( "User-Agent", "Mozilla/5.0 (X11; U; Linux i686 (x86_64); "
+    QNetworkRequest req(url);
+    req.setRawHeader( "User-Agent", "Mozilla/5.0 (X11; U; Linux i686 (x86_64); "
                           "en-US; rv:1.9.0.1) Gecko/2008070206 Firefox/3.0.1" );
-    request.setRawHeader( "Accept-Charset", "win1251,utf-8;q=0.7,*;q=0.7" );
-    request.setRawHeader( "charset", "utf-8" );
-    request.setRawHeader( "Connection", "keep-alive" );
+    req.setRawHeader( "Accept-Charset", "win1251,utf-8;q=0.7,*;q=0.7" );
+    req.setRawHeader( "charset", "utf-8" );
+    req.setRawHeader( "Connection", "keep-alive" );
+    return req;
+}
 
+int Updater::checkManifest()
+{
+    QUrl baseUrl(MANIFEST_URL);
+    QNetworkAccessManager manager;
+    QNetworkRequest request = getNetworkRequest(baseUrl);
     QNetworkReply *rep = manager.get(request);
 
     while(rep->error() == QNetworkReply::NoError && !rep->isFinished())
         QCoreApplication::processEvents();
 
+    while(true)
+    {
+        while(!rep->isFinished())
+            QCoreApplication::processEvents();
+
+        if(rep->error() != QNetworkReply::NoError)
+            return RES_CHECK_FAILED;
+
+        QVariant redirect = rep->attribute(QNetworkRequest::RedirectionTargetAttribute);
+        if(redirect.type() != QVariant::Url)
+            break;
+
+        // redirect
+        baseUrl = baseUrl.resolved(redirect.toUrl());
+        request = getNetworkRequest(baseUrl);
+        rep = manager.get(request);
+    }
+
     if(rep->isFinished() && rep->size() != 0)
     {
+        QString s;
         QString ver(VERSION);
-        for(QString s = rep->readLine(); !s.isNull(); s = rep->readLine())
+        while(!rep->atEnd())
         {
+            s = rep->readLine();
+
             QStringList parts = s.split(' ', QString::SkipEmptyParts);
             if(parts.size() < 3 || !ver.contains(parts[0]))
                 continue;
 
             if(REVISION < parts[1].toInt())
-                return true;
-            return false;
+                return RES_UPDATE_AVAILABLE;
+            else
+                return RES_NO_UPDATE;
         }
     }
-    return false;
+    return RES_NO_UPDATE;
 }
 
-bool Updater::askForUpdate()
-{
-    UpdaterDialog d;
-    return d.exec() == QDialog::Accepted;
-}
-
-bool Updater::doUpdate(bool autoCheck)
+void Updater::checkForUpdate(bool autoCheck)
 {
     quint32 time = QDateTime::currentDateTime().toTime_t();
     if(autoCheck)
     {
         if(!sConfig.get(CFG_BOOL_CHECK_FOR_UPDATE))
-            return false;
+            return;
 
         if(time < sConfig.get(CFG_QUINT32_LAST_UPDATE_CHECK)+300)
-            return false;
+            return;
     }
 
     sConfig.set(CFG_QUINT32_LAST_UPDATE_CHECK, time);
 
-    bool update = false;
-    if(autoCheck && !sConfig.get(CFG_BOOL_AUTO_UPDATE))
-    {
-        QFuture<bool> f = QtConcurrent::run(&Updater::checkForUpdate, autoCheck);
-        UpdateHandler *h = new UpdateHandler(NULL);
-        h->createWatcher(f);
-        return false;
-    }
-    else
-    {
-        if(!checkForUpdate(autoCheck))
-            return false;
-
-        if(!autoCheck)
-            update = askForUpdate();
-        else
-            update = sConfig.get(CFG_BOOL_AUTO_UPDATE);
-    }
-
-    return update && startUpdater();
+    UpdateHandler *h = new UpdateHandler(autoCheck);
+    QFuture<int> f = QtConcurrent::run(&Updater::checkManifest);
+    h->createWatcher(f);
 }
 
 bool Updater::copyUpdater()
@@ -123,57 +129,28 @@ bool Updater::startUpdater()
     return true;
 }
 
-void Updater::showNotification()
+UpdateHandler::UpdateHandler(bool autoCheck, QObject *parent) : QObject(parent)
 {
-    ToolTipWarn *w = new ToolTipWarn(QObject::tr("New update for Lorris is available"),
-                                     NULL, NULL, 30000, ":/actions/update");
-    QPushButton *btn = new QPushButton(QObject::tr("Download"));
-    w->setButton(btn);
-    w->toRightBottom();
-
-    UpdateHandler *h = new UpdateHandler(w);
-    QObject::connect(btn, SIGNAL(clicked()), h, SLOT(updateBtn()));
-    QObject::connect(btn, SIGNAL(clicked()), w, SLOT(deleteLater()));
-}
-
-UpdaterDialog::UpdaterDialog(QWidget *parent) :
-    QDialog(parent), ui(new Ui::UpdateCheck)
-{
-    ui->setupUi(this);
-
-    ui->noAskBox->setChecked(sConfig.get(CFG_BOOL_AUTO_UPDATE));
-    ui->noCheckBox->setChecked(!sConfig.get(CFG_BOOL_CHECK_FOR_UPDATE));
-}
-
-UpdaterDialog::~UpdaterDialog()
-{
-    delete ui;
-}
-
-void UpdaterDialog::on_noAskBox_clicked(bool checked)
-{
-    sConfig.set(CFG_BOOL_AUTO_UPDATE, checked);
-}
-
-void UpdaterDialog::on_noCheckBox_clicked(bool checked)
-{
-    sConfig.set(CFG_BOOL_CHECK_FOR_UPDATE, !checked);
-}
-
-UpdateHandler::UpdateHandler(QObject *parent) : QObject(parent)
-{
-
+    m_autoCheck = autoCheck;
+    if(!autoCheck)
+    {
+        sWorkTabMgr.printToAllStatusBars(tr("Checking for updates..."), 0);
+        m_progress = new ToolTipWarn(tr("Checking for updates..."), NULL, NULL, -1);
+        m_progress->showSpinner();
+        m_progress->toRightBottom();
+    }
 }
 
 void UpdateHandler::updateBtn()
 {
     if(Updater::startUpdater())
         qApp->closeAllWindows();
+    deleteLater();
 }
 
-void UpdateHandler::createWatcher(const QFuture<bool> &f)
+void UpdateHandler::createWatcher(const QFuture<int> &f)
 {
-    m_watcher = new QFutureWatcher<bool>(this);
+    m_watcher = new QFutureWatcher<int>(this);
 
     connect(m_watcher, SIGNAL(finished()), SLOT(updateCheckResult()));
     m_watcher->setFuture(f);
@@ -181,7 +158,59 @@ void UpdateHandler::createWatcher(const QFuture<bool> &f)
 
 void UpdateHandler::updateCheckResult()
 {
-    if(m_watcher->result())
-        Updater::showNotification();
-    deleteLater();
+    if(!m_progress.isNull())
+        m_progress->deleteLater();
+
+    int res = m_watcher->result();
+    if(m_autoCheck && (res == RES_CHECK_FAILED || res == RES_NO_UPDATE))
+    {
+        deleteLater();
+        return;
+    }
+
+    static const QString texts[] = {
+        tr("Update check has failed!"),
+        tr("No update available"),
+        tr("New update for Lorris is available")
+    };
+
+    switch(res)
+    {
+        case RES_CHECK_FAILED:
+        {
+            sWorkTabMgr.printToAllStatusBars(texts[res]);
+            ToolTipWarn *w = new ToolTipWarn(texts[res], NULL, NULL, 4000, ":/icons/warning");
+            w->toRightBottom();
+            deleteLater();
+            break;
+        }
+        case RES_NO_UPDATE:
+        {
+            sWorkTabMgr.printToAllStatusBars(texts[res]);
+            ToolTipWarn *w = new ToolTipWarn(texts[res], NULL, NULL, 3000, ":/actions/info");
+            w->toRightBottom();
+            deleteLater();
+            break;
+        }
+        case RES_UPDATE_AVAILABLE:
+        {
+            sWorkTabMgr.printToAllStatusBars(texts[res]);
+            ToolTipWarn *w = new ToolTipWarn(texts[res], NULL, NULL, 30000, ":/actions/update");
+            QPushButton *btn = new QPushButton(tr("Download"));
+            w->setButton(btn);
+            w->toRightBottom();
+
+            connect(btn, SIGNAL(clicked()), this, SLOT(updateBtn()));
+            connect(btn, SIGNAL(clicked()), w, SLOT(deleteLater()));
+            break;
+        }
+        default:
+        {
+            sWorkTabMgr.printToAllStatusBars("");
+            deleteLater();
+            break;
+        }
+    }
 }
+
+

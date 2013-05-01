@@ -7,6 +7,7 @@
 
 #include "connectbutton.h"
 #include "chooseconnectiondlg.h"
+#include "../connection/shupitoconn.h"
 
 ConnectButton::ConnectButton(QToolButton * btn)
     : QObject(btn), m_btn(btn), m_conn(0), m_connTypes(pct_port_data)

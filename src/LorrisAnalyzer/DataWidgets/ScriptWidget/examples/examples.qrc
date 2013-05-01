@@ -16,5 +16,7 @@
         <file>terminal.py</file>
         <file>input.py</file>
         <file>input.js</file>
+        <file>rotation.js</file>
+        <file>rotation.py</file>
     </qresource>
 </RCC>

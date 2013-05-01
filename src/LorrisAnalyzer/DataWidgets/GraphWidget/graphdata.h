@@ -12,6 +12,7 @@
 #include <deque>
 
 #include "../datawidget.h"
+#include "../../../misc/formulaevaluation.h"
 
 class Storage;
 struct data_widget_info;
@@ -51,6 +52,9 @@ public:
     virtual quint8 getDataType() { return 0; }
     virtual void setInfo(data_widget_info&) { }
 
+    QString getFormula() { return m_eval.getFormula(); }
+    void setFormula(const QString& f) { m_eval.setFormula(f); }
+
 protected:
     void setMinMax(double val);
     void resetMinMax();
@@ -60,6 +64,7 @@ protected:
 
     qint32 m_min;
     qint32 m_max;
+    FormulaEvaluation m_eval;
 };
 
 class GraphData : public GraphDataSimple

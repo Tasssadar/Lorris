@@ -18,5 +18,6 @@
         <file alias="spinner">icons/spinner.gif</file>
         <file alias="redo">icons/edit-redo.png</file>
         <file alias="undo">icons/edit-undo.png</file>
+        <file alias="pause">icons/media-playback-pause.png</file>
     </qresource>
 </RCC>

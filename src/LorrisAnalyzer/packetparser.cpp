@@ -10,7 +10,7 @@
 #include "packet.h"
 
 PacketParser::PacketParser(Storage *storage, QObject *parent) :
-    QObject(parent), m_curData(&m_curByteArray)
+    QObject(parent), m_curData(&m_curByteArray), m_emitSigData(NULL)
 {
     m_storage = storage;
     m_paused = false;
@@ -54,10 +54,15 @@ bool PacketParser::newData(const QByteArray &data, bool emitSig)
         if(m_curData.isValid(m_packetItr))
         {
             if(m_storage)
-                m_storage->addData(m_curData.getData());
+            {
+                QByteArray *b = m_storage->addData(m_curData.getData());
+                m_emitSigData.setData(b);
+            }
+            else
+                m_emitSigData.setData(m_curData.getDataPtr());
 
             if(emitSig)
-                emit packetReceived(&m_curData, m_storage ? m_storage->getSize()-1 : 0);
+                emit packetReceived(&m_emitSigData, m_storage ? m_storage->getSize()-1 : 0);
 
             m_curData.clear();
             m_packetItr = 0;
@@ -70,6 +75,7 @@ void PacketParser::setPacket(analyzer_packet *packet)
 {
     m_packet = packet;
     m_curData.setPacket(packet);
+    m_emitSigData.setPacket(packet);
     resetCurPacket();
 }
 

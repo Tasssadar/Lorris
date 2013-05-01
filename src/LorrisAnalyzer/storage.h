@@ -44,7 +44,7 @@ public:
 
     void Clear();
 
-    void addData(const QByteArray& data);
+    QByteArray *addData(const QByteArray& data);
     quint32 getSize() const { return m_size; }
     quint32 getMaxIdx() const { return m_size ? m_size -1 : 0; }
     bool isEmpty() const { return m_size == 0; }

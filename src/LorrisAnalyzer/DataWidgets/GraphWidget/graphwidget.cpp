@@ -211,6 +211,14 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         // color
         file->writeBlockIdentifier("graphWCurveColor");
         file->writeString(info->curve->pen().color().name());
+
+        // formula
+        file->writeBlockIdentifier("graphWCurveFormula");
+        file->writeString(info->curve->getFormula());
+
+        // visibility
+        file->writeBlockIdentifier("graphWCurveVisible");
+        file->writeVal(info->curve->isVisible());
     }
 }
 
@@ -318,6 +326,12 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         m_deleteAct[name] = deleteCurve;
 
         m_editCurve->setEnabled(true);
+
+        if(file->seekToNextBlock("graphWCurveFormula", "graphWCurve"))
+            curve->setFormula(file->readString());
+
+        if(file->seekToNextBlock("graphWCurveVisible", "graphWCurve"))
+            m_graph->showCurve(curve, file->readVal<bool>());
     }
     updateRemoveMapping();
 }
@@ -344,7 +358,7 @@ void GraphWidget::dropEvent(QDropEvent *event)
     m_add_dialog->open();
 }
 
-void GraphWidget::addCurve()
+void GraphWidget::applyCurveChanges()
 {
     if(!m_add_dialog->forceEdit())
         setInfo(m_dropData.second, m_dropData.first);
@@ -355,6 +369,7 @@ void GraphWidget::addCurve()
         GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), data);
         curve->setPen(QPen(m_add_dialog->getColor()));
         curve->attach(m_graph);
+        data->setFormula(m_add_dialog->getFormula());
         m_graph->showCurve(curve, true);
         m_curves.push_back(new GraphCurveInfo(curve, m_info));
 
@@ -396,17 +411,23 @@ void GraphWidget::addCurve()
             m_info.filter->connectWidget(this, false);
         }
         info->curve->setDataType(m_add_dialog->getDataType());
+        info->curve->setFormula(m_add_dialog->getFormula());
     }
 
     updateRemoveMapping();
     updateVisibleArea();
 
+    emit updateForMe();
+}
+
+void GraphWidget::acceptCurveChanges()
+{
+    applyCurveChanges();
+
     delete m_add_dialog;
     m_add_dialog = NULL;
 
     m_state |= STATE_ASSIGNED;
-
-    emit updateForMe();
 }
 
 void GraphWidget::updateVisibleArea()
@@ -488,7 +509,8 @@ void GraphWidget::editCurve()
     m_add_dialog = new GraphCurveAddDialog(this, &m_curves, true);
     m_add_dialog->open();
 
-    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(addCurve()));
+    connect(m_add_dialog, SIGNAL(accepted()), SLOT(addCurve()));
+    connect(m_add_dialog, SIGNAL(apply()),    SLOT(applyCurveChanges()));
 }
 
 void GraphWidget::removeCurve(QString name)

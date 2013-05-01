@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include(../config.pri)
 
-QT += gui core network script
+QT += gui core network script opengl
 TARGET = Lorris
 CONFIG += uitools precompile_header
 CONFIG(debug, debug|release):DESTDIR = $$PWD/../bin/debug
@@ -123,7 +123,6 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/undoactions.cpp \
     LorrisAnalyzer/filtertabwidget.cpp \
     LorrisAnalyzer/datafilter.cpp \
-    misc/qobjectpointer.cpp \
     misc/threadchannel.cpp \
     ui/hookedlineedit.cpp \
     LorrisProgrammer/shupitopacket.cpp \
@@ -147,7 +146,13 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/ui/fusewidget.cpp \
     LorrisProgrammer/ui/fullprogrammerui.cpp \
     LorrisProgrammer/programmers/avr109programmer.cpp \
-    ui/bytevalidator.cpp
+    ui/bytevalidator.cpp \
+    misc/qtobjectpointer.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/glmodel.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.cpp \
+    LorrisAnalyzer/DataWidgets/GLWidget/glutils.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -251,7 +256,6 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/undoactions.h \
     LorrisAnalyzer/filtertabwidget.h \
     LorrisAnalyzer/datafilter.h \
-    misc/qobjectpointer.h \
     misc/threadchannel.h \
     ui/hookedlineedit.h \
     LorrisProgrammer/shupitopacket.h \
@@ -275,7 +279,13 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/ui/fusewidget.h \
     LorrisProgrammer/ui/fullprogrammerui.h \
     LorrisProgrammer/programmers/avr109programmer.h \
-    ui/bytevalidator.h
+    ui/bytevalidator.h \
+    misc/qtobjectpointer.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/glwidget.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/glmodel.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.h \
+    LorrisAnalyzer/DataWidgets/GLWidget/glutils.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -290,7 +300,6 @@ FORMS += \
     LorrisAnalyzer/playback.ui \
     ui/chooseconnectiondlg.ui \
     ui/rangeselectdialog.ui \
-    updatecheck.ui \
     LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui \
     ui/terminalsettings.ui \
     misc/sessiondialog.ui \
@@ -304,7 +313,8 @@ FORMS += \
     LorrisAnalyzer/filterdialog.ui \
     LorrisProgrammer/ui/overvccdialog.ui \
     LorrisProgrammer/ui/miniprogrammerui.ui \
-    LorrisProgrammer/ui/fullprogrammerui.ui
+    LorrisProgrammer/ui/fullprogrammerui.ui \
+    ui/sessionsavedialog.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
@@ -312,7 +322,8 @@ RESOURCES += \
     actions.qrc \
     shared/definitions.qrc \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc \
-    LorrisProgrammer/programmericons.qrc
+    LorrisProgrammer/programmericons.qrc \
+    LorrisAnalyzer/DataWidgets/GLWidget/models.qrc
 
 include(../dep/qtsingleapplication/qtsingleapplication.pri)
 
@@ -337,7 +348,9 @@ OTHER_FILES += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/terminal.js \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/terminal.py \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/input.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/input.py
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/input.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/rotation.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/rotation.py
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {

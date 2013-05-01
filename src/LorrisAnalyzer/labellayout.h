@@ -81,7 +81,7 @@ public slots:
 
 protected:
     void SetLabelType(DraggableLabel *label, quint8 type);
-    virtual quint8 GetTypeForPos(quint32 pos);
+    quint8 GetTypeForPos(quint32 pos);
 
     std::vector<DraggableLabel*> m_labels;
     std::vector<DraggableLabel*> m_freedLabels;
@@ -120,9 +120,6 @@ public:
 
 public slots:
     void fmtChanged(int len);
-
-protected:
-    quint8 GetTypeForPos(quint32 pos);
 
 private:
     quint8 m_format;

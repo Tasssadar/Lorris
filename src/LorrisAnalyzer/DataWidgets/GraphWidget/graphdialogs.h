@@ -20,15 +20,18 @@ namespace Ui {
 class GraphCurveAddDialog : public QDialog
 {
     Q_OBJECT
+Q_SIGNALS:
+    void apply();
+
 public:
     explicit GraphCurveAddDialog(QWidget *parent, std::vector<GraphCurveInfo*> *curves, bool edit);
     ~GraphCurveAddDialog();
 
     QString getName();
     QColor getColor();
-    QString getCurrentCurve();
     quint8 getDataType();
     QString getEditName();
+    QString getFormula();
 
     bool forceEdit();
     bool edit();
@@ -38,6 +41,7 @@ private slots:
     void tryAccept();
     void curveChanged(int idx);
     void selectColor();
+    void buttonBoxClicked(QAbstractButton *btn);
 
 private:
     void showError(const QString& text);
