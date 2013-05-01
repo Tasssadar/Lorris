@@ -98,10 +98,7 @@ public:
         m_smooth_shading = on;
     }
 
-    void addMaterial(const material& mtl)
-    {
-        m_materials.push_back(std::make_pair<quint32, material>(m_faces.size(), mtl));
-    }
+    void addMaterial(const material &mtl);
 
 private:
     std::vector<GLUtils::vector4> m_vertices;

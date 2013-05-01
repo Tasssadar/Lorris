@@ -17,7 +17,19 @@ class GLWidget : public DataWidget
     Q_OBJECT
 public:
     explicit GLWidget(QWidget *parent = 0);
+
+    void setUp(Storage *storage);
+
+    void saveWidgetInfo(DataFileParser *file);
+    void loadWidgetInfo(DataFileParser *file);
     
+public slots:
+    void setRotationX(float ang);
+    void setRotationY(float ang);
+    void setRotationZ(float ang);
+    void loadModel(const QString& file);
+    void loadModel();
+
 private:
     RenderWidget *m_widget;
 };

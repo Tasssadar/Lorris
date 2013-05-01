@@ -322,7 +322,8 @@ RESOURCES += \
     actions.qrc \
     shared/definitions.qrc \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc \
-    LorrisProgrammer/programmericons.qrc
+    LorrisProgrammer/programmericons.qrc \
+    LorrisAnalyzer/DataWidgets/GLWidget/models.qrc
 
 include(../dep/qtsingleapplication/qtsingleapplication.pri)
 

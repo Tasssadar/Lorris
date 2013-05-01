@@ -158,3 +158,8 @@ void GLModel::draw()
         glDisable(GL_DEPTH_TEST);
     glShadeModel(shading);
 }
+
+void GLModel::addMaterial(const material &mtl)
+{
+    m_materials.push_back(std::make_pair((quint32)m_faces.size(), mtl));
+}

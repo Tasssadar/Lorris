@@ -7,25 +7,38 @@
 
 #include <QPixmap>
 #include <QMouseEvent>
+#include <QTimer>
+#include <QtOpenGL>
 
 #include "glutils.h"
 #include "objfileloader.h"
 #include "renderwidget.h"
 #include "../../../misc/utils.h"
+#include "../../../misc/datafileparser.h"
+
+#define RENDER_TIMER 50
+#define DEFAULT_MODEL ":/models/default.obj"
 
 RenderWidget::RenderWidget(QWidget *parent) :
     QGLWidget(parent)
 {
-    xRot = 0;
-    yRot = 0;
+    m_modelRotX = m_modelRotY = m_modelRotZ = 0;
+    m_cameraRotX = 45;
+    m_cameraRotY = -45;
+    m_cameraRotZ = 0;
     m_scale = 2.0;
-    zRot = 0;
     m_x = 0;
     m_z = -10;
     m_y = 0;
     m_camera_dist = 10.f;
 
+    m_modelFile = DEFAULT_MODEL;
+
     setFocusPolicy(Qt::StrongFocus);
+
+    m_timer = new QTimer(this);
+    m_timer->start(RENDER_TIMER);
+    connect(m_timer, SIGNAL(timeout()), SLOT(repaint()));
 }
 
 RenderWidget::~RenderWidget()
@@ -35,7 +48,7 @@ RenderWidget::~RenderWidget()
 
 void RenderWidget::initializeGL()
 {
-    ObjFileLoader::load("/home/tassadar/kostka_test/quadro_small.obj", m_models);
+    ObjFileLoader::load(m_modelFile, m_models);
 
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
@@ -84,7 +97,7 @@ void RenderWidget::resizeGL(int width, int height)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(left, right, bottom, top, 4, 80);
+    glFrustum(left, right, bottom, top, 5, 80);
     glMatrixMode(GL_MODELVIEW);
 
     updateGL();
@@ -92,70 +105,101 @@ void RenderWidget::resizeGL(int width, int height)
 
 void RenderWidget::paintGL()
 {
+    m_timer->start(RENDER_TIMER);
+
     qglClearColor(Qt::lightGray);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
 
-    // draw cube
     glLoadIdentity();
-    glTranslatef(0.0f, 0.f, -m_camera_dist);
-    glRotatef(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+    glTranslatef(0.0f, 0.0f, -m_camera_dist);
+
+    glRotatef(m_cameraRotX, 1.0f, 0.0f, 0.0f);
+    glRotatef(m_cameraRotY, 0.0f, 1.0f, 0.0f);
+    glRotatef(m_cameraRotZ, 0.0f, 0.0f, 1.0f);
+
+    glRotatef(m_modelRotY, 0.0f, 1.0f, 0.0f);
+    glRotatef(m_modelRotX, 1.0f, 0.0f, 0.0f);
+    glRotatef(m_modelRotZ, 0.0f, 0.0f, 1.0f);
 
     glScalef(m_scale, m_scale, m_scale);
-glRotatef(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
+
 
     for(quint32 i = 0; i < m_models.size(); ++i)
         m_models.at(i)->draw();
 
-    // draw grid
+    glLoadIdentity();
+
     float camerax = m_camera_dist * cos((90 + 270.0f) * M_PI / 180) + m_x;
     float cameraz = m_camera_dist * sin((90 - 270.0f) * M_PI / 180) + m_z;
 
-    glLoadIdentity();
-    glTranslatef(0.0f, 0, -10.0f);
-    glRotatef(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+    glTranslatef(0.0f, 0, -m_camera_dist);
     glScalef(m_scale, m_scale, m_scale);
 
-    glRotatef(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
+    glRotatef(m_cameraRotX, 1.0f, 0.0f, 0.0f);
+    glRotatef(m_cameraRotY, 0.0f, 1.0f, 0.0f);
     glTranslatef(-camerax, -m_y, -cameraz);
     glRotatef(180, 1.0f, 0.0f, 0.0f);
 
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
 
-    /*glBegin(GL_QUADS);
-    glVertex3f( 0,-0.001, 0);
-    glVertex3f( 0,-0.001,10);
-    glVertex3f(10,-0.001,10);
-    glVertex3f(10,-0.001, 0);
-    glEnd();*/
-
     glBegin(GL_LINES);
-    for(int i=0;i<=10;i++) {
-        if (i==0) { glColor3f(.6,.3,.3); } else { glColor3f(.25,.25,.25); };
+    for(int i=0;i<=20;i++) {
+        if(i == 10)
+            continue;
+
         glVertex3f(i,0,0);
-        glVertex3f(i,0,10);
-        if (i==0) { glColor3f(.3,.3,.6); } else { glColor3f(.25,.25,.25); };
+        glVertex3f(i,0,20);
         glVertex3f(0,0,i);
-        glVertex3f(10,0,i);
+        glVertex3f(20,0,i);
     };
+
+    glLineWidth (10.0);
+    glColor3f (1,0,0);
+    glVertex3f(-50, 0, 10);
+    glVertex3f(50, 0, 10);
+
+    glColor3f (0,1,0);
+    glVertex3f(10, -50, 10);
+    glVertex3f(10, 50, 10);
+
+    glColor3f (0,0,1);
+    glVertex3f(10, 0, -50);
+    glVertex3f(10, 0, 50);
     glEnd();
 
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
 }
 
-void RenderWidget::rotateBy(int xAngle, int yAngle, int zAngle)
+void RenderWidget::rotateBy(float xAngle, float yAngle, float zAngle)
 {
-     yRot += yAngle;
+     m_cameraRotY += yAngle;
 
-     xRot += xAngle;
-     xRot = std::max(0.f, xRot);
-     xRot = std::min(90.f*16, xRot);
+     m_cameraRotX += xAngle;
+     m_cameraRotX = std::max(0.f, m_cameraRotX);
+     m_cameraRotX = std::min(90.f, m_cameraRotX);
 
-     zRot = 0;
+     m_cameraRotZ += zAngle;
+
      updateGL();
+}
+
+void RenderWidget::setRotationX(float ang)
+{
+    m_modelRotX = ang;
+}
+
+void RenderWidget::setRotationY(float ang)
+{
+    m_modelRotY = ang;
+}
+
+void RenderWidget::setRotationZ(float ang)
+{
+    m_modelRotZ = ang;
 }
 
 void RenderWidget::mousePressEvent(QMouseEvent *ev)
@@ -174,9 +218,9 @@ void RenderWidget::mouseMoveEvent(QMouseEvent *event)
     int dy = event->y() - lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
-        rotateBy(8 * dy, 8 * dx, 0);
-    } else if (event->buttons() & Qt::RightButton) {
-        rotateBy(8 * dy, 0, 8 * dx);
+        rotateBy(dy, dx, 0);
+    } else if (event->buttons() & Qt::MidButton) {
+        rotateBy(dy, 0, dx);
     }
     lastPos = event->pos();
 }
@@ -196,7 +240,10 @@ void RenderWidget::wheelEvent(QWheelEvent *ev)
 
 void RenderWidget::keyPressEvent(QKeyEvent *ev)
 {
-    float ang = ((yRot/16)+180);
+    return QGLWidget::keyPressEvent(ev);
+
+    /*
+    float ang = ((m_cameraRotY)+180);
 
     while(ang >= 360) ang -= 360;
     while(ang < 0) ang = 360 - ang;
@@ -231,4 +278,56 @@ void RenderWidget::keyPressEvent(QKeyEvent *ev)
     m_x += sin(ang);
 
     updateGL();
+    */
+}
+
+void RenderWidget::repaint()
+{
+    updateGL();
+}
+
+void RenderWidget::setModelFile(const QString &path)
+{
+    delete_vect(m_models);
+    if(!ObjFileLoader::load(path, m_models))
+    {
+        delete_vect(m_models);
+        ObjFileLoader::load(m_modelFile, m_models);
+        return;
+    }
+    m_modelFile = path;
+}
+
+void RenderWidget::save(DataFileParser *file)
+{
+    file->writeBlockIdentifier("glwidgetCamera");
+    file->writeVal(m_scale);
+    file->writeVal(m_cameraRotX);
+    file->writeVal(m_cameraRotY);
+    file->writeVal(m_cameraRotZ);
+
+    file->writeBlockIdentifier("glwidgetModel");
+    file->writeString(m_modelFile);
+    file->writeVal(m_modelRotX);
+    file->writeVal(m_modelRotY);
+    file->writeVal(m_modelRotZ);
+}
+
+void RenderWidget::load(DataFileParser *file)
+{
+    if(file->seekToNextBlock("glwidgetCamera", BLOCK_WIDGET))
+    {
+        m_scale = file->readVal<double>();
+        m_cameraRotX = file->readVal<float>();
+        m_cameraRotY = file->readVal<float>();
+        m_cameraRotZ = file->readVal<float>();
+    }
+
+    if(file->seekToNextBlock("glwidgetModel", BLOCK_WIDGET))
+    {
+        setModelFile(file->readString());
+        m_modelRotX = file->readVal<float>();
+        m_modelRotY = file->readVal<float>();
+        m_modelRotZ = file->readVal<float>();
+    }
 }
