@@ -47,7 +47,7 @@ static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
 static const QString colorSavedToFile= "#FFE0E0";
 
-static const QString hex_filters = QObject::tr("Intel HEX file (*.hex)");
+static const QString hex_filters = QObject::tr("All supported file types (*.hex;*.bin);;Intel HEX file (*.hex);;Binary file (*.bin)");
 static const QString svf_filters = QObject::tr("Serial Vector Format file (*.svf)");
 
 LorrisProgrammer::LorrisProgrammer()
@@ -623,7 +623,10 @@ void LorrisProgrammer::loadFromFile(int memId, const QString& filename)
     if (memId != MEM_JTAG)
     {
         HexFile file;
-        file.LoadFromFile(filename);
+        if (filename.endsWith(".hex"))
+            file.LoadFromFile(filename);
+        else
+            file.LoadFromBin(filename);
 
         quint32 len = 0;
         if(!m_cur_def.getName().isEmpty())
