@@ -999,6 +999,9 @@ void LorrisProgrammer::setUiType(int type)
 
     if (m_programmer)
         ui->connectProgrammer(m_programmer.data());
+
+    updateStartStopUi(m_chipStopped);
+    update_chip_description(m_cur_def);
 }
 
 void LorrisProgrammer::setMiniUi(bool mini)
