@@ -110,11 +110,10 @@ void ShupitoSpiFlash::readMemRange(quint8 memid, QByteArray& memory, quint32 add
     out.push_back(m_prog_cmd_base + 2);
     out.push_back(0);
     out.push_back(3);
-    out.push_back(0);
-    out.push_back(0);
-    out.push_back(0);
+    out.push_back(address >> 16);
+    out.push_back(address >> 8);
+    out.push_back(address);
 
-    memory.clear();
     while (size && !m_cancel_requested)
     {
         size_t offset = out.size() - 2;
@@ -140,6 +139,8 @@ void ShupitoSpiFlash::readMemRange(quint8 memid, QByteArray& memory, quint32 add
 void ShupitoSpiFlash::flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address)
 {
     this->writeEnable();
+    if ((this->readStatus() & (1<<1)) == 0)
+        throw tr("Failed to enable write");
 
     std::vector<uint8_t> out;
     out.push_back(2);
@@ -152,11 +153,16 @@ void ShupitoSpiFlash::flashPage(chip_definition::memorydef *memdef, std::vector<
     while (this->readStatus() & (1<<0))
     {
     }
+
+    if ((this->readStatus() & (1<<1)) != 0)
+        throw tr("The device didn't reset the write enable latch");
 }
 
 void ShupitoSpiFlash::erase_device(chip_definition& chip)
 {
     this->writeEnable();
+    if ((this->readStatus() & (1<<1)) == 0)
+        throw tr("Failed to enable write");
 
     uint8_t const req[] = { m_prog_cmd_base + 2, (1<<1), 0xC7 };
     m_shupito->waitForPacket(ShupitoPacket(req, req + sizeof req), m_prog_cmd_base + 2);
@@ -164,6 +170,9 @@ void ShupitoSpiFlash::erase_device(chip_definition& chip)
     while (this->readStatus() & (1<<0))
     {
     }
+
+    if ((this->readStatus() & (1<<1)) != 0)
+        throw tr("The device didn't reset the write enable latch");
 }
 
 void ShupitoSpiFlash::writeEnable()
