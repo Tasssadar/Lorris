@@ -179,8 +179,8 @@ void RenderWidget::rotateBy(float xAngle, float yAngle, float zAngle)
      m_cameraRotY += yAngle;
 
      m_cameraRotX += xAngle;
-     m_cameraRotX = std::max(0.f, m_cameraRotX);
-     m_cameraRotX = std::min(90.f, m_cameraRotX);
+     m_cameraRotX = (std::max)(0.f, m_cameraRotX);
+     m_cameraRotX = (std::min)(90.f, m_cameraRotX);
 
      m_cameraRotZ += zAngle;
 
