@@ -47,7 +47,7 @@ static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
 static const QString colorSavedToFile= "#FFE0E0";
 
-static const QString hex_filters = QObject::tr("All supported file types (*.hex;*.bin);;Intel HEX file (*.hex);;Binary file (*.bin)");
+static const QString hex_filters = QObject::tr("All supported file types (*.hex *.bin);;Intel HEX file (*.hex);;Binary file (*.bin)");
 static const QString svf_filters = QObject::tr("Serial Vector Format file (*.svf)");
 
 LorrisProgrammer::LorrisProgrammer()
