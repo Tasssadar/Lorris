@@ -66,6 +66,7 @@ public:
     }
 
     void LoadFromFile(const QString& path);
+    void LoadFromBin(const QString& path);
     void SaveToFile(const QString& path);
 
     void addRegion(quint32 pos, quint8 const * first, quint8 const * last, int lineno);
