@@ -20,6 +20,10 @@ def createWidgets():
     inputLine = inputW.newWidget("QLineEdit")
     inputLine.connect("returnPressed()", inputLine_returnPressed)
 
+    # you can use idString to find widgets later
+    inputW.newWidget("QLabel", "label")
+    inputW.get("label").text = "Test label"
+
     inputW.setHorizontal(True) # Changes orientation of layout in widget
 
 def onWidgetAdd(widget, name):
@@ -46,7 +50,8 @@ def createBtn_clicked():
     global createBtn
     global inputW
 
-    inputW.removeWidget(createBtn) # remove only one widget
+    inputW.removeWidget(createBtn) # remove by pointer
+    inputW.removeWidget("label") # remove by idString
     createWidgets()
 
 def inputLine_returnPressed():

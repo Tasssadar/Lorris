@@ -26,12 +26,16 @@ public:
 
 public slots:
     QWidget *newWidget(const QString& name, int stretch = 0);
+    QWidget *newWidget(const QString& name, const QString& idString, int stretch = 0);
     void setHorizontal(bool horizontal);
     void clear();
     void removeWidget(QWidget *widget);
+    void removeWidget(const QString& idString);
+    QWidget *get(const QString& idString);
 
 private:
     QBoxLayout *m_layout;
+    QHash<QString, QWidget*> m_namedWidgets;
 };
 
 class InputWidgetAddBtn : public DataWidgetAddBtn

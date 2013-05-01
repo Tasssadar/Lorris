@@ -17,6 +17,10 @@ function createWidgets()
     inputLine = inputW.newWidget("QLineEdit");
     inputLine.returnPressed.connect(inputLine_returnPressed);
 
+    // you can use idString to find widgets later
+    inputW.newWidget("QLabel", "label");
+    inputW.get("label").text = "Test label";
+
     inputW.setHorizontal(true); // Changes orientation of layout in widget
 }
 
@@ -41,7 +45,8 @@ function clearBtn_clicked()
 
 function createBtn_clicked()
 {
-    inputW.removeWidget(createBtn); // remove only one widget
+    inputW.removeWidget(createBtn); // remove by pointer
+    inputW.removeWidget("label") // remove by idString
     createWidgets();
 }
 
