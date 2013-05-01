@@ -24,7 +24,7 @@ RenderWidget::RenderWidget(QWidget *parent) :
 {
     m_modelRotX = m_modelRotY = m_modelRotZ = 0;
     m_cameraRotX = 45;
-    m_cameraRotY = -45;
+    m_cameraRotY = 45;
     m_cameraRotZ = 0;
     m_scale = 2.0;
     m_x = 0;
