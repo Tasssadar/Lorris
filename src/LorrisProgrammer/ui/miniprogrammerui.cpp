@@ -16,7 +16,6 @@
 MiniProgrammerUI::MiniProgrammerUI(QObject *parent) :
     ProgrammerUI(UI_MINIMAL, parent), ui(new Ui::MiniProgrammerUI)
 {
-    m_fileSet = false;
     m_isVertical = true;
 }
 
@@ -36,7 +35,7 @@ void MiniProgrammerUI::setupUi(LorrisProgrammer *widget)
     ui->verticalLayout->setAlignment(ui->writeButton, Qt::AlignHCenter);
     ui->verticalLayout->setAlignment(ui->startStopBtn, Qt::AlignHCenter);
 
-    connect(ui->writeButton,  SIGNAL(clicked()),         SLOT(writeFlashBtn()));
+    connect(ui->writeButton,  SIGNAL(clicked()),         SLOT(writeSelectedMem()));
     connect(ui->startStopBtn, SIGNAL(clicked()), widget, SLOT(startstopChip()));
     connect(ui->loadBtn,      SIGNAL(clicked()), widget, SLOT(loadFromFile()));
 
@@ -58,7 +57,6 @@ void MiniProgrammerUI::setChipId(const QString &text)
 
 void MiniProgrammerUI::setFileAndTime(const QString &file, const QDateTime &time)
 {
-    m_fileSet = true;
     enableWrite(true);
 
     ui->loadBtn->setToolTip(file);
@@ -70,7 +68,9 @@ void MiniProgrammerUI::setFileAndTime(const QString &file, const QDateTime &time
 
 void MiniProgrammerUI::enableWrite(bool enable)
 {
-    ui->writeButton->setEnabled(enable && m_fileSet && m_widget->m_buttons_enabled);
+    ui->writeButton->setEnabled(enable
+        && (this->getMemIndex() == MEM_JTAG? !m_svfData.isEmpty(): !m_hexData[this->getMemIndex()].isEmpty())
+        && m_widget->m_buttons_enabled);
 }
 
 void MiniProgrammerUI::saveData(DataFileParser *file)
@@ -152,7 +152,7 @@ void MiniProgrammerUI::loadData(DataFileParser *file)
 
 void MiniProgrammerUI::writeSelectedMem()
 {
-    this->writeFlashBtn();
+    this->writeMemInFlash(m_programmer_caps.flash? MEM_FLASH: MEM_JTAG);
 }
 
 void MiniProgrammerUI::setVertical(bool vertical)
@@ -223,4 +223,9 @@ void MiniProgrammerUI::enableButtons(bool enable)
 {
     this->enableWrite(enable);
     ui->startStopBtn->setEnabled(enable);
+}
+
+int MiniProgrammerUI::getMemIndex()
+{
+    return m_programmer_caps.flash? MEM_FLASH: MEM_JTAG;
 }

@@ -170,7 +170,7 @@ struct ShupitoJtag::play_visitor
 
                 for (size_t i = 0; i < chunk_bytes; ++i)
                 {
-                    if ((pkt[i+2] & mask[i]) != tdo[i])
+                    if ((pkt[i+2] & mask[i]) != (tdo[i] & mask[i]))
                         throw QObject::tr("Verification failed!");
                 }
 

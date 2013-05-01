@@ -35,7 +35,7 @@ public:
     void setChipId(const QString &text);
     void postFlashSwitchCheck(chip_definition &chip);
     void setStartStopBtn(bool start);
-    void setFileAndTime(const QString &file, const QDateTime &time);
+    void setFileAndTime(const QString &file, const QDateTime &time) override;
     void setActiveMem(quint32 memId);
     void warnSecondFlash();
     int getMemIndex();
@@ -52,7 +52,7 @@ public:
     void readFuses(chip_definition &chip);
     void writeFuses(chip_definition &chip);
 
-    void writeSelectedMem();
+    void writeSelectedMem() override;
 
     void enableButtons(bool enable) override;
 
@@ -62,7 +62,14 @@ protected:
     QLabel *engineLabel() const { return ui->engineLabel; }
     QLabel *vccLabel() const { return ui->vccLabel; }
 
+    void programmerCapsChanged() override;
+
 private slots:
+    void readMemButton() { readMemInFlash(MEM_FLASH); }
+    void readEEPROMBtn() { readMemInFlash(MEM_EEPROM); }
+    void writeFlashBtn() { writeMemInFlash(MEM_FLASH); }
+    void writeEEPROMBtn(){ writeMemInFlash(MEM_EEPROM); }
+
     void hideLogBtn(bool checked);
     void hideFusesBtn(bool checked);
     void hideSettingsBtn(bool checked);
@@ -83,8 +90,6 @@ private slots:
     void readButtonClicked();
     void writeButtonClicked();
 
-    void updateProgrammerFeatures();
-
 private:
     void initMenus();
     void updateProgrammersBox(Programmer *prog);
@@ -94,7 +99,6 @@ private:
     FuseWidget *m_fuse_widget;
     QHexEdit *m_hexAreas[MEM_FUSES];
     QTextEdit * m_svfEdit;
-    ProgrammerCapabilities m_sources;
     void applySources();
 
     enum tabs_t

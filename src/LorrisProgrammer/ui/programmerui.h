@@ -54,7 +54,7 @@ public:
     ui_type getType() const { return m_ui_type; }
 
     virtual void setupUi(LorrisProgrammer *widget);
-    virtual void connectProgrammer(Programmer *) { }
+    virtual void connectProgrammer(Programmer * prog);
 
     virtual void connectedStatus(bool connected);
     virtual void tunnelStop(bool /*stop*/) { }
@@ -64,7 +64,7 @@ public:
     virtual void postFlashSwitchCheck(chip_definition&) { }
     virtual void setActiveMem(quint32) { }
     virtual void warnSecondFlash() { }
-    virtual int getMemIndex() { return MEM_FLASH; }
+    virtual int getMemIndex() = 0;
 
     virtual void setHexData(quint32 memid, const QByteArray& data) = 0;
     virtual void setHexColor(quint32 /*memid*/, const QString&) { }
@@ -80,7 +80,7 @@ public:
     void vccValChanged(double val);
     void vddSetup(const vdd_setup &vs);
     void setStartStopBtn(bool start);
-    virtual void setFileAndTime(const QString& /*file*/, const QDateTime&) {}
+    virtual void setFileAndTime(const QString& /*file*/, const QDateTime&) = 0;
     virtual void setChipId(const QString&) {}
 
     void readMemInFlash(quint8 memId);
@@ -92,16 +92,12 @@ public:
     virtual void readFusesInFlash() { }
     virtual void writeFusesInFlash() { }
 
-    virtual void writeSelectedMem() {}
-
     virtual void enableButtons(bool enable) = 0;
 
-protected slots:
-    void readMemButton() { readMemInFlash(MEM_FLASH); }
-    void readEEPROMBtn() { readMemInFlash(MEM_EEPROM); }
-    void writeFlashBtn() { writeMemInFlash(MEM_FLASH); }
-    void writeEEPROMBtn(){ writeMemInFlash(MEM_EEPROM); }
+public slots:
+    virtual void writeSelectedMem() = 0;
 
+protected slots:
     void readAll();
     void writeAll();
     void eraseDevice();
@@ -128,6 +124,12 @@ protected:
     QSignalMapper *m_vdd_signals;
 
     VddColor m_color;
+
+    virtual void programmerCapsChanged() {}
+    ProgrammerCapabilities m_programmer_caps;
+
+private slots:
+    void updateProgrammerCaps();
 
 private:
     ui_type m_ui_type;
