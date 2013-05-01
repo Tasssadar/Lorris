@@ -66,6 +66,7 @@ private:
     float m_camera_dist;
     QTimer *m_timer;
     QString m_modelFile;
+    bool m_renderRequested;
 };
 
 #endif // RENDERWIDGET_H

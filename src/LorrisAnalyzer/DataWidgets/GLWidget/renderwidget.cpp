@@ -31,6 +31,7 @@ RenderWidget::RenderWidget(QWidget *parent) :
     m_z = -10;
     m_y = 0;
     m_camera_dist = 10.f;
+    m_renderRequested = false;
 
     m_modelFile = DEFAULT_MODEL;
 
@@ -52,7 +53,7 @@ void RenderWidget::initializeGL()
 
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
+    glDisable(GL_LIGHTING);
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable (GL_BLEND);
     glEnable (GL_LINE_SMOOTH);
@@ -60,10 +61,13 @@ void RenderWidget::initializeGL()
     glEnable (GL_TEXTURE_2D);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    {
+    // Lightining is disabled because it looks better without it,
+    // and that's because I don't know how to do lightning properly
+
+    /*{
         float specular[] = {1.0, 1.0, 1.0, 1.0};
         float diffuse[] = {1, 1, 1, 1.0};
-        float ambient[] = {0, 0, 0, 1};
+        float ambient[] = {1, 1, 1, 1};
         float position[] = { 1, 1, 0, 0.0f };
         glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
         glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
@@ -82,7 +86,7 @@ void RenderWidget::initializeGL()
         glLightfv(GL_LIGHT1, GL_POSITION, position);
         glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
         glEnable(GL_LIGHT1);
-    }
+    }*/
 }
 
 void RenderWidget::resizeGL(int width, int height)
@@ -107,7 +111,7 @@ void RenderWidget::paintGL()
 {
     m_timer->start(RENDER_TIMER);
 
-    qglClearColor(Qt::lightGray);
+    qglClearColor(Qt::darkGray);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
@@ -119,12 +123,11 @@ void RenderWidget::paintGL()
     glRotatef(m_cameraRotY, 0.0f, 1.0f, 0.0f);
     glRotatef(m_cameraRotZ, 0.0f, 0.0f, 1.0f);
 
-    glRotatef(m_modelRotY, 0.0f, 1.0f, 0.0f);
+    glRotatef(m_modelRotY+180, 0.0f, 1.0f, 0.0f);
     glRotatef(m_modelRotX, 1.0f, 0.0f, 0.0f);
     glRotatef(m_modelRotZ, 0.0f, 0.0f, 1.0f);
 
     glScalef(m_scale, m_scale, m_scale);
-
 
     for(quint32 i = 0; i < m_models.size(); ++i)
         m_models.at(i)->draw();
@@ -142,10 +145,11 @@ void RenderWidget::paintGL()
     glTranslatef(-camerax, -m_y, -cameraz);
     glRotatef(180, 1.0f, 0.0f, 0.0f);
 
-    glDisable(GL_LIGHTING);
+    //glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
 
     glBegin(GL_LINES);
+    glColor3f (1,1,1);
     for(int i=0;i<=20;i++) {
         if(i == 10)
             continue;
@@ -170,7 +174,7 @@ void RenderWidget::paintGL()
     glVertex3f(10, 0, 50);
     glEnd();
 
-    glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
 }
 
@@ -190,16 +194,19 @@ void RenderWidget::rotateBy(float xAngle, float yAngle, float zAngle)
 void RenderWidget::setRotationX(float ang)
 {
     m_modelRotX = ang;
+    m_renderRequested = true;
 }
 
 void RenderWidget::setRotationY(float ang)
 {
     m_modelRotY = ang;
+    m_renderRequested = true;
 }
 
 void RenderWidget::setRotationZ(float ang)
 {
     m_modelRotZ = ang;
+    m_renderRequested = true;
 }
 
 void RenderWidget::mousePressEvent(QMouseEvent *ev)
@@ -283,7 +290,11 @@ void RenderWidget::keyPressEvent(QKeyEvent *ev)
 
 void RenderWidget::repaint()
 {
-    updateGL();
+    if(m_renderRequested)
+    {
+        updateGL();
+        m_renderRequested = false;
+    }
 }
 
 void RenderWidget::setModelFile(const QString &path)

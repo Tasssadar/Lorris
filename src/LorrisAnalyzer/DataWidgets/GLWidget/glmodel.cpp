@@ -134,12 +134,11 @@ void GLModel::draw()
             glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mtl.Kd);
             glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mtl.Ks);
             glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mtl.Ns);
+            glColor3f(mtl.Kd[0], mtl.Kd[1], mtl.Kd[2]);
             ++m_itr;
         }
 
-        glColor3f(1, 1, 1);
         glBegin(GL_POLYGON);
-
         for (quint32 y = 0; y < f.v.size(); ++y)
         {
             glNormal3fv(m_normals[f.vn[y]].d());
