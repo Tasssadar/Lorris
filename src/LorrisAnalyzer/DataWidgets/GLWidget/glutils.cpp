@@ -48,6 +48,17 @@ vector4 vector4::operator *(const float& ratio) const
     return res;
 }
 
+float& vector4::operator [](int b)
+{
+    switch(b)
+    {
+        case 0: return x;
+        case 1: return y;
+        case 2: return z;
+        case 3: return w;
+        default: throw "Invalid vector index";
+    }
+}
 
 vector3::vector3(float x, float y, float z)
 {
@@ -90,6 +101,26 @@ vector3 vector3::operator *(const float& ratio) const
     return res;
 }
 
+vector3 vector3::operator /(const float& div) const
+{
+    vector3 res(*this);
+    res.x /= div;
+    res.y /= div;
+    res.z /= div;
+    return res;
+}
+
+float& vector3::operator [](int b)
+{
+    switch(b)
+    {
+        case 0: return x;
+        case 1: return y;
+        case 2: return z;
+        default: throw "Invalid vector index";
+    }
+}
+
 /// cross product of two vectors
 vector3 GLUtils::cross(const vector3& x, const vector3& y)
 {
@@ -101,10 +132,19 @@ vector3 GLUtils::cross(const vector3& x, const vector3& y)
 /// normalize vector
 vector3 GLUtils::normalize(const vector3& x)
 {
-    double sqr = sqrt(x.x * x.x + x.y * x.y + x.z * x.z);
+    float sqr = sqrt(x.x * x.x + x.y * x.y + x.z * x.z);
 
-    if(sqr > 0)
-        return x * (1.0 / sqr);
+    if(sqr != 0)
+        return x / sqr;
     else
         return x;
+}
+
+vector3 GLUtils::normalOfPlane(const vector3 &x, const vector3 &y)
+{
+    vector3 res;
+    res.x = x.y * y.z - x.z * y.y;
+    res.y = x.z * y.x - x.x * y.z;
+    res.z = x.x * y.y - x.y * y.x;
+    return res;
 }

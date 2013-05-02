@@ -12,9 +12,14 @@
 #include <QVector>
 #include <QVector3D>
 #include <QVector2D>
+#include <QElapsedTimer>
+
+#include "glutils.h"
 
 class GLModel;
 class DataFileParser;
+
+using namespace GLUtils;
 
 class RenderWidget : public QGLWidget
 {
@@ -24,7 +29,9 @@ public:
     ~RenderWidget();
     
 public slots:
-    void rotateBy(float xAngle, float yAngle, float zAngle);
+    void rotateCamera(float xAngle, float yAngle, float zAngle);
+    void resetCamera();
+
     void setRotationX(float ang);
     void setRotationY(float ang);
     void setRotationZ(float ang);
@@ -45,7 +52,7 @@ protected:
     void keyPressEvent(QKeyEvent *ev);
 
 private slots:
-    void repaint();
+    void requestRender();
 
 private:
     void mesaGluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
@@ -66,6 +73,7 @@ private:
     double m_z;
     double m_y;
     float m_camera_dist;
+    QElapsedTimer m_lastRender;
     QTimer *m_timer;
     QString m_modelFile;
     bool m_renderRequested;

@@ -18,6 +18,7 @@ namespace GLUtils
         vector4 operator +(const vector4& b) const;
         vector4 operator -(const vector4& b) const;
         vector4 operator *(const float& ratio) const;
+        float& operator [](int b);
 
         float x;
         float y;
@@ -35,6 +36,8 @@ namespace GLUtils
         vector3 operator +(const vector3& b) const;
         vector3 operator -(const vector3& b) const;
         vector3 operator *(const float& ratio) const;
+        vector3 operator /(const float& div) const;
+        float& operator [](int b);
 
         float x;
         float y;
@@ -46,6 +49,8 @@ namespace GLUtils
 
     /// normalize vector
     vector3 normalize(const vector3& x);
+
+    vector3 normalOfPlane(const vector3& x, const vector3 &y);
 }
 
 #endif // GLUTILS_H

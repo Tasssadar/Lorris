@@ -16,13 +16,32 @@
 #include "../../../misc/utils.h"
 #include "../../../misc/datafileparser.h"
 
-#define RENDER_TIMER 50
+#define RENDER_TIMER 16
 #define DEFAULT_MODEL ":/models/default.obj"
 
 RenderWidget::RenderWidget(QWidget *parent) :
     QGLWidget(parent)
 {
     m_modelRotX = m_modelRotY = m_modelRotZ = 0;
+    m_renderRequested = false;
+    m_modelFile = DEFAULT_MODEL;
+
+    resetCamera();
+
+    setFocusPolicy(Qt::StrongFocus);
+    m_timer = new QTimer(this);
+    m_timer->setInterval(RENDER_TIMER);
+    m_timer->setSingleShot(true);
+    connect(m_timer, SIGNAL(timeout()), SLOT(requestRender()));
+}
+
+RenderWidget::~RenderWidget()
+{
+    delete_vect(m_models);
+}
+
+void RenderWidget::resetCamera()
+{
     m_cameraRotX = 45;
     m_cameraRotY = 45;
     m_cameraRotZ = 0;
@@ -31,62 +50,51 @@ RenderWidget::RenderWidget(QWidget *parent) :
     m_z = -10;
     m_y = 0;
     m_camera_dist = 10.f;
-    m_renderRequested = false;
 
-    m_modelFile = DEFAULT_MODEL;
-
-    setFocusPolicy(Qt::StrongFocus);
-
-    m_timer = new QTimer(this);
-    m_timer->start(RENDER_TIMER);
-    connect(m_timer, SIGNAL(timeout()), SLOT(repaint()));
-}
-
-RenderWidget::~RenderWidget()
-{
-    delete_vect(m_models);
+    m_renderRequested = true;
 }
 
 void RenderWidget::initializeGL()
 {
     ObjFileLoader::load(m_modelFile, m_models);
 
-    glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_NORMALIZE);
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable (GL_BLEND);
     glEnable (GL_LINE_SMOOTH);
     glCullFace(GL_NONE);
-    glEnable (GL_TEXTURE_2D);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    // Lightining is disabled because it looks better without it,
-    // and that's because I don't know how to do lightning properly
-
-    /*{
-        float specular[] = {1.0, 1.0, 1.0, 1.0};
-        float diffuse[] = {1, 1, 1, 1.0};
-        float ambient[] = {1, 1, 1, 1};
-        float position[] = { 1, 1, 0, 0.0f };
+    {
+        glEnable(GL_LIGHT0);
+        float specular[] = {0.5, 0.5, 0.5, 1.0};
+        float diffuse[] = {0.8, 0.8, 0.8, 1.0};
+        float position[] = { 1.0, 1.0, 1.0, 0.0 };
         glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
         glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT0, GL_POSITION, position);
-        glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-        glEnable(GL_LIGHT0);
     }
 
     {
-        float specular[] = {1.0, 1.0, 1.0, 1.0};
-        float diffuse[] = {1, 1, 1, 1.0};
-        float ambient[] = {0, 0, 0, 1};
-        float position[] = { -1, -1, 0, 0.0f };
+        glEnable(GL_LIGHT1);
+        float specular[] = {0.2, 0.2, 0.2, 1.0};
+        float diffuse[] = {0.5, 0.5, 0.6, 1.0};
+        float position[] = { 0.0, 1.0, 1.0, 0.0 };
         glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
         glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
         glLightfv(GL_LIGHT1, GL_POSITION, position);
-        glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
-        glEnable(GL_LIGHT1);
-    }*/
+    }
+
+    {
+        glEnable(GL_LIGHT2);
+        float specular[] = {0.5, 0.5, 0.5, 1.0};
+        float diffuse[] = {0.8, 0.8, 0.8, 1.0};
+        float position[] = { -1.0, 1.0, -1.0, 0.0 };
+        glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
+        glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
+        glLightfv(GL_LIGHT2, GL_POSITION, position);
+    }
 }
 
 void RenderWidget::mesaGluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
@@ -127,7 +135,6 @@ void RenderWidget::resizeGL(int width, int height)
 
 void RenderWidget::paintGL()
 {
-    m_timer->start(RENDER_TIMER);
 
     qglClearColor(Qt::darkGray);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -135,118 +142,122 @@ void RenderWidget::paintGL()
     glMatrixMode(GL_MODELVIEW);
 
     glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, -m_camera_dist);
+
+    float camerax = m_camera_dist * cos((90 + 270.0f) * M_PI / 180) + m_x;
+    float cameraz = m_camera_dist * sin((90 - 270.0f) * M_PI / 180) + m_z;
+
+    glTranslatef(0, 0, -m_camera_dist);
+    glScalef(m_scale, m_scale, m_scale);
 
     glRotatef(m_cameraRotX, 1.0f, 0.0f, 0.0f);
     glRotatef(m_cameraRotY, 0.0f, 1.0f, 0.0f);
     glRotatef(m_cameraRotZ, 0.0f, 0.0f, 1.0f);
 
-    glRotatef(m_modelRotY+180, 0.0f, 1.0f, 0.0f);
+    glTranslatef(-camerax, -m_y, -cameraz);
+    glTranslatef(10, 0, -10);
+
+    {
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_LIGHTING);
+
+        glBegin(GL_LINES);
+
+        glColor3f (1,1,1);
+        for(int i = -10; i <= 10; ++i) {
+            if(i == 0)
+                continue;
+
+            glVertex3f(i, 0,-10);
+            glVertex3f(i, 0, 10);
+            glVertex3f(-10, 0, i);
+            glVertex3f(10, 0, i);
+        };
+
+        glLineWidth (10.0);
+        glColor3f (1,0,0);
+        glVertex3f(-50, 0, 0);
+        glVertex3f(50, 0, 0);
+
+        glColor3f (0,1,0);
+        glVertex3f(0, -50, 0);
+        glVertex3f(0, 50, 0);
+
+        glColor3f (0,0,1);
+        glVertex3f(0, 0, -50);
+        glVertex3f(0, 0, 50);
+        glEnd();
+
+
+        glEnable(GL_LIGHTING);
+        glEnable(GL_TEXTURE_2D);
+    }
+
+    glRotatef(180, 1.0f, 0.0f, 0.0f);
+    glRotatef(180, 0.0f, 0.0f, 1.0f);
+
+    glRotatef(m_modelRotY, 0.0f, 1.0f, 0.0f);
     glRotatef(m_modelRotX, 1.0f, 0.0f, 0.0f);
     glRotatef(m_modelRotZ, 0.0f, 0.0f, 1.0f);
-
-    glScalef(m_scale, m_scale, m_scale);
 
     for(quint32 i = 0; i < m_models.size(); ++i)
         m_models.at(i)->draw();
 
-    glLoadIdentity();
+    glFlush();
 
-    float camerax = m_camera_dist * cos((90 + 270.0f) * M_PI / 180) + m_x;
-    float cameraz = m_camera_dist * sin((90 - 270.0f) * M_PI / 180) + m_z;
-
-    glTranslatef(0.0f, 0, -m_camera_dist);
-    glScalef(m_scale, m_scale, m_scale);
-
-    glRotatef(m_cameraRotX, 1.0f, 0.0f, 0.0f);
-    glRotatef(m_cameraRotY, 0.0f, 1.0f, 0.0f);
-    glTranslatef(-camerax, -m_y, -cameraz);
-    glRotatef(180, 1.0f, 0.0f, 0.0f);
-
-    //glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-
-    glBegin(GL_LINES);
-    glColor3f (1,1,1);
-    for(int i=0;i<=20;i++) {
-        if(i == 10)
-            continue;
-
-        glVertex3f(i,0,0);
-        glVertex3f(i,0,20);
-        glVertex3f(0,0,i);
-        glVertex3f(20,0,i);
-    };
-
-    glLineWidth (10.0);
-    glColor3f (1,0,0);
-    glVertex3f(-50, 0, 10);
-    glVertex3f(50, 0, 10);
-
-    glColor3f (0,1,0);
-    glVertex3f(10, -50, 10);
-    glVertex3f(10, 50, 10);
-
-    glColor3f (0,0,1);
-    glVertex3f(10, 0, -50);
-    glVertex3f(10, 0, 50);
-    glEnd();
-
-    //glEnable(GL_LIGHTING);
-    glEnable(GL_TEXTURE_2D);
+    m_lastRender.restart();
 }
 
-void RenderWidget::rotateBy(float xAngle, float yAngle, float zAngle)
+void RenderWidget::rotateCamera(float xAngle, float yAngle, float zAngle)
 {
      m_cameraRotY += yAngle;
 
      m_cameraRotX += xAngle;
-     m_cameraRotX = (std::max)(0.f, m_cameraRotX);
+     m_cameraRotX = (std::max)(-90.f, m_cameraRotX);
      m_cameraRotX = (std::min)(90.f, m_cameraRotX);
 
      m_cameraRotZ += zAngle;
 
-     updateGL();
+     requestRender();
 }
 
 void RenderWidget::setRotationX(float ang)
 {
     m_modelRotX = ang;
-    m_renderRequested = true;
+    requestRender();
 }
 
 void RenderWidget::setRotationY(float ang)
 {
     m_modelRotY = ang;
-    m_renderRequested = true;
+    requestRender();
 }
 
 void RenderWidget::setRotationZ(float ang)
 {
     m_modelRotZ = ang;
-    m_renderRequested = true;
+    requestRender();
 }
 
 void RenderWidget::mousePressEvent(QMouseEvent *ev)
 {
-    if(!(ev->buttons() & (Qt::LeftButton | Qt::RightButton)))
+    if(!(ev->buttons() & (Qt::LeftButton | Qt::MidButton)))
         return QGLWidget::mousePressEvent(ev);
     lastPos = ev->pos();
 }
 
 void RenderWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if(!(event->buttons() & (Qt::LeftButton | Qt::RightButton)))
+    if(!(event->buttons() & (Qt::LeftButton | Qt::MidButton)))
         return QGLWidget::mouseMoveEvent(event);
 
     int dx = event->x() - lastPos.x();
     int dy = event->y() - lastPos.y();
 
-    if (event->buttons() & Qt::LeftButton) {
-        rotateBy(dy, dx, 0);
-    } else if (event->buttons() & Qt::MidButton) {
-        rotateBy(dy, 0, dx);
-    }
+    if (event->buttons() & Qt::LeftButton)
+        rotateCamera(dy, dx, 0);
+    else if (event->buttons() & Qt::MidButton)
+        rotateCamera(dy, 0, dx);
+
     lastPos = event->pos();
 }
 
@@ -265,9 +276,6 @@ void RenderWidget::wheelEvent(QWheelEvent *ev)
 
 void RenderWidget::keyPressEvent(QKeyEvent *ev)
 {
-    return QGLWidget::keyPressEvent(ev);
-
-    /*
     float ang = ((m_cameraRotY)+180);
 
     while(ang >= 360) ang -= 360;
@@ -278,41 +286,46 @@ void RenderWidget::keyPressEvent(QKeyEvent *ev)
     while(ang >= 360) ang -= 360;
     while(ang < 0) ang = 360 - ang;
 
-    if(ev->key() == Qt::Key_W)
-        ang += 0.0f;
-    else if(ev->key() == Qt::Key_S)
-        ang += 180.0f;
-    else if(ev->key() == Qt::Key_A)
-        ang += 90.f;
-    else if(ev->key() == Qt::Key_D)
-        ang -= 90.f;
-    else if(ev->key() == Qt::Key_Shift)
+    switch(ev->key())
     {
-        m_y += 0.25;
-        return updateGL();
-    }
-    else if(ev->key() == Qt::Key_Control)
-    {
-        m_y -= 0.25;
-        return updateGL();
+        case Qt::Key_W:
+            //ang += 0.f;
+            break;
+        case Qt::Key_S:
+            ang += 180.f;
+            break;
+        case Qt::Key_A:
+            ang += 90.f;
+            break;
+        case Qt::Key_D:
+            ang -= 90.f;
+            break;
+        case Qt::Key_Shift:
+        case Qt::Key_Q:
+            m_y += 0.25;
+            return updateGL();
+        case Qt::Key_Control:
+        case Qt::Key_E:
+            m_y -= 0.25;
+            return updateGL();
+        default:
+            return QGLWidget::keyPressEvent(ev);
     }
 
     ang *= (M_PI / 180);
 
-    m_z += cos(ang);
-    m_x += sin(ang);
+    m_z += cos(ang)*1;
+    m_x += sin(ang)*1;
 
-    updateGL();
-    */
+    requestRender();
 }
 
-void RenderWidget::repaint()
+void RenderWidget::requestRender()
 {
-    if(m_renderRequested)
-    {
+    if(m_lastRender.elapsed() > RENDER_TIMER)
         updateGL();
-        m_renderRequested = false;
-    }
+    else
+        m_timer->start();
 }
 
 void RenderWidget::setModelFile(const QString &path)

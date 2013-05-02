@@ -29,6 +29,8 @@ public slots:
     void setRotationZ(float ang);
     void loadModel(const QString& file);
     void loadModel();
+    void resetCamera();
+    void rotateCamera(float deltaX, float deltaY, float deltaZ);
 
 private:
     RenderWidget *m_widget;

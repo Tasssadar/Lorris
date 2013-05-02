@@ -208,7 +208,8 @@ void ObjFileLoader::loadMaterials(const QString& file, QHash<QString, material>&
                     mtl.Ks[i-1] = parts[i].toFloat();
                 break;
             case 4: // Ns
-                mtl.Ns = parts.back().toFloat();
+                // Wavefront has range 0 to 1000, opengl has 0 to 128
+                mtl.Ns = parts.back().toFloat()*0.128;
                 break;
             case 5: // d
             case 6: // Tr

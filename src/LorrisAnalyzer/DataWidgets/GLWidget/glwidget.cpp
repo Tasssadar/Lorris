@@ -30,6 +30,7 @@ void GLWidget::setUp(Storage *storage)
     DataWidget::setUp(storage);
 
     contextMenu->addAction(tr("Load model..."), this, SLOT(loadModel()));
+    contextMenu->addAction(tr("Reset camera"), this, SLOT(resetCamera()));
 }
 
 void GLWidget::setRotationX(float ang)
@@ -70,6 +71,16 @@ void GLWidget::loadModel()
     if(file.isEmpty())
         return;
     loadModel(file);
+}
+
+void GLWidget::rotateCamera(float deltaX, float deltaY, float deltaZ)
+{
+    m_widget->rotateCamera(deltaX, deltaY, deltaZ);
+}
+
+void GLWidget::resetCamera()
+{
+    m_widget->resetCamera();
 }
 
 GLWidgetAddBtn::GLWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
