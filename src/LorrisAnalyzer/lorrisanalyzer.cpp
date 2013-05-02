@@ -380,7 +380,7 @@ void LorrisAnalyzer::updateData()
     ui->timeBox->setValue(m_curIndex);
     ui->timeSlider->setValue(m_curIndex);
 
-    if(m_curIndex && (quint32)m_curIndex < m_storage.getSize())
+    if((quint32)m_curIndex < m_storage.getSize())
     {
         m_curData.setData(m_storage.get(m_curIndex));
         emit newData(&m_curData, m_curIndex);
@@ -603,6 +603,8 @@ void LorrisAnalyzer::clearDataButton()
     ui->timeSlider->setMaximum(0);
     ui->timeBox->setMaximum(0);
     ui->timeBox->setSuffix(tr(" of ") % "0");
+
+    ui->filterTabs->clearLastData();
 
     updateData();
 }

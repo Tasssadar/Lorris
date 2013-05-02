@@ -336,6 +336,12 @@ void FilterTabWidget::sendLastData()
     }
 }
 
+void FilterTabWidget::clearLastData()
+{
+    for(quint32 i = 0; i < m_filters.size(); ++i)
+        m_filters[i]->clearLastData();
+}
+
 void FilterTabWidget::activateTab()
 {
     Q_ASSERT(sender() && sender()->inherits("DataFilter"));

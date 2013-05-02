@@ -56,6 +56,7 @@ public:
     std::vector<DataFilter*>& getFilters() { return m_filters; }
 
     void sendLastData();
+    void clearLastData();
 
 public slots:
     void handleData(analyzer_data *data, quint32 index);

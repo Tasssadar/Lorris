@@ -75,6 +75,11 @@ void DataFilter::sendLastData()
         emit newData(&m_lastData, m_lastIdx);
 }
 
+void DataFilter::clearLastData()
+{
+    m_lastData.setData(NULL);
+}
+
 void DataFilter::handleData(analyzer_data *data, quint32 idx)
 {
     if(!m_layout || !isOkay(data))

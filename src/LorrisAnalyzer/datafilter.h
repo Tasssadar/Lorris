@@ -180,6 +180,7 @@ public:
     quint32 getLastIdx() const { return m_lastIdx; }
 
     void sendLastData();
+    void clearLastData();
     void connectWidget(DataWidget *w, bool exclusive = true);
 
 protected slots:
