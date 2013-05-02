@@ -48,6 +48,8 @@ private slots:
     void repaint();
 
 private:
+    void mesaGluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
+
     float m_modelRotX;
     float m_modelRotY;
     float m_modelRotZ;

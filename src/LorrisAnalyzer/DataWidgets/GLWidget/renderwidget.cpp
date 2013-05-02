@@ -89,19 +89,37 @@ void RenderWidget::initializeGL()
     }*/
 }
 
+void RenderWidget::mesaGluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
+{
+    GLdouble xmin, xmax, ymin, ymax;
+
+    ymax = zNear * tan(fovy * M_PI / 360.0);
+    ymin = -ymax;
+
+    xmin = ymin * aspect;
+    xmax = ymax * aspect;
+
+    glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
+}
+
 void RenderWidget::resizeGL(int width, int height)
 {
     glViewport(0, 0, width, height);
 
-    GLdouble top, bottom, left, right;
-    top = 4 * tan((M_PI/180)*80/2);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    /*GLdouble top, bottom, left, right;
+    top = 4 * tan((M_PI/180)*90/2);
     bottom = -top;
     right = (float(width)/height)*top;
     left = -right;
+    glFrustum(left, right, bottom, top, m_near, m_far);
+    //glOrtho(left, right, bottom, top, 4, 80);
+    */
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(left, right, bottom, top, 5, 80);
+    mesaGluPerspective(90, (double(width)/height), 1, 100);
+
     glMatrixMode(GL_MODELVIEW);
 
     updateGL();
