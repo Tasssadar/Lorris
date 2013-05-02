@@ -354,7 +354,7 @@ void GraphWidget::dropEvent(QDropEvent *event)
     if(m_add_dialog)
         delete m_add_dialog;
     m_add_dialog = new GraphCurveAddDialog(this, &m_curves, false);
-    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(addCurve()));
+    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(acceptCurveChanges()));
     m_add_dialog->open();
 }
 
@@ -509,7 +509,7 @@ void GraphWidget::editCurve()
     m_add_dialog = new GraphCurveAddDialog(this, &m_curves, true);
     m_add_dialog->open();
 
-    connect(m_add_dialog, SIGNAL(accepted()), SLOT(addCurve()));
+    connect(m_add_dialog, SIGNAL(accepted()), SLOT(acceptCurveChanges()));
     connect(m_add_dialog, SIGNAL(apply()),    SLOT(applyCurveChanges()));
 }
 
