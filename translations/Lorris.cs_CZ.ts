@@ -1109,18 +1109,18 @@ p, li { white-space: pre-wrap; }
         <translation>Přidat filtr</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/filtertabwidget.cpp" line="631"/>
-        <location filename="../src/LorrisAnalyzer/filtertabwidget.cpp" line="696"/>
+        <location filename="../src/LorrisAnalyzer/filtertabwidget.cpp" line="637"/>
+        <location filename="../src/LorrisAnalyzer/filtertabwidget.cpp" line="702"/>
         <source>Error! Mouseover to see details.</source>
         <translation>Chyba! Najeďte sem myší pro info</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/filtertabwidget.cpp" line="706"/>
+        <location filename="../src/LorrisAnalyzer/filtertabwidget.cpp" line="712"/>
         <source>Filter%1</source>
         <translation>Filtr%1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/filtertabwidget.cpp" line="707"/>
+        <location filename="../src/LorrisAnalyzer/filtertabwidget.cpp" line="713"/>
         <source>Filter</source>
         <translation>Filtr</translation>
     </message>
@@ -1563,12 +1563,17 @@ stejného souboru vícekrát:</translation>
         <translation>Načíst model...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp" line="69"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp" line="33"/>
+        <source>Reset camera</source>
+        <translation>Resetovat kameru</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp" line="70"/>
         <source>Load model</source>
         <translation>Načíst model</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp" line="69"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp" line="70"/>
         <source>Wavefront models (*.obj)</source>
         <translation>Modely Wavefront (*.obj)</translation>
     </message>
@@ -1576,7 +1581,7 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>GLWidgetAddBtn</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp" line="77"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp" line="88"/>
         <source>Rotation</source>
         <translation>Natočení</translation>
     </message>
@@ -3048,7 +3053,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="630"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="632"/>
         <location filename="../src/LorrisAnalyzer/storage.cpp" line="187"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -3325,7 +3330,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="631"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="633"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
@@ -3425,22 +3430,22 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="227"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="232"/>
         <source>Device == 0x%1</source>
         <translation>Zařízení == 0x%1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="254"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="259"/>
         <source>Command == 0x%1</source>
         <translation>Příkaz == 0x%1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="285"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="290"/>
         <source>Byte at idx %1 == 0x%2</source>
         <translation>Byte na pozici %1 == 0x%2</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="311"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="316"/>
         <source>// Return true if okay, false to filter out
 function dataPass(data, dev, cmd) {
     return false;
@@ -3453,12 +3458,12 @@ function dataPass(data, dev, cmd) {
 </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="336"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="341"/>
         <source>Could not find dataPass function!</source>
         <translation>Nemůžu najít fci dataPass!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="381"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="386"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
