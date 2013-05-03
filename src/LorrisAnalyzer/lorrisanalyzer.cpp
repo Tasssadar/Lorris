@@ -127,13 +127,6 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(exportAct,      SIGNAL(triggered()),     SLOT(exportBin()));
     connect(importAct,      SIGNAL(triggered()),     SLOT(importBinAct()));
 
-    // Time box update consumes hilarious CPU time on X11,
-    // this makes it better
-#if defined(Q_WS_X11)
-    ui->timeBox->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
-    ui->timeBox->setAttribute(Qt::WA_PaintOnScreen, true);
-#endif
-
     ui->dataArea->setAnalyzerAndStorage(this, &m_storage);
 
     QWidget *tmp = new QWidget(this);

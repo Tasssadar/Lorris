@@ -29,10 +29,13 @@ RenderWidget::RenderWidget(QWidget *parent) :
     resetCamera();
 
     setFocusPolicy(Qt::StrongFocus);
+
     m_timer = new QTimer(this);
     m_timer->setInterval(RENDER_TIMER);
     m_timer->setSingleShot(true);
     connect(m_timer, SIGNAL(timeout()), SLOT(requestRender()));
+
+    ObjFileLoader::load(m_modelFile, m_models);
 }
 
 RenderWidget::~RenderWidget()
@@ -56,8 +59,6 @@ void RenderWidget::resetCamera()
 
 void RenderWidget::initializeGL()
 {
-    ObjFileLoader::load(m_modelFile, m_models);
-
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_NORMALIZE);
