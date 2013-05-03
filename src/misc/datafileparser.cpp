@@ -291,6 +291,30 @@ QString DataFileParser::getAttachmentFilename()
     return QString("%1_%2_at%3.cldta").arg(m_path).arg(m_name).arg(m_attachmentId++);
 }
 
+DataFileParser& DataFileParser::operator <<(const QString& str)
+{
+    writeString(str);
+    return *this;
+}
+
+DataFileParser& DataFileParser::operator <<(const QColor& color)
+{
+    writeColor(color);
+    return *this;
+}
+
+DataFileParser& DataFileParser::operator >>(QString& str)
+{
+    str = readString();
+    return *this;
+}
+
+DataFileParser& DataFileParser::operator >>(QColor& color)
+{
+    color = readColor();
+    return *this;
+}
+
 QFuture<QByteArray> DataFileBuilder::m_future;
 QFutureWatcher<QByteArray> *DataFileBuilder::m_watcher = NULL;
 

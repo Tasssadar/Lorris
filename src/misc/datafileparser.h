@@ -110,6 +110,14 @@ public:
     template <typename T> void writeVal(T val);
     template <typename T> void writeVal(T val, quint64 pos);
 
+    template <typename T> DataFileParser& operator <<(T data);
+    DataFileParser& operator <<(const QString& str);
+    DataFileParser& operator <<(const QColor& color);
+
+    template <typename T> DataFileParser& operator >>(T &data);
+    DataFileParser& operator >>(QString& str);
+    DataFileParser& operator >>(QColor& color);
+
 private:
     char *getBlockWithFormat(const char *block, quint8& lenght);
 
@@ -183,6 +191,24 @@ void DataFileParser::writeVal(T val, quint64 pos)
     if(seek(pos))
         write((char*)&val, sizeof(T));
     seek(origin);
+}
+
+// NOTE: Operators << and >> have specialized methods
+// for QString, QColor and Connection (and possibly some
+// other, depends if this comment is outdated or not)
+template <typename T>
+DataFileParser& DataFileParser::operator <<(T data)
+{
+    writeVal<T>(data);
+    return *this;
+}
+
+template <typename T>
+DataFileParser& DataFileParser::operator >>(T &data)
+{
+    read((char*)&data, sizeof(T));
+    qDebug("read data");
+    return *this;
 }
 
 #endif // DATAFILEPARSER_H
