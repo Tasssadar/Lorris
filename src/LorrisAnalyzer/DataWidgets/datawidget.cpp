@@ -569,17 +569,13 @@ void DataWidget::loadOldDataInfo(DataFileParser *file, data_widget_info& info)
 
 void DataWidget::saveWidgetInfo(DataFileParser *file)
 {
-    char *p = NULL;
-
     // widget type
     file->writeBlockIdentifier("widgetType");
-    p = (char*)&m_widgetType;
-    file->write(p, sizeof(m_widgetType));
+    *file << m_widgetType;
 
     // widget pos and size
     file->writeBlockIdentifier("widgetPosSize");
-    int val[] = { pos().x(), pos().y(), width(), height() };
-    file->write((char*)&val, sizeof(val));
+    *file << x() << y() << width() << height();
 
     // data info
     file->writeBlockIdentifier("widgetDataInfoV2");
@@ -587,19 +583,19 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
 
     // locked
     file->writeBlockIdentifier("widgetLocked");
-    file->writeVal(isLocked());
+    *file << isLocked();
 
     // title
     file->writeBlockIdentifier("widgetTitleUtf8");
-    file->writeString(getTitle());
+    *file << getTitle();
 
     // scaled up
     file->writeBlockIdentifier("widgetScaledUp");
-    file->writeVal(bool(m_state & STATE_SCALED_UP));
-    file->writeVal(m_orig_geometry.x());
-    file->writeVal(m_orig_geometry.y());
-    file->writeVal(m_orig_geometry.width());
-    file->writeVal(m_orig_geometry.height());
+    *file << bool(m_state & STATE_SCALED_UP);
+    *file << m_orig_geometry.x();
+    *file << m_orig_geometry.y();
+    *file << m_orig_geometry.width();
+    *file << m_orig_geometry.height();
 }
 
 void DataWidget::loadWidgetInfo(DataFileParser *file)

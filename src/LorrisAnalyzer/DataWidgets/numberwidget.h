@@ -55,16 +55,16 @@ private slots:
 private:
      void prependZeros(QString& n, quint8 len);
 
-     QLabel *num;
-     quint8 numberType;
-     quint8 format;
-     bool level;
+     QLabel *m_num;
+     quint8 m_numberType;
+     quint8 m_format;
+     bool m_level;
      quint8 m_digits;
 
-     QAction *bitsAction[NUM_COUNT];
-     QAction *fmtAction[FMT_COUNT];
+     QAction *m_bitsAction[NUM_COUNT];
+     QAction *m_fmtAction[FMT_COUNT];
      QAction *m_precAct[PREC_COUNT];
-     QAction *levelAction;
+     QAction *m_levelAction;
 
      FormulaEvaluation m_eval;
 };

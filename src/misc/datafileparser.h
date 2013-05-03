@@ -207,7 +207,6 @@ template <typename T>
 DataFileParser& DataFileParser::operator >>(T &data)
 {
     read((char*)&data, sizeof(T));
-    qDebug("read data");
     return *this;
 }
 
