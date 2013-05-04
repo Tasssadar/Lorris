@@ -19,13 +19,20 @@
 #include "lorrisanalyzer.h"
 #include "widgetarea.h"
 #include "../ui/hookedlineedit.h"
+#include "confirmwidget.h"
 
-#define SORT_DATA     Qt::UserRole
-#define TARGET_DATA   Qt::UserRole+1
-#define SLOT_DATA     Qt::UserRole+2
-#define ARG1_DATA     Qt::UserRole+3
-#define ARG2_DATA     Qt::UserRole+4
-#define ARG3_DATA     Qt::UserRole+5
+enum ItemDataTypes
+{
+    DATA_SORT      = Qt::UserRole,
+    DATA_CONFIRM,
+    DATA_TARGET,
+    DATA_SLOT,
+
+    // args must be after each other
+    DATA_ARG1,
+    DATA_ARG2,
+    DATA_ARG3
+};
 
 #define ARG_COUNT 3
 
@@ -41,24 +48,14 @@ SearchWidget::SearchWidget(WidgetArea *area, LorrisAnalyzer *analyzer) :
     setMouseTracking(true);
 
     m_line = new HookedLineEdit(this);
-    m_list = new QListWidget(this);
+    m_list = new FlatListWidget(true, this);
 
-    m_list->setFont(Utils::getMonospaceFont());
-    m_list->setFont(Utils::getMonospaceFont());
+    m_line->setFont(Utils::getMonospaceFont());
 
     m_line->setStyleSheet("background-color: #1b1b1b; color: #ffffff; border: 1px solid #FF4444;");
     QPalette p;
     p.setColor(QPalette::Highlight, Qt::darkGray);
     m_line->setPalette(p);
-
-    m_list->setFrameStyle(QFrame::Plain | QFrame::NoFrame);
-    setStyleSheet("QListWidget::item { padding-top: 3px; padding-bottom:3px;}"
-                  "QListWidget::item:hover { background-color: transparent; }"
-                  "QListWidget::item:selected { background-color: #FF4444; color: white; }");
-    m_list->setStyleSheet("background-color: #000000; color: #ffffff;");
-    m_list->setUniformItemSizes(true);
-    m_list->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_list->installEventFilter(this);
 
     QVBoxLayout *v = new QVBoxLayout(this);
     v->addWidget(m_line);
@@ -104,7 +101,7 @@ void SearchWidget::initItems()
     for(int i = 0; i < (int)n.size(); ++i)
         addItem(tr("Add %1").arg(n[i]), this, "actionAddWidget", QVariant(i));
 
-    addItem(tr("Clear data"), m_analyzer, "clearData");
+    addConfirmItem(tr("Clear data"), m_analyzer, "clearData");
     addItem(tr("Change structure"), m_analyzer, "editStructure");
 
     addItem(tr("Create bookmark"), m_area, "addBookmark");
@@ -123,20 +120,52 @@ QListWidgetItem* SearchWidget::addItem(const QString& text, QObject *target, con
               const QVariant& arg1, const QVariant& arg2, const QVariant& arg3)
 {
     QListWidgetItem *it = new QListWidgetItem(text, m_list);
-    it->setData(TARGET_DATA, QVariant::fromValue((void*)target));
-    it->setData(SLOT_DATA, QVariant(slot));
-    it->setData(ARG1_DATA, arg1);
-    it->setData(ARG2_DATA, arg2);
-    it->setData(ARG3_DATA, arg3);
+    it->setData(DATA_CONFIRM, QVariant(false));
+    it->setData(DATA_TARGET, QVariant::fromValue((void*)target));
+    it->setData(DATA_SLOT, QVariant(slot));
+    it->setData(DATA_ARG1, arg1);
+    it->setData(DATA_ARG2, arg2);
+    it->setData(DATA_ARG3, arg3);
     m_items.push_back(it);
     m_itemVisibility.push_back(true);
     return it;
 }
 
+QListWidgetItem* SearchWidget::addConfirmItem(const QString& text, QObject *target,
+              const char *slot, const QVariant& arg1, const QVariant& arg2, const QVariant& arg3)
+{
+    QListWidgetItem *it = addItem(text, target, slot, arg1, arg2, arg3);
+    it->setData(DATA_CONFIRM, QVariant(true));
+    return it;
+}
+
 void SearchWidget::itemActivated(QListWidgetItem *it)
 {
-    QObject *obj = (QObject*)it->data(TARGET_DATA).value<void*>();
-    QString slot = it->data(SLOT_DATA).toString();
+    m_line->releaseKeyboard();
+    m_area->setLastSearch(it->text());
+
+    if(!it->data(DATA_CONFIRM).toBool())
+        invokeItem(it);
+    else
+    {
+        m_list->takeItem(m_list->row(it));
+        for(size_t i = 0; i < m_items.size(); ++i)
+        {
+            if(it == m_items[i])
+            {
+                m_items.erase(m_items.begin()+i);
+                break;
+            }
+        }
+        new ConfirmWidget(it);
+    }
+    deleteLater();
+}
+
+void SearchWidget::invokeItem(QListWidgetItem *it)
+{
+    QObject *obj = (QObject*)it->data(DATA_TARGET).value<void*>();
+    QString slot = it->data(DATA_SLOT).toString();
 
     // We need to copy data from QVariant to newly allocated memory,
     // because QGenericArgument stores pointer to data, which get
@@ -144,47 +173,24 @@ void SearchWidget::itemActivated(QListWidgetItem *it)
     QGenericArgument args[ARG_COUNT];
     for(int i = 0; i < ARG_COUNT; ++i)
     {
-        QVariant v = it->data(ARG1_DATA+i);
-        switch(v.type())
-        {
-            case QVariant::Invalid:
-                break;
-            case QVariant::Bool:
-            {
-                bool *b = new bool;
-                *b = v.toBool();
-                args[i] = Q_ARG(bool, *b);
-                break;
-            }
-            case QVariant::Int:
-            {
-                int *d = new int;
-                *d = v.toInt();
-                args[i] = Q_ARG(int, *d);
-                break;
-            }
-            case QVariant::String:
-            {
-                QString *s = new QString(v.toString());
-                args[i] = Q_ARG(QString, *s);
-                break;
-            }
-            default:
-                qWarning("Unsupported action arg type in SearchWidget::itemActivated");
-                break;
-        }
-    }
+        QVariant v = it->data(DATA_ARG1+i);
+        if(v.type() == QVariant::Invalid)
+            continue;
 
-    m_line->releaseKeyboard();
+        args[i] = QGenericArgument(v.typeName(), QMetaType::construct(v.type(), v.data()));
+    }
 
     QMetaObject::invokeMethod(obj, slot.toStdString().c_str(), Qt::DirectConnection,
                               args[0], args[1], args[2]);
 
     for(int i = 0; i < ARG_COUNT; ++i)
-        delete args[i].data();
+    {
+        QVariant v = it->data(DATA_ARG1+i);
+        if(v.type() == QVariant::Invalid)
+            continue;
 
-    m_area->setLastSearch(it->text());
-    deleteLater();
+        QMetaType::destroy(v.type(), args[i].data());
+    }
 }
 
 void SearchWidget::actionAddWidget(int type)
@@ -235,22 +241,10 @@ void SearchWidget::lineKeyPressed(int key)
     }
 }
 
-bool SearchWidget::eventFilter(QObject *obj, QEvent *event)
-{
-    if(event->type() != QEvent::HoverMove)
-        return false;
-
-    QHoverEvent *ev = (QHoverEvent*)event;
-    QListWidgetItem *it = m_list->itemAt(ev->pos());
-    if(it)
-        m_list->setCurrentItem(it);
-    return true;
-}
-
 static bool compareItems(QListWidgetItem *a, QListWidgetItem *b)
 {
-    int ia = a->data(SORT_DATA).toInt();
-    int ib = b->data(SORT_DATA).toInt();
+    int ia = a->data(DATA_SORT).toInt();
+    int ib = b->data(DATA_SORT).toInt();
 
     if(ia != ib)
         return ia < ib;
@@ -297,7 +291,7 @@ void SearchWidget::filterChanged(const QString &f)
             if(m_itemVisibility[i])
             {
                 add.push_back(it);
-                it->setData(SORT_DATA, QVariant(idx));
+                it->setData(DATA_SORT, QVariant(idx));
             }
         }
 

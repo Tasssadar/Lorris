@@ -24,8 +24,7 @@ public:
     explicit SearchWidget(WidgetArea *area, LorrisAnalyzer *analyzer);
     ~SearchWidget();
 
-protected:
-    bool eventFilter(QObject *obj, QEvent *event);
+    static void invokeItem(QListWidgetItem *it);
 
 private slots:
     void itemActivated(QListWidgetItem *it);
@@ -35,6 +34,9 @@ private slots:
 
 private:
     QListWidgetItem *addItem(const QString &text, QObject *target, const char *slot,
+                 const QVariant& arg1 = QVariant(), const QVariant& arg2 = QVariant(),
+                 const QVariant& arg3 = QVariant());
+    QListWidgetItem *addConfirmItem(const QString &text, QObject *target, const char *slot,
                  const QVariant& arg1 = QVariant(), const QVariant& arg2 = QVariant(),
                  const QVariant& arg3 = QVariant());
 

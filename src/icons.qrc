@@ -17,5 +17,6 @@
         <file alias="symbol_moon">icons/symbol_moon.png</file>
         <file alias="arrow-right">icons/go-next.png</file>
         <file alias="arrow-left">icons/go-previous.png</file>
+        <file alias="question">icons/question.png</file>
     </qresource>
 </RCC>
