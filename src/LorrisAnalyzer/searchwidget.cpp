@@ -101,8 +101,8 @@ void SearchWidget::initItems()
 {
     // widgets
     const std::vector<QString>& n = sWidgetFactory.getWidgetNames();
-    for(size_t i = 0; i < n.size(); ++i)
-        addItem(tr("Add %1Widget").arg(n[i]), this, "actionAddWidget", QVariant((int)i));
+    for(int i = 0; i < (int)n.size(); ++i)
+        addItem(tr("Add %1Widget").arg(n[i]), this, "actionAddWidget", QVariant(i));
 
     addItem(tr("Clear data"), m_analyzer, "clearData");
     addItem(tr("Change structure"), m_analyzer, "editStructure");
@@ -138,6 +138,9 @@ void SearchWidget::itemActivated(QListWidgetItem *it)
     QObject *obj = (QObject*)it->data(TARGET_DATA).value<void*>();
     QString slot = it->data(SLOT_DATA).toString();
 
+    // We need to copy data from QVariant to newly allocated memory,
+    // because QGenericArgument stores pointer to data, which get
+    // destroyed at the end of the scope
     QGenericArgument args[ARG_COUNT];
     for(int i = 0; i < ARG_COUNT; ++i)
     {
@@ -146,15 +149,26 @@ void SearchWidget::itemActivated(QListWidgetItem *it)
         {
             case QVariant::Invalid:
                 break;
+            case QVariant::Bool:
+            {
+                bool *b = new bool;
+                *b = v.toBool();
+                args[i] = Q_ARG(bool, *b);
+                break;
+            }
             case QVariant::Int:
-                args[i] = Q_ARG(int, v.toInt());
+            {
+                int *d = new int;
+                *d = v.toInt();
+                args[i] = Q_ARG(int, *d);
                 break;
-            case QVariant::UInt:
-                args[i] = Q_ARG(uint, v.toUInt());
-                break;
+            }
             case QVariant::String:
-                args[i] = Q_ARG(QString, v.toString());
+            {
+                QString *s = new QString(v.toString());
+                args[i] = Q_ARG(QString, *s);
                 break;
+            }
             default:
                 qWarning("Unsupported action arg type in SearchWidget::itemActivated");
                 break;
@@ -165,6 +179,9 @@ void SearchWidget::itemActivated(QListWidgetItem *it)
 
     QMetaObject::invokeMethod(obj, slot.toStdString().c_str(), Qt::DirectConnection,
                               args[0], args[1], args[2]);
+
+    for(int i = 0; i < ARG_COUNT; ++i)
+        delete args[i].data();
 
     m_area->setLastSearch(it->text());
     deleteLater();
