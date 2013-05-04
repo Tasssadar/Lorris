@@ -191,7 +191,9 @@ void SearchWidget::actionAddWidget(int type)
 {
     QPoint p = pos();
     p = m_area->mapFromGlobal(p);
-    m_area->addWidget(p, type);
+
+    DataWidget *w = m_area->addWidget(p, type);
+    w->align();
 }
 
 void SearchWidget::lineKeyPressed(int key)
