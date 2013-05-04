@@ -99,7 +99,7 @@ void SearchWidget::initItems()
     // widgets
     const std::vector<QString>& n = sWidgetFactory.getWidgetNames();
     for(int i = 0; i < (int)n.size(); ++i)
-        addItem(tr("Add %1").arg(n[i]), this, "actionAddWidget", QVariant(i));
+        addItem(tr("Add %1").arg(n[i].toLower()), this, "actionAddWidget", QVariant(i));
 
     addConfirmItem(tr("Clear data"), m_analyzer, "clearData");
     addItem(tr("Change structure"), m_analyzer, "editStructure");
