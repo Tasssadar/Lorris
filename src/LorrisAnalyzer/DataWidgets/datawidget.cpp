@@ -197,8 +197,14 @@ bool DataWidget::eventFilter(QObject *, QEvent *ev)
 
 void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
-    if(e->button() == Qt::LeftButton && m_title_label->rect().contains(e->pos()))
+    if(e->button() != Qt::LeftButton)
+        return QFrame::mouseDoubleClickEvent(e);
+
+    if(e->x() >= 0 && e->x() <= m_title_label->geometry().right() &&
+       e->y() >= 0 && e->y() <= m_sep_line->geometry().bottom())
+    {
         titleDoubleClick();
+    }
     else
         QFrame::mouseDoubleClickEvent(e);
 }
