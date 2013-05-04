@@ -366,15 +366,18 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 win32 {
     CONFIG -= flat
     CONFIG += libenjoy
-    
+
     win32-msvc* {
         CONFIG += libyb
     }
 
-    INCLUDEPATH += ../dep/SDL/include
-
-    CONFIG(debug, debug|release):LIBS += -lqwtd
-    else:LIBS += -lqwt
+    CONFIG(debug, debug|release) {
+        LIBS += -lqwtd
+        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qwt\\lib\\qwtd.dll\"" \""$$DESTDIR\\qwtd.dll\"" &
+    } else {
+        LIBS += -lqwt
+        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qwt\\lib\\qwt.dll\"" \""$$DESTDIR\\qwt.dll\"" &
+    }
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
 
@@ -472,10 +475,13 @@ qsci_editor:win32 {
     DEFINES += USE_QSCI
     win32-msvc* {
         LIBS += -L"$$PWD/../dep/qscintilla2/msvc"
-        CONFIG(debug, debug|release):LIBS += -lqscintilla2d
-        else:LIBS += -lqscintilla2
-
-        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\msvc\\qscintilla2.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
+        CONFIG(debug, debug|release) {
+            LIBS += -lqscintilla2d
+            QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\msvc\\qscintilla2d.dll\"" \""$$DESTDIR\\qscintilla2d.dll\"" &
+        } else {
+            LIBS += -lqscintilla2
+            QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\msvc\\qscintilla2.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
+        }
     } else {
         LIBS += -L"$$PWD/../dep/qscintilla2/" -lqscintilla2
         QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\qscintilla2.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
