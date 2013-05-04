@@ -42,9 +42,9 @@ WidgetArea::WidgetArea(QWidget *parent) :
     m_active_bookmk = NULL;
     m_bookmk_ids = 0;
     m_show_bookmk = sConfig.get(CFG_BOOL_ANALYZER_SHOW_BOOKMARKS);
+    m_draggin = false;
 
     setCursor(Qt::OpenHandCursor);
-    m_draggin = false;
 
     QAction *addPoint = m_menu->addAction(tr("Add bookmark..."));
     m_actShowBookmk = m_menu->addAction(tr("Show bookmarks"));
@@ -70,15 +70,15 @@ WidgetArea::WidgetArea(QWidget *parent) :
 
     m_menu->addSeparator();
 
-    m_titleVisibility = m_menu->addAction(tr("Show widget's title bar"));
-    m_showPreview = m_menu->addAction(tr("Show preview while moving the area"));
+    m_actTitleVisibility = m_menu->addAction(tr("Show widget's title bar"));
+    m_actShowPreview = m_menu->addAction(tr("Show preview while moving the area"));
     QAction *lockAll = m_menu->addAction(tr("Lock all widgets"));
     QAction *unlockAll = m_menu->addAction(tr("Unlock all widgets"));
 
-    m_titleVisibility->setCheckable(true);
-    m_titleVisibility->setChecked(true);
-    m_showPreview->setCheckable(true);
-    m_showPreview->setChecked(sConfig.get(CFG_BOOL_ANALYZER_SHOW_PREVIEW));
+    m_actTitleVisibility->setCheckable(true);
+    m_actTitleVisibility->setChecked(true);
+    m_actShowPreview->setCheckable(true);
+    m_actShowPreview->setChecked(sConfig.get(CFG_BOOL_ANALYZER_SHOW_PREVIEW));
 
     m_menu->addSeparator();
 
@@ -100,8 +100,8 @@ WidgetArea::WidgetArea(QWidget *parent) :
     connect(gridSize,        SIGNAL(triggered()),                  SLOT(setGridSize()));
     connect(align,           SIGNAL(triggered()),                  SLOT(alignWidgets()));
     connect(linesAct,        SIGNAL(toggled(bool)),                SLOT(enableLines(bool)));
-    connect(m_titleVisibility, SIGNAL(triggered(bool)),            SLOT(titleVisibilityAct(bool)));
-    connect(m_showPreview,   SIGNAL(toggled(bool)),                SLOT(setShowPreview(bool)));
+    connect(m_actTitleVisibility, SIGNAL(triggered(bool)),            SLOT(titleVisibilityAct(bool)));
+    connect(m_actShowPreview,   SIGNAL(toggled(bool)),                SLOT(setShowPreview(bool)));
     connect(lockAll,         SIGNAL(triggered()),                  SLOT(lockAll()));
     connect(unlockAll,       SIGNAL(triggered()),                  SLOT(unlockAll()));
     connect(&m_undoStack,    SIGNAL(undoAvailable(bool)),    undo, SLOT(setEnabled(bool)));
@@ -185,7 +185,7 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
 
     m_analyzer->setDataChanged();
 
-    w->setTitleVisibility(m_titleVisibility->isChecked());
+    w->setTitleVisibility(m_actTitleVisibility->isChecked());
     return w;
 }
 
@@ -214,6 +214,8 @@ void WidgetArea::removeWidget(quint32 id)
     update();
 
     m_undoStack.checkValid();
+
+    setFocus();
 }
 
 DataWidget *WidgetArea::getWidget(quint32 id)
@@ -320,6 +322,9 @@ void WidgetArea::saveSettings(DataFileParser *file)
 
         file->writeString(b.keyseq);
     }
+
+    file->writeBlockIdentifier("areaLastSearch");
+    *file << m_lastSearch;
 }
 
 void WidgetArea::loadSettings(DataFileParser *file)
@@ -369,6 +374,9 @@ void WidgetArea::loadSettings(DataFileParser *file)
             m_bookmarks.push_back(b);
         }
     }
+
+    if(file->seekToNextBlock("areaLastSearch", BLOCK_DATA_INDEX))
+        *file >> m_lastSearch;
 }
 
 void WidgetArea::paintEvent(QPaintEvent *event)
@@ -504,7 +512,7 @@ void WidgetArea::mouseMoveEvent(QMouseEvent *event)
 
         if(m_prev)
             m_prev->prepareRender();
-        else if(m_showPreview->isChecked())
+        else if(m_actShowPreview->isChecked())
             m_prev = new WidgetAreaPreview(this, (QWidget*)parent());
     }
     else
@@ -759,8 +767,13 @@ void WidgetArea::enableLines(bool enable)
 
 void WidgetArea::titleVisibilityAct(bool toggled)
 {
-    m_titleVisibility->setChecked(toggled);
+    m_actTitleVisibility->setChecked(toggled);
     emit setTitleVisibility(toggled);
+}
+
+void WidgetArea::toggleWidgetTitles()
+{
+    titleVisibilityAct(!m_actTitleVisibility->isChecked());
 }
 
 void WidgetArea::lockAll()
@@ -796,6 +809,11 @@ void WidgetArea::clearSelection()
 void WidgetArea::setShowPreview(bool show)
 {
     sConfig.set(CFG_BOOL_ANALYZER_SHOW_PREVIEW, show);
+}
+
+void WidgetArea::togglePreview()
+{
+    m_actShowPreview->toggle();
 }
 
 DataFilter *WidgetArea::getFilter(quint32 id) const
@@ -927,6 +945,11 @@ void WidgetArea::setShowBookmarks(bool show)
     m_show_bookmk = show;
     sConfig.set(CFG_BOOL_ANALYZER_SHOW_BOOKMARKS, m_show_bookmk);
     update();
+}
+
+void WidgetArea::toggleBookmarks()
+{
+    m_actShowBookmk->toggle();
 }
 
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)

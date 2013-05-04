@@ -152,7 +152,9 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.cpp \
     LorrisAnalyzer/DataWidgets/GLWidget/glmodel.cpp \
     LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/glutils.cpp
+    LorrisAnalyzer/DataWidgets/GLWidget/glutils.cpp \
+    LorrisAnalyzer/searchwidget.cpp \
+    LorrisAnalyzer/floatingwidget.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -285,7 +287,9 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.h \
     LorrisAnalyzer/DataWidgets/GLWidget/glmodel.h \
     LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/glutils.h
+    LorrisAnalyzer/DataWidgets/GLWidget/glutils.h \
+    LorrisAnalyzer/searchwidget.h \
+    LorrisAnalyzer/floatingwidget.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

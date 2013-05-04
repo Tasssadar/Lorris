@@ -49,7 +49,7 @@ public:
     static void sleep (unsigned long secs)  { QThread::sleep(secs); }
     static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
 
-    static QFont getMonospaceFont(quint8 size = 9);
+    static QFont getMonospaceFont(int size = -1);
 
     static void showErrorBox(const QString& text, QWidget* parent = 0);
 

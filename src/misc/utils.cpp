@@ -84,9 +84,35 @@ QString Utils::toBinary(std::size_t width, int value)
     return res;
 }
 
-QFont Utils::getMonospaceFont(quint8 size)
+QFont Utils::getMonospaceFont(int size)
 {
-    return QFont("Courier New", size);
+    if(size == -1)
+        size = qApp->font().pointSize();
+
+    static const char *families[] = {
+        "Consolas",
+        "Deja Vu Sans Mono",
+        "Droid Sans Mono",
+        "Andale Mono",
+        "Courier New"
+    };
+
+    static int selected = -1;
+    if(selected == -1)
+    {
+        for(int i = 0; i < sizeof_array(families); ++i)
+        {
+            QFont f(families[i], size);
+            if(f.exactMatch())
+            {
+                selected = i;
+                return f;
+            }
+        }
+        selected = sizeof_array(families)-1;
+    }
+
+    return QFont(families[selected], size);
 }
 
 void Utils::showErrorBox(const QString& text, QWidget* parent)

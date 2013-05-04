@@ -35,6 +35,7 @@
 #include "../WorkTab/WorkTabMgr.h"
 #include "DataWidgets/datawidget.h"
 #include "widgetfactory.h"
+#include "searchwidget.h"
 
 #include "ui_lorrisanalyzer.h"
 
@@ -121,9 +122,9 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(openAct,        SIGNAL(triggered()),     SLOT(openFile()));
     connect(saveAsAct,      SIGNAL(triggered()),     SLOT(saveAsButton()));
     connect(saveAct,        SIGNAL(triggered()),     SLOT(saveButton()));
-    connect(clearAct,       SIGNAL(triggered()),     SLOT(clearDataButton()));
+    connect(clearAct,       SIGNAL(triggered()),     SLOT(clearData()));
     connect(clearAllAct,    SIGNAL(triggered()),     SLOT(clearAllButton()));
-    connect(structAct,      SIGNAL(triggered()),     SLOT(editStruture()));
+    connect(structAct,      SIGNAL(triggered()),     SLOT(editStructure()));
     connect(exportAct,      SIGNAL(triggered()),     SLOT(exportBin()));
     connect(importAct,      SIGNAL(triggered()),     SLOT(importBinAct()));
 
@@ -204,6 +205,8 @@ void LorrisAnalyzer::onTabShow(const QString& filename)
 {
     if(!filename.isEmpty())
         openFile(filename);
+
+    ui->dataArea->setFocus();
 
     if (!m_con && sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB))
     {
@@ -587,7 +590,7 @@ void LorrisAnalyzer::clearAllButton()
     updateData();
 }
 
-void LorrisAnalyzer::clearDataButton()
+void LorrisAnalyzer::clearData()
 {
     m_parser.resetCurPacket();
     m_storage.Clear();
@@ -618,6 +621,8 @@ void LorrisAnalyzer::openFile(const QString& filename)
 {
     if(load((QString&)filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS)))
         sConfig.set(CFG_STRING_ANALYZER_FOLDER, m_storage.getFilename());
+
+    ui->dataArea->setFocus();
 }
 
 void LorrisAnalyzer::openFile()
@@ -635,7 +640,7 @@ void LorrisAnalyzer::openFile()
     load(filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS));
 }
 
-void LorrisAnalyzer::editStruture()
+void LorrisAnalyzer::editStructure()
 {
     m_parser.setPaused(true);
     analyzer_packet *packet = SourceDialog::getStructure(m_packet, m_con.data());
@@ -769,4 +774,80 @@ DataFilter *LorrisAnalyzer::getFilter(quint32 id)
 DataFilter *LorrisAnalyzer::getFilterByOldInfo(const data_widget_infoV1 &old_info) const
 {
     return ui->filterTabs->getFilterByOldInfo(old_info);
+}
+
+void LorrisAnalyzer::keyPressEvent(QKeyEvent *ev)
+{
+    if(ev->key() == Qt::Key_Space)
+        new SearchWidget(ui->dataArea, this);
+    PortConnWorkTab::keyPressEvent(ev);
+}
+
+bool LorrisAnalyzer::event(QEvent *ev)
+{
+    switch(ev->type())
+    {
+        case QEvent::ChildAdded:
+        {
+            QChildEvent *e = (QChildEvent*)ev;
+            installEventFilterToChildren(e->child());
+            break;
+        }
+        case QEvent::ChildRemoved:
+        {
+            QChildEvent *e = (QChildEvent*)ev;
+            removeEventFilterFromChildren(e->child());
+            break;
+        }
+        default:
+            break;
+    }
+    return PortConnWorkTab::event(ev);
+}
+
+bool LorrisAnalyzer::eventFilter(QObject */*obj*/, QEvent *event)
+{
+    switch(event->type())
+    {
+        case QEvent::ChildAdded:
+        {
+            QChildEvent *e = (QChildEvent*)event;
+            installEventFilterToChildren(e->child());
+            break;
+        }
+        case QEvent::ChildRemoved:
+        {
+            QChildEvent *e = (QChildEvent*)event;
+            removeEventFilterFromChildren(e->child());
+            break;
+        }
+        case QEvent::KeyPress:
+        {
+            if(((QKeyEvent*)event)->key() == Qt::Key_Space)
+            {
+                new SearchWidget(ui->dataArea, this);
+                return true;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    return false;
+}
+
+void LorrisAnalyzer::installEventFilterToChildren(QObject *object)
+{
+    object->installEventFilter(this);
+    const QObjectList &children = object->children();
+    for(int i = 0; i < children.size(); ++i)
+        installEventFilterToChildren(children[i]);
+}
+
+void LorrisAnalyzer::removeEventFilterFromChildren(QObject *object)
+{
+    object->removeEventFilter(this);
+    const QObjectList &children = object->children();
+    for(int i = 0; i < children.size(); ++i)
+        removeEventFilterFromChildren(children[i]);
 }

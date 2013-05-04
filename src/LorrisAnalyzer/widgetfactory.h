@@ -21,6 +21,7 @@ class DataWidgetAddBtn;
        DataWidgetAddBtn *n##BtnInst(QWidget *parent) { return new n##WidgetAddBtn(parent); } \
        struct n##WidgetInit { \
             n##WidgetInit() { \
+                sWidgetFactory.addWidgetName(id, #n); \
                 sWidgetFactory.addWidgetInit(id, &n##WidgetInst); \
                 sWidgetFactory.addBtnInit(&n##BtnInst); \
                 sWidgetFactory.addScriptEnum(#id, id); \
@@ -74,9 +75,15 @@ public:
     void addWidgetInit(quint32 type, widgetInit init);
     void addBtnInit(btnInit init);
     void addScriptEnum(const char *text, quint32 val);
+    void addWidgetName(quint32 id, const char *name);
 
     DataWidget *getWidget(quint32 type, QWidget *parent);
     std::vector<DataWidgetAddBtn*> getButtons(QWidget *parent);
+
+    const std::vector<QString>& getWidgetNames()
+    {
+        return m_names;
+    }
 
     DataWidget *copy(DataWidget *w);
 
@@ -89,6 +96,7 @@ private:
     widgetInit m_widgetInits[WIDGET_MAX];
     QHash<QString, quint32> m_scriptEnums;
     std::vector<btnInit> m_btnInits;
+    std::vector<QString> m_names;
 };
 
 #define sWidgetFactory WidgetFactory::GetSingleton()

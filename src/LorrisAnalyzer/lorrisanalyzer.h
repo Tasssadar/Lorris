@@ -83,6 +83,14 @@ public slots:
     void addChildTab(ChildTab *tab, const QString& name);
     void removeChildTab(ChildTab *tab);
 
+    void clearData();
+    void editStructure();
+
+protected:
+    void keyPressEvent(QKeyEvent *ev);
+    bool event(QEvent *ev);
+    bool eventFilter(QObject *obj, QEvent *event);
+
 private slots:
     void doNewSource();
 
@@ -91,9 +99,7 @@ private slots:
     void exportBin();
     void importBinAct();
     void clearAllButton();
-    void clearDataButton();
     void openFile();
-    void editStruture();
 
     void collapseTopButton();
     void collapseRightButton();
@@ -111,6 +117,8 @@ private:
     void resetDevAndStorage(analyzer_packet *packet = NULL);
     void setPacket(analyzer_packet *packet);
     bool askToSave();
+    void installEventFilterToChildren(QObject *object);
+    void removeEventFilterFromChildren(QObject *object);
 
     Ui::LorrisAnalyzer *ui;
     Storage m_storage;

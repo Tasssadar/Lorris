@@ -14,6 +14,7 @@ WidgetFactory::WidgetFactory()
 {
     for(int i = 0; i < WIDGET_MAX; ++i)
         m_widgetInits[i] = NULL;
+    m_names.resize(WIDGET_MAX);
 }
 
 void WidgetFactory::addWidgetInit(quint32 type, widgetInit init)
@@ -30,6 +31,11 @@ void WidgetFactory::addBtnInit(btnInit init)
 void WidgetFactory::addScriptEnum(const char *text, quint32 val)
 {
     m_scriptEnums[QString(text)] = val;
+}
+
+void WidgetFactory::addWidgetName(quint32 id, const char *name)
+{
+    m_names[id] = name;
 }
 
 DataWidget *WidgetFactory::getWidget(quint32 type, QWidget *parent)
