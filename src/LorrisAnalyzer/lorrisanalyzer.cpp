@@ -132,7 +132,7 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
-    widgetBtnL->setContentsMargins(0, 0, 0, 0);
+    widgetBtnL->setContentsMargins(0, 0, style()->pixelMetric(QStyle::PM_ScrollBarExtent), 0);
 
     std::vector<DataWidgetAddBtn*> buttons = sWidgetFactory.getButtons(tmp);
     std::sort(buttons.begin(), buttons.end(), sortDataWidget);
