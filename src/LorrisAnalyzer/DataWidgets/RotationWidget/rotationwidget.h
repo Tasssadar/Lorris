@@ -5,18 +5,18 @@
 **    See README and COPYING
 ***********************************************/
 
-#ifndef GLWIDGET_H
-#define GLWIDGET_H
+#ifndef ROTATIONWIDGET_H
+#define ROTATIONWIDGET_H
 
 #include "../datawidget.h"
 
 class RenderWidget;
 
-class GLWidget : public DataWidget
+class RotationWidget : public DataWidget
 {
     Q_OBJECT
 public:
-    explicit GLWidget(QWidget *parent = 0);
+    explicit RotationWidget(QWidget *parent = 0);
 
     void setUp(Storage *storage);
 
@@ -36,11 +36,11 @@ private:
     RenderWidget *m_widget;
 };
 
-class GLWidgetAddBtn : public DataWidgetAddBtn
+class RotationWidgetAddBtn : public DataWidgetAddBtn
 {
     Q_OBJECT
 public:
-    GLWidgetAddBtn(QWidget *parent = 0);
+    RotationWidgetAddBtn(QWidget *parent = 0);
 };
 
-#endif // GLWIDGET_H
+#endif // ROTATIONWIDGET_H

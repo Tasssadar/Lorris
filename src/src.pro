@@ -148,14 +148,14 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/programmers/avr109programmer.cpp \
     ui/bytevalidator.cpp \
     misc/qtobjectpointer.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/glmodel.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/glutils.cpp \
     LorrisAnalyzer/searchwidget.cpp \
     LorrisAnalyzer/floatingwidget.cpp \
-    LorrisAnalyzer/confirmwidget.cpp
+    LorrisAnalyzer/confirmwidget.cpp \
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp \
+    LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.cpp \
+    LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.cpp \
+    LorrisAnalyzer/DataWidgets/RotationWidget/glutils.cpp \
+    LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -284,14 +284,14 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/programmers/avr109programmer.h \
     ui/bytevalidator.h \
     misc/qtobjectpointer.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/glwidget.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/glmodel.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/glutils.h \
     LorrisAnalyzer/searchwidget.h \
     LorrisAnalyzer/floatingwidget.h \
-    LorrisAnalyzer/confirmwidget.h
+    LorrisAnalyzer/confirmwidget.h \
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h \
+    LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.h \
+    LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.h \
+    LorrisAnalyzer/DataWidgets/RotationWidget/glutils.h \
+    LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -329,7 +329,7 @@ RESOURCES += \
     shared/definitions.qrc \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc \
     LorrisProgrammer/programmericons.qrc \
-    LorrisAnalyzer/DataWidgets/GLWidget/models.qrc
+    LorrisAnalyzer/DataWidgets/RotationWidget/models.qrc
 
 include(../dep/qtsingleapplication/qtsingleapplication.pri)
 

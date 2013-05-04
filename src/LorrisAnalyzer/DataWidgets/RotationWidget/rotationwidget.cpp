@@ -6,18 +6,18 @@
 ***********************************************/
 #include <QFileDialog>
 
-#include "glwidget.h"
+#include "rotationwidget.h"
 #include "renderwidget.h"
 
-REGISTER_DATAWIDGET(WIDGET_OPENGL, GL, NULL)
+REGISTER_DATAWIDGET(WIDGET_ROTATION, Rotation, NULL)
 
-GLWidget::GLWidget(QWidget *parent) :
+RotationWidget::RotationWidget(QWidget *parent) :
     DataWidget(parent)
 {
-    m_widgetType = WIDGET_OPENGL;
+    m_widgetType = WIDGET_ROTATION;
 
     setTitle(tr("Rotation"));
-    setIcon(":/dataWidgetIcons/opengl.png");
+    setIcon(":/dataWidgetIcons/rotation.png");
 
     m_widget = new RenderWidget(this);
     layout->addWidget(m_widget, 1);
@@ -25,7 +25,7 @@ GLWidget::GLWidget(QWidget *parent) :
     resize(300, 300);
 }
 
-void GLWidget::setUp(Storage *storage)
+void RotationWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
@@ -33,39 +33,39 @@ void GLWidget::setUp(Storage *storage)
     contextMenu->addAction(tr("Reset camera"), this, SLOT(resetCamera()));
 }
 
-void GLWidget::setRotationX(float ang)
+void RotationWidget::setRotationX(float ang)
 {
     m_widget->setRotationX(ang);
 }
 
-void GLWidget::setRotationY(float ang)
+void RotationWidget::setRotationY(float ang)
 {
     m_widget->setRotationY(ang);
 }
 
-void GLWidget::setRotationZ(float ang)
+void RotationWidget::setRotationZ(float ang)
 {
     m_widget->setRotationZ(ang);
 }
 
-void GLWidget::saveWidgetInfo(DataFileParser *file)
+void RotationWidget::saveWidgetInfo(DataFileParser *file)
 {
     DataWidget::saveWidgetInfo(file);
     m_widget->save(file);
 }
 
-void GLWidget::loadWidgetInfo(DataFileParser *file)
+void RotationWidget::loadWidgetInfo(DataFileParser *file)
 {
     DataWidget::loadWidgetInfo(file);
     m_widget->load(file);
 }
 
-void GLWidget::loadModel(const QString &file)
+void RotationWidget::loadModel(const QString &file)
 {
     m_widget->setModelFile(file);
 }
 
-void GLWidget::loadModel()
+void RotationWidget::loadModel()
 {
     QString file = QFileDialog::getOpenFileName(this, tr("Load model"), QString(), tr("Wavefront models (*.obj)"));
     if(file.isEmpty())
@@ -73,21 +73,21 @@ void GLWidget::loadModel()
     loadModel(file);
 }
 
-void GLWidget::rotateCamera(float deltaX, float deltaY, float deltaZ)
+void RotationWidget::rotateCamera(float deltaX, float deltaY, float deltaZ)
 {
     m_widget->rotateCamera(deltaX, deltaY, deltaZ);
 }
 
-void GLWidget::resetCamera()
+void RotationWidget::resetCamera()
 {
     m_widget->resetCamera();
 }
 
-GLWidgetAddBtn::GLWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
+RotationWidgetAddBtn::RotationWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
 {
     setText(tr("Rotation"));
     setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/opengl.png"));
+    setIcon(QIcon(":/dataWidgetIcons/rotation.png"));
 
-    m_widgetType = WIDGET_OPENGL;
+    m_widgetType = WIDGET_ROTATION;
 }
