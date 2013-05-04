@@ -32,7 +32,7 @@ FloatingWidget::FloatingWidget(QWidget *parent) :
 
 FloatingWidget::~FloatingWidget()
 {
-    //releaseKeyboard();
+
 }
 
 void FloatingWidget::focusChanged(QWidget *, QWidget *to)
@@ -92,10 +92,12 @@ FlatListWidget::FlatListWidget(bool selectByHover, QWidget *parent) :
                   "QListWidget::item { padding-top: 3px; padding-bottom:3px;}"
                   "QListWidget::item:selected { background-color: #FF4444; color: white; }");
 
+
     if(selectByHover)
     {
         setStyleSheet(styleSheet() +
-                      "QListWidget::item:hover { background-color: transparent; }");
+                      "QListWidget::item:hover:selected { background-color: #FF4444; color: white; }"
+                      "QListWidget::item:hover:!selected { background-color: transparent; }");
     }
     else
     {

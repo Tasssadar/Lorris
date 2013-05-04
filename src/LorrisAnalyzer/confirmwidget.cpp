@@ -75,4 +75,6 @@ void ConfirmWidget::keyPressEvent(QKeyEvent *ev)
             itemActivated(it);
         deleteLater();
     }
+    else if(ev->key() == Qt::Key_Escape)
+        deleteLater();
 }
