@@ -325,6 +325,9 @@ void WidgetArea::saveSettings(DataFileParser *file)
 
     file->writeBlockIdentifier("areaLastSearch");
     *file << m_lastSearch;
+
+    file->writeBlockIdentifier("areaShowTitles");
+    *file << m_actTitleVisibility->isChecked();
 }
 
 void WidgetArea::loadSettings(DataFileParser *file)
@@ -377,6 +380,9 @@ void WidgetArea::loadSettings(DataFileParser *file)
 
     if(file->seekToNextBlock("areaLastSearch", BLOCK_DATA_INDEX))
         *file >> m_lastSearch;
+
+    if(file->seekToNextBlock("areaShowTitles", BLOCK_DATA_INDEX))
+        titleVisibilityAct(file->readVal<bool>());
 }
 
 void WidgetArea::paintEvent(QPaintEvent *event)
