@@ -214,8 +214,6 @@ void WidgetArea::removeWidget(quint32 id)
     update();
 
     m_undoStack.checkValid();
-
-    setFocus();
 }
 
 DataWidget *WidgetArea::getWidget(quint32 id)
