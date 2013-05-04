@@ -11,6 +11,7 @@
 #include <QDialog>
 
 struct GraphCurveInfo;
+class QAbstractButton;
 
 namespace Ui {
     class GraphCurveAddDialog;

@@ -1,3 +1,10 @@
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
+**
+**    See README and COPYING
+***********************************************/
+
 #ifndef USBACMCONN_H
 #define USBACMCONN_H
 

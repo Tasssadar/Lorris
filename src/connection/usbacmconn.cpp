@@ -1,11 +1,22 @@
-#include "usbacmconn.h"
-#include "genericusbconn.h"
-#include "connectionmgr2.h"
-#include <libyb/async/sync_runner.hpp>
-#include <libyb/async/double_buffer.hpp>
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
+**
+**    See README and COPYING
+***********************************************/
+
 #include <QEvent>
 #include <QCoreApplication>
 #include <QString>
+#include <QStringList>
+#include <QVariant>
+#include <libyb/async/sync_runner.hpp>
+#include <libyb/async/double_buffer.hpp>
+
+#include "usbacmconn.h"
+#include "genericusbconn.h"
+#include "connectionmgr2.h"
+#include "../misc/utils.h"
 
 UsbAcmConnection2::UsbAcmConnection2(yb::async_runner & runner)
     : PortConnection(CONNECTION_USB_ACM2), m_runner(runner), m_enumerated(false), m_vid(0), m_pid(0),

@@ -11,6 +11,7 @@
 #include <QFrame>
 
 class QTimer;
+class QPushButton;
 
 namespace Ui {
     class Playback;

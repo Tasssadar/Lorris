@@ -1,5 +1,15 @@
-#include "shupitoprogrammer.h"
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
+**
+**    See README and COPYING
+***********************************************/
+
 #include <QStringBuilder>
+
+#include "shupitoprogrammer.h"
+#include "../../misc/config.h"
+#include "../../misc/utils.h"
 
 ShupitoProgrammer::ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn, ProgrammerLogSink * logsink)
     : Programmer(logsink), m_con(conn), m_vdd_config(0), m_tunnel_config(0), m_btn_config(0), m_led_config(0), m_cur_mode(0)

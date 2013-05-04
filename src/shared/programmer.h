@@ -3,6 +3,10 @@
 
 #include <QObject>
 #include <vector>
+#include <QStringList>
+
+#include "../shared/chipdefs.h"
+#include "../shared/hexfile.h"
 
 // device.hpp, 122
 struct vdd_point

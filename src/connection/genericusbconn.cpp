@@ -1,7 +1,17 @@
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
+**
+**    See README and COPYING
+***********************************************/
+
+#include <QStringList>
+#include <libyb/async/sync_runner.hpp>
+
 #include "genericusbconn.h"
 #include "usbacmconn.h"
 #include "connectionmgr2.h"
-#include <libyb/async/sync_runner.hpp>
+#include "../misc/utils.h"
 
 static struct
 {

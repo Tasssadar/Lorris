@@ -8,6 +8,7 @@
 #include "../shupito.h"
 #include "shupitospiflash.h"
 #include "../../shared/defmgr.h"
+#include "../../misc/utils.h"
 
 void ShupitoSpiFlash::transfer(uint8_t const * out_data, uint8_t * in_data, size_t size)
 {
