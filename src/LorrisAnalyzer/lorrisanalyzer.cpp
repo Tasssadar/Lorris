@@ -159,10 +159,14 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     m_connectButton = new ConnectButton(ui->connectButton);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+
+    qApp->installEventFilter(this);
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
 {
+    qApp->removeEventFilter(this);
+
     if(m_packet)
     {
         delete m_packet->header;
@@ -783,71 +787,21 @@ void LorrisAnalyzer::keyPressEvent(QKeyEvent *ev)
     PortConnWorkTab::keyPressEvent(ev);
 }
 
-bool LorrisAnalyzer::event(QEvent *ev)
-{
-    switch(ev->type())
-    {
-        case QEvent::ChildAdded:
-        {
-            QChildEvent *e = (QChildEvent*)ev;
-            installEventFilterToChildren(e->child());
-            break;
-        }
-        case QEvent::ChildRemoved:
-        {
-            QChildEvent *e = (QChildEvent*)ev;
-            removeEventFilterFromChildren(e->child());
-            break;
-        }
-        default:
-            break;
-    }
-    return PortConnWorkTab::event(ev);
-}
-
 bool LorrisAnalyzer::eventFilter(QObject */*obj*/, QEvent *event)
 {
-    switch(event->type())
-    {
-        case QEvent::ChildAdded:
-        {
-            QChildEvent *e = (QChildEvent*)event;
-            installEventFilterToChildren(e->child());
-            break;
-        }
-        case QEvent::ChildRemoved:
-        {
-            QChildEvent *e = (QChildEvent*)event;
-            removeEventFilterFromChildren(e->child());
-            break;
-        }
-        case QEvent::KeyPress:
-        {
-            if(((QKeyEvent*)event)->key() == Qt::Key_Space)
-            {
-                new SearchWidget(ui->dataArea, this);
-                return true;
-            }
-            break;
-        }
-        default:
-            break;
-    }
-    return false;
-}
+    if(event->type() != QEvent::KeyPress)
+        return false;
 
-void LorrisAnalyzer::installEventFilterToChildren(QObject *object)
-{
-    object->installEventFilter(this);
-    const QObjectList &children = object->children();
-    for(int i = 0; i < children.size(); ++i)
-        installEventFilterToChildren(children[i]);
-}
+    if(((QKeyEvent*)event)->key() != Qt::Key_Space)
+        return false;
 
-void LorrisAnalyzer::removeEventFilterFromChildren(QObject *object)
-{
-    object->removeEventFilter(this);
-    const QObjectList &children = object->children();
-    for(int i = 0; i < children.size(); ++i)
-        removeEventFilterFromChildren(children[i]);
+    if(!isVisible() || !underMouse())
+        return false;
+
+    QWidget *focus = qApp->focusWidget();
+    if(focus && (focus->inherits("QLineEdit") || focus->inherits("Terminal")))
+        return false;
+
+    new SearchWidget(ui->dataArea, this);
+    return true;
 }

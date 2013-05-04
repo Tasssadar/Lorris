@@ -88,7 +88,6 @@ public slots:
 
 protected:
     void keyPressEvent(QKeyEvent *ev);
-    bool event(QEvent *ev);
     bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
@@ -117,8 +116,6 @@ private:
     void resetDevAndStorage(analyzer_packet *packet = NULL);
     void setPacket(analyzer_packet *packet);
     bool askToSave();
-    void installEventFilterToChildren(QObject *object);
-    void removeEventFilterFromChildren(QObject *object);
 
     Ui::LorrisAnalyzer *ui;
     Storage m_storage;
