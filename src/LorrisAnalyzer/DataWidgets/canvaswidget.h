@@ -48,13 +48,6 @@ private:
     QPoint m_lastLine;
 };
 
-class CanvasWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    CanvasWidgetAddBtn(QWidget *parent = 0);
-};
-
 class Canvas : public QWidget
 {
     Q_OBJECT

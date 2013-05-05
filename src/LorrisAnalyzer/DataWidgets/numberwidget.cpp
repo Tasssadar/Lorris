@@ -35,14 +35,10 @@ static void addEnum()
 }
 
 REGISTER_DATAWIDGET(WIDGET_NUMBER, Number, &addEnum)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Number"))
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle(tr("Number"));
-    setIcon(":/dataWidgetIcons/num.png");
-
-    m_widgetType = WIDGET_NUMBER;
-
     m_num = new QLabel("0", this);
     m_num->setAlignment(Qt::AlignCenter);
 
@@ -408,13 +404,4 @@ void NumberWidget::setPrecision(quint8 digits)
 {
     m_digits = digits;
     emit updateForMe();
-}
-
-NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Number"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/num.png"));
-
-    m_widgetType = WIDGET_NUMBER;
 }

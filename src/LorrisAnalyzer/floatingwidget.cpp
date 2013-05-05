@@ -107,6 +107,7 @@ FlatListWidget::FlatListWidget(bool selectByHover, QWidget *parent) :
 
     setUniformItemSizes(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFont(Utils::getMonospaceFont());
 }
 

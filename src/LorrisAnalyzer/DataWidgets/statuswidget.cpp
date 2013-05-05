@@ -11,15 +11,11 @@
 #include "../../ui/colorbutton.h"
 
 REGISTER_DATAWIDGET(WIDGET_STATUS, Status, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Status"))
 
 StatusWidget::StatusWidget(QWidget *parent) :
     DataWidget(parent)
 {
-    m_widgetType = WIDGET_STATUS;
-
-    setTitle(tr("Status"));
-    setIcon(":/dataWidgetIcons/status.png");
-
     m_dataType = 0;
     m_curUnknown = false;
     m_lastVal = 0;
@@ -347,15 +343,6 @@ void StatusWidget::setUnknownTextColor(const QString &color)
 {
     m_unknown.textColor = QColor(color);
     updateUnknown();
-}
-
-StatusWidgetAddBtn::StatusWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Status"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/status.png"));
-
-    m_widgetType = WIDGET_STATUS;
 }
 
 StatusManager::StatusManager(StatusWidget *widget) : QDialog(widget), ui(new Ui::StatusManager)

@@ -15,13 +15,10 @@
 #include "../../widgetarea.h"
 
 REGISTER_DATAWIDGET(WIDGET_SCRIPT, Script, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Script"))
 
 ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle(tr("Script"));
-    setIcon(":/dataWidgetIcons/script.png");
-
-    m_widgetType = WIDGET_SCRIPT;
     m_editor = NULL;
 
     m_terminal = new Terminal(this);
@@ -349,13 +346,4 @@ void ScriptWidget::inputLineKeyReleased(int keyCode)
 {
     if(m_engine)
         m_engine->callEventHandler("inputLineKeyReleased", (QVariantList() << keyCode));
-}
-
-ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Script"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/script.png"));
-
-    m_widgetType = WIDGET_SCRIPT;
 }

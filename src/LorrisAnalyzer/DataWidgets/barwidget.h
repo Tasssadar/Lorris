@@ -83,13 +83,6 @@ private:
     FormulaEvaluation m_eval;
 };
 
-class BarWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    BarWidgetAddBtn(QWidget *parent);
-};
-
 #define COLOR_COUNT 3
 
 class BarWidgetClrDialog : public QDialog

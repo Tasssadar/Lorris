@@ -76,12 +76,4 @@ protected:
      QString m_errors;
 };
 
-class ScriptWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    ScriptWidgetAddBtn(QWidget *parent = 0);
-
-};
-
 #endif // SCRIPTWIDGET_H

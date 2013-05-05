@@ -22,15 +22,11 @@ void CircleWidget::addEnum()
 }
 
 REGISTER_DATAWIDGET(WIDGET_CIRCLE, Circle, &CircleWidget::addEnum)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Circle"))
 
 CircleWidget::CircleWidget(QWidget *parent) :
     DataWidget(parent)
 {
-    setTitle(tr("Circle"));
-    setIcon(":/dataWidgetIcons/circle.png");
-
-    m_widgetType = WIDGET_CIRCLE;
-
     m_circle = new CircleDraw(this);
     layout->addWidget(m_circle, 1);
     resize(150, 150);
@@ -322,13 +318,3 @@ void CircleDraw::setClockwise(bool clockwise)
     m_clockwise = clockwise;
     update();
 }
-
-CircleWidgetAddBtn::CircleWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Circle"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/circle.png"));
-
-    m_widgetType = WIDGET_CIRCLE;
-}
-

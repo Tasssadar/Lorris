@@ -161,6 +161,11 @@ void DataWidget::setIcon(QString path)
     m_icon_widget->setPixmap(icon.pixmap(16));
 }
 
+void DataWidget::setType(quint32 widgetType)
+{
+    m_widgetType = widgetType;
+}
+
 void DataWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     contextMenu->exec(event->globalPos());
@@ -918,11 +923,17 @@ void DataWidget::setHighlighted(bool highlight)
     update();
 }
 
-DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
+DataWidgetAddBtn::DataWidgetAddBtn(quint32 type, const QString& name, QWidget *parent) :
+    QPushButton(parent)
 {
     setFlat(true);
     setStyleSheet("text-align: left");
     m_pixmap = NULL;
+
+    setText(name);
+    setIconSize(QSize(16, 16));
+
+    m_widgetType = type;
 }
 
 DataWidgetAddBtn::~DataWidgetAddBtn()

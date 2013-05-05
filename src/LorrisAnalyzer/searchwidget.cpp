@@ -43,7 +43,7 @@ SearchWidget::SearchWidget(WidgetArea *area, LorrisAnalyzer *analyzer) :
     m_analyzer = analyzer;
     m_lastLen = 0;
 
-    setFixedSize(195, 250);
+    setFixedSize(200, 250);
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
 
@@ -97,7 +97,7 @@ SearchWidget::~SearchWidget()
 void SearchWidget::initItems()
 {
     // widgets
-    const std::vector<QString>& n = sWidgetFactory.getWidgetNames();
+    const std::vector<QString>& n = sWidgetFactory.getTranslatedWidgetNames();
     for(int i = 0; i < (int)n.size(); ++i)
         addItem(tr("Add %1").arg(n[i].toLower()), this, "actionAddWidget", QVariant(i));
 
@@ -112,6 +112,7 @@ void SearchWidget::initItems()
     addItem(tr("Align widgets to grid"), m_area, "alignWidgets");
     addItem(tr("Toggle area preview"), m_area, "togglePreview");
     addItem(tr("Toggle widget titles"), m_area, "toggleWidgetTitles");
+
 
     m_list->sortItems();
 }

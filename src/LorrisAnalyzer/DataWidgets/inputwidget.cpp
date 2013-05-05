@@ -12,15 +12,11 @@
 #include "inputwidget.h"
 
 REGISTER_DATAWIDGET(WIDGET_INPUT, Input, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Input"))
 
 InputWidget::InputWidget(QWidget *parent) :
     DataWidget(parent)
 {
-    m_widgetType = WIDGET_INPUT;
-
-    setTitle(tr("Input"));
-    setIcon(":/dataWidgetIcons/input.png");
-
     m_layout = new QVBoxLayout;
     m_layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_layout->setSpacing(0);
@@ -126,13 +122,3 @@ QWidget *InputWidget::get(const QString& idString)
         return NULL;
     return *itr;
 }
-
-InputWidgetAddBtn::InputWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Input"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/input.png"));
-
-    m_widgetType = WIDGET_INPUT;
-}
-

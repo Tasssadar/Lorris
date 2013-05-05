@@ -25,16 +25,12 @@
 #include "../../datafilter.h"
 
 REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Graph"))
 
 static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
 GraphWidget::GraphWidget(QWidget *parent) : DataWidget(parent)
 {
-    m_widgetType = WIDGET_GRAPH;
-
-    setTitle(tr("Graph"));
-    setIcon(":/dataWidgetIcons/graph.png");
-
     m_graph = new Graph(this);
     m_add_dialog = NULL;
 
@@ -634,13 +630,4 @@ void GraphWidget::changeBackground()
         return;
 
     m_graph->setBgColor(c);
-}
-
-GraphWidgetAddBtn::GraphWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Graph"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/graph.png"));
-
-    m_widgetType = WIDGET_GRAPH;
 }

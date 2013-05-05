@@ -90,11 +90,4 @@ private:
     bool m_doReplot;
 };
 
-class GraphWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    GraphWidgetAddBtn(QWidget *parent = 0);
-};
-
 #endif // GRAPHWIDGET_H

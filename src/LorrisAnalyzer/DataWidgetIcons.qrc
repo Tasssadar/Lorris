@@ -1,17 +1,17 @@
 <RCC>
     <qresource prefix="/dataWidgetIcons">
-        <file alias="num.png">icons/num.png</file>
-        <file alias="bar.png">icons/bar.png</file>
-        <file alias="color.png">icons/color.png</file>
-        <file alias="graph.png">icons/graph.png</file>
-        <file alias="script.png">icons/script.png</file>
-        <file alias="input.png">icons/input.png</file>
-        <file alias="terminal.png">icons/terminal.png</file>
-        <file alias="button.png">icons/button.png</file>
-        <file alias="circle.png">icons/circle.png</file>
-        <file alias="slider.png">icons/slider.png</file>
-        <file alias="canvas.png">icons/canvas.png</file>
-        <file alias="status.png">icons/status.png</file>
-        <file alias="rotation.png">icons/rotation.png</file>
+        <file alias="Number">icons/num.png</file>
+        <file alias="Bar">icons/bar.png</file>
+        <file alias="Color">icons/color.png</file>
+        <file alias="Graph">icons/graph.png</file>
+        <file alias="Script">icons/script.png</file>
+        <file alias="Input">icons/input.png</file>
+        <file alias="Terminal">icons/terminal.png</file>
+        <file alias="Button">icons/button.png</file>
+        <file alias="Circle">icons/circle.png</file>
+        <file alias="Slider">icons/slider.png</file>
+        <file alias="Canvas">icons/canvas.png</file>
+        <file alias="Status">icons/status.png</file>
+        <file alias="Rotation">icons/rotation.png</file>
     </qresource>
 </RCC>

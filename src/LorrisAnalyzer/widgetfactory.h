@@ -18,12 +18,10 @@ class DataWidget;
 class DataWidgetAddBtn;
 
 #define REGISTER_DATAWIDGET(id, n, en) DataWidget *n##WidgetInst(QWidget *parent) { return new n##Widget(parent); } \
-       DataWidgetAddBtn *n##BtnInst(QWidget *parent) { return new n##WidgetAddBtn(parent); } \
        struct n##WidgetInit { \
             n##WidgetInit() { \
                 sWidgetFactory.addWidgetName(id, #n); \
                 sWidgetFactory.addWidgetInit(id, &n##WidgetInst); \
-                sWidgetFactory.addBtnInit(&n##BtnInst); \
                 sWidgetFactory.addScriptEnum(#id, id); \
                 void (*func)() = en; \
                 if(func) \
@@ -33,6 +31,11 @@ class DataWidgetAddBtn;
         static const n##WidgetInit n##widgetinit;
 
 #define REGISTER_ENUM(val) sWidgetFactory.addScriptEnum(#val, val);
+
+// To fool qt linguist - it needs the translate macro,
+// but we don't need the string it returns
+// Example: W_TR(QT_TRANSLATE_NOOP("Number", "Number"))
+#define W_TR(x) ;
 
 /*
 #define REGISTER_DATAWIDGET_NOBTN(id, n) DataWidget *n##WidgetInst(QWidget *parent) { return new n##Widget(parent); } \
@@ -75,15 +78,14 @@ public:
     void addWidgetInit(quint32 type, widgetInit init);
     void addBtnInit(btnInit init);
     void addScriptEnum(const char *text, quint32 val);
-    void addWidgetName(quint32 id, const char *name);
+    void addWidgetName(quint32 id, const char* name);
+    void translateWidgetNames();
 
     DataWidget *getWidget(quint32 type, QWidget *parent);
     std::vector<DataWidgetAddBtn*> getButtons(QWidget *parent);
 
-    const std::vector<QString>& getWidgetNames()
-    {
-        return m_names;
-    }
+    const std::vector<QString>& getWidgetNames() const;
+    const std::vector<QString>& getTranslatedWidgetNames();
 
     DataWidget *copy(DataWidget *w);
 
@@ -95,8 +97,8 @@ public:
 private:
     widgetInit m_widgetInits[WIDGET_MAX];
     QHash<QString, quint32> m_scriptEnums;
-    std::vector<btnInit> m_btnInits;
     std::vector<QString> m_names;
+    std::vector<QString> m_namesTranslated;
 };
 
 #define sWidgetFactory WidgetFactory::GetSingleton()

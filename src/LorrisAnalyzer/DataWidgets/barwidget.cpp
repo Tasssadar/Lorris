@@ -22,16 +22,12 @@
 #include "../../misc/datafileparser.h"
 
 REGISTER_DATAWIDGET(WIDGET_BAR, Bar, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Bar"))
 
 static const QPalette::ColorRole roles[COLOR_COUNT] = { QPalette::Base, QPalette::Highlight, QPalette::ButtonText };
 
 BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle(tr("Bar"));
-    setIcon(":/dataWidgetIcons/bar.png");
-
-    m_widgetType = WIDGET_BAR;
-
     m_showScaleAct = NULL;
     m_showValAct = NULL;
 
@@ -417,15 +413,6 @@ void BarWidget::showFormulaDialog()
 {
     m_eval.showFormulaDialog();
     emit updateForMe();
-}
-
-BarWidgetAddBtn::BarWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Bar"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/bar.png"));
-
-    m_widgetType = WIDGET_BAR;
 }
 
 BarWidgetClrDialog::BarWidgetClrDialog(const QPalette &curPalette, QWidget *parent) : QDialog(parent)

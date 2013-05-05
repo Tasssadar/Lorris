@@ -36,11 +36,4 @@ private:
     RenderWidget *m_widget;
 };
 
-class RotationWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    RotationWidgetAddBtn(QWidget *parent = 0);
-};
-
 #endif // ROTATIONWIDGET_H

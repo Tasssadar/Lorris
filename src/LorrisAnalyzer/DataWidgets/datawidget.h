@@ -99,6 +99,8 @@ class DataWidget : public QFrame
 
     Q_PROPERTY(quint8 widgetType READ getWidgetType)
 
+    friend class WidgetFactory;
+
 protected:
     enum widgetStates
     {
@@ -218,6 +220,7 @@ protected:
     virtual void processData(analyzer_data *data);
 
     void setIcon(QString path);
+    void setType(quint32 widgetType);
 
     inline WidgetArea *widgetArea() const
     {
@@ -284,7 +287,7 @@ class DataWidgetAddBtn : public QPushButton
 {
     Q_OBJECT
 public:
-    explicit DataWidgetAddBtn(QWidget *parent);
+    DataWidgetAddBtn(quint32 type, const QString &name, QWidget *parent);
     ~DataWidgetAddBtn();
 
     void setText(const QString &text);

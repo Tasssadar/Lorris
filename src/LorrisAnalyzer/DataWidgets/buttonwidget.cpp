@@ -12,15 +12,12 @@
 #include "../../ui/shortcutinputbox.h"
 #include "../../ui/colordialog.h"
 
+
 REGISTER_DATAWIDGET(WIDGET_BUTTON, Button, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Button"))
 
 ButtonWidget::ButtonWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle(tr("Button"));
-    setIcon(":/dataWidgetIcons/button.png");
-
-    m_widgetType = WIDGET_BUTTON;
-
     m_button = new QPushButton(tr("Button"), this);
     m_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -170,13 +167,4 @@ void ButtonWidget::loadWidgetInfo(DataFileParser *file)
         setColor(file->readString());
         setTextColor(file->readString());
     }
-}
-
-ButtonWidgetAddBtn::ButtonWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Button"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/button.png"));
-
-    m_widgetType = WIDGET_BUTTON;
 }

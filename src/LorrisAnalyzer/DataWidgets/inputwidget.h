@@ -38,12 +38,4 @@ private:
     QHash<QString, QWidget*> m_namedWidgets;
 };
 
-class InputWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    InputWidgetAddBtn(QWidget *parent = 0);
-
-};
-
 #endif // INPUTWIDGET_H

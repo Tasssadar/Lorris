@@ -10,15 +10,11 @@
 #include "renderwidget.h"
 
 REGISTER_DATAWIDGET(WIDGET_ROTATION, Rotation, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Rotation"))
 
 RotationWidget::RotationWidget(QWidget *parent) :
     DataWidget(parent)
 {
-    m_widgetType = WIDGET_ROTATION;
-
-    setTitle(tr("Rotation"));
-    setIcon(":/dataWidgetIcons/rotation.png");
-
     m_widget = new RenderWidget(this);
     layout->addWidget(m_widget, 1);
 
@@ -81,13 +77,4 @@ void RotationWidget::rotateCamera(float deltaX, float deltaY, float deltaZ)
 void RotationWidget::resetCamera()
 {
     m_widget->resetCamera();
-}
-
-RotationWidgetAddBtn::RotationWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Rotation"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/rotation.png"));
-
-    m_widgetType = WIDGET_ROTATION;
 }
