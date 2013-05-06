@@ -71,6 +71,7 @@ SearchWidget::SearchWidget(WidgetArea *area, LorrisAnalyzer *analyzer) :
                            std::max(msz.height(), icon->sizeHint().height() + frameW * 2 + 2));
     icon->show();
 
+    connect(m_list, SIGNAL(itemClicked(QListWidgetItem*)),   SLOT(itemActivated(QListWidgetItem*)));
     connect(m_list, SIGNAL(itemActivated(QListWidgetItem*)), SLOT(itemActivated(QListWidgetItem*)));
     connect(m_line, SIGNAL(keyPressed(int)),                 SLOT(lineKeyPressed(int)));
     connect(m_line, SIGNAL(textChanged(QString)),            SLOT(filterChanged(QString)));

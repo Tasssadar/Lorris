@@ -5,6 +5,10 @@
 **    See README and COPYING
 ***********************************************/
 
+// This file is named floatinginputdialog_impl.cpp because
+// when it was just floatinginputdialog.cpp, MSVC2010 just ignored it.
+// It didn't even run it through the preprocessor, just ignored it. wtf.
+
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>

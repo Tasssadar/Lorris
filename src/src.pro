@@ -156,7 +156,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/RotationWidget/glutils.cpp \
     LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.cpp \
     ui/floatingwidget.cpp \
-    ui/floatinginputdialog.cpp
+    ui/floatinginputdialog_impl.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \

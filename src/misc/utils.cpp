@@ -90,7 +90,6 @@ QFont Utils::getMonospaceFont(int size)
         size = qApp->font().pointSize();
 
     static const char *families[] = {
-        "Consolas",
         "Deja Vu Sans Mono",
         "Droid Sans Mono",
         "Andale Mono",

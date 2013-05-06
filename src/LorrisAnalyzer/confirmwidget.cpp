@@ -53,6 +53,7 @@ ConfirmWidget::ConfirmWidget(QListWidgetItem *it) :
     it->setText("");
 
     connect(m_list, SIGNAL(itemActivated(QListWidgetItem*)), SLOT(itemActivated(QListWidgetItem*)));
+    connect(m_list, SIGNAL(itemClicked(QListWidgetItem*)),   SLOT(itemActivated(QListWidgetItem*)));
 }
 
 ConfirmWidget::~ConfirmWidget()
