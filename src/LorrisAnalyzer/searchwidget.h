@@ -9,7 +9,7 @@
 #define SEARCHWIDGET_H
 
 #include <QWidget>
-#include "floatingwidget.h"
+#include "../ui/floatingwidget.h"
 
 class HookedLineEdit;
 class QListWidget;

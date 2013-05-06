@@ -149,13 +149,14 @@ SOURCES += ui/mainwindow.cpp \
     ui/bytevalidator.cpp \
     misc/qtobjectpointer.cpp \
     LorrisAnalyzer/searchwidget.cpp \
-    LorrisAnalyzer/floatingwidget.cpp \
     LorrisAnalyzer/confirmwidget.cpp \
     LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp \
     LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.cpp \
     LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.cpp \
     LorrisAnalyzer/DataWidgets/RotationWidget/glutils.cpp \
-    LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.cpp
+    LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.cpp \
+    ui/floatingwidget.cpp \
+    ui/floatinginputdialog.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -285,13 +286,14 @@ HEADERS += ui/mainwindow.h \
     ui/bytevalidator.h \
     misc/qtobjectpointer.h \
     LorrisAnalyzer/searchwidget.h \
-    LorrisAnalyzer/floatingwidget.h \
     LorrisAnalyzer/confirmwidget.h \
     LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h \
     LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.h \
     LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.h \
     LorrisAnalyzer/DataWidgets/RotationWidget/glutils.h \
-    LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.h
+    LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.h \
+    ui/floatingwidget.h \
+    ui/floatinginputdialog.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

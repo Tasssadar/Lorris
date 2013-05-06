@@ -38,4 +38,3 @@ void ScriptAgent::scriptLoad(qint64, const QString &, const QString &, int)
     m_timer.invalidate();
     m_errors = 0;
 }
-

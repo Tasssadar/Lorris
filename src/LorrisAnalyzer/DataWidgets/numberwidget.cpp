@@ -14,9 +14,9 @@
 #include <QSignalMapper>
 #include <QStringBuilder>
 #include <QScriptEngine>
-#include <QInputDialog>
 
 #include "numberwidget.h"
+#include "../../ui/floatinginputdialog.h"
 
 static void addEnum()
 {
@@ -394,7 +394,7 @@ void NumberWidget::setPrecisionAct(int idx)
         setPrecision(idx);
     else
     {
-        int res = QInputDialog::getInt(this, tr("Number precision"), tr("Enter number of digits"), m_digits, 0, 255);
+        int res = FloatingInputDialog::getInt(tr("Decimal digits:"), m_digits, 0, 255);
         if(res != m_digits)
             setPrecision(res);
     }

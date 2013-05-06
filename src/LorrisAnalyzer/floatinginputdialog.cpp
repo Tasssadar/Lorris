@@ -5,8 +5,9 @@
 **    See README and COPYING
 ***********************************************/
 
-#ifndef REVISION_H
-#define REVISION_H
- #define VERSION "0.7.0-dev"
- #define REVISION 787
-#endif // REVISION_H
+#include "floatinginputdialog.h"
+
+FloatingInputDialog::FloatingInputDialog(QWidget *parent) :
+    FloatingWidget(parent)
+{
+}

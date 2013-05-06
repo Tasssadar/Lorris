@@ -9,7 +9,6 @@
 #include <qwt_plot_curve.h>
 #include <QMenu>
 #include <QSignalMapper>
-#include <QInputDialog>
 #include <QTimer>
 #include <QColorDialog>
 #include <qwt_plot_canvas.h>
@@ -23,6 +22,7 @@
 #include "../../storage.h"
 #include "graphexport.h"
 #include "../../datafilter.h"
+#include "../../../ui/floatinginputdialog.h"
 
 REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph, NULL)
 W_TR(QT_TRANSLATE_NOOP("DataWidget", "Graph"))
@@ -467,7 +467,7 @@ void GraphWidget::sampleSizeChanged(int val)
     bool ok = true;
     if(val == -2)
     {
-        sample = QInputDialog::getInt(this, tr("Set sample size"), tr("Sample size:"), 0, 0, 2147483647, 1, &ok);
+        sample = FloatingInputDialog::getInt(tr("Sample size:"), 0, 0, INT_MAX, 1, &ok);
         if(ok)
             m_sample_size_idx = -2;
     }

@@ -1,8 +1,14 @@
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
+**
+**    See README and COPYING
+***********************************************/
+
 #ifndef CONFIRMWIDGET_H
 #define CONFIRMWIDGET_H
 
-
-#include "floatingwidget.h"
+#include "../ui/floatingwidget.h"
 
 class QListWidgetItem;
 class QListWidget;

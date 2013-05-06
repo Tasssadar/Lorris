@@ -10,7 +10,7 @@
 #include <QSignalMapper>
 
 #include "circlewidget.h"
-#include "../../ui/rangeselectdialog.h"
+#include "../../ui/floatinginputdialog.h"
 
 static const double pi = 3.1415926535897932384626433832795;
 
@@ -181,14 +181,7 @@ void CircleWidget::processData(analyzer_data *data)
 void CircleWidget::angTypeChanged(int i)
 {
     if(i == ANG_RANGE)
-    {
-        RangeSelectDialog dialog(m_range_min, m_range_max, false, this);
-        if(dialog.exec())
-        {
-            m_range_min = dialog.getMin();
-            m_range_max = dialog.getMax();
-        }
-    }
+        FloatingInputDialog::getDoubleRange(tr("Circle's range:"), m_range_min, m_range_max, 3);
     setAngType(i, m_range_min, m_range_max);
 }
 

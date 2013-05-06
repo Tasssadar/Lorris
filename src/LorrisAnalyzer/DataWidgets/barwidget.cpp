@@ -12,14 +12,13 @@
 #include <QContextMenuEvent>
 #include <qwt_thermo.h>
 #include <float.h>
-#include <QInputDialog>
 #include <QGridLayout>
 #include <QDialogButtonBox>
 #include <QColorDialog>
 
 #include "barwidget.h"
-#include "../../ui/rangeselectdialog.h"
 #include "../../misc/datafileparser.h"
+#include "../../ui/floatinginputdialog.h"
 
 REGISTER_DATAWIDGET(WIDGET_BAR, Bar, NULL)
 W_TR(QT_TRANSLATE_NOOP("DataWidget", "Bar"))
@@ -227,11 +226,21 @@ void BarWidget::setDataType(int i)
 
 void BarWidget::rangeSelected()
 {
-    RangeSelectDialog dialog(m_bar->minValue(), m_bar->maxValue(),
-                             (m_numberType < NUM_FLOAT), this);
-    if(dialog.exec())
-        m_bar->setRange(dialog.getMin(), dialog.getMax());
+    if(m_numberType < NUM_FLOAT)
+    {
+        int min = m_bar->minValue();
+        int max = m_bar->maxValue();
+        if(FloatingInputDialog::getIntRange(tr("Bar range:"), min, max))
+            m_bar->setRange(min, max);
+    }
+    else
+    {
+        double min = m_bar->minValue();
+        double max = m_bar->maxValue();
 
+        if(FloatingInputDialog::getDoubleRange(tr("Bar range:"), min, max))
+            m_bar->setRange(min, max);
+    }
     emit updateForMe();
 }
 
@@ -384,8 +393,7 @@ void BarWidget::showVal(bool show)
 void BarWidget::alarmLevelAct()
 {
     bool ok;
-    double val = QInputDialog::getDouble(this, tr("Alarm level"), tr("Enter alarm level"), m_bar->alarmLevel(),
-                                         INT_MIN, INT_MAX, 4, &ok);
+    double val = FloatingInputDialog::getDouble(tr("Alarm level:"), m_bar->alarmLevel(), INT_MIN, INT_MAX, 4, &ok);
     if(!ok)
         return;
 

@@ -12,7 +12,6 @@
 #include <QMouseEvent>
 #include <QDrag>
 #include <QMenu>
-#include <QInputDialog>
 #include <QPropertyAnimation>
 #include <QPainter>
 
@@ -21,6 +20,7 @@
 #include "../widgetarea.h"
 #include "../../misc/datafileparser.h"
 #include "../datafilter.h"
+#include "../../ui/floatinginputdialog.h"
 
 DataWidget::DataWidget(QWidget *parent) :
     QFrame(parent), m_title_label(NULL), m_icon_widget(NULL),
@@ -533,9 +533,8 @@ void DataWidget::setLocked(bool locked)
 
 void DataWidget::setTitleTriggered()
 {
-    QString title = QInputDialog::getText(this, tr("Set widget title"), tr("Enter title:"),
-                                          QLineEdit::Normal, getTitle());
-    if(title.length() == 0)
+    QString title = FloatingInputDialog::getText(tr("Widget title:"), getTitle());
+    if(title.isEmpty())
         return;
     setTitle(title);
 }

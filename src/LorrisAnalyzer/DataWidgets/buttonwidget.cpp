@@ -5,13 +5,12 @@
 **    See README and COPYING
 ***********************************************/
 
-#include <QInputDialog>
 #include <QDialogButtonBox>
 
 #include "buttonwidget.h"
 #include "../../ui/shortcutinputbox.h"
 #include "../../ui/colordialog.h"
-
+#include "../../ui/floatinginputdialog.h"
 
 REGISTER_DATAWIDGET(WIDGET_BUTTON, Button, NULL)
 W_TR(QT_TRANSLATE_NOOP("DataWidget", "Button"))
@@ -52,7 +51,7 @@ void ButtonWidget::buttonClicked()
 
 void ButtonWidget::setButtonName()
 {
-    QString name = QInputDialog::getText(this, tr("Button text"), tr("Enter new button text"));
+    QString name = FloatingInputDialog::getText(tr("Button text:"), m_button->text());
     if(name.isEmpty())
         return;
     setButtonName(name);

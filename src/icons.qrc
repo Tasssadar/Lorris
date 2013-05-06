@@ -18,5 +18,6 @@
         <file alias="arrow-right">icons/go-next.png</file>
         <file alias="arrow-left">icons/go-previous.png</file>
         <file alias="question">icons/question.png</file>
+        <file alias="edit">icons/edit.png</file>
     </qresource>
 </RCC>
