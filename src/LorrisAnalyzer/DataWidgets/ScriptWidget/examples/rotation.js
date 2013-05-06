@@ -1,10 +1,10 @@
-// OpenGL widget example - how to set object's rotation
+// Rotation widget example - how to set object's rotation
 
 // create widgets
 (function() {
     var x = getWidth() + 20;
     var y = 0;
-    newWidget(WIDGET_OPENGL, "rot_test", 400, 400, x, y);
+    newWidget(WIDGET_ROTATION, "rot_test", 400, 400, x, y);
     x += rot_test.width + 20;
 
     newWidget(WIDGET_SLIDER, "rot_x", 300, 120, x, y);

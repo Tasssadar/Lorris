@@ -1,11 +1,11 @@
-# OpenGL widget example - how to set object's rotation
+# Rotation widget example - how to set object's rotation
 
 # create widgets
 def createWidgets():
     x = lorris.getWidth() + 20
     y = 0
 
-    lorris.newWidget(WIDGET_OPENGL, "rot_test", 400, 400, x, y)
+    lorris.newWidget(WIDGET_ROTATION, "rot_test", 400, 400, x, y)
     x += rot_test.width + 20
 
     lorris.newWidget(WIDGET_SLIDER, "rot_x", 300, 120, x, y)
