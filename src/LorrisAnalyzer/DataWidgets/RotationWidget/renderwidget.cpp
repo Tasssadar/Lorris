@@ -203,8 +203,6 @@ void RenderWidget::paintGL()
     for(quint32 i = 0; i < m_models.size(); ++i)
         m_models.at(i)->draw();
 
-    glFlush();
-
     m_lastRender.restart();
 }
 

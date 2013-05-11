@@ -56,7 +56,7 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
     QHash<QString, material>::iterator m_itr;
     QTextStream str(&f);
 
-    GLModel *model = NULL;
+    GLModel *model = new GLModel("");
     int vertexTotal = 0;
     int vertexModel = 0;
 
@@ -68,7 +68,7 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
         if(line.startsWith('#'))
             continue;
 
-        QStringList parts = line.split(' ');
+        QStringList parts = line.split(' ', QString::SkipEmptyParts);
         if(parts.size() < 2)
             continue;
 
@@ -113,7 +113,7 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
         {
             case 0: // vertex
             {
-                double coords[4] = { 0.0, 0.0, 0.0, 1.f };
+                double coords[4] = { 0.0, 0.0, 0.0, 1.0 };
                 for(int i = 1; i < parts.size() && i < 5; ++i)
                     coords[i-1] = parts[i].toDouble();
                 model->addVertex(coords);
@@ -139,7 +139,7 @@ bool ObjFileLoader::load(const QString& file, std::vector<GLModel*>& modelList)
                 break;
             }
             case 4: // smooth shading
-                model->setSmoothShading(parts.back() == "1");
+                model->setSmoothShading(parts.back() != "off");
                 break;
             case 7: // usemtl
             {
