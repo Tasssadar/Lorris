@@ -26,6 +26,13 @@ public:
     size_t maxPacketSize() const { return 255; }
 
     bool getFirmwareDetails(ShupitoFirmwareDetails & details) const;
+    int vid() const;
+    int pid() const;
+    QString serialNumber() const;
+    QString intfName() const;
+
+    QHash<QString, QVariant> config() const;
+    bool canSaveToSession() const { return true; }
 
 public slots:
     void sendPacket(ShupitoPacket const & packet);

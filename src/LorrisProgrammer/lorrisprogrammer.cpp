@@ -885,6 +885,12 @@ void LorrisProgrammer::saveData(DataFileParser *file)
         file->writeString("Port");
         file->writeConn(con.data());
     }
+    else if(m_con->getType() == CONNECTION_SHUPITO23)
+    {
+        file->writeBlockIdentifier("LorrShupitoConn2");
+        file->writeString("Shupito23");
+        file->writeConn(m_con.data());
+    }
 }
 
 void LorrisProgrammer::loadData(DataFileParser *file)
@@ -915,26 +921,27 @@ void LorrisProgrammer::loadData(DataFileParser *file)
 
         if(file->readConn(type, cfg))
         {
-            ConnectionPointer<PortConnection> pc = sConMgr2.getConnWithConfig(type, cfg);
-            if(pc)
+            ConnectionPointer<Connection> conn = sConMgr2.getConnWithConfig(type, cfg);
+            if(conn.data())
             {
-                ConnectionPointer<Connection> con;
+                ConnectionPointer<Connection> progConn;
                 if(typeStr == "Shupito" || typeStr == "Shupito2")
                 {
-                    ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc.data());
-                    con = sc;
+                    PortConnection *pc = (PortConnection*)conn.data();
+                    ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
+                    progConn = sc;
 
                     if(typeStr == "Shupito2")
                         sc->setCompanionId(file->readVal<qint64>());
                 }
-                else if(typeStr == "Port")
-                    con = pc;
+                else if(typeStr == "Port" || typeStr == "Shupito23")
+                    progConn = conn;
 
-                if(con.data())
+                if(progConn.data())
                 {
-                    m_connectButton->setConn(con);
-                    if(!con->isOpen() && sConfig.get(CFG_BOOL_SESSION_CONNECT))
-                        con->OpenConcurrent();
+                    m_connectButton->setConn(progConn);
+                    if(!progConn->isOpen() && sConfig.get(CFG_BOOL_SESSION_CONNECT))
+                        progConn->OpenConcurrent();
                 }
             }
         }

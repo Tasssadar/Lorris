@@ -205,3 +205,45 @@ void UsbShupito23Connection::sendCompleted()
     if (this->state() == st_disconnecting)
         this->Close();
 }
+
+int UsbShupito23Connection::vid() const
+{
+    if(m_intf.empty())
+        return 0;
+    return m_intf.device().vidpid() >> 16;
+}
+
+int UsbShupito23Connection::pid() const
+{
+    if(m_intf.empty())
+        return 0;
+    return m_intf.device().vidpid() & 0xFFFF;
+}
+
+QString UsbShupito23Connection::serialNumber() const
+{
+    if(m_intf.empty())
+        return QString();
+    return QString::fromUtf8(m_intf.device().serial_number().c_str());
+}
+
+QString UsbShupito23Connection::intfName() const
+{
+    if(m_intf.empty())
+        return QString();
+
+    QString name = QString::fromUtf8(m_intf.name().c_str());
+    if (name.isEmpty())
+        name = QString("#%1").arg(m_intf.interface_index());
+    return name;
+}
+
+QHash<QString, QVariant> UsbShupito23Connection::config() const
+{
+    QHash<QString, QVariant> cfg = ShupitoConnection::config();
+    cfg["vid"] = this->vid();
+    cfg["pid"] = this->pid();
+    cfg["serial_number"] = this->serialNumber();
+    cfg["intf_name"] = this->intfName();
+    return cfg;
+}

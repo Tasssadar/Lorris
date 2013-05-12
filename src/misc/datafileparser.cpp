@@ -212,7 +212,7 @@ QColor DataFileParser::readColor()
     return QColor(readVal<QRgb>());
 }
 
-void DataFileParser::writeConn(PortConnection *conn)
+void DataFileParser::writeConn(Connection *conn)
 {
     if(!conn || !conn->canSaveToSession())
     {

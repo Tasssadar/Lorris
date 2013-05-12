@@ -38,6 +38,7 @@ public:
     ~UsbAcmConnection2();
 
     QString details() const { return m_details; }
+    bool canSaveToSession() const { return true; }
 
     int baudRate() const { return m_baudrate; }
     void setBaudRate(int value);

@@ -195,7 +195,7 @@ public:
     QVariant config() const;
     bool applyConfig(QVariant const & config);
 
-    ConnectionPointer<PortConnection> getConnWithConfig(quint8 type, const QHash<QString, QVariant>& cfg);
+    ConnectionPointer<Connection> getConnWithConfig(quint8 type, const QHash<QString, QVariant>& cfg);
 
     qint64 generateCompanionId();
     Connection *getCompanionConnection(Connection *toConn);

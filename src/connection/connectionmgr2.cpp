@@ -8,6 +8,7 @@
 #include <qextserialenumerator.h>
 #include <QStringBuilder>
 #include <QDateTime>
+#include <QApplication>
 
 #include "connectionmgr2.h"
 #include "serialport.h"
@@ -616,11 +617,17 @@ void ConnectionManager2::autoShupitoDestroyed()
     port->release();
 }
 
-ConnectionPointer<PortConnection> ConnectionManager2::getConnWithConfig(quint8 type, const QHash<QString, QVariant> &cfg)
+ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type, const QHash<QString, QVariant> &cfg)
 {
     this->refresh();
 
-    PortConnection *enumCon = NULL;
+#ifdef HAVE_LIBYB
+    // We want to receive first USB enumeration events,
+    // so that connections created here can be opened
+    QApplication::processEvents();
+#endif
+
+    Connection *enumCon = NULL;
     for(int i = 0; i < m_conns.size(); ++i)
     {
         if(m_conns[i]->getType() != type)
@@ -636,7 +643,7 @@ ConnectionPointer<PortConnection> ConnectionManager2::getConnWithConfig(quint8 t
                     if(!sp->removable())
                         enumCon = sp;
                     else if(sp->baudRate() == cfg["baud_rate"])
-                        return ConnectionPointer<PortConnection>::fromPtr(sp);
+                        return ConnectionPointer<Connection>::fromPtr(sp);
                 }
                 break;
             }
@@ -644,35 +651,65 @@ ConnectionPointer<PortConnection> ConnectionManager2::getConnWithConfig(quint8 t
             {
                 TcpSocket *socket = (TcpSocket*)m_conns[i];
                 if(socket->host() == cfg["host"] && socket->port() == cfg["port"])
-                    return ConnectionPointer<PortConnection>::fromPtr(socket);
+                    return ConnectionPointer<Connection>::fromPtr(socket);
                 break;
             }
             case CONNECTION_PROXY_TUNNEL:
             {
                 ProxyTunnel *tunnel = (ProxyTunnel*)m_conns[i];
                 if(tunnel->name() == cfg["name"])
-                    return ConnectionPointer<PortConnection>::fromPtr(tunnel);
+                    return ConnectionPointer<Connection>::fromPtr(tunnel);
                 break;
             }
             case CONNECTION_SHUPITO_TUNNEL:
             {
                 qint64 id = cfg.value("companion", 0).toLongLong();
                 if(id == 0)
-                    return ConnectionPointer<PortConnection>();
+                    return ConnectionPointer<Connection>();
 
                 if(id == m_conns[i]->getCompanionId())
-                    return ConnectionPointer<PortConnection>::fromPtr((ShupitoTunnel*)m_conns[i]);
+                    return ConnectionPointer<Connection>::fromPtr((ShupitoTunnel*)m_conns[i]);
                 break;
             }
+#ifdef HAVE_LIBYB
+            case CONNECTION_USB_ACM2:
+            {
+                UsbAcmConnection2 *usb = (UsbAcmConnection2*)m_conns[i];
+                if (usb->vid() == cfg.value("vid", 0).toInt() &&
+                    usb->pid() == cfg.value("pid", 0).toInt() &&
+                    usb->serialNumber() == cfg.value("serial_number").toString() &&
+                    usb->intfName() == cfg.value("intf_name").toString() &&
+                    usb->baudRate() == cfg.value("baud_rate", 115200).toInt() &&
+                    usb->stopBits() == cfg.value("stop_bits", 0).toInt() &&
+                    usb->parity() == (UsbAcmConnection2::parity_t)cfg.value("parity", 0).toInt() &&
+                    usb->dataBits() == cfg.value("data_bits", 8).toInt())
+                {
+                    return ConnectionPointer<Connection>::fromPtr(usb);
+                }
+                break;
+            }
+            case CONNECTION_SHUPITO23:
+            {
+                UsbShupito23Connection *usb = (UsbShupito23Connection*)m_conns[i];
+                if (usb->vid() == cfg.value("vid", 0).toInt() &&
+                    usb->pid() == cfg.value("pid", 0).toInt() &&
+                    usb->serialNumber() == cfg.value("serial_number").toString() &&
+                    usb->intfName() == cfg.value("intf_name").toString())
+                {
+                    return ConnectionPointer<Connection>::fromPtr(usb);
+                }
+                break;
+            }
+#endif
             default:
-                return ConnectionPointer<PortConnection>();
+                return ConnectionPointer<Connection>();
         }
     }
 
     if(enumCon)
     {
         enumCon->applyConfig(cfg);
-        return ConnectionPointer<PortConnection>::fromPtr(enumCon);
+        return ConnectionPointer<Connection>::fromPtr(enumCon);
     }
 
     if(type == CONNECTION_SHUPITO_TUNNEL)
@@ -681,14 +718,22 @@ ConnectionPointer<PortConnection> ConnectionManager2::getConnWithConfig(quint8 t
         if(id == 0)
             return ConnectionPointer<PortConnection>();
 
-        ConnectionPointer<PortConnection> tunnel(new ShupitoTunnel());
+        ConnectionPointer<Connection> tunnel(new ShupitoTunnel());
         tunnel->applyConfig(cfg);
         tunnel->setRemovable(false);
         this->addConnection(tunnel.data());
         return tunnel;
     }
+#ifdef HAVE_LIBYB
+    else if(type == CONNECTION_USB_ACM2)
+    {
+        ConnectionPointer<Connection> usb(createUsbAcmConn());
+        usb->applyConfig(cfg);
+        return usb;
+    }
+#endif
 
-    return ConnectionPointer<PortConnection>();
+    return ConnectionPointer<Connection>();
 }
 
 void ConnectionManager2::connectAll()

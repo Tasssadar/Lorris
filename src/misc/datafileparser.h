@@ -18,7 +18,7 @@
 #include "utils.h"
 
 class QEventLoop;
-class PortConnection;
+class Connection;
 
 enum DataBlocks
 {
@@ -100,7 +100,7 @@ public:
     void writeColor(const QColor& color);
     QColor readColor();
 
-    void writeConn(PortConnection *conn);
+    void writeConn(Connection *conn);
     bool readConn(quint8& type, QHash<QString, QVariant>& cfg);
 
     QString getAttachmentFilename();
