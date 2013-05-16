@@ -40,11 +40,4 @@ private:
     QList<QColor> m_colors;
 };
 
-class ButtonWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    ButtonWidgetAddBtn(QWidget *parent = 0);
-
-};
 #endif // TERMINALWIDGET_H

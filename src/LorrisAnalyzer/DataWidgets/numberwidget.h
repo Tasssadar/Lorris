@@ -69,11 +69,4 @@ private:
      FormulaEvaluation m_eval;
 };
 
-class NumberWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    NumberWidgetAddBtn(QWidget *parent = 0);
-};
-
 #endif // NUMBERWIDGET_H
