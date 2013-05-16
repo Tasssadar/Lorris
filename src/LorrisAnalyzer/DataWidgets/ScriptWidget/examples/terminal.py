@@ -1,9 +1,13 @@
 #  Make ScriptWidget work as terminal
 history = [""]
 cur_hist = 0
+last_idx = -1
 
 def onDataChanged(data, dev, cmd, index):
+    if(last_idx == index)
+        return ""
     terminal.appendText(data)
+    last_idx = index
     return ""
 
 def onKeyPress(key):

@@ -37,8 +37,6 @@ ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 
     resize(180, 100);
 
-    setMinimumSize(50, 50);
-
     m_brightness = 0;
     m_color_layout[0] = m_color_layout[1] = m_color_layout[2] = NULL;
     m_color_cor[0] = m_color_cor[1] = m_color_cor[2] = 0;
