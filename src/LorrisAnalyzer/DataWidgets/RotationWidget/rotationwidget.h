@@ -33,7 +33,10 @@ public slots:
     void rotateCamera(float deltaX, float deltaY, float deltaZ);
 
 private:
+
+#ifdef HAVE_OPENGL
     RenderWidget *m_widget;
+#endif
 };
 
 #endif // ROTATIONWIDGET_H

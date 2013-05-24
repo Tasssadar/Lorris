@@ -5,6 +5,7 @@ GOT_PYTHON=0
 GOT_KATE=0
 GOT_QSCI=0
 GOT_JOYSTICK=0
+GOT_QTOPENGL=0
 
 function CHECK_EXECUTABLE {
     echo -n "Checking for $1..."
@@ -81,6 +82,28 @@ for lib in ${qtLibs[@]} ; do
         fi
     fi
 done
+
+# Special QtOpenGL check
+echo -n "Checking for QtOpenGL..."
+libver=$(pkg-config --modversion QtOpenGL --silence-errors)
+if [ -z $libver ] ; then
+     echo "not found, building without OpenGL"
+     GOT_QTOPENGL=0
+else
+    if [ $(echo $libver | tr -d .) -lt 470 ] ; then
+        echo "too old ($libver, minimum is 4.7.0)"
+        GOT_QTOPENGL=0
+    else
+        echo "ok ($libver)"
+        echo ""
+        echo -n "Do you want to build parts that require OpenGL? [Y/n]: "
+        read use_qtopengl_user
+        echo ""
+        if [ -z $use_qtopengl_user ] || [ "$use_qtopengl_user" == "y" ] || [ "$use_qtopengl_user" == "Y" ] ; then
+            GOT_QTOPENGL=1
+        fi
+    fi
+fi
 
 echo ""
 echo -n "Checking if this is a git repository..."
@@ -244,6 +267,10 @@ fi
 
 if [ $GOT_JOYSTICK -eq 1 ] ; then
     echo "CONFIG += joystick" >> config.pri
+fi
+
+if [ $GOT_QTOPENGL -eq 1 ] ; then
+    echo "CONFIG += opengl" >> config.pri
 fi
 
 echo "done"

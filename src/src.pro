@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include(../config.pri)
 
-QT += gui core network script opengl
+QT += gui core network script
 TARGET = Lorris
 CONFIG += uitools precompile_header
 CONFIG(debug, debug|release):DESTDIR = $$PWD/../bin/debug
@@ -150,13 +150,9 @@ SOURCES += ui/mainwindow.cpp \
     misc/qtobjectpointer.cpp \
     LorrisAnalyzer/searchwidget.cpp \
     LorrisAnalyzer/confirmwidget.cpp \
-    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp \
-    LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.cpp \
-    LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.cpp \
-    LorrisAnalyzer/DataWidgets/RotationWidget/glutils.cpp \
-    LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.cpp \
     ui/floatingwidget.cpp \
-    ui/floatinginputdialog_impl.cpp
+    ui/floatinginputdialog_impl.cpp \
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -287,13 +283,9 @@ HEADERS += ui/mainwindow.h \
     misc/qtobjectpointer.h \
     LorrisAnalyzer/searchwidget.h \
     LorrisAnalyzer/confirmwidget.h \
-    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h \
-    LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.h \
-    LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.h \
-    LorrisAnalyzer/DataWidgets/RotationWidget/glutils.h \
-    LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.h \
     ui/floatingwidget.h \
-    ui/floatinginputdialog.h
+    ui/floatinginputdialog.h \
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -503,4 +495,17 @@ joystick:libenjoy {
     SOURCES += joystick/joystick.cpp \
         joystick/joythread.cpp
     HEADERS += joystick/joythread.h
+}
+
+opengl {
+    QT += opengl
+    DEFINES += HAVE_OPENGL
+    SOURCES += LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.cpp \
+        LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.cpp \
+        LorrisAnalyzer/DataWidgets/RotationWidget/glutils.cpp \
+        LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.cpp
+    HEADERS += LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.h \
+        LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.h \
+        LorrisAnalyzer/DataWidgets/RotationWidget/glutils.h \
+        LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.h
 }
