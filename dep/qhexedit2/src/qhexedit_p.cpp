@@ -918,3 +918,14 @@ void QHexEditPrivate::ensureVisible()
     // x-margin is 3 pixels, y-margin is half of charHeight
     _scrollArea->ensureVisible(_cursorX, _cursorY + _charHeight/2, 3, _charHeight/2 + 2);
 }
+
+QVariant QHexEditPrivate::inputMethodQuery(Qt::InputMethodQuery query) const
+{
+    if(query == Qt::ImMicroFocus)
+    {
+        QRect rect(_cursorX, _cursorY + _charHeight/2, 3, _charHeight/2 + 2);
+        return QVariant::fromValue(rect);
+    }
+    else
+        return QWidget::inputMethodQuery(query);
+}

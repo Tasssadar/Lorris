@@ -63,6 +63,8 @@ public:
     QString toRedableString();
     QString selectionToReadableString();
 
+    virtual QVariant inputMethodQuery(Qt::InputMethodQuery query) const;
+
 signals:
     void currentAddressChanged(int address);
     void currentSizeChanged(int size);
@@ -83,7 +85,6 @@ protected:
     void setSelection(int pos);         // set min (if below init) or max (if greater init)
     int getSelectionBegin();
     int getSelectionEnd();
-
 
 private slots:
     void updateCursor();
