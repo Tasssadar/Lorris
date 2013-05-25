@@ -22,3 +22,6 @@ CONFIG += qsci_editor
 
 # Comment out following line if you do not want joystick support
 CONFIG += joystick
+
+# Comment out following line if you don't want parts which require OpenGL
+CONFIG += opengl
