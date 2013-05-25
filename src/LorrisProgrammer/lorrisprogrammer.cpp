@@ -885,7 +885,7 @@ void LorrisProgrammer::saveData(DataFileParser *file)
         file->writeString("Port");
         file->writeConn(con.data());
     }
-    else if(m_con->getType() == CONNECTION_SHUPITO23)
+    else if(m_con && m_con->getType() == CONNECTION_SHUPITO23)
     {
         file->writeBlockIdentifier("LorrShupitoConn2");
         file->writeString("Shupito23");
