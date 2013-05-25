@@ -142,6 +142,7 @@ void LorrisProgrammer::initMenus()
     m_start_act->setEnabled(false);
     m_stop_act->setEnabled(false);
     m_restart_act->setShortcut(QKeySequence("R"));
+    m_restart_act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     m_restart_act->setEnabled(false);
 
     connect(m_start_act,  SIGNAL(triggered()), SLOT(startChip()));
