@@ -28,6 +28,8 @@ QHexEditPrivate::QHexEditPrivate(QScrollArea *parent) : QWidget(parent)
     //setFont(QFont("Courier", 10));
     setFont(QFont("Courier", 9));
 
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     _size = 0;
     resetSelection(0);
 
@@ -122,6 +124,22 @@ XByteArray & QHexEditPrivate::xData()
     return _xData;
 }
 
+int QHexEditPrivate::indexOf(const QByteArray & ba, int from)
+{
+    if (from > (_xData.data().length() - 1))
+        from = _xData.data().length() - 1;
+    int idx = _xData.data().indexOf(ba, from);
+    if (idx > -1)
+    {
+        int curPos = idx*2;
+        setCursorPos(curPos + ba.length()*2);
+        resetSelection(curPos);
+        setSelection(curPos + ba.length()*2);
+        ensureVisible();
+    }
+    return idx;
+}
+
 void QHexEditPrivate::insert(int index, const QByteArray & ba)
 {
     if (ba.length() > 0)
@@ -146,6 +164,23 @@ void QHexEditPrivate::insert(int index, char ch)
     QUndoCommand *charCommand = new CharCommand(&_xData, CharCommand::insert, index, ch);
     _undoStack->push(charCommand);
     emit dataChanged();
+}
+
+int QHexEditPrivate::lastIndexOf(const QByteArray & ba, int from)
+{
+    from -= ba.length();
+    if (from < 0)
+        from = 0;
+    int idx = _xData.data().lastIndexOf(ba, from);
+    if (idx > -1)
+    {
+        int curPos = idx*2;
+        setCursorPos(curPos);
+        resetSelection(curPos);
+        setSelection(curPos + ba.length()*2);
+        ensureVisible();
+    }
+    return idx;
 }
 
 void QHexEditPrivate::remove(int index, int len)
@@ -190,6 +225,7 @@ void QHexEditPrivate::replace(int index, char ch)
 {
     QUndoCommand *charCommand = new CharCommand(&_xData, CharCommand::replace, index, ch);
     _undoStack->push(charCommand);
+    resetSelection();
     emit dataChanged();
 }
 
@@ -197,6 +233,15 @@ void QHexEditPrivate::replace(int index, const QByteArray & ba)
 {
     QUndoCommand *arrayCommand= new ArrayCommand(&_xData, ArrayCommand::replace, index, ba, ba.length());
     _undoStack->push(arrayCommand);
+    resetSelection();
+    emit dataChanged();
+}
+
+void QHexEditPrivate::replace(int pos, int len, const QByteArray &after)
+{
+    QUndoCommand *arrayCommand= new ArrayCommand(&_xData, ArrayCommand::replace, pos, after, len);
+    _undoStack->push(arrayCommand);
+    resetSelection();
     emit dataChanged();
 }
 
@@ -548,7 +593,7 @@ if (!_readOnly)
         overwriteModeChanged(_overwriteMode);
     }*/
 
-    _scrollArea->ensureVisible(_cursorX, _cursorY + _charHeight/2, 3, _charHeight/2 + 2);
+    ensureVisible();
     update();
 }
 
@@ -789,6 +834,12 @@ int QHexEditPrivate::cursorPos()
     return _cursorPosition;
 }
 
+void QHexEditPrivate::resetSelection()
+{
+    _selectionBegin = _selectionInit;
+    _selectionEnd = _selectionInit;
+}
+
 void QHexEditPrivate::resetSelection(int pos)
 {
     if (pos < 0)
@@ -835,8 +886,8 @@ void QHexEditPrivate::updateCursor()
         _blink = false;
     else
         _blink = true;
+        */
     update(_cursorX, _cursorY, _charWidth, _charHeight);
-    */
 }
 
 void QHexEditPrivate::adjust()
@@ -859,4 +910,11 @@ void QHexEditPrivate::adjust()
         setMinimumWidth(_xPosHex + HEXCHARS_IN_LINE * _charWidth);
 
     update();
+}
+
+void QHexEditPrivate::ensureVisible()
+{
+    // scrolls to cursorx, cusory (which are set by setCursorPos)
+    // x-margin is 3 pixels, y-margin is half of charHeight
+    _scrollArea->ensureVisible(_cursorX, _cursorY + _charHeight/2, 3, _charHeight/2 + 2);
 }
