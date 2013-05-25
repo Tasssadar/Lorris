@@ -140,7 +140,9 @@ void LorrisProgrammer::initMenus()
     m_restart_act = chipBar->addAction(QIcon(":/actions/refresh"), tr("Restart chip"));
 
     m_start_act->setEnabled(false);
+    m_stop_act->setEnabled(false);
     m_restart_act->setShortcut(QKeySequence("R"));
+    m_restart_act->setEnabled(false);
 
     connect(m_start_act,  SIGNAL(triggered()), SLOT(startChip()));
     connect(m_stop_act,   SIGNAL(triggered()), SLOT(stopChip()));
@@ -575,8 +577,8 @@ void LorrisProgrammer::updateStartStopUi(bool stopped)
 {
     ui->setStartStopBtn(stopped);
 
-    m_start_act->setEnabled(stopped);
-    m_stop_act->setEnabled(!stopped);
+    m_start_act->setEnabled(m_buttons_enabled && stopped);
+    m_stop_act->setEnabled(m_buttons_enabled && !stopped);
 
     m_chipStopped = stopped;
 }
@@ -954,6 +956,9 @@ void LorrisProgrammer::setEnableButtons(bool enable)
         return;
 
     m_buttons_enabled = enable;
+    m_start_act->setEnabled(enable);
+    m_stop_act->setEnabled(enable);
+    m_restart_act->setEnabled(enable);
     ui->enableButtons(enable);
 }
 
