@@ -13,6 +13,11 @@
 #include <QFont>
 #include <stdint.h>
 
+// Workaround for GCC 4.6, it does not know override keyword
+#if (__GNUC__ == 4 && __GNUC_MINOR__< 7)
+  #define override
+#endif
+
 class QLayout;
 
 #define sizeof_array(a) (sizeof(a)/sizeof(a[0]))

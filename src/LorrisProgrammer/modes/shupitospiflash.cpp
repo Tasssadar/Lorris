@@ -67,7 +67,7 @@ chip_definition ShupitoSpiFlash::readDeviceId()
     cd.setName("spiflash");
 
     {
-        uint8_t const req[] = { m_prog_cmd_base + 2, (1<<1), 0x9f, 0, 0, 0 };
+        uint8_t const req[] = { uint8_t(m_prog_cmd_base + 2), (1<<1), 0x9f, 0, 0, 0 };
         ShupitoPacket in = m_shupito->waitForPacket(ShupitoPacket(req, req + sizeof req), req[0]);
 
         if (in[3] == 0 && in[4] == 0 && in[5] == 0)
@@ -165,7 +165,7 @@ void ShupitoSpiFlash::erase_device(chip_definition& chip)
     if ((this->readStatus() & (1<<1)) == 0)
         throw tr("Failed to enable write");
 
-    uint8_t const req[] = { m_prog_cmd_base + 2, (1<<1), 0xC7 };
+    uint8_t const req[] = { uint8_t(m_prog_cmd_base + 2), (1<<1), 0xC7 };
     m_shupito->waitForPacket(ShupitoPacket(req, req + sizeof req), m_prog_cmd_base + 2);
 
     while (this->readStatus() & (1<<0))
@@ -178,13 +178,13 @@ void ShupitoSpiFlash::erase_device(chip_definition& chip)
 
 void ShupitoSpiFlash::writeEnable()
 {
-    uint8_t const req[] = { m_prog_cmd_base + 2, (1<<1), 6 };
+    uint8_t const req[] = { uint8_t(m_prog_cmd_base + 2), (1<<1), 6 };
     m_shupito->waitForPacket(ShupitoPacket(req, req + sizeof req), m_prog_cmd_base + 2);
 }
 
 uint8_t ShupitoSpiFlash::readStatus()
 {
-    uint8_t const req[] = { m_prog_cmd_base + 2, (1<<1), 5, 0 };
+    uint8_t const req[] = { uint8_t(m_prog_cmd_base + 2), (1<<1), 5, 0 };
     ShupitoPacket in = m_shupito->waitForPacket(ShupitoPacket(req, req + sizeof req), m_prog_cmd_base + 2);
     if (in.size() != sizeof req)
         throw QString(tr("Invalid response.")); //XXX
