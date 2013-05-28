@@ -1,4 +1,4 @@
-// This module defines various things common to all of the Scintilla Qt port.
+// This module implements the QsciAbstractAPIs class.
 //
 // Copyright (c) 2012 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -23,45 +23,34 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#ifndef QSCIGLOBAL_H
-#define QSCIGLOBAL_H
+#include "Qsci/qsciabstractapis.h"
 
-#ifdef __APPLE__
-extern "C++" {
-#endif
-
-#include <qglobal.h>
+#include "Qsci/qscilexer.h"
 
 
-#define QSCINTILLA_VERSION      0x020701
-#define QSCINTILLA_VERSION_STR  "2.7.1"
-
-
-// Under Windows, define QSCINTILLA_MAKE_DLL to create a Scintilla DLL, or
-// define QSCINTILLA_DLL to link against a Scintilla DLL, or define neither
-// to either build or link against a static Scintilla library.
-#if defined(Q_OS_WIN)
-
-#if defined(QSCINTILLA_DLL)
-#define QSCINTILLA_EXPORT       __declspec(dllimport)
-#elif defined(QSCINTILLA_MAKE_DLL)
-#define QSCINTILLA_EXPORT       __declspec(dllexport)
-#endif
-
-#endif
-
-#if !defined(QSCINTILLA_EXPORT)
-#define QSCINTILLA_EXPORT
-#endif
-
-
-#if !defined(QT_BEGIN_NAMESPACE)
-#define QT_BEGIN_NAMESPACE
-#define QT_END_NAMESPACE
-#endif
-
-#ifdef __APPLE__
+// The ctor.
+QsciAbstractAPIs::QsciAbstractAPIs(QsciLexer *lexer)
+    : QObject(lexer),
+      lex(lexer)
+{
+    lexer->setAPIs(this);
 }
-#endif
 
-#endif
+
+// The dtor.
+QsciAbstractAPIs::~QsciAbstractAPIs()
+{
+}
+
+
+// Return the lexer.
+QsciLexer *QsciAbstractAPIs::lexer() const
+{
+    return lex;
+}
+
+
+// Called when the user has made a selection from the auto-completion list.
+void QsciAbstractAPIs::autoCompletionSelected(const QString &selection)
+{
+}

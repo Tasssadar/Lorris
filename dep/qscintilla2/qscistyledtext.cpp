@@ -1,4 +1,4 @@
-// This module defines various things common to all of the Scintilla Qt port.
+// This module implements the QsciStyledText class.
 //
 // Copyright (c) 2012 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
@@ -23,45 +23,37 @@
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-#ifndef QSCIGLOBAL_H
-#define QSCIGLOBAL_H
+#include "Qsci/qscistyledtext.h"
 
-#ifdef __APPLE__
-extern "C++" {
-#endif
-
-#include <qglobal.h>
+#include "Qsci/qsciscintillabase.h"
+#include "Qsci/qscistyle.h"
 
 
-#define QSCINTILLA_VERSION      0x020701
-#define QSCINTILLA_VERSION_STR  "2.7.1"
-
-
-// Under Windows, define QSCINTILLA_MAKE_DLL to create a Scintilla DLL, or
-// define QSCINTILLA_DLL to link against a Scintilla DLL, or define neither
-// to either build or link against a static Scintilla library.
-#if defined(Q_OS_WIN)
-
-#if defined(QSCINTILLA_DLL)
-#define QSCINTILLA_EXPORT       __declspec(dllimport)
-#elif defined(QSCINTILLA_MAKE_DLL)
-#define QSCINTILLA_EXPORT       __declspec(dllexport)
-#endif
-
-#endif
-
-#if !defined(QSCINTILLA_EXPORT)
-#define QSCINTILLA_EXPORT
-#endif
-
-
-#if !defined(QT_BEGIN_NAMESPACE)
-#define QT_BEGIN_NAMESPACE
-#define QT_END_NAMESPACE
-#endif
-
-#ifdef __APPLE__
+// A ctor.
+QsciStyledText::QsciStyledText(const QString &text, int style)
+    : styled_text(text), style_nr(style), explicit_style(0)
+{
 }
-#endif
 
-#endif
+
+// A ctor.
+QsciStyledText::QsciStyledText(const QString &text, const QsciStyle &style)
+    : styled_text(text), style_nr(-1)
+{
+    explicit_style = new QsciStyle(style);
+}
+
+
+// Return the number of the style.
+int QsciStyledText::style() const
+{
+    return explicit_style ? explicit_style->style() : style_nr;
+}
+
+
+// Apply any explicit style to an editor.
+void QsciStyledText::apply(QsciScintillaBase *sci) const
+{
+    if (explicit_style)
+        explicit_style->apply(sci);
+}

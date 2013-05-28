@@ -468,25 +468,20 @@ kate_editor:unix {
     LIBS += -lktexteditor -lkdecore
 }
 
-qsci_editor:win32 {
+qsci_editor {
     DEFINES += USE_QSCI
-    win32-msvc* {
-        LIBS += -L"$$PWD/../dep/qscintilla2/msvc"
-        CONFIG(debug, debug|release) {
-            LIBS += -lqscintilla2d
-            QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\msvc\\qscintilla2d.dll\"" \""$$DESTDIR\\qscintilla2d.dll\"" &
-        } else {
-            LIBS += -lqscintilla2
-            QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\msvc\\qscintilla2.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
-        }
-    } else {
-        LIBS += -L"$$PWD/../dep/qscintilla2/" -lqscintilla2
-        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\qscintilla2.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
-    }
+    LIBS += -L"$$PWD/../dep/qscintilla2/lib"
     INCLUDEPATH += "$$PWD/../dep/qscintilla2/"
+    CONFIG(debug, debug|release) {
+        LIBS += -lqscintilla2_lorrisd
+        win32:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\lib\\qscintilla2_lorrisd.dll\"" \""$$DESTDIR\\qscintilla2d.dll\"" &
+    } else {
+        LIBS += -lqscintilla2_lorris
+        win32:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\lib\\qscintilla2_lorris.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
+    }
 }
 
-qsci_editor:unix {
+qsci_system:unix {
     DEFINES += USE_QSCI
     LIBS += -lqscintilla2
 }
