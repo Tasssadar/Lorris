@@ -62,7 +62,7 @@ private slots:
     void on_usbPidEdit_textChanged(QString const & value);
     void on_usbAcmSnEdit_textChanged(QString const & value);
     void on_usbIntfNameEdit_textChanged(QString const & value);
-    void on_usbBaudRateEdit_textChanged(QString const & value);
+    void on_usbBaudRateEdit_editTextChanged(QString const & value);
     void on_usbDataBitsCombo_currentIndexChanged(int value);
     void on_usbParityCombo_currentIndexChanged(int value);
     void on_usbStopBitsCombo_currentIndexChanged(int value);
