@@ -370,11 +370,14 @@ win32 {
 
     CONFIG(debug, debug|release) {
         LIBS += -lqwtd
-        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qwt\\lib\\qwtd.dll\"" \""$$DESTDIR\\qwtd.dll\"" &
+        QWT_L=qwtd.dll
     } else {
         LIBS += -lqwt
-        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qwt\\lib\\qwt.dll\"" \""$$DESTDIR\\qwt.dll\"" &
+        QWT_L=qwt.dll
     }
+
+    cross_build:QMAKE_POST_LINK += cp \""$$PWD/../dep/qwt/lib/$$QWT_L\"" \""$$DESTDIR/$$QWT_L\"" ;
+    else:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qwt\\lib\\$$QWT_L\"" \""$$DESTDIR\\$$QWT_L\"" &
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
 
@@ -437,7 +440,8 @@ python {
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 
     win32 {
-        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\pythonqt\\PythonQt.dll\"" \""$$DESTDIR\\PythonQt.dll\"" &
+        cross_build:QMAKE_POST_LINK += cp \""$$PWD/../dep/pythonqt/PythonQt.dll\"" \""$$DESTDIR/PythonQt.dll\"";
+        else:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\pythonqt\\PythonQt.dll\"" \""$$DESTDIR\\PythonQt.dll\"" &
     }
 }
 
@@ -474,10 +478,15 @@ qsci_editor {
     INCLUDEPATH += "$$PWD/../dep/qscintilla2/"
     CONFIG(debug, debug|release) {
         LIBS += -lqscintilla2_lorrisd
-        win32:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\lib\\qscintilla2_lorrisd.dll\"" \""$$DESTDIR\\qscintilla2d.dll\"" &
+        QSCI_L=qscintilla2_lorrisd.dll
     } else {
         LIBS += -lqscintilla2_lorris
-        win32:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\lib\\qscintilla2_lorris.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
+        QSCI_L=qscintilla2_lorris.dll
+    }
+
+    win32 {
+        cross_build:QMAKE_POST_LINK += cp \""$$PWD/../dep/qscintilla2/lib/$$QSCI_L\"" \""$$DESTDIR/$$QSCI_L\"" ;
+        else:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\lib\\$$QSCI_L\"" \""$$DESTDIR\\$$QSCI_L\"" &
     }
 }
 
