@@ -152,7 +152,10 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/confirmwidget.cpp \
     ui/floatingwidget.cpp \
     ui/floatinginputdialog_impl.cpp \
-    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp \
+    ../dep/qcustomplot/qcustomplot.cpp \
+    LorrisAnalyzer/DataWidgets/PlotWidget/plotwidget.cpp \
+    LorrisAnalyzer/DataWidgets/PlotWidget/plotcurve.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -285,7 +288,10 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/confirmwidget.h \
     ui/floatingwidget.h \
     ui/floatinginputdialog.h \
-    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h \
+    ../dep/qcustomplot/qcustomplot.h \
+    LorrisAnalyzer/DataWidgets/PlotWidget/plotwidget.h \
+    LorrisAnalyzer/DataWidgets/PlotWidget/plotcurve.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
