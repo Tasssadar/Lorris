@@ -126,6 +126,7 @@ Q_SIGNALS:
 
     void titleChanged(const QString& newTitle);
     void scriptEvent(const QString& eventId);
+    void scriptEvent(const QString &eventId, const QVariantList& args);
 
     void addChildTab(ChildTab *tab, const QString& name);
     void removeChildTab(ChildTab *tab);
@@ -194,11 +195,16 @@ public slots:
     bool isLocked() const { return (m_state & STATE_LOCKED); }
     void setError(bool error, QString tooltip = QString());
     void setSelected(bool selected);
+    void move(int x, int y) { QFrame::move(x, y); }
+    void move(const QPoint& p) { QFrame::move(p); }
+    void resize(int w, int h) { QFrame::resize(w, h); }
+    void resize(const QSize& s) { QFrame::resize(s); }
 
     //events
     virtual void onWidgetAdd(DataWidget *w);
     virtual void onWidgetRemove(DataWidget *w);
     virtual void onScriptEvent(const QString& eventId);
+    virtual void onScriptEvent(const QString& eventId, const QVariantList& args);
 
 protected:
     void mousePressEvent(QMouseEvent * event);

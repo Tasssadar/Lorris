@@ -44,6 +44,7 @@ public slots:
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
     void onScriptEvent(const QString& eventId);
+    void onScriptEvent(const QString &eventId, const QVariantList& args);
 
 protected slots:
      void setSourceTriggered();

@@ -4,6 +4,8 @@ cur_hist = 0
 last_idx = -1
 
 def onDataChanged(data, dev, cmd, index):
+    global last_idx
+
     if last_idx == index:
         return ""
     terminal.appendText(data)

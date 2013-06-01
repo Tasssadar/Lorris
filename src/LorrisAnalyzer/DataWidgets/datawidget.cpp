@@ -691,6 +691,11 @@ void DataWidget::onScriptEvent(const QString& /*eventId*/)
 
 }
 
+void DataWidget::onScriptEvent(const QString &/*eventId*/, const QVariantList &/*args*/)
+{
+
+}
+
 void DataWidget::mapXYToGrid(QPoint& point)
 {
     mapToGrid(point.rx());

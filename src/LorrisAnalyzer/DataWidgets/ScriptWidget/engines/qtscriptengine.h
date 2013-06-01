@@ -40,6 +40,8 @@ private:
     int getWidth();
     int getHeight();
     QScriptValue newTimer();
+    quint32 getDataCount() const;
+    QByteArray *getData(quint32 idx) const;
 
     static QScriptValue __clearTerm(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __appendTerm(QScriptContext *context, QScriptEngine *engine);
@@ -55,6 +57,8 @@ private:
     static QScriptValue __addComboBoxItems(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __moveWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __resizeWidget(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getData(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getDataCount(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);

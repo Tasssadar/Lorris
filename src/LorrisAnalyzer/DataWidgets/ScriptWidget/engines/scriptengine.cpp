@@ -71,3 +71,8 @@ QString ScriptEngine::sanitizeWidgetName(QString const & name)
 
     return name;
 }
+
+Storage *ScriptEngine::getStorage() const
+{
+    return m_area->getStorage();
+}

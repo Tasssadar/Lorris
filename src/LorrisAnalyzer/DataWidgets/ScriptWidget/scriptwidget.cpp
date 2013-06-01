@@ -144,7 +144,7 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
 
     // storage data
     m_engine->onSave();
-    m_engine->getStorage()->saveToFile(file);
+    m_engine->getScriptStorage()->saveToFile(file);
 
     // scripts filename
     file->writeBlockIdentifier("scriptWFilename");
@@ -190,7 +190,7 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     createEngine();
 
     // storage data
-    m_engine->getStorage()->loadFromFile(file);
+    m_engine->getScriptStorage()->loadFromFile(file);
 
     // Filename
     if(file->seekToNextBlock("scriptWFilename", BLOCK_WIDGET))
@@ -297,6 +297,12 @@ void ScriptWidget::onScriptEvent(const QString& eventId)
 {
     if(m_engine)
         m_engine->callEventHandler(eventId);
+}
+
+void ScriptWidget::onScriptEvent(const QString &eventId, const QVariantList& args)
+{
+    if(m_engine)
+        m_engine->callEventHandler(eventId, args);
 }
 
 void ScriptWidget::blinkError(const QString &text)

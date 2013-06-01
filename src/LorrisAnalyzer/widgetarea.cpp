@@ -179,7 +179,9 @@ DataWidget *WidgetArea::addWidget(QPoint pos, quint8 type, bool show)
     connect(this,       SIGNAL(onWidgetAdd(DataWidget*)),        w, SLOT(onWidgetAdd(DataWidget*)));
     connect(this,       SIGNAL(onWidgetRemove(DataWidget*)),     w, SLOT(onWidgetRemove(DataWidget*)));
     connect(this,       SIGNAL(onScriptEvent(QString)),          w, SLOT(onScriptEvent(QString)));
+    connect(this,       SIGNAL(onScriptEvent(QString,QVariantList)), w, SLOT(onScriptEvent(QString, QVariantList)));
     connect(w,          SIGNAL(scriptEvent(QString)),         this, SIGNAL(onScriptEvent(QString)));
+    connect(w,          SIGNAL(scriptEvent(QString, QVariantList)),this, SIGNAL(onScriptEvent(QString, QVariantList)));
 
     emit onWidgetAdd(w);
 

@@ -40,6 +40,7 @@ Q_SIGNALS:
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
     void onScriptEvent(const QString& eventId);
+    void onScriptEvent(const QString &eventId, const QVariantList& args);
 
 public:
     typedef QHash<quint32, DataWidget*> w_map;

@@ -39,14 +39,28 @@ void ButtonWidget::setUp(Storage *storage)
 
     connect(btnText,     SIGNAL(triggered()), SLOT(setButtonName()));
     connect(btnShortcut, SIGNAL(triggered()), SLOT(setShortcut()));
-    connect(btnColor,    SIGNAL(triggered()),   SLOT(setColors()));
+    connect(btnColor,    SIGNAL(triggered()), SLOT(setColors()));
     connect(m_button,    SIGNAL(clicked()),   SLOT(buttonClicked()));
+    connect(m_button,    SIGNAL(pressed()),   SLOT(buttonPressed()));
+    connect(m_button,    SIGNAL(released()),  SLOT(buttonReleased()));
     connect(m_button,    SIGNAL(clicked()),   SIGNAL(clicked()));
+    connect(m_button,    SIGNAL(pressed()),   SIGNAL(pressed()));
+    connect(m_button,    SIGNAL(released()),  SIGNAL(released()));
 }
 
 void ButtonWidget::buttonClicked()
 {
     emit scriptEvent(getTitle() + "_clicked");
+}
+
+void ButtonWidget::buttonPressed()
+{
+    emit scriptEvent(getTitle() + "_pressed");
+}
+
+void ButtonWidget::buttonReleased()
+{
+    emit scriptEvent(getTitle() + "_released");
 }
 
 void ButtonWidget::setButtonName()

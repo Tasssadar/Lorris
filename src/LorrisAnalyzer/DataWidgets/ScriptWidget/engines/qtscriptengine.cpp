@@ -22,6 +22,7 @@
 #include "../../../../joystick/joymgr.h"
 #include "../scriptwidget.h"
 #include "../../../../ui/terminal.h"
+#include "../../../storage.h"
 
 /* Simple JavaScript Inheritance
  * By John Resig http://ejohn.org/
@@ -84,6 +85,8 @@ void QtScriptEngine::prepareNewContext()
     QScriptValue addComboItems = m_engine->newFunction(&QtScriptEngine_private::__addComboBoxItems);
     QScriptValue moveW = m_engine->newFunction(&QtScriptEngine_private::__moveWidget);
     QScriptValue resizeW = m_engine->newFunction(&QtScriptEngine_private::__resizeWidget);
+    QScriptValue getData = m_engine->newFunction(&QtScriptEngine_private::__getData);
+    QScriptValue getDataCount = m_engine->newFunction(&QtScriptEngine_private::__getDataCount);
 
     QScriptValue numberW = m_engine->newFunction(&QtScriptEngine_private::__newNumberWidget);
     QScriptValue barW = m_engine->newFunction(&QtScriptEngine_private::__newBarWidget);
@@ -97,10 +100,13 @@ void QtScriptEngine::prepareNewContext()
 
     m_global.setProperty("clearTerm", clearTerm);
     m_global.setProperty("appendTerm", appendTerm);
+    m_global.setProperty("print", appendTerm);
     m_global.setProperty("sendData", sendData);
+    m_global.setProperty("send", sendData);
     m_global.setProperty("getWidth", getW);
     m_global.setProperty("getHeight", getH);
     m_global.setProperty("throwException", throwEx);
+    m_global.setProperty("alert", throwEx);
     m_global.setProperty("getJoystick", getJoy);
     m_global.setProperty("closeJoystick", closeJoy);
     m_global.setProperty("getJoystickNames", getJoyName);
@@ -109,6 +115,8 @@ void QtScriptEngine::prepareNewContext()
     m_global.setProperty("addComboBoxItems", addComboItems);
     m_global.setProperty("moveWidget", moveW);
     m_global.setProperty("resizeWidget", resizeW);
+    m_global.setProperty("getData", getData);
+    m_global.setProperty("getDataCount", getDataCount);
 
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
@@ -430,6 +438,16 @@ QScriptValue QtScriptEngine_private::newTimer()
     return m_base->newTimer();
 }
 
+QByteArray *QtScriptEngine_private::getData(quint32 idx) const
+{
+    return m_base->getStorage()->get(idx);
+}
+
+quint32 QtScriptEngine_private::getDataCount() const
+{
+    return m_base->getStorage()->getSize();
+}
+
 QScriptValue QtScriptEngine_private::__clearTerm(QScriptContext */*context*/, QScriptEngine *engine)
 {
     ((QtScriptEngine_private*)engine)->clearTerm();
@@ -676,4 +694,28 @@ QScriptValue QtScriptEngine_private::__resizeWidget(QScriptContext *context, QSc
     w->resize(context->argument(1).toInt32(), context->argument(2).toInt32());
 
     return QScriptValue();
+}
+
+QScriptValue QtScriptEngine_private::__getData(QScriptContext *context, QScriptEngine *engine)
+{
+    if(context->argumentCount() != 1 || !context->argument(0).isNumber())
+        return QScriptValue();
+
+    QtScriptEngine_private *eng = (QtScriptEngine_private*)engine;
+
+    quint32 idx = context->argument(0).toUInt32();
+    quint32 count = eng->getDataCount();
+    if(idx >= count)
+        return QScriptValue();
+
+    QByteArray *data = eng->getData(idx);
+    QScriptValue jsData = eng->newArray(data->size());
+    for(int i = 0; i < data->size(); ++i)
+        jsData.setProperty(i, QScriptValue(eng, (quint8)data->at(i)));
+    return jsData;
+}
+
+QScriptValue QtScriptEngine_private::__getDataCount(QScriptContext */*context*/, QScriptEngine *engine)
+{
+    return ((QtScriptEngine_private*)engine)->getDataCount();
 }
