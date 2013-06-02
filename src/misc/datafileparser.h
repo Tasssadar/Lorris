@@ -130,14 +130,17 @@ private:
 class DataFileBuilder
 {
 public:
-    static QByteArray readAndCheck(QFile& file, DataFileTypes expectedType, bool *legacy = NULL);
+    static QByteArray readAndCheck(QFile& file, DataFileTypes expectedType, bool *legacy = NULL, DataFileHeader *fillHeader = NULL);
 
     // Returns MD5 of written data. data is cleared!
     static QByteArray writeWithHeader(const QString& filename, QByteArray& data, bool compress, DataFileTypes type);
 
+    static void dumpFileInfo(const QString& filename);
+
 private:
     static void readHeader(QFile& file, DataFileHeader *header);
     static void writeHeader(QIODevice &file, DataFileHeader *header);
+    static void dumpHeader(const DataFileHeader& header);
 
     static QByteArray writeWithHeader_private(const QString& filename, QByteArray& data, bool compress, DataFileTypes type);
 

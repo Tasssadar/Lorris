@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QString>
 
 #include "datafileparser.h"
 #include "config.h"
@@ -318,7 +319,7 @@ DataFileParser& DataFileParser::operator >>(QColor& color)
 QFuture<QByteArray> DataFileBuilder::m_future;
 QFutureWatcher<QByteArray> *DataFileBuilder::m_watcher = NULL;
 
-QByteArray DataFileBuilder::readAndCheck(QFile &file, DataFileTypes expectedType, bool *legacy)
+QByteArray DataFileBuilder::readAndCheck(QFile &file, DataFileTypes expectedType, bool *legacy, DataFileHeader *fillHeader)
 {
     if(!file.isOpen() && !file.open(QIODevice::ReadOnly))
         throw QObject::tr("Cannot open file \"%1\"!").arg(file.fileName());
@@ -341,10 +342,13 @@ QByteArray DataFileBuilder::readAndCheck(QFile &file, DataFileTypes expectedType
         header.reset(new DataFileHeader);
         readHeader(file, header.data());
 
-        if(header->data_type != expectedType)
+        if(expectedType != DATAFILE_NONE && header->data_type != expectedType)
             throw QObject::tr("This file is not of expected content type");
 
         compressed = (header->flags & DATAFLAG_COMPRESSED);
+
+        if(fillHeader)
+            memcpy(fillHeader, header.data(), sizeof(DataFileHeader));
     }
 
     if(legacy)
@@ -354,13 +358,18 @@ QByteArray DataFileBuilder::readAndCheck(QFile &file, DataFileTypes expectedType
 
     if(header && QByteArray::fromRawData(header->md5, sizeof(header->md5)) != MD5(data))
     {
-        QMessageBox box(QMessageBox::Question, QObject::tr("Error"),
+        if(qApp)
+        {
+            QMessageBox box(QMessageBox::Question, QObject::tr("Error"),
                         QObject::tr("Corrupted data file - MD5 checksum does not match"),
                         QMessageBox::Yes | QMessageBox::No);
-        box.setInformativeText(QObject::tr("Load anyway?"));
+            box.setInformativeText(QObject::tr("Load anyway?"));
 
-        if(box.exec() == QMessageBox::No)
-            throw QObject::tr("Corrupted data file - MD5 checksum does not match");
+            if(box.exec() == QMessageBox::No)
+                throw QObject::tr("Corrupted data file - MD5 checksum does not match");
+        }
+        else
+            printf("MD5 checksums do not match!\n");
     }
 
 
@@ -502,6 +511,76 @@ void DataFileBuilder::writeHeader(QIODevice &file, DataFileHeader *header)
     file.seek(0);
     file.write((char*)header->str, sizeof(DataFileHeader));
     file.seek(header->header_size);
+}
+
+void DataFileBuilder::dumpFileInfo(const QString& filename)
+{
+    QFile f(filename);
+    try
+    {
+        bool legacy = false;
+        DataFileHeader header;
+        QByteArray data = readAndCheck(f, DATAFILE_NONE, &legacy, &header);
+        f.close();
+
+        if(legacy) printf("This file does not have header\n");
+        else       dumpHeader(header);
+
+        printf("\nData blocks:\n");
+        int cur = 0;
+        char *st, *itr;
+        int offset = legacy ? 0 : sizeof(DataFileHeader);
+        while((cur = data.indexOf((char)0x80, cur)) != -1)
+        {
+            st = itr = data.data() + cur + 1;
+            for(; *itr >= 0; ++itr)
+            {
+                if(*itr == 0)
+                {
+                    if(*(itr+1) == (char)0x80 && itr != st)
+                        printf("%08X: %s\n", cur+offset, st);
+                    break;
+                }
+            }
+            ++cur;
+        }
+    }
+    catch (const QString& str)
+    {
+        printf("ERROR: %s\n", str.toStdString().c_str());
+    }
+}
+
+void DataFileBuilder::dumpHeader(const DataFileHeader& header)
+{
+    QString flags;
+    if(header.flags != 0)
+    {
+        if(header.flags & DATAFLAG_COMPRESSED_OBSOLETE)
+            flags += "DATAFLAG_COMPRESSED_OBSOLETE ";
+        if(header.flags & DATAFLAG_COMPRESSED)
+            flags += "DATAFLAG_COMPRESSED ";
+    } else flags = "none ";
+
+    QString type;
+    switch(header.data_type)
+    {
+        case DATAFILE_NONE:     type = "DATAFILE_NONE"; break;
+        case DATAFILE_ANALYZER: type = "DATAFILE_ANALYZER"; break;
+        case DATAFILE_SESSION:  type = "DATAFILE_SESSION"; break;
+        default:                type = "UNKNOWN"; break;
+    }
+
+    QString md5 = Utils::toBase16((quint8*)header.md5, (quint8*)header.md5+16);
+    printf("Header:\n");
+    printf("             str: %c%c%c%c\n", header.str[0], header.str[1], header.str[2], header.str[3]);
+    printf("         version: %u\n", header.version);
+    printf("           flags: 0x%X - %s\n", header.flags, flags.toStdString().c_str());
+    printf("       data_type: %u (%s)\n", header.data_type, type.toStdString().c_str());
+    printf("             md5: %s\n", md5.toStdString().c_str());
+    printf("     header_size: %u\n", header.header_size);
+    printf("compressed_block: %u (%.1f MB)\n", header.compressed_block, float(header.compressed_block)/1024/1024);
+    printf("      lorris_rev: %u\n", header.lorris_rev);
 }
 
 ProgressReporter::ProgressReporter() : QObject()
