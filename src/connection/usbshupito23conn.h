@@ -45,6 +45,7 @@ private:
     yb::usb_device_interface m_intf;
     yb::usb_interface_guard m_intf_guard;
     uint8_t m_out_ep;
+    size_t m_out_ep_size;
     std::vector<uint8_t> m_in_eps;
     QString m_details;
     ShupitoDesc m_desc;

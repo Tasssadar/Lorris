@@ -42,7 +42,10 @@ void UsbShupito23Connection::setup(yb::usb_device_interface const & intf)
     for (size_t i = 0; i < desc.endpoints.size(); ++i)
     {
         if (desc.endpoints[i].is_output())
+        {
             m_out_ep = desc.endpoints[i].bEndpointAddress;
+            m_out_ep_size = desc.endpoints[i].wMaxPacketSize;
+        }
         else
             m_in_eps.push_back(desc.endpoints[i].bEndpointAddress);
     }
@@ -156,7 +159,10 @@ yb::task<void> UsbShupito23Connection::write_packets()
         }
 
         ShupitoPacket & packet = m_write_loop_ctx.packets[m_write_loop_ctx.packet_index++];
-        return m_intf.device().bulk_write(m_out_ep, packet.data(), packet.size()).ignore_result();
+        if (packet.size() == 256)
+            return m_intf.device().bulk_write(m_out_ep, packet.data(), packet.size()).ignore_result();
+        else
+            return m_intf.device().bulk_write_zlp(m_out_ep, packet.data(), packet.size(), m_out_ep_size).ignore_result();
     });
 }
 
