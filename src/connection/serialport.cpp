@@ -237,7 +237,7 @@ void SerialPortOpenThread::run()
 
 #ifdef Q_OS_WIN
     m_port = new QextSerialPort(m_conn->deviceName(), QextSerialPort::Polling);
-    m_port->setTimeout(0);
+    m_port->setTimeout(-1);
 #else
     m_port = new QextSerialPort(m_conn->deviceName(), QextSerialPort::EventDriven);
     m_port->setTimeout(500);
