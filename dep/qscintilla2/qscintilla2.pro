@@ -30,7 +30,7 @@
 TEMPLATE = lib
 TARGET = $$qtLibraryTarget(qscintilla2_lorris)
 CONFIG += qt warn_off thread
-INCLUDEPATH = ./include ./lexlib ./src
+INCLUDEPATH = ./include ./lexlib ./src .
 DESTDIR = $$PWD/lib
 DEFINES = QSCINTILLA_MAKE_DLL QT SCI_LEXER
 
