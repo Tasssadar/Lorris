@@ -58,6 +58,7 @@ void SettingsDialog::loadSettings()
     ui->instanceBox->setChecked(sConfig.get(CFG_BOOL_ONE_INSTANCE));
     ui->connDlgBox->setChecked(sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB));
     ui->updateBox->setChecked(sConfig.get(CFG_BOOL_CHECK_FOR_UPDATE));
+    ui->soundsBox->setChecked(sConfig.get(CFG_BOOL_ENABLE_SOUNDS));
 }
 
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *btn)
@@ -88,6 +89,7 @@ void SettingsDialog::applySettings()
     sConfig.set(CFG_BOOL_ONE_INSTANCE, ui->instanceBox->isChecked());
     sConfig.set(CFG_BOOL_CONN_ON_NEW_TAB, ui->connDlgBox->isChecked());
     sConfig.set(CFG_BOOL_CHECK_FOR_UPDATE, ui->updateBox->isChecked());
+    sConfig.set(CFG_BOOL_ENABLE_SOUNDS, ui->soundsBox->isChecked());
 }
 
 void SettingsDialog::setPortable(bool portable)

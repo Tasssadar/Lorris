@@ -99,7 +99,7 @@ QFont Utils::getMonospaceFont(int size)
     static int selected = -1;
     if(selected == -1)
     {
-        for(int i = 0; i < sizeof_array(families); ++i)
+        for(quint32 i = 0; i < sizeof_array(families); ++i)
         {
             QFont f(families[i], size);
             if(f.exactMatch())
@@ -135,12 +135,14 @@ void Utils::swapEndian(char *val, quint8 size)
 #include <windows.h>
 void Utils::playErrorSound()
 {
-    PlaySound(TEXT("SystemHand"), NULL, (SND_ASYNC | SND_ALIAS | SND_NOWAIT));
+    if(sConfig.get(CFG_BOOL_ENABLE_SOUNDS))
+        PlaySound(TEXT("SystemHand"), NULL, (SND_ASYNC | SND_ALIAS | SND_NOWAIT));
 }
 #else
 void Utils::playErrorSound()
 {
-    qApp->beep();
+    if(sConfig.get(CFG_BOOL_ENABLE_SOUNDS))
+        qApp->beep();
 }
 #endif
 
