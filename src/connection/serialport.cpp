@@ -103,7 +103,7 @@ void SerialPort::doClose()
 
 void SerialPort::SendData(const QByteArray& data)
 {
-    if(this->isOpen())
+    if(this->isOpen() && !data.isEmpty())
     {
         QMutexLocker l(&m_port_mutex);
         m_port->write(data);
