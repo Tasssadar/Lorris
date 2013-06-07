@@ -120,7 +120,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0,0">
      <item>
       <widget class="QSlider" name="timeSlider">
        <property name="maximum">
@@ -153,6 +153,32 @@
        </property>
        <property name="maximum">
         <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="limitBtn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Set packet limits...</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">padding: 2px</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../actions.qrc">
+         <normaloff>:/actions/system</normaloff>:/actions/system</iconset>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -447,7 +473,7 @@
               <x>0</x>
               <y>0</y>
               <width>90</width>
-              <height>204</height>
+              <height>199</height>
              </rect>
             </property>
             <property name="sizePolicy">

@@ -9,6 +9,7 @@
 #include <QApplication>
 #include <QBitmap>
 #include <QMouseEvent>
+#include <QDesktopWidget>
 
 #include "floatingwidget.h"
 #include "../misc/utils.h"
@@ -79,6 +80,25 @@ void FloatingWidget::mouseMoveEvent(QMouseEvent *ev)
     }
 
     QWidget::mouseMoveEvent(ev);
+}
+
+void FloatingWidget::ensureOnScreen()
+{
+    QDesktopWidget w;
+    QRect screen = w.screenGeometry(mapToGlobal(pos()));
+
+    QPoint p = pos();
+    if(p.x() < 0)
+        p.rx() = 0;
+    else if(p.x() + width() > screen.width())
+        p.rx() = screen.width() - width();
+
+    if(p.y() < 0)
+        p.ry() = 0;
+    else if(p.y() + height() > screen.height())
+        p.ry() = screen.height() - height();
+
+    move(p);
 }
 
 FlatListWidget::FlatListWidget(bool selectByHover, QWidget *parent) :

@@ -99,6 +99,7 @@ private slots:
     void importBinAct();
     void clearAllButton();
     void openFile();
+    void setPacketLimit();
 
     void collapseTopButton();
     void collapseRightButton();

@@ -35,6 +35,7 @@ static const char *blockNames[] = {
     "widgetsBlock",        // BLOCK_WIDGETS
     "widgetBlock",         // BLOCK_WIDGET
     "dataIndexBlock",      // BLOCK_DATA_INDEX
+    "packetLimits",        // BLOCK_PACKET_LIMIT
     "filterBlock",         // BLOCK_FILTERS
 
     "tabWidget",           // BLOCK_TABWIDGET

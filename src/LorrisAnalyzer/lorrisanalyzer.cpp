@@ -36,6 +36,7 @@
 #include "DataWidgets/datawidget.h"
 #include "widgetfactory.h"
 #include "searchwidget.h"
+#include "../ui/floatinginputdialog.h"
 
 #include "ui_lorrisanalyzer.h"
 
@@ -61,6 +62,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
     connect(ui->dataArea,        SIGNAL(updateData()),      SLOT(updateData()));
+    connect(ui->limitBtn,        SIGNAL(clicked()),         SLOT(setPacketLimit()));
     connect(&m_parser,           SIGNAL(packetReceived(analyzer_data*,quint32)), SIGNAL(newData(analyzer_data*,quint32)));
     connect(ui->dataArea,        SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
                                  SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
@@ -184,7 +186,8 @@ void LorrisAnalyzer::connectedStatus(bool)
 
 void LorrisAnalyzer::readData(const QByteArray& data)
 {
-    bool update = m_curIndex == ui->timeSlider->maximum();
+    bool atMax = (m_curIndex == ui->timeSlider->maximum());
+    bool update = atMax || (m_storage.getSize() >= m_storage.getPacketLimit());
     if(!m_parser.newData(data, update))
         return;
 
@@ -197,11 +200,11 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     static const QString ofString = tr(" of ");
     ui->timeBox->setSuffix(ofString % QString::number(size+1));
 
-    if(update)
+    if(atMax)
     {
         m_curIndex = size;
-        ui->timeBox->setValue(size);
-        ui->timeSlider->setValue(size);
+        ui->timeBox->setValue(m_curIndex);
+        ui->timeSlider->setValue(m_curIndex);
     }
 }
 
@@ -804,4 +807,14 @@ bool LorrisAnalyzer::eventFilter(QObject */*obj*/, QEvent *event)
 
     new SearchWidget(ui->dataArea, this);
     return true;
+}
+
+void LorrisAnalyzer::setPacketLimit()
+{
+    int limit = FloatingInputDialog::getInt(tr("Set maximum number of packets"), m_storage.getPacketLimit(), 1);
+    m_storage.setPacketLimit(limit);
+
+    int size = m_storage.getMaxIdx();
+    ui->timeSlider->setMaximum(size);
+    ui->timeBox->setMaximum(size);
 }

@@ -152,7 +152,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/confirmwidget.cpp \
     ui/floatingwidget.cpp \
     ui/floatinginputdialog_impl.cpp \
-    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp \
+    LorrisAnalyzer/storagedata.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -285,7 +286,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/confirmwidget.h \
     ui/floatingwidget.h \
     ui/floatinginputdialog.h \
-    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h \
+    LorrisAnalyzer/storagedata.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
