@@ -90,6 +90,9 @@ private slots:
     void readButtonClicked();
     void writeButtonClicked();
 
+    void setPwmEnable(bool enable);
+    void pwmChanged(uint32_t freq_hz);
+
 private:
     void initMenus();
     void updateProgrammersBox(Programmer *prog);
