@@ -5,22 +5,18 @@
 **    See README and COPYING
 ***********************************************/
 
-#include <QInputDialog>
 #include <QDialogButtonBox>
 
 #include "buttonwidget.h"
 #include "../../ui/shortcutinputbox.h"
 #include "../../ui/colordialog.h"
+#include "../../ui/floatinginputdialog.h"
 
 REGISTER_DATAWIDGET(WIDGET_BUTTON, Button, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Button"))
 
 ButtonWidget::ButtonWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle(tr("Button"));
-    setIcon(":/dataWidgetIcons/button.png");
-
-    m_widgetType = WIDGET_BUTTON;
-
     m_button = new QPushButton(tr("Button"), this);
     m_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -43,9 +39,13 @@ void ButtonWidget::setUp(Storage *storage)
 
     connect(btnText,     SIGNAL(triggered()), SLOT(setButtonName()));
     connect(btnShortcut, SIGNAL(triggered()), SLOT(setShortcut()));
-    connect(btnColor,    SIGNAL(triggered()),   SLOT(setColors()));
+    connect(btnColor,    SIGNAL(triggered()), SLOT(setColors()));
     connect(m_button,    SIGNAL(clicked()),   SLOT(buttonClicked()));
+    connect(m_button,    SIGNAL(pressed()),   SLOT(buttonPressed()));
+    connect(m_button,    SIGNAL(released()),  SLOT(buttonReleased()));
     connect(m_button,    SIGNAL(clicked()),   SIGNAL(clicked()));
+    connect(m_button,    SIGNAL(pressed()),   SIGNAL(pressed()));
+    connect(m_button,    SIGNAL(released()),  SIGNAL(released()));
 }
 
 void ButtonWidget::buttonClicked()
@@ -53,9 +53,19 @@ void ButtonWidget::buttonClicked()
     emit scriptEvent(getTitle() + "_clicked");
 }
 
+void ButtonWidget::buttonPressed()
+{
+    emit scriptEvent(getTitle() + "_pressed");
+}
+
+void ButtonWidget::buttonReleased()
+{
+    emit scriptEvent(getTitle() + "_released");
+}
+
 void ButtonWidget::setButtonName()
 {
-    QString name = QInputDialog::getText(this, tr("Button text"), tr("Enter new button text"));
+    QString name = FloatingInputDialog::getText(tr("Button text:"), m_button->text());
     if(name.isEmpty())
         return;
     setButtonName(name);
@@ -170,13 +180,4 @@ void ButtonWidget::loadWidgetInfo(DataFileParser *file)
         setColor(file->readString());
         setTextColor(file->readString());
     }
-}
-
-ButtonWidgetAddBtn::ButtonWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Button"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/button.png"));
-
-    m_widgetType = WIDGET_BUTTON;
 }

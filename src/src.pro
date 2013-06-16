@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include(../config.pri)
 
-QT += gui core network script opengl
+QT += gui core network script
 TARGET = Lorris
 CONFIG += uitools precompile_header
 CONFIG(debug, debug|release):DESTDIR = $$PWD/../bin/debug
@@ -148,11 +148,12 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/programmers/avr109programmer.cpp \
     ui/bytevalidator.cpp \
     misc/qtobjectpointer.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/glwidget.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/glmodel.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.cpp \
-    LorrisAnalyzer/DataWidgets/GLWidget/glutils.cpp
+    LorrisAnalyzer/searchwidget.cpp \
+    LorrisAnalyzer/confirmwidget.cpp \
+    ui/floatingwidget.cpp \
+    ui/floatinginputdialog_impl.cpp \
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp \
+    LorrisAnalyzer/storagedata.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -281,11 +282,12 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/programmers/avr109programmer.h \
     ui/bytevalidator.h \
     misc/qtobjectpointer.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/glwidget.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/renderwidget.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/glmodel.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/objfileloader.h \
-    LorrisAnalyzer/DataWidgets/GLWidget/glutils.h
+    LorrisAnalyzer/searchwidget.h \
+    LorrisAnalyzer/confirmwidget.h \
+    ui/floatingwidget.h \
+    ui/floatinginputdialog.h \
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h \
+    LorrisAnalyzer/storagedata.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -323,7 +325,7 @@ RESOURCES += \
     shared/definitions.qrc \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc \
     LorrisProgrammer/programmericons.qrc \
-    LorrisAnalyzer/DataWidgets/GLWidget/models.qrc
+    LorrisAnalyzer/DataWidgets/RotationWidget/models.qrc
 
 include(../dep/qtsingleapplication/qtsingleapplication.pri)
 
@@ -360,15 +362,24 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 win32 {
     CONFIG -= flat
     CONFIG += libenjoy
-    
-    win32-msvc* {
-        CONFIG += libyb
+
+
+    *g++* {
+        warning("It looks like you are trying to build Lorris with mingw")
+        warning("Make sure it has at least GCC 4.6 or newer, Lorris needs some C++x0 features")
+    }
+    CONFIG += libyb
+
+    CONFIG(debug, debug|release) {
+        LIBS += -lqwtd
+        QWT_L=qwtd.dll
+    } else {
+        LIBS += -lqwt
+        QWT_L=qwt.dll
     }
 
-    INCLUDEPATH += ../dep/SDL/include
-
-    CONFIG(debug, debug|release):LIBS += -lqwtd
-    else:LIBS += -lqwt
+    cross_build:QMAKE_POST_LINK += cp \""$$PWD/../dep/qwt/lib/$$QWT_L\"" \""$$DESTDIR/$$QWT_L\"" ;
+    else:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qwt\\lib\\$$QWT_L\"" \""$$DESTDIR\\$$QWT_L\"" &
 
     DEFINES += QT_DLL QWT_DLL QESP_NO_QT4_PRIVATE
 
@@ -431,7 +442,8 @@ python {
     HEADERS += LorrisAnalyzer/DataWidgets/ScriptWidget/engines/pythonengine.h
 
     win32 {
-        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\pythonqt\\PythonQt.dll\"" \""$$DESTDIR\\PythonQt.dll\"" &
+        cross_build:QMAKE_POST_LINK += cp \""$$PWD/../dep/pythonqt/PythonQt.dll\"" \""$$DESTDIR/PythonQt.dll\"";
+        else:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\pythonqt\\PythonQt.dll\"" \""$$DESTDIR\\PythonQt.dll\"" &
     }
 }
 
@@ -462,22 +474,25 @@ kate_editor:unix {
     LIBS += -lktexteditor -lkdecore
 }
 
-qsci_editor:win32 {
+qsci_editor {
     DEFINES += USE_QSCI
-    win32-msvc* {
-        LIBS += -L"$$PWD/../dep/qscintilla2/msvc"
-        CONFIG(debug, debug|release):LIBS += -lqscintilla2d
-        else:LIBS += -lqscintilla2
-
-        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\msvc\\qscintilla2.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
-    } else {
-        LIBS += -L"$$PWD/../dep/qscintilla2/" -lqscintilla2
-        QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\qscintilla2.dll\"" \""$$DESTDIR\\qscintilla2.dll\"" &
-    }
+    LIBS += -L"$$PWD/../dep/qscintilla2/lib"
     INCLUDEPATH += "$$PWD/../dep/qscintilla2/"
+    CONFIG(debug, debug|release) {
+        LIBS += -lqscintilla2_lorrisd
+        QSCI_L=qscintilla2_lorrisd.dll
+    } else {
+        LIBS += -lqscintilla2_lorris
+        QSCI_L=qscintilla2_lorris.dll
+    }
+
+    win32 {
+        cross_build:QMAKE_POST_LINK += cp \""$$PWD/../dep/qscintilla2/lib/$$QSCI_L\"" \""$$DESTDIR/$$QSCI_L\"" ;
+        else:QMAKE_POST_LINK += copy \""$$PWD\\..\\dep\\qscintilla2\\lib\\$$QSCI_L\"" \""$$DESTDIR\\$$QSCI_L\"" &
+    }
 }
 
-qsci_editor:unix {
+qsci_system:unix {
     DEFINES += USE_QSCI
     LIBS += -lqscintilla2
 }
@@ -489,4 +504,17 @@ joystick:libenjoy {
     SOURCES += joystick/joystick.cpp \
         joystick/joythread.cpp
     HEADERS += joystick/joythread.h
+}
+
+opengl {
+    QT += opengl
+    DEFINES += HAVE_OPENGL
+    SOURCES += LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.cpp \
+        LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.cpp \
+        LorrisAnalyzer/DataWidgets/RotationWidget/glutils.cpp \
+        LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.cpp
+    HEADERS += LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.h \
+        LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.h \
+        LorrisAnalyzer/DataWidgets/RotationWidget/glutils.h \
+        LorrisAnalyzer/DataWidgets/RotationWidget/glmodel.h
 }

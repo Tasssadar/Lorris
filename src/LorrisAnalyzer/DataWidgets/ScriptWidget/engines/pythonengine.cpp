@@ -19,6 +19,7 @@
 #include "../../../../joystick/joymgr.h"
 #include "../../GraphWidget/graphcurve.h"
 #include "../scriptwidget.h"
+#include "../../../storage.h"
 
 QString PythonEngine::getNewModuleName()
 {
@@ -36,6 +37,18 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent)
         PythonQt::self()->registerClass(&QTimer::staticMetaObject);
         PythonQt::self()->registerClass(&GraphCurve::staticMetaObject);
         PythonQt::self()->registerClass(&Joystick::staticMetaObject);
+
+        // Hack-overload for print statement.
+        static const QString writer =
+            "import sys\n"
+            "class printOverload:\n"
+            "    def write(self, text):\n"
+            "        f = sys._getframe(1)\n"
+            "        sys.modules[f.f_globals['__name__']].terminal.appendText(text)\n"
+            "        return\n"
+            "sys.stdout = printOverload()\n";
+        PythonQt::self()->evalScript(PythonQt::self()->getMainModule().object(), writer, "printOverload");
+
         initialized = true;
     }
     connect(PythonQt::self(), SIGNAL(pythonStdErr(QString)), SLOT(errorFilter(QString)));
@@ -333,4 +346,17 @@ DataWidget *PythonFunctions::newWidget(int type, QString title, int width, int h
     w->setAcceptDrops(false);
 
     return w;
+}
+
+QByteArray PythonFunctions::getData(quint32 idx) const
+{
+    if(idx >= m_engine->getStorage()->getSize())
+        return QByteArray();
+
+    return *m_engine->getStorage()->get(idx);
+}
+
+quint32 PythonFunctions::getDataCount() const
+{
+    return m_engine->getStorage()->getSize();
 }

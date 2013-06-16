@@ -89,13 +89,6 @@ private:
      bool m_curUnknown;
 };
 
-class StatusWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    StatusWidgetAddBtn(QWidget *parent = 0);
-};
-
 class StatusManager : public QDialog, private Ui::StatusManager
 {
     Q_OBJECT

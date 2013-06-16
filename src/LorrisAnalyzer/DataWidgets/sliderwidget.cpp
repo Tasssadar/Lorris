@@ -21,14 +21,11 @@
 #include "ui_sliderwidget_vertical.h"
 
 REGISTER_DATAWIDGET(WIDGET_SLIDER, Slider, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Slider"))
 
 SliderWidget::SliderWidget(QWidget *parent) : DataWidget(parent),
     ui_hor(new Ui::SliderWidget_horizontal), ui_ver(new Ui::SliderWidget_vertical)
 {
-    setTitle(tr("Slider"));
-    setIcon(":/dataWidgetIcons/slider.png");
-
-    m_widgetType = WIDGET_SLIDER;
     m_widget = NULL;
 
     m_min = 0;
@@ -425,13 +422,4 @@ void SliderWidget::showShortcutDialog()
 
     if(d.exec() == QDialog::Accepted)
         setShortcut(box->getKeySequence().toString());
-}
-
-SliderWidgetAddBtn::SliderWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Slider"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/slider.png"));
-
-    m_widgetType = WIDGET_SLIDER;
 }

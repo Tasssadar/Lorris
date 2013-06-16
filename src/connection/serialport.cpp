@@ -103,7 +103,7 @@ void SerialPort::doClose()
 
 void SerialPort::SendData(const QByteArray& data)
 {
-    if(this->isOpen())
+    if(this->isOpen() && !data.isEmpty())
     {
         QMutexLocker l(&m_port_mutex);
         m_port->write(data);
@@ -237,7 +237,7 @@ void SerialPortOpenThread::run()
 
 #ifdef Q_OS_WIN
     m_port = new QextSerialPort(m_conn->deviceName(), QextSerialPort::Polling);
-    m_port->setTimeout(0);
+    m_port->setTimeout(-1);
 #else
     m_port = new QextSerialPort(m_conn->deviceName(), QextSerialPort::EventDriven);
     m_port->setTimeout(500);

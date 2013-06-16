@@ -44,6 +44,7 @@ public slots:
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
     void onScriptEvent(const QString& eventId);
+    void onScriptEvent(const QString &eventId, const QVariantList& args);
 
 protected slots:
      void setSourceTriggered();
@@ -74,14 +75,6 @@ protected:
      QAction *m_inputAct;
      QString m_filename;
      QString m_errors;
-};
-
-class ScriptWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    ScriptWidgetAddBtn(QWidget *parent = 0);
-
 };
 
 #endif // SCRIPTWIDGET_H

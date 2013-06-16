@@ -10,7 +10,7 @@
 #include <QSignalMapper>
 
 #include "circlewidget.h"
-#include "../../ui/rangeselectdialog.h"
+#include "../../ui/floatinginputdialog.h"
 
 static const double pi = 3.1415926535897932384626433832795;
 
@@ -22,15 +22,11 @@ void CircleWidget::addEnum()
 }
 
 REGISTER_DATAWIDGET(WIDGET_CIRCLE, Circle, &CircleWidget::addEnum)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Circle"))
 
 CircleWidget::CircleWidget(QWidget *parent) :
     DataWidget(parent)
 {
-    setTitle(tr("Circle"));
-    setIcon(":/dataWidgetIcons/circle.png");
-
-    m_widgetType = WIDGET_CIRCLE;
-
     m_circle = new CircleDraw(this);
     layout->addWidget(m_circle, 1);
     resize(150, 150);
@@ -185,14 +181,7 @@ void CircleWidget::processData(analyzer_data *data)
 void CircleWidget::angTypeChanged(int i)
 {
     if(i == ANG_RANGE)
-    {
-        RangeSelectDialog dialog(m_range_min, m_range_max, false, this);
-        if(dialog.exec())
-        {
-            m_range_min = dialog.getMin();
-            m_range_max = dialog.getMax();
-        }
-    }
+        FloatingInputDialog::getDoubleRange(tr("Circle's range:"), m_range_min, m_range_max, 3);
     setAngType(i, m_range_min, m_range_max);
 }
 
@@ -322,13 +311,3 @@ void CircleDraw::setClockwise(bool clockwise)
     m_clockwise = clockwise;
     update();
 }
-
-CircleWidgetAddBtn::CircleWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Circle"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/circle.png"));
-
-    m_widgetType = WIDGET_CIRCLE;
-}
-

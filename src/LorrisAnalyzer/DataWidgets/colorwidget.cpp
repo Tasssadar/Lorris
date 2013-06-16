@@ -26,22 +26,16 @@ void ColorWidget::addEnum()
 }
 
 REGISTER_DATAWIDGET(WIDGET_COLOR, Color, &ColorWidget::addEnum)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Color"))
 
 ColorWidget::ColorWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle(tr("Color"));
-    setIcon(":/dataWidgetIcons/color.png");
-
-    m_widgetType = WIDGET_COLOR;
-
     m_widget = new ColorDisplay(this);
     m_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     layout->addWidget(m_widget, 1);
 
     resize(180, 100);
-
-    setMinimumSize(50, 50);
 
     m_brightness = 0;
     m_color_layout[0] = m_color_layout[1] = m_color_layout[2] = NULL;
@@ -489,14 +483,4 @@ void ColorDisplay::paintEvent(QPaintEvent *ev)
         path.addText(baseline, font(), str);
     }
     p.drawPath(path);
-}
-
-
-ColorWidgetAddBtn::ColorWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Color"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/color.png"));
-
-    m_widgetType = WIDGET_COLOR;
 }

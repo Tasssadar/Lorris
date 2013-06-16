@@ -20,11 +20,4 @@ public:
     void setUp(Storage *storage);
 };
 
-class TerminalWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    TerminalWidgetAddBtn(QWidget *parent = 0);
-
-};
 #endif // TERMINALWIDGET_H

@@ -47,7 +47,7 @@ static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
 static const QString colorSavedToFile= "#FFE0E0";
 
-static const QString hex_filters = QObject::tr("All supported file types (*.hex;*.bin);;Intel HEX file (*.hex);;Binary file (*.bin)");
+static const QString hex_filters = QObject::tr("All supported file types (*.hex *.bin);;Intel HEX file (*.hex);;Binary file (*.bin)");
 static const QString svf_filters = QObject::tr("Serial Vector Format file (*.svf)");
 
 LorrisProgrammer::LorrisProgrammer()
@@ -140,7 +140,10 @@ void LorrisProgrammer::initMenus()
     m_restart_act = chipBar->addAction(QIcon(":/actions/refresh"), tr("Restart chip"));
 
     m_start_act->setEnabled(false);
+    m_stop_act->setEnabled(false);
     m_restart_act->setShortcut(QKeySequence("R"));
+    m_restart_act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    m_restart_act->setEnabled(false);
 
     connect(m_start_act,  SIGNAL(triggered()), SLOT(startChip()));
     connect(m_stop_act,   SIGNAL(triggered()), SLOT(stopChip()));
@@ -575,8 +578,8 @@ void LorrisProgrammer::updateStartStopUi(bool stopped)
 {
     ui->setStartStopBtn(stopped);
 
-    m_start_act->setEnabled(stopped);
-    m_stop_act->setEnabled(!stopped);
+    m_start_act->setEnabled(m_buttons_enabled && stopped);
+    m_stop_act->setEnabled(m_buttons_enabled && !stopped);
 
     m_chipStopped = stopped;
 }
@@ -885,6 +888,12 @@ void LorrisProgrammer::saveData(DataFileParser *file)
         file->writeString("Port");
         file->writeConn(con.data());
     }
+    else if(m_con && m_con->getType() == CONNECTION_SHUPITO23)
+    {
+        file->writeBlockIdentifier("LorrShupitoConn2");
+        file->writeString("Shupito23");
+        file->writeConn(m_con.data());
+    }
 }
 
 void LorrisProgrammer::loadData(DataFileParser *file)
@@ -915,26 +924,27 @@ void LorrisProgrammer::loadData(DataFileParser *file)
 
         if(file->readConn(type, cfg))
         {
-            ConnectionPointer<PortConnection> pc = sConMgr2.getConnWithConfig(type, cfg);
-            if(pc)
+            ConnectionPointer<Connection> conn = sConMgr2.getConnWithConfig(type, cfg);
+            if(conn.data())
             {
-                ConnectionPointer<Connection> con;
+                ConnectionPointer<Connection> progConn;
                 if(typeStr == "Shupito" || typeStr == "Shupito2")
                 {
-                    ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc.data());
-                    con = sc;
+                    PortConnection *pc = (PortConnection*)conn.data();
+                    ConnectionPointer<ShupitoConnection> sc = sConMgr2.createAutoShupito(pc);
+                    progConn = sc;
 
                     if(typeStr == "Shupito2")
                         sc->setCompanionId(file->readVal<qint64>());
                 }
-                else if(typeStr == "Port")
-                    con = pc;
+                else if(typeStr == "Port" || typeStr == "Shupito23")
+                    progConn = conn;
 
-                if(con.data())
+                if(progConn.data())
                 {
-                    m_connectButton->setConn(con);
-                    if(!con->isOpen() && sConfig.get(CFG_BOOL_SESSION_CONNECT))
-                        con->OpenConcurrent();
+                    m_connectButton->setConn(progConn);
+                    if(!progConn->isOpen() && sConfig.get(CFG_BOOL_SESSION_CONNECT))
+                        progConn->OpenConcurrent();
                 }
             }
         }
@@ -947,6 +957,9 @@ void LorrisProgrammer::setEnableButtons(bool enable)
         return;
 
     m_buttons_enabled = enable;
+    m_start_act->setEnabled(enable);
+    m_stop_act->setEnabled(enable);
+    m_restart_act->setEnabled(enable);
     ui->enableButtons(enable);
 }
 
@@ -999,6 +1012,9 @@ void LorrisProgrammer::setUiType(int type)
 
     if (m_programmer)
         ui->connectProgrammer(m_programmer.data());
+
+    updateStartStopUi(m_chipStopped);
+    update_chip_description(m_cur_def);
 }
 
 void LorrisProgrammer::setMiniUi(bool mini)

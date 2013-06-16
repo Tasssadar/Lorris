@@ -99,6 +99,8 @@ class DataWidget : public QFrame
 
     Q_PROPERTY(quint8 widgetType READ getWidgetType)
 
+    friend class WidgetFactory;
+
 protected:
     enum widgetStates
     {
@@ -124,6 +126,7 @@ Q_SIGNALS:
 
     void titleChanged(const QString& newTitle);
     void scriptEvent(const QString& eventId);
+    void scriptEvent(const QString &eventId, const QVariantList& args);
 
     void addChildTab(ChildTab *tab, const QString& name);
     void removeChildTab(ChildTab *tab);
@@ -192,11 +195,16 @@ public slots:
     bool isLocked() const { return (m_state & STATE_LOCKED); }
     void setError(bool error, QString tooltip = QString());
     void setSelected(bool selected);
+    void move(int x, int y) { QFrame::move(x, y); }
+    void move(const QPoint& p) { QFrame::move(p); }
+    void resize(int w, int h) { QFrame::resize(w, h); }
+    void resize(const QSize& s) { QFrame::resize(s); }
 
     //events
     virtual void onWidgetAdd(DataWidget *w);
     virtual void onWidgetRemove(DataWidget *w);
     virtual void onScriptEvent(const QString& eventId);
+    virtual void onScriptEvent(const QString& eventId, const QVariantList& args);
 
 protected:
     void mousePressEvent(QMouseEvent * event);
@@ -218,6 +226,7 @@ protected:
     virtual void processData(analyzer_data *data);
 
     void setIcon(QString path);
+    void setType(quint32 widgetType);
 
     inline WidgetArea *widgetArea() const
     {
@@ -284,7 +293,7 @@ class DataWidgetAddBtn : public QPushButton
 {
     Q_OBJECT
 public:
-    explicit DataWidgetAddBtn(QWidget *parent);
+    DataWidgetAddBtn(quint32 type, const QString &name, QWidget *parent);
     ~DataWidgetAddBtn();
 
     void setText(const QString &text);

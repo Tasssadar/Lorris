@@ -20,6 +20,7 @@
 #include "connection/connectionmgr2.h"
 #include "WorkTab/WorkTabMgr.h"
 #include "ui/settingsdialog.h"
+#include "misc/datafileparser.h"
 
 // metatypes
 #include "ui/colorbutton.h"
@@ -31,9 +32,6 @@
 
 static bool checkArgs(int argc, char** argv, QStringList& openFiles)
 {
-    if(argc < 2)
-        return true;
-
     for(int i = 1; i < argc; ++i)
     {
         if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0)
@@ -41,15 +39,23 @@ static bool checkArgs(int argc, char** argv, QStringList& openFiles)
             printf("Lorris release %s, git revision %u\n", VERSION, REVISION);
             return false;
         }
-        else if(strcmp(argv[i], "--help") == 0)
+        else if(strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
         {
-            printf("Usage: %s [ARGUMENTS...]  Run Lorris\n\n"
+            printf("Usage: %s [ARGUMENTS...] [*.cldta file]\n\n"
                 "Lorris, GUI tool for robotics - https://github.com/Tasssadar/Lorris\n\n"
-                 "Command line argumens:\n"
-                "       %s --help          Display this help and exit\n"
-                "       %s --version       Display version info and exit\n"
-                "       %s -v\n",
-                argv[0], argv[0], argv[0], argv[0]);
+                "Command line argumens:\n"
+                "           --dump-cldta=FILE    Dump contents of *.cldta file and exit\n"
+                "       -h, --help               Display this help and exit\n"
+                "       -v, --version            Display version info and exit\n",
+                argv[0]);
+            return false;
+        }
+        else if(strstr(argv[i], "--dump-cldta="))
+        {
+            // This will not handle non-ASCII characters on Windows. /care
+            char *p = strchr(argv[i], '=')+1;
+            QString path = QString::fromLocal8Bit(p);
+            DataFileBuilder::dumpFileInfo(path);
             return false;
         }
         else

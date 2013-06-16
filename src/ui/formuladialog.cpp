@@ -6,7 +6,9 @@
 ***********************************************/
 
 #include <QScriptEngine>
+
 #include "formuladialog.h"
+#include "../misc/utils.h"
 
 FormulaDialog::FormulaDialog(QString formula, QWidget *parent) :
     QDialog(parent), ui(new Ui::FormulaDialog)

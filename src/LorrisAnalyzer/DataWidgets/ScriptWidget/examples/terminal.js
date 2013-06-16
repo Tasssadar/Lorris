@@ -1,13 +1,18 @@
 // Make ScriptWidget work as terminal
 var history = new Array("");
 var cur_hist = 0;
+var last_idx = -1;
 
 function onDataChanged(data, dev, cmd, index) {
-    appendTerm(data);
+    if(index != last_idx)
+    {
+        appendTerm(data);
+        last_idx = index;
+    }
 }
 
 function onKeyPress(key) {
-    sendData(new Array(key.charCodeAt(0)));
+    sendData(key);
 }
 
 // Input line - right click to script -> show input line

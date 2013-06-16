@@ -12,14 +12,10 @@
 #include "../../misc/utils.h"
 
 REGISTER_DATAWIDGET(WIDGET_CANVAS, Canvas, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Canvas"))
 
 CanvasWidget::CanvasWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle(tr("Canvas"));
-    setIcon(":/dataWidgetIcons/canvas.png");
-
-    m_widgetType = WIDGET_CANVAS;
-
     m_canvas = new Canvas(this);
     layout->addWidget(m_canvas);
 
@@ -136,15 +132,6 @@ int CanvasWidget::getCanvasWidth() const
 int CanvasWidget::getCanvasHeight() const
 {
     return m_canvas->height();
-}
-
-CanvasWidgetAddBtn::CanvasWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Canvas"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/canvas.png"));
-
-    m_widgetType = WIDGET_CANVAS;
 }
 
 Canvas::Canvas(QWidget *parent) : QWidget(parent)

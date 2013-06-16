@@ -20,6 +20,7 @@ class WidgetArea;
 class QTimer;
 class Terminal;
 class ScriptWidget;
+class Storage;
 
 enum ScriptEngines
 {
@@ -71,10 +72,12 @@ public:
     int getWidth() { return m_width; }
     int getHeight() { return m_height; }
 
-    ScriptStorage *getStorage() const
+    ScriptStorage *getScriptStorage() const
     {
         return m_storage;
     }
+
+    Storage *getStorage() const;
 
 public slots:
     virtual void keyPressed(const QString &key) = 0;

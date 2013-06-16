@@ -16,6 +16,8 @@ class ButtonWidget : public DataWidget
 
 Q_SIGNALS:
     void clicked();
+    void pressed();
+    void released();
 
 public:
     ButtonWidget(QWidget *parent);
@@ -33,6 +35,8 @@ public slots:
 
 private slots:
     void buttonClicked();
+    void buttonPressed();
+    void buttonReleased();
     void setColors();
 
 private:
@@ -40,11 +44,4 @@ private:
     QList<QColor> m_colors;
 };
 
-class ButtonWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    ButtonWidgetAddBtn(QWidget *parent = 0);
-
-};
 #endif // TERMINALWIDGET_H

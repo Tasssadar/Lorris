@@ -225,7 +225,7 @@ struct ShupitoJtag::play_visitor
             uint32_t chunk = (std::min)(clocks, max_chunk);
             clocks -= chunk;
 
-            uint8_t pkt[5] = { parent.m_prog_cmd_base + 3 };
+            uint8_t pkt[5] = { uint8_t(parent.m_prog_cmd_base + 3) };
             serialize_le(pkt + 1, chunk);
 
             ShupitoPacket resp = parent.m_shupito->waitForPacket(ShupitoPacket(pkt, pkt + sizeof pkt), pkt[0]);
@@ -320,7 +320,7 @@ void ShupitoJtag::cmd_frequency(uint32_t speed_hz)
 
     uint32_t period = (m_freq_base + speed_hz - 1) / speed_hz;
 
-    uint8_t packet[5] = { m_prog_cmd_base + 2 };
+    uint8_t packet[5] = { uint8_t(m_prog_cmd_base + 2) };
     serialize_le(packet + 1, period);
     m_shupito->waitForPacket(ShupitoPacket(packet, packet + sizeof packet), packet[0]);
 }

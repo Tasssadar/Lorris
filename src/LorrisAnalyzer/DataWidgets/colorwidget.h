@@ -122,12 +122,4 @@ private:
     quint8 m_drawNums;
 };
 
-class ColorWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    ColorWidgetAddBtn(QWidget *parent = 0);
-
-};
-
 #endif // COLORWIDGET_H

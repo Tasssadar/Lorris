@@ -12,7 +12,6 @@
 #include <QMouseEvent>
 #include <QDrag>
 #include <QMenu>
-#include <QInputDialog>
 #include <QPropertyAnimation>
 #include <QPainter>
 
@@ -21,6 +20,7 @@
 #include "../widgetarea.h"
 #include "../../misc/datafileparser.h"
 #include "../datafilter.h"
+#include "../../ui/floatinginputdialog.h"
 
 DataWidget::DataWidget(QWidget *parent) :
     QFrame(parent), m_title_label(NULL), m_icon_widget(NULL),
@@ -161,6 +161,11 @@ void DataWidget::setIcon(QString path)
     m_icon_widget->setPixmap(icon.pixmap(16));
 }
 
+void DataWidget::setType(quint32 widgetType)
+{
+    m_widgetType = widgetType;
+}
+
 void DataWidget::contextMenuEvent ( QContextMenuEvent * event )
 {
     contextMenu->exec(event->globalPos());
@@ -197,8 +202,14 @@ bool DataWidget::eventFilter(QObject *, QEvent *ev)
 
 void DataWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
-    if(e->button() == Qt::LeftButton && m_title_label->rect().contains(e->pos()))
+    if(e->button() != Qt::LeftButton)
+        return QFrame::mouseDoubleClickEvent(e);
+
+    if(e->x() >= 0 && e->x() <= m_title_label->geometry().right() &&
+       e->y() >= 0 && e->y() <= m_sep_line->geometry().bottom())
+    {
         titleDoubleClick();
+    }
     else
         QFrame::mouseDoubleClickEvent(e);
 }
@@ -522,9 +533,8 @@ void DataWidget::setLocked(bool locked)
 
 void DataWidget::setTitleTriggered()
 {
-    QString title = QInputDialog::getText(this, tr("Set widget title"), tr("Enter title:"),
-                                          QLineEdit::Normal, getTitle());
-    if(title.length() == 0)
+    QString title = FloatingInputDialog::getText(tr("Widget title:"), getTitle());
+    if(title.isEmpty())
         return;
     setTitle(title);
 }
@@ -569,17 +579,13 @@ void DataWidget::loadOldDataInfo(DataFileParser *file, data_widget_info& info)
 
 void DataWidget::saveWidgetInfo(DataFileParser *file)
 {
-    char *p = NULL;
-
     // widget type
     file->writeBlockIdentifier("widgetType");
-    p = (char*)&m_widgetType;
-    file->write(p, sizeof(m_widgetType));
+    *file << m_widgetType;
 
     // widget pos and size
     file->writeBlockIdentifier("widgetPosSize");
-    int val[] = { pos().x(), pos().y(), width(), height() };
-    file->write((char*)&val, sizeof(val));
+    *file << x() << y() << width() << height();
 
     // data info
     file->writeBlockIdentifier("widgetDataInfoV2");
@@ -587,19 +593,19 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
 
     // locked
     file->writeBlockIdentifier("widgetLocked");
-    file->writeVal(isLocked());
+    *file << isLocked();
 
     // title
     file->writeBlockIdentifier("widgetTitleUtf8");
-    file->writeString(getTitle());
+    *file << getTitle();
 
     // scaled up
     file->writeBlockIdentifier("widgetScaledUp");
-    file->writeVal(bool(m_state & STATE_SCALED_UP));
-    file->writeVal(m_orig_geometry.x());
-    file->writeVal(m_orig_geometry.y());
-    file->writeVal(m_orig_geometry.width());
-    file->writeVal(m_orig_geometry.height());
+    *file << bool(m_state & STATE_SCALED_UP);
+    *file << m_orig_geometry.x();
+    *file << m_orig_geometry.y();
+    *file << m_orig_geometry.width();
+    *file << m_orig_geometry.height();
 }
 
 void DataWidget::loadWidgetInfo(DataFileParser *file)
@@ -681,6 +687,11 @@ void DataWidget::onWidgetRemove(DataWidget */*w*/)
 }
 
 void DataWidget::onScriptEvent(const QString& /*eventId*/)
+{
+
+}
+
+void DataWidget::onScriptEvent(const QString &/*eventId*/, const QVariantList &/*args*/)
 {
 
 }
@@ -916,11 +927,17 @@ void DataWidget::setHighlighted(bool highlight)
     update();
 }
 
-DataWidgetAddBtn::DataWidgetAddBtn(QWidget *parent) : QPushButton(parent)
+DataWidgetAddBtn::DataWidgetAddBtn(quint32 type, const QString& name, QWidget *parent) :
+    QPushButton(parent)
 {
     setFlat(true);
     setStyleSheet("text-align: left");
     m_pixmap = NULL;
+
+    setText(name);
+    setIconSize(QSize(16, 16));
+
+    m_widgetType = type;
 }
 
 DataWidgetAddBtn::~DataWidgetAddBtn()

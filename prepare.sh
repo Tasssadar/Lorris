@@ -1,9 +1,11 @@
 #! /bin/bash
-LIBUSBY_REPO="git://github.com/avakar/libusby.git"
+LIBYB_REPO="git://github.com/avakar/libyb.git"
+LIBENJOY_REPO="git://github.com/Tasssadar/libenjoy.git"
 GOT_PYTHON=0
 GOT_KATE=0
 GOT_QSCI=0
 GOT_JOYSTICK=0
+GOT_QTOPENGL=0
 
 function CHECK_EXECUTABLE {
     echo -n "Checking for $1..."
@@ -47,11 +49,19 @@ function CHECK_SUBMODULE {
 }
 
 echo "Checking required executables..."
-CHECK_EXECUTABLE qmake
+
+qmake_bin="qmake"
+cpp_bin="c++"
+# Handle qmake-qt4 only system
+if [ -z "$(which $qmake_bin > /dev/null 2>&1)" ]; then qmake_bin="qmake-qt4"; fi
+# Handle cpp only system
+if [ -z "$(which $cpp_bin > /dev/null 2>&1)" ]; then cpp_bin="cpp"; fi;
+
+CHECK_EXECUTABLE $qmake_bin
 CHECK_EXECUTABLE pkg-config
 CHECK_EXECUTABLE make
 CHECK_EXECUTABLE cc
-CHECK_EXECUTABLE c++
+CHECK_EXECUTABLE $cpp_bin
 
 echo ""
 echo "Checking Qt libraries..."
@@ -73,6 +83,28 @@ for lib in ${qtLibs[@]} ; do
     fi
 done
 
+# Special QtOpenGL check
+echo -n "Checking for QtOpenGL..."
+libver=$(pkg-config --modversion QtOpenGL --silence-errors)
+if [ -z $libver ] ; then
+     echo "not found, building without OpenGL"
+     GOT_QTOPENGL=0
+else
+    if [ $(echo $libver | tr -d .) -lt 470 ] ; then
+        echo "too old ($libver, minimum is 4.7.0)"
+        GOT_QTOPENGL=0
+    else
+        echo "ok ($libver)"
+        echo ""
+        echo -n "Do you want to build parts that require OpenGL? [Y/n]: "
+        read use_qtopengl_user
+        echo ""
+        if [ -z $use_qtopengl_user ] || [ "$use_qtopengl_user" == "y" ] || [ "$use_qtopengl_user" == "Y" ] ; then
+            GOT_QTOPENGL=1
+        fi
+    fi
+fi
+
 echo ""
 echo -n "Checking if this is a git repository..."
 IS_GIT=$( ( [ -d ".git" ] && echo 0) || echo 1)
@@ -90,12 +122,20 @@ if [ $IS_GIT -eq 0 ] ; then
     done
     unset $IFS
 else
-    echo -n "Checking libusby..."
-    if [ -e "dep/libusby/libusby.pri" ] ; then
+    echo -n "Checking libyb..."
+    if [ -e "dep/libyb/libyb.pri" ] ; then
         echo "ok"
     else
         echo "not found"
-        echo "Clone libusby repository ($LIBUSBY_REPO) into dep/libusby"
+        echo "Clone libyb repository ($LIBYB_REPO) into dep/libyb"
+    fi
+
+    echo -n "Checking libenjoy..."
+    if [ -e "dep/libenjoy/libenjoy.pri" ] ; then
+        echo "ok"
+    else
+        echo "not found"
+        echo "Clone libenjoy repository ($LIBENJOY_REPO) into dep/libenjoy"
     fi
 fi
 
@@ -156,7 +196,7 @@ if [ -z $use_kate_user ] || [ $use_kate_user == "y" ] || [ $use_kate_user == "Y"
 #include <kconfig.h>
 int main() { KTextEditor::Editor *editor = KTextEditor::EditorChooser::editor(); return 0; }
 EOF
-    c++ /tmp/test.cpp -o /tmp/test -I"$(qmake -query QT_INSTALL_HEADERS)" -I"$(qmake -query QT_INSTALL_HEADERS)/QtCore" -I"$(qmake -query QT_INSTALL_HEADERS)/QtGui" -lktexteditor -lkdecore -lQtCore -lQtGui &> /dev/null
+    $cpp_bin /tmp/test.cpp -o /tmp/test -I"$($qmake_bin -query QT_INSTALL_HEADERS)" -I"$($qmake_bin -query QT_INSTALL_HEADERS)/QtCore" -I"$($qmake_bin -query QT_INSTALL_HEADERS)/QtGui" -lktexteditor -lkdecore -lQtCore -lQtGui
     if [ $? -eq 0 ] ; then
         echo "ok"
         rm /tmp/test.cpp
@@ -174,26 +214,33 @@ fi
 
 echo -n "Do you want to use QScintilla2 editor? [y/N]: "
 read use_qsci_user
+echo -n "Use systemwide QScintilla2 library? [Y/n]: "
+read use_qsci_system
 echo ""
 if [ "$use_qsci_user" == "y" ] || [ "$use_qsci_user" == "Y" ]; then
-    echo -n "Checking for QScintilla dev files..."
-    cat > /tmp/test.cpp << EOF
+    if [ "$use_qsci_system" == "n" ] || [ "$use_qsci_system" == "N" ]; then
+        echo -n "Checking for QScintilla dev files..."
+        cat > /tmp/test.cpp << EOF
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexerjavascript.h>
 #include <Qsci/qscilexerpython.h>
 int main() { QsciScintilla *s = new QsciScintilla; delete s; return 0; }
 EOF
-    c++ /tmp/test.cpp -o /tmp/test -I"$(qmake -query QT_INSTALL_HEADERS)" -I"$(qmake -query QT_INSTALL_HEADERS)/QtCore" -I"$(qmake -query QT_INSTALL_HEADERS)/QtGui" -lqscintilla2 -lQtGui -lQtCore &> /dev/null
-    if [ $? -eq 0 ] ; then
-        echo "ok"
-        rm /tmp/test.cpp
-        rm /tmp/test
-        GOT_QSCI=1
+        $cpp_bin /tmp/test.cpp -o /tmp/test -I"$($qmake_bin -query QT_INSTALL_HEADERS)" -I"$($qmake_bin -query QT_INSTALL_HEADERS)/QtCore" -I"$($qmake_bin -query QT_INSTALL_HEADERS)/QtGui" -lqscintilla2 -lQtGui -lQtCore
+        if [ $? -eq 0 ] ; then
+            echo "ok"
+            rm /tmp/test.cpp
+            rm /tmp/test
+            GOT_QSCI=1
+        else
+            echo "failed"
+            echo "Install qscintilla devel files!"
+            rm /tmp/test.cpp
+            exit 1
+        fi
     else
-        echo "failed"
-        echo "Install qscintilla devel files!"
-        rm /tmp/test.cpp
-        exit 1
+        GOT_QSCI=2
+        echo "Using Lorris' QScintilla2 library"
     fi
 else
     echo "Not using QScintilla"
@@ -223,15 +270,21 @@ fi
 
 if [ $GOT_QSCI -eq 1 ] ; then 
     echo "CONFIG += qsci_editor" >> config.pri
+elif [ $GOT_QSCI -eq 2 ] ; then
+    echo "CONFIG += qsci_system" >> config.pri
 fi
 
 if [ $GOT_JOYSTICK -eq 1 ] ; then
     echo "CONFIG += joystick" >> config.pri
 fi
 
+if [ $GOT_QTOPENGL -eq 1 ] ; then
+    echo "CONFIG += opengl" >> config.pri
+fi
+
 echo "done"
 echo "Running qmake..."
-qmake CONFIG+=release QMAKE_CXXFLAGS+="$CXXFLAGS" QMAKE_CFLAGS+="$CFLAGS" Lorris.pro
+$qmake_bin CONFIG+=release QMAKE_CXXFLAGS+="$CXXFLAGS" QMAKE_CFLAGS+="$CFLAGS" Lorris.pro
 
 if [ $? -eq 0 ] ; then
     echo ""

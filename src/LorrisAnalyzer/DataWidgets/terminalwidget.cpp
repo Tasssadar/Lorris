@@ -9,13 +9,11 @@
 #include "terminalwidget.h"
 
 REGISTER_DATAWIDGET(WIDGET_TERMINAL, Terminal, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Terminal"))
 
 TerminalWidget::TerminalWidget(QWidget *parent) : ScriptWidget(parent)
 {
-    setTitle(tr("Terminal"));
-    setIcon(":/dataWidgetIcons/terminal.png");
 
-    m_widgetType = WIDGET_TERMINAL;
 }
 
 void TerminalWidget::setUp(Storage *storage)
@@ -37,13 +35,4 @@ void TerminalWidget::setUp(Storage *storage)
 TerminalWidget::~TerminalWidget()
 {
 
-}
-
-TerminalWidgetAddBtn::TerminalWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Terminal"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/terminal.png"));
-
-    m_widgetType = WIDGET_TERMINAL;
 }

@@ -15,13 +15,10 @@
 #include "../../widgetarea.h"
 
 REGISTER_DATAWIDGET(WIDGET_SCRIPT, Script, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Script"))
 
 ScriptWidget::ScriptWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle(tr("Script"));
-    setIcon(":/dataWidgetIcons/script.png");
-
-    m_widgetType = WIDGET_SCRIPT;
     m_editor = NULL;
 
     m_terminal = new Terminal(this);
@@ -147,7 +144,7 @@ void ScriptWidget::saveWidgetInfo(DataFileParser *file)
 
     // storage data
     m_engine->onSave();
-    m_engine->getStorage()->saveToFile(file);
+    m_engine->getScriptStorage()->saveToFile(file);
 
     // scripts filename
     file->writeBlockIdentifier("scriptWFilename");
@@ -193,7 +190,7 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     createEngine();
 
     // storage data
-    m_engine->getStorage()->loadFromFile(file);
+    m_engine->getScriptStorage()->loadFromFile(file);
 
     // Filename
     if(file->seekToNextBlock("scriptWFilename", BLOCK_WIDGET))
@@ -302,6 +299,12 @@ void ScriptWidget::onScriptEvent(const QString& eventId)
         m_engine->callEventHandler(eventId);
 }
 
+void ScriptWidget::onScriptEvent(const QString &eventId, const QVariantList& args)
+{
+    if(m_engine)
+        m_engine->callEventHandler(eventId, args);
+}
+
 void ScriptWidget::blinkError(const QString &text)
 {
     m_errors.append(text);
@@ -349,13 +352,4 @@ void ScriptWidget::inputLineKeyReleased(int keyCode)
 {
     if(m_engine)
         m_engine->callEventHandler("inputLineKeyReleased", (QVariantList() << keyCode));
-}
-
-ScriptWidgetAddBtn::ScriptWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Script"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/script.png"));
-
-    m_widgetType = WIDGET_SCRIPT;
 }

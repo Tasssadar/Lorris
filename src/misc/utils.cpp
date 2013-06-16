@@ -84,9 +84,34 @@ QString Utils::toBinary(std::size_t width, int value)
     return res;
 }
 
-QFont Utils::getMonospaceFont(quint8 size)
+QFont Utils::getMonospaceFont(int size)
 {
-    return QFont("Courier New", size);
+    if(size == -1)
+        size = qApp->font().pointSize();
+
+    static const char *families[] = {
+        "Deja Vu Sans Mono",
+        "Droid Sans Mono",
+        "Andale Mono",
+        "Courier New"
+    };
+
+    static int selected = -1;
+    if(selected == -1)
+    {
+        for(quint32 i = 0; i < sizeof_array(families); ++i)
+        {
+            QFont f(families[i], size);
+            if(f.exactMatch())
+            {
+                selected = i;
+                return f;
+            }
+        }
+        selected = sizeof_array(families)-1;
+    }
+
+    return QFont(families[selected], size);
 }
 
 void Utils::showErrorBox(const QString& text, QWidget* parent)
@@ -110,12 +135,14 @@ void Utils::swapEndian(char *val, quint8 size)
 #include <windows.h>
 void Utils::playErrorSound()
 {
-    PlaySound(TEXT("SystemHand"), NULL, (SND_ASYNC | SND_ALIAS | SND_NOWAIT));
+    if(sConfig.get(CFG_BOOL_ENABLE_SOUNDS))
+        PlaySound(TEXT("SystemHand"), NULL, (SND_ASYNC | SND_ALIAS | SND_NOWAIT));
 }
 #else
 void Utils::playErrorSound()
 {
-    qApp->beep();
+    if(sConfig.get(CFG_BOOL_ENABLE_SOUNDS))
+        qApp->beep();
 }
 #endif
 

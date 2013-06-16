@@ -14,9 +14,9 @@
 #include <QSignalMapper>
 #include <QStringBuilder>
 #include <QScriptEngine>
-#include <QInputDialog>
 
 #include "numberwidget.h"
+#include "../../ui/floatinginputdialog.h"
 
 static void addEnum()
 {
@@ -35,25 +35,21 @@ static void addEnum()
 }
 
 REGISTER_DATAWIDGET(WIDGET_NUMBER, Number, &addEnum)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Number"))
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
 {
-    setTitle(tr("Number"));
-    setIcon(":/dataWidgetIcons/num.png");
-
-    m_widgetType = WIDGET_NUMBER;
-
-    num = new QLabel("0", this);
-    num->setAlignment(Qt::AlignCenter);
+    m_num = new QLabel("0", this);
+    m_num->setAlignment(Qt::AlignCenter);
 
     m_digits = 2;
 
     // FIXME
-    //num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+    //m_num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
     QFont font = Utils::getMonospaceFont(20);
-    num->setFont(font);
-    layout->addWidget(num);
+    m_num->setFont(font);
+    layout->addWidget(m_num);
 
     adjustSize();
     setMinimumSize(size());
@@ -71,9 +67,9 @@ void NumberWidget::setUp(Storage *storage)
 
     setUseErrorLabel(true);
 
-    numberType = NUM_UINT8;
-    format = FMT_DECIMAL;
-    level = false;
+    m_numberType = NUM_UINT8;
+    m_format = FMT_DECIMAL;
+    m_level = false;
 
     QMenu *bitsMenu = contextMenu->addMenu(tr("Data type"));
     QMenu *formatMenu = contextMenu->addMenu(tr("Format"));
@@ -102,13 +98,13 @@ void NumberWidget::setUp(Storage *storage)
         if(i%4 == 0 && i != 0)
             bitsMenu->addSeparator();
 
-        bitsAction[i] = new QAction(dataTypes[i], this);
-        bitsAction[i]->setCheckable(true);
-        bitsMenu->addAction(bitsAction[i]);
-        signalMapBits->setMapping(bitsAction[i], i);
-        connect(bitsAction[i], SIGNAL(triggered()), signalMapBits, SLOT(map()));
+        m_bitsAction[i] = new QAction(dataTypes[i], this);
+        m_bitsAction[i]->setCheckable(true);
+        bitsMenu->addAction(m_bitsAction[i]);
+        signalMapBits->setMapping(m_bitsAction[i], i);
+        connect(m_bitsAction[i], SIGNAL(triggered()), signalMapBits, SLOT(map()));
     }
-    bitsAction[0]->setChecked(true);
+    m_bitsAction[0]->setChecked(true);
     connect(signalMapBits, SIGNAL(mapped(int)), SLOT(setDataType(int)));
 
     static const QString formatStr[] =
@@ -122,14 +118,14 @@ void NumberWidget::setUp(Storage *storage)
     QSignalMapper *signalMapFmt = new QSignalMapper(this);
     for(quint8 i = 0; i < FMT_COUNT; ++i)
     {
-        fmtAction[i] = new QAction(formatStr[i], this);
-        fmtAction[i]->setCheckable(true);
-        formatMenu->addAction(fmtAction[i]);
-        signalMapFmt->setMapping(fmtAction[i], i);
-        connect(fmtAction[i], SIGNAL(triggered()), signalMapFmt, SLOT(map()));
+        m_fmtAction[i] = new QAction(formatStr[i], this);
+        m_fmtAction[i]->setCheckable(true);
+        formatMenu->addAction(m_fmtAction[i]);
+        signalMapFmt->setMapping(m_fmtAction[i], i);
+        connect(m_fmtAction[i], SIGNAL(triggered()), signalMapFmt, SLOT(map()));
     }
-    fmtAction[FMT_DECIMAL]->setChecked(true);
-    fmtAction[FMT_EXPONENT]->setEnabled(false);
+    m_fmtAction[FMT_DECIMAL]->setChecked(true);
+    m_fmtAction[FMT_EXPONENT]->setEnabled(false);
     connect(signalMapFmt, SIGNAL(mapped(int)), SLOT(fmtSelected(int)));
 
     QSignalMapper *signalMapPrec = new QSignalMapper(this);
@@ -150,10 +146,10 @@ void NumberWidget::setUp(Storage *storage)
     signalMapPrec->setMapping(m_precAct[PREC_COUNT-1], PREC_COUNT-1);
     connect(m_precAct[PREC_COUNT-1], SIGNAL(triggered()), signalMapPrec, SLOT(map()));
 
-    levelAction = new QAction(tr("Level off"), this);
-    levelAction->setCheckable(true);
-    contextMenu->addAction(levelAction);
-    connect(levelAction, SIGNAL(triggered()), this, SLOT(levelSelected()));
+    m_levelAction = new QAction(tr("Level off"), this);
+    m_levelAction->setCheckable(true);
+    contextMenu->addAction(m_levelAction);
+    connect(m_levelAction, SIGNAL(triggered()), this, SLOT(levelSelected()));
 
     QAction *formula = contextMenu->addAction(tr("Set formula..."));
     connect(formula, SIGNAL(triggered()), SLOT(showFormulaDialog()));
@@ -163,7 +159,7 @@ void NumberWidget::setUp(Storage *storage)
 
 void NumberWidget::processData(analyzer_data *data)
 {
-    QVariant var = DataWidget::getNumFromPacket(data, m_info.pos, numberType);
+    QVariant var = DataWidget::getNumFromPacket(data, m_info.pos, m_numberType);
     setValue(var);
 }
 
@@ -171,7 +167,7 @@ void NumberWidget::setValue(QVariant var)
 {
     if(var.isNull())
     {
-        num->setText("N/A");
+        m_num->setText("N/A");
         return;
     }
 
@@ -194,10 +190,10 @@ void NumberWidget::setValue(QVariant var)
             switch(res.type())
             {
                 case QVariant::Int:
-                    n.setNum(res.toInt(), base[format]);
+                    n.setNum(res.toInt(), base[m_format]);
                     break;
                 case QVariant::Double:
-                    n.setNum(res.toDouble(), fmt[format], m_digits);
+                    n.setNum(res.toDouble(), fmt[m_format], m_digits);
                     break;
                 default:
                     n = res.toString();
@@ -207,17 +203,17 @@ void NumberWidget::setValue(QVariant var)
     }
     else
     {
-        if(numberType < NUM_INT8)        n.setNum(var.toULongLong(), base[format]);
-        else if(numberType < NUM_FLOAT)  n = var.toString();
-        else                             n.setNum(var.toDouble(), fmt[format], m_digits);
+        if(m_numberType < NUM_INT8)        n.setNum(var.toULongLong(), base[m_format]);
+        else if(m_numberType < NUM_FLOAT)  n = var.toString();
+        else                             n.setNum(var.toDouble(), fmt[m_format], m_digits);
     }
 
-    switch(format)
+    switch(m_format)
     {
         case FMT_DECIMAL:
         case FMT_EXPONENT:
         {
-            if(!level)
+            if(!m_level)
                 break;
 
             static const quint8 levelPos[] =
@@ -230,60 +226,60 @@ void NumberWidget::setValue(QVariant var)
                 0,  //NUM_DOUBLE
             };
 
-            quint8 len = levelPos[numberType >= 4 ? numberType - 4 : numberType];
+            quint8 len = levelPos[m_numberType >= 4 ? m_numberType - 4 : m_numberType];
             prependZeros(n, len);
             break;
         }
         case FMT_HEX:
         {
-            if(level)
-                prependZeros(n, (1 << (numberType%4))*2);
+            if(m_level)
+                prependZeros(n, (1 << (m_numberType%4))*2);
             n = "0x" % n.toUpper();
             break;
         }
         case FMT_BINARY:
         {
-            if(level)
-                prependZeros(n, (1 << (numberType%4))*8);
+            if(m_level)
+                prependZeros(n, (1 << (m_numberType%4))*8);
             n.prepend("0b");
             break;
         }
     }
 
-    num->setText(n);
+    m_num->setText(n);
 }
 
 void NumberWidget::fmtSelected(int i)
 {
     for(quint8 y = 0; y < FMT_COUNT; ++y)
-        fmtAction[y]->setChecked(y == i);
-    format = i;
+        m_fmtAction[y]->setChecked(y == i);
+    m_format = i;
     emit updateForMe();
 }
 
 void NumberWidget::setDataType(int i)
 {
     for(quint8 y = 0; y < NUM_COUNT; ++y)
-        bitsAction[y]->setChecked(y == i);
+        m_bitsAction[y]->setChecked(y == i);
 
-    if(i >= NUM_INT8 && numberType < NUM_FLOAT)
+    if(i >= NUM_INT8 && m_numberType < NUM_FLOAT)
         fmtSelected(FMT_DECIMAL);
 
-    if(numberType == i)
+    if(m_numberType == i)
         return;
 
-    numberType = i;
+    m_numberType = i;
 
-    fmtAction[FMT_HEX]->setEnabled(i < NUM_INT8);
-    fmtAction[FMT_BINARY]->setEnabled(i < NUM_INT8);
-    fmtAction[FMT_EXPONENT]->setEnabled(i >= NUM_FLOAT);
+    m_fmtAction[FMT_HEX]->setEnabled(i < NUM_INT8);
+    m_fmtAction[FMT_BINARY]->setEnabled(i < NUM_INT8);
+    m_fmtAction[FMT_EXPONENT]->setEnabled(i >= NUM_FLOAT);
     emit updateForMe();
 }
 
 void NumberWidget::levelSelected()
 {
-    level = !level;
-    levelAction->setChecked(level);
+    m_level = !m_level;
+    m_levelAction->setChecked(m_level);
     emit updateForMe();
 }
 
@@ -293,9 +289,9 @@ void NumberWidget::resizeEvent(QResizeEvent *event)
     if(event->oldSize().height() < minimumHeight())
         old = minimumSize();
 
-    QFont f = num->font();
+    QFont f = m_num->font();
     f.setPointSize(f.pointSize() + event->size().height() - old.height());
-    num->setFont(f);
+    m_num->setFont(f);
     DataWidget::resizeEvent(event);
 }
 
@@ -305,23 +301,23 @@ void NumberWidget::saveWidgetInfo(DataFileParser *file)
 
     // data type
     file->writeBlockIdentifier("numWType");
-    file->write((char*)&numberType, sizeof(numberType));
+    *file << m_numberType;
 
     // Format
     file->writeBlockIdentifier("numWFormat");
-    file->write((char*)&format, sizeof(format));
+    *file << m_format;
 
     // Level off
     file->writeBlockIdentifier("numWLevel");
-    file->write((char*)&level, sizeof(level));
+    *file << m_level;
 
     // formula
     file->writeBlockIdentifier("numWFormula");
-    file->writeString(m_eval.getFormula());
+    *file << m_eval.getFormula();
 
     // precision
     file->writeBlockIdentifier("numWPrec");
-    file->writeVal(m_digits);
+    *file << m_digits;
 }
 
 void NumberWidget::loadWidgetInfo(DataFileParser *file)
@@ -331,22 +327,22 @@ void NumberWidget::loadWidgetInfo(DataFileParser *file)
     // data type
     if(file->seekToNextBlock("numWType", BLOCK_WIDGET))
     {
-        file->read((char*)&numberType, sizeof(numberType));
-        setDataType(numberType);
+        *file >> m_numberType;
+        setDataType(m_numberType);
     }
 
     // Format
     if(file->seekToNextBlock("numWFormat", BLOCK_WIDGET))
     {
-        file->read((char*)&format, sizeof(format));
-        fmtSelected(format);
+        *file >> m_format;
+        fmtSelected(m_format);
     }
 
     // Level off
     if(file->seekToNextBlock("numWLevel", BLOCK_WIDGET))
     {
-        file->read((char*)&level, sizeof(level));
-        levelAction->setChecked(level);
+        *file >> m_level;
+        m_levelAction->setChecked(m_level);
     }
 
     // Formula
@@ -356,7 +352,7 @@ void NumberWidget::loadWidgetInfo(DataFileParser *file)
     // Precision
     if(file->seekToNextBlock("numWPrec", BLOCK_WIDGET))
     {
-        m_digits = file->readVal<quint8>();
+        *file >> m_digits;
         int idx = std::min((int)m_digits, PREC_COUNT-1);
         for(int i = 0; i < PREC_COUNT; ++i)
             m_precAct[i]->setChecked(idx == i);
@@ -398,7 +394,7 @@ void NumberWidget::setPrecisionAct(int idx)
         setPrecision(idx);
     else
     {
-        int res = QInputDialog::getInt(this, tr("Number precision"), tr("Enter number of digits"), m_digits, 0, 255);
+        int res = FloatingInputDialog::getInt(tr("Decimal digits:"), m_digits, 0, 255);
         if(res != m_digits)
             setPrecision(res);
     }
@@ -408,13 +404,4 @@ void NumberWidget::setPrecision(quint8 digits)
 {
     m_digits = digits;
     emit updateForMe();
-}
-
-NumberWidgetAddBtn::NumberWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Number"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/num.png"));
-
-    m_widgetType = WIDGET_NUMBER;
 }

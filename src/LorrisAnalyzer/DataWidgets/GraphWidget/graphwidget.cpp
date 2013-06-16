@@ -9,7 +9,6 @@
 #include <qwt_plot_curve.h>
 #include <QMenu>
 #include <QSignalMapper>
-#include <QInputDialog>
 #include <QTimer>
 #include <QColorDialog>
 #include <qwt_plot_canvas.h>
@@ -23,18 +22,15 @@
 #include "../../storage.h"
 #include "graphexport.h"
 #include "../../datafilter.h"
+#include "../../../ui/floatinginputdialog.h"
 
 REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph, NULL)
+W_TR(QT_TRANSLATE_NOOP("DataWidget", "Graph"))
 
 static const int sampleValues[SAMPLE_ACT_COUNT] = { -1, -2, -3, 10, 50, 100, 200, 500, 1000 };
 
 GraphWidget::GraphWidget(QWidget *parent) : DataWidget(parent)
 {
-    m_widgetType = WIDGET_GRAPH;
-
-    setTitle(tr("Graph"));
-    setIcon(":/dataWidgetIcons/graph.png");
-
     m_graph = new Graph(this);
     m_add_dialog = NULL;
 
@@ -354,7 +350,7 @@ void GraphWidget::dropEvent(QDropEvent *event)
     if(m_add_dialog)
         delete m_add_dialog;
     m_add_dialog = new GraphCurveAddDialog(this, &m_curves, false);
-    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(addCurve()));
+    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(acceptCurveChanges()));
     m_add_dialog->open();
 }
 
@@ -471,7 +467,7 @@ void GraphWidget::sampleSizeChanged(int val)
     bool ok = true;
     if(val == -2)
     {
-        sample = QInputDialog::getInt(this, tr("Set sample size"), tr("Sample size:"), 0, 0, 2147483647, 1, &ok);
+        sample = FloatingInputDialog::getInt(tr("Sample size:"), 0, 0, INT_MAX, 1, &ok);
         if(ok)
             m_sample_size_idx = -2;
     }
@@ -509,7 +505,7 @@ void GraphWidget::editCurve()
     m_add_dialog = new GraphCurveAddDialog(this, &m_curves, true);
     m_add_dialog->open();
 
-    connect(m_add_dialog, SIGNAL(accepted()), SLOT(addCurve()));
+    connect(m_add_dialog, SIGNAL(accepted()), SLOT(acceptCurveChanges()));
     connect(m_add_dialog, SIGNAL(apply()),    SLOT(applyCurveChanges()));
 }
 
@@ -634,13 +630,4 @@ void GraphWidget::changeBackground()
         return;
 
     m_graph->setBgColor(c);
-}
-
-GraphWidgetAddBtn::GraphWidgetAddBtn(QWidget *parent) : DataWidgetAddBtn(parent)
-{
-    setText(tr("Graph"));
-    setIconSize(QSize(17, 17));
-    setIcon(QIcon(":/dataWidgetIcons/graph.png"));
-
-    m_widgetType = WIDGET_GRAPH;
 }

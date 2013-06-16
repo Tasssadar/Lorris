@@ -13,6 +13,11 @@
 #include <QFont>
 #include <stdint.h>
 
+// Workaround for GCC 4.6, it does not know override keyword
+#if (__GNUC__ == 4 && __GNUC_MINOR__< 7)
+  #define override
+#endif
+
 class QLayout;
 
 #define sizeof_array(a) (sizeof(a)/sizeof(a[0]))
@@ -49,7 +54,7 @@ public:
     static void sleep (unsigned long secs)  { QThread::sleep(secs); }
     static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
 
-    static QFont getMonospaceFont(quint8 size = 9);
+    static QFont getMonospaceFont(int size = -1);
 
     static void showErrorBox(const QString& text, QWidget* parent = 0);
 

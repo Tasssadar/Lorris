@@ -35,6 +35,8 @@
 #include "../WorkTab/WorkTabMgr.h"
 #include "DataWidgets/datawidget.h"
 #include "widgetfactory.h"
+#include "searchwidget.h"
+#include "../ui/floatinginputdialog.h"
 
 #include "ui_lorrisanalyzer.h"
 
@@ -60,6 +62,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
     connect(ui->dataArea,        SIGNAL(updateData()),      SLOT(updateData()));
+    connect(ui->limitBtn,        SIGNAL(clicked()),         SLOT(setPacketLimit()));
     connect(&m_parser,           SIGNAL(packetReceived(analyzer_data*,quint32)), SIGNAL(newData(analyzer_data*,quint32)));
     connect(ui->dataArea,        SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
                                  SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
@@ -121,24 +124,17 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(openAct,        SIGNAL(triggered()),     SLOT(openFile()));
     connect(saveAsAct,      SIGNAL(triggered()),     SLOT(saveAsButton()));
     connect(saveAct,        SIGNAL(triggered()),     SLOT(saveButton()));
-    connect(clearAct,       SIGNAL(triggered()),     SLOT(clearDataButton()));
+    connect(clearAct,       SIGNAL(triggered()),     SLOT(clearData()));
     connect(clearAllAct,    SIGNAL(triggered()),     SLOT(clearAllButton()));
-    connect(structAct,      SIGNAL(triggered()),     SLOT(editStruture()));
+    connect(structAct,      SIGNAL(triggered()),     SLOT(editStructure()));
     connect(exportAct,      SIGNAL(triggered()),     SLOT(exportBin()));
     connect(importAct,      SIGNAL(triggered()),     SLOT(importBinAct()));
-
-    // Time box update consumes hilarious CPU time on X11,
-    // this makes it better
-#if defined(Q_WS_X11)
-    ui->timeBox->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
-    ui->timeBox->setAttribute(Qt::WA_PaintOnScreen, true);
-#endif
 
     ui->dataArea->setAnalyzerAndStorage(this, &m_storage);
 
     QWidget *tmp = new QWidget(this);
     QVBoxLayout *widgetBtnL = new QVBoxLayout(tmp);
-    widgetBtnL->setContentsMargins(0, 0, 0, 0);
+    widgetBtnL->setContentsMargins(0, 0, style()->pixelMetric(QStyle::PM_ScrollBarExtent), 0);
 
     std::vector<DataWidgetAddBtn*> buttons = sWidgetFactory.getButtons(tmp);
     std::sort(buttons.begin(), buttons.end(), sortDataWidget);
@@ -165,10 +161,14 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     m_connectButton = new ConnectButton(ui->connectButton);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+
+    qApp->installEventFilter(this);
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
 {
+    qApp->removeEventFilter(this);
+
     if(m_packet)
     {
         delete m_packet->header;
@@ -186,7 +186,8 @@ void LorrisAnalyzer::connectedStatus(bool)
 
 void LorrisAnalyzer::readData(const QByteArray& data)
 {
-    bool update = m_curIndex == ui->timeSlider->maximum();
+    bool atMax = (m_curIndex == ui->timeSlider->maximum());
+    bool update = atMax || (m_storage.getSize() >= m_storage.getPacketLimit());
     if(!m_parser.newData(data, update))
         return;
 
@@ -199,11 +200,11 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     static const QString ofString = tr(" of ");
     ui->timeBox->setSuffix(ofString % QString::number(size+1));
 
-    if(update)
+    if(atMax)
     {
         m_curIndex = size;
-        ui->timeBox->setValue(size);
-        ui->timeSlider->setValue(size);
+        ui->timeBox->setValue(m_curIndex);
+        ui->timeSlider->setValue(m_curIndex);
     }
 }
 
@@ -211,6 +212,8 @@ void LorrisAnalyzer::onTabShow(const QString& filename)
 {
     if(!filename.isEmpty())
         openFile(filename);
+
+    ui->dataArea->setFocus();
 
     if (!m_con && sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB))
     {
@@ -380,7 +383,7 @@ void LorrisAnalyzer::updateData()
     ui->timeBox->setValue(m_curIndex);
     ui->timeSlider->setValue(m_curIndex);
 
-    if(m_curIndex && (quint32)m_curIndex < m_storage.getSize())
+    if((quint32)m_curIndex < m_storage.getSize())
     {
         m_curData.setData(m_storage.get(m_curIndex));
         emit newData(&m_curData, m_curIndex);
@@ -594,7 +597,7 @@ void LorrisAnalyzer::clearAllButton()
     updateData();
 }
 
-void LorrisAnalyzer::clearDataButton()
+void LorrisAnalyzer::clearData()
 {
     m_parser.resetCurPacket();
     m_storage.Clear();
@@ -603,6 +606,8 @@ void LorrisAnalyzer::clearDataButton()
     ui->timeSlider->setMaximum(0);
     ui->timeBox->setMaximum(0);
     ui->timeBox->setSuffix(tr(" of ") % "0");
+
+    ui->filterTabs->clearLastData();
 
     updateData();
 }
@@ -623,6 +628,8 @@ void LorrisAnalyzer::openFile(const QString& filename)
 {
     if(load((QString&)filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS)))
         sConfig.set(CFG_STRING_ANALYZER_FOLDER, m_storage.getFilename());
+
+    ui->dataArea->setFocus();
 }
 
 void LorrisAnalyzer::openFile()
@@ -640,7 +647,7 @@ void LorrisAnalyzer::openFile()
     load(filename, (STORAGE_STRUCTURE | STORAGE_DATA | STORAGE_WIDGETS));
 }
 
-void LorrisAnalyzer::editStruture()
+void LorrisAnalyzer::editStructure()
 {
     m_parser.setPaused(true);
     analyzer_packet *packet = SourceDialog::getStructure(m_packet, m_con.data());
@@ -774,4 +781,40 @@ DataFilter *LorrisAnalyzer::getFilter(quint32 id)
 DataFilter *LorrisAnalyzer::getFilterByOldInfo(const data_widget_infoV1 &old_info) const
 {
     return ui->filterTabs->getFilterByOldInfo(old_info);
+}
+
+void LorrisAnalyzer::keyPressEvent(QKeyEvent *ev)
+{
+    if(ev->key() == Qt::Key_Space)
+        new SearchWidget(ui->dataArea, this);
+    PortConnWorkTab::keyPressEvent(ev);
+}
+
+bool LorrisAnalyzer::eventFilter(QObject */*obj*/, QEvent *event)
+{
+    if(event->type() != QEvent::KeyPress)
+        return false;
+
+    if(((QKeyEvent*)event)->key() != Qt::Key_Space)
+        return false;
+
+    if(!isVisible() || !underMouse())
+        return false;
+
+    QWidget *focus = qApp->focusWidget();
+    if(focus && (focus->inherits("QLineEdit") || focus->inherits("Terminal")))
+        return false;
+
+    new SearchWidget(ui->dataArea, this);
+    return true;
+}
+
+void LorrisAnalyzer::setPacketLimit()
+{
+    int limit = FloatingInputDialog::getInt(tr("Set maximum number of packets"), m_storage.getPacketLimit(), 1);
+    m_storage.setPacketLimit(limit);
+
+    int size = m_storage.getMaxIdx();
+    ui->timeSlider->setMaximum(size);
+    ui->timeBox->setMaximum(size);
 }

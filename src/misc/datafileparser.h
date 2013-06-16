@@ -18,7 +18,7 @@
 #include "utils.h"
 
 class QEventLoop;
-class PortConnection;
+class Connection;
 
 enum DataBlocks
 {
@@ -33,6 +33,7 @@ enum DataBlocks
     BLOCK_WIDGETS,
     BLOCK_WIDGET,
     BLOCK_DATA_INDEX,
+    BLOCK_PACKET_LIMIT,
     BLOCK_FILTERS,
 
     BLOCK_TABWIDGET,
@@ -100,7 +101,7 @@ public:
     void writeColor(const QColor& color);
     QColor readColor();
 
-    void writeConn(PortConnection *conn);
+    void writeConn(Connection *conn);
     bool readConn(quint8& type, QHash<QString, QVariant>& cfg);
 
     QString getAttachmentFilename();
@@ -109,6 +110,14 @@ public:
     template <typename T> T readVal();
     template <typename T> void writeVal(T val);
     template <typename T> void writeVal(T val, quint64 pos);
+
+    template <typename T> DataFileParser& operator <<(T data);
+    DataFileParser& operator <<(const QString& str);
+    DataFileParser& operator <<(const QColor& color);
+
+    template <typename T> DataFileParser& operator >>(T &data);
+    DataFileParser& operator >>(QString& str);
+    DataFileParser& operator >>(QColor& color);
 
 private:
     char *getBlockWithFormat(const char *block, quint8& lenght);
@@ -122,14 +131,17 @@ private:
 class DataFileBuilder
 {
 public:
-    static QByteArray readAndCheck(QFile& file, DataFileTypes expectedType, bool *legacy = NULL);
+    static QByteArray readAndCheck(QFile& file, DataFileTypes expectedType, bool *legacy = NULL, DataFileHeader *fillHeader = NULL);
 
     // Returns MD5 of written data. data is cleared!
     static QByteArray writeWithHeader(const QString& filename, QByteArray& data, bool compress, DataFileTypes type);
 
+    static void dumpFileInfo(const QString& filename);
+
 private:
     static void readHeader(QFile& file, DataFileHeader *header);
     static void writeHeader(QIODevice &file, DataFileHeader *header);
+    static void dumpHeader(const DataFileHeader& header);
 
     static QByteArray writeWithHeader_private(const QString& filename, QByteArray& data, bool compress, DataFileTypes type);
 
@@ -183,6 +195,23 @@ void DataFileParser::writeVal(T val, quint64 pos)
     if(seek(pos))
         write((char*)&val, sizeof(T));
     seek(origin);
+}
+
+// NOTE: Operators << and >> have specialized methods
+// for QString, QColor and Connection (and possibly some
+// other, depends if this comment is outdated or not)
+template <typename T>
+DataFileParser& DataFileParser::operator <<(T data)
+{
+    writeVal<T>(data);
+    return *this;
+}
+
+template <typename T>
+DataFileParser& DataFileParser::operator >>(T &data)
+{
+    read((char*)&data, sizeof(T));
+    return *this;
 }
 
 #endif // DATAFILEPARSER_H

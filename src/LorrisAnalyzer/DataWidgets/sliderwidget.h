@@ -103,12 +103,4 @@ private:
     QAction *m_hide_act;
 };
 
-class SliderWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    SliderWidgetAddBtn(QWidget *parent = 0);
-
-};
-
 #endif // SLIDERWIDGET_H

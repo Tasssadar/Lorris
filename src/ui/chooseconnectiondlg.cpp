@@ -592,7 +592,7 @@ void ChooseConnectionDlg::on_usbIntfNameEdit_textChanged(QString const & value)
     static_cast<UsbAcmConnection2 *>(m_current.data())->setIntfName(value);
 }
 
-void ChooseConnectionDlg::on_usbBaudRateEdit_textChanged(QString const & value)
+void ChooseConnectionDlg::on_usbBaudRateEdit_editTextChanged(QString const & value)
 {
     if (!m_current)
         return;

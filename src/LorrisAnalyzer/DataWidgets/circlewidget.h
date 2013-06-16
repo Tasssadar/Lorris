@@ -92,11 +92,4 @@ private:
     bool m_draw_angle;
 };
 
-class CircleWidgetAddBtn : public DataWidgetAddBtn
-{
-    Q_OBJECT
-public:
-    CircleWidgetAddBtn(QWidget *parent = 0);
-};
-
 #endif // CIRCLEWIDGET_H

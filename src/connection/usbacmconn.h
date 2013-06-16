@@ -1,3 +1,10 @@
+/**********************************************
+**    This file is part of Lorris
+**    http://tasssadar.github.com/Lorris/
+**
+**    See README and COPYING
+***********************************************/
+
 #ifndef USBACMCONN_H
 #define USBACMCONN_H
 
@@ -31,6 +38,7 @@ public:
     ~UsbAcmConnection2();
 
     QString details() const { return m_details; }
+    bool canSaveToSession() const { return true; }
 
     int baudRate() const { return m_baudrate; }
     void setBaudRate(int value);

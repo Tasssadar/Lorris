@@ -26,6 +26,10 @@ public slots:
     void sendData(const QByteArray& data);
     void sendData(const QList<int>& data);
     void sendData(const QString& str);
+    void send(const QByteArray& data) { sendData(data); }
+    void send(const QList<int>& data) { sendData(data); }
+    void send(const QString& str) { sendData(str); }
+
     int getWidth();
     int getHeight();
     void throwException(const QString& text);
@@ -46,6 +50,9 @@ public slots:
     {
         return newWidget(type, title, -1, -1, -1, -1);
     }
+
+    QByteArray getData(quint32 idx) const;
+    quint32 getDataCount() const;
 
 private:
     PythonEngine *m_engine;

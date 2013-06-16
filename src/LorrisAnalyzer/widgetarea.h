@@ -40,6 +40,7 @@ Q_SIGNALS:
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
     void onScriptEvent(const QString& eventId);
+    void onScriptEvent(const QString &eventId, const QVariantList& args);
 
 public:
     typedef QHash<quint32, DataWidget*> w_map;
@@ -88,9 +89,20 @@ public:
     DataFilter *getFilter(quint32 id) const;
     DataFilter *getFilterByOldInfo(const data_widget_infoV1& old_info) const;
 
+    void setLastSearch(const QString& str) { m_lastSearch = str; }
+    QString getLastSearch() const { return m_lastSearch; }
+
 public slots:
     void removeWidget(quint32 id);
     void updateMarker(DataWidget *w);
+    void addBookmark();
+    void lockAll();
+    void unlockAll();
+    void toggleGrid() { showGrid(!m_show_grid); }
+    void toggleBookmarks();
+    void alignWidgets();
+    void togglePreview();
+    void toggleWidgetTitles();
     
 protected:
     void mousePressEvent(QMouseEvent * event);
@@ -107,11 +119,8 @@ private slots:
     void enableGrid(bool enable);
     void showGrid(bool show);
     void setGridSize();
-    void alignWidgets();
     void clearPlacementLines();
     void enableLines(bool enable);
-    void lockAll();
-    void unlockAll();
     void titleVisibilityAct(bool toggled);
     void toggleSelection(bool select);
     void clearSelection();
@@ -119,7 +128,6 @@ private slots:
     void jumpToBookmark(int id);
     void removeBookmark();
     void changeBookmarkSeq();
-    void addBookmark();
     void setShowBookmarks(bool show);
 
 private:
@@ -145,8 +153,9 @@ private:
     QAction *m_actShowBookmk;
     QAction *m_actEnableGrid;
     QAction *m_actShowGrid;
-    QAction *m_titleVisibility;
-    QAction *m_showPreview;
+    QAction *m_actTitleVisibility;
+    QAction *m_actShowPreview;
+
     WidgetAreaPreview *m_prev;
 
     QVector<QLine> m_placementLines;
@@ -170,6 +179,8 @@ private:
     QMenu *m_bookmk_menu;
     int m_bookmk_ids;
     bool m_show_bookmk;
+
+    QString m_lastSearch;
 };
 
 class WidgetAreaPreview : public QWidget
