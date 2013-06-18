@@ -22,6 +22,9 @@ public:
     ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn, ProgrammerLogSink * logsink);
     ~ShupitoProgrammer();
 
+    bool supportsPwm() const override;
+    bool setPwmFreq(uint32_t freq_hz) override;
+
     bool supportsVdd() const override { return true; }
 
     QStringList getAvailableModes() override;
@@ -74,6 +77,7 @@ private:
     ShupitoDesc::config const *m_tunnel_config;
     ShupitoDesc::config const *m_btn_config;
     ShupitoDesc::config const *m_led_config;
+    ShupitoDesc::config const *m_pwm_config;
 
     Shupito *m_shupito;
     ShupitoMode *m_modes[MODE_COUNT];
