@@ -12,7 +12,7 @@
 #include "../../misc/utils.h"
 
 ShupitoProgrammer::ShupitoProgrammer(ConnectionPointer<ShupitoConnection> const & conn, ProgrammerLogSink * logsink)
-    : Programmer(logsink), m_con(conn), m_vdd_config(0), m_tunnel_config(0), m_btn_config(0), m_led_config(0), m_cur_mode(0)
+    : Programmer(logsink), m_con(conn), m_vdd_config(0), m_tunnel_config(0), m_btn_config(0), m_led_config(0), m_pwm_config(0), m_cur_mode(0)
 {
     m_desc = 0;
     m_shupito = new Shupito(this);
@@ -98,6 +98,27 @@ void ShupitoProgrammer::readPacket(const ShupitoPacket & packet)
 
     if (m_btn_config && packet.size() >= 3 && packet[0] == m_btn_config->cmd && packet[1] == 1 && (packet[2] & 1) != 0)
         emit buttonPressed(0);
+
+    if (this->supportsPwm() && packet.size() > 1 && packet[0] == m_pwm_config->cmd + 1)
+    {
+        if (packet[1] == 1 && packet.size() == 10)
+        {
+            uint32_t base_freq = 0;
+            for (size_t i = 4; i != 0; --i)
+                base_freq = (base_freq << 8) | m_pwm_config->data[i];
+
+            uint32_t period = 0;
+            for (size_t i = 4; i != 0; --i)
+                period = (period << 8) | packet[i+1];
+
+            if (period != 0)
+                emit pwmChanged(base_freq / period);
+        }
+        else if (packet[1] == 0)
+        {
+            emit pwmChanged(0);
+        }
+    }
 }
 
 void ShupitoProgrammer::setVddIndex(int index)
@@ -265,6 +286,12 @@ void ShupitoProgrammer::descRead(bool correct)
     if (m_led_config)
         m_shupito->sendPacket(makeShupitoPacket(m_led_config->cmd, 1, 1));
     emit blinkLedSupport(/*supported=*/m_led_config != 0);
+
+    m_pwm_config = m_desc->getConfig("0a77e245-db84-4871-8d0a-daefa901df21");
+    if (m_pwm_config)
+        m_shupito->sendPacket(makeShupitoPacket(m_pwm_config->cmd + 1, 0));
+
+    emit capabilitiesChanged();
 }
 
 void ShupitoProgrammer::stopAll(bool wait)
@@ -333,4 +360,48 @@ ProgrammerCapabilities ShupitoProgrammer::capabilities() const
 void ShupitoProgrammer::executeText(QByteArray const & data, quint8 memId, chip_definition & chip)
 {
     m_modes[m_cur_mode]->executeText(data, memId, chip);
+}
+
+bool ShupitoProgrammer::supportsPwm() const
+{
+    return m_pwm_config != 0 && m_pwm_config->data.size() == 5 && m_pwm_config->data[0] == 1;
+}
+
+bool ShupitoProgrammer::setPwmFreq(uint32_t freq_hz)
+{
+    Q_ASSERT(this->supportsPwm());
+
+    if (freq_hz == 0)
+    {
+        ShupitoPacket pck = m_shupito->waitForPacket(makeShupitoPacket(m_pwm_config->cmd, 1, 0), m_pwm_config->cmd);
+        if (pck.size() < 2 || (pck[1] != 0 && pck[1] != 2))
+            Utils::showErrorBox(tr("Invalid response"));
+        return true;
+    }
+
+    uint32_t base_freq = 0;
+    for (size_t i = 4; i != 0; --i)
+        base_freq = (base_freq << 8) | m_pwm_config->data[i];
+
+    uint32_t div = base_freq / freq_hz;
+    uint32_t duty_cycle = div / 2 + 1;
+
+    if (div == 0 || (div % 2) == 0)
+        ++div;
+
+    uint8_t const pck[] = { m_pwm_config->cmd, 1, div, div >> 8, div >> 16, div >> 24, duty_cycle, duty_cycle >> 8, duty_cycle >> 16, duty_cycle >> 24 };
+    ShupitoPacket out = m_shupito->waitForPacket(ShupitoPacket(pck, pck + sizeof pck), m_pwm_config->cmd);
+    if (out.size() > 1 && out[1] == 2)
+    {
+        //Utils::showErrorBox(tr("Clock output is not supported in this mode."));
+        return false;
+    }
+
+    if (out.size() < 2 || out[1] != 0)
+    {
+        Utils::showErrorBox(tr("Invalid response"));
+        return false;
+    }
+
+    return true;
 }
