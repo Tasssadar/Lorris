@@ -45,10 +45,9 @@ def addCurve(type):
 
 	x = 0;
 	for i in range(500):
-		# Add point to graph. first is index, second is value
-		# index IS NOT value on x axis, but data will be ordered by this index
-		# (point with idx 10 will be always before point with idx 50, even is it was inserted after)
-                # if you use same index twice, value if that index will be changed
+                # Add point to graph. first is index, second is value,
+                # index is the value on x axis.
+                # If you use same index twice, value if that index will be changed
 		if type == 0:
 			c.addPoint(i, math.sin(x))
 		elif type == 1:

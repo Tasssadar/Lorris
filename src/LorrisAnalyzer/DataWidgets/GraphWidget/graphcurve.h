@@ -19,7 +19,7 @@ class GraphCurve : public QObject, public QwtPlotCurve
 {
     Q_OBJECT
 public:
-    GraphCurve(const QString& name, GraphDataSimple *data);
+    GraphCurve(const QString& name, GraphData *data);
     GraphCurve(const GraphCurve &curve);
     GraphCurve()
     {
@@ -30,11 +30,12 @@ public:
 
     void init();
 
-    void setSampleSize(qint32 size);
+    void setSampleSize(quint32 size);
     void dataPosChanged(quint32 pos);
 
     qint32 getMin();
     qint32 getMax();
+    quint32 getMaxX();
     quint32 getSize();
     void setDataType(quint8 type);
 
@@ -49,11 +50,15 @@ public:
     void setFormula(const QString& f) { m_data->setFormula(f); }
 
 public slots:
-    void addPoint(quint32 index, qreal val);
+    void addPoint(quint32 index, qreal val)
+    {
+        addPoint((qreal)index, val);
+    }
+    void addPoint(qreal index, qreal val);
     void clear();
 
 private:
-    GraphDataSimple *m_data;
+    GraphData *m_data;
     qint32 m_sample_size;
 };
 

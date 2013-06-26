@@ -206,7 +206,7 @@ struct analyzer_packet
 class analyzer_data
 {
 public:
-    analyzer_data(QByteArray *data = NULL);
+    analyzer_data(QByteArray *data = NULL, analyzer_packet *packet = NULL);
     void clear();
     void copy(analyzer_data *other);
 

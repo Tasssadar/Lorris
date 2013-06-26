@@ -309,7 +309,7 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
             continue;
         color = file->readString();
 
-        GraphDataSimple *dta = new GraphData(m_storage, info, m_sample_size, dataType);
+        GraphData *dta = new GraphData(m_storage, info, m_sample_size, dataType);
         GraphCurve *curve = new GraphCurve(name, dta);
 
         curve->setPen(QPen(QColor(color)));
@@ -443,13 +443,13 @@ void GraphWidget::tryReplot()
 
             for(quint8 i = 0; i < m_curves.size(); ++i)
             {
-                qint32 c_size = m_curves[i]->curve->getSize();
+                qint32 c_size = m_curves[i]->curve->getMaxX();
 
                 if(c_size > size)
                     size = c_size;
             }
 
-            qint32 x_max = m_graph->XupperBound() - m_graph->XlowerBound();
+            qint32 x_max = abs(m_graph->XupperBound() - m_graph->XlowerBound());
             m_graph->setAxisScale(QwtPlot::xBottom, size - x_max, size);
         }
 
@@ -482,13 +482,22 @@ void GraphWidget::sampleSizeChanged(int val)
     if(!ok || m_sample_size == sample)
         return;
 
-    if(sample != -3)
+    switch(sample)
     {
-        for(quint8 i = 0; i < m_curves.size(); ++i)
-            m_curves[i]->curve->setSampleSize(sample);
+        case -3: // Automatic
+            updateSampleSize();
+            break;
+        case -2: // User-specified
+            break;
+        case -1: // all data
+            for(quint8 i = 0; i < m_curves.size(); ++i)
+                m_curves[i]->curve->setSampleSize(UINT_MAX);
+            break;
+        default:
+            for(quint8 i = 0; i < m_curves.size(); ++i)
+                m_curves[i]->curve->setSampleSize(sample);
+            break;
     }
-    else
-        updateSampleSize();
 
     m_sample_size = sample;
 
@@ -580,9 +589,10 @@ GraphCurve *GraphWidget::addCurve(QString name, QString color)
         if(m_curves[i]->curve->title().text() == name)
             return m_curves[i]->curve;
 
-    GraphDataSimple *dta = new GraphDataSimple();
-    GraphCurve *curve = new GraphCurve(name, dta);
+    GraphData *dta = new GraphData(m_storage, m_info, UINT_MAX, NUM_UINT8);
+    dta->setScriptBased();
 
+    GraphCurve *curve = new GraphCurve(name, dta);
     curve->setPen(QPen(QColor(color)));
     curve->attach(m_graph);
     m_graph->showCurve(curve, true);
@@ -610,7 +620,7 @@ void GraphWidget::updateSampleSize()
     if(m_sample_size != -3)
         return;
 
-    qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound())*2;
+    qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound());
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
         m_curves[i]->curve->setSampleSize(size);

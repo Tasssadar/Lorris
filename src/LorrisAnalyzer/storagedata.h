@@ -15,10 +15,11 @@ class StorageData
 {
 public:
     StorageData();
-    ~StorageData();
+    virtual ~StorageData();
 
     void clear();
     inline bool empty() const { return m_data.empty(); }
+    inline bool full() const { return m_data.size() >= (quint32)m_packet_limit; }
     inline quint32 size() const { return m_data.size(); }
 
     int getPacketLimit() const { return m_packet_limit; }

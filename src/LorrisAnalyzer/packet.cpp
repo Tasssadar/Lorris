@@ -8,9 +8,9 @@
 #include "packet.h"
 #include "../common.h"
 
-analyzer_data::analyzer_data(QByteArray *data)
+analyzer_data::analyzer_data(QByteArray *data, analyzer_packet *packet)
 {
-    m_packet = NULL;
+    m_packet = packet;
     m_data = data;
 }
 

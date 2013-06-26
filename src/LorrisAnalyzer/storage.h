@@ -47,6 +47,7 @@ public:
     quint32 getSize() const { return m_data.size(); }
     quint32 getMaxIdx() const { return m_data.size() ? m_data.size()-1 : 0; }
     bool isEmpty() const { return m_data.empty(); }
+    bool isFull() const { return m_data.full(); }
     QByteArray *get(quint32 index) { return &m_data[index]; }
     analyzer_packet *loadFromFile(QString *name, quint8 load, WidgetArea *area, FilterTabWidget *filters, quint32 &data_idx);
 

@@ -10,7 +10,7 @@
 #include "graphcurve.h"
 #include "../../storage.h"
 
-GraphCurve::GraphCurve(const QString &name, GraphDataSimple *data) :
+GraphCurve::GraphCurve(const QString &name, GraphData *data) :
     QObject(NULL),QwtPlotCurve(name)
 {
     m_data = data;
@@ -36,7 +36,7 @@ void GraphCurve::init()
     setData(m_data);
 }
 
-void GraphCurve::setSampleSize(qint32 size)
+void GraphCurve::setSampleSize(quint32 size)
 {
     m_data->setSampleSize(size);
 }
@@ -61,12 +61,17 @@ quint32 GraphCurve::getSize()
     return m_data->size();
 }
 
+quint32 GraphCurve::getMaxX()
+{
+    return m_data->getMaxX();
+}
+
 void GraphCurve::setDataType(quint8 type)
 {
     m_data->setDataType(type);
 }
 
-void GraphCurve::addPoint(quint32 index, qreal val)
+void GraphCurve::addPoint(qreal index, qreal val)
 {
     m_data->addPoint(index, val);
     plot()->replot();
