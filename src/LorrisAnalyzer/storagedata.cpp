@@ -30,8 +30,16 @@ void StorageData::setPacketLimit(int limit)
     if(m_data.size() > (quint32)limit)
     {
         std::vector<QByteArray> vec;
-        vec.insert(vec.begin(), m_data.end()-limit, m_data.end());
+
+        quint32 end = (std::min)(m_data.size(), (size_t)m_offset+limit);
+        vec.insert(vec.end(), m_data.begin()+m_offset, m_data.begin()+end);
+        if((quint32)m_offset+limit >= m_data.size())
+        {
+            end = (m_offset + limit) - m_data.size() - 1;
+            vec.insert(vec.end(), m_data.begin(), m_data.begin()+end);
+        }
         m_data.swap(vec);
+        m_offset = 0;
     }
 }
 
@@ -45,18 +53,25 @@ QByteArray& StorageData::operator[](quint32 idx)
 
 QByteArray *StorageData::push_back(const QByteArray& data)
 {
+    QByteArray *res = NULL;
     if(m_data.size() < (quint32)m_packet_limit)
     {
         m_data.push_back(data);
-        return &m_data.back();
+        res = &m_data.back();
     }
     else
     {
         if((quint32)m_offset >= m_data.size())
             m_offset = 0;
+
+        m_data[m_offset] = data;
+        res = &m_data[m_offset];
         ++m_offset;
-        m_data[m_offset-1] = data;
-        return &m_data[m_offset-1];
     }
+
+    // Data in this class will never be modified,
+    // so release unused memory
+    res->squeeze();
+    return res;
 }
 
