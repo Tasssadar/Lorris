@@ -163,6 +163,9 @@ void GraphData::dataPosChanged(quint32 index)
                 continue;
 
             n = num.toDouble();
+            if(m_eval.isActive())
+                n = m_eval.evaluate(QString::number(n, 'f')).toDouble();
+
             setMinMax(n);
 
             m_data.push_back(QPointF(i, n));
