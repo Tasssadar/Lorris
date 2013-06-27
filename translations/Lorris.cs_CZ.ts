@@ -1597,12 +1597,12 @@ stejného souboru vícekrát:</translation>
         <translation>Dvojklikem přidáte značku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="187"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="202"/>
         <source>Remove markers</source>
         <translation>Odstranit značky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="194"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="209"/>
         <source>No markers</source>
         <translation>Žádné značky</translation>
     </message>
@@ -2195,7 +2195,7 @@ stejného souboru vícekrát:</translation>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="814"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="827"/>
         <source>Set maximum number of packets</source>
         <translation>Zadejte maximální počet packetů</translation>
     </message>
@@ -3937,33 +3937,33 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
 <context>
     <name>SessionMgr</name>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="57"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="72"/>
         <source>Error loading session file: %1</source>
         <translation>Chyba při načítání sezení: %1</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="84"/>
-        <location filename="../src/misc/sessionmgr.cpp" line="193"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="99"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="208"/>
         <source>No saved sessions</source>
         <translation>Žádná uložená sezení</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="99"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="114"/>
         <source>Save this session...</source>
         <translation>Uložit toto sezení...</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="100"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="115"/>
         <source>Session manager...</source>
         <translation>Správce sezení...</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="145"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="160"/>
         <source>Session %1 saved.</source>
         <translation>Sezení &quot;%1&quot; bylo uloženo.</translation>
     </message>
     <message>
-        <location filename="../src/misc/sessionmgr.cpp" line="157"/>
+        <location filename="../src/misc/sessionmgr.cpp" line="172"/>
         <location filename="../src/misc/sessionmgr.h" line="30"/>
         <source>[Last session]</source>
         <translation>[Poslední sezení]</translation>
@@ -5295,7 +5295,7 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../src/misc/utils.cpp" line="121"/>
+        <location filename="../src/misc/utils.cpp" line="124"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
@@ -5348,52 +5348,57 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
         <translation>Ukázat titulek widgetů</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="77"/>
         <source>Show preview while moving the area</source>
         <translation>Zobrazit náhled při posouvání plochy</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="75"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="74"/>
         <source>Lock all widgets</source>
         <translation>Uzamknout všechny widgety</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="76"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="75"/>
         <source>Unlock all widgets</source>
         <translation>Odemknout všechny widgety</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="85"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="78"/>
+        <source>Enable quick search (spacebar)</source>
+        <translation>Povolit rychlé menu (mezerník)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="89"/>
         <source>Undo</source>
         <translation>Zpět</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="86"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="90"/>
         <source>Redo</source>
         <translation>Opakovat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="93"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="97"/>
         <source>Change shortcut</source>
         <translation>Změnit klávesovou zkratku...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="94"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="98"/>
         <source>Remove</source>
         <translation>Odstranit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="646"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="658"/>
         <source>Grid size</source>
         <translation>Rozteč sítě</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="646"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="658"/>
         <source>Enter grid size in pixels</source>
         <translation>Zadejte rozteč sítě v pixelech</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="903"/>
+        <location filename="../src/LorrisAnalyzer/widgetarea.cpp" line="915"/>
         <source>Set bookmark shortcut</source>
         <translation>Zkratka pro záložku</translation>
     </message>
