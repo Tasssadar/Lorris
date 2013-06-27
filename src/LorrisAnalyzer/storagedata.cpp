@@ -26,21 +26,29 @@ void StorageData::clear()
 
 void StorageData::setPacketLimit(int limit)
 {
-    m_packet_limit = limit;
-    if(m_data.size() > (quint32)limit)
-    {
-        std::vector<QByteArray> vec;
+    if(limit == m_packet_limit)
+        return;
 
-        quint32 end = (std::min)(m_data.size(), (size_t)m_offset+limit);
-        vec.insert(vec.end(), m_data.begin()+m_offset, m_data.begin()+end);
-        if((quint32)m_offset+limit >= m_data.size())
+    if(!m_data.empty())
+    {
+        size_t itr;
+        std::vector<QByteArray> vec;
+        vec.reserve((std::min)(m_data.size(), (size_t)limit));
+
+        if(m_offset < limit)
         {
-            end = (m_offset + limit) - m_data.size() - 1;
-            vec.insert(vec.end(), m_data.begin(), m_data.begin()+end);
+            itr = m_data.size() - (std::min)(m_data.size()-m_offset, size_t(limit - m_offset));
+            vec.insert(vec.end(), m_data.begin()+itr, m_data.end());
         }
+
+        itr = (std::max)(0, m_offset-limit);
+        vec.insert(vec.end(), m_data.begin()+itr, m_data.begin()+m_offset);
+
         m_data.swap(vec);
-        m_offset = 0;
     }
+
+    m_packet_limit = limit;
+    m_offset = 0;
 }
 
 QByteArray& StorageData::operator[](quint32 idx)
