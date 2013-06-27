@@ -389,7 +389,12 @@ bool ShupitoProgrammer::setPwmFreq(uint32_t freq_hz)
     if (div == 0 || (div % 2) == 0)
         ++div;
 
-    uint8_t const pck[] = { m_pwm_config->cmd, 1, div, div >> 8, div >> 16, div >> 24, duty_cycle, duty_cycle >> 8, duty_cycle >> 16, duty_cycle >> 24 };
+    uint8_t const pck[] = {
+        m_pwm_config->cmd, 1,
+        uint8_t(div), uint8_t(div >> 8), uint8_t(div >> 16), uint8_t(div >> 24),
+        uint8_t(duty_cycle), uint8_t(duty_cycle >> 8), uint8_t(duty_cycle >> 16), uint8_t(duty_cycle >> 24)
+    };
+
     ShupitoPacket out = m_shupito->waitForPacket(ShupitoPacket(pck, pck + sizeof pck), m_pwm_config->cmd);
     if (out.size() > 1 && out[1] == 2)
     {
