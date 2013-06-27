@@ -132,6 +132,7 @@ static const QString keys_bool[] =
     "analyzer/show_bookmarks",    // CFG_BOOL_ANALYZER_SHOW_BOOKMARKS
     "general/connect_on_new_tab", // CFG_BOOL_CONN_ON_NEW_TAB
     "general/enable_sounds",      // CFG_BOOL_ENABLE_SOUNDS
+    "analyzer/enable_search"      // CFG_BOOL_ANALYZER_SEARCH_WIDGET
 };
 
 static const bool def_bool[] =
@@ -168,6 +169,7 @@ static const bool def_bool[] =
     true,                         // CFG_BOOL_ANALYZER_SHOW_BOOKMARKS
     true,                         // CFG_BOOL_CONN_ON_NEW_TAB
     true,                         // CFG_BOOL_ENABLE_SOUNDS
+    true,                         // CFG_BOOL_ANALYZER_SEARCH_WIDGET
 };
 
 static const QString keys_variant[] =

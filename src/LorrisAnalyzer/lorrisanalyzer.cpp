@@ -153,6 +153,8 @@ LorrisAnalyzer::LorrisAnalyzer()
     m_curIndex = 0;
     m_rightVisible = true;
 
+    setEnableSearchWidget(sConfig.get(CFG_BOOL_ANALYZER_SEARCH_WIDGET));
+
     setAreaVisibility(AREA_LEFT, false);
     setAreaVisibility(AREA_RIGHT, true);
     setAreaVisibility(AREA_TOP, true);
@@ -161,8 +163,6 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     m_connectButton = new ConnectButton(ui->connectButton);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
-
-    qApp->installEventFilter(this);
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -782,7 +782,7 @@ DataFilter *LorrisAnalyzer::getFilterByOldInfo(const data_widget_infoV1 &old_inf
 
 void LorrisAnalyzer::keyPressEvent(QKeyEvent *ev)
 {
-    if(ev->key() == Qt::Key_Space)
+    if(m_enableSearchWidget && ev->key() == Qt::Key_Space)
         new SearchWidget(ui->dataArea, this);
     PortConnWorkTab::keyPressEvent(ev);
 }
@@ -814,4 +814,13 @@ void LorrisAnalyzer::setPacketLimit()
     int size = m_storage.getMaxIdx();
     ui->timeSlider->setMaximum(size);
     ui->timeBox->setMaximum(size);
+}
+
+void LorrisAnalyzer::setEnableSearchWidget(bool enable)
+{
+    m_enableSearchWidget = enable;
+    if(enable)
+        qApp->installEventFilter(this);
+    else
+        qApp->removeEventFilter(this);
 }
