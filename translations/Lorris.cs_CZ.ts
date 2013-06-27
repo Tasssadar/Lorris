@@ -895,7 +895,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/ui/connectbutton.cpp" line="94"/>
         <source>Connecting...</source>
-        <translation>Připojujování...</translation>
+        <translation>Připojování...</translation>
     </message>
     <message>
         <location filename="../src/ui/connectbutton.cpp" line="98"/>
@@ -1291,19 +1291,19 @@ Vstupní hodnota bude zpracována výrazem, který zde vyplníte. &amp;quot;%n&a
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="509"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="644"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="709"/>
         <source>500000</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="514"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="649"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="714"/>
         <source>1000000</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="519"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="659"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="724"/>
         <source>2000000</source>
         <translation></translation>
     </message>
@@ -1332,203 +1332,219 @@ stejného souboru vícekrát:</translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="588"/>
+        <source>Clock output</source>
+        <translation>Hodinový výstup</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="601"/>
+        <source>Clock frequency:</source>
+        <translation>Frekvence hodin:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="634"/>
+        <source> Hz</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="653"/>
         <source>RS232 tunnel</source>
         <translation>RS232 tunel</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="600"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="665"/>
         <source>Speed:</source>
         <translation>Rychlost:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="629"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="694"/>
         <source>38400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="634"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="699"/>
         <source>57600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="639"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="704"/>
         <source>115200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="654"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="719"/>
         <source>1500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="709"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="774"/>
         <source>Enable:</source>
         <translation>Povolit:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="719"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="784"/>
         <source>Overvoltage warning</source>
         <translation>Varování při přepětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="725"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="790"/>
         <source>Warn at:</source>
         <translation>Varovat při:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="738"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="803"/>
         <source> V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="748"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="594"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="813"/>
         <source>Enable</source>
         <translation>Zapnout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="758"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="823"/>
         <source>Turn off VCC</source>
         <translation>Vypnout VCC</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="800"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="344"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="865"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="346"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="808"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="873"/>
         <source>Format:</source>
         <translation>Formát:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="819"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="884"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="824"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="889"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="848"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="913"/>
         <source>Pause</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="858"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="923"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="897"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="962"/>
         <source>Log</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="937"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1002"/>
         <source>Fuses</source>
         <translation>Pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="346"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="348"/>
         <source>Program memory</source>
         <translation>Paměť programu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="348"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="350"/>
         <source>EEPROM</source>
         <translation>EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="131"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="132"/>
         <source>Read flash</source>
         <translation>Přečíst flash paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="132"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="133"/>
         <source>Read all</source>
         <translation>Přečíst vše</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="133"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="134"/>
         <source>Read EEPROM</source>
         <translation>Přečíst EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="134"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="135"/>
         <source>Read fuses</source>
         <translation>Přečíst pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="154"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="155"/>
         <source>Write flash</source>
         <translation>Programovat flash paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="155"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="156"/>
         <source>Write all</source>
         <translation>Programovat vše</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="156"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="157"/>
         <source>Write EEPROM</source>
         <translation>Programovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="157"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="158"/>
         <source>Write fuses</source>
         <translation>Programovat pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="257"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="258"/>
         <source>Mode</source>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="350"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="352"/>
         <source>SVF</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="521"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="524"/>
         <source>Fuses had been succesfully read</source>
         <translation>Pojistky byly úspěšně přečteny</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="554"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="590"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="557"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="593"/>
         <source>Fuses had not been read yet</source>
         <translation>Pojistky ještě nebyly přečteny ze součástky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="560"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="563"/>
         <source>You have to &quot;Remember&quot; fuses prior to writing</source>
         <translation>Před zapsáním pojistek je musíte &quot;zapamatovat&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="564"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="567"/>
         <source>Write fuses?</source>
         <translation>Programovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="564"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="567"/>
         <source>Do you really wanna to write fuses to the chip?</source>
         <translation>Opravdu chcete naprogramovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="579"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="582"/>
         <source>Fuses had been succesfully written</source>
         <translation>Pojistky byly úspěšně naprogramovány</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="606"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="609"/>
         <source>You have flashed this file already, and it was not changed since.</source>
         <translation>Tento soubor se od posledního flashnutí nezměnil!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="745"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="748"/>
         <source> | h:mm:ss M.d.yyyy</source>
         <translation> | h:mm:ss d.M.yyyy</translation>
     </message>
@@ -4206,9 +4222,15 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ShupitoProgrammer</name>
     <message>
-        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="192"/>
+        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="213"/>
         <source>Failed to read info from Shupito. If you&apos;re sure you&apos;re connected to shupito, try to disconnect and connect again</source>
         <translation>Shupito neodpovídá, pokud jste si jistí že Shupito je správně připojeno, zkuste se odpojit a zase připojit</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="378"/>
+        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="402"/>
+        <source>Invalid response</source>
+        <translation>Chybná odpověď</translation>
     </message>
 </context>
 <context>
