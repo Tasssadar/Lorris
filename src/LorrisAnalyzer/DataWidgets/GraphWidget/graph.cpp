@@ -158,13 +158,13 @@ void Graph::wheelEvent(QWheelEvent *event)
         diff = 1;
 
     float exp = (event->modifiers() & Qt::ShiftModifier) ? 0.01 : 0.001;
-    double newDiff = fabs(diff + (diff*(exp *event->delta())))/2;
+    double newDiff = fabs(diff + (diff*(exp *event->delta())));
 
-    diff /= 2;
-    double newMax = (max + diff) - newDiff;
-    double newMin = (min - diff) + newDiff;
+    double pct = getAxisPosPct(axis, event->pos());
+    double newMax = (max + diff*(1-pct)) - newDiff*(1-pct);
+    double newMin = (min - diff*pct) + newDiff*pct;
 
-    if(newMin > newMax)
+    if(newMin > newMax || newMin == newMax)
         return;
 
     setAxisScale(axis, newMin, newMax);
@@ -179,6 +179,21 @@ int Graph::getAxisOnPos(const QPoint &pos)
     if(pos.x() < yPos)      return QwtPlot::yLeft;
     else if(pos.y() > xPos) return QwtPlot::xBottom;
     else                    return -1;
+}
+
+double Graph::getAxisPosPct(int axis, const QPoint &pos)
+{
+    QwtScaleWidget *w = axisWidget(axis);
+    switch(axis)
+    {
+        case QwtPlot::yLeft:
+        case QwtPlot::yRight:
+            return 1.0 - (double(pos.y() - w->pos().y()) / w->height());
+        case QwtPlot::xTop:
+        case QwtPlot::xBottom:
+            return (double(pos.x() - w->pos().x()) / w->width());
+    }
+    return 0.5;
 }
 
 void Graph::createMarkerRmMenu(const QPoint &pos, int axis)
