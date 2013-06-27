@@ -360,7 +360,7 @@ void FullProgrammerUI::programmerCapsChanged()
     if (this->prog())
         this->applySources();
 
-    ui->pwmBox->setVisible(ui->settingsBtn->isCheckable() && this->prog() && this->prog()->supportsPwm());
+    ui->pwmBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsPwm());
     ui->tunnelBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsTunnel());
 
     bool bootseq = ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsBootseq();
