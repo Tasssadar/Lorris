@@ -664,10 +664,7 @@ void LorrisAnalyzer::editStructure()
         ui->filterTabs->setHeader(packet->header);
 
         if(!m_packet)
-        {
-            //ui->filterTabs->removeAll();
-            //ui->filterTabs->addDevice();
-        }
+            resetDevAndStorage(packet);
 
         m_storage.setPacket(packet);
         setPacket(packet);
