@@ -285,12 +285,12 @@ bool DataFileParser::readConn(quint8 &type, QHash<QString, QVariant> &cfg)
     return true;
 }
 
-QString DataFileParser::getAttachmentFilename()
+QFileInfo DataFileParser::getAttachmentFileInfo()
 {
     if(m_name.isEmpty() || m_path.isEmpty())
-        return QString();
+        return QFileInfo();
 
-    return QString("%1_%2_at%3.cldta").arg(m_path).arg(m_name).arg(m_attachmentId++);
+    return QFileInfo(QString("%1_%2_at%3.cldta").arg(m_path).arg(m_name).arg(m_attachmentId++));
 }
 
 DataFileParser& DataFileParser::operator <<(const QString& str)

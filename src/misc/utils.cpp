@@ -9,6 +9,9 @@
 #include <QStatusBar>
 #include <QApplication>
 #include <QLayout>
+#include <QFile>
+#include <QDir>
+#include <QDesktopServices>
 
 #include "utils.h"
 #include "../dep/ecwin7/ecwin7.h"
@@ -276,4 +279,49 @@ size_t Utils::align(size_t & offset, size_t & size, size_t alignment)
     size = (size + alignment - 1) & ~(alignment - 1);
     offset = aligned_offset;
     return front_padding;
+}
+
+void Utils::moveDataFolder()
+{
+    QString data = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/";
+    QString documents = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Lorris/";
+
+    if(!QFile::exists(data))
+    {
+        fprintf(stderr, "Folder %s does not exist!\n", data.toStdString().c_str());
+        return;
+    }
+
+    if(QFile::exists(documents))
+    {
+        fprintf(stderr, "Folder %s exists, please move it!\n", documents.toStdString().c_str());
+        return;
+    }
+
+    QDir dir(data);
+    dir.mkpath(documents + "sessions");
+
+    if(!QFile::copy(data + "config.ini", documents + "config.ini"))
+    {
+        fprintf(stderr, "Failed to copy config.ini!\n");
+        return;
+    }
+    QFile::remove(data + "config.ini");
+
+    documents.append("sessions/");
+    QStringList files = dir.entryList(QDir::Files);
+    for(int i = 0; i < files.size(); ++i)
+    {
+        if(!QFile::copy(data + files[i], documents + files[i]))
+        {
+            fprintf(stderr, "Failed to copy %s!\n", files[i].toStdString().c_str());
+            return;
+        }
+        QFile::remove(data + files[i]);
+    }
+
+    if(dir.rmdir(data))
+        printf("Data successfuly moved to %s\n", documents.toStdString().c_str());
+    else
+        fprintf(stderr, "Failed to remove folder %s", data.toStdString().c_str());
 }

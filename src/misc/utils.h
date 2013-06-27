@@ -73,6 +73,8 @@ public:
     static bool isInRect(const QPoint& p, const QPoint& rp, const QPoint& rs);
 
     static size_t align(size_t & offset, size_t & size, size_t alignment);
+
+    static void moveDataFolder();
 };
 
 template <typename T>

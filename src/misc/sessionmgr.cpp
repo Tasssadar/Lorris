@@ -35,7 +35,22 @@ QString SessionMgr::getFolder()
     if(sConfig.get(CFG_BOOL_PORTABLE))
         return "./data/";
     else
-        return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/";;
+    {
+        static int idx = -1;
+        static const QString locations[] = {
+            QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/",
+            QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Lorris/sessions/",
+        };
+
+        if(idx == -1)
+        {
+            if(QFile::exists(locations[0]))
+                idx = 0;
+            else
+                idx = 1;
+        }
+        return locations[idx];
+    }
 }
 
 QByteArray SessionMgr::openSessionFile(const QString& name)
@@ -163,7 +178,7 @@ void SessionMgr::loadSession(QString name)
     if(data.isEmpty())
         return;
 
-    DataFileParser parser(&data, QIODevice::ReadOnly);
+    DataFileParser parser(&data, QIODevice::ReadOnly, getFolder());
     sWorkTabMgr.loadData(&parser, closeOther);
 }
 

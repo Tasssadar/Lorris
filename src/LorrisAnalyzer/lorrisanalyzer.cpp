@@ -187,7 +187,7 @@ void LorrisAnalyzer::connectedStatus(bool)
 void LorrisAnalyzer::readData(const QByteArray& data)
 {
     bool atMax = (m_curIndex == ui->timeSlider->maximum());
-    bool update = atMax || (m_storage.getSize() >= m_storage.getPacketLimit());
+    bool update = atMax || (m_storage.getSize() >= (quint32)m_storage.getPacketLimit());
     if(!m_parser.newData(data, update))
         return;
 
@@ -724,16 +724,16 @@ void LorrisAnalyzer::saveData(DataFileParser *file)
     }
     else
     {
-        filename = file->getAttachmentFilename();
-        if(!filename.isEmpty())
+        QFileInfo info = file->getAttachmentFileInfo();
+        if(!info.path().isEmpty())
         {
             QString cfg_name = sConfig.get(CFG_STRING_ANALYZER_FOLDER);
-            m_storage.SaveToFile(filename, ui->dataArea, ui->filterTabs);
+            m_storage.SaveToFile(info.absoluteFilePath(), ui->dataArea, ui->filterTabs);
             m_storage.clearFilename();
             sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
 
-            file->writeBlockIdentifier("LorrAnalyzerTemp");
-            file->writeString(filename);
+            file->writeBlockIdentifier("LorrAnalyzerTempV2");
+            file->writeString(info.fileName());
         }
     }
 }
@@ -744,12 +744,28 @@ void LorrisAnalyzer::loadData(DataFileParser *file)
 
     if(file->seekToNextBlock("LorrAnalyzerFile", BLOCK_WORKTAB))
         openFile(file->readString());
+    else if(file->seekToNextBlock("LorrAnalyzerTempV2", BLOCK_WORKTAB))
+    {
+        QString cfg_name = sConfig.get(CFG_STRING_ANALYZER_FOLDER);
+
+        openFile(file->getAttachmentsPath() + file->readString());
+
+        sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
+        m_storage.clearFilename();
+    }
     else if(file->seekToNextBlock("LorrAnalyzerTemp", BLOCK_WORKTAB))
     {
         QString cfg_name = sConfig.get(CFG_STRING_ANALYZER_FOLDER);
-        openFile(file->readString());
-        sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
 
+        QString filename = file->readString();
+        QString path = file->getAttachmentsPath();
+        int idx = filename.lastIndexOf('/');
+        if(!path.isEmpty() && idx != -1)
+            filename = path + filename.mid(idx+1);
+
+        openFile(filename);
+
+        sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
         m_storage.clearFilename();
     }
 }

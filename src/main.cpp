@@ -45,6 +45,7 @@ static bool checkArgs(int argc, char** argv, QStringList& openFiles)
                 "Lorris, GUI tool for robotics - https://github.com/Tasssadar/Lorris\n\n"
                 "Command line argumens:\n"
                 "           --dump-cldta=FILE    Dump contents of *.cldta file and exit\n"
+                "           --move-data          Move config.ini and sessions to user's documents folder"
                 "       -h, --help               Display this help and exit\n"
                 "       -v, --version            Display version info and exit\n",
                 argv[0]);
@@ -56,6 +57,11 @@ static bool checkArgs(int argc, char** argv, QStringList& openFiles)
             char *p = strchr(argv[i], '=')+1;
             QString path = QString::fromLocal8Bit(p);
             DataFileBuilder::dumpFileInfo(path);
+            return false;
+        }
+        else if(strcmp(argv[i], "--move-data") == 0)
+        {
+            Utils::moveDataFolder();
             return false;
         }
         else

@@ -217,6 +217,7 @@ void Config::openSettings()
     static QString cfgFileLocations[] =
     {
         "./data/config.ini",
+        QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Lorris/config.ini",
         QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/config.ini"
     };
 
