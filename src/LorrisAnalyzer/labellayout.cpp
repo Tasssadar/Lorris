@@ -278,9 +278,9 @@ ScrollDataLayout::~ScrollDataLayout()
 
 }
 
-void ScrollDataLayout::fmtChanged(int len)
+void ScrollDataLayout::fmtChanged(int fmt)
 {
-    m_format = len;
+    m_format = fmt;
 }
 
 void ScrollDataLayout::SetData(analyzer_data *data)

@@ -98,6 +98,18 @@ void DataFilter::setHeader(analyzer_header *header)
         m_layout->setHeader(header);
 }
 
+void DataFilter::setAreaAndLayout(QScrollArea *a, ScrollDataLayout *l)
+{
+    m_area = a;
+    m_layout = l;
+
+    if(m_layout)
+    {
+        m_area->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(m_area, SIGNAL(customContextMenuRequested(QPoint)), SLOT(layoutContextMenu(QPoint)));
+    }
+}
+
 void DataFilter::save(DataFileParser *file)
 {
     file->writeBlockIdentifier("dataFilter");
@@ -122,6 +134,46 @@ void DataFilter::widgetMouseStatus(bool in, const data_widget_info& info, qint32
 
     if(in && (qApp->keyboardModifiers() & Qt::ShiftModifier))
         emit activateTab();
+}
+
+void DataFilter::layoutContextMenu(const QPoint &pos)
+{
+    QMenu menu;
+
+    QAction *title = menu.addAction(tr("Data format"));
+    title->setEnabled(false);
+    menu.addSeparator();
+
+    QAction *act[] = {
+        menu.addAction(tr("Hexadecimal")),
+        menu.addAction(tr("Decimal")),
+        menu.addAction(tr("ASCII"))
+    };
+
+    size_t curr = m_layout->getCurrentFmt();
+    for(size_t i = 0; i < sizeof_array(act); ++i)
+    {
+        act[i]->setCheckable(true);
+        act[i]->setChecked(i == curr);
+    }
+
+    QAction *res = menu.exec(m_area->mapToGlobal(pos));
+    if(!res)
+        return;
+
+    for(size_t i = 0; i < sizeof_array(act); ++i)
+    {
+        if(act[i] != res)
+            continue;
+
+        if(i == curr)
+            break;
+
+        m_layout->fmtChanged(i);
+        if(m_lastData.hasData())
+            m_layout->SetData(&m_lastData);
+        break;
+    }
 }
 
 ConditionFilter::ConditionFilter(quint32 id, QString name, QObject *parent) :

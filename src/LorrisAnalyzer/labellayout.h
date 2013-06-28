@@ -117,9 +117,10 @@ public:
     ~ScrollDataLayout();
 
     void SetData(analyzer_data *data);
+    int getCurrentFmt() const { return m_format; }
 
 public slots:
-    void fmtChanged(int len);
+    void fmtChanged(int fmt);
 
 private:
     quint8 m_format;
