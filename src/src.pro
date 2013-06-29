@@ -5,7 +5,7 @@ include(../config.pri)
 
 QT += gui core network script
 TARGET = Lorris
-CONFIG += uitools precompile_header
+CONFIG += uitools precompile_header console
 CONFIG(debug, debug|release):DESTDIR = $$PWD/../bin/debug
 else:DESTDIR = $$PWD/../bin/release
 OBJECTS_DIR = $$PWD/../obj
