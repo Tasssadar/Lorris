@@ -92,14 +92,20 @@ TabView::TabView(MainWindow *parent) :
     connect(disconnectAll,           SIGNAL(triggered()), &sConMgr2, SLOT(disconnectAll()));
 }
 
-TabWidget *TabView::newTabWidget(QBoxLayout *l)
+TabWidget *TabView::newTabWidget(QBoxLayout *l, bool addAsNextToLast)
 {
     quint32 id = sWorkTabMgr.generateNewWidgetId();
 
     TabWidget *tabW = new TabWidget(id, this);
     m_tab_widgets.insert(id, tabW);
 
-    l->addWidget(tabW, 50);
+    if(!addAsNextToLast)
+        l->addWidget(tabW, 50);
+    else
+    {
+        int index = std::max(0, l->count()-1);
+        l->insertWidget(index, tabW, 50);
+    }
 
     if(!m_active_widget)
         m_active_widget = tabW;
@@ -107,7 +113,7 @@ TabWidget *TabView::newTabWidget(QBoxLayout *l)
     connect(tabW, SIGNAL(newTab()),                       SLOT(newTab()));
     connect(tabW, SIGNAL(statusBarMsg(QString,int)),      SIGNAL(statusBarMsg(QString,int)));
     connect(tabW, SIGNAL(closeHomeTab()),                 SIGNAL(closeHomeTab()));
-    connect(tabW, SIGNAL(split(bool,int)),                SLOT(split(bool,int)));
+    connect(tabW, SIGNAL(split(int,int)),                 SLOT(split(int,int)));
     connect(tabW, SIGNAL(removeWidget(quint32)),          SLOT(removeWidget(quint32)));
     connect(tabW, SIGNAL(changeActiveWidget(TabWidget*)), SLOT(changeActiveWidget(TabWidget*)));
     connect(tabW, SIGNAL(changeWindowTitle(QString)),     SLOT(checkChangeWindowTitle(QString)));
@@ -160,7 +166,7 @@ void TabView::removeWidget(quint32 id)
     updateResizeLines((QBoxLayout*)layout());
 }
 
-void TabView::split(bool horizontal, int index)
+void TabView::split(int pos, int index)
 {
     Q_ASSERT(sender());
 
@@ -168,6 +174,9 @@ void TabView::split(bool horizontal, int index)
     QBoxLayout *l = getLayoutForWidget(widget);
     if(!l)
         return;
+
+    bool horizontal = (pos == SplitOverlay::POS_BOTTOM || pos == SplitOverlay::POS_TOP);
+    bool switched = (pos == SplitOverlay::POS_LEFT || pos == SplitOverlay::POS_TOP);
 
     if(horizontal ^ l->inherits("QVBoxLayout"))
     {
@@ -205,7 +214,7 @@ void TabView::split(bool horizontal, int index)
         }
     }
 
-    TabWidget *second = newTabWidget(l);
+    TabWidget *second = newTabWidget(l, switched);
     second->pullTab(index, widget);
 
     updateResizeLines((QBoxLayout*)layout());
@@ -293,15 +302,13 @@ void TabView::createSplitOverlay(quint32 id, QDrag *drag)
     if(tab->count() < 2)
         return;
 
-    // Right - split
-    overlay = new SplitOverlay(SplitOverlay::POS_RIGHT, tab, this);
-    connect(overlay, SIGNAL(split(bool,int)), tab,     SIGNAL(split(bool,int)));
-    connect(drag,    SIGNAL(destroyed()),     overlay, SLOT(deleteLater()));
-
-    // Bottom - split
-    overlay = new SplitOverlay(SplitOverlay::POS_BOTTOM, tab, this);
-    connect(overlay, SIGNAL(split(bool,int)), tab,     SIGNAL(split(bool,int)));
-    connect(drag,    SIGNAL(destroyed()),     overlay, SLOT(deleteLater()));
+    // splits
+    for(int i = 0; i < SplitOverlay::POS_SPLIT_MAX; ++i)
+    {
+        overlay = new SplitOverlay((SplitOverlay::position)i, tab, this);
+        connect(overlay, SIGNAL(split(int,int)),  tab,     SIGNAL(split(int,int)));
+        connect(drag,    SIGNAL(destroyed()),     overlay, SLOT(deleteLater()));
+    }
 }
 
 QBoxLayout *TabView::getLayoutForWidget(QWidget *widget)
@@ -632,9 +639,11 @@ SplitOverlay::SplitOverlay(position pos, TabWidget *tab, QWidget *parent) : QWid
     switch(pos)
     {
         case POS_RIGHT:
+        case POS_LEFT:
             resize(OVERLAY_1, OVERLAY_2);
             break;
         case POS_BOTTOM:
+        case POS_TOP:
         case POS_CENTER:
             resize(OVERLAY_2, OVERLAY_1);
             break;
@@ -648,14 +657,28 @@ void SplitOverlay::paintEvent(QPaintEvent *)
 {
     static const QPoint poly[POS_MAX][5] =
     {
+
+        // POS_RIGHT
         {
             QPoint(0, 0), QPoint(OVERLAY_1/2, 0), QPoint(OVERLAY_1, OVERLAY_2/2),
             QPoint(OVERLAY_1/2, OVERLAY_2), QPoint(0, OVERLAY_2)
         },
+        // POS_LEFT
+        {
+            QPoint(OVERLAY_1/2, 0), QPoint(OVERLAY_1, 0), QPoint(OVERLAY_1, OVERLAY_2),
+            QPoint(OVERLAY_1/2, OVERLAY_2), QPoint(0, OVERLAY_2/2),
+        },
+        // POS_BOTTOM
         {
             QPoint(0, 0), QPoint(OVERLAY_2, 0), QPoint(OVERLAY_2, OVERLAY_1/2),
             QPoint(OVERLAY_2/2, OVERLAY_1), QPoint(0, OVERLAY_1/2)
         },
+        // POS_TOP
+        {
+            QPoint(0, OVERLAY_1/2), QPoint(OVERLAY_2/2, 0), QPoint(OVERLAY_2, OVERLAY_1/2),
+            QPoint(OVERLAY_2, OVERLAY_1), QPoint(0, OVERLAY_1)
+        },
+        // POS_CENTER
         {
             QPoint(0, 0), QPoint(OVERLAY_2, 0), QPoint(OVERLAY_2, OVERLAY_1),
             QPoint(OVERLAY_2, OVERLAY_1), QPoint(0, OVERLAY_1)
@@ -675,7 +698,13 @@ void SplitOverlay::paintEvent(QPaintEvent *)
             p.translate(-height(), 0);
             p.drawText(0, 0, height(), width(), Qt::AlignCenter, tr("Split"));
             break;
+        case POS_LEFT:
+            p.rotate(-90);
+            p.translate(-height(), 5);
+            p.drawText(0, 0, height(), width(), Qt::AlignCenter, tr("Split"));
+            break;
         case POS_BOTTOM:
+        case POS_TOP:
             p.drawText(0, 0, width(), height(), Qt::AlignCenter, tr("Split"));
             break;
         case POS_CENTER:
@@ -712,7 +741,9 @@ void SplitOverlay::dropEvent(QDropEvent *event)
     {
         case POS_RIGHT:
         case POS_BOTTOM:
-            return emit split(m_pos == POS_BOTTOM, lst[1].toInt());
+        case POS_LEFT:
+        case POS_TOP:
+            return emit split(m_pos, lst[1].toInt());
         case POS_CENTER:
             return emit newWindow(lst[1].toInt());
         default: break;
@@ -728,9 +759,17 @@ void SplitOverlay::showAt(TabWidget *tab)
             x = (tab->x() + tab->width()) - width() - 15;
             y = tab->y() + (tab->height() - height())/2;
             break;
+        case POS_LEFT:
+            x = tab->x() + 15;
+            y = tab->y() + (tab->height() - height())/2;
+            break;
         case POS_BOTTOM:
             x = tab->x() + (tab->width() - width())/2;
             y = tab->y() + tab->height() - height() - 15;
+            break;
+        case POS_TOP:
+            x = tab->x() + (tab->width() - width())/2;
+            y = tab->y() + 15;
             break;
         case POS_CENTER:
             x = tab->x() + (tab->width() - width())/2;
