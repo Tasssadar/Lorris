@@ -59,24 +59,15 @@ public:
     std::vector<fuse> &getFuses() { return m_fuses; }
     QHash<QString, QString> &getOptions() { return m_options; }
 
-    memorydef *getMemDef(const QString& name)
-    {
-        QHash<QString, memorydef>::iterator itr = m_memories.find(name);
-        if(itr != m_memories.end())
-            return &itr.value();
-        return NULL;
-    }
-
+    const memorydef *getMemDef(const QString& name) const;
+    memorydef *getMemDef(const QString& name);
+    const memorydef *getMemDef(quint8 memId) const;
     memorydef *getMemDef(quint8 memId);
 
-    QString getOption(const QString& name)
-    {
-        QString res;
-        QHash<QString, QString>::iterator itr = m_options.find(name);
-        if(itr != m_options.end())
-            res = itr.value();
-        return res;
-    }
+    bool hasOption(const QString& name) const;
+    QString getOption(const QString& name) const;
+    quint32 getOptionUInt(const QString& name, bool *ok = NULL) const;
+    qint32 getOptionInt(const QString& name, bool *ok = NULL) const;
 
 private:
     QString m_name;
