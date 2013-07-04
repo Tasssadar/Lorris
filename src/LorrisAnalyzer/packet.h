@@ -254,7 +254,7 @@ T analyzer_data::read(quint32 pos) const
 {
     T val = *((T const*)&m_data->data()[pos]);
     if(m_packet->big_endian)
-        Utils::swapEndian<T>((char*)&val);
+        Utils::swapEndian(val);
     return val;
 }
 

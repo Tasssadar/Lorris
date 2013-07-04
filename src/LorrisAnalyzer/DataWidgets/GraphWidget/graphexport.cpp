@@ -146,7 +146,7 @@ QByteArray GraphExport::generateBin()
         if(ui->indexBox->isChecked())
         {
             quint64 idx = i;
-            Utils::swapEndian<quint64>((char*)&idx);
+            Utils::swapEndian(idx);
             if(!big)
                 Utils::swapEndian(((char*)&idx)+(sizeof(idx)-idxW), idxW);
             buff.write(((char*)&idx)+(sizeof(idx)-idxW), idxW);

@@ -127,12 +127,6 @@ void Utils::showErrorBox(const QString& text, QWidget* parent)
     box.exec();
 }
 
-void Utils::swapEndian(char *val, quint8 size)
-{
-    for(qint8 i = size; i > 0; i -= 2, ++val)
-        std::swap(*val, *(val + i - 1));
-}
-
 // FIXME: some better implementation?
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -325,3 +319,65 @@ void Utils::moveDataFolder()
     else
         fprintf(stderr, "Failed to remove folder %s", data.toStdString().c_str());
 }
+
+
+void Utils::swapEndian(char *val, quint8 size)
+{
+    for(qint8 i = size; i > 0; i -= 2, ++val)
+        std::swap(*val, *(val + i - 1));
+}
+
+#if defined(PROCESSOR_X86) && defined(Q_CC_GNU)
+void Utils::swapEndian(uint32_t &val)
+{
+    __asm__
+    (
+        "bswap %%eax;"
+        :"=a"(val)
+        :"a"(val)
+    );
+}
+
+void Utils::swapEndian(float& val)
+{
+    __asm__
+    (
+        "bswap %%eax;"
+        :"=a"(val)
+        :"a"(val)
+    );
+}
+
+void Utils::swapEndian(uint16_t &val)
+{
+    __asm__
+    (
+        "xchg %%ah,%%al;"
+        :"=a"(val)
+        :"a"(val)
+    );
+}
+#else
+void Utils::swapEndian(uint32_t &val)
+{
+    val = ((val & 0x000000FF) << 24) |
+          ((val & 0x0000FF00) << 8)  |
+          ((val & 0x00FF0000) >> 8)  |
+          ((val & 0xFF000000) >> 24);
+}
+
+void Utils::swapEndian(float& val)
+{
+    uint32_t *r = (uint32_t*)&val;
+    *r = ((*r & 0x000000FF) << 24) |
+         ((*r & 0x0000FF00) << 8)  |
+         ((*r & 0x00FF0000) >> 8)  |
+         ((*r & 0xFF000000) >> 24);
+}
+
+void Utils::swapEndian(uint16_t &val)
+{
+    val = ((val & 0x00FF) << 8) |
+          ((val & 0xFF00) >> 8);
+}
+#endif
