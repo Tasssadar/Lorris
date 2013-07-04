@@ -175,6 +175,7 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     ui->connectionsList->setItemDelegate(new ConnectionListItemDelegate(this));
 
     m_prog_btns[programmer_flip] = NULL; // can't be selected
+    m_prog_btns[programmer_stm32] = NULL;
     m_prog_btns[programmer_shupito] = ui->progShupito;
     m_prog_btns[programmer_avr232boot] = ui->progAVR232;
     m_prog_btns[programmer_atsam] = ui->progAtsam;
@@ -482,10 +483,16 @@ void ChooseConnectionDlg::on_connectionsList_itemSelectionChanged()
             || ((m_allowedConns & pct_shupito) && dynamic_cast<ShupitoConnection *>(conn));
 
 #ifdef HAVE_LIBYB
-    if (!enabled && (m_allowedConns & pct_flip))
+    if (!enabled && (m_allowedConns & (pct_flip | pct_stm32link)))
     {
-        if (GenericUsbConnection * uc = dynamic_cast<GenericUsbConnection *>(conn))
+        if(dynamic_cast<STM32Connection *>(conn))
+        {
+            enabled = true;
+        }
+        else if (GenericUsbConnection * uc = dynamic_cast<GenericUsbConnection *>(conn))
+        {
             enabled = uc->isFlipDevice();
+        }
     }
 #endif
 

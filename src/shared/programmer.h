@@ -30,6 +30,7 @@ enum ProgrammerTypes
     programmer_avr232boot,
     programmer_atsam,
     programmer_avr109,
+    programmer_stm32,
 
     programmer_max
 };

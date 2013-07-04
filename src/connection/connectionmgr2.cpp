@@ -21,6 +21,7 @@
 #ifdef HAVE_LIBYB
 #include "usbshupito22conn.h"
 #include "usbshupito23conn.h"
+#include "stm32connection.h"
 #endif // HAVE_LIBYB
 
 ConnectionManager2 * psConMgr2 = 0;
@@ -371,6 +372,34 @@ void LibybUsbEnumerator::pluginEventReceived()
                         }
                         break;
                     }
+                }
+            }
+            else if(GenericUsbConnection::isSTLink32LDevice(ev.intf.device()) && intf.bInterfaceClass == 0xff && st.intfname == "ST Link")
+            {
+                switch (ev.action)
+                {
+                case yb::usb_plugin_event::a_add:
+                    {
+                        ConnectionPointer<STM32Connection> conn = m_standby_stm32_devices.extract(st);
+                        if (!conn)
+                        {
+                            conn.reset(new STM32Connection(m_runner));
+                            sConMgr2.addConnection(conn.data());
+                        }
+                        conn->setup(ev.intf);
+                        conn->setRemovable(false);
+                        m_stm32_devices.insert(std::make_pair(ev.intf, conn));
+                    }
+                    break;
+                case yb::usb_plugin_event::a_remove:
+                    {
+                        std::map<yb::usb_device_interface, ConnectionPointer<STM32Connection> >::iterator it = m_stm32_devices.find(ev.intf);
+                        it->second->clear();
+                        it->second->setRemovable(true);
+                        m_standby_stm32_devices.add(st, it->second.data());
+                        m_stm32_devices.erase(it);
+                    }
+                    break;
                 }
             }
         }

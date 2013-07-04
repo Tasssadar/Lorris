@@ -61,8 +61,8 @@ static struct
     { 0x03EB, 0x2FFF, "AT89C5132/AT89C51SND1/AT89C51SND2 DFU" },
 };
 
-GenericUsbConnection::GenericUsbConnection(yb::async_runner & runner, yb::usb_device const & dev)
-    : Connection(CONNECTION_LIBYB_USB), m_runner(runner)
+GenericUsbConnection::GenericUsbConnection(yb::async_runner & runner, yb::usb_device const & dev, ConnectionType type)
+    : Connection(type), m_runner(runner)
 {
     this->setDevice(dev, /*updateName=*/true);
 }
@@ -195,4 +195,14 @@ bool GenericUsbConnection::isFlipDevice(yb::usb_device const & dev)
 bool GenericUsbConnection::isFlipDevice() const
 {
     return isFlipDevice(m_dev);
+}
+
+bool GenericUsbConnection::isSTLink32LDevice(yb::usb_device const & dev)
+{
+    return dev.vidpid() == 0x04833748;
+}
+
+bool GenericUsbConnection::isSTLink32LDevice() const
+{
+    return isSTLink32LDevice(m_dev);
 }

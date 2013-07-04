@@ -37,6 +37,7 @@
 
 #ifdef HAVE_LIBYB
 #include "programmers/flipprogrammer.h"
+#include "programmers/stm32programmer.h"
 #endif
 
 // When no packet from shupito is received for TIMEOUT_INTERVAL ms,
@@ -737,6 +738,10 @@ void LorrisProgrammer::updateProgrammer()
             m_programmer.reset(new ShupitoProgrammer(sc, &m_logsink));
         }
 #ifdef HAVE_LIBYB
+        else if(ConnectionPointer<STM32Connection> fc = m_con.dynamicCast<STM32Connection>())
+        {
+            m_programmer.reset(new STM32Programmer(fc, &m_logsink));
+        }
         else if (ConnectionPointer<GenericUsbConnection> fc = m_con.dynamicCast<GenericUsbConnection>())
         {
             if (fc->isFlipDevice())

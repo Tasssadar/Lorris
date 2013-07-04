@@ -41,3 +41,5 @@ S25FL004K spiflash:ef4013
 S25FL008K spiflash:ef4014
 S25FL016K spiflash:ef4015
 M25P40 spiflash:202013 flash=524288:256
+
+stm32f3 stm32:2ba01477-422 flash=0:2048 !flash_size_reg=0x1ffff7cc !erased_pattern_zeros=false !flash_controller=stm32vl
