@@ -464,7 +464,7 @@ void LorrisProgrammer::updateProgressDialog(int value)
     if(!m_progress_dialog)
         return;
 
-    if(value == -1 || value == 100)
+    if(value == -1)
     {
         m_progress_dialog->close();
         delete m_progress_dialog;
