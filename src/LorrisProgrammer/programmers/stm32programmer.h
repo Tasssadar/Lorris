@@ -27,6 +27,7 @@ public:
     virtual ~STM32Programmer();
 
     virtual void stopAll(bool wait) override;
+    virtual void cancelRequested();
 
     virtual void switchToFlashMode(quint32 prog_speed_hz) override;
     virtual void switchToRunMode() override;
@@ -49,6 +50,7 @@ private:
     uint32_t readChipId();
 
     ConnectionPointer<STM32Connection> m_conn;
+    bool m_cancel_req;
 };
 
 class STM32FlashController : public QObject

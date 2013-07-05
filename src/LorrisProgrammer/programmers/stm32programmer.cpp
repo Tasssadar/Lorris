@@ -24,7 +24,7 @@
 #include <libyb/usb/usb_descriptors.hpp>
 
 STM32Programmer::STM32Programmer(const ConnectionPointer<STM32Connection> &conn, ProgrammerLogSink *logsink) :
-    Programmer(logsink), m_conn(conn)
+    Programmer(logsink), m_conn(conn), m_cancel_req(false)
 {
 
 }
@@ -41,6 +41,11 @@ int STM32Programmer::getType()
 
 void STM32Programmer::stopAll(bool /*wait*/)
 {
+}
+
+void STM32Programmer::cancelRequested()
+{
+    m_cancel_req = true;
 }
 
 void STM32Programmer::switchToFlashMode(quint32 /*prog_speed_hz*/)
@@ -110,6 +115,8 @@ chip_definition STM32Programmer::readDeviceId()
 
 QByteArray STM32Programmer::readMemory(const QString& mem, chip_definition &chip)
 {
+    m_cancel_req = false;
+
     if(mem != "flash")
         throw tr("Unsupported memory type");
 
@@ -120,8 +127,7 @@ QByteArray STM32Programmer::readMemory(const QString& mem, chip_definition &chip
     res.reserve(size);
 
     emit updateProgressDialog(0);
-
-    for(size_t off = 0; off < size; off += 1024)
+    for(size_t off = 0; off < size && !m_cancel_req; off += 1024)
     {
         size_t read_size = 1024;
         size_t rounded_size;
@@ -151,6 +157,8 @@ void STM32Programmer::writeFuses(std::vector<quint8>&, chip_definition &, Verify
 
 void STM32Programmer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
 {
+    m_cancel_req = false;
+
     if(memId != MEM_FLASH)
         throw tr("Unsupported memory type");
 
@@ -181,7 +189,7 @@ void STM32Programmer::flashRaw(HexFile& file, quint8 memId, chip_definition& chi
     // Erase affected pages
     emit updateProgressLabel(tr("Erasing flash pages..."));
     emit updateProgressDialog(0);
-    for(uint32_t off = 0; off < (uint32_t)data.size(); off += flash_mem->pagesize)
+    for(uint32_t off = 0; off < (uint32_t)data.size() && !m_cancel_req; off += flash_mem->pagesize)
     {
         flash->unlock();
         flash->erase_page(addr+off);
@@ -190,6 +198,9 @@ void STM32Programmer::flashRaw(HexFile& file, quint8 memId, chip_definition& chi
         } while(flash->is_busy());
         flash->lock();
     }
+
+    if(m_cancel_req)
+        return;
 
     // Write
     emit updateProgressLabel(tr("Writing data..."));
@@ -200,6 +211,9 @@ void STM32Programmer::flashRaw(HexFile& file, quint8 memId, chip_definition& chi
     m_conn->c_write_reg(m_conn->c_read_debug32(addr), 13);   // Stack
     m_conn->c_write_reg(m_conn->c_read_debug32(addr+4), 15); // PC
 
+    if(m_cancel_req)
+        return;
+
     // Verify
     if(verifyMode == VERIFY_ONLY_NON_EMPTY || verifyMode == VERIFY_ALL_PAGES)
     {
@@ -209,7 +223,7 @@ void STM32Programmer::flashRaw(HexFile& file, quint8 memId, chip_definition& chi
         QByteArray mem;
         int cmp, aligned;
         int block_size = flash_mem->pagesize > 0x1800 ? 0x1800 : flash_mem->pagesize;
-        for(int off = 0; off < data.size(); off += cmp)
+        for(int off = 0; off < data.size() && !m_cancel_req; off += cmp)
         {
             cmp = (std::min)(block_size, data.size() - off);
             aligned = cmp;
