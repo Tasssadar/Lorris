@@ -474,6 +474,9 @@ void LorrisProgrammer::updateProgressDialog(int value)
         disconnect(this, SLOT(updateProgressLabel(QString)));
         return;
     }
+    // 100 closes the dialog, we don't want that
+    else if(value >= 100)
+        value = 99;
     m_progress_dialog->setValue(value);
 }
 
