@@ -129,6 +129,8 @@ private slots:
     void removeBookmark();
     void changeBookmarkSeq();
     void setShowBookmarks(bool show);
+    void enableSearchClicked(bool enable);
+    void enableSearchToggled(bool enable);
 
 private:
     void getMarkPos(int &x, int &y, QSize &size);
@@ -155,6 +157,7 @@ private:
     QAction *m_actShowGrid;
     QAction *m_actTitleVisibility;
     QAction *m_actShowPreview;
+    QAction *m_actEnableSearch;
 
     WidgetAreaPreview *m_prev;
 

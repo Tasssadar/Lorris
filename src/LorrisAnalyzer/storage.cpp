@@ -24,7 +24,6 @@ static const char ANALYZER_DATA_MAGIC[] = { (char)0xFF, (char)0x80, 0x68 };
 Storage::Storage(LorrisAnalyzer *analyzer)
 {
     m_packet = NULL;
-    m_size = 0;
     m_analyzer = analyzer;
 }
 
@@ -43,7 +42,6 @@ void Storage::setPacket(analyzer_packet *packet)
 
 void Storage::Clear()
 {
-    m_size = 0;
     m_data.clear();
 }
 
@@ -51,9 +49,7 @@ QByteArray *Storage::addData(const QByteArray& data)
 {
     if(!m_packet)
         return NULL;
-    m_data.push_back(data);
-    ++m_size;
-    return &m_data.back();
+    return m_data.push_back(data);
 }
 
 void Storage::SaveToFile(WidgetArea *area, FilterTabWidget *filters)
@@ -144,9 +140,9 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, FilterTabWidget *fi
 
         for(quint32 i = 0; i < m_data.size(); ++i)
         {
-            quint32 len = m_data[i].length();
-            buffer.write((char*)&len, sizeof(len));
-            buffer.write(m_data[i]);
+            const QByteArray& d = m_data[i];
+            buffer << (quint32)d.size();
+            buffer.write(d);
         }
 
         //Widgets
@@ -158,8 +154,11 @@ void Storage::SaveToFile(QString filename, WidgetArea *area, FilterTabWidget *fi
 
         // Data index
         buffer.writeBlockIdentifier(BLOCK_DATA_INDEX);
-        quint32 idx = m_analyzer->getCurrentIndex();
-        buffer.write((char*)&idx, sizeof(idx));
+        buffer << (quint32)m_analyzer->getCurrentIndex();
+
+        // Packet limits
+        buffer.writeBlockIdentifier(BLOCK_PACKET_LIMIT);
+        buffer << m_data.getPacketLimit();
 
         buffer.close();
     }
@@ -355,6 +354,10 @@ analyzer_packet *Storage::loadFromFile(QString *name, quint8 load, WidgetArea *a
     if((load & STORAGE_DATA) && buffer.seekToNextBlock(BLOCK_DATA_INDEX, 0))
         buffer.read((char*)&data_idx, sizeof(data_idx));
 
+    // packet limit
+    if(buffer.seekToNextBlock(BLOCK_PACKET_LIMIT, 0))
+        m_data.setPacketLimit(buffer.readVal<quint32>());
+
     buffer.close();
 
     // To process delayed load events
@@ -387,8 +390,8 @@ void Storage::ExportToBin(const QString &filename)
     if(!f.open(QIODevice::Truncate | QIODevice::WriteOnly))
         throw tr("Unable to open file %1 for writing!").arg(filename);
 
-    for(DataVector::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
-        f.write((*itr));
+    for(quint32 i = 0; i < m_data.size(); ++i)
+        f.write(m_data[i]);
 
     f.close();
 }

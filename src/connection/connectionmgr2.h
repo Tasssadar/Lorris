@@ -53,6 +53,7 @@ private:
 #include <libyb/utils/tuple_less.hpp>
 #include "../connection/usbshupito22conn.h"
 #include "genericusbconn.h"
+#include "stm32connection.h"
 
 class StandbyDeviceListBase
     : public QObject
@@ -112,11 +113,13 @@ public:
     ~LibybUsbEnumerator();
 
     void registerUserOwnedConn(UsbAcmConnection2 * conn);
+    void registerUserOwnedConn(STM32Connection * conn);
     yb::usb_device_interface lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName);
 
 private slots:
     void pluginEventReceived();
     void acmConnDestroying();
+    void stm32ConnDestroying();
 
 private:
     yb::async_runner & m_runner;
@@ -162,6 +165,10 @@ private:
     std::map<usb_interface_standby, yb::usb_device_interface> m_usb_acm_devices_by_info;
     std::set<UsbAcmConnection2 *> m_user_owned_acm_conns;
 
+    std::map<yb::usb_device_interface, ConnectionPointer<STM32Connection> > m_stm32_devices;
+    StandbyDeviceList<STM32Connection, usb_interface_standby> m_standby_stm32_devices;
+    std::set<STM32Connection *> m_user_owned_stm32_conns;
+
     QList<QVariant> m_connConfigs;
     void updateConfig(UsbAcmConnection2 * conn);
     void applyConfig(UsbAcmConnection2 * conn);
@@ -187,6 +194,7 @@ public:
     TcpSocket * createTcpSocket();
 #ifdef HAVE_LIBYB
     UsbAcmConnection2 * createUsbAcmConn();
+    STM32Connection * createSTM32Conn();
     yb::usb_device_interface lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName);
 #endif
 

@@ -9,6 +9,9 @@
 #include <QStatusBar>
 #include <QApplication>
 #include <QLayout>
+#include <QFile>
+#include <QDir>
+#include <QDesktopServices>
 
 #if QT_VERSION < 0x050000
 #include <QDesktopServices>
@@ -105,7 +108,7 @@ QFont Utils::getMonospaceFont(int size)
     static int selected = -1;
     if(selected == -1)
     {
-        for(int i = 0; i < sizeof_array(families); ++i)
+        for(quint32 i = 0; i < sizeof_array(families); ++i)
         {
             QFont f(families[i], size);
             if(f.exactMatch())
@@ -130,23 +133,19 @@ void Utils::showErrorBox(const QString& text, QWidget* parent)
     box.exec();
 }
 
-void Utils::swapEndian(char *val, quint8 size)
-{
-    for(qint8 i = size; i > 0; i -= 2, ++val)
-        std::swap(*val, *(val + i - 1));
-}
-
 // FIXME: some better implementation?
 #ifdef Q_OS_WIN
 #include <windows.h>
 void Utils::playErrorSound()
 {
-    PlaySound(TEXT("SystemHand"), NULL, (SND_ASYNC | SND_ALIAS | SND_NOWAIT));
+    if(sConfig.get(CFG_BOOL_ENABLE_SOUNDS))
+        PlaySound(TEXT("SystemHand"), NULL, (SND_ASYNC | SND_ALIAS | SND_NOWAIT));
 }
 #else
 void Utils::playErrorSound()
 {
-    qApp->beep();
+    if(sConfig.get(CFG_BOOL_ENABLE_SOUNDS))
+        qApp->beep();
 }
 #endif
 
@@ -298,3 +297,110 @@ QString Utils::storageLocation(StandardLocation loc)
     return QStandardPaths::writableLocation(locations[loc]);
 #endif
 }
+
+void Utils::moveDataFolder()
+{
+    QString data = Utils::storageLocation(Utils::DataLocation) + "/";
+    QString documents = Utils::storageLocation(Utils::DocumentsLocation) + "/Lorris/";
+
+    if(!QFile::exists(data))
+    {
+        fprintf(stderr, "Folder %s does not exist!\n", data.toStdString().c_str());
+        return;
+    }
+
+    if(QFile::exists(documents))
+    {
+        fprintf(stderr, "Folder %s exists, please move it!\n", documents.toStdString().c_str());
+        return;
+    }
+
+    QDir dir(data);
+    dir.mkpath(documents + "sessions");
+
+    if(!QFile::copy(data + "config.ini", documents + "config.ini"))
+    {
+        fprintf(stderr, "Failed to copy config.ini!\n");
+        return;
+    }
+    QFile::remove(data + "config.ini");
+
+    documents.append("sessions/");
+    QStringList files = dir.entryList(QDir::Files);
+    for(int i = 0; i < files.size(); ++i)
+    {
+        if(!QFile::copy(data + files[i], documents + files[i]))
+        {
+            fprintf(stderr, "Failed to copy %s!\n", files[i].toStdString().c_str());
+            return;
+        }
+        QFile::remove(data + files[i]);
+    }
+
+    if(dir.rmdir(data))
+        printf("Data successfuly moved to %s\n", documents.toStdString().c_str());
+    else
+        fprintf(stderr, "Failed to remove folder %s", data.toStdString().c_str());
+}
+
+
+void Utils::swapEndian(char *val, quint8 size)
+{
+    for(qint8 i = size; i > 0; i -= 2, ++val)
+        std::swap(*val, *(val + i - 1));
+}
+
+#if defined(PROCESSOR_X86) && defined(Q_CC_GNU)
+void Utils::swapEndian(uint32_t &val)
+{
+    __asm__
+    (
+        "bswap %%eax;"
+        :"=a"(val)
+        :"a"(val)
+    );
+}
+
+void Utils::swapEndian(float& val)
+{
+    __asm__
+    (
+        "bswap %%eax;"
+        :"=a"(val)
+        :"a"(val)
+    );
+}
+
+void Utils::swapEndian(uint16_t &val)
+{
+    __asm__
+    (
+        "xchg %%ah,%%al;"
+        :"=a"(val)
+        :"a"(val)
+    );
+}
+#else
+void Utils::swapEndian(uint32_t &val)
+{
+    val = ((val & 0x000000FF) << 24) |
+          ((val & 0x0000FF00) << 8)  |
+          ((val & 0x00FF0000) >> 8)  |
+          ((val & 0xFF000000) >> 24);
+}
+
+void Utils::swapEndian(float& val)
+{
+    uint32_t *r = (uint32_t*)&val;
+    *r = ((*r & 0x000000FF) << 24) |
+         ((*r & 0x0000FF00) << 8)  |
+         ((*r & 0x00FF0000) >> 8)  |
+         ((*r & 0xFF000000) >> 24);
+}
+
+void Utils::swapEndian(uint16_t &val)
+{
+    val = ((val & 0x00FF) << 8) |
+          ((val & 0xFF00) >> 8);
+}
+#endif

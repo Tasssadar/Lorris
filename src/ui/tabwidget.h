@@ -35,7 +35,7 @@ class TabWidget : public QTabWidget
 Q_SIGNALS:
     void newTab();
     void removeWidget(quint32 id);
-    void split(bool horizontal, int index);
+    void split(int pos, int index);
     void changeActiveWidget(TabWidget *widget);
     void statusBarMsg(const QString& message, int timeout = 0);
     void closeHomeTab();
@@ -133,7 +133,7 @@ class TabBar : public PlusTabBar
     Q_OBJECT
 
 Q_SIGNALS:
-    void split(bool horizontal, int index);
+    void split(int pos, int index);
     void pullTab(int idx, TabWidget *origin, int to);
     void newWindow(int idx);
 

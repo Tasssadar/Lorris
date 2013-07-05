@@ -56,7 +56,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     connect(this,      SIGNAL(currentChanged(int)),    SLOT(currentIndexChanged(int)));
     connect(m_tab_bar, SIGNAL(tabMoved(int,int)),      SLOT(tabMoved(int,int)));
     connect(m_tab_bar, SIGNAL(plusPressed()),          SLOT(newTabBtn()));
-    connect(m_tab_bar, SIGNAL(split(bool,int)),        SIGNAL(split(bool,int)));
+    connect(m_tab_bar, SIGNAL(split(int,int)),         SIGNAL(split(int,int)));
     connect(m_tab_bar, SIGNAL(pullTab(int,TabWidget*,int)),
                        SLOT(pullTab(int,TabWidget*,int)), Qt::QueuedConnection);
     connect(m_tab_bar, SIGNAL(newWindow(int)),         SLOT(newWindow(int)), Qt::QueuedConnection);

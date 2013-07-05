@@ -30,6 +30,7 @@ enum ProgrammerTypes
     programmer_avr232boot,
     programmer_atsam,
     programmer_avr109,
+    programmer_stm32,
 
     programmer_max
 };
@@ -85,11 +86,16 @@ signals:
 
     void capabilitiesChanged();
 
+    void pwmChanged(uint32_t freq_hz);
+
 public:
     explicit Programmer(ProgrammerLogSink * logsink)
         : m_logsink(logsink)
     {
     }
+
+    virtual bool supportsPwm() const { return false; }
+    virtual bool setPwmFreq(uint32_t freq_hz);
 
     virtual bool supportsVdd() const { return false; }
     virtual bool supportsBootseq() const { return false; }

@@ -158,7 +158,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/confirmwidget.cpp \
     ui/floatingwidget.cpp \
     ui/floatinginputdialog_impl.cpp \
-    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp \
+    LorrisAnalyzer/storagedata.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -291,7 +292,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/confirmwidget.h \
     ui/floatingwidget.h \
     ui/floatinginputdialog.h \
-    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h
+    LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h \
+    LorrisAnalyzer/storagedata.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -463,14 +465,19 @@ libyb {
         connection/usbacmconn.cpp \
         connection/usbshupito22conn.cpp \
         connection/usbshupito23conn.cpp \
-        LorrisProgrammer/programmers/flipprogrammer.cpp
+        LorrisProgrammer/programmers/flipprogrammer.cpp \
+        LorrisProgrammer/programmers/stm32programmer.cpp \
+        connection/stm32connection.cpp
 
     HEADERS += \
         connection/genericusbconn.h \
         connection/usbacmconn.h \
         connection/usbshupito22conn.h \
         connection/usbshupito23conn.h \
-        LorrisProgrammer/programmers/flipprogrammer.h
+        LorrisProgrammer/programmers/flipprogrammer.h \
+        LorrisProgrammer/programmers/stm32programmer.h \
+        connection/stm32connection.h \
+        connection/stm32defines.h
 }
 
 kate_editor:unix {

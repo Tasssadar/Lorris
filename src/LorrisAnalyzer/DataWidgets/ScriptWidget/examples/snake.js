@@ -3,7 +3,6 @@
 //    r - start/stop
 //    p - pause
 //    wasd - control snake's movement
-
 var MOVE_UP    = 0;
 var MOVE_DOWN  = 1;
 var MOVE_LEFT  = 2;
@@ -21,9 +20,9 @@ var scoreW = newNumberWidget("Score", 150, 0);
 moveWidget(scoreW, area.width - 150, 0);
 var score = 0;
 
-var moveQueue;
+script.resize(90, 90);
 
-resizeWidget(script, 90, 90);
+var moveQueue;
 clearTerm();
 
 function Pos(x, y)
@@ -46,7 +45,7 @@ function onKeyPress(key) {
         {
             if(!run)
                 return;
-            
+
             if(timer.active)
                 timer.stop();
             else
@@ -88,7 +87,7 @@ function start()
     direction = MOVE_RIGHT;
     score = 0;
     scoreW.setValue(0);
-    
+
     for(var i = 0; tail != null && i < tail.length; ++i)
         tail[i].remove();
     tail = new Array();
@@ -99,8 +98,8 @@ function start()
         cookie.remove();
 
     spawnCookie();
-    
-    timer.start(300);
+
+    timer.start(400);
 }
 
 function moveAll()
@@ -113,7 +112,7 @@ function moveAll()
         direction = moveQueue.shift();
         var prevPos = new Pos(script.x + 5, script.y + 5);
         move(script, direction);
-    
+
         for(var i = 0; i < tail.length; ++i)
         {
             var pos = new Pos(tail[i].x, tail[i].y);
@@ -168,6 +167,7 @@ function spawnCookie()
     cookie = newColorWidget("Cookie", 110, 110);
     cookieColor = new Array(rand(255), rand(255), rand(255));
     cookie.setValue(cookieColor[0], cookieColor[1], cookieColor[2]);
+    cookie.setTitleVisibility(false);
 
     moveWidget(cookie, x, y);
 }
@@ -178,7 +178,7 @@ function rectOverlaps(first, second)
     var f_yh = first.y + first.height;
     var s_xw = second.x + second.width;
     var s_yh = second.y + second.height;
-    
+
     var xOverlap = valueInRange(first.x, second.x, s_xw) || valueInRange(second.x, first.x, f_xw);
     var yOverlap = valueInRange(first.y, second.y, s_yh) || valueInRange(second.y, first.y, f_yh);
 
@@ -194,6 +194,7 @@ function consumeCookie()
 {
     var tailpart = newColorWidget("T", script.width-10, script.height-10);
     tailpart.setValue(cookieColor[0], cookieColor[1], cookieColor[2]);
+    tailpart.setTitleVisibility(false);
 
     cookie.remove();
     spawnCookie();

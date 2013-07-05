@@ -14,6 +14,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QTimer>
+#include <QFileInfo>
 
 #include "utils.h"
 
@@ -33,6 +34,7 @@ enum DataBlocks
     BLOCK_WIDGETS,
     BLOCK_WIDGET,
     BLOCK_DATA_INDEX,
+    BLOCK_PACKET_LIMIT,
     BLOCK_FILTERS,
 
     BLOCK_TABWIDGET,
@@ -103,7 +105,8 @@ public:
     void writeConn(Connection *conn);
     bool readConn(quint8& type, QHash<QString, QVariant>& cfg);
 
-    QString getAttachmentFilename();
+    QFileInfo getAttachmentFileInfo();
+    QString getAttachmentsPath() const { return m_path; }
 
     template <typename T> void readVal(T& val);
     template <typename T> T readVal();

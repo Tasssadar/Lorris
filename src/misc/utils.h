@@ -34,6 +34,11 @@ class QLayout;
     #error PACK_STRUCT is not defined for this compiler
 #endif
 
+#if defined(__i386) || defined(__i386__) || defined(_M_IX86) || \
+    defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)
+  #define PROCESSOR_X86
+#endif
+
 class Utils : public QThread
 {
     Q_OBJECT
@@ -49,7 +54,10 @@ public:
 
     static QByteArray convertByteStr(QString str);
 
-    template <typename T> static inline void swapEndian(char *val);
+    template <typename T> static void swapEndian(T& val);
+    static void swapEndian(uint32_t& val);
+    static void swapEndian(uint16_t& val);
+    static void swapEndian(float& val);
     static void swapEndian(char *val, quint8 size);
 
     static QString toBase16(quint8 const * first, quint8 const * last);
@@ -81,13 +89,16 @@ public:
     static size_t align(size_t & offset, size_t & size, size_t alignment);
 
     static QString storageLocation(StandardLocation loc);
+
+    static void moveDataFolder();
 };
 
 template <typename T>
-void Utils::swapEndian(char *val)
-{
-    for(qint8 i = sizeof(T); i > 0; i -= 2, ++val)
-        std::swap(*val, *(val + i - 1));
+void Utils::swapEndian(T& val)
+ {
+    int8_t *p = (int8_t*)&val;
+    for(size_t i = sizeof(val); i > 0; i -= 2, ++p)
+        std::swap(*p, *(p + i - 1));
 }
 
 #ifdef Q_LITTLE_ENDIAN

@@ -85,7 +85,7 @@ public:
     void forceCloseChilds();
 
 private slots:
-    void split(bool horizontal, int index);
+    void split(int pos, int index);
     void removeWidget(quint32 id);
     void changeActiveWidget(TabWidget *widget);
     void NewSpecificTab();
@@ -97,7 +97,7 @@ private slots:
     void closeAllTabs();
 
 private:
-    TabWidget *newTabWidget(QBoxLayout *l);
+    TabWidget *newTabWidget(QBoxLayout *l, bool addAsNextToLast = false);
     void updateSize(QBoxLayout *l);
     inline bool isResizeLine(QLayoutItem *item);
     void updateResizeLines(QBoxLayout *l);
@@ -145,15 +145,18 @@ class SplitOverlay : public QWidget
     Q_OBJECT
 
 Q_SIGNALS:
-    void split(bool horizontal, int index);
+    void split(int pos, int index);
     void newWindow(int index);
 
 public:
     enum position
     {
         POS_RIGHT = 0,
+        POS_LEFT,
         POS_BOTTOM,
+        POS_TOP,
         POS_CENTER,
+        POS_SPLIT_MAX = POS_CENTER,
 
         POS_MAX
     };

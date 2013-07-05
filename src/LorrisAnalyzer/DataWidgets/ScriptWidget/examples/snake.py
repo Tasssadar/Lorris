@@ -72,7 +72,7 @@ def start():
     global timer
 
     lorris.moveWidget(script, 0, 0);
-    
+
     direction = MOVE_RIGHT
     score = 0
     scoreW.setValue(0)
@@ -94,10 +94,10 @@ def moveAll():
     global direction
     if len(moveQueue) == 0:
         moveQueue.append(direction);
-    
+
     while len(moveQueue) != 0:
         direction = moveQueue.pop(0)
-        prevPos = [script.x + 5, script.y + 5 ]
+        prevPos = [script.x + 10, script.y + 10 ]
         move(script, direction)
 
         for i in tail:
@@ -140,6 +140,7 @@ def spawnCookie():
     cookie = lorris.newWidget(WIDGET_COLOR, "Cookie", 110, 110)
     cookieColor = [ randint(0, 255), randint(0, 255), randint(0, 255) ]
     cookie.setValue(cookieColor[0], cookieColor[1], cookieColor[2])
+    cookie.setTitleVisibility(False)
 
     lorris.moveWidget(cookie, x, y)
 
@@ -162,9 +163,10 @@ def consumeCookie():
     global tail
     global scoreW
 
-    tailpart = lorris.newWidget(WIDGET_COLOR, "T", script.width-10, script.height-10)
+    tailpart = lorris.newWidget(WIDGET_COLOR, "T", script.width-20, script.height-20)
     tailpart.setValue(cookieColor[0], cookieColor[1], cookieColor[2])
-    
+    tailpart.setTitleVisibility(False)
+
     cookie.remove()
     spawnCookie()
 

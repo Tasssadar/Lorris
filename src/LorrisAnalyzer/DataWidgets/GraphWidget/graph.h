@@ -59,6 +59,7 @@ public slots:
 
 private:
     int getAxisOnPos(const QPoint& pos);
+    double getAxisPosPct(int axis, const QPoint &pos);
     void createMarkerRmMenu(const QPoint& pos, int axis);
     void addMarker(double val, const QColor& color, int axis);
     void initLegend();

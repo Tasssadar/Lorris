@@ -37,6 +37,7 @@
 
 #ifdef HAVE_LIBYB
 #include "programmers/flipprogrammer.h"
+#include "programmers/stm32programmer.h"
 #endif
 
 // When no packet from shupito is received for TIMEOUT_INTERVAL ms,
@@ -464,7 +465,7 @@ void LorrisProgrammer::updateProgressDialog(int value)
     if(!m_progress_dialog)
         return;
 
-    if(value == -1 || value == 100)
+    if(value == -1)
     {
         m_progress_dialog->close();
         delete m_progress_dialog;
@@ -737,6 +738,10 @@ void LorrisProgrammer::updateProgrammer()
             m_programmer.reset(new ShupitoProgrammer(sc, &m_logsink));
         }
 #ifdef HAVE_LIBYB
+        else if(ConnectionPointer<STM32Connection> fc = m_con.dynamicCast<STM32Connection>())
+        {
+            m_programmer.reset(new STM32Programmer(fc, &m_logsink));
+        }
         else if (ConnectionPointer<GenericUsbConnection> fc = m_con.dynamicCast<GenericUsbConnection>())
         {
             if (fc->isFlipDevice())
@@ -875,24 +880,33 @@ void LorrisProgrammer::saveData(DataFileParser *file)
 
     ui->saveData(file);
 
-    if(ConnectionPointer<PortShupitoConnection> sc = m_con.dynamicCast<PortShupitoConnection>())
+    if(m_con)
     {
-        file->writeBlockIdentifier("LorrShupitoConn2");
-        file->writeString("Shupito2");
-        file->writeConn(sc->port().data());
-        file->writeVal<qint64>(sc->getCompanionId());
-    }
-    else if(ConnectionPointer<PortConnection> con = m_con.dynamicCast<PortConnection>())
-    {
-        file->writeBlockIdentifier("LorrShupitoConn2");
-        file->writeString("Port");
-        file->writeConn(con.data());
-    }
-    else if(m_con && m_con->getType() == CONNECTION_SHUPITO23)
-    {
-        file->writeBlockIdentifier("LorrShupitoConn2");
-        file->writeString("Shupito23");
-        file->writeConn(m_con.data());
+        if(ConnectionPointer<PortShupitoConnection> sc = m_con.dynamicCast<PortShupitoConnection>())
+        {
+            file->writeBlockIdentifier("LorrShupitoConn2");
+            file->writeString("Shupito2");
+            file->writeConn(sc->port().data());
+            file->writeVal<qint64>(sc->getCompanionId());
+        }
+        else if(ConnectionPointer<PortConnection> con = m_con.dynamicCast<PortConnection>())
+        {
+            file->writeBlockIdentifier("LorrShupitoConn2");
+            file->writeString("Port");
+            file->writeConn(con.data());
+        }
+        else if(m_con->getType() == CONNECTION_SHUPITO23)
+        {
+            file->writeBlockIdentifier("LorrShupitoConn2");
+            file->writeString("Shupito23");
+            file->writeConn(m_con.data());
+        }
+        else if(m_con->getType() == CONNECTION_STM32)
+        {
+            file->writeBlockIdentifier("LorrShupitoConn2");
+            file->writeString("STM32");
+            file->writeConn(m_con.data());
+        }
     }
 }
 
@@ -937,7 +951,7 @@ void LorrisProgrammer::loadData(DataFileParser *file)
                     if(typeStr == "Shupito2")
                         sc->setCompanionId(file->readVal<qint64>());
                 }
-                else if(typeStr == "Port" || typeStr == "Shupito23")
+                else if(typeStr == "Port" || typeStr == "Shupito23" || typeStr == "STM32")
                     progConn = conn;
 
                 if(progConn.data())

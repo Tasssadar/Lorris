@@ -36,6 +36,7 @@
 #include "DataWidgets/datawidget.h"
 #include "widgetfactory.h"
 #include "searchwidget.h"
+#include "../ui/floatinginputdialog.h"
 
 #include "ui_lorrisanalyzer.h"
 
@@ -61,6 +62,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeBox,    SLOT(setEnabled(bool)));
     connect(ui->playFrame,       SIGNAL(enablePosSet(bool)),    ui->timeSlider, SLOT(setEnabled(bool)));
     connect(ui->dataArea,        SIGNAL(updateData()),      SLOT(updateData()));
+    connect(ui->limitBtn,        SIGNAL(clicked()),         SLOT(setPacketLimit()));
     connect(&m_parser,           SIGNAL(packetReceived(analyzer_data*,quint32)), SIGNAL(newData(analyzer_data*,quint32)));
     connect(ui->dataArea,        SIGNAL(mouseStatus(bool,data_widget_info,qint32)),
                                  SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
@@ -151,6 +153,8 @@ LorrisAnalyzer::LorrisAnalyzer()
     m_curIndex = 0;
     m_rightVisible = true;
 
+    setEnableSearchWidget(sConfig.get(CFG_BOOL_ANALYZER_SEARCH_WIDGET));
+
     setAreaVisibility(AREA_LEFT, false);
     setAreaVisibility(AREA_RIGHT, true);
     setAreaVisibility(AREA_TOP, true);
@@ -159,8 +163,6 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     m_connectButton = new ConnectButton(ui->connectButton);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
-
-    qApp->installEventFilter(this);
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()
@@ -184,7 +186,8 @@ void LorrisAnalyzer::connectedStatus(bool)
 
 void LorrisAnalyzer::readData(const QByteArray& data)
 {
-    bool update = m_curIndex == ui->timeSlider->maximum();
+    bool atMax = (m_curIndex == ui->timeSlider->maximum());
+    bool update = atMax || (m_storage.getSize() >= (quint32)m_storage.getPacketLimit());
     if(!m_parser.newData(data, update))
         return;
 
@@ -197,11 +200,11 @@ void LorrisAnalyzer::readData(const QByteArray& data)
     static const QString ofString = tr(" of ");
     ui->timeBox->setSuffix(ofString % QString::number(size+1));
 
-    if(update)
+    if(atMax)
     {
         m_curIndex = size;
-        ui->timeBox->setValue(size);
-        ui->timeSlider->setValue(size);
+        ui->timeBox->setValue(m_curIndex);
+        ui->timeSlider->setValue(m_curIndex);
     }
 }
 
@@ -661,10 +664,7 @@ void LorrisAnalyzer::editStructure()
         ui->filterTabs->setHeader(packet->header);
 
         if(!m_packet)
-        {
-            //ui->filterTabs->removeAll();
-            //ui->filterTabs->addDevice();
-        }
+            resetDevAndStorage(packet);
 
         m_storage.setPacket(packet);
         setPacket(packet);
@@ -724,16 +724,16 @@ void LorrisAnalyzer::saveData(DataFileParser *file)
     }
     else
     {
-        filename = file->getAttachmentFilename();
-        if(!filename.isEmpty())
+        QFileInfo info = file->getAttachmentFileInfo();
+        if(!info.path().isEmpty())
         {
             QString cfg_name = sConfig.get(CFG_STRING_ANALYZER_FOLDER);
-            m_storage.SaveToFile(filename, ui->dataArea, ui->filterTabs);
+            m_storage.SaveToFile(info.absoluteFilePath(), ui->dataArea, ui->filterTabs);
             m_storage.clearFilename();
             sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
 
-            file->writeBlockIdentifier("LorrAnalyzerTemp");
-            file->writeString(filename);
+            file->writeBlockIdentifier("LorrAnalyzerTempV2");
+            file->writeString(info.fileName());
         }
     }
 }
@@ -744,12 +744,28 @@ void LorrisAnalyzer::loadData(DataFileParser *file)
 
     if(file->seekToNextBlock("LorrAnalyzerFile", BLOCK_WORKTAB))
         openFile(file->readString());
+    else if(file->seekToNextBlock("LorrAnalyzerTempV2", BLOCK_WORKTAB))
+    {
+        QString cfg_name = sConfig.get(CFG_STRING_ANALYZER_FOLDER);
+
+        openFile(file->getAttachmentsPath() + file->readString());
+
+        sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
+        m_storage.clearFilename();
+    }
     else if(file->seekToNextBlock("LorrAnalyzerTemp", BLOCK_WORKTAB))
     {
         QString cfg_name = sConfig.get(CFG_STRING_ANALYZER_FOLDER);
-        openFile(file->readString());
-        sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
 
+        QString filename = file->readString();
+        QString path = file->getAttachmentsPath();
+        int idx = filename.lastIndexOf('/');
+        if(!path.isEmpty() && idx != -1)
+            filename = path + filename.mid(idx+1);
+
+        openFile(filename);
+
+        sConfig.set(CFG_STRING_ANALYZER_FOLDER, cfg_name);
         m_storage.clearFilename();
     }
 }
@@ -782,7 +798,7 @@ DataFilter *LorrisAnalyzer::getFilterByOldInfo(const data_widget_infoV1 &old_inf
 
 void LorrisAnalyzer::keyPressEvent(QKeyEvent *ev)
 {
-    if(ev->key() == Qt::Key_Space)
+    if(m_enableSearchWidget && ev->key() == Qt::Key_Space)
         new SearchWidget(ui->dataArea, this);
     PortConnWorkTab::keyPressEvent(ev);
 }
@@ -804,4 +820,23 @@ bool LorrisAnalyzer::eventFilter(QObject */*obj*/, QEvent *event)
 
     new SearchWidget(ui->dataArea, this);
     return true;
+}
+
+void LorrisAnalyzer::setPacketLimit()
+{
+    int limit = FloatingInputDialog::getInt(tr("Set maximum number of packets"), m_storage.getPacketLimit(), 1);
+    m_storage.setPacketLimit(limit);
+
+    int size = m_storage.getMaxIdx();
+    ui->timeSlider->setMaximum(size);
+    ui->timeBox->setMaximum(size);
+}
+
+void LorrisAnalyzer::setEnableSearchWidget(bool enable)
+{
+    m_enableSearchWidget = enable;
+    if(enable)
+        qApp->installEventFilter(this);
+    else
+        qApp->removeEventFilter(this);
 }

@@ -61,6 +61,7 @@ public:
     analyzer_data *getLastData(quint32& idx);
     QByteArray *getDataAt(quint32 idx);
     analyzer_packet *getPacket() const { return m_packet; }
+    void setEnableSearchWidget(bool enable);
 
     quint32 getCurrentIndex();
 
@@ -99,6 +100,7 @@ private slots:
     void importBinAct();
     void clearAllButton();
     void openFile();
+    void setPacketLimit();
 
     void collapseTopButton();
     void collapseRightButton();
@@ -128,6 +130,7 @@ private:
     ConnectButton * m_connectButton;
     analyzer_data m_curData;
     bool m_rightVisible;
+    bool m_enableSearchWidget;
 };
 
 #endif // LORRISANALYZER_H

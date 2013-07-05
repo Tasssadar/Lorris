@@ -85,6 +85,7 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
     connect(ui->clearBtn,        SIGNAL(clicked()),        ui->terminal, SLOT(clear()));
     connect(ui->pauseBtn,        SIGNAL(clicked(bool)),    ui->terminal, SLOT(pause(bool)));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          widget, SLOT(status(QString)));
+    connect(ui->pwmEnableBox,    SIGNAL(clicked(bool)), this, SLOT(setPwmEnable(bool)));
 
     this->enableButtons(widget->m_buttons_enabled);
 
@@ -267,6 +268,7 @@ void FullProgrammerUI::connectProgrammer(Programmer * prog)
     connect(ui->terminal,    SIGNAL(keyPressed(QString)),    prog,         SLOT(sendTunnelData(QString)));
     connect(ui->bootseqEdit, SIGNAL(textEdited(QString)),    prog,         SLOT(setBootseq(QString)));
     connect(prog,            SIGNAL(tunnelData(QByteArray)), ui->terminal, SLOT(appendText(QByteArray)));
+    connect(prog,            SIGNAL(pwmChanged(uint32_t)),   this,         SLOT(pwmChanged(uint32_t)));
 
     m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->currentText().toInt(), false);
     ui->bootseqEdit->setText(prog->getBootseq());
@@ -278,13 +280,14 @@ void FullProgrammerUI::connectProgrammer(Programmer * prog)
 void FullProgrammerUI::updateProgrammersBox(Programmer *prog)
 {
     // corresponds to enum ProgrammerTypes
-    static const QString names[] = { "Shupito", "Flip", "avr232boot", "atsam", "avr109" };
+    static const QString names[] = { "Shupito", "Flip", "avr232boot", "atsam", "avr109", "STM32 STLink" };
     static const QString icons[] = {
         ":/icons/symbol_triangle",
         ":/icons/symbol_circle",
         ":/icons/symbol_star",
         ":/icons/symbol_cross",
-        ":/icons/symbol_moon"
+        ":/icons/symbol_moon",
+        ":/icons/symbol_circle"
     };
 
     Q_ASSERT(sizeof_array(names) == programmer_max);
@@ -358,6 +361,7 @@ void FullProgrammerUI::programmerCapsChanged()
     if (this->prog())
         this->applySources();
 
+    ui->pwmBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsPwm());
     ui->tunnelBox->setVisible(ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsTunnel());
 
     bool bootseq = ui->settingsBtn->isChecked() && this->prog() && this->prog()->supportsBootseq();
@@ -753,3 +757,26 @@ void FullProgrammerUI::setChipId(const QString &text)
     ui->chipIdLabel->setToolTip(text);
 }
 
+void FullProgrammerUI::setPwmEnable(bool enable)
+{
+    if (!this->prog())
+        return;
+
+    uint32_t freq = ui->pwmFreqSpin->value();
+    this->prog()->setPwmFreq(enable? freq: 0);
+}
+
+void FullProgrammerUI::pwmChanged(uint32_t freq_hz)
+{
+    if (freq_hz == 0)
+    {
+        ui->pwmFreqSpin->setEnabled(true);
+        ui->pwmEnableBox->setChecked(false);
+    }
+    else
+    {
+        ui->pwmFreqSpin->setValue(freq_hz);
+        ui->pwmFreqSpin->setEnabled(false);
+        ui->pwmEnableBox->setChecked(true);
+    }
+}

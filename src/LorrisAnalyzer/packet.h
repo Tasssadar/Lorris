@@ -206,7 +206,7 @@ struct analyzer_packet
 class analyzer_data
 {
 public:
-    analyzer_data(QByteArray *data = NULL);
+    analyzer_data(QByteArray *data = NULL, analyzer_packet *packet = NULL);
     void clear();
     void copy(analyzer_data *other);
 
@@ -229,20 +229,20 @@ public:
     bool getLenFromHeader(quint32& len);
     quint32 getLenght(bool *readFromHeader = NULL);
 
-    quint8   getUInt8  (quint32 pos) { return read<quint8> (pos); }
-    qint8    getInt8   (quint32 pos) { return read<qint8>  (pos); }
-    quint16  getUInt16 (quint32 pos) { return read<quint16>(pos); }
-    qint16   getInt16  (quint32 pos) { return read<qint16> (pos); }
-    quint32  getUInt32 (quint32 pos) { return read<quint32>(pos); }
-    qint32   getInt32  (quint32 pos) { return read<qint32> (pos); }
-    quint64  getUInt64 (quint32 pos) { return read<quint64>(pos); }
-    qint64   getInt64  (quint32 pos) { return read<qint64> (pos); }
-    float    getFloat  (quint32 pos) { return read<float>  (pos); }
-    double   getDouble (quint32 pos) { return read<double> (pos); }
+    quint8   getUInt8  (quint32 pos) const { return m_data->at(pos); }
+    qint8    getInt8   (quint32 pos) const { return m_data->at(pos); }
+    quint16  getUInt16 (quint32 pos) const { return read<quint16>(pos); }
+    qint16   getInt16  (quint32 pos) const { return read<qint16> (pos); }
+    quint32  getUInt32 (quint32 pos) const { return read<quint32>(pos); }
+    qint32   getInt32  (quint32 pos) const { return read<qint32> (pos); }
+    quint64  getUInt64 (quint32 pos) const { return read<quint64>(pos); }
+    qint64   getInt64  (quint32 pos) const { return read<qint64> (pos); }
+    float    getFloat  (quint32 pos) const { return read<float>  (pos); }
+    double   getDouble (quint32 pos) const { return read<double> (pos); }
 
     QString getString(quint32 pos);
 
-    template <typename T> T read(quint32 pos);
+    template <typename T> T read(quint32 pos) const;
 
 private:
     analyzer_packet *m_packet;
@@ -250,17 +250,12 @@ private:
 };
 
 template <typename T>
-T analyzer_data::read(quint32 pos)
+T analyzer_data::read(quint32 pos) const
 {
-    if(pos+sizeof(T) > (quint32)m_data->length())
-        throw "Cannot read beyond data size!";
-
     T val = *((T const*)&m_data->data()[pos]);
     if(m_packet->big_endian)
-        Utils::swapEndian<T>((char*)&val);
+        Utils::swapEndian(val);
     return val;
 }
-
-
 
 #endif // PACKET_H

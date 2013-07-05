@@ -72,14 +72,18 @@ WidgetArea::WidgetArea(QWidget *parent) :
     m_menu->addSeparator();
 
     m_actTitleVisibility = m_menu->addAction(tr("Show widget's title bar"));
-    m_actShowPreview = m_menu->addAction(tr("Show preview while moving the area"));
     QAction *lockAll = m_menu->addAction(tr("Lock all widgets"));
     QAction *unlockAll = m_menu->addAction(tr("Unlock all widgets"));
+
+    m_actShowPreview = m_menu->addAction(tr("Show preview while moving the area"));
+    m_actEnableSearch = m_menu->addAction(tr("Enable quick search (spacebar)"));
 
     m_actTitleVisibility->setCheckable(true);
     m_actTitleVisibility->setChecked(true);
     m_actShowPreview->setCheckable(true);
     m_actShowPreview->setChecked(sConfig.get(CFG_BOOL_ANALYZER_SHOW_PREVIEW));
+    m_actEnableSearch->setCheckable(true);
+    m_actEnableSearch->setChecked(sConfig.get(CFG_BOOL_ANALYZER_SEARCH_WIDGET));
 
     m_menu->addSeparator();
 
@@ -94,24 +98,26 @@ WidgetArea::WidgetArea(QWidget *parent) :
     QAction *keyseqAct = m_bookmk_menu->addAction(tr("Change shortcut"));
     QAction *rmPntAct = m_bookmk_menu->addAction(tr("Remove"));
 
-    connect(m_actEnableGrid, SIGNAL(toggled(bool)),                SLOT(enableGrid(bool)));
-    connect(m_actEnableGrid, SIGNAL(toggled(bool)), m_actShowGrid, SLOT(setEnabled(bool)));
-    connect(m_actEnableGrid, SIGNAL(toggled(bool)), gridSize,      SLOT(setEnabled(bool)));
-    connect(m_actShowGrid,   SIGNAL(toggled(bool)),                SLOT(showGrid(bool)));
-    connect(gridSize,        SIGNAL(triggered()),                  SLOT(setGridSize()));
-    connect(align,           SIGNAL(triggered()),                  SLOT(alignWidgets()));
-    connect(linesAct,        SIGNAL(toggled(bool)),                SLOT(enableLines(bool)));
-    connect(m_actTitleVisibility, SIGNAL(triggered(bool)),            SLOT(titleVisibilityAct(bool)));
-    connect(m_actShowPreview,   SIGNAL(toggled(bool)),                SLOT(setShowPreview(bool)));
-    connect(lockAll,         SIGNAL(triggered()),                  SLOT(lockAll()));
-    connect(unlockAll,       SIGNAL(triggered()),                  SLOT(unlockAll()));
-    connect(&m_undoStack,    SIGNAL(undoAvailable(bool)),    undo, SLOT(setEnabled(bool)));
-    connect(&m_undoStack,    SIGNAL(redoAvailable(bool)),    redo, SLOT(setEnabled(bool)));
-    connect(&m_bookmk_mapper,SIGNAL(mapped(int)),                  SLOT(jumpToBookmark(int)));
-    connect(keyseqAct,       SIGNAL(triggered()),                  SLOT(changeBookmarkSeq()));
-    connect(rmPntAct,        SIGNAL(triggered()),                  SLOT(removeBookmark()));
-    connect(addPoint,        SIGNAL(triggered()),                  SLOT(addBookmark()));
-    connect(m_actShowBookmk, SIGNAL(toggled(bool)),                SLOT(setShowBookmarks(bool)));
+    connect(m_actEnableGrid,      SIGNAL(toggled(bool)),                SLOT(enableGrid(bool)));
+    connect(m_actEnableGrid,      SIGNAL(toggled(bool)), m_actShowGrid, SLOT(setEnabled(bool)));
+    connect(m_actEnableGrid,      SIGNAL(toggled(bool)), gridSize,      SLOT(setEnabled(bool)));
+    connect(m_actShowGrid,        SIGNAL(toggled(bool)),                SLOT(showGrid(bool)));
+    connect(m_actEnableSearch,    SIGNAL(triggered(bool)),              SLOT(enableSearchClicked(bool)));
+    connect(m_actEnableSearch,    SIGNAL(toggled(bool)),                SLOT(enableSearchToggled(bool)));
+    connect(gridSize,             SIGNAL(triggered()),                  SLOT(setGridSize()));
+    connect(align,                SIGNAL(triggered()),                  SLOT(alignWidgets()));
+    connect(linesAct,             SIGNAL(toggled(bool)),                SLOT(enableLines(bool)));
+    connect(m_actTitleVisibility, SIGNAL(triggered(bool)),              SLOT(titleVisibilityAct(bool)));
+    connect(m_actShowPreview,     SIGNAL(toggled(bool)),                SLOT(setShowPreview(bool)));
+    connect(lockAll,              SIGNAL(triggered()),                  SLOT(lockAll()));
+    connect(unlockAll,            SIGNAL(triggered()),                  SLOT(unlockAll()));
+    connect(&m_undoStack,         SIGNAL(undoAvailable(bool)),    undo, SLOT(setEnabled(bool)));
+    connect(&m_undoStack,         SIGNAL(redoAvailable(bool)),    redo, SLOT(setEnabled(bool)));
+    connect(&m_bookmk_mapper,     SIGNAL(mapped(int)),                  SLOT(jumpToBookmark(int)));
+    connect(keyseqAct,            SIGNAL(triggered()),                  SLOT(changeBookmarkSeq()));
+    connect(rmPntAct,             SIGNAL(triggered()),                  SLOT(removeBookmark()));
+    connect(addPoint,             SIGNAL(triggered()),                  SLOT(addBookmark()));
+    connect(m_actShowBookmk,      SIGNAL(toggled(bool)),                SLOT(setShowBookmarks(bool)));
 }
 
 WidgetArea::~WidgetArea()
@@ -329,6 +335,9 @@ void WidgetArea::saveSettings(DataFileParser *file)
 
     file->writeBlockIdentifier("areaShowTitles");
     *file << m_actTitleVisibility->isChecked();
+
+    file->writeBlockIdentifier("areaEnableSearch");
+    *file << m_actEnableSearch->isChecked();
 }
 
 void WidgetArea::loadSettings(DataFileParser *file)
@@ -384,6 +393,9 @@ void WidgetArea::loadSettings(DataFileParser *file)
 
     if(file->seekToNextBlock("areaShowTitles", BLOCK_DATA_INDEX))
         titleVisibilityAct(file->readVal<bool>());
+
+    if(file->seekToNextBlock("areaEnableSearch", BLOCK_DATA_INDEX))
+        enableSearchToggled(file->readVal<bool>());
 }
 
 void WidgetArea::paintEvent(QPaintEvent *event)
@@ -957,6 +969,17 @@ void WidgetArea::setShowBookmarks(bool show)
 void WidgetArea::toggleBookmarks()
 {
     m_actShowBookmk->toggle();
+}
+
+void WidgetArea::enableSearchClicked(bool enable)
+{
+    sConfig.set(CFG_BOOL_ANALYZER_SEARCH_WIDGET, enable);
+}
+
+void WidgetArea::enableSearchToggled(bool enable)
+{
+    m_actEnableSearch->setChecked(enable);
+    m_analyzer->setEnableSearchWidget(enable);
 }
 
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)

@@ -18,6 +18,8 @@ public:
     explicit FloatingWidget(QWidget *parent = 0);
     ~FloatingWidget();
 
+    void ensureOnScreen();
+
 protected:
     void resizeEvent(QResizeEvent *ev);
     void mouseMoveEvent(QMouseEvent *ev);

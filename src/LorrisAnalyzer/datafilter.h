@@ -170,7 +170,7 @@ public:
     virtual void load(DataFileParser *file);
 
     void setHeader(analyzer_header *header);
-    void setAreaAndLayout(QScrollArea *a, ScrollDataLayout *l) { m_area = a; m_layout = l; }
+    void setAreaAndLayout(QScrollArea *a, ScrollDataLayout *l);
     void handleData(analyzer_data *data, quint32 idx);
 
     quint8 getType() const { return m_type; }
@@ -186,6 +186,7 @@ public:
 protected slots:
     void updateForWidget();
     void widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent);
+    void layoutContextMenu(const QPoint& pos);
 
 protected:
     QString m_name;

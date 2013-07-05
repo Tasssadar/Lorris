@@ -18,7 +18,7 @@ class GenericUsbConnection : public Connection
     Q_OBJECT
 
 public:
-    explicit GenericUsbConnection(yb::async_runner & runner, yb::usb_device const & dev);
+    explicit GenericUsbConnection(yb::async_runner & runner, yb::usb_device const & dev, ConnectionType type = CONNECTION_LIBYB_USB);
 
     yb::async_runner & runner() const;
 
@@ -33,6 +33,8 @@ public:
     static bool isShupito23Device(yb::usb_device const & dev);
     static bool isFlipDevice(yb::usb_device const & dev);
     bool isFlipDevice() const;
+    static bool isSTLink32LDevice(yb::usb_device const & dev);
+    bool isSTLink32LDevice() const;
 
     static QString formatDeviceName(yb::usb_device const & dev);
 
@@ -40,7 +42,6 @@ protected:
     void doOpen();
     void doClose();
 
-private:
     yb::async_runner & m_runner;
     yb::usb_device m_dev;
     uint16_t m_selected_langid;

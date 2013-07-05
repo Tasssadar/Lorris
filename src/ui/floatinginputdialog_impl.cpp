@@ -90,6 +90,7 @@ QString FloatingInputDialog::getText(const QString& title, const QString & text,
 
     w->show();
     w->move(QCursor::pos()-line->geometry().center());
+    w->ensureOnScreen();
     line->setFocus();
 
     QEventLoop loop;
@@ -129,6 +130,7 @@ int FloatingInputDialog::getInt(const QString &title, int value, int min, int ma
 
     w->show();
     w->move(QCursor::pos()-box->geometry().center());
+    w->ensureOnScreen();
     box->setFocus();
 
     QEventLoop loop;
@@ -168,6 +170,7 @@ double FloatingInputDialog::getDouble(const QString &title, double value, double
 
     w->show();
     w->move(QCursor::pos()-box->geometry().center());
+    w->ensureOnScreen();
     box->setFocus();
 
     QEventLoop loop;
@@ -202,6 +205,7 @@ bool FloatingInputDialog::getIntRange(const QString &title, int &minVal,
 
     w->show();
     w->move(QCursor::pos()-minEdit->geometry().center());
+    w->ensureOnScreen();
     minEdit->setFocus();
 
     QEventLoop loop;
@@ -243,6 +247,7 @@ bool FloatingInputDialog::getDoubleRange(const QString &title, double &minVal,
 
     w->show();
     w->move(QCursor::pos()-minEdit->geometry().center());
+    w->ensureOnScreen();
     minEdit->setFocus();
 
     QEventLoop loop;
