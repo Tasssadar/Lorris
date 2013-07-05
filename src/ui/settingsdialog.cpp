@@ -99,12 +99,14 @@ void SettingsDialog::setPortable(bool portable)
     if(portable)
     {
         from = Utils::storageLocation(Utils::DataLocation) + "/";
+        if(!QFile::exists(from))
+            from = Utils::storageLocation(Utils::DocumentsLocation) + "/Lorris/";
         to = "./data/";
     }
     else
     {
         from = "./data/";
-        to = Utils::storageLocation(Utils::DataLocation) + "/";
+        to = Utils::storageLocation(Utils::DocumentsLocation) + "/Lorris/";
     }
 
     QDir dir(from);

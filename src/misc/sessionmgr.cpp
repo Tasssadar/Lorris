@@ -32,7 +32,12 @@ SessionMgr::SessionMgr(QObject *parent) : QObject(parent)
 QString SessionMgr::getFolder()
 {
     if(sConfig.get(CFG_BOOL_PORTABLE))
-        return "./data/";
+    {
+        if(QFile::exists("./data/sessions/"))
+            return "./data/sessions/";
+        else
+            return "./data/";
+    }
     else
     {
         static int idx = -1;
