@@ -156,10 +156,10 @@ SOURCES += ui/mainwindow.cpp \
     misc/qtobjectpointer.cpp \
     LorrisAnalyzer/searchwidget.cpp \
     LorrisAnalyzer/confirmwidget.cpp \
-    ui/floatingwidget.cpp \
-    ui/floatinginputdialog_impl.cpp \
     LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp \
-    LorrisAnalyzer/storagedata.cpp
+    LorrisAnalyzer/storagedata.cpp \
+    ui/floatingwidget.cpp \
+    ui/floatinginputdialog.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
