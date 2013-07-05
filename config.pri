@@ -1,6 +1,9 @@
 # comment out following line to disable python in Lorris
 # There is no debug python library on windows, so do not compile it in debug mode
-!win32|CONFIG(release, debug|release): CONFIG += python
+# PythonQt does not work with Qt5 yet
+lessThan(QT_MAJOR_VERSION, 5) {
+    !win32|CONFIG(release, debug|release): CONFIG += python
+}
 
 python {
     # Change this variable to your python version (2.5, 2.6, 2.7)

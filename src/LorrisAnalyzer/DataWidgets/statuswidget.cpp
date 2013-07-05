@@ -353,10 +353,17 @@ StatusManager::StatusManager(StatusWidget *widget) : QDialog(widget), ui(new Ui:
     m_textClrMap = NULL;
 
     QHeaderView *header = ui->table->horizontalHeader();
+#if QT_VERSION < 0x050000
     header->setResizeMode(0, QHeaderView::ResizeToContents);
     header->setResizeMode(1, QHeaderView::Stretch);
     header->setResizeMode(2, QHeaderView::ResizeToContents);
     header->setResizeMode(3, QHeaderView::ResizeToContents);
+#else
+    header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
+    header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+#endif
 
     updateItems();
 }

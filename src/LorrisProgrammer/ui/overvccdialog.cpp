@@ -17,7 +17,6 @@ OverVccDialog::OverVccDialog(bool autoclose, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QAccessible::updateAccessibility(this, 0, QAccessible::Alert);
     setFixedSize(size());
 
     m_autoclose = autoclose;

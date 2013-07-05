@@ -24,7 +24,7 @@
 #include <QWidget>
 
 // Windows only data definitions
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 
 #include <windows.h>
 #include <initguid.h>
@@ -135,7 +135,7 @@ public:
 
 private:
     WId mWindowId;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     ITaskbarList3 *mTaskbar;
     HICON mOverlayIcon;
 #endif

@@ -202,12 +202,12 @@ void HexFile::SaveToFile(const QString &path)
 
             address += write;
 
-            file.write(line.toAscii());
+            file.write(line.toLatin1());
         }
     }
 
     static const QString endFile = ":00000001FF\r\n";
-    file.write(endFile.toAscii());
+    file.write(endFile.toLatin1());
     file.close();
 }
 
@@ -221,7 +221,7 @@ void HexFile::writeExtAddrLine(QFile *file, quint32 addr)
     line += Utils::hexToString(checksum);
 
     line += "\r\n";
-    file->write(line.toAscii());
+    file->write(line.toLatin1());
 }
 
 void HexFile::setData(const QByteArray &data)

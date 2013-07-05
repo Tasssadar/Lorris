@@ -13,6 +13,7 @@
 #include <QColorDialog>
 #include <qwt_plot_canvas.h>
 #include <qwt_plot_grid.h>
+#include <QMimeData>
 
 #include "graphwidget.h"
 #include "graph.h"
@@ -190,10 +191,7 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
 
         // curve name
         file->writeBlockIdentifier("graphWCurveName");
-        QByteArray title = info->curve->title().text().toAscii();
-        quint32 size = title.length();
-        file->write((char*)&size, sizeof(quint32));
-        file->write(title.data());
+        file->writeString(info->curve->title().text());
 
         // data info
         file->writeBlockIdentifier("graphWCurveDataInfoV2");
@@ -285,11 +283,8 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         // title
         if(!file->seekToNextBlock("graphWCurveName", "graphWCurve"))
             continue;
-        {
-            quint32 size = 0;
-            file->read((char*)&size, sizeof(quint32));
-            name = file->read(size);
-        }
+
+        name = file->readString();
 
         // data info
         if(file->seekToNextBlock("graphWCurveDataInfoV2", "graphWCurve"))

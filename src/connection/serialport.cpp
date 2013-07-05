@@ -5,8 +5,7 @@
 **    See README and COPYING
 ***********************************************/
 
-#include <QtCore/QtConcurrentRun>
-#include <QtCore/QThreadPool>
+#include <QtConcurrentRun>
 #include <qextserialport.h>
 #include <QLabel>
 #include <QComboBox>

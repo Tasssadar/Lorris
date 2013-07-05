@@ -8,7 +8,7 @@
 #ifndef WORKTAB_H
 #define WORKTAB_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <vector>
 #include <QMenu>
 

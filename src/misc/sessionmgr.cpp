@@ -5,7 +5,6 @@
 **    See README and COPYING
 ***********************************************/
 
-#include <QDesktopServices>
 #include <QFile>
 #include <QMenu>
 #include <QDir>
@@ -35,7 +34,7 @@ QString SessionMgr::getFolder()
     if(sConfig.get(CFG_BOOL_PORTABLE))
         return "./data/";
     else
-        return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/";;
+        return Utils::storageLocation(Utils::DataLocation) + "/";;
 }
 
 QByteArray SessionMgr::openSessionFile(const QString& name)

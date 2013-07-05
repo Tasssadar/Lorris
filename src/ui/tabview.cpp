@@ -15,6 +15,8 @@
 #include <QMessageBox>
 #include <stdio.h>
 #include <QLabel>
+#include <QDrag>
+#include <QMimeData>
 
 #include "tabview.h"
 #include "homedialog.h"
@@ -707,7 +709,7 @@ void SplitOverlay::dropEvent(QDropEvent *event)
 {
     event->accept();
 
-    QStringList lst = QString::fromAscii(event->mimeData()->data("data/tabinfo")).split(' ');
+    QStringList lst = QString::fromLatin1(event->mimeData()->data("data/tabinfo")).split(' ');
     switch(m_pos)
     {
         case POS_RIGHT:

@@ -20,6 +20,8 @@ class QwtPlotCanvas;
 class QwtPlotMarker;
 class DataFileParser;
 
+class GraphCurve;
+
 class Graph : public QwtPlot
 {
     Q_OBJECT
@@ -46,19 +48,20 @@ public:
     void saveMarkers(DataFileParser *file, int axis);
     void loadMarkers(DataFileParser *file, int axis);
 
-
 protected:
     void mousePressEvent(QMouseEvent * event);
     void wheelEvent(QWheelEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
 
 public slots:
-    void showCurve(QwtPlotItem *item, bool on);
+    void showCurve(const QVariant &itemInfo, bool on, int index);
+    void showCurve(GraphCurve *curve, bool show);
 
 private:
     int getAxisOnPos(const QPoint& pos);
     void createMarkerRmMenu(const QPoint& pos, int axis);
     void addMarker(double val, const QColor& color, int axis);
+    void initLegend();
 
     std::vector<QwtPlotMarker*>& getMarkers(int axis)
     {
@@ -77,7 +80,7 @@ class Panner : public QwtPlotPanner
 {
     Q_OBJECT
 public:
-    Panner(QwtPlotCanvas *canvas);
+    Panner(QWidget *canvas);
 
 private slots:
     void moveAxes(int dx, int dy);
@@ -92,7 +95,7 @@ class Magnifier : public QwtPlotMagnifier
 {
     Q_OBJECT
 public:
-    explicit Magnifier(QwtPlotCanvas *canvas) : QwtPlotMagnifier(canvas)
+    explicit Magnifier(QWidget *canvas) : QwtPlotMagnifier(canvas)
     {
     }
 

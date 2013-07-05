@@ -96,13 +96,13 @@ void SettingsDialog::setPortable(bool portable)
     QString from, to;
     if(portable)
     {
-        from = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/";
+        from = Utils::storageLocation(Utils::DataLocation) + "/";
         to = "./data/";
     }
     else
     {
         from = "./data/";
-        to = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/";
+        to = Utils::storageLocation(Utils::DataLocation) + "/";
     }
 
     QDir dir(from);

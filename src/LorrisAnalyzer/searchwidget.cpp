@@ -12,7 +12,6 @@
 #include <QBitmap>
 #include <QListWidget>
 #include <QKeyEvent>
-#include <QProxyModel>
 
 #include "searchwidget.h"
 #include "widgetfactory.h"
@@ -179,7 +178,13 @@ void SearchWidget::invokeItem(QListWidgetItem *it)
         if(v.type() == QVariant::Invalid)
             continue;
 
-        args[i] = QGenericArgument(v.typeName(), QMetaType::construct(v.type(), v.data()));
+#if QT_VERSION < 0x050000
+        const void *val = QMetaType::construct(v.type(), v.data());
+#else
+        const void *val = QMetaType::create(v.type(), v.data());
+#endif
+
+        args[i] = QGenericArgument(v.typeName(), val);
     }
 
     QMetaObject::invokeMethod(obj, slot.toStdString().c_str(), Qt::DirectConnection,

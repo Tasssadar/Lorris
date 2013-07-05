@@ -29,7 +29,7 @@ class QLayout;
 #ifdef Q_CC_MSVC
     #define PACK_STRUCT(structure) __pragma( pack(push, 1) ) structure __pragma( pack(pop) )
 #elif defined(Q_CC_GNU)
-    #define PACK_STRUCT(structure) structure __attribute__((packed))
+    #define PACK_STRUCT(structure) structure __attribute__((gcc_struct,packed))
 #else
     #error PACK_STRUCT is not defined for this compiler
 #endif
@@ -38,6 +38,12 @@ class Utils : public QThread
 {
     Q_OBJECT
 public:
+    enum StandardLocation
+    {
+        DataLocation,
+        DocumentsLocation
+    };
+
     static QString hexToString(quint8 data, bool withZeroEx = false);
     static QString parseChar(char c);
 
@@ -73,6 +79,8 @@ public:
     static bool isInRect(const QPoint& p, const QPoint& rp, const QPoint& rs);
 
     static size_t align(size_t & offset, size_t & size, size_t alignment);
+
+    static QString storageLocation(StandardLocation loc);
 };
 
 template <typename T>

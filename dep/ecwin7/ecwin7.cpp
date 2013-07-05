@@ -20,7 +20,7 @@
 #include "ecwin7.h"
 
 // Windows only GUID definitions
-#if defined(Q_WS_WIN)
+#if defined(Q_OS_WIN)
 DEFINE_GUID(CLSID_TaskbarList,0x56fdf344,0xfd6d,0x11d0,0x95,0x8a,0x0,0x60,0x97,0xc9,0xa0,0x90);
 DEFINE_GUID(IID_ITaskbarList3,0xea1afb91,0x9e28,0x4b86,0x90,0xE9,0x9e,0x9f,0x8a,0x5e,0xef,0xaf);
 #endif
@@ -28,7 +28,7 @@ DEFINE_GUID(IID_ITaskbarList3,0xea1afb91,0x9e28,0x4b86,0x90,0xE9,0x9e,0x9f,0x8a,
 // Constructor: variabiles initialization
 EcWin7::EcWin7()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     mTaskbar = NULL;
     mOverlayIcon = NULL;
 
@@ -44,22 +44,22 @@ void EcWin7::init(WId wid)
 }
 
 // Set progress bar current value
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 void EcWin7::setProgressValue(int value, int max)
 {
     if(mTaskbar)
-        mTaskbar->SetProgressValue(mWindowId, value, max);
+        mTaskbar->SetProgressValue((HWND)mWindowId, value, max);
 }
 #else
 void EcWin7::setProgressValue(int, int) { }
 #endif
 
 // Set progress bar current state (active, error, pause, ecc...)
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 void EcWin7::setProgressState(ToolBarProgressState state)
 {
     if(mTaskbar)
-        mTaskbar->SetProgressState(mWindowId, (TBPFLAG)state);
+        mTaskbar->SetProgressState((HWND)mWindowId, (TBPFLAG)state);
 }
 #else
 void EcWin7::setProgressState(ToolBarProgressState) { }
@@ -67,7 +67,7 @@ void EcWin7::setProgressState(ToolBarProgressState) { }
 
 // Set new overlay icon and corresponding description (for accessibility)
 // (call with iconName == "" and description == "" to remove any previous overlay icon)
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 void EcWin7::setOverlayIcon(QString iconName, QString description)
 {
     if(!mTaskbar)
@@ -77,7 +77,7 @@ void EcWin7::setOverlayIcon(QString iconName, QString description)
     if (mOverlayIcon != NULL) oldIcon = mOverlayIcon;
     if (iconName == "")
     {
-        mTaskbar->SetOverlayIcon(mWindowId, NULL, NULL);
+        mTaskbar->SetOverlayIcon((HWND)mWindowId, NULL, NULL);
         mOverlayIcon = NULL;
     }
     else
@@ -88,7 +88,7 @@ void EcWin7::setOverlayIcon(QString iconName, QString description)
                                  0,
                                  0,
                                  NULL);
-        mTaskbar->SetOverlayIcon(mWindowId, mOverlayIcon, description.toStdWString().c_str());
+        mTaskbar->SetOverlayIcon((HWND)mWindowId, mOverlayIcon, description.toStdWString().c_str());
     }
     if ((oldIcon != NULL) && (oldIcon != mOverlayIcon))
     {

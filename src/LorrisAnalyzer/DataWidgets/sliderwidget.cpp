@@ -171,12 +171,12 @@ void SliderWidget::setMax(double max)
 
 double SliderWidget::getMin() const
 {
-    return slider()->minValue();
+    return slider()->minimum();
 }
 
 double SliderWidget::getMax() const
 {
-    return slider()->maxValue();
+    return slider()->maximum();
 }
 
 bool SliderWidget::isInteger() const
@@ -203,7 +203,7 @@ void SliderWidget::setType(bool isDouble)
         maxEdit()->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
         curEdit()->setValidator(new QIntValidator(INT_MIN, INT_MAX, this));
 
-        p_setRange(m_min, m_max, 1.0);
+        p_setRange(m_min, m_max);
         slider()->setValue(floor(slider()->value() + 0.5));
     }
     else
@@ -212,8 +212,7 @@ void SliderWidget::setType(bool isDouble)
         maxEdit()->setValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this));
         curEdit()->setValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this));
 
-        double step = (m_max - m_min)/slider()->width();
-        p_setRange(m_min, m_max, step);
+        p_setRange(m_min, m_max);
     }
 
     emit scriptEvent(getTitle() + "_typeChanged");
@@ -246,9 +245,8 @@ void SliderWidget::on_slider_valueChanged(double val)
 void SliderWidget::parseMinMax(bool isMax, const QString& text)
 {
     double val = text.toDouble();
-    double step = m_int_act->isChecked() ? 1.0 : (slider()->maxValue() - slider()->minValue())/slider()->width();
-    if(isMax) p_setRange(m_min, val, step);
-    else      p_setRange(val, m_max, step);
+    if(isMax) p_setRange(m_min, val);
+    else      p_setRange(val, m_max);
 }
 
 QString SliderWidget::fixValueToInt(const QString& val)
@@ -338,7 +336,7 @@ void SliderWidget::setOrientation(int ori)
             break;
     }
 
-    slider()->setBackgroundStyle(QwtSlider::Groove);
+    slider()->setGroove(true);
     p_setRange(m_min, m_max);
     slider()->setValue(value);
     minEdit()->setText(QString::number(m_min));
@@ -358,7 +356,7 @@ void SliderWidget::setOrientation(int ori)
     emit scriptEvent(getTitle() + "_orientationChanged");
 }
 
-void SliderWidget::p_setRange(double min, double max, double step)
+void SliderWidget::p_setRange(double min, double max)
 {
     m_min = min;
     m_max = max;
@@ -366,7 +364,7 @@ void SliderWidget::p_setRange(double min, double max, double step)
     if(m_orientation == ORI_VER_B_T || m_orientation == ORI_HOR_R_L)
         std::swap(min, max);
 
-    slider()->setRange(min, max, step);
+    slider()->setScale(min, max);
 }
 
 void SliderWidget::hideMinMax(bool hide)

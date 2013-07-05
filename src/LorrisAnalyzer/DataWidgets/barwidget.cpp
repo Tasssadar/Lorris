@@ -31,9 +31,10 @@ BarWidget::BarWidget(QWidget *parent) : DataWidget(parent)
     m_showValAct = NULL;
 
     m_bar = new QwtThermo(this);
-    m_bar->setOrientation(Qt::Vertical, QwtThermo::RightScale);
+    m_bar->setOrientation(Qt::Vertical);
+    m_bar->setScalePosition(QwtThermo::LeadingScale);
     m_bar->setRangeFlags(QwtInterval::IncludeBorders);
-    m_bar->setRange(0, 1000);
+    m_bar->setScale(0, 1000);
 
     QPalette p(m_bar->palette());
     p.setColor(QPalette::ButtonText, Qt::blue);
@@ -170,7 +171,7 @@ void BarWidget::setValuePrivate(double val)
 
 void BarWidget::setRange(double min, double max)
 {
-    m_bar->setRange(min, max);
+    m_bar->setScale(min, max);
 
     emit scriptEvent(getTitle() + "_rangeChanged");
 }
@@ -182,12 +183,12 @@ double BarWidget::getValue() const
 
 double BarWidget::getMin() const
 {
-    return m_bar->minValue();
+    return m_bar->minimum();
 }
 
 double BarWidget::getMax() const
 {
-    return m_bar->maxValue();
+    return m_bar->maximum();
 }
 
 void BarWidget::setAlarmEnabled(bool enable)
@@ -228,18 +229,18 @@ void BarWidget::rangeSelected()
 {
     if(m_numberType < NUM_FLOAT)
     {
-        int min = m_bar->minValue();
-        int max = m_bar->maxValue();
+        int min = m_bar->minimum();
+        int max = m_bar->maximum();
         if(FloatingInputDialog::getIntRange(tr("Bar range:"), min, max))
-            m_bar->setRange(min, max);
+            m_bar->setScale(min, max);
     }
     else
     {
-        double min = m_bar->minValue();
-        double max = m_bar->maxValue();
+        double min = m_bar->minimum();
+        double max = m_bar->maximum();
 
         if(FloatingInputDialog::getDoubleRange(tr("Bar range:"), min, max))
-            m_bar->setRange(min, max);
+            m_bar->setScale(min, max);
     }
     emit updateForMe();
 }
@@ -257,9 +258,9 @@ void BarWidget::rotate(int i)
     m_rotation = i;
 
     if(m_rotation == 0)
-         m_bar->setOrientation(Qt::Vertical, (QwtThermo::ScalePos)getScalePos());
+         m_bar->setOrientation(Qt::Vertical);
     else
-         m_bar->setOrientation(Qt::Horizontal, (QwtThermo::ScalePos)getScalePos());
+         m_bar->setOrientation(Qt::Horizontal);
 }
 
 void BarWidget::saveWidgetInfo(DataFileParser *file)
@@ -272,8 +273,8 @@ void BarWidget::saveWidgetInfo(DataFileParser *file)
 
     // range
     file->writeBlockIdentifier("barWRangeDouble");
-    file->writeVal(m_bar->minValue());
-    file->writeVal(m_bar->maxValue());
+    file->writeVal(m_bar->minimum());
+    file->writeVal(m_bar->maximum());
 
     //rotation
     file->writeBlockIdentifier("barWRotation");
@@ -319,13 +320,13 @@ void BarWidget::loadWidgetInfo(DataFileParser *file)
     {
         double min = file->readVal<double>();
         double max = file->readVal<double>();
-        m_bar->setRange(min, max);
+        m_bar->setScale(min, max);
     }
     else if(file->seekToNextBlock("barWRange", BLOCK_WIDGET))
     {
         double min = file->readVal<int>();
         double max = file->readVal<int>();
-        m_bar->setRange(min, max);
+        m_bar->setScale(min, max);
     }
 
     //rotation
@@ -370,18 +371,15 @@ void BarWidget::loadWidgetInfo(DataFileParser *file)
 void BarWidget::showScale(bool show)
 {
     m_showScaleAct->setChecked(show);
-    m_bar->setScalePosition((QwtThermo::ScalePos)getScalePos());
+    m_bar->setScalePosition((QwtThermo::ScalePosition)getScalePos());
 }
 
 int BarWidget::getScalePos()
 {
     if(m_showScaleAct && !m_showScaleAct->isChecked())
         return QwtThermo::NoScale;
-
-    if(m_rotation == 0)
-        return QwtThermo::RightScale;
     else
-        return QwtThermo::TopScale;
+        return QwtThermo::LeadingScale;
 }
 
 void BarWidget::showVal(bool show)
@@ -429,7 +427,7 @@ BarWidgetClrDialog::BarWidgetClrDialog(const QPalette &curPalette, QWidget *pare
     QHBoxLayout *layoutHor = new QHBoxLayout;
 
     m_bar = new QwtThermo(this);
-    m_bar->setRange(0, 100);
+    m_bar->setScale(0, 100);
     m_bar->setValue(66);
     m_bar->setAlarmEnabled(true);
     m_bar->setAlarmLevel(33);

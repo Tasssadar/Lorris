@@ -15,6 +15,10 @@ win32:CONFIG += dll
 else:CONFIG+= static
 CONFIG -= flat
 
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets
+}
+
 include ( ../build/common.prf )  
 include ( ../build/python.prf )  
 

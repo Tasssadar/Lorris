@@ -232,8 +232,8 @@ void ScriptEditor::setLanguage(int lang)
 
 void ScriptEditor::on_errorBtn_toggled(bool checked)
 {
-    ui->errorEdit->setShown(checked);
-    ui->resizeLine->setShown(checked);
+    ui->errorEdit->setVisible(checked);
+    ui->resizeLine->setVisible(checked);
     sConfig.set(CFG_BOOL_SHOW_SCRIPT_ERROR, checked);
 }
 
@@ -667,7 +667,7 @@ SettingsPopup::SettingsPopup(ScriptEditor *editor) : QFrame(editor)
     l->addWidget(m_editorBox, 1, 1);
     l->addWidget(m_editorSett, 1, 2);
 
-    m_editorSett->setShown(editor->getEditor()->hasSettings());
+    m_editorSett->setVisible(editor->getEditor()->hasSettings());
 
     adjustSize();
 
@@ -693,7 +693,7 @@ void SettingsPopup::editorChanged(int idx)
     disconnect(m_editorSett, 0, editor()->getEditor(), 0);
     editor()->setEditor(type);
     connect(m_editorSett, SIGNAL(clicked()), editor()->getEditor(), SLOT(settingsBtn()));
-    m_editorSett->setShown(editor()->getEditor()->hasSettings());
+    m_editorSett->setVisible(editor()->getEditor()->hasSettings());
 
     adjustSize();
 }

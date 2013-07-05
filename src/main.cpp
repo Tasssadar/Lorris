@@ -5,7 +5,7 @@
 **    See README and COPYING
 ***********************************************/
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QTranslator>
 #include <QLocale>
 #include <QLibraryInfo>

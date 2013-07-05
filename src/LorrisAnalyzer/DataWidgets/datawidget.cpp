@@ -14,6 +14,7 @@
 #include <QMenu>
 #include <QPropertyAnimation>
 #include <QPainter>
+#include <QMimeData>
 
 #include "datawidget.h"
 #include "../../WorkTab/WorkTab.h"

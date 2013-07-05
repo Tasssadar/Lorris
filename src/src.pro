@@ -3,9 +3,15 @@
 # -------------------------------------------------
 include(../config.pri)
 
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets uitools concurrent
+} else {
+    CONFIG += uitools
+}
+
 QT += gui core network script
 TARGET = Lorris
-CONFIG += uitools precompile_header
+CONFIG += precompile_header
 CONFIG(debug, debug|release):DESTDIR = $$PWD/../bin/debug
 else:DESTDIR = $$PWD/../bin/release
 OBJECTS_DIR = $$PWD/../obj

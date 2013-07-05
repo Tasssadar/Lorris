@@ -19,7 +19,7 @@ ThreadChannelBase::ThreadChannelBase()
 
 ThreadChannelBase::~ThreadChannelBase()
 {
-    delete m_notifyEvent;
+    delete m_notifyEvent.fetchAndStoreOrdered(0);
 }
 
 void ThreadChannelBase::notifyDataReady()

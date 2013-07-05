@@ -348,7 +348,7 @@ void Terminal::addHex()
         if(chunk_size != 16)
             *(line + chunk_size + 61) = '|';
 
-        m_lines.push_back(QString::fromAscii(line, 62+chunk_size));
+        m_lines.push_back(QString::fromLatin1(line, 62+chunk_size));
     }
     m_cursor_pos.setY(m_lines.size());
     m_cursor_pos.setX(0);
@@ -368,7 +368,7 @@ void Terminal::keyPressEvent(QKeyEvent *event)
                 return;
             case Qt::Key_V:
             {
-               key = QApplication::clipboard()->text().toAscii();
+               key = QApplication::clipboard()->text();
                break;
             }
             case Qt::Key_A:
@@ -484,7 +484,7 @@ void Terminal::selectAll()
 
 void Terminal::pasteFromClipboard()
 {
-    handleInput(QApplication::clipboard()->text().toAscii());
+    handleInput(QApplication::clipboard()->text());
 }
 
 void Terminal::updateScrollBars()

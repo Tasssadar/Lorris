@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 #include <QDrag>
 #include <QTimer>
+#include <QMimeData>
 
 #include "labellayout.h"
 #include "sourcedialog.h"

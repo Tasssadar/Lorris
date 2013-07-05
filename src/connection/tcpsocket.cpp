@@ -6,8 +6,7 @@
 ***********************************************/
 
 #include <QtNetwork/QTcpSocket>
-#include <QtCore/QtConcurrentRun>
-#include <QtCore/QThreadPool>
+#include <QtConcurrentRun>
 #include <QLabel>
 #include <QLineEdit>
 #include <QSpinBox>

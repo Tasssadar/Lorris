@@ -110,7 +110,7 @@ void Font::Create(const FontParameters &fp)
         strategy = QFont::PreferDefault;
     }
 
-#if defined(Q_WS_MAC)
+#if defined(Q_OS_MAC)
 #if QT_VERSION >= 0x040700
     strategy = static_cast<QFont::StyleStrategy>(strategy | QFont::ForceIntegerMetrics);
 #else

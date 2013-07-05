@@ -7,7 +7,6 @@
 
 #include <QSettings>
 #include <QFile>
-#include <QDesktopServices>
 #include <qextserialport.h>
 
 #include "../connection/connection.h"
@@ -213,7 +212,7 @@ void Config::openSettings()
     static QString cfgFileLocations[] =
     {
         "./data/config.ini",
-        QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/config.ini"
+        Utils::storageLocation(Utils::DataLocation) + "/config.ini"
     };
 
     QFile file;

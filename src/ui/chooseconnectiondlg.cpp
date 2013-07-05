@@ -17,7 +17,7 @@
 #include <QPainter>
 #include <QSignalMapper>
 
-#ifdef Q_WS_WIN
+#if QT_VERSION < 0x050000 && defined(Q_OS_WIN)
 #include <QWindowsVistaStyle>
 #endif
 
@@ -111,7 +111,7 @@ public:
         QColor textColor;
         if (opt.state & QStyle::State_Selected)
         {
-#ifdef Q_WS_WIN
+#if QT_VERSION < 0x050000 && defined(Q_OS_WIN)
             if (dynamic_cast<QWindowsVistaStyle *>(style))
                 textColor = opt.palette.color(QPalette::Active, QPalette::Text);
             else

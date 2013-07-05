@@ -19,6 +19,8 @@
 #include <algorithm>
 #include <QShortcut>
 #include <QLabel>
+#include <QDrag>
+#include <QMimeData>
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
@@ -708,7 +710,7 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
     p.end();
 
     QMimeData *mime = new QMimeData();
-    mime->setData("data/tabinfo", QString("%1 %2 %3").arg(m_id).arg(idx).arg(tabView()->getWindowId()).toAscii());
+    mime->setData("data/tabinfo", QString("%1 %2 %3").arg(m_id).arg(idx).arg(tabView()->getWindowId()).toLatin1());
 
     drag->setPixmap(map);
     drag->setMimeData(mime);
@@ -734,7 +736,7 @@ void TabBar::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
 
-    QStringList lst = QString::fromAscii(event->mimeData()->data("data/tabinfo")).split(' ');
+    QStringList lst = QString::fromLatin1(event->mimeData()->data("data/tabinfo")).split(' ');
     int tabId = lst[1].toInt();
 
     if(event->source() != this)

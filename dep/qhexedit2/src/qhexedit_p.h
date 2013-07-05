@@ -4,8 +4,11 @@
 /** \cond docNever */
 
 
-#include <QtGui>
+#include <QWidget>
 #include "xbytearray.h"
+
+class QScrollArea;
+class QUndoStack;
 
 class QHexEditPrivate : public QWidget
 {

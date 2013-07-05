@@ -79,7 +79,7 @@ private slots:
     void doubleAct(bool checked);
 
 private:
-    void p_setRange(double min, double max, double step = 0.0);
+    void p_setRange(double min, double max);
 
     QwtSlider *slider() const;
     QLineEdit *maxEdit() const;

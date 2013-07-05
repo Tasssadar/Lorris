@@ -190,7 +190,7 @@ int AtsamProgrammer::getType()
 
 QString AtsamProgrammer::transact(QString const & data)
 {
-    m_conn->SendData(data.toAscii());
+    m_conn->SendData(data.toLatin1());
 
     QTimer t(this);
 
@@ -205,7 +205,7 @@ QString AtsamProgrammer::transact(QString const & data)
     if (m_recvBuffer.isEmpty() || m_recvBuffer[m_recvBuffer.size() - 1] != '>')
         throw tr("Failed to get proper response from SAM-BA"); // XXX: should throw something derived from std::exception
 
-    return QString::fromAscii(m_recvBuffer.data(), m_recvBuffer.size() - 1);
+    return QString::fromLatin1(m_recvBuffer.data(), m_recvBuffer.size() - 1);
 }
 
 void AtsamProgrammer::dataRead(QByteArray const & data)

@@ -15,6 +15,7 @@
 #include <QShortcut>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QMimeData>
 
 #include "widgetarea.h"
 #include "lorrisanalyzer.h"

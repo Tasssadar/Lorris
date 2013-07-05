@@ -21,7 +21,7 @@ QValidator::State ByteValidator::validate(QString &in, int &pos) const
     if(pos > 0)
     {
         static const char *allowed = " 01234567890xXABCDEFabcdef-";
-        if(!strchr(allowed, in[pos-1].toAscii()))
+        if(!strchr(allowed, in[pos-1].toLatin1()))
             return Invalid;
     }
 

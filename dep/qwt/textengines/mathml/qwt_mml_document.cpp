@@ -3083,7 +3083,7 @@ QwtMmlDocument::QwtMmlDocument()
 
     // Some defaults which happen to work on my computer,
     // but probably won't work on other's
-#if defined(Q_WS_WIN)
+#if defined(Q_OS_WIN)
     m_normal_font_name = "Times New Roman";
 #else
     m_normal_font_name = "Century Schoolbook L";

@@ -36,7 +36,14 @@ QWidget *InputWidget::newWidget(const QString &name, int stretch)
     {
         int id = QMetaType::type(name.toStdString().c_str());
         if(id)
+        {
+#if QT_VERSION < 0x050000
             w = (QWidget*)QMetaType::construct(id);
+#else
+            w = (QWidget*)QMetaType::create(id);
+#endif
+        }
+
     }
 
     if(!w)

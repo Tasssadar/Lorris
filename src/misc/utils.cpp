@@ -10,6 +10,12 @@
 #include <QApplication>
 #include <QLayout>
 
+#if QT_VERSION < 0x050000
+#include <QDesktopServices>
+#else
+#include <QStandardPaths>
+#endif
+
 #include "utils.h"
 #include "../dep/ecwin7/ecwin7.h"
 
@@ -274,4 +280,21 @@ size_t Utils::align(size_t & offset, size_t & size, size_t alignment)
     size = (size + alignment - 1) & ~(alignment - 1);
     offset = aligned_offset;
     return front_padding;
+}
+
+QString Utils::storageLocation(StandardLocation loc)
+{
+#if QT_VERSION < 0x050000
+    static const QDesktopServices::StandardLocation locations[] = {
+        QDesktopServices::DataLocation,
+        QDesktopServices::DocumentsLocation
+    };
+    return QDesktopServices::storageLocation(locations[loc]);
+#else
+    static const QStandardPaths::StandardLocation locations[] = {
+        QStandardPaths::DataLocation,
+        QStandardPaths::DocumentsLocation
+    };
+    return QStandardPaths::writableLocation(locations[loc]);
+#endif
 }

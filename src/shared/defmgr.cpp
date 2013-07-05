@@ -5,11 +5,9 @@
 **    See README and COPYING
 ***********************************************/
 
-#include <QDesktopServices>
 #include <QFile>
 #include <QStringList>
 #include "../misc/utils.h"
-
 #include "defmgr.h"
 
 DefMgr::DefMgr(QObject *parent) :
@@ -27,7 +25,7 @@ void DefMgr::loadChipdefs()
     {
         ":/definitions/chipdefs",
         "./shupito_chipdefs.txt",
-        QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/shupito_chipdefs.txt",
+        Utils::storageLocation(Utils::DataLocation) + "/shupito_chipdefs.txt",
     };
 
     QFile file;
@@ -51,7 +49,7 @@ void DefMgr::loadFusedesc()
     {
         ":/definitions/fusedesc",
         "./shupito_fusedesc.txt",
-        QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/shupito_fusedesc.txt",
+        Utils::storageLocation(Utils::DataLocation) + "/shupito_fusedesc.txt",
     };
 
     QFile file;

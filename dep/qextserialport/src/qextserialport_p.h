@@ -211,11 +211,11 @@ public:
     OVERLAPPED overlap;
     COMMCONFIG Win_CommConfig;
     COMMTIMEOUTS Win_CommTimeouts;
-#  ifndef QESP_NO_QT4_PRIVATE
+#if QT_VERSION >= 0x050000 || !defined(QESP_NO_QT4_PRIVATE)
     QWinEventNotifier *winEventNotifier;
-#  else
+#else
     QextWinEventNotifier *winEventNotifier;
-#  endif
+#endif
     DWORD eventMask;
     QList<OVERLAPPED*> pendingWrites;
     QReadWriteLock* bytesToWriteLock;

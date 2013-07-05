@@ -32,7 +32,6 @@ void GraphCurve::init()
 {
     //setRenderHint(QwtPlotItem::RenderAntialiased);
     setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
-    setPaintAttribute(QwtPlotCurve::CacheSymbols, true);
     setData(m_data);
 }
 
