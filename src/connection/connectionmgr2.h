@@ -113,11 +113,13 @@ public:
     ~LibybUsbEnumerator();
 
     void registerUserOwnedConn(UsbAcmConnection2 * conn);
+    void registerUserOwnedConn(STM32Connection * conn);
     yb::usb_device_interface lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName);
 
 private slots:
     void pluginEventReceived();
     void acmConnDestroying();
+    void stm32ConnDestroying();
 
 private:
     yb::async_runner & m_runner;
@@ -165,6 +167,7 @@ private:
 
     std::map<yb::usb_device_interface, ConnectionPointer<STM32Connection> > m_stm32_devices;
     StandbyDeviceList<STM32Connection, usb_interface_standby> m_standby_stm32_devices;
+    std::set<STM32Connection *> m_user_owned_stm32_conns;
 
     QList<QVariant> m_connConfigs;
     void updateConfig(UsbAcmConnection2 * conn);
@@ -191,6 +194,7 @@ public:
     TcpSocket * createTcpSocket();
 #ifdef HAVE_LIBYB
     UsbAcmConnection2 * createUsbAcmConn();
+    STM32Connection * createSTM32Conn();
     yb::usb_device_interface lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName);
 #endif
 

@@ -42,6 +42,23 @@ STM32Connection::stm32_cmd::stm32_cmd(uint8_t b1, uint8_t b2, uint8_t b3)
 STM32Connection::STM32Connection(yb::async_runner & runner) :
     GenericUsbConnection(runner, yb::usb_device(), CONNECTION_STM32)
 {
+    m_enumerated = false;
+    m_pid = m_vid = 0;
+
+    this->markMissing();
+}
+
+void STM32Connection::setEnumeratedIntf(yb::usb_device_interface const & intf)
+{
+    m_enumerated = true;
+
+    yb::usb_device dev = intf.device();
+    m_vid = dev.vidpid() >> 16;
+    m_pid = dev.vidpid() & 0xFFFF;
+    m_serialNumber = QString::fromUtf8(dev.serial_number().c_str());
+    m_intfName = UsbAcmConnection2::formatIntfName(intf);
+
+    this->setup(intf);
 }
 
 void STM32Connection::setup(const yb::usb_device_interface &intf)
@@ -68,6 +85,28 @@ void STM32Connection::clear()
     this->setDevice(yb::usb_device());
 }
 
+void STM32Connection::notifyIntfPlugin(yb::usb_device_interface const & intf)
+{
+    if (!m_enumerated && this->isMissing())
+    {
+        yb::usb_device const & dev = intf.device();
+        yb::usb_device_descriptor const & desc = dev.descriptor();
+
+        if (desc.idVendor == m_vid && desc.idProduct == m_pid
+            && QString::fromUtf8(intf.device().serial_number().c_str()) == m_serialNumber
+            && UsbAcmConnection2::formatIntfName(intf) == m_intfName)
+        {
+            this->setup(intf);
+        }
+    }
+}
+
+void STM32Connection::notifyIntfUnplug(yb::usb_device_interface const & intf)
+{
+    if (!m_enumerated && m_intf == intf)
+        this->setup(yb::usb_device_interface());
+}
+
 void STM32Connection::doOpen()
 {
     yb::usb_device dev = m_intf.device();
@@ -82,6 +121,28 @@ void STM32Connection::doClose()
     emit disconnecting();
     m_intf_guard.release();
     this->SetState(st_disconnected);
+}
+
+QHash<QString, QVariant> STM32Connection::config() const
+{
+    QHash<QString, QVariant> cfg = GenericUsbConnection::config();
+    cfg["vid"] = this->vid();
+    cfg["pid"] = this->pid();
+    cfg["serial_number"] = this->serialNumber();
+    cfg["intf_name"] = this->intfName();
+    return cfg;
+}
+
+bool STM32Connection::applyConfig(const QHash<QString, QVariant> &config)
+{
+    if (!m_enumerated)
+    {
+        m_vid = config.value("vid", 0).toInt();
+        m_pid = config.value("pid", 0).toInt();
+        m_serialNumber = config.value("serial_number").toString();
+        m_intfName = config.value("intf_name").toString();
+    }
+    return this->Connection::applyConfig(config);
 }
 
 void STM32Connection::send_cmd(const stm32_cmd &cmd)

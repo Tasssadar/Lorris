@@ -189,10 +189,22 @@ void LibybUsbEnumerator::registerUserOwnedConn(UsbAcmConnection2 * conn)
     m_user_owned_acm_conns.insert(conn);
 }
 
+void LibybUsbEnumerator::registerUserOwnedConn(STM32Connection * conn)
+{
+    connect(conn, SIGNAL(destroying()), this, SLOT(stm32ConnDestroying()));
+    m_user_owned_stm32_conns.insert(conn);
+}
+
 void LibybUsbEnumerator::acmConnDestroying()
 {
     UsbAcmConnection2 * conn = static_cast<UsbAcmConnection2 *>(this->sender());
     m_user_owned_acm_conns.erase(conn);
+}
+
+void LibybUsbEnumerator::stm32ConnDestroying()
+{
+    STM32Connection *conn = static_cast<STM32Connection *>(this->sender());
+    m_user_owned_stm32_conns.erase(conn);
 }
 
 yb::usb_device_interface LibybUsbEnumerator::lookupUsbAcmConn(int vid, int pid, QString const & serialNumber, QString const & intfName)
@@ -380,19 +392,25 @@ void LibybUsbEnumerator::pluginEventReceived()
                 {
                 case yb::usb_plugin_event::a_add:
                     {
+                        for (std::set<STM32Connection *>::const_iterator it = m_user_owned_stm32_conns.begin(); it != m_user_owned_stm32_conns.end(); ++it)
+                            (*it)->notifyIntfPlugin(ev.intf);
+
                         ConnectionPointer<STM32Connection> conn = m_standby_stm32_devices.extract(st);
                         if (!conn)
                         {
                             conn.reset(new STM32Connection(m_runner));
                             sConMgr2.addConnection(conn.data());
                         }
-                        conn->setup(ev.intf);
+                        conn->setEnumeratedIntf(ev.intf);
                         conn->setRemovable(false);
                         m_stm32_devices.insert(std::make_pair(ev.intf, conn));
                     }
                     break;
                 case yb::usb_plugin_event::a_remove:
                     {
+                        for (std::set<STM32Connection *>::const_iterator it = m_user_owned_stm32_conns.begin(); it != m_user_owned_stm32_conns.end(); ++it)
+                            (*it)->notifyIntfUnplug(ev.intf);
+
                         std::map<yb::usb_device_interface, ConnectionPointer<STM32Connection> >::iterator it = m_stm32_devices.find(ev.intf);
                         it->second->clear();
                         it->second->setRemovable(true);
@@ -581,6 +599,14 @@ yb::usb_device_interface ConnectionManager2::lookupUsbAcmConn(int vid, int pid, 
 {
     return m_libybUsbEnumerator->lookupUsbAcmConn(vid, pid, serialNumber, intfName);
 }
+
+STM32Connection *ConnectionManager2::createSTM32Conn()
+{
+    ConnectionPointer<STM32Connection> conn(new STM32Connection(m_yb_runner));
+    this->addUserOwnedConn(conn.data());
+    return conn.take();
+}
+
 #endif
 
 void ConnectionManager2::addConnection(Connection * conn)
@@ -598,6 +624,8 @@ void ConnectionManager2::addUserOwnedConn(Connection * conn)
 #ifdef HAVE_LIBYB
     if (UsbAcmConnection2 * uc = dynamic_cast<UsbAcmConnection2 *>(conn))
         m_libybUsbEnumerator->registerUserOwnedConn(uc);
+    if (STM32Connection * sc = dynamic_cast<STM32Connection *>(conn))
+        m_libybUsbEnumerator->registerUserOwnedConn(sc);
 #endif
 }
 
@@ -729,6 +757,18 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
                 }
                 break;
             }
+            case CONNECTION_STM32:
+            {
+                STM32Connection *stm32 = (STM32Connection*)m_conns[i];
+                if (stm32->vid() == cfg.value("vid", 0).toInt() &&
+                    stm32->pid() == cfg.value("pid", 0).toInt() &&
+                    stm32->serialNumber() == cfg.value("serial_number").toString() &&
+                    stm32->intfName() == cfg.value("intf_name").toString())
+                {
+                    return ConnectionPointer<Connection>::fromPtr(stm32);
+                }
+                break;
+            }
 #endif
             default:
                 return ConnectionPointer<Connection>();
@@ -759,6 +799,12 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
         ConnectionPointer<Connection> usb(createUsbAcmConn());
         usb->applyConfig(cfg);
         return usb;
+    }
+    else if(type == CONNECTION_STM32)
+    {
+        ConnectionPointer<Connection> stm32(createSTM32Conn());
+        stm32->applyConfig(cfg);
+        return stm32;
     }
 #endif
 

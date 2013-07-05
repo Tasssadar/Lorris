@@ -20,8 +20,19 @@ class STM32Connection : public GenericUsbConnection
 public:
     explicit STM32Connection(yb::async_runner & runner);
     
-    void setup(yb::usb_device_interface const & intf);
+    void setEnumeratedIntf(yb::usb_device_interface const & intf);
+    void notifyIntfPlugin(yb::usb_device_interface const & intf);
+    void notifyIntfUnplug(yb::usb_device_interface const & intf);
     void clear();
+
+    QHash<QString, QVariant> config() const;
+    bool applyConfig(QHash<QString, QVariant> const & config);
+    bool canSaveToSession() const { return true; }
+
+    int vid() const { return m_vid; }
+    int pid() const { return m_pid; }
+    QString serialNumber() const { return m_serialNumber; }
+    QString intfName() const { return m_intfName; }
 
     bool is_core_halted();
 
@@ -41,9 +52,9 @@ public:
     void c_write_mem8(uint32_t address, const uint8_t *data, uint16_t size);
     void c_write_reg(uint32_t val, uint8_t idx);
     uint32_t c_read_reg(uint8_t idx);
-    void c_force_reset();
-
     int c_status();
+
+    void c_force_reset();
 
 protected:
     virtual void doOpen();
@@ -66,9 +77,17 @@ private:
         uint32_t stlink_pid;
     };
 
+    void setup(yb::usb_device_interface const & intf);
+
     void send_cmd(const stm32_cmd& cmd);
     void send_data(const uint8_t *data, size_t len);
     int send_recv_cmd(const stm32_cmd& cmd, uint8_t *reply, size_t reply_len);
+
+    bool m_enumerated;
+    int m_vid;
+    int m_pid;
+    QString m_serialNumber;
+    QString m_intfName;
 
     yb::usb_device_interface m_intf;
     yb::usb_interface_guard m_intf_guard;

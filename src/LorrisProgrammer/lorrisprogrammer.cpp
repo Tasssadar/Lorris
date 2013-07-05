@@ -880,24 +880,33 @@ void LorrisProgrammer::saveData(DataFileParser *file)
 
     ui->saveData(file);
 
-    if(ConnectionPointer<PortShupitoConnection> sc = m_con.dynamicCast<PortShupitoConnection>())
+    if(m_con)
     {
-        file->writeBlockIdentifier("LorrShupitoConn2");
-        file->writeString("Shupito2");
-        file->writeConn(sc->port().data());
-        file->writeVal<qint64>(sc->getCompanionId());
-    }
-    else if(ConnectionPointer<PortConnection> con = m_con.dynamicCast<PortConnection>())
-    {
-        file->writeBlockIdentifier("LorrShupitoConn2");
-        file->writeString("Port");
-        file->writeConn(con.data());
-    }
-    else if(m_con && m_con->getType() == CONNECTION_SHUPITO23)
-    {
-        file->writeBlockIdentifier("LorrShupitoConn2");
-        file->writeString("Shupito23");
-        file->writeConn(m_con.data());
+        if(ConnectionPointer<PortShupitoConnection> sc = m_con.dynamicCast<PortShupitoConnection>())
+        {
+            file->writeBlockIdentifier("LorrShupitoConn2");
+            file->writeString("Shupito2");
+            file->writeConn(sc->port().data());
+            file->writeVal<qint64>(sc->getCompanionId());
+        }
+        else if(ConnectionPointer<PortConnection> con = m_con.dynamicCast<PortConnection>())
+        {
+            file->writeBlockIdentifier("LorrShupitoConn2");
+            file->writeString("Port");
+            file->writeConn(con.data());
+        }
+        else if(m_con->getType() == CONNECTION_SHUPITO23)
+        {
+            file->writeBlockIdentifier("LorrShupitoConn2");
+            file->writeString("Shupito23");
+            file->writeConn(m_con.data());
+        }
+        else if(m_con->getType() == CONNECTION_STM32)
+        {
+            file->writeBlockIdentifier("LorrShupitoConn2");
+            file->writeString("STM32");
+            file->writeConn(m_con.data());
+        }
     }
 }
 
@@ -942,7 +951,7 @@ void LorrisProgrammer::loadData(DataFileParser *file)
                     if(typeStr == "Shupito2")
                         sc->setCompanionId(file->readVal<qint64>());
                 }
-                else if(typeStr == "Port" || typeStr == "Shupito23")
+                else if(typeStr == "Port" || typeStr == "Shupito23" || typeStr == "STM32")
                     progConn = conn;
 
                 if(progConn.data())
