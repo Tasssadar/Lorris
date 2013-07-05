@@ -687,17 +687,17 @@ p, li { white-space: pre-wrap; }
         <translation>Duplikovat</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="419"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="420"/>
         <source>New Serial Port</source>
         <translation>Nový sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="428"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="429"/>
         <source>New TCP client</source>
         <translation>Nový TCP client</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="437"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="438"/>
         <source>New USB connection</source>
         <translation>Nové USB spojení</translation>
     </message>
@@ -906,6 +906,29 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/ui/connectbutton.cpp" line="102"/>
         <source>Disconnecting...</source>
         <translation>Odpojování...</translation>
+    </message>
+</context>
+<context>
+    <name>DataFilter</name>
+    <message>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="143"/>
+        <source>Data format</source>
+        <translation>Formát dat</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="148"/>
+        <source>Hexadecimal</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="149"/>
+        <source>Decimal</source>
+        <translation>Desítkový</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="150"/>
+        <source>ASCII</source>
+        <translation>ASCII</translation>
     </message>
 </context>
 <context>
@@ -1408,7 +1431,7 @@ stejného souboru vícekrát:</translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="865"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="346"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="347"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
@@ -1448,12 +1471,12 @@ stejného souboru vícekrát:</translation>
         <translation>Pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="348"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="349"/>
         <source>Program memory</source>
         <translation>Paměť programu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="350"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="351"/>
         <source>EEPROM</source>
         <translation>EEPROM</translation>
     </message>
@@ -1503,48 +1526,48 @@ stejného souboru vícekrát:</translation>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="352"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="353"/>
         <source>SVF</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="524"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="525"/>
         <source>Fuses had been succesfully read</source>
         <translation>Pojistky byly úspěšně přečteny</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="557"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="593"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="558"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="594"/>
         <source>Fuses had not been read yet</source>
         <translation>Pojistky ještě nebyly přečteny ze součástky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="563"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="564"/>
         <source>You have to &quot;Remember&quot; fuses prior to writing</source>
         <translation>Před zapsáním pojistek je musíte &quot;zapamatovat&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="567"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="568"/>
         <source>Write fuses?</source>
         <translation>Programovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="567"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="568"/>
         <source>Do you really wanna to write fuses to the chip?</source>
         <translation>Opravdu chcete naprogramovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="582"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="583"/>
         <source>Fuses had been succesfully written</source>
         <translation>Pojistky byly úspěšně naprogramovány</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="609"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="610"/>
         <source>You have flashed this file already, and it was not changed since.</source>
         <translation>Tento soubor se od posledního flashnutí nezměnil!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="748"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="749"/>
         <source> | h:mm:ss M.d.yyyy</source>
         <translation> | h:mm:ss d.M.yyyy</translation>
     </message>
@@ -2203,177 +2226,177 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>LorrisProgrammer</name>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="135"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="136"/>
         <source>Chip</source>
         <translation>Součástka</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="138"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="139"/>
         <source>Start chip</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="139"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="140"/>
         <source>Stop chip</source>
         <translation>Stop</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="140"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="141"/>
         <source>Restart chip</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="152"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="153"/>
         <source>Mode</source>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="155"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="156"/>
         <source>Verify write</source>
         <translation>Ověření naprogramovaných dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="162"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="163"/>
         <source>None</source>
         <translation>Vypnout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="163"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="164"/>
         <source>Verify only non-empty pages</source>
         <translation>Ověřit pouze zaplněné stránky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="164"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="165"/>
         <source>Verify all</source>
         <translation>Ověřit celou paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="177"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="178"/>
         <source>Set RS232 tunnel name...</source>
         <translation>Nastavit jméno RS232 tunelu...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="181"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="182"/>
         <source>Enable hardware button</source>
         <translation>Povolit HW tlačítko</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="186"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="187"/>
         <source>Load...</source>
         <translation>Otevřít...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="191"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="192"/>
         <source>Save...</source>
         <translation>Uložit...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="196"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="197"/>
         <source>Blink LED</source>
         <translation>Bliknout diodou</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="201"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="202"/>
         <source>Minimal UI</source>
         <translation>Zmenšené UI</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="319"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="320"/>
         <source>Can&apos;t set output VCC, voltage detected!</source>
         <translation>Nemůžu nastavit výstupní napětí, na pinech už nějáké bylo detekováno!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="345"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="346"/>
         <source>It looks like your Shupito does not support RS232 tunnel!</source>
         <translation>Vypadá to že vaše Shupito nepodporuje RS232 tunel!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="358"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="359"/>
         <source>RS232 tunnel %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="358"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="359"/>
         <source>enabled</source>
         <translation>zapnut</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="358"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="359"/>
         <source>disabled</source>
         <translation>vypnut</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="363"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="364"/>
         <source>Set tunnel name</source>
         <translation>Nastavit jméno RS232 tunelu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="363"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="364"/>
         <source>Tunnel name:</source>
         <translation>Jméno tunelu:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="412"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="413"/>
         <source>No voltage present</source>
         <translation>Nebylo detekováno žádné napětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="414"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="415"/>
         <source>Output voltage detected!</source>
         <translation>Detekováno napětí na výstupu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="425"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="426"/>
         <source>&lt;unknown&gt;</source>
         <translation>&lt;neznámý&gt;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="503"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="504"/>
         <source>Unsupported chip: %1</source>
         <translation>Nepodporovaný čip: %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="515"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="516"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="516"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="517"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="542"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="543"/>
         <source>Chip has been started</source>
         <translation>Součástka byla spuštěna</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="564"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="565"/>
         <source>Chip has been stopped</source>
         <translation>Součástka byla zastavena</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="659"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="660"/>
         <source>File loaded</source>
         <translation>Soubor byl načten</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="686"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="687"/>
         <source>File saved</source>
         <translation>Data byla uložena</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="720"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="721"/>
         <source>Failed to reload file %1</source>
         <translation>Chyba při načítání souboru %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="845"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="850"/>
         <source>VCC was turned off due to overvoltage!</source>
         <translation>VCC bylo vypnuto kvůli přepětí!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="856"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="861"/>
         <source>Shupito is not responding, try to re-plug it into computer!</source>
         <translation>Shupito neodpovídá, zkuste ho odpojit a znovu připojit!</translation>
     </message>
@@ -3165,22 +3188,22 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Nemůžu naprogramovat stránku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="50"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="51"/>
         <source>All supported file types (*.hex *.bin);;Intel HEX file (*.hex);;Binary file (*.bin)</source>
         <translation>Všechny podporované soubory (*.hex *.bin);;Intel HEX soubory (*.hex);;Binární soubor (*.bin)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="51"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="52"/>
         <source>Serial Vector Format file (*.svf)</source>
         <translation>Soubor Serial Vector Format (*.svf)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="604"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="605"/>
         <source>Import data</source>
         <translation>Importovat data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="667"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="668"/>
         <source>Export data</source>
         <translation>Exportovat data</translation>
     </message>
@@ -3195,7 +3218,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Program není kompatibilní s tímto typem patchování.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="649"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="650"/>
         <location filename="../src/shared/hexfile.cpp" line="56"/>
         <location filename="../src/shared/hexfile.cpp" line="67"/>
         <location filename="../src/shared/hexfile.cpp" line="168"/>
@@ -3390,22 +3413,22 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="232"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="284"/>
         <source>Device == 0x%1</source>
         <translation>Zařízení == 0x%1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="259"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="311"/>
         <source>Command == 0x%1</source>
         <translation>Příkaz == 0x%1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="290"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="342"/>
         <source>Byte at idx %1 == 0x%2</source>
         <translation>Byte na pozici %1 == 0x%2</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="316"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="368"/>
         <source>// Return true if okay, false to filter out
 function dataPass(data, dev, cmd) {
     return false;
@@ -3418,12 +3441,12 @@ function dataPass(data, dev, cmd) {
 </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="341"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="393"/>
         <source>Could not find dataPass function!</source>
         <translation>Nemůžu najít fci dataPass!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="386"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="438"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -3604,6 +3627,108 @@ function dataPass(data, dev, cmd) {
         <location filename="../src/LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp" line="89"/>
         <source>This widget requires OpenGL support</source>
         <translation>Tento widget potřebuje podporu OpenGL</translation>
+    </message>
+</context>
+<context>
+    <name>STM32Connection</name>
+    <message>
+        <location filename="../src/connection/stm32connection.cpp" line="192"/>
+        <source>STM32Connection::c_read_mem32: read len is not 32bit aligned!</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/connection/stm32connection.cpp" line="218"/>
+        <source>STM32Connection::c_write_mem32: write len is not 32bit aligned!</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/connection/stm32connection.cpp" line="231"/>
+        <source>STM32Connection::c_write_mem8: can&apos;t write more than 64 bytes at once!</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/connection/stm32connection.cpp" line="244"/>
+        <location filename="../src/connection/stm32connection.cpp" line="258"/>
+        <source>STM32Connection::c_write_reg: reg idx must be in range 0..20</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>STM32Programmer</name>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="103"/>
+        <source>Invalid chip definition %1!</source>
+        <translation>Špatná definice čipu %1!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="114"/>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="155"/>
+        <source>Unsupported memory type</source>
+        <translation>Nepodporovaný typ paměti</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="174"/>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="234"/>
+        <source>Waiting for flash operations to finish...</source>
+        <translation>Čekám na dokončení operací flash paměti...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="182"/>
+        <source>Erasing flash pages...</source>
+        <translation>Mažu stránky flash paměti...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="195"/>
+        <source>Writing data...</source>
+        <translation>Zapisuji data...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="206"/>
+        <source>Verifying data...</source>
+        <translation>Kontroluji data...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="221"/>
+        <source>Verification failed at offset 0x%1!</source>
+        <translation>Kontrola dat selhala, offset 0x%1!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="244"/>
+        <source>Erasing memory..</source>
+        <translation>Mažu pamět...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="256"/>
+        <source>This flash does not support mass erase and individual page erase is not yet implemented</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="272"/>
+        <source>Flash controller for this chip was not specified.</source>
+        <translation>Ovladač flash paměti pro tento čip nebyl určen.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="277"/>
+        <source>Unknown flash controller (&quot;%1&quot;)</source>
+        <translation>Neznám ovladač flash (&quot;%1&quot;)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="398"/>
+        <source>Failed to unlock flash memory, try to reset the device!</source>
+        <translation>Nemůžu odemčít flash paměť, zkuste resetovat zařízení!</translation>
+    </message>
+</context>
+<context>
+    <name>STM32VLFlash</name>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="488"/>
+        <source>Flash loader didn&apos;t finish in time!</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/stm32programmer.cpp" line="493"/>
+        <source>Flash loader write error (count: %1)</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -4228,7 +4353,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="378"/>
-        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="402"/>
+        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="407"/>
         <source>Invalid response</source>
         <translation>Chybná odpověď</translation>
     </message>
@@ -4654,13 +4779,14 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
 <context>
     <name>SplitOverlay</name>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="676"/>
-        <location filename="../src/ui/tabview.cpp" line="679"/>
+        <location filename="../src/ui/tabview.cpp" line="699"/>
+        <location filename="../src/ui/tabview.cpp" line="704"/>
+        <location filename="../src/ui/tabview.cpp" line="708"/>
         <source>Split</source>
         <translation>Rozdělit</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="682"/>
+        <location filename="../src/ui/tabview.cpp" line="711"/>
         <source>New window</source>
         <translation>Nové okno</translation>
     </message>
@@ -4912,7 +5038,7 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
         <translation>Zkontrolovat aktualizace...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabview.cpp" line="536"/>
+        <location filename="../src/ui/tabview.cpp" line="543"/>
         <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
