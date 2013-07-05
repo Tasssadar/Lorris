@@ -104,7 +104,7 @@ void STM32Connection::notifyIntfPlugin(yb::usb_device_interface const & intf)
 void STM32Connection::notifyIntfUnplug(yb::usb_device_interface const & intf)
 {
     if (!m_enumerated && m_intf == intf)
-        this->setup(yb::usb_device_interface());
+        this->clear();
 }
 
 void STM32Connection::doOpen()

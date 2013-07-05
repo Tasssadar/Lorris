@@ -80,6 +80,9 @@ void Connection::OpenConcurrent()
 {
     if (m_state == st_disconnected)
         this->doOpen();
+    // If connection was requested, connect when the device is present
+    else if(m_state == st_missing)
+        SetState(st_connect_pending);
 }
 
 void Connection::Close()
