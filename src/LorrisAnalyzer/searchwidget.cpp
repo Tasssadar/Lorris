@@ -78,10 +78,24 @@ SearchWidget::SearchWidget(WidgetArea *area, LorrisAnalyzer *analyzer) :
 
     initItems();
 
-    show();
-    move(QCursor::pos());
+    activate();
 
     icon->move(m_line->x() + frameW, m_line->y() + (m_line->height() - icon->height())/2);
+}
+
+SearchWidget::~SearchWidget()
+{
+    m_line->releaseKeyboard();
+    delete_vect(m_items);
+}
+
+void SearchWidget::activate()
+{
+    if(this->isVisible())
+        return;
+
+    show();
+    move(QCursor::pos());
 
     m_line->setFocus();
     m_line->grabKeyboard();
@@ -89,10 +103,10 @@ SearchWidget::SearchWidget(WidgetArea *area, LorrisAnalyzer *analyzer) :
     m_line->selectAll();
 }
 
-SearchWidget::~SearchWidget()
+void SearchWidget::focusLost()
 {
     m_line->releaseKeyboard();
-    delete_vect(m_items);
+    hide();
 }
 
 void SearchWidget::initItems()

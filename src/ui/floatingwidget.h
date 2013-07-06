@@ -24,6 +24,8 @@ protected:
     void resizeEvent(QResizeEvent *ev);
     void mouseMoveEvent(QMouseEvent *ev);
 
+    virtual void focusLost();
+
 private slots:
     void focusChanged(QWidget *, QWidget *to);
 

@@ -36,10 +36,15 @@ FloatingWidget::~FloatingWidget()
 
 }
 
+void FloatingWidget::focusLost()
+{
+    deleteLater();
+}
+
 void FloatingWidget::focusChanged(QWidget *, QWidget *to)
 {
     if(!to || (to != this && !isAncestorOf(to)))
-        deleteLater();
+        focusLost();
 }
 
 bool FloatingWidget::isAncestorOf(const QWidget *child) const
@@ -76,7 +81,7 @@ void FloatingWidget::mouseMoveEvent(QMouseEvent *ev)
     if (x > width()+DISSAPEAR || x < -DISSAPEAR ||
         y > height()+DISSAPEAR || y < -DISSAPEAR)
     {
-        deleteLater();
+        focusLost();
     }
 
     QWidget::mouseMoveEvent(ev);

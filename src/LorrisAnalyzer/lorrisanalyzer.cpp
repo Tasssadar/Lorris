@@ -154,6 +154,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     m_rightVisible = true;
 
     setEnableSearchWidget(sConfig.get(CFG_BOOL_ANALYZER_SEARCH_WIDGET));
+    m_searchWidget = NULL;
 
     setAreaVisibility(AREA_LEFT, false);
     setAreaVisibility(AREA_RIGHT, true);
@@ -168,6 +169,8 @@ LorrisAnalyzer::LorrisAnalyzer()
 LorrisAnalyzer::~LorrisAnalyzer()
 {
     qApp->removeEventFilter(this);
+
+    delete m_searchWidget;
 
     if(m_packet)
     {
@@ -799,7 +802,11 @@ DataFilter *LorrisAnalyzer::getFilterByOldInfo(const data_widget_infoV1 &old_inf
 void LorrisAnalyzer::keyPressEvent(QKeyEvent *ev)
 {
     if(m_enableSearchWidget && ev->key() == Qt::Key_Space)
-        new SearchWidget(ui->dataArea, this);
+    {
+        if(!m_searchWidget)
+            m_searchWidget = new SearchWidget(ui->dataArea, this);
+        m_searchWidget->activate();
+    }
     PortConnWorkTab::keyPressEvent(ev);
 }
 
@@ -818,7 +825,9 @@ bool LorrisAnalyzer::eventFilter(QObject */*obj*/, QEvent *event)
     if(focus && (focus->inherits("QLineEdit") || focus->inherits("Terminal")))
         return false;
 
-    new SearchWidget(ui->dataArea, this);
+    if(!m_searchWidget)
+        m_searchWidget = new SearchWidget(ui->dataArea, this);
+    m_searchWidget->activate();
     return true;
 }
 

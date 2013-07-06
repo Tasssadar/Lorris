@@ -28,6 +28,7 @@ class WidgetArea;
 class QSpinBox;
 class QScrollArea;
 class DataFilter;
+class SearchWidget;
 
 enum hideable_areas
 {
@@ -130,7 +131,9 @@ private:
     ConnectButton * m_connectButton;
     analyzer_data m_curData;
     bool m_rightVisible;
+
     bool m_enableSearchWidget;
+    SearchWidget *m_searchWidget;
 };
 
 #endif // LORRISANALYZER_H

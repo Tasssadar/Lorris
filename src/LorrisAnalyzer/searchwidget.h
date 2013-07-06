@@ -24,7 +24,12 @@ public:
     explicit SearchWidget(WidgetArea *area, LorrisAnalyzer *analyzer);
     ~SearchWidget();
 
+    void activate();
+
     static void invokeItem(QListWidgetItem *it);
+
+protected:
+    virtual void focusLost() override;
 
 private slots:
     void itemActivated(QListWidgetItem *it);
