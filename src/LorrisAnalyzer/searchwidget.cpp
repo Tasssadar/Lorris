@@ -128,7 +128,6 @@ void SearchWidget::initItems()
     addItem(tr("Toggle area preview"), m_area, "togglePreview");
     addItem(tr("Toggle widget titles"), m_area, "toggleWidgetTitles");
 
-
     m_list->sortItems();
 }
 
@@ -336,39 +335,20 @@ void SearchWidget::filterChanged(const QString &filterString)
     m_lastLen = f.length();
 }
 
-static const ushort czech_translate_table[2][30] = {
-    {
-        'a',  'c',   'd',   'e',  'e',   'i',  'n',   'o',  'r',   's',   't',   'u',  'u',   'y',  'z',
-        'a',  'c',   'd',   'e',  'e',   'i',  'n',   'o',  'r',   's',   't',   'u',  'u',   'y',  'z',
-    },
-    {
-        0xE1, 0x10D, 0x10F, 0xE9, 0x11B, 0xED, 0x148, 0xF3, 0x159, 0x161, 0x165, 0xFA, 0x16F, 0xFD, 0x17e, // Lowercase
-        0xC1, 0x10C, 0x10E, 0xC9, 0x11A, 0xCD, 0x147, 0xD3, 0x158, 0x160, 0x164, 0xDA, 0x16E, 0xDD, 0x17d, // Uppercase
-    }
-};
-
-static ushort normalize_char(const ushort c)
-{
-    if(c >= 'A' && c <= 'Z')
-        return (c + 32);
-
-    if(c < 0x80)
-        return c;
-
-    // Czech
-    for(size_t i = 0; i < sizeof_array(czech_translate_table[0]); ++i)
-        if(c == czech_translate_table[1][i])
-            return czech_translate_table[0][i];
-
-    return c;
-}
-
 QString SearchWidget::normalize(const QString &src)
 {
     QString res;
     res.reserve(src.size());
 
-    for(ushort *itr = (ushort*)src.utf16(); *itr; ++itr)
-        res.push_back(normalize_char(*itr));
-    return res;
+    // Separate diacritics from characters
+    QString norm = src.normalized(QString::NormalizationForm_D);
+
+    for(ushort *itr = (ushort*)norm.utf16(); *itr; ++itr)
+    {
+         // remove non-ASCII elements (-> diacritics separated above)
+        if(*itr < 0x80)
+            res.push_back(*itr);
+    }
+
+    return res.toLower();
 }
