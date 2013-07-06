@@ -175,7 +175,8 @@ void SearchWidget::itemActivated(QListWidgetItem *it)
         }
         new ConfirmWidget(it);
     }
-    deleteLater();
+
+    this->focusLost();
 }
 
 void SearchWidget::invokeItem(QListWidgetItem *it)
