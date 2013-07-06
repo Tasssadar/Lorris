@@ -26,6 +26,7 @@ enum ItemDataTypes
     DATA_CONFIRM,
     DATA_TARGET,
     DATA_SLOT,
+    DATA_NAME_NORM,
 
     // args must be after each other
     DATA_ARG1,
@@ -121,6 +122,7 @@ QListWidgetItem* SearchWidget::addItem(const QString& text, QObject *target, con
               const QVariant& arg1, const QVariant& arg2, const QVariant& arg3)
 {
     QListWidgetItem *it = new QListWidgetItem(text, m_list);
+    it->setData(DATA_NAME_NORM, QVariant(normalize(text)));
     it->setData(DATA_CONFIRM, QVariant(false));
     it->setData(DATA_TARGET, QVariant::fromValue((void*)target));
     it->setData(DATA_SLOT, QVariant(slot));
@@ -259,8 +261,10 @@ static bool compareItems(QListWidgetItem *a, QListWidgetItem *b)
     return a->text() < b->text();
 }
 
-void SearchWidget::filterChanged(const QString &f)
+void SearchWidget::filterChanged(const QString &filterString)
 {
+    QString f = normalize(filterString);
+
     QListWidgetItem *it = NULL;
     if(f.length() == 0)
     {
@@ -291,7 +295,9 @@ void SearchWidget::filterChanged(const QString &f)
                 continue;
 
             it = m_items[i];
-            idx = it->text().indexOf(f, 0, Qt::CaseInsensitive);
+
+            QString n = it->data(DATA_NAME_NORM).toString();
+            idx = n.indexOf(f, 0, Qt::CaseInsensitive);
 
             m_itemVisibility[i] = (idx != -1);
 
@@ -314,4 +320,41 @@ void SearchWidget::filterChanged(const QString &f)
     }
 
     m_lastLen = f.length();
+}
+
+static const ushort czech_translate_table[2][30] = {
+    {
+        'a',  'c',   'd',   'e',  'e',   'i',  'n',   'o',  'r',   's',   't',   'u',  'u',   'y',  'z',
+        'a',  'c',   'd',   'e',  'e',   'i',  'n',   'o',  'r',   's',   't',   'u',  'u',   'y',  'z',
+    },
+    {
+        0xC1, 0x10C, 0x10E, 0xC9, 0x11A, 0xCD, 0x147, 0xD3, 0x158, 0x160, 0x164, 0xDA, 0x16E, 0xDD, 0x17d, // Uppercase
+        0xE1, 0x10D, 0x10F, 0xE9, 0x11B, 0xED, 0x148, 0xF3, 0x159, 0x161, 0x165, 0xFA, 0x16F, 0xFD, 0x17e  // Lowercase
+    }
+};
+
+static ushort normalize_char(const ushort c)
+{
+    if(c >= 'A' && c <= 'Z')
+        return (c + 32);
+
+    if(c < 0x80)
+        return c;
+
+    // Czech
+    for(size_t i = 0; i < sizeof_array(czech_translate_table[0]); ++i)
+        if(c == czech_translate_table[1][i])
+            return czech_translate_table[0][i];
+
+    return c;
+}
+
+QString SearchWidget::normalize(const QString &src)
+{
+    QString res;
+    res.reserve(src.size());
+
+    for(ushort *itr = (ushort*)src.utf16(); *itr; ++itr)
+        res.push_back(normalize_char(*itr));
+    return res;
 }

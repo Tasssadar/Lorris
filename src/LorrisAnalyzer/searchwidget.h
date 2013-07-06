@@ -42,6 +42,8 @@ private:
 
     void initItems();
 
+    static QString normalize(const QString& src);
+
     HookedLineEdit *m_line;
     QListWidget *m_list;
     WidgetArea *m_area;
