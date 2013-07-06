@@ -216,7 +216,7 @@ void Config::openSettings()
     static QString cfgFileLocations[] =
     {
         "./data/config.ini",
-        Utils::storageLocation(Utils::DocumentsLocation) + "/config.ini",
+        Utils::storageLocation(Utils::DocumentsLocation) + "/Lorris/config.ini",
         Utils::storageLocation(Utils::DataLocation) + "/config.ini"
     };
 
