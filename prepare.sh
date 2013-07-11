@@ -212,13 +212,14 @@ else
     echo "Not using kate"
 fi
 
-echo -n "Do you want to use QScintilla2 editor? [y/N]: "
+echo -n "Do you want to use QScintilla2 editor? [Y/n]: "
 read use_qsci_user
-echo -n "Use systemwide QScintilla2 library? [Y/n]: "
-read use_qsci_system
-echo ""
-if [ "$use_qsci_user" == "y" ] || [ "$use_qsci_user" == "Y" ]; then
-    if [ "$use_qsci_system" == "n" ] || [ "$use_qsci_system" == "N" ]; then
+
+if [ -z $use_qsci_user ] || [ "$use_qsci_user" == "y" ] || [ "$use_qsci_user" == "Y" ]; then
+    echo -n "Use systemwide QScintilla2 library? [y/N]: "
+    read use_qsci_system
+    echo ""
+    if [ "$use_qsci_system" == "y" ] || [ "$use_qsci_system" == "Y" ]; then
         echo -n "Checking for QScintilla dev files..."
         cat > /tmp/test.cpp << EOF
 #include <Qsci/qsciscintilla.h>
