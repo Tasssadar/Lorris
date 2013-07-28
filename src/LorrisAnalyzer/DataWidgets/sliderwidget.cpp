@@ -38,7 +38,7 @@ SliderWidget::SliderWidget(QWidget *parent) : DataWidget(parent),
     m_orientation = ORI_MAX+1;
 
     setOrientation(ORI_HOR_L_R);
-    resize(250, 130);
+    resize(250, 150);
 }
 
 SliderWidget::~SliderWidget()
@@ -323,10 +323,10 @@ void SliderWidget::setOrientation(int ori)
         case ORI_HOR_R_L:
         {
             ui_hor->setupUi(m_widget);
+            ui_hor->slider->setOrientation(Qt::Horizontal);
 
-            QSize s = ui_hor->slider->handleSize();
-            s.transpose();
-            ui_hor->slider->setHandleSize(s);
+            const int thickness = 16;
+            ui_hor->slider->setHandleSize(QSize(thickness, 2*thickness));
             break;
         }
         case ORI_VER_B_T:
@@ -337,6 +337,7 @@ void SliderWidget::setOrientation(int ori)
     }
 
     slider()->setGroove(true);
+    slider()->setTrough(false);
     p_setRange(m_min, m_max);
     slider()->setValue(value);
     minEdit()->setText(QString::number(m_min));
@@ -361,7 +362,7 @@ void SliderWidget::p_setRange(double min, double max)
     m_min = min;
     m_max = max;
 
-    if(m_orientation == ORI_VER_B_T || m_orientation == ORI_HOR_R_L)
+    if(m_orientation == ORI_VER_T_B || m_orientation == ORI_HOR_R_L)
         std::swap(min, max);
 
     slider()->setScale(min, max);
