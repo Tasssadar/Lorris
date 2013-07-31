@@ -50,6 +50,8 @@ public:
     virtual void erase_device(chip_definition& chip) = 0;
 
     virtual ProgrammerCapabilities capabilities() const = 0;
+    virtual QList<QWidget*> widgets() { return QList<QWidget*>(); }
+    virtual void setActive(bool active) { }
 
 protected:
     virtual ShupitoDesc::config const *getModeCfg() = 0;
@@ -58,6 +60,8 @@ protected:
     virtual void prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& chip);
     virtual bool is_read_memory_supported(chip_definition::memorydef * /*memdef*/) { return true; }
     virtual void readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size) = 0;
+
+    void prepare();
 
     volatile bool m_cancel_requested;
     Shupito *m_shupito;
@@ -70,9 +74,6 @@ protected:
     quint16 m_bsel_max;
 
     quint8 m_prog_cmd_base;
-
-private:
-    void prepare();
 };
 
 class ShupitoModeCommon : public ShupitoMode

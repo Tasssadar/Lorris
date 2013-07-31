@@ -28,17 +28,18 @@ enum ConnectionState {
 // TODO: maybe we should just remove this and use dynamic_cast?
 enum ConnectionType
 {
-    CONNECTION_SERIAL_PORT = 0,
-    CONNECTION_SHUPITO_TUNNEL = 1,
-    CONNECTION_PORT_SHUPITO = 2,
-    CONNECTION_TCP_SOCKET  = 3,
-    CONNECTION_USB_SHUPITO = 4,
-    CONNECTION_PROXY_TUNNEL= 6,
-    CONNECTION_FLIP        = 7,
-    CONNECTION_LIBYB_USB   = 8,
-    CONNECTION_USB_ACM2    = 9,
-    CONNECTION_SHUPITO23   = 10,
-    CONNECTION_STM32       = 11,
+    CONNECTION_SERIAL_PORT         = 0,
+    CONNECTION_SHUPITO_TUNNEL      = 1,
+    CONNECTION_PORT_SHUPITO        = 2,
+    CONNECTION_TCP_SOCKET          = 3,
+    CONNECTION_USB_SHUPITO         = 4,
+    CONNECTION_PROXY_TUNNEL        = 6,
+    CONNECTION_FLIP                = 7,
+    CONNECTION_LIBYB_USB           = 8,
+    CONNECTION_USB_ACM2            = 9,
+    CONNECTION_SHUPITO23           = 10,
+    CONNECTION_STM32               = 11,
+    CONNECTION_SHUPITO_SPI_TUNNEL  = 12,
 
     MAX_CON_TYPE
 };
@@ -82,15 +83,15 @@ public:
     void setName(const QString& str, bool isDefault = false);
     bool hasDefaultName() const { return m_defaultName; }
 
-    qint64 getCompanionId() const { return m_companionId; }
-    void setCompanionId(qint64 id) { m_companionId = id; }
+    qint64 getCompanionId(const QString& name) const;
+    void setCompanionId(const QString& name, qint64 id);
 
     virtual QString details() const;
 
     void OpenConcurrent();
     void Close();
 
-    bool isOpen() const { return m_state == st_connected; }
+    inline bool isOpen() const { return m_state == st_connected; }
     ConnectionState state() const { return m_state; }
 
     void addRef();
@@ -150,7 +151,7 @@ private:
     bool m_removable;
     bool m_persistent;
     quint8 m_type;
-    qint64 m_companionId;
+    QHash<QString, qint64> m_companionIds;
 };
 
 Q_DECLARE_METATYPE(Connection *)

@@ -12,7 +12,7 @@
 
 Connection::Connection(ConnectionType type)
     : m_state(st_disconnected), m_defaultName(true), m_refcount(1), m_tabcount(0), m_removable(true),
-      m_persistent(false), m_type(type), m_companionId(0)
+      m_persistent(false), m_type(type)
 {
 }
 
@@ -134,7 +134,12 @@ QHash<QString, QVariant> Connection::config() const
     QHash<QString, QVariant> res;
     if (!this->hasDefaultName())
         res["name"] = this->name();
-    res["companion"] = this->getCompanionId();
+
+    QHash<QString, QVariant> c;
+    for(QHash<QString, qint64>::const_iterator itr = m_companionIds.begin(); itr != m_companionIds.end(); ++itr)
+        c[itr.key()] = QVariant::fromValue(itr.value());
+    res["companions"] = c;
+
     return res;
 }
 
@@ -142,7 +147,11 @@ bool Connection::applyConfig(QHash<QString, QVariant> const & config)
 {
     if (config.contains("name"))
         this->setName(config.value("name").toString());
-    this->setCompanionId(config.value("companion", m_companionId).toLongLong());
+
+    QHash<QString, QVariant> c = config.value("companions").toHash();
+    for(QHash<QString, QVariant>::iterator itr = c.begin(); itr != c.end(); ++itr)
+        m_companionIds[itr.key()] = itr.value().toLongLong();
+
     return true;
 }
 
@@ -162,6 +171,22 @@ void Connection::setPersistent(bool value)
         else
             this->release();
     }
+}
+
+qint64 Connection::getCompanionId(const QString &name) const
+{
+    QHash<QString, qint64>::const_iterator itr = m_companionIds.find(name);
+    if(itr != m_companionIds.end())
+        return itr.value();
+    return 0;
+}
+
+void Connection::setCompanionId(const QString &name, qint64 id)
+{
+    if(id != 0)
+        m_companionIds[name] = id;
+    else
+        m_companionIds.remove(name);
 }
 
 PortConnection::PortConnection(ConnectionType type) : Connection(type)

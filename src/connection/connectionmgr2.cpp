@@ -15,6 +15,7 @@
 #include "tcpsocket.h"
 #include "proxytunnel.h"
 #include "shupitotunnel.h"
+#include "shupitospitunnelconn.h"
 #include "../misc/config.h"
 #include "../misc/utils.h"
 
@@ -720,12 +721,26 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
             }
             case CONNECTION_SHUPITO_TUNNEL:
             {
-                qint64 id = cfg.value("companion", 0).toLongLong();
-                if(id == 0)
+                QHash<QString, QVariant> c = cfg.value("companions").toHash();
+                QHash<QString, QVariant>::iterator itr = c.find(ShupitoTunnel::getCompanionName());
+                if(itr == c.end())
                     return ConnectionPointer<Connection>();
 
-                if(id == m_conns[i]->getCompanionId())
+                qint64 id = itr.value().toLongLong();
+                if(id != 0 && id == m_conns[i]->getCompanionId(ShupitoTunnel::getCompanionName()))
                     return ConnectionPointer<Connection>::fromPtr((ShupitoTunnel*)m_conns[i]);
+                break;
+            }
+            case CONNECTION_SHUPITO_SPI_TUNNEL:
+            {
+                QHash<QString, QVariant> c = cfg.value("companions").toHash();
+                QHash<QString, QVariant>::iterator itr = c.find(ShupitoSpiTunnelConn::getCompanionName());
+                if(itr == c.end())
+                    return ConnectionPointer<Connection>();
+
+                qint64 id = itr.value().toLongLong();
+                if(id != 0 && id == m_conns[i]->getCompanionId(ShupitoSpiTunnelConn::getCompanionName()))
+                    return ConnectionPointer<Connection>::fromPtr((ShupitoSpiTunnelConn*)m_conns[i]);
                 break;
             }
 #ifdef HAVE_LIBYB
@@ -741,6 +756,7 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
                     usb->parity() == (UsbAcmConnection2::parity_t)cfg.value("parity", 0).toInt() &&
                     usb->dataBits() == cfg.value("data_bits", 8).toInt())
                 {
+                    usb->applyConfig(cfg);
                     return ConnectionPointer<Connection>::fromPtr(usb);
                 }
                 break;
@@ -753,6 +769,7 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
                     usb->serialNumber() == cfg.value("serial_number").toString() &&
                     usb->intfName() == cfg.value("intf_name").toString())
                 {
+                    usb->applyConfig(cfg);
                     return ConnectionPointer<Connection>::fromPtr(usb);
                 }
                 break;
@@ -783,11 +800,33 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
 
     if(type == CONNECTION_SHUPITO_TUNNEL)
     {
-        qint64 id = cfg.value("companion", 0).toLongLong();
+        QHash<QString, QVariant> c = cfg.value("companions").toHash();
+        QHash<QString, QVariant>::iterator itr = c.find(ShupitoTunnel::getCompanionName());
+        if(itr == c.end())
+            return ConnectionPointer<Connection>();
+
+        qint64 id = itr.value().toLongLong();
         if(id == 0)
-            return ConnectionPointer<PortConnection>();
+            return ConnectionPointer<Connection>();
 
         ConnectionPointer<Connection> tunnel(new ShupitoTunnel());
+        tunnel->applyConfig(cfg);
+        tunnel->setRemovable(false);
+        this->addConnection(tunnel.data());
+        return tunnel;
+    }
+    else if(type == CONNECTION_SHUPITO_SPI_TUNNEL)
+    {
+        QHash<QString, QVariant> c = cfg.value("companions").toHash();
+        QHash<QString, QVariant>::iterator itr = c.find(ShupitoSpiTunnelConn::getCompanionName());
+        if(itr == c.end())
+            return ConnectionPointer<Connection>();
+
+        qint64 id = itr.value().toLongLong();
+        if(id == 0)
+            return ConnectionPointer<Connection>();
+
+        ConnectionPointer<Connection> tunnel(new ShupitoSpiTunnelConn());
         tunnel->applyConfig(cfg);
         tunnel->setRemovable(false);
         this->addConnection(tunnel.data());
@@ -833,15 +872,16 @@ qint64 ConnectionManager2::generateCompanionId()
     return id;
 }
 
-Connection *ConnectionManager2::getCompanionConnection(Connection *toConn)
+Connection *ConnectionManager2::getCompanionConnection(Connection *toConn, const QString& name)
 {
-    if(!toConn || toConn->getCompanionId() == 0)
+    qint64 id = toConn->getCompanionId(name);
+    if(!toConn || id == 0)
         return NULL;
 
     for(int i = 0; i < m_conns.size(); ++i)
     {
         Connection *c = m_conns[i];
-        if(c != toConn && c->getCompanionId() == toConn->getCompanionId())
+        if(c != toConn && c->getCompanionId(name) == id)
             return c;
     }
     return NULL;

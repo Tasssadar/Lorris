@@ -34,6 +34,8 @@ static const QString keys_quint32[] =
     "analyzer/script_edit_type", // CFG_QUINT32_SCRIPTEDITOR_TYPE
     "analyzer/script_engine",    // CFG_QUINT32_ANALYZER_SCRIPT_ENG
     "general/compress_block",    // CFG_QUINT32_COMPRESS_BLOCK
+    "shupito/spi_tunnel_speed",  // CFG_QUINT32_SPI_TUNNEL_SPEED
+    "shupito/spi_tunnel_modes",  // CFG_QUINT32_SPI_TUNNEL_MODES
 };
 
 static const quint32 def_quint32[] =
@@ -57,6 +59,8 @@ static const quint32 def_quint32[] =
     UINT_MAX,                    // CFG_QUINT32_SCRIPTEDITOR_TYPE
     0,                           // CFG_QUINT32_ANALYZER_SCRIPT_ENG
     10*1024*1024,                // CFG_QUINT32_COMPRESS_BLOCK
+    500000,                      // CFG_QUINT32_SPI_TUNNEL_SPEED
+    0x200,                       // CFG_QUINT32_SPI_TUNNEL_MODES
 };
 
 static const QString keys_string[] =
@@ -131,7 +135,8 @@ static const QString keys_bool[] =
     "analyzer/show_bookmarks",    // CFG_BOOL_ANALYZER_SHOW_BOOKMARKS
     "general/connect_on_new_tab", // CFG_BOOL_CONN_ON_NEW_TAB
     "general/enable_sounds",      // CFG_BOOL_ENABLE_SOUNDS
-    "analyzer/enable_search"      // CFG_BOOL_ANALYZER_SEARCH_WIDGET
+    "analyzer/enable_search",     // CFG_BOOL_ANALYZER_SEARCH_WIDGET
+    "shupito/spi_tunnel_lsb",     // CFG_BOOL_SPI_TUNNEL_LSB_FIRST
 };
 
 static const bool def_bool[] =
@@ -169,6 +174,7 @@ static const bool def_bool[] =
     true,                         // CFG_BOOL_CONN_ON_NEW_TAB
     true,                         // CFG_BOOL_ENABLE_SOUNDS
     true,                         // CFG_BOOL_ANALYZER_SEARCH_WIDGET
+    false,                        // CFG_BOOL_SPI_TUNNEL_LSB_FIRST
 };
 
 static const QString keys_variant[] =

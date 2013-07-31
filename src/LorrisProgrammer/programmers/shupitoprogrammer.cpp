@@ -47,7 +47,7 @@ int ShupitoProgrammer::getType()
 
 QStringList ShupitoProgrammer::getAvailableModes()
 {
-    static const QString modeNames[] = { "SPI", "PDI", "cc25xx", "SPI flash", "JTAG" };
+    static const QString modeNames[] = { "SPI", "PDI", "cc25xx", "SPI flash", "JTAG", "SPI tunnel" };
 
     QStringList modes;
     for (int i = 0; i < MODE_COUNT; ++i)
@@ -72,6 +72,10 @@ int ShupitoProgrammer::getMode()
 void ShupitoProgrammer::setMode(int mode)
 {
     Q_ASSERT(mode >= 0 && mode < MODE_COUNT);
+
+    if(m_modes[m_cur_mode])
+        m_modes[m_cur_mode]->setActive(false);
+
     for (int i = 0; i < MODE_COUNT; ++i)
     {
         if (!m_modes[i])
@@ -82,6 +86,7 @@ void ShupitoProgrammer::setMode(int mode)
             m_cur_mode = i;
             sConfig.set(CFG_QUINT32_SHUPITO_MODE, i);
             emit capabilitiesChanged();
+            m_modes[i]->setActive(true);
             return;
         }
 
@@ -240,8 +245,11 @@ void ShupitoProgrammer::descRead(bool correct)
     m_cur_mode = sConfig.get(CFG_QUINT32_SHUPITO_MODE);
     if(m_cur_mode >= MODE_COUNT)
         m_cur_mode = MODE_SPI;
+
     if (!m_modes[m_cur_mode])
         this->setMode(0);
+    else
+        m_modes[m_cur_mode]->setActive(true);
 
     m_vdd_config = m_desc->getConfig("1d4738a0-fc34-4f71-aa73-57881b278cb1");
     m_shupito->setVddConfig(m_vdd_config);
@@ -355,6 +363,14 @@ ProgrammerCapabilities ShupitoProgrammer::capabilities() const
     }
     caps.terminal = m_tunnel_config != 0;
     return caps;
+}
+
+QList<QWidget*> ShupitoProgrammer::widgets()
+{
+    if (m_modes[m_cur_mode])
+        return m_modes[m_cur_mode]->widgets();
+
+    return QList<QWidget*>();
 }
 
 void ShupitoProgrammer::executeText(QByteArray const & data, quint8 memId, chip_definition & chip)

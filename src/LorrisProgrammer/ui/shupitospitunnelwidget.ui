@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ShupitoSpiTunnelWidget</class>
+ <widget class="QWidget" name="ShupitoSpiTunnelWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>654</width>
+    <height>370</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SPI tunnel config</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>SPI tunnel config</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Speed:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="tunnel_speed">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <item>
+         <property name="text">
+          <string>250000</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>500000</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1000000</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2000000</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Mode:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QRadioButton" name="sample_leading">
+        <property name="text">
+         <string>Sample on leading edge</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string>buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QRadioButton" name="sample_trailing">
+        <property name="text">
+         <string>Sample on trailing edge</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string>buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Endianness:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QRadioButton" name="big_endian">
+        <property name="text">
+         <string>Big endian</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string>buttonGroup_2</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QRadioButton" name="little_endian">
+        <property name="text">
+         <string>Little endian</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string>buttonGroup_2</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>On transmission start:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QRadioButton" name="ss_start_high">
+        <property name="text">
+         <string>Set slave select high</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string>buttonGroup_4</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QRadioButton" name="ss_start_low">
+        <property name="text">
+         <string>Set slave select low</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string>buttonGroup_4</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>On transmission end:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QRadioButton" name="ss_end_high">
+        <property name="text">
+         <string>Set slave select high</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string>buttonGroup_3</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QRadioButton" name="ss_end_low">
+        <property name="text">
+         <string>Set slave select low</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string>buttonGroup_3</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="9" column="0" colspan="2">
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Apply</set>
+        </property>
+        <property name="centerButtons">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup_4"/>
+ </buttongroups>
+</ui>

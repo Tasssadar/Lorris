@@ -206,7 +206,7 @@ public:
     ConnectionPointer<Connection> getConnWithConfig(quint8 type, const QHash<QString, QVariant>& cfg);
 
     qint64 generateCompanionId();
-    Connection *getCompanionConnection(Connection *toConn);
+    Connection *getCompanionConnection(Connection *toConn, const QString &name);
 
 Q_SIGNALS:
     void connAdded(Connection * conn);

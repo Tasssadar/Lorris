@@ -402,8 +402,9 @@ void Shupito::setTunnelConfig(ShupitoDesc::config const *cfg)
     m_tunnel_config = cfg;
     if(m_tunnel_config && !m_tunnel_conn)
     {
-        qint64 id = m_con->getCompanionId();
-        Connection *c = sConMgr2.getCompanionConnection(m_con);
+        const QString name = ShupitoTunnel::getCompanionName();
+        qint64 id = m_con->getCompanionId(name);
+        Connection *c = sConMgr2.getCompanionConnection(m_con, name);
         if(id && c && c->getType() == CONNECTION_SHUPITO_TUNNEL)
             m_tunnel_conn = ConnectionPointer<ShupitoTunnel>::fromPtr((ShupitoTunnel*)c);
         else
@@ -412,8 +413,8 @@ void Shupito::setTunnelConfig(ShupitoDesc::config const *cfg)
             id = sConMgr2.generateCompanionId();
 
             m_tunnel_conn.reset(new ShupitoTunnel());
-            m_tunnel_conn->setCompanionId(id);
-            m_con->setCompanionId(id);
+            m_tunnel_conn->setCompanionId(name, id);
+            m_con->setCompanionId(name, id);
         }
 
         m_tunnel_conn->setName("Tunnel at " + m_con->GetIDString());
@@ -430,7 +431,7 @@ void Shupito::setTunnelConfig(ShupitoDesc::config const *cfg)
         m_tunnel_conn->setShupito(NULL);
         m_tunnel_conn.reset();
 
-        m_con->setCompanionId(0);
+        m_con->setCompanionId(ShupitoTunnel::getCompanionName(), 0);
     }
 }
 

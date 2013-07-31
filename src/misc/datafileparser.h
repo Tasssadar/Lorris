@@ -105,6 +105,9 @@ public:
     void writeConn(Connection *conn);
     bool readConn(quint8& type, QHash<QString, QVariant>& cfg);
 
+    void writeVariantHash(const QHash<QString, QVariant>& hash);
+    QHash<QString, QVariant> readVariantHash();
+
     QFileInfo getAttachmentFileInfo();
     QString getAttachmentsPath() const { return m_path; }
 

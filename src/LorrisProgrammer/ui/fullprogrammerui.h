@@ -106,6 +106,7 @@ private:
 
     enum tabs_t
     {
+        tab_widgets,
         tab_terminal,
         tab_flash,
         tab_eeprom,

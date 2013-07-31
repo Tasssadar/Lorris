@@ -50,9 +50,11 @@ struct ProgrammerCapabilities
     bool eeprom;
     bool svf;
     bool fuses;
+    int widgets;
 
     ProgrammerCapabilities()
-        : terminal(false), flash(false), eeprom(false), svf(false), fuses(false)
+        : terminal(false), flash(false), eeprom(false), svf(false), fuses(false),
+          widgets(0)
     {
     }
 
@@ -61,6 +63,8 @@ struct ProgrammerCapabilities
         return flash || eeprom || fuses;
     }
 };
+
+#define PROG_WIDGET_PROPERTY "programmerWidget"
 
 class Programmer
     : public QObject
@@ -134,6 +138,7 @@ public:
     virtual int getType() = 0;
 
     virtual ProgrammerCapabilities capabilities() const = 0;
+    virtual QList<QWidget*> widgets() { return QList<QWidget*>(); }
 
 public slots:
     virtual void sendTunnelData(QString const &) {}

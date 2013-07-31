@@ -14,6 +14,11 @@
 #include "../WorkTab/WorkTab.h"
 #include "../WorkTab/WorkTabInfo.h"
 
+QString ShupitoTunnel::getCompanionName()
+{
+    return "shupitotunnel";
+}
+
 ShupitoTunnel::ShupitoTunnel()
     : PortConnection(CONNECTION_SHUPITO_TUNNEL)
 {

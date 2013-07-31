@@ -26,6 +26,7 @@
 #include "../shared/hexfile.h"
 #include "../shared/chipdefs.h"
 #include "../connection/shupitoconn.h"
+#include "../connection/shupitotunnel.h"
 #include "ui/overvccdialog.h"
 #include "../ui/tooltipwarn.h"
 #include "../WorkTab/WorkTabMgr.h"
@@ -890,7 +891,7 @@ void LorrisProgrammer::saveData(DataFileParser *file)
             file->writeBlockIdentifier("LorrShupitoConn2");
             file->writeString("Shupito2");
             file->writeConn(sc->port().data());
-            file->writeVal<qint64>(sc->getCompanionId());
+            file->writeVal<qint64>(sc->getCompanionId(ShupitoTunnel::getCompanionName()));
         }
         else if(ConnectionPointer<PortConnection> con = m_con.dynamicCast<PortConnection>())
         {
@@ -952,7 +953,7 @@ void LorrisProgrammer::loadData(DataFileParser *file)
                     progConn = sc;
 
                     if(typeStr == "Shupito2")
-                        sc->setCompanionId(file->readVal<qint64>());
+                        sc->setCompanionId(ShupitoTunnel::getCompanionName(), file->readVal<qint64>());
                 }
                 else if(typeStr == "Port" || typeStr == "Shupito23" || typeStr == "STM32")
                     progConn = conn;

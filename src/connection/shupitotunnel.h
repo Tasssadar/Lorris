@@ -10,7 +10,6 @@
 
 #include "connection.h"
 
-class QComboBox;
 class Shupito;
 
 class ShupitoTunnel : public PortConnection
@@ -18,6 +17,8 @@ class ShupitoTunnel : public PortConnection
     Q_OBJECT
 
 public:
+    static QString getCompanionName();
+
     ShupitoTunnel();
 
     void SendData(const QByteArray &data);

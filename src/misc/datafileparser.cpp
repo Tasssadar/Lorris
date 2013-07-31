@@ -224,10 +224,23 @@ void DataFileParser::writeConn(Connection *conn)
 
     writeVal(true);
     writeVal(conn->getType());
+    writeVariantHash(conn->config());
+}
 
-    QHash<QString, QVariant> cfg = conn->config();
-    writeVal((int)cfg.count());
-    for(QHash<QString, QVariant>::iterator itr = cfg.begin(); itr != cfg.end(); ++itr)
+bool DataFileParser::readConn(quint8 &type, QHash<QString, QVariant> &cfg)
+{
+    if(!readVal<bool>())
+        return false;
+
+    type = readVal<quint8>();
+    cfg = readVariantHash();
+    return true;
+}
+
+void DataFileParser::writeVariantHash(const QHash<QString, QVariant> &hash)
+{
+    writeVal((int)hash.count());
+    for(QHash<QString, QVariant>::const_iterator itr = hash.begin(); itr != hash.end(); ++itr)
     {
         writeString(itr.key());
         writeVal((int)(*itr).type());
@@ -244,20 +257,20 @@ void DataFileParser::writeConn(Connection *conn)
             case QVariant::LongLong:
                 writeVal((*itr).value<qint64>());
                 break;
+            case QVariant::Hash:
+                writeVariantHash((*itr).toHash());
+                break;
             default:
                 break;
         }
     }
 }
 
-bool DataFileParser::readConn(quint8 &type, QHash<QString, QVariant> &cfg)
+QHash<QString, QVariant> DataFileParser::readVariantHash()
 {
-    if(!readVal<bool>())
-        return false;
+    QHash<QString, QVariant> hash;
 
-    type = readVal<quint8>();
     int count = readVal<int>();
-
     for(int i = 0; i < count; ++i)
     {
         QString key = readString();
@@ -277,12 +290,14 @@ bool DataFileParser::readConn(quint8 &type, QHash<QString, QVariant> &cfg)
             case QVariant::LongLong:
                 val = readVal<qint64>();
                 break;
+            case QVariant::Hash:
+                val = readVariantHash();
             default:
                 break;
         }
-        cfg.insert(key, val);
+        hash.insert(key, val);
     }
-    return true;
+    return hash;
 }
 
 QFileInfo DataFileParser::getAttachmentFileInfo()

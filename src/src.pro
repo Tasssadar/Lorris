@@ -159,7 +159,9 @@ SOURCES += ui/mainwindow.cpp \
     LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.cpp \
     LorrisAnalyzer/storagedata.cpp \
     ui/floatingwidget.cpp \
-    ui/floatinginputdialog.cpp
+    ui/floatinginputdialog.cpp \
+    LorrisProgrammer/modes/shupitospitunnel.cpp \
+    connection/shupitospitunnelconn.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -293,7 +295,9 @@ HEADERS += ui/mainwindow.h \
     ui/floatingwidget.h \
     ui/floatinginputdialog.h \
     LorrisAnalyzer/DataWidgets/RotationWidget/rotationwidget.h \
-    LorrisAnalyzer/storagedata.h
+    LorrisAnalyzer/storagedata.h \
+    LorrisProgrammer/modes/shupitospitunnel.h \
+    connection/shupitospitunnelconn.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -322,7 +326,8 @@ FORMS += \
     LorrisProgrammer/ui/overvccdialog.ui \
     LorrisProgrammer/ui/miniprogrammerui.ui \
     LorrisProgrammer/ui/fullprogrammerui.ui \
-    ui/sessionsavedialog.ui
+    ui/sessionsavedialog.ui \
+    LorrisProgrammer/ui/shupitospitunnelwidget.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \

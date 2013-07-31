@@ -342,7 +342,30 @@ void FullProgrammerUI::applySources()
     tabs_t tab = this->currentTab();
 
     bool prevBlock = ui->memTabs->blockSignals(true);
-    ui->memTabs->clear();
+
+    QVariant prop;
+    while(ui->memTabs->count())
+    {
+        prop = ui->memTabs->widget(0)->property(PROG_WIDGET_PROPERTY);
+        if(prop.type() == QVariant::Bool && prop.toBool() == true)
+            delete ui->memTabs->widget(0);
+        else
+            ui->memTabs->removeTab(0);
+    }
+
+    if (m_programmer_caps.widgets)
+    {
+        QList<QWidget*> widgets = prog()->widgets();
+        Q_ASSERT(widgets.size() == m_programmer_caps.widgets);
+
+        for(int i = 0; i < widgets.size(); ++i)
+        {
+            widgets[i]->setParent(ui->memTabs);
+            widgets[i]->setProperty(PROG_WIDGET_PROPERTY, QVariant(true));
+            ui->memTabs->addTab(widgets[i], widgets[i]->windowTitle());
+        }
+    }
+
     if (m_programmer_caps.terminal)
         ui->memTabs->addTab(ui->terminal, tr("Terminal"));
     if (m_programmer_caps.flash)
@@ -351,6 +374,7 @@ void FullProgrammerUI::applySources()
         ui->memTabs->addTab(m_hexAreas[MEM_EEPROM], tr("EEPROM"));
     if (m_programmer_caps.svf)
         ui->memTabs->addTab(m_svfEdit, tr("SVF"));
+
     ui->memTabs->blockSignals(prevBlock);
 
     this->setCurrentTab(tab);
@@ -465,13 +489,15 @@ void FullProgrammerUI::setActiveMem(quint32 memId)
 FullProgrammerUI::tabs_t FullProgrammerUI::currentTab() const
 {
     int idx = ui->memTabs->currentIndex();
+    if (m_programmer_caps.widgets > 0 && idx < m_programmer_caps.widgets)
+        return tab_widgets;
     if (m_programmer_caps.terminal && idx == 0)
         return tab_terminal;
-    if (m_programmer_caps.flash && idx == (int)m_programmer_caps.terminal)
+    if (m_programmer_caps.flash && idx == (int)m_programmer_caps.terminal + m_programmer_caps.widgets)
         return tab_flash;
-    if (m_programmer_caps.eeprom && idx == m_programmer_caps.terminal + m_programmer_caps.flash)
+    if (m_programmer_caps.eeprom && idx == m_programmer_caps.terminal + m_programmer_caps.flash + m_programmer_caps.widgets)
         return tab_eeprom;
-    if (m_programmer_caps.svf && idx == m_programmer_caps.terminal + m_programmer_caps.flash + m_programmer_caps.eeprom)
+    if (m_programmer_caps.svf && idx == m_programmer_caps.terminal + m_programmer_caps.flash + m_programmer_caps.eeprom + m_programmer_caps.widgets)
         return tab_svf;
 
     Q_ASSERT(0);
@@ -482,21 +508,24 @@ void FullProgrammerUI::setCurrentTab(tabs_t t)
 {
     switch (t)
     {
+    case tab_widgets:
+        if (m_programmer_caps.widgets)
+            ui->memTabs->setCurrentIndex(0);
     case tab_terminal:
         if (m_programmer_caps.terminal)
-            ui->memTabs->setCurrentIndex(0);
+            ui->memTabs->setCurrentIndex(m_programmer_caps.widgets);
         break;
     case tab_flash:
         if (m_programmer_caps.flash)
-            ui->memTabs->setCurrentIndex(m_programmer_caps.terminal);
+            ui->memTabs->setCurrentIndex(m_programmer_caps.widgets + m_programmer_caps.terminal);
         break;
     case tab_eeprom:
         if (m_programmer_caps.eeprom)
-            ui->memTabs->setCurrentIndex(m_programmer_caps.terminal + m_programmer_caps.flash);
+            ui->memTabs->setCurrentIndex(m_programmer_caps.widgets + m_programmer_caps.terminal + m_programmer_caps.flash);
         break;
     case tab_svf:
         if (m_programmer_caps.svf)
-            ui->memTabs->setCurrentIndex(m_programmer_caps.terminal + m_programmer_caps.flash + m_programmer_caps.eeprom);
+            ui->memTabs->setCurrentIndex(m_programmer_caps.widgets + m_programmer_caps.terminal + m_programmer_caps.flash + m_programmer_caps.eeprom);
         break;
     }
 

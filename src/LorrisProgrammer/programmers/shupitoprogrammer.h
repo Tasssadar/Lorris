@@ -60,6 +60,7 @@ public:
     int getType() override;
 
     virtual ProgrammerCapabilities capabilities() const override;
+    virtual QList<QWidget*> widgets() override;
 
 public slots:
     void sendTunnelData(QString const & data);

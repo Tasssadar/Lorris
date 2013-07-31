@@ -32,6 +32,7 @@ enum Modes
     MODE_CC25XX,
     MODE_SPIFLASH,
     MODE_JTAG,
+    MODE_SPITUNNEL,
 
     MODE_COUNT
 };
@@ -80,6 +81,7 @@ public:
     void setTunnelPipe(quint8 pipe) { m_tunnel_pipe = pipe; }
 
     ShupitoDesc *getDesc() { return m_desc; }
+    ShupitoConnection *getConn() const { return m_con; }
     void setChipId(chip_definition cd) { m_chip_def = cd; }
     const chip_definition& getChipId() { return m_chip_def; }
 
