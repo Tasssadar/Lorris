@@ -114,7 +114,7 @@ public:
     template <typename T> void readVal(T& val);
     template <typename T> T readVal();
     template <typename T> void writeVal(T val);
-    template <typename T> void writeVal(T val, quint64 pos);
+    template <typename T> void writeVal(T val, qint64 pos);
 
     template <typename T> DataFileParser& operator <<(T data);
     DataFileParser& operator <<(const QString& str);
@@ -194,9 +194,9 @@ void DataFileParser::writeVal(T val)
 }
 
 template <typename T>
-void DataFileParser::writeVal(T val, quint64 pos)
+void DataFileParser::writeVal(T val, qint64 pos)
 {
-    quint64 origin = this->pos();
+    qint64 origin = this->pos();
     if(seek(pos))
         write((char*)&val, sizeof(T));
     seek(origin);

@@ -239,10 +239,14 @@ bool DataFileParser::readConn(quint8 &type, QHash<QString, QVariant> &cfg)
 
 void DataFileParser::writeVariantHash(const QHash<QString, QVariant> &hash)
 {
-    writeVal((int)hash.count());
+    qint64 type_pos;
+
+    writeVal((int)hash.size());
+
     for(QHash<QString, QVariant>::const_iterator itr = hash.begin(); itr != hash.end(); ++itr)
     {
         writeString(itr.key());
+        type_pos = this->pos();
         writeVal((int)(*itr).type());
 
         switch((*itr).type())
@@ -261,6 +265,7 @@ void DataFileParser::writeVariantHash(const QHash<QString, QVariant> &hash)
                 writeVariantHash((*itr).toHash());
                 break;
             default:
+                writeVal((int)QVariant::Invalid, type_pos);
                 break;
         }
     }
@@ -292,6 +297,8 @@ QHash<QString, QVariant> DataFileParser::readVariantHash()
                 break;
             case QVariant::Hash:
                 val = readVariantHash();
+                break;
+            case QVariant::Invalid:
             default:
                 break;
         }
