@@ -22,6 +22,8 @@ TerminalSettings::TerminalSettings(const terminal_settings &set, QWidget *parent
     ui->alarmBox->setChecked(set.chars[SET_ALARM]);
     ui->newBox->setCurrentIndex(set.chars[SET_NEWLINE]);
     ui->returnBox->setCurrentIndex(set.chars[SET_RETURN]);
+    ui->backBox->setChecked(set.chars[SET_BACKSPACE]);
+    ui->formBox->setChecked(set.chars[SET_FORMFEED]);
     ui->nullBox->setChecked(set.chars[SET_IGNORE_NULL]);
     ui->enterSendBox->setCurrentIndex(set.chars[SET_ENTER_SEND]);
 
@@ -46,6 +48,8 @@ terminal_settings TerminalSettings::getSettings()
     set.chars[SET_ALARM] = ui->alarmBox->isChecked();
     set.chars[SET_NEWLINE] = ui->newBox->currentIndex();
     set.chars[SET_RETURN] = ui->returnBox->currentIndex();
+    set.chars[SET_BACKSPACE] = ui->backBox->isChecked();
+    set.chars[SET_FORMFEED] = ui->formBox->isChecked();
     set.chars[SET_IGNORE_NULL] = ui->nullBox->isChecked();
     set.chars[SET_ENTER_SEND] = ui->enterSendBox->currentIndex();
 
