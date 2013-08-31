@@ -16,6 +16,7 @@
 #include "../../ui/tooltipwarn.h"
 #include "overvccdialog.h"
 #include "../../ui/bytevalidator.h"
+#include "../../ui/floatinginputdialog.h"
 
 FullProgrammerUI::FullProgrammerUI(QObject *parent) :
     ProgrammerUI(UI_FULL, parent), ui(new Ui::FullProgrammerUI)
@@ -45,6 +46,9 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
         QHexEdit *h = new QHexEdit(widget);
         h->setData(data);
         m_hexAreas[i] = h;
+
+        h->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(h, SIGNAL(customContextMenuRequested(QPoint)), SLOT(hexEditMenuReq(QPoint)));
     }
 
     m_svfEdit = new QTextEdit(widget);
@@ -808,4 +812,22 @@ void FullProgrammerUI::pwmChanged(uint32_t freq_hz)
         ui->pwmFreqSpin->setEnabled(false);
         ui->pwmEnableBox->setChecked(true);
     }
+}
+
+void FullProgrammerUI::hexEditMenuReq(const QPoint &/*p*/)
+{
+    Q_ASSERT(sender() && sender()->inherits("QHexEdit"));
+
+    QByteArray fill = FloatingInputDialog::getBytes(tr("Fill with..."), "0xFF");
+    if(fill.isEmpty())
+        return;
+
+    QHexEdit *h = (QHexEdit*)sender();
+    int data_size = h->data().size();
+    int fill_size = fill.size();
+
+    QByteArray data = fill.repeated(data_size/fill_size);
+    data += fill.left(data_size%fill_size);
+
+    h->setData(data);
 }

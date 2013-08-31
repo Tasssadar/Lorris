@@ -93,6 +93,8 @@ private slots:
     void setPwmEnable(bool enable);
     void pwmChanged(uint32_t freq_hz);
 
+    void hexEditMenuReq(const QPoint& p);
+
 private:
     void initMenus();
     void updateProgrammersBox(Programmer *prog);

@@ -18,6 +18,7 @@
 
 #include "../misc/utils.h"
 #include "floatinginputdialog.h"
+#include "bytevalidator.h"
 
 FloatingInputDialog::FloatingInputDialog(const QString& title, const QString& icon, QWidget *parent) :
     FloatingWidget(parent)
@@ -101,6 +102,48 @@ QString FloatingInputDialog::getText(const QString& title, const QString & text,
     if(!line.isNull())
     {
         res = line->text();
+        w->deleteLater();
+    }
+    return res;
+}
+
+QByteArray FloatingInputDialog::getBytes(const QString& title, const QString & text,
+                                     bool *ok, QLineEdit::EchoMode mode)
+{
+    FloatingInputDialog *w = new FloatingInputDialog(title, ":/icons/edit");
+
+    QVBoxLayout *l = (QVBoxLayout*)w->layout();
+
+    QPointer<QLineEdit> line = new QLineEdit(w);
+    line->setFont(Utils::getMonospaceFont());
+    line->setStyleSheet("background-color: #1b1b1b; color: #ffffff; border: 1px solid #FF4444;");
+    line->setEchoMode(mode);
+    line->setText(text);
+    line->setValidator(new ByteValidator(line.data()));
+    line->selectAll();
+
+    QPalette p;
+    p.setColor(QPalette::Highlight, Qt::darkGray);
+    line->setPalette(p);
+
+    l->addWidget(line);
+
+    w->show();
+    w->move(QCursor::pos()-line->geometry().center());
+    w->ensureOnScreen();
+    line->setFocus();
+
+    QEventLoop loop;
+    connect(line.data(), SIGNAL(returnPressed()), &loop, SLOT(quit()));
+    connect(w,           SIGNAL(destroyed()),     &loop, SLOT(quit()));
+    loop.exec();
+
+    QByteArray res;
+    if(!line.isNull())
+    {
+        res = Utils::convertByteStr(line->text());
+        if(ok)
+            *ok = !res.isEmpty();
         w->deleteLater();
     }
     return res;

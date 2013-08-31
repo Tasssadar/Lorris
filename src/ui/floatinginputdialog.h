@@ -21,6 +21,8 @@ class FloatingInputDialog : public FloatingWidget
 public:
     static QString getText(const QString& title, const QString & text = QString(),
                            bool * ok = 0, QLineEdit::EchoMode mode = QLineEdit::Normal);
+    static QByteArray getBytes(const QString& title, const QString & text = QString(),
+                           bool * ok = 0, QLineEdit::EchoMode mode = QLineEdit::Normal);
     static int getInt(const QString& title, int value = 0, int min = -2147483647, int max = 2147483647,
                       int step = 1, bool *ok = 0);
     static double getDouble(const QString& title, double value = 0, double min = -2147483647,
