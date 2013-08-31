@@ -1183,12 +1183,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>FloatingInputDialog</name>
     <message>
-        <location filename="../src/ui/floatinginputdialog.cpp" line="52"/>
+        <location filename="../src/ui/floatinginputdialog.cpp" line="53"/>
         <source>Min:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/floatinginputdialog.cpp" line="54"/>
+        <location filename="../src/ui/floatinginputdialog.cpp" line="55"/>
         <source>Max:</source>
         <translation></translation>
     </message>
@@ -1431,7 +1431,7 @@ stejného souboru vícekrát:</translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="865"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="370"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="374"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
@@ -1471,105 +1471,110 @@ stejného souboru vícekrát:</translation>
         <translation>Pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="372"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="376"/>
         <source>Program memory</source>
         <translation>Paměť programu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="374"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="378"/>
         <source>EEPROM</source>
         <translation>EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="132"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="136"/>
         <source>Read flash</source>
         <translation>Přečíst flash paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="133"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="137"/>
         <source>Read all</source>
         <translation>Přečíst vše</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="134"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="138"/>
         <source>Read EEPROM</source>
         <translation>Přečíst EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="135"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="139"/>
         <source>Read fuses</source>
         <translation>Přečíst pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="155"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="159"/>
         <source>Write flash</source>
         <translation>Programovat flash paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="156"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="160"/>
         <source>Write all</source>
         <translation>Programovat vše</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="157"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="161"/>
         <source>Write EEPROM</source>
         <translation>Programovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="158"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="162"/>
         <source>Write fuses</source>
         <translation>Programovat pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="258"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="262"/>
         <source>Mode</source>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="376"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="380"/>
         <source>SVF</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="554"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="558"/>
         <source>Fuses had been succesfully read</source>
         <translation>Pojistky byly úspěšně přečteny</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="587"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="623"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="591"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="627"/>
         <source>Fuses had not been read yet</source>
         <translation>Pojistky ještě nebyly přečteny ze součástky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="593"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="597"/>
         <source>You have to &quot;Remember&quot; fuses prior to writing</source>
         <translation>Před zapsáním pojistek je musíte &quot;zapamatovat&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="597"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="601"/>
         <source>Write fuses?</source>
         <translation>Programovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="597"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="601"/>
         <source>Do you really wanna to write fuses to the chip?</source>
         <translation>Opravdu chcete naprogramovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="612"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="616"/>
         <source>Fuses had been succesfully written</source>
         <translation>Pojistky byly úspěšně naprogramovány</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="639"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="643"/>
         <source>You have flashed this file already, and it was not changed since.</source>
         <translation>Tento soubor se od posledního flashnutí nezměnil!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="778"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="782"/>
         <source> | h:mm:ss M.d.yyyy</source>
         <translation> | h:mm:ss d.M.yyyy</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="821"/>
+        <source>Fill with...</source>
+        <translation>Vyplnit bajty...</translation>
     </message>
 </context>
 <context>
@@ -3002,12 +3007,12 @@ a nebo sledovat co clienti do proxy posílají.</translation>
 <context>
     <name>ProgressReporter</name>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="614"/>
+        <location filename="../src/misc/datafileparser.cpp" line="621"/>
         <source>Data file saved</source>
         <translation>Datový soubor byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="621"/>
+        <location filename="../src/misc/datafileparser.cpp" line="628"/>
         <source>Saving data file...</source>
         <translation>Ukládám datový soubor...</translation>
     </message>
@@ -3372,40 +3377,40 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>(Odpojování...)</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="341"/>
-        <location filename="../src/misc/datafileparser.cpp" line="431"/>
+        <location filename="../src/misc/datafileparser.cpp" line="348"/>
+        <location filename="../src/misc/datafileparser.cpp" line="438"/>
         <source>Cannot open file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="345"/>
-        <location filename="../src/misc/datafileparser.cpp" line="356"/>
+        <location filename="../src/misc/datafileparser.cpp" line="352"/>
+        <location filename="../src/misc/datafileparser.cpp" line="363"/>
         <source>Corrupted data file</source>
         <translation>Datový soubor je porušený</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="362"/>
+        <location filename="../src/misc/datafileparser.cpp" line="369"/>
         <source>This file is not of expected content type</source>
         <translation>Obsah tohoto souboru nema očekáváný typ</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="379"/>
+        <location filename="../src/misc/datafileparser.cpp" line="386"/>
         <source>Error</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="380"/>
-        <location filename="../src/misc/datafileparser.cpp" line="385"/>
+        <location filename="../src/misc/datafileparser.cpp" line="387"/>
+        <location filename="../src/misc/datafileparser.cpp" line="392"/>
         <source>Corrupted data file - MD5 checksum does not match</source>
         <translation>Soubor je porušený - nesedí kontrolní součet</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="382"/>
+        <location filename="../src/misc/datafileparser.cpp" line="389"/>
         <source>Load anyway?</source>
         <translation>Přejete si soubor přesto načíst?</translation>
     </message>
     <message>
-        <location filename="../src/misc/datafileparser.cpp" line="436"/>
+        <location filename="../src/misc/datafileparser.cpp" line="443"/>
         <source>Another file is currently saving!</source>
         <translation>Právě se ukládá jiný soubor!</translation>
     </message>
