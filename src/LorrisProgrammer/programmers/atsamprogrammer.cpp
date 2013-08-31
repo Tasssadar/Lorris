@@ -192,7 +192,7 @@ QString AtsamProgrammer::transact(QString const & data)
 {
     m_conn->SendData(data.toLatin1());
 
-    QTimer t(this);
+    QTimer t;
 
     connect(&t, SIGNAL(timeout()), &m_waitLoop, SLOT(quit()));
 

@@ -588,8 +588,8 @@ bool avr109Programmer::waitForAct(int waitAct, int timeout)
     m_rec_buff.clear();
     m_wait_act = waitAct;
 
-    QEventLoop ev(this);
-    QTimer t(this);
+    QEventLoop ev;
+    QTimer t;
 
     connect(&t,   SIGNAL(timeout()), &ev, SLOT(quit()));
     connect(this, SIGNAL(waitActDone()),  &ev, SLOT(quit()));
