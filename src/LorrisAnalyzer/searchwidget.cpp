@@ -230,7 +230,7 @@ void SearchWidget::lineKeyPressed(int key)
     switch(key)
     {
         case Qt::Key_Escape:
-            deleteLater();
+            focusLost();
             break;
         case Qt::Key_Up:
         {
@@ -255,7 +255,7 @@ void SearchWidget::lineKeyPressed(int key)
             if(cur == -1)
             {
                 m_area->setLastSearch(QString());
-                deleteLater();
+                focusLost();
             }
             else
                 itemActivated(m_list->item(cur));
