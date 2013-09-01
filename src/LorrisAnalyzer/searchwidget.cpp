@@ -234,6 +234,7 @@ void SearchWidget::lineKeyPressed(int key)
             break;
         case Qt::Key_Up:
         {
+            // reimplement Key_Up because we want to be able to select nothing
             int cur = m_list->currentRow();
             if(cur <= 0)
                 m_list->setCurrentRow(-1);
@@ -242,10 +243,11 @@ void SearchWidget::lineKeyPressed(int key)
             break;
         }
         case Qt::Key_Down:
+        case Qt::Key_PageDown:
+        case Qt::Key_PageUp:
         {
-            int next = m_list->currentRow()+1;
-            if(next < m_list->count())
-                m_list->setCurrentRow(next);
+            QKeyEvent ev(QEvent::KeyPress, key, Qt::NoModifier);
+            QApplication::sendEvent(m_list, &ev);
             break;
         }
         case Qt::Key_Enter:
