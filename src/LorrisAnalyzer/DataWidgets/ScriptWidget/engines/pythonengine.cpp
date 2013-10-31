@@ -283,6 +283,17 @@ Joystick *PythonFunctions::getJoystick(int id)
     return joy;
 }
 
+Joystick *PythonFunctions::getFirstJoystick()
+{
+    Joystick *joy = sJoyMgr.getFirstJoystick();
+    if(!joy)
+        return NULL;
+
+    joy->startUsing(m_engine);
+    connect(m_engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
+    return joy;
+}
+
 void PythonFunctions::closeJoystick(Joystick *joy)
 {
     if(!joy)

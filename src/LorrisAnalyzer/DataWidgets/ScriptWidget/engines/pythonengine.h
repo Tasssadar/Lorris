@@ -34,6 +34,7 @@ public slots:
     int getHeight();
     void throwException(const QString& text);
     Joystick *getJoystick(int id);
+    Joystick *getFirstJoystick();
     void closeJoystick(Joystick *joy);
     QStringList getJoystickNames();
     QList<quint32> getJoystickIds();

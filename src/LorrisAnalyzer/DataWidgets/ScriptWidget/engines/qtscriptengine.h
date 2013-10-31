@@ -50,6 +50,7 @@ private:
     static QScriptValue __getHeight(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __throwException(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getJoystick(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __getFirstJoystick(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __closeJoystick(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getJoystickNames(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getJoystickIds(QScriptContext *context, QScriptEngine *engine);

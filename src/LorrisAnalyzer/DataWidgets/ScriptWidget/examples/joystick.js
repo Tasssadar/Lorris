@@ -32,6 +32,11 @@ function joystick_selected(idx)
 
     var id_list = getJoystickIds();
     joystick = getJoystick(id_list[idx]);
+
+    // If you don't wanna let user select the joystick and just
+    // grab the first one, you can use getFirstJoystick() function.
+    //joystick = getFirstJoystick();
+
     if(joystick)
     {
         // connect to signals

@@ -39,6 +39,7 @@ public:
     QList<quint32> getIdList();
 
     Joystick *getJoystick(quint32 id);
+    Joystick *getFirstJoystick();
 
     bool hasJoystick(quint32 id)
     {
@@ -58,6 +59,8 @@ private slots:
     void enumerate();
 
 private:
+    Joystick *openNewJoystick(quint32 id);
+
     QHash<quint32, JoystickPrivate*> m_joysticks;
     QMap<quint32, QString> m_names;
 

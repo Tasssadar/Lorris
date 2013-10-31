@@ -78,6 +78,7 @@ void QtScriptEngine::prepareNewContext()
     QScriptValue getH = m_engine->newFunction(&QtScriptEngine_private::__getHeight);
     QScriptValue throwEx = m_engine->newFunction(&QtScriptEngine_private::__throwException);
     QScriptValue getJoy = m_engine->newFunction(&QtScriptEngine_private::__getJoystick);
+    QScriptValue getFirstJoy = m_engine->newFunction(&QtScriptEngine_private::__getFirstJoystick);
     QScriptValue closeJoy = m_engine->newFunction(&QtScriptEngine_private::__closeJoystick);
     QScriptValue getJoyName = m_engine->newFunction(&QtScriptEngine_private::__getJoystickNames);
     QScriptValue getJoyIds = m_engine->newFunction(&QtScriptEngine_private::__getJoystickIds);
@@ -108,6 +109,7 @@ void QtScriptEngine::prepareNewContext()
     m_global.setProperty("throwException", throwEx);
     m_global.setProperty("alert", throwEx);
     m_global.setProperty("getJoystick", getJoy);
+    m_global.setProperty("getFirstJoystick", getFirstJoy);
     m_global.setProperty("closeJoystick", closeJoy);
     m_global.setProperty("getJoystickNames", getJoyName);
     m_global.setProperty("getJoystickIds", getJoyIds);
@@ -597,6 +599,17 @@ QScriptValue QtScriptEngine_private::__getJoystick(QScriptContext *context, QScr
         return QScriptValue();
 
     Joystick *joy = sJoyMgr.getJoystick(context->argument(0).toInt32());
+    if(!joy)
+        return QScriptValue();
+
+    joy->startUsing(engine);
+    connect((QtScriptEngine_private*)engine, SIGNAL(stopUsingJoy(QObject*)), joy, SLOT(stopUsing(QObject*)));
+    return engine->newQObject(joy);
+}
+
+QScriptValue QtScriptEngine_private::__getFirstJoystick(QScriptContext */*context*/, QScriptEngine *engine)
+{
+    Joystick *joy = sJoyMgr.getFirstJoystick();
     if(!joy)
         return QScriptValue();
 

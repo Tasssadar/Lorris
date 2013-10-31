@@ -70,21 +70,44 @@ Joystick *JoyMgr::getJoystick(quint32 id)
             return new Joystick(*itr);
     }
 
-    {
-        QWriteLocker locker(&m_joy_lock);
+    return openNewJoystick(id);
+}
 
-        libenjoy_joystick *joy = libenjoy_open_joystick(m_context, id);
-        if(!joy)
+Joystick *JoyMgr::getFirstJoystick()
+{
+    quint32 id = 0;
+
+    {
+        QReadLocker locker(&m_joy_lock);
+
+        if(m_names.empty())
             return NULL;
 
-        JoystickPrivate *joy_priv = new JoystickPrivate(joy);
-        connect(joy_priv, SIGNAL(removeJoystick(JoystickPrivate*)), SLOT(removeJoystick(JoystickPrivate*)));
+        id = m_names.begin().key();
 
-        m_thread.setStopped(false);
-
-        m_joysticks[id] = joy_priv;
-        return new Joystick(joy_priv);
+        QHash<quint32, JoystickPrivate*>::iterator itr = m_joysticks.find(id);
+        if(itr != m_joysticks.end())
+            return new Joystick(*itr);
     }
+
+    return openNewJoystick(id);
+}
+
+Joystick *JoyMgr::openNewJoystick(quint32 id)
+{
+    QWriteLocker locker(&m_joy_lock);
+
+    libenjoy_joystick *joy = libenjoy_open_joystick(m_context, id);
+    if(!joy)
+        return NULL;
+
+    JoystickPrivate *joy_priv = new JoystickPrivate(joy);
+    connect(joy_priv, SIGNAL(removeJoystick(JoystickPrivate*)), SLOT(removeJoystick(JoystickPrivate*)));
+
+    m_thread.setStopped(false);
+
+    m_joysticks[id] = joy_priv;
+    return new Joystick(joy_priv);
 }
 
 QStringList JoyMgr::getNamesList()

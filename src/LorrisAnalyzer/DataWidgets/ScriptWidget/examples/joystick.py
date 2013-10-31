@@ -37,6 +37,11 @@ def joystick_selected(idx):
 
     id_list = lorris.getJoystickIds();
     joystick = lorris.getJoystick(id_list[idx]);
+
+    # If you don't wanna let user select the joystick and just
+    # grab the first one, you can use getFirstJoystick() function.
+    #joystick = lorris.getFirstJoystick()
+
     if joystick != None:
         # connect to signals
         joystick.connect("axesChanged(QList<int>)", axesChanged);
