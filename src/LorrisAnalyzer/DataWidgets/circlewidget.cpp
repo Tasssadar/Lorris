@@ -103,6 +103,8 @@ void CircleWidget::setUp(Storage *storage)
     m_drawAngAct->setCheckable(true);
     m_drawAngAct->setChecked(true);
 
+    contextMenu->addAction(tr("Set formula..."), this, SLOT(showFormulaDialog()));
+
     connect(m_clockwiseAct, SIGNAL(triggered(bool)), SLOT(setClockwise(bool)));
     connect(m_drawAngAct, SIGNAL(triggered(bool)),   SLOT(drawAngle(bool)));
 }
@@ -112,18 +114,19 @@ void CircleWidget::saveWidgetInfo(DataFileParser *file)
     DataWidget::saveWidgetInfo(file);
 
     file->writeBlockIdentifier("circleWtype");
-    file->writeVal(m_ang_type);
-    file->writeVal(m_num_type);
+    *file << m_ang_type << m_num_type;
 
     file->writeBlockIdentifier("circleWrangeDouble");
-    file->writeVal(m_range_min);
-    file->writeVal(m_range_max);
+    *file << m_range_min << m_range_max;
 
     file->writeBlockIdentifier("circleWclockwise");
-    file->writeVal(m_clockwiseAct->isChecked());
+    *file << m_clockwiseAct->isChecked();
 
     file->writeBlockIdentifier("circleWdrawAngText");
-    file->writeVal(m_drawAngAct->isChecked());
+    *file << m_drawAngAct->isChecked();
+
+    file->writeBlockIdentifier("circleWformula");
+    *file << m_eval.getFormula();
 }
 
 void CircleWidget::loadWidgetInfo(DataFileParser *file)
@@ -131,16 +134,10 @@ void CircleWidget::loadWidgetInfo(DataFileParser *file)
     DataWidget::loadWidgetInfo(file);
 
     if(file->seekToNextBlock("circleWtype", BLOCK_WIDGET))
-    {
-        m_ang_type = file->readVal<quint8>();
-        m_num_type = file->readVal<quint8>();
-    }
+        *file >> m_ang_type >> m_num_type;
 
     if(file->seekToNextBlock("circleWrangeDouble", BLOCK_WIDGET))
-    {
-        m_range_min = file->readVal<double>();
-        m_range_max = file->readVal<double>();
-    }
+        *file >> m_range_min >> m_range_max;
     else if(file->seekToNextBlock("circleWrange", BLOCK_WIDGET))
     {
         m_range_min = file->readVal<quint32>();
@@ -155,17 +152,30 @@ void CircleWidget::loadWidgetInfo(DataFileParser *file)
     }
 
     if(file->seekToNextBlock("circleWdrawAngText", BLOCK_WIDGET))
-    {
-        bool draw = file->readVal<bool>();
-        drawAngle(draw);
-    }
+        drawAngle(file->readVal<bool>());
+
+    if(file->seekToNextBlock("circleWformula", BLOCK_WIDGET))
+        m_eval.setFormula(file->readString());
 
     setAngType(m_ang_type);
     setDataType(m_num_type);
 }
 
-void CircleWidget::setValue(const QVariant &var)
+void CircleWidget::setValue(QVariant var)
 {
+    if(m_eval.isActive())
+    {
+        // .toString() on char type makes one
+        // character string instead of value transcript
+        if ((int)var.type() == QMetaType::QChar ||
+            (int)var.type() == QMetaType::UChar)
+            var.convert(QVariant::Int);
+
+        QVariant res = m_eval.evaluate(var.toString());
+        if(res.isValid())
+            var.swap(res);
+    }
+
     float rad = toRad(var);
     if(!m_clockwiseAct->isChecked())
         rad = (2*pi) - rad;
@@ -247,6 +257,12 @@ void CircleWidget::drawAngle(bool draw)
 {
     m_drawAngAct->setChecked(draw);
     m_circle->setDrawAngle(draw);
+}
+
+void CircleWidget::showFormulaDialog()
+{
+    m_eval.showFormulaDialog();
+    emit updateForMe();
 }
 
 CircleDraw::CircleDraw(QWidget *parent) : QWidget(parent)

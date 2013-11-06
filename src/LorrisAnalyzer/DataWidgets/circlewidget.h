@@ -9,6 +9,7 @@
 #define CIRCLEWIDGET_H
 
 #include "datawidget.h"
+#include "../../misc/formulaevaluation.h"
 
 class CircleDraw;
 
@@ -36,7 +37,7 @@ public:
     void loadWidgetInfo(DataFileParser *file);
 
 public slots:
-    void setValue(const QVariant &var);
+    void setValue(QVariant var);
     void setClockwise(bool clockwise);
     void drawAngle(bool draw);
     void setDataType(int i);
@@ -51,10 +52,12 @@ protected:
 
 private slots:
      void angTypeChanged(int i);
+     void showFormulaDialog();
 
 private:
      float toRad(const QVariant& var);
 
+     FormulaEvaluation m_eval;
      CircleDraw *m_circle;
      QAction *m_type_act[ANG_MAX];
      QAction *m_bits_act[NUM_COUNT];
