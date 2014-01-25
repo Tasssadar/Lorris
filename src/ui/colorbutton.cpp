@@ -28,9 +28,9 @@ ColorButton::ColorButton(QWidget *parent) : QPushButton(parent)
     connect(this, SIGNAL(clicked()), SLOT(choose()));
 }
 
-ColorButton::ColorButton(const ColorButton &btn) : QPushButton(btn.parentWidget())
+ColorButton::ColorButton(const ColorButton &btn) : ColorButton(btn.getColor(), btn.parentWidget())
 {
-    ColorButton(btn.getColor(), btn.parentWidget());
+
 }
 
 void ColorButton::setColor(const QColor &color)

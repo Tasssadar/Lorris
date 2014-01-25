@@ -21,9 +21,9 @@ class GraphCurve : public QObject, public QwtPlotCurve
 public:
     GraphCurve(const QString& name, GraphData *data);
     GraphCurve(const GraphCurve &curve);
-    GraphCurve()
+    GraphCurve() : GraphCurve("", NULL)
     {
-        GraphCurve("", NULL);
+
     }
 
     ~GraphCurve();
