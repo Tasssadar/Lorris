@@ -391,6 +391,7 @@ EditorWidgetQSci::EditorWidgetQSci(QWidget *parent) : EditorWidget(parent)
     m_editor->setIndentationsUseTabs(false);
     m_editor->setIndentationWidth(4);
     m_editor->setUtf8(true);
+    m_editor->setEolMode(QsciScintilla::EolUnix);
 
     m_canUndo = false;
     m_canRedo = false;

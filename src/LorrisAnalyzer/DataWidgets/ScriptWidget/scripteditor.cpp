@@ -249,7 +249,7 @@ void ScriptEditor::loadExample(const QString& name)
     }
 
     QFile file(":/examples/" + name);
-    if(!file.open(QIODevice::ReadOnly))
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     m_editor->setText(QString::fromUtf8(file.readAll()));
