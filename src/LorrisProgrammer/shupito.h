@@ -119,6 +119,7 @@ private:
     quint32 m_tunnel_speed;
     QByteArray m_tunnel_data;
     QTimer m_tunnel_timer;
+    size_t m_max_packet_size;
 
     QTimer *responseTimer;
     ShupitoPacket m_wait_packet;

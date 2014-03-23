@@ -21,6 +21,7 @@ Shupito::Shupito(QObject *parent) :
 {
     m_con = NULL;
     m_desc = NULL;
+    m_max_packet_size = 0;
 
     m_vdd_config = m_tunnel_config = NULL;
     m_tunnel_pipe = 0;
@@ -42,6 +43,7 @@ Shupito::~Shupito()
 void Shupito::init(ShupitoConnection *con, ShupitoDesc *desc)
 {
     m_con = con;
+    m_max_packet_size = m_con->maxPacketSize();
     m_desc = desc;
     desc->Clear();
 
@@ -102,7 +104,7 @@ void Shupito::readPacket(const ShupitoPacket & p)
             {
                 responseTimer->start(1000);
                 m_wait_data.append((char const *)(p.data() + 1), p.size() - 1);
-                if(p.size() < 16)
+                if(p.size()-1 < m_max_packet_size)
                 {
                     m_wait_max_packets = 0;
                     m_wait_type = WAIT_NONE;
