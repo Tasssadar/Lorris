@@ -137,6 +137,9 @@ bool analyzer_data::getLenFromHeader(quint32& len)
         try
         {
             quint32 pos = m_packet->header->findDataPos(DATA_LEN);
+            if(!m_data || pos >= m_data->size())
+                return false;
+
             switch(m_packet->header->len_fmt)
             {
                 case 0: len = getUInt8(pos);  break;
