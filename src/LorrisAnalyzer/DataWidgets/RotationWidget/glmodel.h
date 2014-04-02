@@ -68,7 +68,7 @@ struct material
 
 struct polygonFace
 {
-    void add(int v1, int vt1 = 0, int vn1 = 0)
+    void add(int v1, int vt1 = 1, int vn1 = 1)
     {
         v.push_back(--v1);
         vt.push_back(--vt1);
