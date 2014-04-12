@@ -47,12 +47,14 @@ public slots:
         setAngType(i, m_range_min, m_range_max);
     }
 
+    void setFormula(const QString& formula);
+    void showFormulaDialog();
+
 protected:
      void processData(analyzer_data *data);
 
 private slots:
      void angTypeChanged(int i);
-     void showFormulaDialog();
 
 private:
      float toRad(const QVariant& var);

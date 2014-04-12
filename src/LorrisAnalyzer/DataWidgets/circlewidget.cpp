@@ -259,6 +259,12 @@ void CircleWidget::drawAngle(bool draw)
     m_circle->setDrawAngle(draw);
 }
 
+void CircleWidget::setFormula(const QString &formula)
+{
+    m_eval.setFormula(formula);
+    emit updateForMe();
+}
+
 void CircleWidget::showFormulaDialog()
 {
     m_eval.showFormulaDialog();
