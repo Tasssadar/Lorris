@@ -18,7 +18,7 @@
 #include "numberwidget.h"
 #include "../../ui/floatinginputdialog.h"
 
-static void addEnum()
+void NumberWidget::addEnum()
 {
     REGISTER_ENUM(NUM_UINT8);
     REGISTER_ENUM(NUM_UINT16);
@@ -32,9 +32,15 @@ static void addEnum()
 
     REGISTER_ENUM(NUM_FLOAT);
     REGISTER_ENUM(NUM_DOUBLE);
+
+    REGISTER_ENUM(FMT_DECIMAL);
+    REGISTER_ENUM(FMT_EXPONENT);
+    REGISTER_ENUM(FMT_HEX);
+    REGISTER_ENUM(FMT_BINARY);
+    REGISTER_ENUM(FMT_COUNT);
 }
 
-REGISTER_DATAWIDGET(WIDGET_NUMBER, Number, &addEnum)
+REGISTER_DATAWIDGET(WIDGET_NUMBER, Number, &NumberWidget::addEnum)
 W_TR(QT_TRANSLATE_NOOP("DataWidget", "Number"))
 
 NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
@@ -126,7 +132,7 @@ void NumberWidget::setUp(Storage *storage)
     }
     m_fmtAction[FMT_DECIMAL]->setChecked(true);
     m_fmtAction[FMT_EXPONENT]->setEnabled(false);
-    connect(signalMapFmt, SIGNAL(mapped(int)), SLOT(fmtSelected(int)));
+    connect(signalMapFmt, SIGNAL(mapped(int)), SLOT(setFormat(int)));
 
     QSignalMapper *signalMapPrec = new QSignalMapper(this);
     for(int i = 0; i < PREC_COUNT-1; ++i)
@@ -249,11 +255,14 @@ void NumberWidget::setValue(QVariant var)
     m_num->setText(n);
 }
 
-void NumberWidget::fmtSelected(int i)
+void NumberWidget::setFormat(int fmt)
 {
+    if(fmt < 0 || fmt >= FMT_COUNT)
+        return;
+
     for(quint8 y = 0; y < FMT_COUNT; ++y)
-        m_fmtAction[y]->setChecked(y == i);
-    m_format = i;
+        m_fmtAction[y]->setChecked(y == fmt);
+    m_format = fmt;
     emit updateForMe();
 }
 
@@ -263,7 +272,7 @@ void NumberWidget::setDataType(int i)
         m_bitsAction[y]->setChecked(y == i);
 
     if(i >= NUM_INT8 && m_numberType < NUM_FLOAT)
-        fmtSelected(FMT_DECIMAL);
+        setFormat(FMT_DECIMAL);
 
     if(m_numberType == i)
         return;
@@ -335,7 +344,7 @@ void NumberWidget::loadWidgetInfo(DataFileParser *file)
     if(file->seekToNextBlock("numWFormat", BLOCK_WIDGET))
     {
         *file >> m_format;
-        fmtSelected(m_format);
+        setFormat(m_format);
     }
 
     // Level off

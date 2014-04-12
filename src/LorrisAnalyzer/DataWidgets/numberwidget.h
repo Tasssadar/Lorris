@@ -13,21 +13,24 @@
 
 class QMenu;
 
-enum NumberFormats
-{
-    FMT_DECIMAL,
-    FMT_EXPONENT,
-    FMT_HEX,
-    FMT_BINARY,
-    FMT_COUNT
-};
-
 #define PREC_COUNT 8
 
 class NumberWidget : public DataWidget
 {
     Q_OBJECT
 public:
+    /// \brief To be used with \c setFormat()
+    enum NumberFormats
+    {
+        FMT_DECIMAL,
+        FMT_EXPONENT,
+        FMT_HEX,
+        FMT_BINARY,
+        FMT_COUNT
+    };
+
+    static void addEnum();
+
     NumberWidget(QWidget *parent = 0);
     ~NumberWidget();
 
@@ -40,6 +43,7 @@ public slots:
     void setDataType(int i);
     void setFormula(const QString& formula);
     void setPrecision(quint8 digits);
+    void setFormat(int fmt);
 
     void showFormulaDialog();
 
@@ -48,7 +52,6 @@ protected:
      void resizeEvent ( QResizeEvent * event );
 
 private slots:
-     void fmtSelected(int i);
      void levelSelected();
      void setPrecisionAct(int idx);
 
