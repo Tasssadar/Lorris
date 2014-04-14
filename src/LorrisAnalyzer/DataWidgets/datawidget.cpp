@@ -928,6 +928,18 @@ void DataWidget::setHighlighted(bool highlight)
     update();
 }
 
+void DataWidget::resizeEvent(QResizeEvent *ev)
+{
+    QFrame::resizeEvent(ev);
+    emit resized(ev->size().width(), ev->size().height(), ev->oldSize().width(), ev->oldSize().height());
+}
+
+void DataWidget::moveEvent(QMoveEvent *ev)
+{
+    QFrame::moveEvent(ev);
+    emit moved(ev->pos().x(), ev->pos().y(), ev->oldPos().x(), ev->oldPos().y());
+}
+
 DataWidgetAddBtn::DataWidgetAddBtn(quint32 type, const QString& name, QWidget *parent) :
     QPushButton(parent)
 {

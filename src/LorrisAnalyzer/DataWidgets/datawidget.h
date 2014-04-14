@@ -135,6 +135,9 @@ Q_SIGNALS:
     void addUndoAct(UndoAction *act);
     void toggleSelection(bool selected);
 
+    void resized(int w, int h, int oldW, int oldH);
+    void moved(int x, int y, int oldX, int oldY);
+
 public:
     explicit DataWidget(QWidget *parent = 0);
     ~DataWidget();
@@ -220,6 +223,8 @@ protected:
     bool eventFilter(QObject *, QEvent *ev);
     void focusInEvent(QFocusEvent *event);
     void paintEvent(QPaintEvent *ev);
+    void resizeEvent(QResizeEvent *ev);
+    void moveEvent(QMoveEvent *ev);
 
     virtual void titleDoubleClick();
 

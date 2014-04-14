@@ -269,16 +269,18 @@ void ScriptWidget::closeEditor()
     emit removeChildTab(m_editor);
 }
 
-void ScriptWidget::moveEvent(QMoveEvent *)
+void ScriptWidget::moveEvent(QMoveEvent *ev)
 {
     if(m_engine)
         m_engine->setPos(pos().x(), pos().y());
+    DataWidget::moveEvent(ev);
 }
 
-void ScriptWidget::resizeEvent(QResizeEvent *)
+void ScriptWidget::resizeEvent(QResizeEvent *ev)
 {
     if(m_engine)
         m_engine->setSize(size());
+    DataWidget::resizeEvent(ev);
 }
 
 void ScriptWidget::onWidgetAdd(DataWidget *w)
