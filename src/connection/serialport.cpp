@@ -24,11 +24,12 @@
 
 SerialPort::SerialPort()
     : PortConnection(CONNECTION_SERIAL_PORT),
-      m_rate(38400),
       m_devNameEditable(true)
 {
     m_port = NULL;
     m_openThread = NULL;
+
+    m_rate = sConfig.get(CFG_QUINT32_SERIAL_BAUD);
 
 #ifdef Q_OS_WIN
     m_thread = new SerialPortThread(this);

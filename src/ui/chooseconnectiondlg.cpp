@@ -11,6 +11,7 @@
 #include "../connection/serialport.h"
 #include "../connection/tcpsocket.h"
 #include "../connection/shupitotunnel.h"
+#include "../misc/config.h"
 #include <QMenu>
 #include <QPushButton>
 #include <QStyledItemDelegate>
@@ -533,7 +534,10 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
 
     Q_ASSERT(m_current->getType() == CONNECTION_SERIAL_PORT);
     if (SerialPort * c = dynamic_cast<SerialPort *>(m_current.data()))
+    {
         c->setBaudRate(editValue);
+        sConfig.set(CFG_QUINT32_SERIAL_BAUD, editValue);
+    }
 }
 
 void ChooseConnectionDlg::progBtn_clicked(int programmer)

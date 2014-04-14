@@ -42,7 +42,7 @@ static const quint32 def_quint32[] =
 {
     MAX_CON_TYPE,                // CFG_QUINT32_CONNECTION_TYPE
     0,                           // CFG_QUINT32_TAB_TYPE
-    38400,                       // CFG_QUINT32_SERIAL_BAUD
+    115200,                      // CFG_QUINT32_SERIAL_BAUD
     0,                           // CFG_QUINT32_SHUPITO_MODE
     0,                           // CFG_QUINT32_SHUPITO_PRG_SPEED
     0,                           // CFG_QUINT32_LANGUAGE
