@@ -110,7 +110,7 @@ void PythonEngine::setSource(const QString &source)
     const WidgetArea::w_map& widgets = m_area->getWidgets();
     for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
     {
-        QString name = sanitizeWidgetName((*itr)->getTitle());
+        const QString name = sanitizeWidgetName((*itr)->getTitle());
         if(!name.isEmpty())
             m_module.addObject(name, *itr);
     }
@@ -122,6 +122,20 @@ void PythonEngine::setSource(const QString &source)
     emit stopUsingJoy(this);
 
     m_module.evalScript(source, m_name, 257);
+
+    QVariantList args;
+    for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
+    {
+        const QString name = sanitizeWidgetName((*itr)->getTitle());
+        if(name.isEmpty())
+            continue;
+
+        args.clear();
+        args << m_module.getVariable(name) << name;
+        m_module.call("onWidgetAdd", args);
+    }
+
+
     m_evaluating = false;
 }
 

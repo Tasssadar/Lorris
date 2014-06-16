@@ -196,6 +196,22 @@ void QtScriptEngine::setSource(const QString &source)
     m_on_raw = m_global.property("onRawData");
 
     m_engine->setAgent(new ScriptAgent(this, m_engine));
+
+    if(m_on_widget_add.isFunction())
+    {
+        QScriptValueList args;
+        const WidgetArea::w_map& widgets = m_area->getWidgets();
+        for(WidgetArea::w_map::const_iterator itr = widgets.begin(); itr != widgets.end(); ++itr)
+        {
+            const QString name = sanitizeWidgetName((*itr)->getTitle());
+            if(name.isEmpty())
+                continue;
+
+            args.clear();
+            args << m_engine->newQObject(*itr) << name;
+            m_on_widget_add.call(QScriptValue(), args);
+        }
+    }
 }
 
 QString QtScriptEngine::dataChanged(analyzer_data *data, quint32 index)
