@@ -85,6 +85,27 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Axis:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="axisBox">
+       <item>
+        <property name="text">
+         <string>Y - left</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Y - right</string>
+        </property>
+       </item>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

@@ -110,6 +110,11 @@ quint8 GraphCurveAddDialog::getDataType()
     return edit_widget_ui->dataTypeBox->currentIndex();
 }
 
+int GraphCurveAddDialog::getAxis()
+{
+    return edit_widget_ui->axisBox->currentIndex();
+}
+
 void GraphCurveAddDialog::showError(const QString& text)
 {
     QMessageBox box(this);
@@ -162,6 +167,7 @@ void GraphCurveAddDialog::curveChanged(int idx)
     edit_widget_ui->nameEdit->setText(curve->title().text());
     edit_widget_ui->dataTypeBox->setCurrentIndex(curve->getDataType());
     edit_widget_ui->formulaEdit->setText(curve->getFormula());
+    edit_widget_ui->axisBox->setCurrentIndex(curve->yAxis());
 
     setButtonColor(curve->pen().color());
 }

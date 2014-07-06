@@ -91,6 +91,23 @@ void GraphWidget::setUp(Storage *storage)
 
     updateSampleSize();
 
+    QMenu *enableAxes = contextMenu->addMenu(tr("Visible axes"));
+    QSignalMapper *axisMap = new QSignalMapper(this);
+    static const QString axisNames[QwtPlot::xTop] = {
+        tr("Y - left"), tr("Y - right"), ("X - bottom")
+    };
+
+    for(size_t i = 0; i < sizeof_array(axisNames); ++i)
+    {
+        m_axis_act[i] = enableAxes->addAction(axisNames[i]);
+        m_axis_act[i]->setCheckable(true);
+        axisMap->setMapping(m_axis_act[i], i);
+        connect(m_axis_act[i], SIGNAL(triggered()), axisMap, SLOT(map()));
+    }
+
+    m_axis_act[QwtPlot::yLeft]->setChecked(true);
+    m_axis_act[QwtPlot::xBottom]->setChecked(true);
+
     QAction *exportAct = contextMenu->addAction(tr("Export data..."));
     QAction *bgAct = contextMenu->addAction(tr("Change background..."));
 
@@ -109,6 +126,7 @@ void GraphWidget::setUp(Storage *storage)
     connect(exportAct,    SIGNAL(triggered()),        SLOT(exportData()));
     connect(bgAct,        SIGNAL(triggered()),        SLOT(changeBackground()));
     connect(sampleMap,    SIGNAL(mapped(int)),        SLOT(sampleSizeChanged(int)));
+    connect(axisMap,      SIGNAL(mapped(int)),        SLOT(toggleAxisVisibility(int)));
     connect(m_showLegend, SIGNAL(triggered(bool)),    SLOT(showLegend(bool)));
     connect(m_autoScroll, SIGNAL(triggered(bool)),    SLOT(toggleAutoScroll(bool)));
     connect(m_graph,      SIGNAL(updateSampleSize()), SLOT(updateSampleSize()));
@@ -160,17 +178,19 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         file->write((char*)&showLegend, 1);
     }
 
-    // axis range
-    file->writeBlockIdentifier("graphWAxisRange");
-    {
-        double vals[] = { m_graph->XlowerBound(), m_graph->XupperBound(), m_graph->YlowerBound(), m_graph->YupperBound() };
-        file->write((char*)&vals, sizeof(vals));
-    }
-
     // autoscroll
     file->writeBlockIdentifier("graphWAutoScroll");
     {
         file->write((char*)&m_enableAutoScroll, sizeof(bool));
+    }
+
+    // visible axes
+    file->writeBlockIdentifier("graphWAxisVisibility");
+    {
+        const quint32 cnt = sizeof_array(m_axis_act);
+        *file << cnt;
+        for(quint32 i = 0; i < cnt; ++i)
+            *file << m_graph->axisEnabled(i);
     }
 
     // Graph data
@@ -205,6 +225,10 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         // color
         file->writeBlockIdentifier("graphWCurveColor");
         file->writeString(info->curve->pen().color().name());
+
+        // axis
+        file->writeBlockIdentifier("graphWCurveAxis");
+        file->writeVal(info->curve->yAxis());
 
         // formula
         file->writeBlockIdentifier("graphWCurveFormula");
@@ -243,7 +267,7 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         showLegend(show);
     }
 
-    // axis range
+    // axis range - deprecated, moved to Graph class
     if(file->seekToNextBlock("graphWAxisRange", BLOCK_WIDGET))
     {
         double vals[4];
@@ -251,6 +275,7 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
 
         m_graph->setAxisScale(QwtPlot::xBottom, vals[0], vals[1]);
         m_graph->setAxisScale(QwtPlot::yLeft, vals[2], vals[3]);
+        m_graph->syncYZeros();
     }
 
     // autoscroll
@@ -259,6 +284,18 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         bool enable;
         file->read((char*)&enable, sizeof(enable));
         toggleAutoScroll(enable);
+    }
+
+    // axis visibility
+    if(file->seekToNextBlock("graphWAxisVisibility", BLOCK_WIDGET))
+    {
+        const quint32 cnt = file->readVal<quint32>();
+        for(quint32 i = 0; i < cnt; ++i)
+        {
+            const bool enabled = file->readVal<bool>();
+            m_graph->enableAxis(i, enabled);
+            m_axis_act[i]->setChecked(enabled);
+        }
     }
 
     // Graph data
@@ -279,6 +316,7 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         quint8 dataType;
         data_widget_info info;
         QString color;
+        int axis = QwtPlot::yLeft;
 
         // title
         if(!file->seekToNextBlock("graphWCurveName", "graphWCurve"))
@@ -304,10 +342,15 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
             continue;
         color = file->readString();
 
+        // axis
+        if(file->seekToNextBlock("graphWCurveAxis", "graphWCurve"))
+            axis = file->readVal<int>();
+
         GraphData *dta = new GraphData(m_storage, info, m_sample_size, dataType);
         GraphCurve *curve = new GraphCurve(name, dta);
 
         curve->setPen(QPen(QColor(color)));
+        curve->setYAxis(axis);
         curve->attach(m_graph);
         m_graph->showCurve(curve, true);
         m_curves.push_back(new GraphCurveInfo(curve, info));
@@ -360,6 +403,7 @@ void GraphWidget::applyCurveChanges()
         GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), data);
         curve->setPen(QPen(m_add_dialog->getColor()));
         curve->attach(m_graph);
+        curve->setYAxis(m_add_dialog->getAxis());
         data->setFormula(m_add_dialog->getFormula());
         m_graph->showCurve(curve, true);
         m_curves.push_back(new GraphCurveInfo(curve, m_info));
@@ -395,6 +439,7 @@ void GraphWidget::applyCurveChanges()
 
         info->curve->setTitle(m_add_dialog->getName());
         info->curve->setPen(QPen(m_add_dialog->getColor()));
+        info->curve->setYAxis(m_add_dialog->getAxis());
         if(!m_add_dialog->forceEdit())
         {
             info->curve->setDataInfo(m_info);
@@ -608,6 +653,7 @@ void GraphWidget::setAxisScale(bool x, double min, double max)
     int axis = x ? QwtPlot::xBottom : QwtPlot::yLeft;
 
     m_graph->setAxisScale(axis, min, max);
+    m_graph->syncYZeros();
 }
 
 void GraphWidget::updateSampleSize()
@@ -635,4 +681,10 @@ void GraphWidget::changeBackground()
         return;
 
     m_graph->setBgColor(c);
+}
+
+void GraphWidget::toggleAxisVisibility(int axis)
+{
+    m_axis_act[axis]->setChecked(!m_graph->axisEnabled(axis));
+    m_graph->enableAxis(axis, !m_graph->axisEnabled(axis));
 }

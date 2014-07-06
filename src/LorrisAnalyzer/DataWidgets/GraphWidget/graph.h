@@ -56,6 +56,7 @@ protected:
 public slots:
     void showCurve(const QVariant &itemInfo, bool on, int index);
     void showCurve(GraphCurve *curve, bool show);
+    void syncYZeros();
 
 private:
     int getAxisOnPos(const QPoint& pos);
@@ -63,18 +64,26 @@ private:
     void createMarkerRmMenu(const QPoint& pos, int axis);
     void addMarker(double val, const QColor& color, int axis);
     void initLegend();
+    void syncYZeros(int masterAxis, double masterAxisLower, double masterAxisUpper);
 
     std::vector<QwtPlotMarker*>& getMarkers(int axis)
     {
-        if(axis == QwtPlot::xBottom)
-            return m_xMarkers;
-        else
-            return m_yMarkers;
+        switch(axis)
+        {
+            case QwtPlot::yLeft:
+                return m_yLeftMarkers;
+            case QwtPlot::yRight:
+                return m_yRightMarkers;
+            case QwtPlot::xBottom:
+            default:
+                return m_xMarkers;
+        }
     }
 
     QwtPlotGrid *m_grid;
     std::vector<QwtPlotMarker*> m_xMarkers;
-    std::vector<QwtPlotMarker*> m_yMarkers;
+    std::vector<QwtPlotMarker*> m_yLeftMarkers;
+    std::vector<QwtPlotMarker*> m_yRightMarkers;
 };
 
 class Panner : public QwtPlotPanner
@@ -108,11 +117,12 @@ class GraphMarkerDialog : public QDialog, private Ui::GraphMarkerDialog
 {
     Q_OBJECT
 public:
-    GraphMarkerDialog(QWidget *parent = 0);
+    GraphMarkerDialog(int axis, QWidget *parent = 0);
     ~GraphMarkerDialog();
 
     double getValue() const;
     QColor getColorVal() const { return m_color; }
+    int getAxis() const;
 
 private slots:
     void on_colorBtn_clicked();

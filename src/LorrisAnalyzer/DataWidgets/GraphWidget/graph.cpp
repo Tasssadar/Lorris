@@ -73,9 +73,11 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
     connect(axisWidget(QwtPlot::xBottom), SIGNAL(scaleDivChanged()), SIGNAL(updateSampleSize()));
 
     setAxisScale(QwtPlot::xBottom, -20, 20);
+    setAxisScale(QwtPlot::yRight, -20, 20);
     setAxisScale(QwtPlot::yLeft, -20, 20);
     axisWidget(QwtPlot::xBottom)->setToolTip(tr("Double-click to add marker"));
     axisWidget(QwtPlot::yLeft)->setToolTip(tr("Double-click to add marker"));
+    axisWidget(QwtPlot::yRight)->setToolTip(tr("Double-click to add marker"));
 
     // to show graph appearance while dragging from add button to widget area
     replot();
@@ -92,9 +94,12 @@ void Graph::showCurve(const QVariant &itemInfo, bool on, int index )
     if(it)
         it->setVisible(on);
 
-    QWidget *w = ((QwtLegend*)legend())->legendWidget(itemInfo);
-    if(w && w->inherits("QwtLegendLabel"))
-        ((QwtLegendLabel*)w)->setChecked(on);
+    if(legend())
+    {
+        QWidget *w = ((QwtLegend*)legend())->legendWidget(itemInfo);
+        if(w && w->inherits("QwtLegendLabel"))
+            ((QwtLegendLabel*)w)->setChecked(on);
+    }
 
     replot();
 }
@@ -167,7 +172,7 @@ void Graph::mouseDoubleClickEvent(QMouseEvent *event)
 
     event->accept();
 
-    GraphMarkerDialog d(this);
+    GraphMarkerDialog d(axis, this);
     if(d.exec() == QDialog::Accepted)
     {
         addMarker(d.getValue(), d.getColorVal(), axis);
@@ -192,23 +197,27 @@ void Graph::wheelEvent(QWheelEvent *event)
     double newDiff = fabs(diff + (diff*(exp *event->delta())));
 
     double pct = getAxisPosPct(axis, event->pos());
-    double newMax = (max + diff*(1-pct)) - newDiff*(1-pct);
-    double newMin = (min - diff*pct) + newDiff*pct;
+    double newMax = (max - diff*(1-pct)) + newDiff*(1-pct);
+    double newMin = (min + diff*pct) - newDiff*pct;
 
     if(newMin > newMax || newMin == newMax)
         return;
 
     setAxisScale(axis, newMin, newMax);
+    if(axis == QwtPlot::yLeft || axis == QwtPlot::yRight)
+        syncYZeros(axis, newMin, newMax);
     replot();
 }
 
 int Graph::getAxisOnPos(const QPoint &pos)
 {
-    int yPos = axisWidget(QwtPlot::yLeft)->pos().x() + axisWidget(QwtPlot::yLeft)->width();
+    int yLeftPos = axisWidget(QwtPlot::yLeft)->pos().x() + axisWidget(QwtPlot::yLeft)->width();
+    int yRightPos = axisWidget(QwtPlot::yRight)->pos().x();
     int xPos = axisWidget(QwtPlot::xBottom)->pos().y();
 
-    if(pos.x() < yPos)      return QwtPlot::yLeft;
-    else if(pos.y() > xPos) return QwtPlot::xBottom;
+    if(pos.x() < yLeftPos)      return QwtPlot::yLeft;
+    else if(yRightPos && pos.x() > yRightPos) return QwtPlot::yRight;
+    else if(xPos && pos.y() > xPos) return QwtPlot::xBottom;
     else                    return -1;
 }
 
@@ -270,6 +279,7 @@ void Graph::addMarker(double val, const QColor &color, int axis)
     QwtPlotMarker *m = new QwtPlotMarker();
     m->setLineStyle(axis == QwtPlot::xBottom ? QwtPlotMarker::VLine : QwtPlotMarker::HLine);
     m->setLinePen(QPen(color));
+    m->setYAxis(axis);
     m->setValue(val, val);
     m->attach(this);
     m->setLabel(QString::number(val));
@@ -335,6 +345,19 @@ void Graph::saveData(DataFileParser *file)
 
     file->writeBlockIdentifier("graphWMarkersY");
     saveMarkers(file, QwtPlot::yLeft);
+
+    file->writeBlockIdentifier("graphWMarkersYRight");
+    saveMarkers(file, QwtPlot::yRight);
+
+    // axes
+    file->writeBlockIdentifier("graphWAxisRangeV2");
+    *file << (quint32)QwtPlot::axisCnt;
+    for(size_t i = 0; i < QwtPlot::axisCnt; ++i)
+    {
+        const QwtScaleDiv div = axisScaleDiv(i);
+        *file << div.lowerBound();
+        *file << div.upperBound();
+    }
 }
 
 void Graph::saveMarkers(DataFileParser *file, int axis)
@@ -362,6 +385,21 @@ void Graph::loadData(DataFileParser *file)
     if(file->seekToNextBlock("graphWMarkersY", BLOCK_WIDGET))
         loadMarkers(file, QwtPlot::yLeft);
 
+    if(file->seekToNextBlock("graphWMarkersYRight", BLOCK_WIDGET))
+        loadMarkers(file, QwtPlot::yRight);
+
+    // axes
+    if(file->seekToNextBlock("graphWAxisRangeV2", BLOCK_WIDGET))
+    {
+        const quint32 cnt = file->readVal<quint32>();
+        for(quint32 i = 0; i < cnt; ++i)
+        {
+            double lower = file->readVal<double>();
+            double upper = file->readVal<double>();
+            setAxisScale(i, lower, upper);
+        }
+    }
+
     replot();
 }
 
@@ -374,6 +412,24 @@ void Graph::loadMarkers(DataFileParser *file, int axis)
         QColor color(file->readString());
         addMarker(val, color, axis);
     }
+}
+
+void Graph::syncYZeros()
+{
+    const QwtScaleDiv div = axisScaleDiv(QwtPlot::yLeft);
+    syncYZeros(QwtPlot::yLeft, div.lowerBound(), div.upperBound());
+}
+
+void Graph::syncYZeros(int masterAxis, double masterAxisLower, double masterAxisUpper)
+{
+    int slaveAxis = masterAxis == QwtPlot::yLeft ? QwtPlot::yRight : QwtPlot::yLeft;
+    const QwtScaleDiv divSlave = axisScaleDiv(slaveAxis);
+
+    double slaveAxisRange = divSlave.range();
+    double zeroOff = masterAxisLower/(masterAxisUpper - masterAxisLower);
+    double lower = slaveAxisRange*zeroOff;
+    double upper = slaveAxisRange*zeroOff + slaveAxisRange;
+    setAxisScale(slaveAxis, lower, upper);
 }
 
 Panner::Panner(QWidget *canvas) : QwtPlotPanner(canvas)
@@ -405,10 +461,11 @@ void Magnifier::widgetWheelEvent(QWheelEvent *e)
     QwtPlotMagnifier::widgetWheelEvent(&modEv);
 }
 
-GraphMarkerDialog::GraphMarkerDialog(QWidget *parent) : QDialog(parent), ui(new Ui::GraphMarkerDialog)
+GraphMarkerDialog::GraphMarkerDialog(int axis, QWidget *parent) : QDialog(parent), ui(new Ui::GraphMarkerDialog)
 {
     ui->setupUi(this);
     ui->valBox->setRange(-DBL_MAX, DBL_MAX);
+    ui->axisBox->setCurrentIndex(axis);
 
     setButtonColor(Qt::black);
 }
@@ -438,4 +495,9 @@ void GraphMarkerDialog::on_colorBtn_clicked()
 double GraphMarkerDialog::getValue() const
 {
     return ui->valBox->value();
+}
+
+int GraphMarkerDialog::getAxis() const
+{
+    return ui->axisBox->currentIndex();
 }

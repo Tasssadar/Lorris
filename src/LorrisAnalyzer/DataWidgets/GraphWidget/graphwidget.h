@@ -9,6 +9,7 @@
 #define GRAPHWIDGET_H
 
 #include <QHash>
+#include <qwt_plot.h>
 #include "../datawidget.h"
 
 class QSignalMapper;
@@ -64,6 +65,7 @@ private slots:
     void tryReplot();
     void exportData();
     void changeBackground();
+    void toggleAxisVisibility(int axis);
 
 private:
     void updateRemoveMapping();
@@ -74,6 +76,7 @@ private:
     Storage *m_storage;
 
     QAction *m_sample_act[SAMPLE_ACT_COUNT];
+    QAction *m_axis_act[QwtPlot::xTop];
     QAction *m_editCurve;
     QAction *m_showLegend;
     QAction *m_autoScroll;

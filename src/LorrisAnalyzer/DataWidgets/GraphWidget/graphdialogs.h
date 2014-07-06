@@ -33,6 +33,7 @@ public:
     quint8 getDataType();
     QString getEditName();
     QString getFormula();
+    int getAxis();
 
     bool forceEdit();
     bool edit();
