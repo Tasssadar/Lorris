@@ -184,6 +184,8 @@ private:
 
 class QsciScintilla;
 
+#include "ui_qscisearchbar.h"
+
 class EditorWidgetQSci : public EditorWidget
 {
     Q_OBJECT
@@ -212,11 +214,24 @@ public slots:
 private slots:
     void modified(bool mod);
     void checkUndoRedo();
+    void setSearchBarReplaceVisible(bool visible);
+    void hideSearch();
+    void showSearch();
+    void showReplace();
+    void findNext();
+    void findPrev();
+    void replace();
+    void replaceAll();
 
 private:
     QsciScintilla *m_editor;
+    QWidget *m_widget;
+    QWidget *m_search_widget;
+    Ui::QSciSearchBar *m_search_ui;
     bool m_canUndo;
     bool m_canRedo;
+    QString m_lastSearchForward;
+    QString m_lastSearchBackward;
 };
 
 #endif // USE QSCI

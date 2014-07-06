@@ -379,9 +379,14 @@ void EditorWidgetKate::redo()
 #include <Qsci/qscilexerjavascript.h>
 #include <Qsci/qscilexerpython.h>
 
+#include <QShortcut>
+
 EditorWidgetQSci::EditorWidgetQSci(QWidget *parent) : EditorWidget(parent)
 {
-    m_editor = new QsciScintilla(parent);
+    m_widget = new QWidget(parent);
+    QVBoxLayout *l = new QVBoxLayout(m_widget);
+
+    m_editor = new QsciScintilla(m_widget);
     m_editor->setMarginLineNumbers(QsciScintilla::NumberMargin, true);
     m_editor->setMarginWidth(QsciScintilla::NumberMargin, "12322");
     m_editor->setBraceMatching(QsciScintilla::SloppyBraceMatch);
@@ -393,11 +398,36 @@ EditorWidgetQSci::EditorWidgetQSci(QWidget *parent) : EditorWidget(parent)
     m_editor->setUtf8(true);
     m_editor->setEolMode(QsciScintilla::EolUnix);
 
+    m_search_widget = new QWidget(m_widget);
+    m_search_ui = new Ui::QSciSearchBar;
+    m_search_ui->setupUi(m_search_widget);
+
+    l->addWidget(m_editor, 1);
+    l->addWidget(m_search_widget);
+
+    m_search_widget->setVisible(false);
+    setSearchBarReplaceVisible(false);
+
     m_canUndo = false;
     m_canRedo = false;
 
+    QShortcut *find_s = new QShortcut(QKeySequence("Ctrl+F"), m_widget);
+    QShortcut *replace_s = new QShortcut(QKeySequence("Ctrl+R"), m_widget);
+    QShortcut *find_esc_s = new QShortcut(QKeySequence("Esc"), m_widget);
+
     connect(m_editor, SIGNAL(modificationChanged(bool)), SLOT(modified(bool)));
     connect(m_editor, SIGNAL(textChanged()),             SLOT(checkUndoRedo()));
+    connect(m_search_ui->expandBtn, SIGNAL(clicked(bool)), SLOT(setSearchBarReplaceVisible(bool)));
+    connect(m_search_ui->closeBtn, SIGNAL(clicked()),    SLOT(hideSearch()));
+    connect(find_esc_s, SIGNAL(activated()),             SLOT(hideSearch()));
+    connect(find_s, SIGNAL(activated()),                 SLOT(showSearch()));
+    connect(replace_s, SIGNAL(activated()),              SLOT(showReplace()));
+    connect(m_search_ui->nextBtn, SIGNAL(clicked()), SLOT(findNext()));
+    connect(m_search_ui->prevBtn, SIGNAL(clicked()), SLOT(findPrev()));
+    connect(m_search_ui->findEdit, SIGNAL(textEdited(QString)), SLOT(findNext()));
+    connect(m_search_ui->replaceBtn, SIGNAL(clicked()), SLOT(replace()));
+    connect(m_search_ui->replaceAllBtn, SIGNAL(clicked()), SLOT(replaceAll()));
+    connect(m_search_ui->findEdit, SIGNAL(returnPressed()), SLOT(findNext()));
 }
 
 EditorWidgetQSci::~EditorWidgetQSci()
@@ -447,7 +477,7 @@ void EditorWidgetQSci::setHighlighter(EditorHighlight lang)
 
 QWidget *EditorWidgetQSci::getWidget()
 {
-    return m_editor;
+    return m_widget;
 }
 
 void EditorWidgetQSci::modified(bool mod)
@@ -491,6 +521,100 @@ void EditorWidgetQSci::undo()
 void EditorWidgetQSci::redo()
 {
     m_editor->redo();
+}
+
+void EditorWidgetQSci::setSearchBarReplaceVisible(bool visible)
+{
+    QWidget *widgets[] = {
+        m_search_ui->replaceLabel, m_search_ui->replaceEdit, m_search_ui->replaceBtn,
+        m_search_ui->replaceAllBtn
+    };
+
+    for(size_t i = 0; i < sizeof_array(widgets); ++i)
+        widgets[i]->setVisible(visible);
+
+    m_search_ui->expandBtn->setChecked(visible);
+}
+
+void EditorWidgetQSci::showSearch()
+{
+    m_search_widget->show();
+    m_search_ui->findEdit->setFocus();
+}
+
+void EditorWidgetQSci::showReplace()
+{
+    setSearchBarReplaceVisible(true);
+    showSearch();
+}
+
+void EditorWidgetQSci::hideSearch()
+{
+    m_search_widget->hide();
+    setSearchBarReplaceVisible(false);
+    m_lastSearchForward = "";
+    m_lastSearchBackward = "";
+    m_search_ui->findEdit->clear();
+    m_search_ui->replaceEdit->clear();
+}
+
+void EditorWidgetQSci::findNext()
+{
+    QString curSearch = m_search_ui->findEdit->text();
+    bool caseSens = m_search_ui->caseBox->isChecked();
+    if(curSearch.compare(m_lastSearchForward, caseSens ? Qt::CaseSensitive : Qt::CaseInsensitive) == 0)
+        m_editor->findNext();
+    else
+    {
+        int lineFrom, lineTo, idxFrom, idxTo;
+        m_editor->getSelection(&lineFrom, &idxFrom, &lineTo, &idxTo);
+        if(m_editor->findFirst(curSearch, false, caseSens, m_search_ui->wholeBox->isChecked(),
+                true, true, lineFrom, idxFrom))
+        {
+            m_lastSearchForward = curSearch;
+        }
+    }
+}
+
+void EditorWidgetQSci::findPrev()
+{
+    QString curSearch = m_search_ui->findEdit->text();
+    bool caseSens = m_search_ui->caseBox->isChecked();
+    if(curSearch.compare(m_lastSearchBackward, caseSens ? Qt::CaseSensitive : Qt::CaseInsensitive) == 0)
+        m_editor->findNext();
+    else if(m_editor->findFirst(curSearch, false, caseSens, m_search_ui->wholeBox->isChecked(), true, false))
+    {
+        m_lastSearchBackward = curSearch;
+    }
+}
+
+void EditorWidgetQSci::replace()
+{
+    QString curSearch = m_search_ui->findEdit->text();
+    bool caseSens = m_search_ui->caseBox->isChecked();
+    if(m_editor->selectedText().compare(curSearch, caseSens ? Qt::CaseSensitive : Qt::CaseInsensitive) != 0)
+        findNext();
+
+    if(m_editor->selectedText().compare(curSearch, caseSens ? Qt::CaseSensitive : Qt::CaseInsensitive) == 0)
+    {
+        m_editor->replaceSelectedText(m_search_ui->replaceEdit->text());
+        findNext();
+    }
+}
+
+void EditorWidgetQSci::replaceAll()
+{
+    QString curSearch = m_search_ui->findEdit->text();
+    bool caseSens = m_search_ui->caseBox->isChecked();
+
+    m_lastSearchForward = "";
+    findNext();
+
+    while(m_editor->selectedText().compare(curSearch, caseSens ? Qt::CaseSensitive : Qt::CaseInsensitive) == 0)
+    {
+        m_editor->replaceSelectedText(m_search_ui->replaceEdit->text());
+        findNext();
+    }
 }
 
 #endif // USE_QSCI

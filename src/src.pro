@@ -327,7 +327,8 @@ FORMS += \
     LorrisProgrammer/ui/miniprogrammerui.ui \
     LorrisProgrammer/ui/fullprogrammerui.ui \
     ui/sessionsavedialog.ui \
-    LorrisProgrammer/ui/shupitospitunnelwidget.ui
+    LorrisProgrammer/ui/shupitospitunnelwidget.ui \
+    ui/qscisearchbar.ui
 
 RESOURCES += \
     LorrisAnalyzer/DataWidgetIcons.qrc \
