@@ -23,7 +23,7 @@ public:
     ~ShupitoProgrammer();
 
     bool supportsPwm() const override;
-    bool setPwmFreq(uint32_t freq_hz) override;
+    bool setPwmFreq(uint32_t freq_hz, float duty_cycle) override;
 
     bool supportsVdd() const override { return true; }
 

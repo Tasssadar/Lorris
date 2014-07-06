@@ -90,8 +90,10 @@ private slots:
     void readButtonClicked();
     void writeButtonClicked();
 
-    void setPwmEnable(bool enable);
-    void pwmChanged(uint32_t freq_hz);
+    void pwmRadioClicked(int id);
+    void pwmChanged(uint32_t freq_hz, float duty_cycle);
+    void setPwmGeneric(bool force = false);
+    void setPwmServo(bool force = false);
 
     void hexEditMenuReq(const QPoint& p);
 

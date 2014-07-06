@@ -117,11 +117,16 @@ void ShupitoProgrammer::readPacket(const ShupitoPacket & packet)
                 period = (period << 8) | packet[i+1];
 
             if (period != 0)
-                emit pwmChanged(base_freq / period);
+            {
+                uint32_t duty_cycle = 0;
+                for (size_t i = 8; i != 4; --i)
+                    duty_cycle = (duty_cycle << 8) | packet[i+1];
+                emit pwmChanged(base_freq / period, float(duty_cycle)/(period));
+            }
         }
         else if (packet[1] == 0)
         {
-            emit pwmChanged(0);
+            emit pwmChanged(0, 0.f);
         }
     }
 }
@@ -383,15 +388,13 @@ bool ShupitoProgrammer::supportsPwm() const
     return m_pwm_config != 0 && m_pwm_config->data.size() == 5 && m_pwm_config->data[0] == 1;
 }
 
-bool ShupitoProgrammer::setPwmFreq(uint32_t freq_hz)
+bool ShupitoProgrammer::setPwmFreq(uint32_t freq_hz, float duty_cycle_pct)
 {
     Q_ASSERT(this->supportsPwm());
 
     if (freq_hz == 0)
     {
-        ShupitoPacket pck = m_shupito->waitForPacket(makeShupitoPacket(m_pwm_config->cmd, 1, 0), m_pwm_config->cmd);
-        if (pck.size() < 2 || (pck[1] != 0 && pck[1] != 2))
-            Utils::showErrorBox(tr("Invalid response"));
+        m_shupito->sendPacket(makeShupitoPacket(m_pwm_config->cmd, 1, 0));
         return true;
     }
 
@@ -400,7 +403,7 @@ bool ShupitoProgrammer::setPwmFreq(uint32_t freq_hz)
         base_freq = (base_freq << 8) | m_pwm_config->data[i];
 
     uint32_t div = base_freq / freq_hz;
-    uint32_t duty_cycle = div / 2 + 1;
+    uint32_t duty_cycle = div * duty_cycle_pct + 1;
 
     if (div == 0 || (div % 2) == 0)
         ++div;
@@ -411,18 +414,6 @@ bool ShupitoProgrammer::setPwmFreq(uint32_t freq_hz)
         uint8_t(duty_cycle), uint8_t(duty_cycle >> 8), uint8_t(duty_cycle >> 16), uint8_t(duty_cycle >> 24)
     };
 
-    ShupitoPacket out = m_shupito->waitForPacket(ShupitoPacket(pck, pck + sizeof pck), m_pwm_config->cmd);
-    if (out.size() > 1 && out[1] == 2)
-    {
-        //Utils::showErrorBox(tr("Clock output is not supported in this mode."));
-        return false;
-    }
-
-    if (out.size() < 2 || out[1] != 0)
-    {
-        Utils::showErrorBox(tr("Invalid response"));
-        return false;
-    }
-
+    m_shupito->sendPacket(ShupitoPacket(pck, pck + sizeof pck));
     return true;
 }

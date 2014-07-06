@@ -90,7 +90,7 @@ signals:
 
     void capabilitiesChanged();
 
-    void pwmChanged(uint32_t freq_hz);
+    void pwmChanged(uint32_t freq_hz, float duty_cycle);
 
 public:
     explicit Programmer(ProgrammerLogSink * logsink)
@@ -99,7 +99,7 @@ public:
     }
 
     virtual bool supportsPwm() const { return false; }
-    virtual bool setPwmFreq(uint32_t freq_hz);
+    virtual bool setPwmFreq(uint32_t freq_hz, float duty_cycle);
 
     virtual bool supportsVdd() const { return false; }
     virtual bool supportsBootseq() const { return false; }

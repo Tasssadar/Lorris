@@ -89,7 +89,18 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
     connect(ui->clearBtn,        SIGNAL(clicked()),        ui->terminal, SLOT(clear()));
     connect(ui->pauseBtn,        SIGNAL(clicked(bool)),    ui->terminal, SLOT(pause(bool)));
     connect(m_fuse_widget,       SIGNAL(status(QString)),          widget, SLOT(status(QString)));
-    connect(ui->pwmEnableBox,    SIGNAL(clicked(bool)), this, SLOT(setPwmEnable(bool)));
+    connect(ui->pwmRadioGroup,   SIGNAL(buttonClicked(int)),       SLOT(pwmRadioClicked(int)));
+    connect(ui->pwmFreqSpin,     SIGNAL(valueChanged(int)),        SLOT(setPwmGeneric()));
+    connect(ui->dutySpin,        SIGNAL(valueChanged(int)),        SLOT(setPwmGeneric()));
+    connect(ui->maxServoPeriodBox, SIGNAL(valueChanged(double)),   SLOT(setPwmServo()));
+    connect(ui->minServoPeriodBox, SIGNAL(valueChanged(double)),   SLOT(setPwmServo()));
+    connect(ui->servoPosSlider,  SIGNAL(valueChanged(int)),        ui->servoPosSpin, SLOT(setValue(int)));
+    connect(ui->servoPosSpin,    SIGNAL(valueChanged(int)),        SLOT(setPwmServo()));
+    connect(ui->servoPosSpin,    SIGNAL(valueChanged(int)),        ui->servoPosSlider, SLOT(setValue(int)));
+
+    ui->pwmRadioGroup->setId(ui->disablePwmRadio, 0);
+    ui->pwmRadioGroup->setId(ui->genericPwmRadio, 1);
+    ui->pwmRadioGroup->setId(ui->servoPwmRadio, 2);
 
     this->enableButtons(widget->m_buttons_enabled);
 
@@ -272,7 +283,7 @@ void FullProgrammerUI::connectProgrammer(Programmer * prog)
     connect(ui->terminal,    SIGNAL(keyPressed(QString)),    prog,         SLOT(sendTunnelData(QString)));
     connect(ui->bootseqEdit, SIGNAL(textEdited(QString)),    prog,         SLOT(setBootseq(QString)));
     connect(prog,            SIGNAL(tunnelData(QByteArray)), ui->terminal, SLOT(appendText(QByteArray)));
-    connect(prog,            SIGNAL(pwmChanged(uint32_t)),   this,         SLOT(pwmChanged(uint32_t)));
+    connect(prog,            SIGNAL(pwmChanged(uint32_t,float)), this,     SLOT(pwmChanged(uint32_t, float)));
 
     m_widget->m_programmer->setTunnelSpeed(ui->tunnelSpeedBox->currentText().toInt(), false);
     ui->bootseqEdit->setText(prog->getBootseq());
@@ -790,28 +801,80 @@ void FullProgrammerUI::setChipId(const QString &text)
     ui->chipIdLabel->setToolTip(text);
 }
 
-void FullProgrammerUI::setPwmEnable(bool enable)
+void FullProgrammerUI::pwmRadioClicked(int id)
 {
-    if (!this->prog())
+    ui->pwmStack->setCurrentIndex(id);
+    if(!this->prog())
         return;
 
-    uint32_t freq = ui->pwmFreqSpin->value();
-    this->prog()->setPwmFreq(enable? freq: 0);
+    switch(id)
+    {
+        case 0:
+            this->prog()->setPwmFreq(0, 0.f);
+            break;
+        case 1:
+            setPwmGeneric(true);
+            break;
+        case 2:
+            setPwmServo(true);
+            break;
+    }
 }
 
-void FullProgrammerUI::pwmChanged(uint32_t freq_hz)
+void FullProgrammerUI::pwmChanged(uint32_t freq_hz, float duty_cycle)
 {
     if (freq_hz == 0)
     {
-        ui->pwmFreqSpin->setEnabled(true);
-        ui->pwmEnableBox->setChecked(false);
+        ui->disablePwmRadio->setChecked(true);
+        ui->pwmStack->setCurrentIndex(0);
     }
     else
     {
-        ui->pwmFreqSpin->setValue(freq_hz);
-        ui->pwmFreqSpin->setEnabled(false);
-        ui->pwmEnableBox->setChecked(true);
+        if(ui->disablePwmRadio->isChecked())
+            ui->genericPwmRadio->click();
+
+        if(!ui->pwmFreqSpin->hasFocus())
+            ui->pwmFreqSpin->setValue(freq_hz);
+        if(!ui->dutySpin->hasFocus())
+            ui->dutySpin->setValue(round(duty_cycle*100));
     }
+}
+
+void FullProgrammerUI::setPwmGeneric(bool force)
+{
+    if(!this->prog())
+        return;
+
+    if(ui->pwmFreqSpin->value() < 2)
+        return;
+
+    if(force || ui->pwmFreqSpin->hasFocus() || ui->dutySpin->hasFocus())
+        this->prog()->setPwmFreq(ui->pwmFreqSpin->value(), float(ui->dutySpin->value())/100);
+}
+
+void FullProgrammerUI::setPwmServo(bool force)
+{
+    if(!this->prog())
+        return;
+
+    if(!force && !ui->servoPosSlider->hasFocus() && !ui->servoPosSpin->hasFocus() &&
+        !ui->minServoPeriodBox->hasFocus() && !ui->maxServoPeriodBox->hasFocus())
+        return;
+
+    const uint32_t freq = 50;
+    const uint32_t freq_ms = 1000/freq;
+    const float maxP = ui->maxServoPeriodBox->value();
+    const float minP = ui->minServoPeriodBox->value();
+
+    if(minP > maxP)
+        return;
+
+    const float pctPos = float(ui->servoPosSlider->value())/ui->servoPosSlider->maximum();
+    const float duty_cycle_ms = minP + (maxP - minP)*pctPos;
+    const float duty_cycle = duty_cycle_ms/freq_ms;
+    ui->pwmFreqSpin->setValue(freq);
+    ui->dutySpin->setValue(round(duty_cycle*100));
+    this->prog()->setPwmFreq(freq, duty_cycle);
 }
 
 void FullProgrammerUI::hexEditMenuReq(const QPoint &/*p*/)
