@@ -1676,18 +1676,19 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>Graph</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="77"/>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="78"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="79"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="80"/>
         <source>Double-click to add marker</source>
         <translation>Dvojklikem přidáte značku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="233"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="242"/>
         <source>Remove markers</source>
         <translation>Odstranit značky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="240"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="249"/>
         <source>No markers</source>
         <translation>Žádné značky</translation>
     </message>
@@ -1761,17 +1762,17 @@ stejného souboru vícekrát:</translation>
         <translation>double (8 bytů)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="117"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="122"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="126"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="131"/>
         <source>You have to set name!</source>
         <translation>Musíte nastavit jméno křivky!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="138"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphdialogs.cpp" line="143"/>
         <source>This name is already taken</source>
         <translation>Tohle jméno je už zabrané</translation>
     </message>
@@ -1802,6 +1803,21 @@ stejného souboru vícekrát:</translation>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="104"/>
         <source>%n</source>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="111"/>
+        <source>Axis</source>
+        <translation>Osa:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="119"/>
+        <source>Y - left</source>
+        <translation>Y - levá</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="124"/>
+        <source>Y - right</source>
+        <translation>Y - pravá</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphcurveeditwidget.ui" line="26"/>
@@ -2024,6 +2040,21 @@ stejného souboru vícekrát:</translation>
         <source>Color:</source>
         <translation>Barva:</translation>
     </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui" line="91"/>
+        <source>Axis:</source>
+        <translation>Osa:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui" line="99"/>
+        <source>Y - left</source>
+        <translation>Y - levá</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphmarkerdialog.ui" line="104"/>
+        <source>Y - right</source>
+        <translation>Y - pravá</translation>
+    </message>
 </context>
 <context>
     <name>GraphWidget</name>
@@ -2064,26 +2095,41 @@ stejného souboru vícekrát:</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="94"/>
+        <source>Visible axes</source>
+        <translation>Zobrazené osy</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="97"/>
+        <source>Y - left</source>
+        <translation>Y - levá</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="97"/>
+        <source>Y - right</source>
+        <translation>Y - pravá</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="111"/>
         <source>Export data...</source>
         <translation>Exportovat data...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="95"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="112"/>
         <source>Change background...</source>
         <translation>Změnit barvu pozadí...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="97"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="114"/>
         <source>Show legend</source>
         <translation>Zobrazit legendu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="101"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="118"/>
         <source>Automaticaly scroll graph</source>
         <translation>Automaticky posouvat graf</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="465"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="510"/>
         <source>Sample size:</source>
         <translation>Velikost vzorku</translation>
     </message>
