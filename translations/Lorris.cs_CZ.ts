@@ -687,17 +687,17 @@ p, li { white-space: pre-wrap; }
         <translation>Duplikovat</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="420"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="421"/>
         <source>New Serial Port</source>
         <translation>Nový sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="429"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="430"/>
         <source>New TCP client</source>
         <translation>Nový TCP client</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="438"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="439"/>
         <source>New USB connection</source>
         <translation>Nové USB spojení</translation>
     </message>
@@ -790,7 +790,12 @@ p, li { white-space: pre-wrap; }
         <translation>Zobrazit úhel jako text</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="184"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="106"/>
+        <source>Set formula...</source>
+        <translation>Nastavit výraz...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/circlewidget.cpp" line="194"/>
         <source>Circle&apos;s range:</source>
         <translation>Rozmezí kola:</translation>
     </message>
@@ -798,12 +803,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="1044"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="1056"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="1045"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="1057"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -994,7 +999,7 @@ p, li { white-space: pre-wrap; }
         <translation>Vstup</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="38"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="44"/>
         <source>Number</source>
         <translation>Číslo</translation>
     </message>
@@ -1314,19 +1319,19 @@ Vstupní hodnota bude zpracována výrazem, který zde vyplníte. &amp;quot;%n&a
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="509"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="709"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="853"/>
         <source>500000</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="514"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="714"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="858"/>
         <source>1000000</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="519"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="724"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="868"/>
         <source>2000000</source>
         <translation></translation>
     </message>
@@ -1354,225 +1359,277 @@ stejného souboru vícekrát:</translation>
         <translation>Příkaz pro vstup do bootloaderu:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="588"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="594"/>
         <source>Clock output</source>
         <translation>Hodinový výstup</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="601"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="602"/>
+        <source>Disabled</source>
+        <translation>Vypnutý</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="608"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="618"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="628"/>
+        <source>pwmRadioGroup</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="615"/>
+        <source>Generic</source>
+        <translation>Obecný</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="625"/>
+        <source>Servo</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="667"/>
         <source>Clock frequency:</source>
         <translation>Frekvence hodin:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="634"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="651"/>
         <source> Hz</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="653"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="674"/>
+        <source>Duty cycle:</source>
+        <translation>Střída:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="681"/>
+        <source>%</source>
+        <translation></translation>
+    </message>
+    <message utf8="true">
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="700"/>
+        <source>°</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="742"/>
+        <source>Min:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="749"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="772"/>
+        <source> ms</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="765"/>
+        <source>Max:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="797"/>
         <source>RS232 tunnel</source>
         <translation>RS232 tunel</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="665"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="809"/>
         <source>Speed:</source>
         <translation>Rychlost:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="694"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="838"/>
         <source>38400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="699"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="843"/>
         <source>57600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="704"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="848"/>
         <source>115200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="719"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="863"/>
         <source>1500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="774"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="918"/>
         <source>Enable:</source>
         <translation>Povolit:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="784"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="928"/>
         <source>Overvoltage warning</source>
         <translation>Varování při přepětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="790"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="934"/>
         <source>Warn at:</source>
         <translation>Varovat při:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="803"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="947"/>
         <source> V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="594"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="813"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="957"/>
         <source>Enable</source>
         <translation>Zapnout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="823"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="967"/>
         <source>Turn off VCC</source>
         <translation>Vypnout VCC</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="865"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="374"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1009"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="385"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="873"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1017"/>
         <source>Format:</source>
         <translation>Formát:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="884"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1028"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="889"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1033"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="913"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1057"/>
         <source>Pause</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="923"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1067"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="962"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1106"/>
         <source>Log</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1002"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1146"/>
         <source>Fuses</source>
         <translation>Pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="376"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="387"/>
         <source>Program memory</source>
         <translation>Paměť programu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="378"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="389"/>
         <source>EEPROM</source>
         <translation>EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="136"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="147"/>
         <source>Read flash</source>
         <translation>Přečíst flash paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="137"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="148"/>
         <source>Read all</source>
         <translation>Přečíst vše</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="138"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="149"/>
         <source>Read EEPROM</source>
         <translation>Přečíst EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="139"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="150"/>
         <source>Read fuses</source>
         <translation>Přečíst pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="159"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="170"/>
         <source>Write flash</source>
         <translation>Programovat flash paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="160"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="171"/>
         <source>Write all</source>
         <translation>Programovat vše</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="161"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="172"/>
         <source>Write EEPROM</source>
         <translation>Programovat EEPROM</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="162"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="173"/>
         <source>Write fuses</source>
         <translation>Programovat pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="262"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="273"/>
         <source>Mode</source>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="380"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="391"/>
         <source>SVF</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="558"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="569"/>
         <source>Fuses had been succesfully read</source>
         <translation>Pojistky byly úspěšně přečteny</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="591"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="627"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="602"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="638"/>
         <source>Fuses had not been read yet</source>
         <translation>Pojistky ještě nebyly přečteny ze součástky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="597"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="608"/>
         <source>You have to &quot;Remember&quot; fuses prior to writing</source>
         <translation>Před zapsáním pojistek je musíte &quot;zapamatovat&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="601"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="612"/>
         <source>Write fuses?</source>
         <translation>Programovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="601"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="612"/>
         <source>Do you really wanna to write fuses to the chip?</source>
         <translation>Opravdu chcete naprogramovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="616"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="627"/>
         <source>Fuses had been succesfully written</source>
         <translation>Pojistky byly úspěšně naprogramovány</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="643"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="654"/>
         <source>You have flashed this file already, and it was not changed since.</source>
         <translation>Tento soubor se od posledního flashnutí nezměnil!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="782"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="793"/>
         <source> | h:mm:ss M.d.yyyy</source>
         <translation> | h:mm:ss d.M.yyyy</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="821"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="884"/>
         <source>Fill with...</source>
         <translation>Vyplnit bajty...</translation>
     </message>
@@ -2743,112 +2800,112 @@ a nebo sledovat co clienti do proxy posílají.</translation>
 <context>
     <name>NumberWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="75"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="81"/>
         <source>Format</source>
         <translation>Formát</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="80"/>
         <source>Data type</source>
         <translation>Datový typ</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="76"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="82"/>
         <source>Precision</source>
         <translation>Přesnost</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="80"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="86"/>
         <source>unsigned 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="81"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="87"/>
         <source>unsigned 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="82"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="88"/>
         <source>unsigned 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="83"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="89"/>
         <source>unsigned 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="85"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="91"/>
         <source>signed 8bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="86"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="92"/>
         <source>signed 16bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="87"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="93"/>
         <source>signed 32bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="88"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="94"/>
         <source>signed 64bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="90"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="96"/>
         <source>float (4 bytes)</source>
         <translation>float (4 byty)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="91"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="97"/>
         <source>double (8 bytes)</source>
         <translation>double (8 bytů)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="112"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="118"/>
         <source>Decimal</source>
         <translation>Desítkový</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="113"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="119"/>
         <source>Decimal (w/ exponent)</source>
         <translation>Desítkový (s exponentem)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="114"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="120"/>
         <source>Hex</source>
         <translation>Hexadecimální</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="115"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="121"/>
         <source>Binary</source>
         <translation>Binární</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="134"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="140"/>
         <source>%1 digits</source>
         <translation>%1 číslic</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="144"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="150"/>
         <source>Set precision...</source>
         <translation>Nastavit přesnost...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="149"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="155"/>
         <source>Level off</source>
         <translation>Zarovnat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="154"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="160"/>
         <source>Set formula...</source>
         <translation>Nastavit výraz...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="397"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/numberwidget.cpp" line="406"/>
         <source>Decimal digits:</source>
         <translation>Desetinná místa:</translation>
     </message>
@@ -3357,22 +3414,22 @@ a nebo sledovat co clienti do proxy posílají.</translation>
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="29"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="30"/>
         <source>(Connecting...)</source>
         <translation>(Připojování...)</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="31"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="32"/>
         <source>(Connected)</source>
         <translation>(Připojeno)</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="33"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="34"/>
         <source>(Pending)</source>
         <translation>(Čekajicí)</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="35"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="36"/>
         <source>(Disconnecting...)</source>
         <translation>(Odpojování...)</translation>
     </message>
@@ -3466,6 +3523,54 @@ function dataPass(data, dev, cmd) {
         <location filename="../src/LorrisProgrammer/lorrisprogrammerinfo.cpp" line="30"/>
         <source>Graphical interface for various types of programmers and bootloaders.</source>
         <translation>Grafické rozhraní pro různé typy programátorů a bootloaderů.</translation>
+    </message>
+</context>
+<context>
+    <name>QSciSearchBar</name>
+    <message>
+        <location filename="../src/ui/qscisearchbar.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qscisearchbar.ui" line="20"/>
+        <source>&amp;Replace</source>
+        <translation>Nah&amp;radit</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qscisearchbar.ui" line="27"/>
+        <source>Find:</source>
+        <translation>Najít:</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qscisearchbar.ui" line="40"/>
+        <source>Match case</source>
+        <translation>Rozlišovat velikost</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qscisearchbar.ui" line="47"/>
+        <source>Replace:</source>
+        <translation>Nahradit:</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qscisearchbar.ui" line="57"/>
+        <source>&amp;Next</source>
+        <translation>N&amp;ásledující</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qscisearchbar.ui" line="67"/>
+        <source>Replace &amp;All</source>
+        <translation>N&amp;ahradit vše</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qscisearchbar.ui" line="74"/>
+        <source>&amp;Previous</source>
+        <translation>Pře&amp;dchozí</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/qscisearchbar.ui" line="125"/>
+        <source>Whole word</source>
+        <translation>Celá slova</translation>
     </message>
 </context>
 <context>
@@ -3569,7 +3674,7 @@ function dataPass(data, dev, cmd) {
 <context>
     <name>QtScriptEngine</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="186"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="188"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
@@ -3957,7 +4062,7 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
         <translation>Script engine %1 není k dispozici, používám QtScript!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="334"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scriptwidget.cpp" line="336"/>
         <source> - example</source>
         <translation>- příklad</translation>
     </message>
@@ -4023,12 +4128,12 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
 <context>
     <name>SerialPort</name>
     <message>
-        <location filename="../src/connection/serialport.cpp" line="191"/>
+        <location filename="../src/connection/serialport.cpp" line="192"/>
         <source>Connection to %1 lost!</source>
         <translation>Připojení k %1 bylo ztraceno!</translation>
     </message>
     <message>
-        <location filename="../src/connection/serialport.cpp" line="214"/>
+        <location filename="../src/connection/serialport.cpp" line="215"/>
         <source>Clone of </source>
         <translation>Kopie </translation>
     </message>
@@ -4354,15 +4459,13 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ShupitoProgrammer</name>
     <message>
-        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="218"/>
+        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="223"/>
         <source>Failed to read info from Shupito. If you&apos;re sure you&apos;re connected to shupito, try to disconnect and connect again</source>
         <translation>Shupito neodpovídá, pokud jste si jistí že Shupito je správně připojeno, zkuste se odpojit a zase připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="394"/>
-        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="423"/>
         <source>Invalid response</source>
-        <translation>Chybná odpověď</translation>
+        <translation type="obsolete">Chybná odpověď</translation>
     </message>
 </context>
 <context>
