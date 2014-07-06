@@ -240,7 +240,7 @@ void ChooseConnectionDlg::selectConn(Connection * conn)
 
 void ChooseConnectionDlg::connAdded(Connection * conn)
 {
-    QListWidgetItem * item = new QListWidgetItem(conn->name(), ui->connectionsList);
+    ConnectionListItem * item = new ConnectionListItem(conn->name(), ui->connectionsList);
 
     switch (conn->getType())
     {
@@ -670,4 +670,45 @@ void ChooseConnectionDlg::on_persistNameButton_clicked()
 {
     Q_ASSERT(m_current && m_current->isNamePersistable());
     m_current->persistName();
+}
+
+ConnectionListItem::ConnectionListItem(const QString& text, QListWidget *parent, int type) :
+    QListWidgetItem(text, parent, type)
+{
+
+}
+
+bool ConnectionListItem::operator<(const QListWidgetItem& other) const
+{
+    const QString val1 = this->text();
+    const QString val2 = other.text();
+
+    int numStart = -1;
+
+    int i;
+    for(i = 0; i < val1.size() && i < val2.size(); ++i)
+    {
+        if(numStart == -1 && val1[i].isDigit() && val2[i].isDigit())
+            numStart = i;
+        else if(numStart != -1 && (!val1[i].isDigit() || !val2[i].isDigit()))
+            numStart = -1;
+
+        if(val1[i] != val2[i])
+        {
+            if(numStart == -1)
+                return val1[i] < val2[i];
+
+            int numLen1 = 0;
+            int numLen2 = 0;
+            for(int x = numStart; x < val1.size() && val1[x].isDigit(); ++x)
+                ++numLen1;
+            for(int x = numStart; x < val2.size() && val2[x].isDigit(); ++x)
+                ++numLen2;
+
+            const int num1 = val1.mid(numStart, numLen1).toInt();
+            const int num2 = val2.mid(numStart, numLen2).toInt();
+            return num1 < num2;
+        }
+    }
+    return false;
 }

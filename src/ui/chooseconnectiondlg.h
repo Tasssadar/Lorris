@@ -86,4 +86,12 @@ private:
     QPushButton *m_prog_btns[programmer_max];
 };
 
+class ConnectionListItem : public QListWidgetItem
+{
+public:
+    ConnectionListItem(const QString& text, QListWidget *parent = 0, int type = QListWidgetItem::Type);
+
+    bool operator<(const QListWidgetItem &other) const;
+};
+
 #endif // CHOOSECONNECTIONDLG_H
