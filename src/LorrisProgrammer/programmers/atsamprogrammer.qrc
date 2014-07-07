@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="SAM-BA_loader.bin">SAM-BA_loader/SAM-BA_loader.bin</file>
+    </qresource>
+</RCC>
