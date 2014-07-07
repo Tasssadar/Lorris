@@ -337,7 +337,8 @@ RESOURCES += \
     shared/definitions.qrc \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/examples.qrc \
     LorrisProgrammer/programmericons.qrc \
-    LorrisAnalyzer/DataWidgets/RotationWidget/models.qrc
+    LorrisAnalyzer/DataWidgets/RotationWidget/models.qrc \
+    LorrisProgrammer/programmers/atsamprogrammer.qrc
 
 include(../dep/qtsingleapplication/qtsingleapplication.pri)
 

@@ -13,6 +13,7 @@ class AtsamProgrammer
 
 public:
     AtsamProgrammer(ConnectionPointer<PortConnection> const & conn, ProgrammerLogSink * logsink);
+    ~AtsamProgrammer();
 
     virtual void stopAll(bool wait) override;
 
@@ -34,19 +35,34 @@ public:
 
 public slots:
     virtual void cancelRequested() { m_cancelled = true; }
+    virtual void sendTunnelData(const QString & data) override;
 
 private slots:
     void dataRead(QByteArray const & data);
 
 private:
-    uint32_t read_word(uint32_t address);
-    void write_word(uint32_t address, uint32_t data);
+
     void wait_eefc_ready();
 
-    QString transact(QString const & data);
+    quint16 crc16(const QByteArray & data, quint32 crc);
+    void write_file(const uint32_t& address, const QByteArray & data);
+
+    uint32_t read_word(uint32_t address);
+    void write_word(uint32_t address, uint32_t data);
+    QString transact(const QString & data, const QString & delimiter = ">");
+    QByteArray transact(const QByteArray& data, const QString & delimiter, const bool& hex_debug);
+
+    void debug_output(const QString & dir, QString data);
+
     QByteArray m_recvBuffer;
+    QByteArray m_recvBuffer1;
+    QByteArray m_recvDelimiter;
     QEventLoop m_waitLoop;
     bool m_cancelled;
+    bool m_flash_mode;
+    bool m_tunnel_enabled;
+    uint32_t m_applet_address;
+    chip_definition* m_chipdef;
 
     ConnectionPointer<PortConnection> m_conn;
 };

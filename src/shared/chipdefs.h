@@ -23,11 +23,13 @@ public:
             size = 0;
             pagesize = 0;
             memid = 0;
+            start_addr = 0;
         }
 
         quint32 size;
         quint16 pagesize;
         quint8 memid;
+        quint32 start_addr;
     };
 
     struct fuse
