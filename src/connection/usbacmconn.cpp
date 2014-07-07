@@ -340,7 +340,7 @@ ConnectionPointer<Connection> UsbAcmConnection2::clone()
 
 QHash<QString, QVariant> UsbAcmConnection2::config() const
 {
-    QHash<QString, QVariant> res = this->Connection::config();
+    QHash<QString, QVariant> res = this->PortConnection::config();
     res["vid"] = this->vid();
     res["pid"] = this->pid();
     res["serial_number"] = this->serialNumber();
@@ -369,7 +369,7 @@ bool UsbAcmConnection2::applyConfig(QHash<QString, QVariant> const & config)
     emit changed();
     this->update_line_control();
 
-    return this->Connection::applyConfig(config);
+    return this->PortConnection::applyConfig(config);
 }
 
 void UsbAcmConnection2::updateIntf()
