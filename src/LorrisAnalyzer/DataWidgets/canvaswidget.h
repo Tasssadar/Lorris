@@ -35,6 +35,7 @@ public slots:
     void drawRect(int x, int y, int w, int h);
     void drawEllipse(int x, int y, int w, int h);
     void drawCircle(int x, int y, int r);
+    void drawImage(const QString& path, int x, int y, int w = 0, int h = 0);
     void setLineSize(int width);
     void setLineColor(const QString& color);
     void setFillColor(const QString& color);
@@ -61,6 +62,7 @@ public:
     void addLine(const QLine& l);
     void addRect(const QRect& r);
     void addCircle(const QPoint& center, int r1, int r2);
+    void addImage(const QString& path, int x, int y, int w, int h);
     void clear();
 
     QColor& lineColor() { return m_lineColor; }
@@ -99,9 +101,18 @@ private:
         int width;
     };
 
+    struct image
+    {
+        QString path;
+        QPixmap pixmap;
+        int x;
+        int y;
+    };
+
     std::vector<line> m_lines;
     std::vector<rect> m_rects;
     std::vector<circle> m_circles;
+    std::vector<image> m_images;
     QPoint m_mouse;
     QPoint m_offset;
     QColor m_lineColor;

@@ -103,6 +103,11 @@ void CanvasWidget::drawCircle(int x, int y, int r)
     m_canvas->addCircle(QPoint(x, y), r, r);
 }
 
+void CanvasWidget::drawImage(const QString &path, int x, int y, int w, int h)
+{
+    m_canvas->addImage(path, x, y, w, h);
+}
+
 void CanvasWidget::setLineSize(int width)
 {
     m_canvas->lineWidth() = width;
@@ -199,6 +204,18 @@ void Canvas::save(DataFileParser *file)
         file->writeColor(c.color);
         file->writeColor(c.fillColor);
     }
+
+    // images
+    file->writeBlockIdentifier("canvasWimages");
+    file->writeVal((quint32)m_images.size());
+    for(quint32 i = 0; i < m_images.size(); ++i)
+    {
+        const image& img = m_images[i];
+
+        *file << img.path;
+        *file << img.x << img.y;
+        *file << img.pixmap.width() << img.pixmap.height();
+    }
 }
 
 void Canvas::load(DataFileParser *file)
@@ -268,6 +285,21 @@ void Canvas::load(DataFileParser *file)
         }
     }
 
+    if(file->seekToNextBlock("canvasWimages", BLOCK_WIDGET))
+    {
+        quint32 count = file->readVal<quint32>();
+        for(quint32 i = 0; i < count; ++i)
+        {
+            QString path = file->readString();
+            int x = file->readVal<int>();
+            int y = file->readVal<int>();
+            int w = file->readVal<int>();
+            int h = file->readVal<int>();
+
+            addImage(path, x, y, w, h);
+        }
+    }
+
     update();
 }
 
@@ -304,11 +336,30 @@ void Canvas::addCircle(const QPoint& center, int r1, int r2)
     update();
 }
 
+void Canvas::addImage(const QString &path, int x, int y, int w, int h)
+{
+    QPixmap p(path);
+    if(p.isNull())
+        return;
+
+    if(w && h)
+        p = p.scaled(w, h, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    else if(w || h)
+    {
+        const int s = (std::max)(w, h);
+        p = p.scaled(s, s, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+    }
+
+    image img = { path, p, x,  y };
+    m_images.push_back(img);
+}
+
 void Canvas::clear()
 {
     m_lines.clear();
     m_rects.clear();
     m_circles.clear();
+    m_images.clear();
 
     m_offset = QPoint();
     m_fillColor = QColor();
@@ -327,6 +378,12 @@ void Canvas::paintEvent(QPaintEvent *)
 
     QPen pen;
     QBrush brush;
+
+    for(size_t i = 0; i < m_images.size(); ++i)
+    {
+        const image& img = m_images[i];
+        p.drawPixmap(img.x, img.y, img.pixmap);
+    }
 
     for(quint32 i = 0; i < m_lines.size(); ++i)
     {
