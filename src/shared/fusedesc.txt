@@ -131,8 +131,8 @@
     selfprgen | Enable self programming (default: disabled) | 0b01=Disabled | 0b0=Enabled
 }
 
-# atxmega128a, atxmega64a, atxmega32a, atxmega16a
-{=avr:1e9746,avr:1e9646,avr:1e9541,avr:1e9441
+# atxmega128a, atxmega64a, atxmega32a, atxmega16a, atxmega64b3,atxmega128a3u
+{=avr:1e9746,avr:1e9646,avr:1e9541,avr:1e9441,avr:1e9651,avr:1e9742
     jtaguid | JTAG user id (default: 0b00000000)
     wdwper | Watchdog window timeout period (default: 8clk) | 0b0000=8clk | 0b0001=16clk | 0b0010=32clk | 0b0011=64clk | 0b0100=125clk | 0b0101=250clk ||
         0b0110=500clk | 0b0111=1Kclk | 0b1000=2Kclk | 0b1001=4Kclk | 0b1010=8Kclk | 0b1011=<reserved> | 0b1100=<reserved> | 0b1101=<reserved> | 0b1110=<reserved> | 0b1111=<reserved>
@@ -151,4 +151,5 @@
     blba | Boot lock bit Application section. See datasheet. (default: NOLOCK) | 0b11=NOLOCK | 0b10=WLOCK | 0b01=RLOCK | 0b00=RWLOCK
     blbat | Boot lock bit Application table section. See datasheet. (default: NOLOCK) | 0b11=NOLOCK | 0b10=WLOCK | 0b01=RLOCK | 0b00=RWLOCK
     lb | Lock bits. See datasheet (default: NOLOCK3) | 0b11=NOLOCK3 | 0b10=WLOCK | 0b00=RWLOCK | 0b01=<reserved>
+    toscsel | 32.768kHz Timer Oscillator Pin Selection (default: XTAL) | 0b1=XTAL | 0b0=ALTERNATE
 }
