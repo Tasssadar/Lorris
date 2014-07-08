@@ -385,3 +385,8 @@ quint32 PythonFunctions::getDataCount() const
 {
     return m_engine->getStorage()->getSize();
 }
+
+void PythonFunctions::playErrorSound()
+{
+    Utils::playErrorSound();
+}

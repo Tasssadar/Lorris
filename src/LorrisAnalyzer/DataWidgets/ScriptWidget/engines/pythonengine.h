@@ -55,6 +55,8 @@ public slots:
     QByteArray getData(quint32 idx) const;
     quint32 getDataCount() const;
 
+    void playErrorSound();
+
 private:
     PythonEngine *m_engine;
 };

@@ -60,6 +60,7 @@ private:
     static QScriptValue __resizeWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getData(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __getDataCount(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __playErrorSound(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);
