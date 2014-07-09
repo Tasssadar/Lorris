@@ -833,10 +833,12 @@ void FullProgrammerUI::pwmChanged(uint32_t freq_hz, float duty_cycle)
         if(ui->disablePwmRadio->isChecked())
             ui->genericPwmRadio->click();
 
-        if(!ui->pwmFreqSpin->hasFocus())
+        if(!ui->pwmFreqSpin->hasFocus() && !ui->dutySpin->hasFocus())
+        {
             ui->pwmFreqSpin->setValue(freq_hz);
-        if(!ui->dutySpin->hasFocus())
             ui->dutySpin->setValue(round(duty_cycle*100));
+        }
+        ui->pwmReal->setText(tr("%1 Hz @ %2%").arg(freq_hz).arg(round(duty_cycle*100)));
     }
 }
 

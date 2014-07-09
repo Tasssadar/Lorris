@@ -4,27 +4,42 @@
 <context>
     <name>AtsamProgrammer</name>
     <message>
-        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="66"/>
+        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="148"/>
         <source>Security Bit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="71"/>
+        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="153"/>
         <source>Boot mode selection</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="182"/>
-        <source>The chip faile to become ready.</source>
+        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="323"/>
+        <source>Unable to send packet</source>
+        <translation>Nemůžu odeslat packet</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="329"/>
+        <source>SAM-BA timeout</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="206"/>
-        <source>Failed to get proper response from SAM-BA</source>
+        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="345"/>
+        <source>Failed to get proper response from SAM-BA (write_file)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="224"/>
+        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="364"/>
+        <source>The chip failed to become ready.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="408"/>
+        <source>Failed to get proper response from SAM-BA (transact)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/atsamprogrammer.cpp" line="374"/>
         <source>invalid response from SAM-BA</source>
         <translation></translation>
     </message>
@@ -1319,19 +1334,19 @@ Vstupní hodnota bude zpracována výrazem, který zde vyplníte. &amp;quot;%n&a
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="509"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="853"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="870"/>
         <source>500000</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="514"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="858"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="875"/>
         <source>1000000</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="519"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="868"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="885"/>
         <source>2000000</source>
         <translation></translation>
     </message>
@@ -1405,125 +1420,135 @@ stejného souboru vícekrát:</translation>
         <source>%</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="694"/>
+        <source>Real output frequency and duty cycle can vary from requested values because shupito is can make only certain frequencies.</source>
+        <translation>Opravdová výstupní frekvence a střída nemusí být stejné jako ty požadované, protože shupito dokáže generovat pouze určité násobky svojí vlastní frekvence.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="697"/>
+        <source>Output:</source>
+        <translation>Výstup:</translation>
+    </message>
     <message utf8="true">
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="700"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="717"/>
         <source>°</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="742"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="759"/>
         <source>Min:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="749"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="772"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="766"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="789"/>
         <source> ms</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="765"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="782"/>
         <source>Max:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="797"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="814"/>
         <source>RS232 tunnel</source>
         <translation>RS232 tunel</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="809"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="826"/>
         <source>Speed:</source>
         <translation>Rychlost:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="838"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="855"/>
         <source>38400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="843"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="860"/>
         <source>57600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="848"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="865"/>
         <source>115200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="863"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="880"/>
         <source>1500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="918"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="935"/>
         <source>Enable:</source>
         <translation>Povolit:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="928"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="945"/>
         <source>Overvoltage warning</source>
         <translation>Varování při přepětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="934"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="951"/>
         <source>Warn at:</source>
         <translation>Varovat při:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="947"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="964"/>
         <source> V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="957"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="974"/>
         <source>Enable</source>
         <translation>Zapnout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="967"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="984"/>
         <source>Turn off VCC</source>
         <translation>Vypnout VCC</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1009"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1026"/>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="385"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1017"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1034"/>
         <source>Format:</source>
         <translation>Formát:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1028"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1045"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1033"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1050"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1057"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1074"/>
         <source>Pause</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1067"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1084"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1106"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1123"/>
         <source>Log</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1146"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1163"/>
         <source>Fuses</source>
         <translation>Pojistky</translation>
     </message>
@@ -1629,7 +1654,12 @@ stejného souboru vícekrát:</translation>
         <translation> | h:mm:ss d.M.yyyy</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="884"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="841"/>
+        <source>%1 Hz @ %2%</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="886"/>
         <source>Fill with...</source>
         <translation>Vyplnit bajty...</translation>
     </message>
@@ -3720,7 +3750,7 @@ function dataPass(data, dev, cmd) {
 <context>
     <name>QtScriptEngine</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="188"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="190"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
@@ -4505,7 +4535,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ShupitoProgrammer</name>
     <message>
-        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="223"/>
+        <location filename="../src/LorrisProgrammer/programmers/shupitoprogrammer.cpp" line="225"/>
         <source>Failed to read info from Shupito. If you&apos;re sure you&apos;re connected to shupito, try to disconnect and connect again</source>
         <translation>Shupito neodpovídá, pokud jste si jistí že Shupito je správně připojeno, zkuste se odpojit a zase připojit</translation>
     </message>

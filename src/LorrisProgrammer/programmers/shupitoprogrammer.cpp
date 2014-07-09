@@ -111,10 +111,12 @@ void ShupitoProgrammer::readPacket(const ShupitoPacket & packet)
             uint32_t base_freq = 0;
             for (size_t i = 4; i != 0; --i)
                 base_freq = (base_freq << 8) | m_pwm_config->data[i];
+            base_freq *= 2;
 
             uint32_t period = 0;
             for (size_t i = 4; i != 0; --i)
                 period = (period << 8) | packet[i+1];
+            ++period;
 
             if (period != 0)
             {
@@ -402,11 +404,10 @@ bool ShupitoProgrammer::setPwmFreq(uint32_t freq_hz, float duty_cycle_pct)
     for (size_t i = 4; i != 0; --i)
         base_freq = (base_freq << 8) | m_pwm_config->data[i];
 
-    uint32_t div = base_freq / freq_hz;
-    uint32_t duty_cycle = div * duty_cycle_pct + 1;
+    base_freq *= 2;
 
-    if (div == 0 || (div % 2) == 0)
-        ++div;
+    uint32_t div = base_freq / freq_hz - 1;
+    uint32_t duty_cycle = div * duty_cycle_pct + 1;
 
     uint8_t const pck[] = {
         m_pwm_config->cmd, 1,
