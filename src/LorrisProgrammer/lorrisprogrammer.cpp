@@ -679,9 +679,19 @@ void LorrisProgrammer::saveToFile()
 
         status("");
 
-        HexFile file;
-        file.setData(ui->getHexData(memId));
-        file.SaveToFile(filename);
+        if(filename.endsWith(".hex"))
+        {
+            HexFile file;
+            file.setData(ui->getHexData(memId));
+            file.SaveToFile(filename);
+        }
+        else
+        {
+            QFile f(filename);
+            if(!f.open(QIODevice::WriteOnly))
+                throw tr("Failed to open %1 for writing!").arg(filename);
+            f.write((ui->getHexData(memId)));
+        }
 
         ui->setHexColor(memId, colorFromFile);
         ui->clearHexChanged(memId);

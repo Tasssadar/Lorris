@@ -700,6 +700,9 @@ flashing same file twice:</string>
               </item>
               <item row="2" column="1">
                <widget class="QLabel" name="pwmReal">
+                <property name="toolTip">
+                 <string>Real output frequency and duty cycle can vary from requested values because shupito is can make only certain frequencies.</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
