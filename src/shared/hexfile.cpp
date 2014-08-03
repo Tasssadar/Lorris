@@ -183,10 +183,16 @@ void HexFile::SaveToFile(const QString &path)
         quint8 write = 0;
         for(quint32 i = 0; i != data.size(); i += write)
         {
+            if((base & 0xFFFF0000) != (address & 0xFFFF0000))
+            {
+                writeExtAddrLine(&file, address);
+                base = address;
+            }
+
             QString line(":");
             write = (data.size() - i >= 0x10) ? 0x10 : data.size() - i;
 
-            line += Utils::hexToString(write);       // recordn len
+            line += Utils::hexToString(write);       // record len
             line += Utils::hexToString(address >> 8); // address
             line += Utils::hexToString(address);
             line += "00";                            // record type
