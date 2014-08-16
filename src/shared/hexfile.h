@@ -67,7 +67,9 @@ public:
 
     void LoadFromFile(const QString& path);
     void LoadFromBin(const QString& path);
+    void DecodeFromString(const QByteArray& hex);
     void SaveToFile(const QString& path);
+    QList<QByteArray> SaveToArray();
 
     void addRegion(quint32 pos, quint8 const * first, quint8 const * last, int lineno);
 
@@ -91,10 +93,10 @@ public:
 
     void makePages(std::vector<page>& pages, quint8 memId, chip_definition& chip, std::set<quint32> *skipPages);
     bool intersects(quint32 address, quint32 length);
-    void getRange(quint32 address, quint32 length, std::vector<quint8> & out);
+    void getRange(quint32 address, quint32 length, quint8 * out);
 
 private:
-    void writeExtAddrLine(QFile *file, quint32 addr);
+    QByteArray getExtAddrLine(quint32 addr);
 
     regionMap m_data;
 };
