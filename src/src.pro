@@ -145,6 +145,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/modes/shupitopdi.cpp \
     LorrisProgrammer/modes/shupitomode.cpp \
     LorrisProgrammer/modes/shupitocc25xx.cpp \
+    LorrisProgrammer/modes/shupitods89c.cpp \
     LorrisProgrammer/ui/progressdialog.cpp \
     LorrisProgrammer/ui/programmerui.cpp \
     LorrisProgrammer/ui/overvccdialog.cpp \
@@ -281,6 +282,7 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/modes/shupitopdi.h \
     LorrisProgrammer/modes/shupitomode.h \
     LorrisProgrammer/modes/shupitocc25xx.h \
+    LorrisProgrammer/modes/shupitods89c.h \
     LorrisProgrammer/ui/progressdialog.h \
     LorrisProgrammer/ui/programmerui.h \
     LorrisProgrammer/ui/overvccdialog.h \
