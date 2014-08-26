@@ -1334,19 +1334,19 @@ Vstupní hodnota bude zpracována výrazem, který zde vyplníte. &amp;quot;%n&a
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="509"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="870"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="873"/>
         <source>500000</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="514"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="875"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="878"/>
         <source>1000000</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="519"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="885"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="888"/>
         <source>2000000</source>
         <translation></translation>
     </message>
@@ -1422,6 +1422,7 @@ stejného souboru vícekrát:</translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="694"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="704"/>
         <source>Real output frequency and duty cycle can vary from requested values because shupito is can make only certain frequencies.</source>
         <translation>Opravdová výstupní frekvence a střída nemusí být stejné jako ty požadované, protože shupito dokáže generovat pouze určité násobky svojí vlastní frekvence.</translation>
     </message>
@@ -1431,124 +1432,124 @@ stejného souboru vícekrát:</translation>
         <translation>Výstup:</translation>
     </message>
     <message utf8="true">
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="717"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="720"/>
         <source>°</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="759"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="762"/>
         <source>Min:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="766"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="789"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="769"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="792"/>
         <source> ms</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="782"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="785"/>
         <source>Max:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="814"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="817"/>
         <source>RS232 tunnel</source>
         <translation>RS232 tunel</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="826"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="829"/>
         <source>Speed:</source>
         <translation>Rychlost:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="855"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="858"/>
         <source>38400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="860"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="863"/>
         <source>57600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="865"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="868"/>
         <source>115200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="880"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="883"/>
         <source>1500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="935"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="938"/>
         <source>Enable:</source>
         <translation>Povolit:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="945"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="948"/>
         <source>Overvoltage warning</source>
         <translation>Varování při přepětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="951"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="954"/>
         <source>Warn at:</source>
         <translation>Varovat při:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="964"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="967"/>
         <source> V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="974"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="977"/>
         <source>Enable</source>
         <translation>Zapnout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="984"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="987"/>
         <source>Turn off VCC</source>
         <translation>Vypnout VCC</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1026"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1029"/>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="385"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1034"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1037"/>
         <source>Format:</source>
         <translation>Formát:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1045"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1048"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1050"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1053"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1074"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1077"/>
         <source>Pause</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1084"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1087"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1123"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1126"/>
         <source>Log</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1163"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1166"/>
         <source>Fuses</source>
         <translation>Pojistky</translation>
     </message>
@@ -2519,22 +2520,27 @@ stejného souboru vícekrát:</translation>
         <translation>Soubor byl načten</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="691"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="692"/>
+        <source>Failed to open %1 for writing!</source>
+        <translation>Nemůžu otevčit soubor %1 pro zápis!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="701"/>
         <source>File saved</source>
         <translation>Data byla uložena</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="725"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="735"/>
         <source>Failed to reload file %1</source>
         <translation>Chyba při načítání souboru %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="854"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="864"/>
         <source>VCC was turned off due to overvoltage!</source>
         <translation>VCC bylo vypnuto kvůli přepětí!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="865"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="875"/>
         <source>Shupito is not responding, try to re-plug it into computer!</source>
         <translation>Shupito neodpovídá, zkuste ho odpojit a znovu připojit!</translation>
     </message>
@@ -3225,27 +3231,51 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Analyzér může zpracovat jakákoliv data které mu dáte a zobrazit je několika různými způsoby. Můžete označit packet který se má v proudu dat vyhledávat, označit jeho hlavičku a konec, určit bloky data, jejich typ a způsob jakým budou zobrazeny.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="98"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="103"/>
         <location filename="../src/LorrisProgrammer/modes/shupitospitunnel.cpp" line="93"/>
         <source>Failed to switch to the flash mode</source>
         <translation>Nemůžu přepnout čip do flash módu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="101"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="106"/>
         <location filename="../src/LorrisProgrammer/modes/shupitospitunnel.cpp" line="96"/>
         <source>Failed to switch to the flash mode (error %1)</source>
         <translation>Nemůžu přepnout čip do flash módu (chyba %1)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="117"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="122"/>
         <source>Failed to switch to the run mode</source>
         <translation>Nemůžu čip přepnout zpět do normálního módu</translation>
     </message>
     <message>
+        <location filename="../src/LorrisProgrammer/modes/shupitods89c.cpp" line="43"/>
         <location filename="../src/LorrisProgrammer/modes/shupitojtag.cpp" line="37"/>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="132"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="137"/>
         <source>The device can&apos;t program these types of chips.</source>
         <translation>Vaše Shupito nemůže programovat tento typ čipů.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/modes/shupitods89c.cpp" line="55"/>
+        <source>Failed to initialize USART mode.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/modes/shupitods89c.cpp" line="65"/>
+        <source>Failed to transfer data.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/modes/shupitods89c.cpp" line="89"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitods89c.cpp" line="102"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitods89c.cpp" line="123"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitods89c.cpp" line="251"/>
+        <source>Invalid response from the chip</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/modes/shupitods89c.cpp" line="176"/>
+        <source>An error response received: </source>
+        <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/modes/shupitojtag.cpp" line="164"/>
@@ -3268,62 +3298,62 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Něco je špatně, provedení příkazu TRST se nepovedlo.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="170"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="175"/>
         <source>Failed to read the chip&apos;s signature (error %1).</source>
         <translation>Chyba při čtení identifikace čipu (chyba %1).</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="197"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="202"/>
         <source>Unknown memory id</source>
         <translation>Neznámá paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="238"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="243"/>
         <source>The read returned wrong-sized stream.</source>
         <translation>Čtení paměti vrátilo data o špatné velikosti.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="253"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="258"/>
         <source>Failed to erase chip&apos;s memory</source>
         <translation>Chyba při mazání čipu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="268"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="273"/>
         <source>Can&apos;t read fuses</source>
         <translation>Nemůžu přečíst pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="301"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="306"/>
         <source>Chip does not have mem id %1</source>
         <translation>Čip nemá paměť %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="326"/>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="371"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="331"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="376"/>
         <source>Flashing interruped!</source>
         <translation>Programování přerušeno!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="333"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="338"/>
         <location filename="../src/LorrisProgrammer/programmers/avr109programmer.cpp" line="178"/>
         <source>Verifying data</source>
         <translation>Kontroluji data</translation>
     </message>
     <message>
         <location filename="../src/LorrisProgrammer/modes/shupitojtag.cpp" line="174"/>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="356"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="361"/>
         <source>Verification failed!</source>
         <translation>Chyba při kontrole - data nesedí!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="387"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="392"/>
         <source>Failed to prepare chip&apos;s memory for writing</source>
         <translation>Nemůžu připravit paměť čipu pro programování</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="408"/>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="430"/>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="441"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="413"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="435"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="446"/>
         <source>Failed to flash a page</source>
         <translation>Nemůžu naprogramovat stránku</translation>
     </message>
@@ -3361,53 +3391,53 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="654"/>
         <location filename="../src/shared/hexfile.cpp" line="56"/>
         <location filename="../src/shared/hexfile.cpp" line="67"/>
-        <location filename="../src/shared/hexfile.cpp" line="168"/>
+        <location filename="../src/shared/hexfile.cpp" line="175"/>
         <source>Can&apos;t open file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="83"/>
+        <location filename="../src/shared/hexfile.cpp" line="90"/>
         <source>Invalid line format (line %1)</source>
         <translation>Špatný formát řádku (č. %1)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="91"/>
+        <location filename="../src/shared/hexfile.cpp" line="98"/>
         <source>Failed to parse hex num (line %1)</source>
         <translation>Chyba při parsování hex čísla (lajna %1)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="105"/>
+        <location filename="../src/shared/hexfile.cpp" line="112"/>
         <source>Checksums do not match (line %1)</source>
         <translation>Checksumy nesedí (lajna %1)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="112"/>
+        <location filename="../src/shared/hexfile.cpp" line="119"/>
         <source>Invalid record lenght specified (line %1)</source>
         <translation>Chybná délka záznamu (lajna %1)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="125"/>
+        <location filename="../src/shared/hexfile.cpp" line="132"/>
         <source>Invalid type %1 record (line %2)</source>
         <translation>Chybný záznam typu %1 (lajna %2)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="133"/>
+        <location filename="../src/shared/hexfile.cpp" line="140"/>
         <source>Invalid record type %1 (line %2)</source>
         <translation>Chybný typ záznamu: %1 (lajna %2)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="155"/>
-        <location filename="../src/shared/hexfile.cpp" line="159"/>
+        <location filename="../src/shared/hexfile.cpp" line="162"/>
+        <location filename="../src/shared/hexfile.cpp" line="166"/>
         <source>Memory location was defined twice (line %1)</source>
         <translation>Oblast paměti byla definována dvakrát (lajna %1)</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="289"/>
+        <location filename="../src/shared/hexfile.cpp" line="314"/>
         <source>This chip does not have memory type %1</source>
         <translation>Tento čip nemá paměť %1</translation>
     </message>
     <message>
-        <location filename="../src/shared/hexfile.cpp" line="293"/>
+        <location filename="../src/shared/hexfile.cpp" line="318"/>
         <source>Program is too large.</source>
         <translation>Program je příliš velký.</translation>
     </message>
@@ -4526,8 +4556,8 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ShupitoMode</name>
     <message>
-        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="153"/>
         <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="158"/>
+        <location filename="../src/LorrisProgrammer/modes/shupitomode.cpp" line="163"/>
         <source>The device does not have fuses.</source>
         <translation>Toto zařízení nemá pojistky</translation>
     </message>
