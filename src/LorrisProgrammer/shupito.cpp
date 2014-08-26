@@ -115,6 +115,12 @@ void Shupito::readPacket(const ShupitoPacket & p)
         }
     }
 
+    {
+        auto it = m_packet_captures.find(p[0]);
+        if (it != m_packet_captures.end())
+            it->second->onPacket(p);
+    }
+
     // FIXME: commands are offset based on the descriptor
     switch(p[0])
     {
@@ -490,3 +496,12 @@ void Shupito::setTunnelState(bool enable, bool wait)
     }
 }
 
+void Shupito::registerCapture(quint8 cmd, ShupitoPacketCapture & capture)
+{
+    m_packet_captures[cmd] = &capture;
+}
+
+void Shupito::unregisterCapture(quint8 cmd)
+{
+    m_packet_captures.erase(cmd);
+}

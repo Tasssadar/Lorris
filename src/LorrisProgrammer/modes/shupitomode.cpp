@@ -15,6 +15,7 @@
 #include "shupitopdi.h"
 #include "shupitocc25xx.h"
 #include "shupitospiflash.h"
+#include "shupitods89c.h"
 #include "shupitojtag.h"
 #include "shupitospi.h"
 #include "shupitospitunnel.h"
@@ -61,6 +62,10 @@ ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito, ShupitoDesc *de
     case MODE_SPITUNNEL:
         if(desc->getConfig("633125ab-32e0-49ec-b240-7d845bb70b2d"))
             return new ShupitoSpiTunnel(shupito);
+        return nullptr;
+    case MODE_DS89C:
+        if(desc->getConfig("b1a28e62-6d13-44b5-8894-0b9f7a3061c9"))
+            return new ShupitoDs89c(shupito);
         return nullptr;
     }
 

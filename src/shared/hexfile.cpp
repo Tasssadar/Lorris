@@ -66,15 +66,22 @@ void HexFile::LoadFromFile(const QString &path)
     if(!file.open(QIODevice::ReadOnly))
         throw QString(QObject::tr("Can't open file \"%1\"!")).arg(path);
 
+    this->DecodeFromString(file.readAll());
+}
+
+void HexFile::DecodeFromString(const QByteArray& hex)
+{
     clear();
 
     int base = 0;
     std::vector<quint8> rec_nums;
     bool ok;
 
-    QByteArray line = file.readLine();
-    for(int lineno = 0; !line.isNull(); line = file.readLine(), ++lineno)
+    QList<QByteArray> lines = hex.split('\n');
+
+    for(int lineno = 0; lineno < lines.size(); ++lineno)
     {
+        QByteArray line = lines[lineno];
         line = line.trimmed();
         if(line.isEmpty())
             continue;
@@ -167,6 +174,20 @@ void HexFile::SaveToFile(const QString &path)
     if(!file.open(QIODevice::WriteOnly))
         throw QString(QObject::tr("Can't open file \"%1\"!")).arg(path);
 
+    QList<QByteArray> lines = this->SaveToArray();
+    for (int i = 0; i < lines.size(); ++i)
+    {
+        file.write(lines[i]);
+        file.write("\r\n");
+    }
+
+    file.close();
+}
+
+QList<QByteArray> HexFile::SaveToArray()
+{
+    QList<QByteArray> res;
+
     quint32 base = 0;
     for(regionMap::iterator itr = m_data.begin(); itr != m_data.end(); ++itr)
     {
@@ -176,7 +197,7 @@ void HexFile::SaveToFile(const QString &path)
 
         if((base & 0xFFFF0000) != (offset & 0xFFFF0000))
         {
-            writeExtAddrLine(&file, offset);
+            res.push_back(this->getExtAddrLine(offset));
             base = offset;
         }
 
@@ -185,7 +206,7 @@ void HexFile::SaveToFile(const QString &path)
         {
             if((base & 0xFFFF0000) != (address & 0xFFFF0000))
             {
-                writeExtAddrLine(&file, address);
+                res.push_back(this->getExtAddrLine(address));
                 base = address;
             }
 
@@ -204,20 +225,19 @@ void HexFile::SaveToFile(const QString &path)
                 checksum += data[i+x];
             }
             line += Utils::hexToString(0x100 - checksum);
-            line += "\r\n";
 
             address += write;
 
-            file.write(line.toLatin1());
+            res.push_back(line.toLatin1());
         }
     }
 
-    static const QString endFile = ":00000001FF\r\n";
-    file.write(endFile.toLatin1());
-    file.close();
+    static const QString endFile = ":00000001FF";
+    res.push_back(endFile.toLatin1());
+    return res;
 }
 
-void HexFile::writeExtAddrLine(QFile *file, quint32 addr)
+QByteArray HexFile::getExtAddrLine(quint32 addr)
 {
     QString line = ":02" "00" "00" "04";
     line += Utils::hexToString(addr >> 24);
@@ -226,8 +246,7 @@ void HexFile::writeExtAddrLine(QFile *file, quint32 addr)
     quint8 checksum = 0x100 - (quint8)(0x02 + 0x04 + (quint8)(addr >> 24) + (quint8)(addr >> 16));
     line += Utils::hexToString(checksum);
 
-    line += "\r\n";
-    file->write(line.toLatin1());
+    return line.toLatin1();
 }
 
 void HexFile::setData(const QByteArray &data)
@@ -329,7 +348,7 @@ void HexFile::makePages(std::vector<page> &pages, quint8 memId, chip_definition 
                 continue;
 
             std::fill(cur_page.data.begin(), cur_page.data.end(), 0xFF);
-            getRange(cur_page.address, memdef->pagesize, cur_page.data);
+            getRange(cur_page.address, memdef->pagesize, cur_page.data.data());
 
             patcher.patchPage(cur_page);
             pages.push_back(cur_page);
@@ -378,7 +397,7 @@ bool HexFile::intersects(quint32 address, quint32 length)
     return res;
 }
 
-void HexFile::getRange(quint32 address, quint32 length, std::vector<quint8> & out)
+void HexFile::getRange(quint32 address, quint32 length, quint8 * out)
 {
     regionMap::iterator itr = m_data.upper_bound(address);
     if(itr != m_data.begin())
@@ -394,6 +413,6 @@ void HexFile::getRange(quint32 address, quint32 length, std::vector<quint8> & ou
 
         std::copy(itr->second.data() + (start - itr->first),
                   itr->second.data() + (stop - itr->first),
-                  out.data() + (start - address));
+                  out + (start - address));
     }
 }

@@ -33,6 +33,7 @@ enum Modes
     MODE_SPIFLASH,
     MODE_JTAG,
     MODE_SPITUNNEL,
+    MODE_DS89C,
 
     MODE_COUNT
 };
@@ -45,6 +46,12 @@ enum WaitTypes
 };
 
 class ShupitoTunnel;
+
+class ShupitoPacketCapture
+{
+public:
+    virtual void onPacket(ShupitoPacket const & packet) = 0;
+};
 
 class Shupito : public QObject
 {
@@ -87,6 +94,9 @@ public:
 
     size_t maxPacketSize() const { return m_con->maxPacketSize(); }
 
+    void registerCapture(quint8 cmd, ShupitoPacketCapture & capture);
+    void unregisterCapture(quint8 cmd);
+
 public slots:
     void sendTunnelData(const QString& data)
     {
@@ -127,6 +137,8 @@ private:
     QByteArray m_wait_data;
     quint8 m_wait_type;
     quint16 m_wait_max_packets;
+
+    std::map<quint8, ShupitoPacketCapture *> m_packet_captures;
 
     chip_definition m_chip_def;
 };
