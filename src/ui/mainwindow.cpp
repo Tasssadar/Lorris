@@ -17,6 +17,7 @@
 #include "../misc/config.h"
 #include "HomeTab.h"
 #include "../misc/datafileparser.h"
+#include "../misc/sessionmgr.h"
 
 static const QString titleString = QString("Lorris v%1").arg(REVISION);
 MainWindow::MainWindow(quint32 id, QWidget *parent) :
@@ -61,6 +62,7 @@ void MainWindow::show(const QStringList& openFiles)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    sWorkTabMgr.startBatchOperation();
     if(m_tabView->canCloseWindow())
     {
         if(sWorkTabMgr.getWindowCount() == 1)
@@ -77,6 +79,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     else
         event->ignore();
+    sWorkTabMgr.endBatchOperation();
 }
 
 void MainWindow::saveWindowParams()

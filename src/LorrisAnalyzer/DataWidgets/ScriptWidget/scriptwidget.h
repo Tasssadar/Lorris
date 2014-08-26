@@ -47,7 +47,7 @@ public slots:
     void onScriptEvent(const QString &eventId, const QVariantList& args);
 
 protected slots:
-     void setSourceTriggered();
+     void setSourceTriggered(QString source = QString());
      void sourceSet();
      void closeEditor();
      void blinkError(const QString& text);

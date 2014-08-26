@@ -20,6 +20,7 @@ WorkTabMgr::WorkTabMgr() : QObject()
     windowIdCounter = 0;
     m_session_mgr = NULL;
     m_disable_window_close = false;
+    m_batch_started = false;
 }
 
 WorkTabMgr::~WorkTabMgr()
@@ -259,6 +260,8 @@ void WorkTabMgr::loadData(DataFileParser *file, bool closeOther)
 
     m_disable_window_close = true;
 
+    startBatchOperation();
+
     int count = file->readVal<int>();
 
     if(!closeOther)
@@ -297,6 +300,8 @@ void WorkTabMgr::loadData(DataFileParser *file, bool closeOther)
     }
 
     m_disable_window_close = false;
+
+    endBatchOperation();
 }
 
 void WorkTabMgr::printToAllStatusBars(const QString &text, int timeout)
@@ -342,4 +347,32 @@ void WorkTabMgr::instanceMessage(const QString &message)
         w->activateWindow();
         w->raise();
     }
+}
+
+void WorkTabMgr::startBatchOperation()
+{
+    if(!m_batch_started)
+    {
+        m_batch_started = true;
+        m_batch_vars.clear();
+    }
+}
+
+void WorkTabMgr::endBatchOperation()
+{
+    if(m_batch_started)
+        m_batch_started = false;
+}
+
+void WorkTabMgr::setBatchVar(const QString& name, const QVariant &var)
+{
+    m_batch_vars[name] = var;
+}
+
+QVariant WorkTabMgr::getBatchVar(const QString& name, QVariant def)
+{
+    QHash<QString, QVariant>::iterator itr = m_batch_vars.find(name);
+    if(itr != m_batch_vars.end())
+        return itr.value();
+    return def;
 }

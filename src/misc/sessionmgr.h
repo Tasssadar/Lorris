@@ -10,7 +10,7 @@
 
 #include <QFile>
 #include <vector>
-#include <set>
+#include <QHash>
 
 #include "ui_sessiondialog.h"
 #include "ui_sessionsavedialog.h"
@@ -31,6 +31,12 @@ public:
 
     const QStringList& getSessions() const { return m_sessions; }
 
+    void startBatchOperation();
+    void endBatchOperation();
+    bool isBatchStarted() const { return m_batch_started; }
+    void setBatchVar(const QString& name, const QVariant &var);
+    QVariant getBatchVar(const QString& name, QVariant def = QVariant());
+
 public slots:
     void saveSessionAct();
     void loadSession(QString name = QString());
@@ -47,6 +53,8 @@ private:
     QStringList m_sessions;
     std::set<QMenu*> m_menus;
     QSignalMapper *m_sig_map;
+    QHash<QString, QVariant> m_batch_vars;
+    bool m_batch_started;
 };
 
 class SessionDialog : public QDialog, private Ui::SessionDialog

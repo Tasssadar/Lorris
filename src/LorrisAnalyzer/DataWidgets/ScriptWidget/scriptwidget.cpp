@@ -201,10 +201,10 @@ void ScriptWidget::loadWidgetInfo(DataFileParser *file)
     // Editor settings
     if(file->seekToNextBlock("scriptWEditor", BLOCK_WIDGET))
         if(file->readVal<bool>())
-            setSourceTriggered();
+            setSourceTriggered(source);
 }
 
-void ScriptWidget::setSourceTriggered()
+void ScriptWidget::setSourceTriggered(QString source)
 {
     if(m_editor)
     {
@@ -212,7 +212,10 @@ void ScriptWidget::setSourceTriggered()
         return;
     }
 
-    m_editor = new ScriptEditor(m_engine->getSource(), m_filename, m_engine_type);
+    if(source.isNull())
+        source = m_engine->getSource();
+
+    m_editor = new ScriptEditor(source, m_filename, m_engine_type);
     emit addChildTab(m_editor, m_editor->windowTitle());
     m_editor->activateTab();
 
@@ -254,9 +257,6 @@ void ScriptWidget::sourceSet()
 
 void ScriptWidget::setSourceDirect(const QString &source)
 {
-    if(m_editor)
-        m_editor->setSource(source);
-
     try
     {
         if(m_engine)

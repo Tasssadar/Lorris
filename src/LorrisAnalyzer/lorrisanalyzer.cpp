@@ -341,6 +341,20 @@ bool LorrisAnalyzer::askToSave()
     if(!m_data_changed)
         return true;
 
+    QMessageBox::StandardButtons btns = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
+    if(sWorkTabMgr.isBatchStarted())
+    {
+        if(sWorkTabMgr.getBatchVar("analyzer_saveall").toBool())
+        {
+            saveButton();
+            return true;
+        }
+        else if(sWorkTabMgr.getBatchVar("analyzer_discardall").toBool())
+            return true;
+
+        btns |= QMessageBox::YesAll | QMessageBox::NoAll;
+    }
+
     emit activateMe();
 
     QMessageBox box(this);
@@ -354,15 +368,19 @@ bool LorrisAnalyzer::askToSave()
 
     box.setInformativeText(tr("Do you want to save your changes?"));
     box.setIcon(QMessageBox::Question);
-    box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    box.setStandardButtons(btns);
     box.setDefaultButton(QMessageBox::Save);
 
     switch(box.exec())
     {
-        case QMessageBox::Save:
+        case QMessageBox::YesAll:
+            sWorkTabMgr.setBatchVar("analyzer_saveall", true);
+        case QMessageBox::Yes:
             saveButton();
             return true;
-        case QMessageBox::Discard:
+        case QMessageBox::NoAll:
+            sWorkTabMgr.setBatchVar("analyzer_discardall", true);
+        case QMessageBox::No:
             return true;
         case QMessageBox::Cancel:
             return false;

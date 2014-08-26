@@ -1055,12 +1055,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ExamplePreviewItem</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="581"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="646"/>
         <source>&lt;a href=&quot;%1&quot;&gt;Load to editor&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;%1&quot;&gt;Otevřit v editoru&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="582"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="647"/>
         <source>&lt;a href=&quot;%1&quot;&gt;Show preview&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;%1&quot;&gt;Zobrazit náhled&lt;/a&gt;</translation>
     </message>
@@ -1068,12 +1068,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ExamplePreviewTab</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="614"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="679"/>
         <source> - example</source>
         <translation>- příklad</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="619"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="684"/>
         <source>Could not load example!</source>
         <translation>Nemůžu načíst příklad!</translation>
     </message>
@@ -2233,35 +2233,35 @@ stejného souboru vícekrát:</translation>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="203"/>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="329"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="435"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="589"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="611"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="453"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="607"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="629"/>
         <source> of </source>
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="348"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="362"/>
         <source>Data has been modified.</source>
         <translation>Data byla změněna.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="355"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="369"/>
         <source>Do you want to save your changes?</source>
         <translation>Chcete je uložit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="453"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="464"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="471"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="482"/>
         <source>File &quot;%1&quot; was saved</source>
         <translation>Soubor &quot;%1&quot; byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="571"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="589"/>
         <source>Clear everything?</source>
         <translation>Vymazat vše?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="572"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="590"/>
         <source>Do you really want to clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
@@ -2287,13 +2287,13 @@ stejného souboru vícekrát:</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="92"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="492"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="510"/>
         <source>Import binary data</source>
         <translation>Importovat binární data</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="93"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="471"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="489"/>
         <source>Export binary data</source>
         <translation>Exportovat binární data</translation>
     </message>
@@ -2333,7 +2333,7 @@ stejného souboru vícekrát:</translation>
         <translation>Importuji vaše data...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="351"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="365"/>
         <source>Data has been modified.
 
 %1</source>
@@ -2342,22 +2342,22 @@ stejného souboru vícekrát:</translation>
 %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="484"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="502"/>
         <source>Binary data were exported to file &quot;%1&quot;</source>
         <translation>Binární data byla exportována do souboru &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="573"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="591"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="574"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="592"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="836"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="854"/>
         <source>Set maximum number of packets</source>
         <translation>Zadejte maximální počet packetů</translation>
     </message>
@@ -2821,7 +2821,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="100"/>
+        <location filename="../src/ui/mainwindow.cpp" line="103"/>
         <source>Home</source>
         <translation></translation>
     </message>
@@ -3174,13 +3174,13 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Komprimovaný datový soubor Lorris (*.cldta);;Datový soubor Lorris (*.ldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="470"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="491"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="488"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="509"/>
         <source>Any file (*.*)</source>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="640"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="658"/>
         <location filename="../src/LorrisAnalyzer/storage.cpp" line="186"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
@@ -3483,7 +3483,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="641"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="659"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
@@ -3953,23 +3953,23 @@ function dataPass(data, dev, cmd) {
     <name>ScriptEditor</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="14"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="214"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="215"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="216"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="217"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="38"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="39"/>
         <source>Examples</source>
         <translation>Příklady</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="46"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="47"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="64"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="65"/>
         <source>Save</source>
         <translation>Uložit</translation>
     </message>
@@ -3979,166 +3979,172 @@ function dataPass(data, dev, cmd) {
         <translation>Zobrazit chyby (0)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="28"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="29"/>
         <source>JavaScript file (*.js);;Any file (*.*)</source>
         <translation>JavaScript soubory (*.js);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="29"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="30"/>
         <source>Python file (*.py);;Any file (*.*)</source>
         <translation>Python soubor (*.py);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="57"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="58"/>
         <source>&lt;a href=&quot;http://technika.junior.cz/docs/Lorris/index.html&quot;&gt;Documentation&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;http://technika.junior.cz/docs/Lorris/index.html&quot;&gt;Dokumentace&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="65"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="66"/>
         <source>Save as...</source>
         <translation>Uložit jako...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="184"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="186"/>
         <source>Load file</source>
         <translation>Načíst ze souboru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="192"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="194"/>
         <source>Failed to open &quot;%1!&quot;</source>
         <translation>Nemůžu otevřit &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="175"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="208"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="209"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="210"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="211"/>
         <source>%1 - Script</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="63"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="64"/>
         <source>Load</source>
         <translation>Otevřít</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="67"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="68"/>
         <source>Undo</source>
         <translation>Zpět</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="68"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="69"/>
         <source>Redo</source>
         <translation>Opakovat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="70"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="71"/>
         <source>Apply</source>
         <translation>Použít</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="78"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="79"/>
         <source>Load (Ctrl+O)</source>
         <translation>Otevřít (Ctrl+O)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="80"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="81"/>
         <source>Save (Ctrl+S)</source>
         <translation>Uložit (Ctrl+S)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="82"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="83"/>
         <source>Save as... (Ctrl+Shift+S)</source>
         <translation>Uložit jako... (Ctrl+Shift+S)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="84"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="85"/>
         <source>Apply (F5)</source>
         <translation>Použít (F5)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="104"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="105"/>
         <source>Undo (%1)</source>
         <translation>Zpět (%1)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="105"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="106"/>
         <source>Redo (%1)</source>
         <translation>Opakovat (%1)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="244"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="246"/>
         <source>Load example</source>
         <translation>Načíst příklad</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="244"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="246"/>
         <source>Script was changed, do you really want to load an example?</source>
         <translation>Script byl změněn, přejete si přesto načíst vybraný příklad?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="263"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="270"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="265"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="272"/>
         <source>Show errors (%1)</source>
         <translation>Zobrazit chyby (%1)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="286"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="288"/>
         <source>Can&apos;t open file %1 for writing!</source>
         <translation>Nemůžu otevčit soubor %1 pro zápis!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="292"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="294"/>
         <source>File %1 was saved</source>
         <translation>Subor %1 byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="300"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="302"/>
         <source>Save file</source>
         <translation>Uložit soubor</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="336"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="371"/>
         <source>File on disk was changed</source>
         <translation>Soubor na disku byl změněn</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="337"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="516"/>
+        <source>Script was changed, but not applied. Apply?</source>
+        <translation>Script byl změněn, ale nebyl použit. Použít? </translation>
+    </message>
+    <message>
         <source>File on disk was changed. What do you want to do?</source>
-        <translation>Soubor na disku byl změněn. Co s tím?</translation>
+        <translation type="obsolete">Soubor na disku byl změněn. Co s tím?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="341"/>
         <source>Reload from disk</source>
-        <translation>Načíst z disku</translation>
+        <translation type="obsolete">Načíst z disku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="342"/>
         <source>Ignore</source>
-        <translation>Ignorovat</translation>
+        <translation type="obsolete">Ignorovat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="352"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="319"/>
         <source>Can&apos;t open file %1 for reading!</source>
         <translation>Nemůžu otevčit soubor %1 pro čtení!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="437"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="454"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="372"/>
+        <source>File on disk was changed. Do you want to reload it from disk?</source>
+        <translation>Soubor na disku byl změněn. Chcete ho nahrát z disku?</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="480"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="515"/>
         <source>Script was changed</source>
         <translation>Script se změnil</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="438"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="481"/>
         <source>File was changed, but not saved:</source>
         <translation>Soubor byl změněn, ale není uložen:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="455"/>
         <source>Script was changed, but not applied</source>
-        <translation>Script byl změněn, ale nebyl použit - změny budou ztraceny! </translation>
+        <translation type="obsolete">Script byl změněn, ale nebyl použit - změny budou ztraceny! </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="495"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="560"/>
         <source>Source was applied.</source>
         <translation>Script byl použit.</translation>
     </message>
@@ -4527,17 +4533,17 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SettingsPopup</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="662"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="727"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="664"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="729"/>
         <source>Language:</source>
         <translation>Jazyk:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="666"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="731"/>
         <source>Editor:</source>
         <translation></translation>
     </message>

@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <QHash>
+#include <QVariant>
 
 #include "../misc/singleton.h"
 #include "WorkTab.h"
@@ -101,6 +102,12 @@ public:
 
     void printToAllStatusBars(const QString& text, int timeout = 3000);
 
+    void startBatchOperation();
+    void endBatchOperation();
+    bool isBatchStarted() const { return m_batch_started; }
+    void setBatchVar(const QString& name, const QVariant &var);
+    QVariant getBatchVar(const QString& name, QVariant def = QVariant());
+
 public slots:
     MainWindow *newWindow(QStringList openFiles = QStringList());
     void instanceMessage(const QString& message);
@@ -123,6 +130,9 @@ private:
 
     bool m_disable_window_close;
     SessionMgr *m_session_mgr;
+
+    QHash<QString, QVariant> m_batch_vars;
+    bool m_batch_started;
 };
 
 #define sWorkTabMgr WorkTabMgr::GetSingleton()

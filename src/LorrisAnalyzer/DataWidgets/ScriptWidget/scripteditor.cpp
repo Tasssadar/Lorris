@@ -20,6 +20,7 @@
 #include "../../../common.h"
 #include "engines/scriptengine.h"
 #include "../../../ui/editorwidget.h"
+#include "../../../WorkTab/WorkTabMgr.h"
 
 #define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
 
@@ -111,7 +112,6 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     ui->resizeLine->updateStretch();
 
     m_errors = 0;
-    m_ignoreNextFocus = false;
     m_ignoreFocus = false;
 
     m_editor->setText(source);
@@ -172,7 +172,9 @@ void ScriptEditor::textChanged()
     if(!m_filename.isEmpty() && !ui->nameLabel->text().startsWith('*'))
     {
         ui->nameLabel->setText(ui->nameLabel->text().prepend('*'));
-        setTabText(tr("%1 - Script").arg(ui->nameLabel->text()));
+        QString title = tr("%1 - Script").arg(ui->nameLabel->text());
+        setTabText(title);
+        setWindowTitle(title);
     }
     m_changed = true;
     m_contentChanged = true;
@@ -310,6 +312,18 @@ void ScriptEditor::saveAs()
         setFilename(filename);
 }
 
+void ScriptEditor::load(QFile& f)
+{
+    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        Utils::showErrorBox(tr("Can't open file %1 for reading!").arg(m_filename));
+        return;
+    }
+    m_editor->setText(QString::fromUtf8(f.readAll()));
+    textChanged();
+    m_fileChanged = false;
+}
+
 void ScriptEditor::setStatus(const QString &status)
 {
     ui->statusLabel->setText(status);
@@ -326,34 +340,54 @@ void ScriptEditor::checkChange()
     if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    QByteArray disk = MD5(f.readAll().replace('\r', ""));
-    QByteArray here = MD5(m_editor->getText().toUtf8().replace('\r', ""));
+    QByteArray disk = MD5(f.readAll());
+    QByteArray here = MD5(m_editor->getText().toUtf8());
     f.close();
 
-    if(disk != here)
+    if(disk == here)
+        return;
+
+    QHash<QString, QByteArray>::iterator itr = m_ignoredFiles.find(m_filename);
+    if(itr == m_ignoredFiles.end() || itr.value() != disk)
     {
+        QMessageBox::StandardButtons btns = QMessageBox::Yes | QMessageBox::No | QMessageBox::Close;
+        if(sWorkTabMgr.isBatchStarted())
+        {
+            if(sWorkTabMgr.getBatchVar("scripteditor_reloadall").toBool())
+            {
+                qDebug("Load file %s", m_filename.toStdString().c_str());
+                load(f);
+                return;
+            }
+            else if(sWorkTabMgr.getBatchVar("scripteditor_keepall").toBool())
+            {
+                m_ignoredFiles[m_filename] = disk;
+                return;
+            }
+            btns |= QMessageBox::YesToAll | QMessageBox::NoToAll;
+        }
+
         m_ignoreFocus = true;
         QMessageBox box(QMessageBox::Question, tr("File on disk was changed"),
-                        tr("File on disk was changed. What do you want to do?"), QMessageBox::NoButton, this);
+                        tr("File on disk was changed. Do you want to reload it from disk?"), btns, this);
         box.setInformativeText(m_filename);
         box.setToolTip(m_filename);
-
-        box.addButton(tr("Reload from disk"), QMessageBox::AcceptRole);
-        box.addButton(tr("Ignore"), QMessageBox::RejectRole);
-        box.addButton(QMessageBox::Close);
 
         switch(box.exec())
         {
             case QMessageBox::Close:
                 setFilename(QString());
                 break;
-            case QMessageBox::AcceptRole:
-                if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
-                    Utils::showErrorBox(tr("Can't open file %1 for reading!").arg(m_filename));
-                m_editor->setText(QString::fromUtf8(f.readAll()));
+            case QMessageBox::YesToAll:
+                sWorkTabMgr.setBatchVar("scripteditor_reloadall", true);
+            case QMessageBox::Yes:
+                qDebug("Load file %s", m_filename.toStdString().c_str());
+                load(f);
                 break;
-            case QMessageBox::RejectRole:
-                m_ignoreNextFocus = true;
+            case QMessageBox::NoToAll:
+                sWorkTabMgr.setBatchVar("scripteditor_keepall", true);
+            case QMessageBox::No:
+                m_ignoredFiles[m_filename] = disk;
                 break;
         }
         m_ignoreFocus = false;
@@ -363,12 +397,7 @@ void ScriptEditor::checkChange()
 void ScriptEditor::focusChanged(QWidget *prev, QWidget *now)
 {
     if(!prev && now && !m_ignoreFocus)
-    {
-        if(m_ignoreNextFocus)
-            m_ignoreNextFocus = false;
-        else
-            checkChange();
-    }
+        checkChange();
 }
 
 void ScriptEditor::setEditor(int editorType)
@@ -434,16 +463,34 @@ bool ScriptEditor::onTabClose()
 
     if(m_fileChanged && !m_filename.isEmpty())
     {
+        QMessageBox::StandardButtons btns = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
+        if(sWorkTabMgr.isBatchStarted())
+        {
+            if(sWorkTabMgr.getBatchVar("scripteditor_saveall").toBool())
+            {
+                save(m_filename);
+                return true;
+            }
+            else if(sWorkTabMgr.getBatchVar("scripteditor_discardall").toBool())
+                return true;
+
+            btns |= QMessageBox::YesAll | QMessageBox::NoAll;
+        }
+
         QMessageBox box(QMessageBox::Question, tr("Script was changed"),
                         tr("File was changed, but not saved:"),
-                        QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
+                        btns, this);
         box.setInformativeText(m_filename);
         switch(box.exec())
         {
-            case QMessageBox::Save:
+            case QMessageBox::YesAll:
+                sWorkTabMgr.setBatchVar("scripteditor_saveall", true);
+            case QMessageBox::Yes:
                 save(m_filename);
                 return true;
-            case QMessageBox::Discard:
+            case QMessageBox::NoAll:
+                sWorkTabMgr.setBatchVar("scripteditor_discardall", true);
+            case QMessageBox::No:
                 return true;
             case QMessageBox::Cancel:
                 return false;
@@ -451,15 +498,33 @@ bool ScriptEditor::onTabClose()
     }
     else if(m_contentChanged)
     {
-        QMessageBox box(QMessageBox::Question, tr("Script was changed"),
-                        tr("Script was changed, but not applied"),
-                        QMessageBox::Apply | QMessageBox::Discard | QMessageBox::Cancel, this);
-        switch(box.exec())
+        QMessageBox::StandardButtons btns = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
+        if(sWorkTabMgr.isBatchStarted())
         {
-            case QMessageBox::Apply:
+            if(sWorkTabMgr.getBatchVar("scripteditor_applyall").toBool())
+            {
                 applyAct();
                 return true;
-            case QMessageBox::Discard:
+            }
+            else if(sWorkTabMgr.getBatchVar("scripteditor_ignoreall").toBool())
+                return true;
+
+            btns |= QMessageBox::YesAll | QMessageBox::NoAll;
+        }
+
+        QMessageBox box(QMessageBox::Question, tr("Script was changed"),
+                        tr("Script was changed, but not applied. Apply?"),
+                        btns, this);
+        switch(box.exec())
+        {
+            case QMessageBox::YesAll:
+                sWorkTabMgr.setBatchVar("scripteditor_applyall", true);
+            case QMessageBox::Yes:
+                applyAct();
+                return true;
+            case QMessageBox::NoAll:
+                sWorkTabMgr.setBatchVar("scripteditor_ignoreall", true);
+            case QMessageBox::No:
                 return true;
             case QMessageBox::Cancel:
                 return false;

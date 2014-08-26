@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <QScrollArea>
 #include <QPointer>
+#include <QHash>
 #include "../../../WorkTab/childtab.h"
 
 #include "ui_scripteditor.h"
@@ -82,6 +83,7 @@ private:
     bool save(const QString& file);
     void setStatus(const QString& status);
     void setFilename(const QString& filename);
+    void load(QFile& f);
 
     Ui::ScriptEditor *ui;
     LineNumber *m_line_num;
@@ -102,6 +104,8 @@ private:
     EditorWidget *m_editor;
     QPointer<ExamplesPreview> m_examples;
     QPointer<SettingsPopup> m_settings;
+
+    QHash<QString, QByteArray> m_ignoredFiles;
 };
 
 class ExamplesPreview : public QScrollArea
