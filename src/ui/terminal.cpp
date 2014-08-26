@@ -382,7 +382,7 @@ void Terminal::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Return:
         case Qt::Key_Enter:
         {
-            key = getCurrNewlineStr();
+            key = getCurrNewlineStr(event->modifiers());
             break;
         }
         case Qt::Key_Backspace:
@@ -875,7 +875,7 @@ void Terminal::redrawAll()
     pause(paused);
 }
 
-QString Terminal::getCurrNewlineStr()
+QString Terminal::getCurrNewlineStr(Qt::KeyboardModifiers modifiers)
 {
     static const QString nl[] = {
         "\r\n",   // NLS_RN
@@ -884,9 +884,20 @@ QString Terminal::getCurrNewlineStr()
         "\n\r",   // NLS_NR
     };
 
-    if(m_settings.chars[SET_ENTER_SEND] >= NLS_MAX)
-        return nl[0];
-    return nl[m_settings.chars[SET_ENTER_SEND]];
+    static const int ctrl_mapping[NLS_MAX] = {
+        NLS_NR,
+        NLS_R,
+        NLS_N,
+        NLS_RN,
+    };
+
+    int res_idx = 0;
+    if(m_settings.chars[SET_ENTER_SEND] < NLS_MAX)
+        res_idx = m_settings.chars[SET_ENTER_SEND];
+
+    if(modifiers & Qt::ControlModifier)
+        res_idx = ctrl_mapping[res_idx];
+    return nl[res_idx];
 }
 
 void Terminal::blink(const QColor &color)

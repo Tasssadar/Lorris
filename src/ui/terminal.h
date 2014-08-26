@@ -182,7 +182,7 @@ private:
     void addHex();
     void redrawAll();
     QPoint mouseToTextPos(const QPoint& pos);
-    QString getCurrNewlineStr();
+    QString getCurrNewlineStr(Qt::KeyboardModifiers modifiers);
 
     void selectAll();
 
