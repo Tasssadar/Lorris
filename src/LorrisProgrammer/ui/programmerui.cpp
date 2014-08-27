@@ -335,6 +335,7 @@ void ProgrammerUI::writeMem(quint8 memId, chip_definition &chip)
 
         if(info.exists() && m_widget->m_hexFlashTimes[memId] == info.lastModified())
             warnSecondFlash();
+        setFileNeverFlashed(false);
 
         lastMod = info.lastModified();
     }

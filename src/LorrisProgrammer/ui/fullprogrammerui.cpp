@@ -795,6 +795,14 @@ void FullProgrammerUI::setFileAndTime(const QString &file, const QDateTime &time
     ui->filedate->setToolTip(str);
 }
 
+void FullProgrammerUI::setFileNeverFlashed(bool neverFlashed)
+{
+    if(neverFlashed)
+        ui->new_indicator->setText(tr(" | NEW"));
+    else
+        ui->new_indicator->setText(QString());
+}
+
 void FullProgrammerUI::setChipId(const QString &text)
 {
     ui->chipIdLabel->setText(text);

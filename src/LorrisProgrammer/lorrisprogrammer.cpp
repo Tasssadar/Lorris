@@ -652,7 +652,10 @@ void LorrisProgrammer::loadFromFile(int memId, const QString& filename)
     m_hexWriteTimes[memId] = loadTimestamp;
 
     if(memId == MEM_FLASH || memId == MEM_JTAG)
+    {
         ui->setFileAndTime(filename, QFileInfo(filename).lastModified());
+        ui->setFileNeverFlashed(true);
+    }
 
     status(tr("File loaded"));
 }

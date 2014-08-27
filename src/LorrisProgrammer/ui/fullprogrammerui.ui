@@ -409,7 +409,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="toolLayout" stretch="0,0,0,0">
+      <layout class="QHBoxLayout" name="toolLayout" stretch="0,0,0,0,0">
        <item>
         <widget class="QLabel" name="filename">
          <property name="sizePolicy">
@@ -426,13 +426,26 @@
        <item>
         <widget class="QLabel" name="filedate">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="text">
           <string notr="true"/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="new_indicator">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -605,7 +618,7 @@ flashing same file twice:</string>
                <bool>true</bool>
               </property>
               <attribute name="buttonGroup">
-               <string>pwmRadioGroup</string>
+               <string notr="true">pwmRadioGroup</string>
               </attribute>
              </widget>
             </item>
@@ -615,7 +628,7 @@ flashing same file twice:</string>
                <string>Generic</string>
               </property>
               <attribute name="buttonGroup">
-               <string>pwmRadioGroup</string>
+               <string notr="true">pwmRadioGroup</string>
               </attribute>
              </widget>
             </item>
@@ -625,7 +638,7 @@ flashing same file twice:</string>
                <string>Servo</string>
               </property>
               <attribute name="buttonGroup">
-               <string>pwmRadioGroup</string>
+               <string notr="true">pwmRadioGroup</string>
               </attribute>
              </widget>
             </item>
@@ -1148,7 +1161,16 @@ flashing same file twice:</string>
    <item>
     <widget class="QWidget" name="fuseContainer" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <property name="margin">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item>

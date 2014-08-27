@@ -36,6 +36,7 @@ public:
     void postFlashSwitchCheck(chip_definition &chip);
     void setStartStopBtn(bool start);
     void setFileAndTime(const QString &file, const QDateTime &time) override;
+    void setFileNeverFlashed(bool neverFlashed) override;
     void setActiveMem(quint32 memId);
     void warnSecondFlash();
     int getMemIndex();
