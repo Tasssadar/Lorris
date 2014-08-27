@@ -315,13 +315,6 @@ void LorrisProgrammer::vddIndexChanged(int index)
     if(index == -1)
         return;
 
-    if(lastVccIndex == 0 && index > 0 && m_vcc != 0)
-    {
-        ui->vddIndexChanged(0);
-        Utils::showErrorBox(tr("Can't set output VCC, voltage detected!"));
-        return;
-    }
-
     lastVccIndex = index;
 
     if (m_programmer)
