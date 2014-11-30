@@ -21,6 +21,8 @@ class SerialPortOpenThread;
     class SerialPortThread;
 #endif
 
+
+
 class SerialPort : public PortConnection
 {
     Q_OBJECT
@@ -37,6 +39,12 @@ public:
 
     int baudRate() const { return m_rate; }
     void setBaudRate(int value);
+    ParityType parity() const { return m_parity; }
+    void setParity(ParityType p);
+    StopBitsType stopBits() const { return m_stopBits; }
+    void setStopBits(StopBitsType st);
+    DataBitsType dataBits() const { return m_dataBits; }
+    void setDataBits(DataBitsType dt);
 
     QString deviceName() const { return m_deviceName; }
     void setDeviceName(QString const & value);
@@ -81,6 +89,9 @@ private:
 
     QextSerialPort *m_port;
     int m_rate;
+    ParityType m_parity;
+    StopBitsType m_stopBits;
+    DataBitsType m_dataBits;
 
     QMutex m_port_mutex;
     bool m_devNameEditable;

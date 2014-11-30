@@ -91,9 +91,10 @@ enum ParityType
 enum StopBitsType
 {
     STOP_1,
-#if defined(Q_OS_WIN) || defined(qdoc)
+// Enable everywhere so we can save this enum to config
+//#if defined(Q_OS_WIN) || defined(qdoc)
     STOP_1_5,               //WINDOWS ONLY
-#endif
+//#endif
     STOP_2
 };
 

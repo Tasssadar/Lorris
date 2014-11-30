@@ -403,6 +403,7 @@ void QextSerialPortPrivate::updatePortSettings()
         case STOP_1:
             Posix_CommConfig.c_cflag &= (~CSTOPB);
             break;
+        case STOP_1_5:
         case STOP_2:
             Posix_CommConfig.c_cflag |= CSTOPB;
             break;

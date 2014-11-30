@@ -22,9 +22,8 @@
 #include "../WorkTab/WorkTabInfo.h"
 #include "../shared/programmer.h"
 
-SerialPort::SerialPort()
-    : PortConnection(CONNECTION_SERIAL_PORT),
-      m_devNameEditable(true)
+SerialPort::SerialPort() : PortConnection(CONNECTION_SERIAL_PORT),
+      m_devNameEditable(true), m_parity(PAR_NONE), m_stopBits(STOP_1), m_dataBits(DATA_8)
 {
     m_port = NULL;
     m_openThread = NULL;
@@ -185,6 +184,30 @@ void SerialPort::setBaudRate(int value)
     emit changed();
 }
 
+void SerialPort::setParity(ParityType p)
+{
+    m_parity = p;
+    if(isOpen())
+        m_port->setParity(p);
+    emit changed();
+}
+
+void SerialPort::setStopBits(StopBitsType st)
+{
+    m_stopBits = st;
+    if(isOpen())
+        m_port->setStopBits(st);
+    emit changed();
+}
+
+void SerialPort::setDataBits(DataBitsType dt)
+{
+    m_dataBits = dt;
+    if(isOpen())
+        m_port->setDataBits(dt);
+    emit changed();
+}
+
 void SerialPort::socketError(SocketError err)
 {
     if(err == ERR_IOCTL_FAILED && isOpen())
@@ -199,6 +222,9 @@ QHash<QString, QVariant> SerialPort::config() const
     QHash<QString, QVariant> res = this->PortConnection::config();
     res["device_name"] = this->deviceName();
     res["baud_rate"] = (int)this->baudRate();
+    res["data_bits"] = (int)this->dataBits();
+    res["parity"] = (int)this->parity();
+    res["stop_bits"] = (int)this->stopBits();
     return res;
 }
 
@@ -206,16 +232,17 @@ bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
 {
     this->setDeviceName(config.value("device_name").toString());
     this->setBaudRate(config.value("baud_rate", 38400).toInt());
+    this->setDataBits((DataBitsType)config.value("data_bits", DATA_8).toInt());
+    this->setParity((ParityType)config.value("parity", PAR_NONE).toInt());
+    this->setStopBits((StopBitsType)config.value("stop_bits", STOP_1).toInt());
     return this->PortConnection::applyConfig(config);
 }
 
 ConnectionPointer<Connection> SerialPort::clone()
 {
     ConnectionPointer<SerialPort> res(new SerialPort());
+    res->applyConfig(this->config());
     res->setName(tr("Clone of ") + this->name());
-    res->setDeviceName(this->deviceName());
-    res->setBaudRate(this->baudRate());
-    res->setProgrammerType(this->programmerType());
     return res;
 }
 
@@ -244,9 +271,9 @@ void SerialPortOpenThread::run()
 #endif
 
     m_port->setBaudRate(m_conn->baudRate());
-    m_port->setParity(PAR_NONE);
-    m_port->setDataBits(DATA_8);
-    m_port->setStopBits(STOP_1);
+    m_port->setDataBits(m_conn->dataBits());
+    m_port->setParity(m_conn->parity());
+    m_port->setStopBits(m_conn->stopBits());
     m_port->setFlowControl(FLOW_OFF);
 
     bool res = m_port->open(QIODevice::ReadWrite | QIODevice::Unbuffered);

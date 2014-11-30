@@ -322,6 +322,9 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             ui->settingsStack->setCurrentWidget(ui->serialPortPage);
             updateEditText(ui->spBaudRateEdit->lineEdit(), QString::number((int)sp->baudRate()));
             updateEditText(ui->spDeviceNameEdit, sp->deviceName());
+            updateComboIndex(ui->spParity, (int)sp->parity());
+            updateComboIndex(ui->spStopBits, (int)sp->stopBits());
+            updateComboText(ui->spDataBits, QString::number(sp->dataBits()));
             ui->spDeviceNameEdit->setEnabled(sp->devNameEditable());
             ui->programmerSelection->setVisible(m_allowedConns & pct_port_programmable);
             setActiveProgBtn(sp->programmerType());
@@ -538,6 +541,30 @@ void ChooseConnectionDlg::on_spBaudRateEdit_editTextChanged(const QString &arg1)
         c->setBaudRate(editValue);
         sConfig.set(CFG_QUINT32_SERIAL_BAUD, editValue);
     }
+}
+
+void ChooseConnectionDlg::on_spParity_currentIndexChanged(int value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<SerialPort *>(m_current.data()) != 0);
+    static_cast<SerialPort *>(m_current.data())->setParity((ParityType)value);
+}
+
+void ChooseConnectionDlg::on_spStopBits_currentIndexChanged(int value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<SerialPort *>(m_current.data()) != 0);
+    static_cast<SerialPort *>(m_current.data())->setStopBits((StopBitsType)value);
+}
+
+void ChooseConnectionDlg::on_spDataBits_currentIndexChanged(int value)
+{
+    if (!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<SerialPort *>(m_current.data()) != 0);
+    static_cast<SerialPort *>(m_current.data())->setDataBits((DataBitsType)ui->spDataBits->itemText(value).toInt());
 }
 
 void ChooseConnectionDlg::progBtn_clicked(int programmer)

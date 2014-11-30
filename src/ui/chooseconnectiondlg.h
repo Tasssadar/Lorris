@@ -50,6 +50,9 @@ private slots:
     void on_spDeviceNameEdit_textChanged(const QString &arg1);
     void on_connectionsList_doubleClicked(const QModelIndex &index);
     void on_spBaudRateEdit_editTextChanged(const QString &arg1);
+    void on_spParity_currentIndexChanged(int value);
+    void on_spStopBits_currentIndexChanged(int value);
+    void on_spDataBits_currentIndexChanged(int value);
     void progBtn_clicked(int programmer);
 
     void on_actionCreateTcpClient_triggered();
