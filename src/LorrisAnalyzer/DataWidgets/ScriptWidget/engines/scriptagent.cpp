@@ -17,6 +17,7 @@ ScriptAgent::ScriptAgent(QtScriptEngine *qtengine, QScriptEngine *engine) :
     m_timer.invalidate();
     m_errors = 0;
     m_engine = qtengine;
+    m_enterFuncCnt = 0;
 }
 
 void ScriptAgent::exceptionThrow(qint64 /*scriptid*/, const QScriptValue &exception, bool hasHandler)
@@ -37,4 +38,17 @@ void ScriptAgent::scriptLoad(qint64, const QString &, const QString &, int)
 {
     m_timer.invalidate();
     m_errors = 0;
+    m_enterFuncCnt = 0;
+}
+
+void ScriptAgent::functionEntry(qint64 scriptId)
+{
+    if(++m_enterFuncCnt == 1)
+        ((QtScriptEngine_private*)engine())->startFreezeDetector();
+}
+
+void ScriptAgent::functionExit(qint64 scriptId, const QScriptValue &returnValue)
+{
+    if(--m_enterFuncCnt == 0)
+        ((QtScriptEngine_private*)engine())->stopFreezeDetector();
 }

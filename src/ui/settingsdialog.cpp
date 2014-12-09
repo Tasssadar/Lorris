@@ -16,6 +16,10 @@
 #include "../revision.h"
 #include "../misc/updater.h"
 
+#ifdef WITH_PYTHON
+#include "../../../dep/pythonqt/src/PythonQt.h"
+#endif
+
 QLocale::Language langs[] = { QLocale::system().language(), QLocale::English, QLocale::Czech };
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
@@ -59,6 +63,7 @@ void SettingsDialog::loadSettings()
     ui->connDlgBox->setChecked(sConfig.get(CFG_BOOL_CONN_ON_NEW_TAB));
     ui->updateBox->setChecked(sConfig.get(CFG_BOOL_CHECK_FOR_UPDATE));
     ui->soundsBox->setChecked(sConfig.get(CFG_BOOL_ENABLE_SOUNDS));
+    ui->freezeTimeoutBox->setValue(sConfig.get(CFG_QUINT32_SCRIPT_FREEZE_TIMEOUT));
 }
 
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *btn)
@@ -90,6 +95,12 @@ void SettingsDialog::applySettings()
     sConfig.set(CFG_BOOL_CONN_ON_NEW_TAB, ui->connDlgBox->isChecked());
     sConfig.set(CFG_BOOL_CHECK_FOR_UPDATE, ui->updateBox->isChecked());
     sConfig.set(CFG_BOOL_ENABLE_SOUNDS, ui->soundsBox->isChecked());
+
+    sConfig.set(CFG_QUINT32_SCRIPT_FREEZE_TIMEOUT, ui->freezeTimeoutBox->value());
+#ifdef WITH_PYTHON
+    if(PythonQt::self())
+        PythonQt::self()->setFreezeDetectorTimeoutMs(ui->freezeTimeoutBox->value());
+#endif
 }
 
 void SettingsDialog::setPortable(bool portable)

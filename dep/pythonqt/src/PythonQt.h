@@ -47,6 +47,7 @@
 #include "PythonQtClassWrapper.h"
 #include "PythonQtSlot.h"
 #include "PythonQtObjectPtr.h"
+#include "pythonqtfreezedetector.h"
 #include <QObject>
 #include <QVariant>
 #include <QList>
@@ -54,6 +55,7 @@
 #include <QByteArray>
 #include <QStringList>
 #include <QtDebug>
+#include <QThread>
 #include <iostream>
 
 
@@ -445,6 +447,9 @@ public:
   void disconnectAllSlots(const QString& module);
   void disconnectSlots(const QString& module, QObject *object);
 
+  int getFreezeDetectorTimeoutMs() const;
+  void setFreezeDetectorTimeoutMs(int ms);
+
   //@}
 
 signals:
@@ -651,6 +656,9 @@ private:
 
   int _initFlags;
   int _PythonQtObjectPtr_metaId;
+
+  int _freezeDetectorTimeoutMs;
+  QThread _freezeDetectorThread;
 
   friend class PythonQt;
 };

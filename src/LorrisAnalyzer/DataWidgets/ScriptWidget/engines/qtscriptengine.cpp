@@ -180,6 +180,7 @@ void QtScriptEngine::setSource(const QString &source)
 
     delete m_engine;
     m_engine = new QtScriptEngine_private(this, parent());
+    m_engine->setAgent(new ScriptAgent(this, m_engine));
 
     connect(this, SIGNAL(stopUsingJoy(QObject*)), m_engine, SIGNAL(stopUsingJoy(QObject*)));
 
@@ -196,8 +197,6 @@ void QtScriptEngine::setSource(const QString &source)
     m_on_script_exit = m_global.property("onScriptExit");
     m_on_save = m_global.property("onSave");
     m_on_raw = m_global.property("onRawData");
-
-    m_engine->setAgent(new ScriptAgent(this, m_engine));
 
     if(m_on_widget_add.isFunction())
     {
@@ -416,6 +415,44 @@ QtScriptEngine_private::QtScriptEngine_private(QtScriptEngine *base, QObject *pa
     QScriptEngine(parent)
 {
     m_base = base;
+    setProcessEventsInterval(50);
+    m_freezeDetectTimer.setSingleShot(true);
+    connect(&m_freezeDetectTimer, SIGNAL(timeout()), this, SLOT(freezeDetectorTimeout()));
+}
+
+QScriptValue QtScriptEngine_private::evaluate(const QString &program, const QString &fileName, int lineNumber)
+{
+    startFreezeDetector();
+    QScriptValue res = QScriptEngine::evaluate(program, fileName, lineNumber);
+    stopFreezeDetector();
+    return res;
+}
+
+void QtScriptEngine_private::startFreezeDetector()
+{
+    if(!m_freezeDetectTimer.isActive())
+        m_freezeDetectTimer.start(sConfig.get(CFG_QUINT32_SCRIPT_FREEZE_TIMEOUT));
+}
+
+void QtScriptEngine_private::stopFreezeDetector()
+{
+    m_freezeDetectTimer.stop();
+}
+
+void QtScriptEngine_private::freezeDetectorTimeout()
+{
+    if(this->isEvaluating())
+    {
+        this->abortEvaluation();
+        ((ScriptAgent*)this->agent())->restartEnterFuncCnt();
+        emit m_base->error("FreezeDetector: killing, has been in qtscript code for too long. You can change the timeout in the global settings.");
+    }
+    else
+    {
+        QScriptContext *ctx = this->currentContext();
+        if(ctx)
+            ctx->throwError("FreezeDetector: killing, has been in qtscript code for too long. You can change the timeout in the global settings.");
+    }
 }
 
 void QtScriptEngine_private::clearTerm()

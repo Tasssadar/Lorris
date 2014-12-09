@@ -65,6 +65,7 @@ void PythonQt::init(int flags, const QByteArray& pythonQtModuleName)
 {
   if (!_self) {
     _self = new PythonQt(flags, pythonQtModuleName);
+    _self->_p->setupSharedLibrarySuffixes();
 
     PythonQtMethodInfo::addParameterTypeAlias("QObjectList", "QList<QObject*>");
     qRegisterMetaType<QList<QObject*> >("QList<void*>");
@@ -188,9 +189,6 @@ PythonQt::PythonQt(int flags, const QByteArray& pythonQtModuleName)
   Py_INCREF(&PythonQtStdOutRedirectType);
 
   initPythonQtModule(flags & RedirectStdOut, pythonQtModuleName);
-
-  _p->setupSharedLibrarySuffixes();
-
 }
 
 PythonQt::~PythonQt() {
@@ -213,6 +211,9 @@ PythonQtPrivate::~PythonQtPrivate() {
   PythonQtConv::global_variantStorage.clear();
 
   PythonQtMethodInfo::cleanupCachedMethodInfos();
+
+  _freezeDetectorThread.quit();
+  _freezeDetectorThread.wait();
 }
 
 PythonQtImportFileInterface* PythonQt::importInterface()
@@ -597,6 +598,7 @@ QVariant PythonQt::evalCode(PyObject* object, PyObject* pycode) {
     }
     PyObject* r = NULL;
     if (dict) {
+      PythonQtFreezeDetector dec(_p->_freezeDetectorTimeoutMs, &_p->_freezeDetectorThread);
       r = PyEval_EvalCode((PyCodeObject*)pycode, dict , dict);
     }
     if (r) {
@@ -624,8 +626,10 @@ QVariant PythonQt::evalScript(PyObject* object, const QString& script, const QSt
   if (dict) {
       PyCodeObject* pycode;
       pycode = (PyCodeObject*)Py_CompileString((char*)script.toLatin1().data(), (char*)filename.toLatin1().constData(), Py_file_input);
-      if(pycode)
+      if(pycode) {
+        PythonQtFreezeDetector dec(_p->_freezeDetectorTimeoutMs, &_p->_freezeDetectorThread);
         p.setNewRef(PyEval_EvalCode(pycode, dict, dict));
+      }
   }
   if (p) {
     result = PythonQtConv::PyObjToQVariant(p);
@@ -882,6 +886,7 @@ PyObject* PythonQt::callAndReturnPyObject(PyObject* callable, const QVariantList
     }
 
     if (!err) {
+      PythonQtFreezeDetector dec(_p->_freezeDetectorTimeoutMs, &_p->_freezeDetectorThread);
       PyErr_Clear();
       result = PyObject_CallObject(callable, pargs);
     }
@@ -938,6 +943,8 @@ PythonQtPrivate::PythonQtPrivate()
   _noLongerWrappedCB = NULL;
   _wrappedCB = NULL;
   _currentClassInfoForClassWrapperCreation = NULL;
+  _freezeDetectorTimeoutMs = 15000;
+  _freezeDetectorThread.start();
 }
 
 void PythonQtPrivate::setupSharedLibrarySuffixes()
@@ -1175,6 +1182,16 @@ void PythonQt::disconnectSlots(const QString &module, QObject *object)
     const QList<PyObject*>& mSlots = _p->getSlots(module);
     for(int i = 0; i < mSlots.size(); ++i)
         r->removeSignalHandler(mSlots[i]);
+}
+
+int PythonQt::getFreezeDetectorTimeoutMs() const
+{
+    return _p->_freezeDetectorTimeoutMs;
+}
+
+void PythonQt::setFreezeDetectorTimeoutMs(int ms)
+{
+    _p->_freezeDetectorTimeoutMs = ms;
 }
 
 bool PythonQtPrivate::addParentClass(const char* typeName, const char* parentTypeName, int upcastingOffset)

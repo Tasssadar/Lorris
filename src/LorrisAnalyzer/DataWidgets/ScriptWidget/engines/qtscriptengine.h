@@ -12,6 +12,7 @@
 #include <QScriptEngine>
 #include <QScriptProgram>
 #include <QSize>
+#include <QTimer>
 
 #include "../../../packet.h"
 #include "../scriptstorage.h"
@@ -28,6 +29,14 @@ class QtScriptEngine_private : public QScriptEngine
     friend class QtScriptEngine;
 Q_SIGNALS:
     void stopUsingJoy(QObject *object);
+
+public:
+    QScriptValue evaluate(const QString &program, const QString &fileName = QString(), int lineNumber = 1);
+    void startFreezeDetector();
+    void stopFreezeDetector();
+
+private slots:
+    void freezeDetectorTimeout();
 
 private:
     QtScriptEngine_private(QtScriptEngine *base, QObject *parent);
@@ -74,6 +83,7 @@ private:
 
     QScriptValue  m_global;
     QtScriptEngine *m_base;
+    QTimer m_freezeDetectTimer;
 };
 
 class QtScriptEngine : public ScriptEngine

@@ -37,6 +37,7 @@ PythonEngine::PythonEngine(WidgetArea *area, quint32 w_id, ScriptWidget *parent)
         PythonQt::self()->registerClass(&QTimer::staticMetaObject);
         PythonQt::self()->registerClass(&GraphCurve::staticMetaObject);
         PythonQt::self()->registerClass(&Joystick::staticMetaObject);
+        PythonQt::self()->setFreezeDetectorTimeoutMs(sConfig.get(CFG_QUINT32_SCRIPT_FREEZE_TIMEOUT));
 
         // Hack-overload for print statement.
         static const QString writer =
