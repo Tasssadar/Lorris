@@ -8,19 +8,22 @@ TARGET   = PythonQt
 TEMPLATE = lib
 
 
-DESTDIR    = ../lib
+DESTDIR    = "$$PWD/../"
 
 CONFIG += qt
 CONFIG -= flat
 
 
 # allow to choose static linking through the environment variable PYTHONQT_STATIC
-PYTHONQT_STATIC = $$(PYTHONQT_STATIC)
-isEmpty(PYTHONQT_STATIC) {
-  CONFIG += dll
-} else {
-  CONFIG += static
-}
+#PYTHONQT_STATIC = $$(PYTHONQT_STATIC)
+#isEmpty(PYTHONQT_STATIC) {
+#  CONFIG += dll
+#} else {
+#  CONFIG += static
+#}
+
+win32:CONFIG += dll
+else:CONFIG += static
 
 contains(QT_MAJOR_VERSION, 5) {
   QT += widgets

@@ -49,6 +49,7 @@
 #include "PythonQtSlot.h"
 #include "PythonQtObjectPtr.h"
 #include "PythonQtStdIn.h"
+#include "pythonqtfreezedetector.h"
 #include <QObject>
 #include <QVariant>
 #include <QList>
@@ -57,6 +58,7 @@
 #include <QStringList>
 #include <QtDebug>
 #include <iostream>
+#include <QThread>
 
 
 class PythonQtClassInfo;
@@ -342,7 +344,7 @@ public:
   QVariant evalCode(PyObject* object, PyObject* pycode);
 
   //! evaluates the given script code and returns the result value
-  QVariant evalScript(PyObject* object, const QString& script, int start = Py_file_input);
+  QVariant evalScript(PyObject* object, const QString& script, const QString& filename, int start = Py_file_input);
 
   //! evaluates the given script code from file
   void evalFile(PyObject* object, const QString& filename);
@@ -565,6 +567,12 @@ public:
 
   //! sets a callback that is called before and after function calls for profiling
   void setProfilingCallback(ProfilingCB* cb);
+  
+  void disconnectAllSlots(const QString& module);
+  void disconnectSlots(const QString& module, QObject *object);
+
+  int getFreezeDetectorTimeoutMs() const;
+  void setFreezeDetectorTimeoutMs(int ms);
 
   //@}
 
@@ -735,6 +743,25 @@ public:
   
   //! returns true if the object is a method descriptor (same as inspect.ismethoddescriptor() in inspect.py)
   bool isMethodDescriptor(PyObject* object) const;
+  
+  void addSlot(const QString& module, PyObject *callable)
+  {
+      if(module.isEmpty())
+          return;
+
+      if(!_slots[module].contains(callable))
+        _slots[module].push_back(callable);
+  }
+
+  const QList<PyObject*>& getSlots(const QString& module)
+  {
+      return _slots[module];
+  }
+
+  void clearSlots(const QString& module)
+  {
+      _slots.remove(module);
+  }
 
 private:
   //! Setup the shared library suffixes by getting them from the "imp" module.
@@ -788,6 +815,8 @@ private:
   QList<PythonQtForeignWrapperFactory*> _foreignWrapperFactories;
 
   QHash<QByteArray, PyObject*> _packages;
+  
+  QHash<QString, QList<PyObject*> > _slots;
 
   PythonQtClassInfo* _currentClassInfoForClassWrapperCreation;
 
@@ -800,6 +829,9 @@ private:
 
   bool _hadError;
   bool _systemExitExceptionHandlerEnabled;
+  
+  int _freezeDetectorTimeoutMs;
+  QThread _freezeDetectorThread;
 
   friend class PythonQt;
 };

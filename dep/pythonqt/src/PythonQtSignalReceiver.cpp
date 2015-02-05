@@ -237,6 +237,21 @@ bool PythonQtSignalReceiver::removeSignalHandler(const char* signal, PyObject* c
   return foundCount>0;
 }
 
+bool PythonQtSignalReceiver::removeSignalHandler(PyObject* callable)
+{
+    bool found = false;
+    QMutableListIterator<PythonQtSignalTarget> i(_targets);
+    while (i.hasNext())
+    {
+        if (i.next().isSameCallable(callable))
+        {
+            i.remove();
+            found = true;
+        }
+    }
+    return found;
+}
+
 int PythonQtSignalReceiver::getSignalIndex(const char* signal)
 {
   int sigId = _obj->metaObject()->indexOfSignal(signal+1);

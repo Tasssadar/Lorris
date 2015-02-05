@@ -60,9 +60,9 @@ void PythonQtObjectPtr::setNewRef(PyObject* o)
   }
 }
   
-QVariant PythonQtObjectPtr::evalScript(const QString& script, int start)
+QVariant PythonQtObjectPtr::evalScript(const QString& script, const QString& filename, int start)
 {
-  return PythonQt::self()->evalScript(_object, script, start);
+  return PythonQt::self()->evalScript(_object, script, filename, start);
 }
 
 void PythonQtObjectPtr::evalFile(const QString& file)

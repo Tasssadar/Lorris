@@ -86,6 +86,8 @@ public:
 
   //! check if it is the same signal target
   bool isSame(int signalId, PyObject* callable) const;
+  
+  bool isSameCallable(PyObject *callable) const { return callable == _callable; }
 
   //! call the given callable with arguments described by PythonQtMethodInfo, returns a new reference as result value (or NULL)
   static PyObject* call(PyObject* callable, const PythonQtMethodInfo* methodInfo, void **arguments, bool skipFirstArgumentOfMethodInfo = false);
@@ -120,6 +122,7 @@ public:
 
   //! remove a signal handler for given callable (or all callables on that signal if callable is NULL)
   bool removeSignalHandler(const char* signal, PyObject* callable = NULL);
+  bool removeSignalHandler(PyObject* callable);
 
   //! we implement this method to simulate a number of slots that match the ids in _targets
   virtual int qt_metacall(QMetaObject::Call c, int id, void **arguments);

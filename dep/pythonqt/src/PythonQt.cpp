@@ -70,6 +70,7 @@ void PythonQt::init(int flags, const QByteArray& pythonQtModuleName)
 {
   if (!_self) {
     _self = new PythonQt(flags, pythonQtModuleName);
+    _self->_p->setupSharedLibrarySuffixes();
     
     PythonQt::priv()->setupSharedLibrarySuffixes();
 
@@ -338,6 +339,9 @@ PythonQtPrivate::~PythonQtPrivate() {
   PythonQtConv::global_variantStorage.clear();
 
   PythonQtMethodInfo::cleanupCachedMethodInfos();
+  
+  _freezeDetectorThread.quit();
+  _freezeDetectorThread.wait();
 }
 
 void PythonQt::setRedirectStdInCallback(PythonQtInputChangedCB* callback, void * callbackData)
@@ -739,6 +743,27 @@ bool PythonQt::addSignalHandler(QObject* obj, const char* signal, PyObject* modu
 
 bool PythonQt::addSignalHandler(QObject* obj, const char* signal, PyObject* receiver)
 {
+  if(PyFunction_Check(receiver))
+  {
+    PyFunctionObject *func = (PyFunctionObject*)receiver;
+    if(func->func_module && PyString_Check(func->func_module))
+      _p->addSlot(QString(PyString_AsString(func->func_module)), receiver);
+  }
+  else if(PyMethod_Check(receiver) && PyClass_Check(PyMethod_GET_CLASS(receiver)))
+  {
+    PyClassObject* cl = (PyClassObject*)PyMethod_GET_CLASS(receiver);
+    PyObject *module_str = PyDict_GetItem(cl->cl_dict, PyString_FromString("__module__"));
+    if(module_str && PyString_Check(module_str))
+      _p->addSlot(QString(PyString_AsString(module_str)), receiver);
+  }
+  else if(PyClass_Check(receiver))
+  {
+    PyClassObject* cl = (PyClassObject*)receiver;
+    PyObject *module_str = PyDict_GetItem(cl->cl_dict, PyString_FromString("__module__"));
+    if(module_str && PyString_Check(module_str))
+      _p->addSlot(QString(PyString_AsString(module_str)), receiver);
+  }
+
   bool flag = false;
   PythonQtSignalReceiver* r = getSignalReceiver(obj);
   if (r) {
@@ -835,6 +860,7 @@ QVariant PythonQt::evalCode(PyObject* object, PyObject* pycode) {
     }
     PyObject* r = NULL;
     if (dict) {
+        PythonQtFreezeDetector dec(_p->_freezeDetectorTimeoutMs, &_p->_freezeDetectorThread);
 #ifdef PY3K
       r = PyEval_EvalCode(pycode, globals, dict);
 #else
@@ -853,7 +879,7 @@ QVariant PythonQt::evalCode(PyObject* object, PyObject* pycode) {
   return result;
 }
 
-QVariant PythonQt::evalScript(PyObject* object, const QString& script, int start)
+QVariant PythonQt::evalScript(PyObject* object, const QString& script, const QString& filename, int start)
 {
   QVariant result;
   PythonQtObjectPtr p;
@@ -865,7 +891,12 @@ QVariant PythonQt::evalScript(PyObject* object, const QString& script, int start
     dict = object;
   }
   if (dict) {
-    p.setNewRef(PyRun_String(script.toLatin1().data(), start, dict, dict));
+    PyCodeObject* pycode;
+    pycode = (PyCodeObject*)Py_CompileString((char*)script.toLatin1().data(), (char*)filename.toLatin1().constData(), Py_file_input);
+    if(pycode) {
+        PythonQtFreezeDetector dec(_p->_freezeDetectorTimeoutMs, &_p->_freezeDetectorThread);
+        p.setNewRef(PyEval_EvalCode(pycode, dict, dict));
+    }
   }
   if (p) {
     result = PythonQtConv::PyObjToQVariant(p);
@@ -913,7 +944,7 @@ PythonQtObjectPtr PythonQt::createModuleFromScript(const QString& name, const QS
     scriptCode = "\n";
   }
   PythonQtObjectPtr pycode;
-  pycode.setNewRef(Py_CompileString((char*)scriptCode.toLatin1().data(), "",  Py_file_input));
+  pycode.setNewRef(Py_CompileString((char*)scriptCode.toLatin1().data(), (char*)name.toLatin1().constData(),  Py_file_input));
   PythonQtObjectPtr module = _p->createModule(name, pycode);
   return module;
 }
@@ -1205,6 +1236,7 @@ PyObject* PythonQt::callAndReturnPyObject(PyObject* callable, const QVariantList
     }
     if (!err) {
       if (kwargs.isEmpty()) {
+        PythonQtFreezeDetector dec(_p->_freezeDetectorTimeoutMs, &_p->_freezeDetectorThread);
         // do a direct call if we have no keyword arguments
         PyErr_Clear();
         result = PyObject_CallObject(callable, pargs);
@@ -1224,6 +1256,7 @@ PyObject* PythonQt::callAndReturnPyObject(PyObject* callable, const QVariantList
           }
         }
         if (!err) {
+          PythonQtFreezeDetector dec(_p->_freezeDetectorTimeoutMs, &_p->_freezeDetectorThread);
           // call with arguments and keyword arguments
           PyErr_Clear();
           result = PyObject_Call(callable, pargs, pkwargs);
@@ -1292,6 +1325,8 @@ PythonQtPrivate::PythonQtPrivate()
   _hadError = false;
   _systemExitExceptionHandlerEnabled = false;
   _debugAPI = new PythonQtDebugAPI(this);
+  _freezeDetectorTimeoutMs = 15000;
+  _freezeDetectorThread.start();
 }
 
 void PythonQtPrivate::setupSharedLibrarySuffixes()
@@ -1813,6 +1848,38 @@ void PythonQt::removeWrapperFactory( PythonQtCppWrapperFactory* factory )
 void PythonQt::removeWrapperFactory( PythonQtForeignWrapperFactory* factory )
 {
   _p->_foreignWrapperFactories.removeAll(factory);
+}
+
+void PythonQt::disconnectAllSlots(const QString &module)
+{
+    const QList<PyObject*>& mSlots = _p->getSlots(module);
+    for(int i = 0; i < mSlots.size(); ++i)
+        for(QHash<QObject*, PythonQtSignalReceiver *>::iterator itr = _p->_signalReceivers.begin(); itr != _p->_signalReceivers.end(); ++itr)
+            (*itr)->removeSignalHandler(mSlots[i]);
+
+    _p->clearSlots(module);
+}
+
+void PythonQt::disconnectSlots(const QString &module, QObject *object)
+{
+    PythonQtSignalReceiver* r = _p->_signalReceivers[object];
+
+    if(!r)
+        return;
+
+    const QList<PyObject*>& mSlots = _p->getSlots(module);
+    for(int i = 0; i < mSlots.size(); ++i)
+        r->removeSignalHandler(mSlots[i]);
+}
+
+int PythonQt::getFreezeDetectorTimeoutMs() const
+{
+    return _p->_freezeDetectorTimeoutMs;
+}
+
+void PythonQt::setFreezeDetectorTimeoutMs(int ms)
+{
+    _p->_freezeDetectorTimeoutMs = ms;
 }
 
 void PythonQtPrivate::removeWrapperPointer(void* obj)
