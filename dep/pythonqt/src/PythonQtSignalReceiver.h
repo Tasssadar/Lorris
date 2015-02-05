@@ -42,7 +42,8 @@
 */
 //----------------------------------------------------------------------------------
 
-#include <Python.h>
+#include "PythonQtPythonInclude.h"
+
 #include "PythonQtSystem.h"
 #include "PythonQtObjectPtr.h"
 
@@ -50,7 +51,7 @@ class PythonQtMethodInfo;
 class PythonQtClassInfo;
 
 //! stores information about a signal target
-/*! copy construction and assignment works fine with the C++ standard behaviour and are thus not implemented
+/*! copy construction and assignment works fine with the C++ standard behavior and are thus not implemented
 */
 class PYTHONQT_EXPORT PythonQtSignalTarget {
 public:
@@ -84,9 +85,7 @@ public:
   void call(void **arguments) const;
 
   //! check if it is the same signal target
-  bool isSame(int signalId, PyObject* callable) const { return callable==_callable && signalId==_signalId; }
-
-  bool isSameCallable(PyObject *callable) const { return callable == _callable; }
+  bool isSame(int signalId, PyObject* callable) const;
 
   //! call the given callable with arguments described by PythonQtMethodInfo, returns a new reference as result value (or NULL)
   static PyObject* call(PyObject* callable, const PythonQtMethodInfo* methodInfo, void **arguments, bool skipFirstArgumentOfMethodInfo = false);
@@ -119,12 +118,8 @@ public:
   //! add a signal handler
   bool addSignalHandler(const char* signal, PyObject* callable);
 
-  //! remove a signal handler
-  bool removeSignalHandler(const char* signal, PyObject* callable);
-  bool removeSignalHandler(PyObject* callable);
-
-  //! remove all signal handlers
-  void removeSignalHandlers();
+  //! remove a signal handler for given callable (or all callables on that signal if callable is NULL)
+  bool removeSignalHandler(const char* signal, PyObject* callable = NULL);
 
   //! we implement this method to simulate a number of slots that match the ids in _targets
   virtual int qt_metacall(QMetaObject::Call c, int id, void **arguments);
@@ -136,9 +131,14 @@ private:
   QObject* _obj;
   PythonQtClassInfo* _objClassInfo;
   int _slotCount;
+  int _destroyedSignalCount;
   // linear list may get slow on multiple targets, but I think typically we have many objects and just a few signals
   QList<PythonQtSignalTarget> _targets;
+
+  static int _destroyedSignal1Id;
+  static int _destroyedSignal2Id;
 };
 
 
 #endif
+

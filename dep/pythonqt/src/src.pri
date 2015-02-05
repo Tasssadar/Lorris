@@ -1,5 +1,9 @@
 DEFINES +=  PYTHONQT_EXPORTS
+
 INCLUDEPATH += $$PWD
+
+# This was needed to work around "number of sections exceeded object file format limit" linker error
+win32:QMAKE_CXXFLAGS += /bigobj
 
 HEADERS +=                    \
   $$PWD/PythonQt.h                  \
@@ -7,7 +11,9 @@ HEADERS +=                    \
   $$PWD/PythonQtClassInfo.h         \
   $$PWD/PythonQtImporter.h          \
   $$PWD/PythonQtObjectPtr.h         \
+  $$PWD/PythonQtSignal.h            \
   $$PWD/PythonQtSlot.h              \
+  $$PWD/PythonQtStdIn.h             \
   $$PWD/PythonQtStdOut.h            \
   $$PWD/PythonQtMisc.h              \
   $$PWD/PythonQtMethodInfo.h        \
@@ -22,7 +28,8 @@ HEADERS +=                    \
   $$PWD/PythonQtVariants.h          \
   $$PWD/gui/PythonQtScriptingConsole.h    \
   $$PWD/PythonQtSystem.h \
-  $$PWD/pythonqtfreezedetector.h
+  $$PWD/PythonQtUtils.h \
+  $$PWD/PythonQtBoolResult.h
   
 SOURCES +=                    \
   $$PWD/PythonQtStdDecorators.cpp   \
@@ -30,7 +37,9 @@ SOURCES +=                    \
   $$PWD/PythonQtClassInfo.cpp       \
   $$PWD/PythonQtImporter.cpp        \
   $$PWD/PythonQtObjectPtr.cpp       \
+  $$PWD/PythonQtStdIn.cpp           \
   $$PWD/PythonQtStdOut.cpp          \
+  $$PWD/PythonQtSignal.cpp          \
   $$PWD/PythonQtSlot.cpp            \
   $$PWD/PythonQtMisc.cpp            \
   $$PWD/PythonQtMethodInfo.cpp      \
@@ -39,8 +48,8 @@ SOURCES +=                    \
   $$PWD/PythonQtInstanceWrapper.cpp \
   $$PWD/PythonQtQFileImporter.cpp   \
   $$PWD/PythonQtClassWrapper.cpp    \
+  $$PWD/PythonQtBoolResult.cpp      \
   $$PWD/gui/PythonQtScriptingConsole.cpp \
-  $$PWD/pythonqtfreezedetector.cpp
 
-include($$PWD/../generated_cpp/com_trolltech_qt_core_builtin/com_trolltech_qt_core_builtin.pri)
-include($$PWD/../generated_cpp/com_trolltech_qt_gui_builtin/com_trolltech_qt_gui_builtin.pri)
+
+

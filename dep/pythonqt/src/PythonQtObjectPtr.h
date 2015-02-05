@@ -42,10 +42,12 @@
 */
 //----------------------------------------------------------------------------------
 
-#include <Python.h>
+#include "PythonQtPythonInclude.h"
+
 #include "PythonQtSystem.h"
 #include <QVariant>
 #include <QVariantList>
+#include <QVariantMap>
 
 //! a smart pointer that stores a PyObject pointer and that handles reference counting automatically
 class PYTHONQT_EXPORT PythonQtObjectPtr
@@ -53,25 +55,23 @@ class PYTHONQT_EXPORT PythonQtObjectPtr
 public:
   PythonQtObjectPtr():_object(NULL) {}
 
-  PythonQtObjectPtr(const PythonQtObjectPtr &p):_object(NULL) {
+  PythonQtObjectPtr(const PythonQtObjectPtr &p)
+  :_object(NULL) {
     setObject(p.object());
   }
 
-  //! If the given variant holds a PythonQtObjectPtr, extract the value from it and hold onto the reference. This results in an increment of the reference count. 
+  //! If the given variant holds a PythonQtObjectPtr, extract the value from it and hold onto the reference. This results in an increment of the reference count.
   PythonQtObjectPtr(const QVariant& variant):_object(NULL) {
-      fromVariant(variant); 
-  }
-  
-  PythonQtObjectPtr(PyObject* o) {
-    _object = o;
-    if (o) Py_INCREF(_object);
+      fromVariant(variant);
   }
 
-  ~PythonQtObjectPtr() { if (_object) Py_DECREF(_object); }
+  PythonQtObjectPtr(PyObject* o);
   
-  //! If the given variant holds a PythonQtObjectPtr, extract the value from it and hold onto the reference. This results in an increment of the reference count.   
+  ~PythonQtObjectPtr();
+  
+  //! If the given variant holds a PythonQtObjectPtr, extract the value from it and hold onto the reference. This results in an increment of the reference count.
   bool fromVariant(const QVariant& variant);
-  
+
   PythonQtObjectPtr &operator=(const PythonQtObjectPtr &p) {
     setObject(p.object());
     return *this;
@@ -82,13 +82,13 @@ public:
     return *this;
   }
 
-  
+
   PythonQtObjectPtr &operator=(const QVariant& variant) {
       fromVariant(variant);
       return *this;
   }
 
-  
+
   bool operator==( const PythonQtObjectPtr &p ) const {
     return object() == p.object();
   }
@@ -114,19 +114,14 @@ public:
   operator PyObject*() const { return object(); }
 
   //! sets the object and passes the ownership (stealing the reference, in Python slang)
-  void setNewRef(PyObject* o) {
-    if (o != _object) {
-      if (_object) Py_DECREF(_object);
-      _object = o;
-    }
-  }
-
+  void setNewRef(PyObject* o);
+  
   PyObject* object() const {
     return _object;
   }
 
   //! evaluates the given script code in the context of this object and returns the result value
-  QVariant evalScript(const QString& script, const QString& filename, int start = Py_file_input);
+  QVariant evalScript(const QString& script, int start = Py_file_input);
 
   //! evaluates the given code and returns the result value (use Py_Compile etc. to create pycode from string)
   //! If pycode is NULL, a python error is printed.
@@ -148,21 +143,15 @@ public:
   QVariant getVariable(const QString& name);
 
   //! call the given python object (in the scope of the current object), returns the result converted to a QVariant
-  QVariant call(const QString& callable, const QVariantList& args = QVariantList());
+  QVariant call(const QString& callable, const QVariantList& args = QVariantList(), const QVariantMap& kwargs = QVariantMap());
 
   //! call the contained python object directly, returns the result converted to a QVariant
-  QVariant call(const QVariantList& args = QVariantList());
+  QVariant call(const QVariantList& args = QVariantList(), const QVariantMap& kwargs = QVariantMap());
 
 protected:
 
-  void setObject(PyObject* o) {
-    if (o != _object) {
-      if (_object) Py_DECREF(_object);
-      _object = o;
-      if (_object) Py_INCREF(_object);
-    }
-  }
-
+  void setObject(PyObject* o);
+  
 private:
   PyObject* _object;
 };
@@ -172,3 +161,4 @@ private:
 Q_DECLARE_METATYPE(PythonQtObjectPtr)
 
 #endif
+

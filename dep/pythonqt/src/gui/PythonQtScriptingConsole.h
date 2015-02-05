@@ -59,7 +59,7 @@ public:
 
   ~PythonQtScriptingConsole();
 
-public slots:
+public Q_SLOTS:
   //! execute current line
   void executeLine(bool storeOnly);
 
@@ -147,3 +147,4 @@ private:
 
 
 #endif
+

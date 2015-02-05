@@ -1,5 +1,9 @@
 # profile to include and link Python
-include(../../../config.pri)
+
+# Change this variable to your python version (2.6, 2.7, 3.3, ...)
+win32:PYTHON_VERSION=26
+unix:PYTHON_VERSION=2.6
+
 macx {
   # for macx you need to have the Python development kit installed as framework
   INCLUDEPATH += /System/Library/Frameworks/Python.framework/Headers
@@ -21,18 +25,17 @@ macx {
 
   # check if debug or release
   CONFIG(debug, debug|release) {
-    DEBUG_EXT = d
+    DEBUG_EXT = _d 
   } else {
     DEBUG_EXT = 
   }
 
-  #win32:INCLUDEPATH += $(PYTHON_PATH)/PC $(PYTHON_PATH)/include
-  include(../../../python.pri)
+  win32:INCLUDEPATH += $$(PYTHON_PATH)/PC $$(PYTHON_PATH)/include
+  win32:LIBS += $$(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib
 } else:unix {
   # on linux, python-config is used to autodetect Python.
   # make sure that you have installed a matching python-dev package.
   
-  include(../../../python.pri)
-  #unix:LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
-  #unix:QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
+  unix:LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
+  unix:QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
 }

@@ -56,16 +56,36 @@ static PyObject *PythonQtStdOutRedirect_write(PyObject *self, PyObject *args)
 {
   PythonQtStdOutRedirect*  s = (PythonQtStdOutRedirect*)self;
   if (s->_cb) {
-    char *string;
-    if (!PyArg_ParseTuple(args, "s", &string))
-      return NULL;
+    QString output;
+    if (PyTuple_GET_SIZE(args)>=1) {
+      PyObject* obj = PyTuple_GET_ITEM(args,0);
+      if (PyUnicode_Check(obj)) {
+#ifdef PY3K
+        output = QString::fromUtf8(PyUnicode_AsUTF8(obj));
+#else
+        PyObject *tmp = PyUnicode_AsUTF8String(obj);
+        if(tmp) {
+          output = QString::fromUtf8(PyString_AS_STRING(tmp));
+          Py_DECREF(tmp);
+        } else {
+          return NULL;
+        }
+#endif
+      } else {
+        char *string;
+        if (!PyArg_ParseTuple(args, "s", &string)) {
+          return NULL;
+        }
+        output = QString::fromLatin1(string);
+      }
+    }
 
     if (s->softspace > 0) {
       (*s->_cb)(QString(""));
       s->softspace = 0;
     }
 
-    (*s->_cb)(QString(string));
+    (*s->_cb)(output);
   }
   return Py_BuildValue("");
 }
@@ -75,7 +95,11 @@ static PyObject *PythonQtStdOutRedirect_flush(PyObject * /*self*/, PyObject * /*
   return Py_BuildValue("");
 }
 
-
+static PyObject *PythonQtStdOutRedirect_isatty(PyObject * /*self*/, PyObject * /*args*/)
+{
+  Py_INCREF(Py_False);
+  return Py_False;
+}
 
 static PyMethodDef PythonQtStdOutRedirect_methods[] = {
   {"write", (PyCFunction)PythonQtStdOutRedirect_write, METH_VARARGS,
@@ -83,19 +107,21 @@ static PyMethodDef PythonQtStdOutRedirect_methods[] = {
   {"flush", (PyCFunction)PythonQtStdOutRedirect_flush, METH_VARARGS,
   "flush the output, currently not implemented but needed for logging framework"
   },
+  {"isatty", (PyCFunction)PythonQtStdOutRedirect_isatty,   METH_NOARGS,
+  "return False since this object is not a tty-like device. Needed for logging framework"
+  },
   {NULL,    NULL, 0 , NULL} /* sentinel */
 };
 
 static PyMemberDef PythonQtStdOutRedirect_members[] = {
-  {"softspace", T_INT, offsetof(PythonQtStdOutRedirect, softspace), 0,
-    "soft space flag"
+  {const_cast<char*>("softspace"), T_INT, offsetof(PythonQtStdOutRedirect, softspace), 0,
+    const_cast<char*>("soft space flag")
   },
   {NULL}  /* Sentinel */
 };
 
 PyTypeObject PythonQtStdOutRedirectType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(NULL, 0)
     "PythonQtStdOutRedirect",             /*tp_name*/
     sizeof(PythonQtStdOutRedirect),             /*tp_basicsize*/
     0,                         /*tp_itemsize*/

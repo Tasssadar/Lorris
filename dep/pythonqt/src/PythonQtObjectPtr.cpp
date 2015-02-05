@@ -41,9 +41,28 @@
 
 #include <PythonQt.h>
 
-QVariant PythonQtObjectPtr::evalScript(const QString& script, const QString& filename, int start)
+PythonQtObjectPtr::PythonQtObjectPtr(PyObject* o)
 {
-  return PythonQt::self()->evalScript(_object, script, filename, start);
+  _object = o;
+  if (o) Py_INCREF(_object);
+}
+
+PythonQtObjectPtr::~PythonQtObjectPtr()
+{ 
+  if (_object) Py_DECREF(_object); 
+}
+
+void PythonQtObjectPtr::setNewRef(PyObject* o)
+{
+  if (o != _object) {
+    if (_object) Py_DECREF(_object);
+    _object = o;
+  }
+}
+  
+QVariant PythonQtObjectPtr::evalScript(const QString& script, int start)
+{
+  return PythonQt::self()->evalScript(_object, script, start);
 }
 
 void PythonQtObjectPtr::evalFile(const QString& file)
@@ -77,25 +96,33 @@ QVariant PythonQtObjectPtr::getVariable(const QString& name)
 }
 
 
-QVariant PythonQtObjectPtr::call(const QString& callable, const QVariantList& args)
+QVariant PythonQtObjectPtr::call(const QString& callable, const QVariantList& args, const QVariantMap& kwargs)
 {
-  return PythonQt::self()->call(_object, callable, args);
+  return PythonQt::self()->call(_object, callable, args, kwargs);
 }
 
-QVariant PythonQtObjectPtr::call(const QVariantList& args)
+QVariant PythonQtObjectPtr::call(const QVariantList& args, const QVariantMap& kwargs)
 {
-  return PythonQt::self()->call(_object, args);
+  return PythonQt::self()->call(_object, args, kwargs);
 }
 
 bool PythonQtObjectPtr::fromVariant(const QVariant& variant) 
 {
   if (!variant.isNull()) {
-      setObject(qVariantValue<PythonQtObjectPtr>(variant));
+      setObject(qvariant_cast<PythonQtObjectPtr>(variant));
       return true;
   }
   else {
       setObject(0);
       return false;
+  } 
+}
+
+void PythonQtObjectPtr::setObject(PyObject* o)
+{
+  if (o != _object) {
+    if (_object) Py_DECREF(_object);
+    _object = o;
+    if (_object) Py_INCREF(_object);
   }
-  
 }
