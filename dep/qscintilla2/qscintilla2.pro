@@ -28,7 +28,11 @@
 !win32:VERSION = 9.0.1
 
 TEMPLATE = lib
-TARGET = $$qtLibraryTarget(qscintilla2_lorris)
+CONFIG(debug, debug|release) {
+    TARGET = qscintilla2_lorrisd
+} else {
+    TARGET = qscintilla2_lorris
+}
 CONFIG += qt warn_off thread
 INCLUDEPATH = ./include ./lexlib ./src .
 DESTDIR = $$PWD/lib

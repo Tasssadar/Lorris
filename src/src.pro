@@ -4,7 +4,7 @@
 include(../config.pri)
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets uitools concurrent
+    QT += widgets concurrent uitools
 } else {
     CONFIG += uitools
 }
@@ -490,8 +490,10 @@ libyb {
 }
 
 kate_editor:unix {
-    DEFINES += USE_KATE
-    LIBS += -lktexteditor -lkdecore
+    !contains(QT_MAJOR_VERSION, 5) {
+        DEFINES += USE_KATE
+        LIBS += -lktexteditor -lkdecore
+    }
 }
 
 qsci_editor {

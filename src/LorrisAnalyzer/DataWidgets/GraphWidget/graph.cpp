@@ -52,13 +52,6 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
         zoomer->setMousePattern(pattern);
     }
 
-#if defined(Q_OS_LINUX)
-    // Even if not recommended by TrollTech, Qt::WA_PaintOutsidePaintEvent
-    // works on X11. This has a nice effect on the performance.
-
-    canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
-#endif
-
     m_grid = new QwtPlotGrid();
     m_grid->setMinorPen(QPen(Qt::gray, 0.0, Qt::DotLine));
     m_grid->setMajorPen(QPen(Qt::black, 0.0, Qt::DotLine));

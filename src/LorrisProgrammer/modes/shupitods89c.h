@@ -44,7 +44,7 @@ private:
     {
         void onPacket(ShupitoPacket const & packet) override
         {
-            data.append(QString::fromAscii((char const *)packet.data() + 1, packet.size() - 1));
+            data.append(QString::fromLatin1((char const *)packet.data() + 1, packet.size() - 1));
         }
 
         QString data;

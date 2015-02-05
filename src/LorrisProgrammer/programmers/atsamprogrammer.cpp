@@ -311,7 +311,7 @@ void AtsamProgrammer::write_file(const uint32_t& address, QByteArray const & dat
         QString res = this->transact(packet, "\x06\x15>", true);
         if(res.size() == 0)
             res = "\x00";
-        switch(res.at(0).toAscii())
+        switch(res.at(0).toLatin1())
         {
         case '\x06': // ACK
             attempts = 0;

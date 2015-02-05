@@ -182,46 +182,6 @@ QtSingleApplication::QtSingleApplication(int &argc, char **argv, Type type)
 }
 #endif // QT_VERSION < 0x050000
 
-#if defined(Q_OS_LINUX)
-/*!
-  Special constructor for X11, ref. the documentation of
-  QApplication's corresponding constructor. The application identifier
-  will be QCoreApplication::applicationFilePath(). \a dpy, \a visual,
-  and \a cmap are passed on to the QApplication constructor.
-*/
-QtSingleApplication::QtSingleApplication(Display* dpy, Qt::HANDLE visual, Qt::HANDLE cmap)
-    : QApplication(dpy, visual, cmap)
-{
-    sysInit();
-}
-
-/*!
-  Special constructor for X11, ref. the documentation of
-  QApplication's corresponding constructor. The application identifier
-  will be QCoreApplication::applicationFilePath(). \a dpy, \a argc, \a
-  argv, \a visual, and \a cmap are passed on to the QApplication
-  constructor.
-*/
-QtSingleApplication::QtSingleApplication(Display *dpy, int &argc, char **argv, Qt::HANDLE visual, Qt::HANDLE cmap)
-    : QApplication(dpy, argc, argv, visual, cmap)
-{
-    sysInit();
-}
-
-/*!
-  Special constructor for X11, ref. the documentation of
-  QApplication's corresponding constructor. The application identifier
-  will be \a appId. \a dpy, \a argc, \a
-  argv, \a visual, and \a cmap are passed on to the QApplication
-  constructor.
-*/
-QtSingleApplication::QtSingleApplication(Display* dpy, const QString &appId, int argc, char **argv, Qt::HANDLE visual, Qt::HANDLE cmap)
-    : QApplication(dpy, argc, argv, visual, cmap)
-{
-    sysInit(appId);
-}
-#endif
-
 
 /*!
     Returns true if another instance of this application is running;
