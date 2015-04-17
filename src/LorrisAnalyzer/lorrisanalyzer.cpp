@@ -68,6 +68,7 @@ LorrisAnalyzer::LorrisAnalyzer()
                                  SLOT(widgetMouseStatus(bool,data_widget_info, qint32)));
     connect(this,                SIGNAL(newData(analyzer_data*,quint32)), ui->filterTabs,
                                  SLOT(handleData(analyzer_data*, quint32)));
+    connect(&m_storage,          SIGNAL(onPacketLimitChanged(int)), SLOT(onPacketLimitChanged(int)));
 
 
     int h = ui->collapseLeft->fontMetrics().height()+10;
@@ -856,10 +857,13 @@ void LorrisAnalyzer::setPacketLimit()
 {
     int limit = FloatingInputDialog::getInt(tr("Set maximum number of packets"), m_storage.getPacketLimit(), 1);
     m_storage.setPacketLimit(limit);
+}
 
-    int size = m_storage.getMaxIdx();
-    ui->timeSlider->setMaximum(size);
-    ui->timeBox->setMaximum(size);
+void LorrisAnalyzer::onPacketLimitChanged(int limit)
+{
+    ui->timeSlider->setMaximum(limit);
+    ui->timeBox->setMaximum(limit);
+    ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage.getSize()));
 }
 
 void LorrisAnalyzer::setEnableSearchWidget(bool enable)

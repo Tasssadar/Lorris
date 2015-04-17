@@ -34,6 +34,9 @@ class Storage : public QObject
 {
     Q_OBJECT
 
+Q_SIGNALS:
+    void onPacketLimitChanged(int currentLimit);
+
 public:
     explicit Storage(LorrisAnalyzer *analyzer);
     ~Storage();
@@ -55,7 +58,7 @@ public:
     void clearFilename() { m_filename.clear(); }
 
     int getPacketLimit() const { return m_data.getPacketLimit(); }
-    void setPacketLimit(int limit) { m_data.setPacketLimit(limit); }
+    void setPacketLimit(int limit);
 
 public slots:
     void SaveToFile(QString filename, WidgetArea *area, FilterTabWidget *filters);

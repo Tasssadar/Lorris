@@ -40,6 +40,15 @@ void Storage::setPacket(analyzer_packet *packet)
         return;
 }
 
+void Storage::setPacketLimit(int limit)
+{
+    if(m_data.getPacketLimit() == limit)
+        return;
+
+    m_data.setPacketLimit(limit);
+    emit onPacketLimitChanged(limit);
+}
+
 void Storage::Clear()
 {
     m_data.clear();

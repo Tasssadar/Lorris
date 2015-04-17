@@ -54,6 +54,7 @@ public slots:
 
     QByteArray getData(quint32 idx) const;
     quint32 getDataCount() const;
+    void setMaxPacketNumber(int limit);
 
     void playErrorSound();
 

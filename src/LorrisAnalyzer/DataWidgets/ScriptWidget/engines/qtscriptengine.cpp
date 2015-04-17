@@ -89,6 +89,7 @@ void QtScriptEngine::prepareNewContext()
     QScriptValue getData = m_engine->newFunction(&QtScriptEngine_private::__getData);
     QScriptValue getDataCount = m_engine->newFunction(&QtScriptEngine_private::__getDataCount);
     QScriptValue playErrorSound = m_engine->newFunction(&QtScriptEngine_private::__playErrorSound);
+    QScriptValue setMaxPacketNumber = m_engine->newFunction(&QtScriptEngine_private::__setMaxPacketNumber);
 
     QScriptValue numberW = m_engine->newFunction(&QtScriptEngine_private::__newNumberWidget);
     QScriptValue barW = m_engine->newFunction(&QtScriptEngine_private::__newBarWidget);
@@ -121,6 +122,7 @@ void QtScriptEngine::prepareNewContext()
     m_global.setProperty("getData", getData);
     m_global.setProperty("getDataCount", getDataCount);
     m_global.setProperty("playErrorSound", playErrorSound);
+    m_global.setProperty("setMaxPacketNumber", setMaxPacketNumber);
 
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
@@ -791,5 +793,19 @@ QScriptValue QtScriptEngine_private::__getDataCount(QScriptContext */*context*/,
 QScriptValue QtScriptEngine_private::__playErrorSound(QScriptContext *context, QScriptEngine *engine)
 {
     Utils::playErrorSound();
+    return QScriptValue();
+}
+
+QScriptValue QtScriptEngine_private::__setMaxPacketNumber(QScriptContext *context, QScriptEngine *engine)
+{
+    QtScriptEngine_private *eng = (QtScriptEngine_private*)engine;
+    if(context->argumentCount() != 1 || !context->argument(0).isNumber())
+        return QScriptValue();
+
+    int limit = context->argument(0).toInt32();
+    if(limit < 0)
+        limit = INT_MAX;
+
+    eng->m_base->getStorage()->setPacketLimit(limit);
     return QScriptValue();
 }

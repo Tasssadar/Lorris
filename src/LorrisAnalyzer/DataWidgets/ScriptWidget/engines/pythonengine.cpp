@@ -391,3 +391,10 @@ void PythonFunctions::playErrorSound()
 {
     Utils::playErrorSound();
 }
+
+void PythonFunctions::setMaxPacketNumber(int limit)
+{
+    if(limit < 0)
+        limit = INT_MAX;
+    m_engine->getStorage()->setPacketLimit(limit);
+}

@@ -109,6 +109,7 @@ private slots:
 
     void connectedStatus(bool connected);
     void indexChanged(int value);
+    void onPacketLimitChanged(int limit);
 
     void updateForWidget();
 
