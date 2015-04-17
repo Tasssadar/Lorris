@@ -96,8 +96,11 @@ LorrisAnalyzer::LorrisAnalyzer()
     QAction* clearAllAct = menuData->addAction(tr("Clear everything"));
 
     openAct->setShortcut(QKeySequence("Ctrl+O"));
+    openAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     saveAsAct->setShortcut(QKeySequence("Ctrl+Shift+S"));
+    saveAsAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     saveAct->setShortcut(QKeySequence("Ctrl+S"));
+    saveAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
     addTopMenu(menuData);
 

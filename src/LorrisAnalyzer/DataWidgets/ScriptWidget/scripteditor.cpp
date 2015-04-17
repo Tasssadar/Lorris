@@ -76,13 +76,17 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     bar->addWidget(docLabel);
 
     load->setShortcut(QKeySequence("Ctrl+O"));
+    load->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     load->setToolTip(tr("Load (Ctrl+O)"));
     save->setShortcut(QKeySequence("Ctrl+S"));
     save->setToolTip(tr("Save (Ctrl+S)"));
+    save->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     saveAs->setShortcut(QKeySequence("Ctrl+Shift+S"));
     saveAs->setToolTip(tr("Save as... (Ctrl+Shift+S)"));
+    saveAs->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     apply->setShortcut(QKeySequence("F5"));
     apply->setToolTip(tr("Apply (F5)"));
+    apply->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
     connect(this, SIGNAL(undoAvailable(bool)), undo, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(redoAvailable(bool)), redo, SLOT(setEnabled(bool)));

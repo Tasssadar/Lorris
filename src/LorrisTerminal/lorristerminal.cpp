@@ -61,7 +61,9 @@ void LorrisTerminal::initUI()
     QAction *termSave = dataMenu->addAction(tr("Save terminal content to text file"));
     QAction *binSave = dataMenu->addAction(tr("Save received data to binary file"));
     termSave->setShortcut(QKeySequence("Ctrl+Shift+S"));
+    termSave->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     binSave->setShortcut(QKeySequence("Ctrl+S"));
+    binSave->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
     dataMenu->addSeparator();
 

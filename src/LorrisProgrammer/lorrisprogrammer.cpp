@@ -187,11 +187,13 @@ void LorrisProgrammer::initMenus()
 
     m_load_flash = new QAction(QIcon(":/actions/open"), tr("Load..."), this);
     m_load_flash->setShortcut(QKeySequence("Ctrl+O"));
+    m_load_flash->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(m_load_flash,  SIGNAL(triggered()), this, SLOT(loadFromFile()));
     addTopAction(m_load_flash);
 
     m_save_flash = new QAction(QIcon(":/actions/save"), tr("Save..."), this);
     m_save_flash->setShortcut(QKeySequence("Ctrl+S"));
+    m_save_flash->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(m_save_flash,  SIGNAL(triggered()), this, SLOT(saveToFile()));
     addTopAction(m_save_flash);
 
