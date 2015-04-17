@@ -36,6 +36,9 @@ private slots:
     void on_browseBtn_clicked();
     void on_curveBox_currentIndexChanged(int index);
     void on_typeBox_currentIndexChanged(int index);
+    void on_sampleStartBox_valueChanged(int val);
+    void on_sampleEndBox_valueChanged(int val);
+    void on_rangeResetBtn_clicked();
 
     void updatePreview();
 

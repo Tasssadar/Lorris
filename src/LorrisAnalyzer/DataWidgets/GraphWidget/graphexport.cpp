@@ -23,6 +23,7 @@ GraphExport::GraphExport(std::vector<GraphCurveInfo*> *curves, QWidget *parent) 
     m_curves = curves;
 
     ui->colList->item(0)->setData(Qt::UserRole, -1);
+    int maxSampleIdx = 0;
     for(quint32 i = 0; i < curves->size(); ++i)
     {
         QString text = curves->at(i)->curve->title().text();
@@ -33,12 +34,19 @@ GraphExport::GraphExport(std::vector<GraphCurveInfo*> *curves, QWidget *parent) 
         item->setData(Qt::UserRole, i);
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
         item->setCheckState(Qt::Checked);
+
+        maxSampleIdx = (std::max)(maxSampleIdx, (int)curves->at(i)->curve->getSize());
     }
 
     connect(ui->colNamesBox, SIGNAL(clicked()),                     SLOT(updatePreview()));
     connect(ui->endBox,      SIGNAL(currentIndexChanged(int)),      SLOT(updatePreview()));
     connect(ui->sepEdit,     SIGNAL(textChanged(QString)),          SLOT(updatePreview()));
     connect(ui->colList,     SIGNAL(itemChanged(QListWidgetItem*)), SLOT(updatePreview()), Qt::QueuedConnection);
+
+
+    ui->sampleEndBox->setValue(maxSampleIdx);
+    ui->sampleEndBox->setMaximum(maxSampleIdx);
+    ui->sampleStartBox->setMaximum(maxSampleIdx);
 
     updatePreview();
 }
@@ -63,10 +71,10 @@ void GraphExport::updatePreview()
 
 QString GraphExport::generateCSV(quint32 limit)
 {
-    quint32 maxSize = 0;
-    for(quint32 i = 0; i < m_curves->size(); ++i)
-        maxSize = (std::max)(maxSize, m_curves->at(i)->curve->getSize());
-    maxSize = (std::min)(maxSize, limit);
+    const quint32 start = ui->sampleStartBox->value();
+    quint32 end = ui->sampleEndBox->value();
+    if(end - start > limit)
+        end = start + limit;
 
     std::vector<GraphCurve*> order;
     for(int i = 0; i < ui->colList->count(); ++i)
@@ -105,9 +113,9 @@ QString GraphExport::generateCSV(quint32 limit)
         csv += lineEnd;
     }
 
-    for(quint32 line = 0; line < maxSize; ++line)
+    for(quint32 line = start; line < end; ++line)
     {
-        emit updateProgress(line*100/maxSize);
+        emit updateProgress((line - start)*100/(end - start));
 
         for(quint32 i = 0; i < order.size(); ++i)
         {
@@ -139,9 +147,12 @@ QByteArray GraphExport::generateBin()
     bool big = !ui->endianBox->currentIndex();
     int idxW = (1 << ui->idxWidthBox->currentIndex());
 
-    for(quint32 i = 0; i < c->getSize(); ++i)
+    const quint32 start = ui->sampleStartBox->value();
+    const quint32 end = ui->sampleEndBox->value();
+
+    for(quint32 i = start; i < end && i < c->getSize(); ++i)
     {
-        emit updateProgress(i*100/c->getSize());
+        emit updateProgress((i - start )*100/(end - start));
 
         if(ui->indexBox->isChecked())
         {
@@ -312,4 +323,28 @@ void GraphExport::on_curveBox_currentIndexChanged(int index)
 void GraphExport::on_typeBox_currentIndexChanged(int index)
 {
     ui->widthBox->setEnabled(index == 0);
+}
+
+void GraphExport::on_sampleStartBox_valueChanged(int val)
+{
+    ui->sampleEndBox->setMinimum(val);
+    updatePreview();
+}
+
+void GraphExport::on_sampleEndBox_valueChanged(int val)
+{
+    ui->sampleStartBox->setMaximum(val);
+    updatePreview();
+}
+
+void GraphExport::on_rangeResetBtn_clicked()
+{
+    int maxSize = 0;
+    for(quint32 i = 0; i < m_curves->size(); ++i)
+        maxSize = (std::max)(maxSize, (int)m_curves->at(i)->curve->getSize());
+
+    ui->sampleEndBox->setMaximum(maxSize);
+    ui->sampleEndBox->setValue(maxSize);
+    ui->sampleStartBox->setMinimum(0);
+    ui->sampleStartBox->setValue(0);
 }
