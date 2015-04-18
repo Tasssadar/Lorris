@@ -859,11 +859,14 @@ void LorrisAnalyzer::setPacketLimit()
     m_storage.setPacketLimit(limit);
 }
 
-void LorrisAnalyzer::onPacketLimitChanged(int limit)
+void LorrisAnalyzer::onPacketLimitChanged(int /*limit*/)
 {
-    ui->timeSlider->setMaximum(limit);
-    ui->timeBox->setMaximum(limit);
+    ui->timeSlider->setMaximum(m_storage.getMaxIdx());
+    ui->timeBox->setMaximum(m_storage.getMaxIdx());
     ui->timeBox->setSuffix(tr(" of ") % QString::number(m_storage.getSize()));
+
+    if(m_curIndex > m_storage.getMaxIdx())
+        indexChanged(m_storage.getMaxIdx());
 }
 
 void LorrisAnalyzer::setEnableSearchWidget(bool enable)
