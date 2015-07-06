@@ -114,6 +114,8 @@ protected:
     void moveEvent(QMoveEvent *event);
     void resizeEvent(QResizeEvent *);
     void wheelEvent(QWheelEvent *ev);
+    void keyPressEvent(QKeyEvent *k);
+    void keyReleaseEvent(QKeyEvent *k);
 
 private slots:
     void enableGrid(bool enable);

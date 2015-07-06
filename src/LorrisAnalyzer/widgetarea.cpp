@@ -982,6 +982,24 @@ void WidgetArea::enableSearchToggled(bool enable)
     m_analyzer->setEnableSearchWidget(enable);
 }
 
+void WidgetArea::keyPressEvent(QKeyEvent *k)
+{
+    if(k->isAutoRepeat())
+        return;
+    QVariantList args;
+    args.push_back(k->key());
+    emit onScriptEvent("keyPressed", args);
+}
+
+void WidgetArea::keyReleaseEvent(QKeyEvent *k)
+{
+    if(k->isAutoRepeat())
+        return;
+    QVariantList args;
+    args.push_back(k->key());
+    emit onScriptEvent("keyReleased", args);
+}
+
 WidgetAreaPreview::WidgetAreaPreview(WidgetArea *area, QWidget *parent) : QWidget(parent)
 {
     m_widgetArea = area;
