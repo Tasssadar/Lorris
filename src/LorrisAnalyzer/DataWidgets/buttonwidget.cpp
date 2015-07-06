@@ -181,3 +181,7 @@ void ButtonWidget::loadWidgetInfo(DataFileParser *file)
         setTextColor(file->readString());
     }
 }
+
+QPushButton *ButtonWidget::getWidget() const {
+    return m_button;
+}

@@ -32,6 +32,7 @@ public slots:
     void setShortcut(const QString &shortcut);
     void setColor(const QString& color);
     void setTextColor(const QString& color);
+    QPushButton *getWidget() const;
 
 private slots:
     void buttonClicked();
