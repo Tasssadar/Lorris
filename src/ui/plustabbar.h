@@ -35,6 +35,7 @@ public slots:
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void leaveEvent(QEvent *event);
     virtual void tabLayoutChange();
@@ -52,6 +53,7 @@ private:
     QPixmap m_hover_pixmap;
     bool m_disabled;
     bool m_hover;
+    bool m_pressed;
 };
 
 #endif // PLUSTABBAR_H

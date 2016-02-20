@@ -19,6 +19,7 @@ PlusTabBar::PlusTabBar(QWidget *parent) :
     m_plusRect = QRect(2, 4, 16, 16);
     m_disabled = false;
     m_hover = false;
+    m_pressed = false;
 
     QIcon icon(":/icons/list-add");
     m_pixmap = icon.pixmap(16, 16);
@@ -62,6 +63,18 @@ void PlusTabBar::mousePressEvent(QMouseEvent *event)
 {
     if(m_disabled || event->button() != Qt::LeftButton || !m_plusRect.contains(event->pos()))
         return QTabBar::mousePressEvent(event);
+
+    event->accept();
+    m_pressed = true;
+}
+
+void PlusTabBar::mouseReleaseEvent(QMouseEvent *event) {
+    if(!m_pressed)
+        return QTabBar::mouseReleaseEvent(event);
+
+    m_pressed = false;
+    if(m_disabled || event->button() != Qt::LeftButton || !m_plusRect.contains(event->pos()))
+        return QTabBar::mouseReleaseEvent(event);
 
     event->accept();
     emit plusPressed();
