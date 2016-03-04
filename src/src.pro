@@ -531,6 +531,11 @@ joystick:libenjoy {
 opengl {
     QT += opengl
     DEFINES += HAVE_OPENGL
+
+    win32 {
+        LIBS += -lopengl32
+    }
+
     SOURCES += LorrisAnalyzer/DataWidgets/RotationWidget/renderwidget.cpp \
         LorrisAnalyzer/DataWidgets/RotationWidget/objfileloader.cpp \
         LorrisAnalyzer/DataWidgets/RotationWidget/glutils.cpp \
