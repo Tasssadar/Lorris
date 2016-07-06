@@ -27,6 +27,7 @@ ToolTipWarn::ToolTipWarn(const QString &text, QWidget *posTo, QWidget *parent, i
 
     QPalette p(palette());
     p.setColor(QPalette::Window, p.color(QPalette::ToolTipBase));
+    p.setColor(QPalette::WindowText, p.color(QPalette::ToolTipText));
     setPalette(p);
 
     QLabel *iconLabel = new QLabel(this);
