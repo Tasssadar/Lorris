@@ -123,6 +123,7 @@ struct PortSettings
     long Timeout_Millisec;
 };
 
+
 class QextSerialPortPrivate;
 class QEXTSERIALPORT_EXPORT QextSerialPort: public QIODevice
 {
@@ -203,3 +204,4 @@ private:
 };
 
 #endif
+#include "qextserialport_p.h"

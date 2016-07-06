@@ -255,3 +255,4 @@ public:
 };
 
 #endif //_QEXTSERIALPORT_P_H_
+

@@ -46,6 +46,9 @@ public:
     DataBitsType dataBits() const { return m_dataBits; }
     void setDataBits(DataBitsType dt);
 
+    void setDtr(bool set);
+    void setRts(bool set);
+
     QString deviceName() const { return m_deviceName; }
     void setDeviceName(QString const & value);
 

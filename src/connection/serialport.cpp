@@ -171,6 +171,9 @@ void SerialPort::setFriendlyName(QString const & value)
         // FIXME: better way to detect shupito?
         if(m_friendlyName.startsWith("Shupito Programmer"))
             m_programmer_type = programmer_shupito;
+        // "heurestics"
+        else if(m_friendlyName.startsWith("USB-serial adapter") || m_friendlyName.startsWith("USB-SERIAL CH340"))
+            m_programmer_type = programmer_arduino;
 
         emit changed();
     }
@@ -206,6 +209,16 @@ void SerialPort::setDataBits(DataBitsType dt)
     if(isOpen())
         m_port->setDataBits(dt);
     emit changed();
+}
+
+void SerialPort::setDtr(bool set) {
+    if(isOpen())
+        m_port->setDtr(set);
+}
+
+void SerialPort::setRts(bool set) {
+    if(isOpen())
+        m_port->setRts(set);
 }
 
 void SerialPort::socketError(SocketError err)

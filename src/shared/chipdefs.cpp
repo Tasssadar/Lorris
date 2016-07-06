@@ -36,6 +36,12 @@ quint8 chip_definition::memNameToId(const QString& name)
     return MEM_NONE;
 }
 
+const QString& chip_definition::memIdToName(quint8 id) {
+    if(id < sizeof_array(memNames))
+        return memNames[id];
+    return memNames[0];
+}
+
 void chip_definition::copy(chip_definition &cd)
 {
     m_name = cd.m_name;

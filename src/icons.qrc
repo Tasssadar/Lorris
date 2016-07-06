@@ -21,5 +21,6 @@
         <file alias="edit">icons/edit.png</file>
         <file alias="arrow-bottom">icons/go-bottom.png</file>
         <file alias="arrow-top">icons/go-top.png</file>
+        <file alias="arduino">icons/arduino.png</file>
     </qresource>
 </RCC>

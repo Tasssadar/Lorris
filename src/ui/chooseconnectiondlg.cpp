@@ -181,6 +181,7 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     m_prog_btns[programmer_avr232boot] = ui->progAVR232;
     m_prog_btns[programmer_atsam] = ui->progAtsam;
     m_prog_btns[programmer_avr109] = ui->progAVR109;
+    m_prog_btns[programmer_arduino] = ui->progArduino;
 
     ui->programmerSelection->setVisible(false);
 
@@ -313,6 +314,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
     ui->programmerSelection->setVisible(false);
     ui->persistNameButton->setVisible(conn->isNamePersistable());
     ui->persistNameButton->setEnabled(!conn->hasDefaultName());
+    ui->progArduino->setEnabled(conn->getType() == CONNECTION_SERIAL_PORT);
 
     switch (conn->getType())
     {
