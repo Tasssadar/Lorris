@@ -42,6 +42,9 @@ public:
     bool applyConfig(QHash<QString, QVariant> const & config);
     bool canSaveToSession() const { return true; }
 
+    bool clonable() const { return true; }
+    ConnectionPointer<Connection> clone();
+
 public slots:
     void connectResultSer(bool opened);
     void tcpConnectResult();

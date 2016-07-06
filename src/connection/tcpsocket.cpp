@@ -146,3 +146,11 @@ bool TcpSocket::applyConfig(QHash<QString, QVariant> const & config)
     this->setPort(config.value("port", 80).toInt());
     return this->PortConnection::applyConfig(config);
 }
+
+ConnectionPointer<Connection> TcpSocket::clone()
+{
+    ConnectionPointer<TcpSocket> res(new TcpSocket());
+    res->applyConfig(this->config());
+    res->setName(tr("Clone of ") + this->name());
+    return res;
+}
