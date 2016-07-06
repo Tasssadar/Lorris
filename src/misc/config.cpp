@@ -15,12 +15,12 @@
 
 static const QString keys_quint32[] =
 {
-    "general/connection_type",   // CFG_QUINT32_CONNECTION_TYPE
-    "general/tab_type",          // CFG_QUINT32_TAB_TYPE
+    "main/connection_type",   // CFG_QUINT32_CONNECTION_TYPE
+    "main/tab_type",          // CFG_QUINT32_TAB_TYPE
     "serial_port/baud_rate",     // CFG_QUINT32_SERIAL_BAUD
     "shupito/flash_mode",        // CFG_QUINT32_SHUPITO_MODE
     "shupito/prog_speed",        // CFG_QUINT32_SHUPITO_PRG_SPEED
-    "general/language",          // CFG_QUINT32_LANGUAGE
+    "main/language",          // CFG_QUINT32_LANGUAGE
     "terminal/format",           // CFG_QUINT32_TERMINAL_FMT
     "tcpsocket/port",            // CFG_QUINT32_TCP_PORT
     "terminal/input_handling",   // CFG_QUINT32_TERMINAL_INPUT
@@ -29,14 +29,14 @@ static const QString keys_quint32[] =
     "analyzer/play_delay",       // CFG_QUINT32_ANALYZER_PLAY_DEL
     "shupito/terminal_format",   // CFG_QUITN32_SHUPITO_TERM_FMT
     "analyzer/grid_size",        // CFG_QUINT32_ANALYZER_GRID_SIZE
-    "general/last_update_check", // CFG_QUINT32_LAST_UPDATE_CHECK
+    "main/last_update_check", // CFG_QUINT32_LAST_UPDATE_CHECK
     "analyzer/script_error_str", // CFG_QUINT32_SCRIPTEDITOR_STR
     "analyzer/script_edit_type", // CFG_QUINT32_SCRIPTEDITOR_TYPE
     "analyzer/script_engine",    // CFG_QUINT32_ANALYZER_SCRIPT_ENG
-    "general/compress_block",    // CFG_QUINT32_COMPRESS_BLOCK
+    "main/compress_block",    // CFG_QUINT32_COMPRESS_BLOCK
     "shupito/spi_tunnel_speed",  // CFG_QUINT32_SPI_TUNNEL_SPEED
     "shupito/spi_tunnel_modes",  // CFG_QUINT32_SPI_TUNNEL_MODES
-    "general/freeze_timeout",    // CFG_QUINT32_SCRIPT_FREEZE_TIMEOUT
+    "main/freeze_timeout",    // CFG_QUINT32_SCRIPT_FREEZE_TIMEOUT
 };
 
 static const quint32 def_quint32[] =
@@ -79,9 +79,9 @@ static const QString keys_string[] =
     "terminal/settings",          // CFG_STRING_TERMINAL_SETTINGS
     "shupito/term_settings",      // CFG_STRING_SHUPITO_TERM_SET
     "analyzer/import_folder",     // CFG_STRING_ANALYZER_IMPORT
-    "general/window_params",      // CFG_STRING_WINDOW_PARAMS
+    "main/window_params",      // CFG_STRING_WINDOW_PARAMS
     "analyzer/graph_export_path", // CFG_STRING_GRAPH_EXPORT
-    "general/font",               // CFG_STRING_APP_FONT
+    "main/font",               // CFG_STRING_APP_FONT
     "analyzer/script_wnd_params", // CFG_STRING_SCRIPT_WND_PARAMS
     "proxy/tunnel_name",          // CFG_STRING_PROXY_TUNNEL_NAME
     "shupito/avr109_bootseq",     // CFG_STRING_AVR109_BOOTSEQ
@@ -122,21 +122,21 @@ static const QString keys_bool[] =
     "analyzer/show_grid",         // CFG_BOOL_ANALYZER_SHOW_GRID,
     "shupito/show_settings",      // CFG_BOOL_SHUPITO_SHOW_SETTINGS
     "shupito/show_flash_warn",    // CFG_BOOL_SHUPITO_SHOW_FLASH_WARN
-    "general/check_for_updates",  // CFG_BOOL_CHECK_FOR_UPDATE
-    "general/load_last_session",  // CFG_BOOL_LOAD_LAST_SESSION
-    "general/session_connect",    // CFG_BOOL_SESSION_CONNECT
-    "general/portable",           // CFG_BOOL_PORTABLE
+    "main/check_for_updates",  // CFG_BOOL_CHECK_FOR_UPDATE
+    "main/load_last_session",  // CFG_BOOL_LOAD_LAST_SESSION
+    "main/session_connect",    // CFG_BOOL_SESSION_CONNECT
+    "main/portable",           // CFG_BOOL_PORTABLE
     "analyzer/script_show_errors",// CFG_BOOL_SHOW_SCRIPT_ERROR
-    "general/smooth_scaling",     // CFG_BOOL_SMOOTH_SCALING
+    "main/smooth_scaling",     // CFG_BOOL_SMOOTH_SCALING
     "proxy/enable_tunnel",        // CFG_BOOL_PROXY_TUNNEL
     "analyzer/script_input",      // CFG_BOOL_SCRIPT_SHOW_INPUT
-    "general/one_instance",       // CFG_BOOL_ONE_INSTANCE
+    "main/one_instance",       // CFG_BOOL_ONE_INSTANCE
     "analyzer/placement_lines",   // CFG_BOOL_ANALYZER_PLACEMENT_LINES
     "analyzer/show_preview",      // CFG_BOOL_ANALYZER_SHOW_PREVIEW
     "shupito/enable_hw_button",   // CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON
     "analyzer/show_bookmarks",    // CFG_BOOL_ANALYZER_SHOW_BOOKMARKS
-    "general/connect_on_new_tab", // CFG_BOOL_CONN_ON_NEW_TAB
-    "general/enable_sounds",      // CFG_BOOL_ENABLE_SOUNDS
+    "main/connect_on_new_tab", // CFG_BOOL_CONN_ON_NEW_TAB
+    "main/enable_sounds",      // CFG_BOOL_ENABLE_SOUNDS
     "analyzer/enable_search",     // CFG_BOOL_ANALYZER_SEARCH_WIDGET
     "shupito/spi_tunnel_lsb",     // CFG_BOOL_SPI_TUNNEL_LSB_FIRST
 };
@@ -181,11 +181,11 @@ static const bool def_bool[] =
 
 static const QString keys_variant[] =
 {
-    "general/connections",        // CFG_VARIANT_CONNECTIONS
-    "general/usb_yb_enumerator",  // CFG_VARIANT_USB_ENUMERATOR
+    "main/connections",        // CFG_VARIANT_CONNECTIONS
+    "main/usb_yb_enumerator",  // CFG_VARIANT_USB_ENUMERATOR
     "kate/kate_sett_doc",         // CFG_VARIANT_KATE_SETTINGS_DOC
     "kate/kate_sett_view",        // CFG_VARIANT_KATE_SETTINGS_VIEW
-    "general/serial_connections", // CFG_VARIANT_SERIAL_CONNECTIONS
+    "main/serial_connections", // CFG_VARIANT_SERIAL_CONNECTIONS
 };
 
 static const QString keys_float[] =
