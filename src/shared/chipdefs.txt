@@ -31,7 +31,7 @@ atxmega64au flip:1e9646 flash=65536:256,eeprom=2048:32
 atxmega32au flip:1e9541 flash=32768:256,eeprom=1024:32
 atxmega16au flip:1e9441 flash=16384:256,eeprom=1024:32
 atxmega128a3u flip:1e9742 flash=131072:512,eeprom=2048:32
-atxmega128a1u flip:1e974c flash=139264:512,eeprom=2048:32
+atxmega128a1u flip:1e974c flash=131072:512,eeprom=2048:32
 
 atmega48 avr232boot:m48 flash=3840:64,eeprom=256:2 !avr232boot_patch=3838
 atmega88 avr232boot:m88 flash=7936:64,eeprom=512:2
