@@ -437,6 +437,7 @@ EditorWidgetQSci::~EditorWidgetQSci()
     delete lex;
 
     delete m_editor;
+    delete m_widget;
 }
 
 QString EditorWidgetQSci::getText() const
