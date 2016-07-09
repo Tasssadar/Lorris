@@ -11,6 +11,9 @@ python {
 win32 {
     # Comment out following line if you want to disable QScintilla editor for ScriptWidget
     CONFIG += qsci_editor
+
+    # Enable when building for Windows x64. Changes python settings, see python.pri
+    #CONFIG += win64_build
 }
 
 unix {

@@ -5,7 +5,7 @@ python {
     }
     win32 {
         INCLUDEPATH += "$$PWD/dep/python2.7/"
-        !contains(QMAKE_HOST.arch, x86_64) {
+        !win64_build {
             LIBS += -L"$$PWD/dep/python2.7/lib/" -lpython27
         } else {
             LIBS += -L"$$PWD/dep/python2.7/lib64/" -lpython27
