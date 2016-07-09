@@ -460,16 +460,20 @@ void EditorWidgetQSci::setHighlighter(EditorHighlight lang)
 
     switch(lang)
     {
-        case HIGHLIGHT_JSCRIPT:
+        case HIGHLIGHT_JSCRIPT: {
             m_editor->setLexer(new QsciLexerJavaScript);
-            m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerJavaScript::Comment);
-            m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerJavaScript::CommentLine);
+            QFont monospace = Utils::getMonospaceFont(10);
+            m_editor->lexer()->setDefaultFont(monospace);
+            m_editor->lexer()->setFont(monospace);
             break;
-        case HIGHLIGHT_PYTHON:
+        }
+        case HIGHLIGHT_PYTHON: {
             m_editor->setLexer(new QsciLexerPython);
-            m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerPython::Comment);
-            m_editor->lexer()->setFont(Utils::getMonospaceFont(10), QsciLexerPython::CommentBlock);
+            QFont monospace = Utils::getMonospaceFont(10);
+            m_editor->lexer()->setDefaultFont(monospace);
+            m_editor->lexer()->setFont(monospace);
             break;
+        }
         default:
             m_editor->setLexer(NULL);
             return;

@@ -102,6 +102,7 @@ QFont Utils::getMonospaceFont(int size)
         "Deja Vu Sans Mono",
         "Droid Sans Mono",
         "Andale Mono",
+        "Consolas",
         "Courier New"
     };
 
