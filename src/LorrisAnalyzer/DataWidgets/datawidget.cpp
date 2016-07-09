@@ -975,6 +975,7 @@ void DataWidgetAddBtn::mousePressEvent(QMouseEvent *event)
         drag->setMimeData(mimeData);
         drag->setPixmap(getRender());
         drag->exec();
+        delete drag;
         event->accept();
     }
 }
