@@ -55,6 +55,7 @@ void GraphWidget::setUp(Storage *storage)
 
     m_storage = storage;
     m_doReplot = false;
+    m_indexChange = UINT32_MAX;
 
     m_editCurve = contextMenu->addAction(tr("Edit curve properties"));
     m_editCurve->setEnabled(false);
@@ -119,8 +120,11 @@ void GraphWidget::setUp(Storage *storage)
     m_autoScroll->setCheckable(true);
     toggleAutoScroll(true);
 
-    QTimer *replotTimer = new QTimer(this);
-    replotTimer->start(100);
+    QAction *rateAct = contextMenu->addAction(tr("Set refresh rate..."));
+
+    m_refreshRateMs = 100;
+    m_replotTimer = new QTimer(this);
+    m_replotTimer->start(m_refreshRateMs);
 
     connect(m_editCurve,  SIGNAL(triggered()),        SLOT(editCurve()));
     connect(exportAct,    SIGNAL(triggered()),        SLOT(exportData()));
@@ -130,8 +134,9 @@ void GraphWidget::setUp(Storage *storage)
     connect(m_showLegend, SIGNAL(triggered(bool)),    SLOT(showLegend(bool)));
     connect(m_autoScroll, SIGNAL(triggered(bool)),    SLOT(toggleAutoScroll(bool)));
     connect(m_graph,      SIGNAL(updateSampleSize()), SLOT(updateSampleSize()));
-    connect(replotTimer,  SIGNAL(timeout()),          SLOT(tryReplot()));
+    connect(m_replotTimer,SIGNAL(timeout()),          SLOT(tryReplot()));
     connect(removeAllCurves, SIGNAL(triggered()),     SLOT(removeAllCurves()));
+    connect(rateAct,      SIGNAL(triggered()),        SLOT(setRefreshRateAct()));
 }
 
 void GraphWidget::updateRemoveMapping()
@@ -149,13 +154,8 @@ void GraphWidget::updateRemoveMapping()
 
 void GraphWidget::newData(analyzer_data */*data*/, quint32 index)
 {
-    if(!isUpdating() || m_curves.empty())
-        return;
-
-    for(quint8 i = 0; i < m_curves.size(); ++i)
-        m_curves[i]->curve->dataPosChanged(index);
-
-    updateVisibleArea();
+    if(isUpdating() && !m_curves.empty())
+        m_indexChange = index;
 }
 
 void GraphWidget::processData(analyzer_data */*data*/)
@@ -191,6 +191,11 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         *file << cnt;
         for(quint32 i = 0; i < cnt; ++i)
             *file << m_graph->axisEnabled(i);
+    }
+
+    file->writeBlockIdentifier("graphWRefreshRate");
+    {
+        *file << m_refreshRateMs;
     }
 
     // Graph data
@@ -297,6 +302,10 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
             m_axis_act[i]->setChecked(enabled);
         }
     }
+
+    // refresh rate
+    if(file->seekToNextBlock("graphWRefreshRate", BLOCK_WIDGET))
+        setRefreshRate(file->readVal<int>());
 
     // Graph data
     m_graph->loadData(file);
@@ -475,6 +484,17 @@ void GraphWidget::updateVisibleArea()
 
 void GraphWidget::tryReplot()
 {
+    if(m_indexChange != UINT32_MAX) {
+        const size_t size = m_curves.size();
+        if(size != 0) {
+            for(size_t i = 0; i < size; ++i)
+                m_curves[i]->curve->dataPosChanged(m_indexChange);
+            m_doReplot = true;
+        }
+
+        m_indexChange = UINT32_MAX;
+    }
+
     if(m_doReplot)
     {
         if(m_enableAutoScroll && !m_curves.empty())
@@ -687,4 +707,19 @@ void GraphWidget::toggleAxisVisibility(int axis)
 {
     m_axis_act[axis]->setChecked(!m_graph->axisEnabled(axis));
     m_graph->enableAxis(axis, !m_graph->axisEnabled(axis));
+}
+
+void GraphWidget::setRefreshRateAct() {
+    bool ok;
+    int newRate = FloatingInputDialog::getInt(tr("Refresh rate in ms:"), m_refreshRateMs, 0, INT_MAX, 1, &ok);
+    if(ok) {
+        setRefreshRate(newRate);
+    }
+}
+
+void GraphWidget::setRefreshRate(int rateMs) {
+    if(rateMs != m_refreshRateMs) {
+        m_refreshRateMs = rateMs;
+        m_replotTimer->start(rateMs);
+    }
 }

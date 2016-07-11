@@ -159,6 +159,8 @@ bool analyzer_data::getLenFromHeader(quint32& len)
         try
         {
             quint32 pos = m_packet->header->findDataPos(DATA_AVAKAR);
+            if(m_data->size() <= pos)
+                return false;
             len = (getUInt8(pos) & 0xF) + m_packet->header->len_offset;
         }
         catch(const char*)

@@ -16,6 +16,7 @@ class QSignalMapper;
 class Graph;
 class GraphCurveAddDialog;
 class GraphCurve;
+class QTimer;
 
 #define SAMPLE_ACT_COUNT 9
 
@@ -66,9 +67,11 @@ private slots:
     void exportData();
     void changeBackground();
     void toggleAxisVisibility(int axis);
+    void setRefreshRateAct();
 
 private:
     void updateRemoveMapping();
+    void setRefreshRate(int rateMs);
 
     Graph *m_graph;
     GraphCurveAddDialog *m_add_dialog;
@@ -88,6 +91,9 @@ private:
     int m_sample_size_idx;
     qint32 m_sample_size;
     bool m_enableAutoScroll;
+    quint32 m_indexChange;
+    int m_refreshRateMs;
+    QTimer *m_replotTimer;
 
     std::vector<GraphCurveInfo*> m_curves;
     bool m_doReplot;
