@@ -24,7 +24,7 @@ static const char CLDTA_DATA_MAGIC[] = { (char)0xFF, (char)0x80, 0x68 };
 SessionMgr::SessionMgr(QObject *parent) : QObject(parent)
 {
     m_sig_map = new QSignalMapper(this);
-    connect(m_sig_map, SIGNAL(mapped(QString)), SLOT(loadSession(QString)));
+    connect(m_sig_map, SIGNAL(mapped(QString)), SLOT(loadSession(QString)), Qt::QueuedConnection);
 
     updateSessions();
 }
