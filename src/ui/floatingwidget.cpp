@@ -90,18 +90,18 @@ void FloatingWidget::mouseMoveEvent(QMouseEvent *ev)
 void FloatingWidget::ensureOnScreen()
 {
     QDesktopWidget w;
-    QRect screen = w.screenGeometry(mapToGlobal(pos()));
-
     QPoint p = pos();
+    QRect screen = w.screenGeometry(p);
+
     if(p.x() < 0)
         p.rx() = 0;
-    else if(p.x() + width() > screen.width())
-        p.rx() = screen.width() - width();
+    else if(p.x() + width() > screen.right())
+        p.rx() = screen.right() - width();
 
     if(p.y() < 0)
         p.ry() = 0;
-    else if(p.y() + height() > screen.height())
-        p.ry() = screen.height() - height();
+    else if(p.y() + height() > screen.bottom())
+        p.ry() = screen.bottom() - height();
 
     move(p);
 }

@@ -96,6 +96,7 @@ void SearchWidget::activate()
 
     show();
     move(QCursor::pos());
+    ensureOnScreen();
 
     m_line->setFocus();
     m_line->grabKeyboard();
