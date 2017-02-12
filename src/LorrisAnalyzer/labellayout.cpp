@@ -195,27 +195,30 @@ void LabelLayout::SetLabelType(DraggableLabel *label, quint8 type)
 
 quint8 LabelLayout::GetTypeForPos(quint32 pos)
 {
-    if(pos < m_header->length)
-    {
+    if(m_enableReorder) {
+        if(pos < 4) {
+            return DATA_HEADER | m_header->order[pos];
+        }
+    } else if(pos < m_header->length) {
         quint8 type = DATA_HEADER;
         quint8 pos_h = 0;
         for(quint8 i = 0; i < 4; ++i)
         {
             switch(m_header->order[i])
             {
-                case DATA_STATIC:
-                    pos_h += m_header->static_len;
-                    break;
-                case DATA_LEN:
-                    pos_h += (1 << m_header->len_fmt);
-                    break;
-                case DATA_DEVICE_ID:
-                case DATA_OPCODE:
-                case DATA_AVAKAR:
-                    ++pos_h;
-                    break;
-                default:
-                    return type;
+            case DATA_STATIC:
+                pos_h += m_header->static_len;
+                break;
+            case DATA_LEN:
+                pos_h += (1 << m_header->len_fmt);
+                break;
+            case DATA_DEVICE_ID:
+            case DATA_OPCODE:
+            case DATA_AVAKAR:
+                ++pos_h;
+                break;
+            default:
+                return type;
             }
             if(pos < pos_h)
             {
@@ -223,7 +226,6 @@ quint8 LabelLayout::GetTypeForPos(quint32 pos)
                 break;
             }
         }
-
         return type;
     }
     return DATA_BODY;

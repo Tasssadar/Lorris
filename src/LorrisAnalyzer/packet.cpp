@@ -32,24 +32,25 @@ quint32 analyzer_data::addData(char *d_itr, char *d_end, quint32 &itr)
         return 0;
 
     QByteArray static_data = m_packet->getStaticData();
-
-    quint32 read = 0;
-    for(; itr < (quint32)static_data.length() && d_itr+read != d_end;)
-    {
-        if(*(d_itr+read) != static_data[itr])
-            return read;
-        (*m_data)[itr++] = *(d_itr+read++);
-    }
-
+    const quint32 staticOffset = m_packet->getStaticDataOffset();
+    const quint32 staticOffsetEnd = staticOffset + static_data.length();
+    quint32 staticItr = 0;
     bool readFromHeader = false;
     quint32 len = getLenght(&readFromHeader);
     quint32 var_len = 0;
 
     quint8 lenRead = m_packet->header->hasLen();
 
+    quint32 read = 0;
     for(quint32 i = itr; i < len && d_itr+read != d_end; ++i)
     {
-        if(!readFromHeader && lenRead == DATA_LEN && getLenFromHeader(var_len))
+        if(i >= staticOffset && i < staticOffsetEnd)
+        {
+            if(static_data[staticItr] != *(d_itr+read))
+                return read;
+            ++staticItr;
+        }
+        else if(!readFromHeader && lenRead == DATA_LEN && getLenFromHeader(var_len))
         {
             len += var_len;
             lenRead = 0;

@@ -48,6 +48,7 @@ private:
     Storage *m_storage;
     QFile m_import;
     quint32 m_packetItr;
+    quint32 m_staticDataOffset;
 };
 
 #endif // PACKETPARSER_H

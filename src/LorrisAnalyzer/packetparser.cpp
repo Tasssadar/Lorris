@@ -16,6 +16,7 @@ PacketParser::PacketParser(Storage *storage, QObject *parent) :
     m_paused = false;
     m_packet = NULL;
     m_packetItr = 0;
+    m_staticDataOffset = 0;
 }
 
 PacketParser::~PacketParser()
@@ -44,7 +45,9 @@ bool PacketParser::newData(const QByteArray &data, bool emitSig)
             int index = data.indexOf(m_packet->getStaticData(), d_itr - d_start);
             if(index == -1)
                 break;
-            d_itr = d_start + index;
+            if(index < m_staticDataOffset)
+                break;
+            d_itr = d_start + index - m_staticDataOffset;
             m_curData.clear();
             m_packetItr = 0;
         }
@@ -77,6 +80,9 @@ void PacketParser::setPacket(analyzer_packet *packet)
     m_curData.setPacket(packet);
     m_emitSigData.setPacket(packet);
     resetCurPacket();
+    if(m_packet) {
+        m_staticDataOffset = m_packet->getStaticDataOffset();
+    }
 }
 
 void PacketParser::resetCurPacket()

@@ -197,6 +197,13 @@ struct analyzer_packet
         return QByteArray();
     }
 
+    quint32 getStaticDataOffset() {
+        if(header && header->static_len != 0) {
+            return header->findDataPos(DATA_STATIC);
+        }
+        return 0;
+    }
+
     analyzer_header *header;
     bool big_endian;
     std::vector<quint8> static_data;

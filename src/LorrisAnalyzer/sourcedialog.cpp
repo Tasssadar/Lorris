@@ -78,6 +78,7 @@ SourceDialog::SourceDialog(analyzer_packet *pkt, PortConnection *con, const QStr
     scroll_layout->lenChanged(m_packet.header->packet_length);
     ui->len_box->setValue(m_packet.header->packet_length);
     ui->offsetBox->setValue(m_packet.header->len_offset);
+    ui->len_fmt_box->setCurrentIndex(m_packet.header->len_fmt);
 
     for(quint8 i = 0; i < 4 && m_packet.header->order[i] != 0; ++i)
     {
