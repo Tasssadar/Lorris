@@ -96,6 +96,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     viewport()->setAutoFillBackground(true);
 
     setFocusPolicy(Qt::StrongFocus);
+    setAttribute(Qt::WA_InputMethodEnabled);
 }
 
 Terminal::~Terminal()
@@ -352,6 +353,10 @@ void Terminal::addHex()
     }
     m_cursor_pos.setY(m_lines.size());
     m_cursor_pos.setX(0);
+}
+
+void Terminal::inputMethodEvent(QInputMethodEvent *e) {
+    handleInput(e->commitString(), 0);
 }
 
 void Terminal::keyPressEvent(QKeyEvent *event)
