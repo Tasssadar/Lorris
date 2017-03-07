@@ -327,6 +327,10 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             updateComboIndex(ui->spParity, (int)sp->parity());
             updateComboIndex(ui->spStopBits, (int)sp->stopBits());
             updateComboText(ui->spDataBits, QString::number(sp->dataBits()));
+            updateComboIndex(ui->spFlowControl, (int)sp->flowControl());
+            ui->spRts->setChecked(sp->rts());
+            ui->spRts->setEnabled(sp->flowControl() != FLOW_HARDWARE);
+            ui->spDtr->setChecked(sp->dtr());
             ui->spDeviceNameEdit->setEnabled(sp->devNameEditable());
             ui->programmerSelection->setVisible(m_allowedConns & pct_port_programmable);
             setActiveProgBtn(sp->programmerType());
@@ -567,6 +571,31 @@ void ChooseConnectionDlg::on_spDataBits_currentIndexChanged(int value)
         return;
     Q_ASSERT(dynamic_cast<SerialPort *>(m_current.data()) != 0);
     static_cast<SerialPort *>(m_current.data())->setDataBits((DataBitsType)ui->spDataBits->itemText(value).toInt());
+}
+
+void ChooseConnectionDlg::on_spFlowControl_currentIndexChanged(int value)
+{
+    if(!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<SerialPort *>(m_current.data()) != 0);
+    static_cast<SerialPort *>(m_current.data())->setFlowControl((FlowType)value);
+    ui->spRts->setEnabled(value != FLOW_HARDWARE);
+}
+
+void ChooseConnectionDlg::on_spRts_stateChanged(int state)
+{
+    if(!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<SerialPort *>(m_current.data()) != 0);
+    static_cast<SerialPort *>(m_current.data())->setRts(state == Qt::Checked);
+}
+
+void ChooseConnectionDlg::on_spDtr_stateChanged(int state)
+{
+    if(!m_current)
+        return;
+    Q_ASSERT(dynamic_cast<SerialPort *>(m_current.data()) != 0);
+    static_cast<SerialPort *>(m_current.data())->setDtr(state == Qt::Checked);
 }
 
 void ChooseConnectionDlg::progBtn_clicked(int programmer)

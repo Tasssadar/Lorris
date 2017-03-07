@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>653</width>
-    <height>636</height>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -422,6 +422,52 @@
                  <string>8</string>
                 </property>
                </item>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_23">
+               <property name="text">
+                <string>Flow control:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QComboBox" name="spFlowControl">
+               <item>
+                <property name="text">
+                 <string>None</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Hardware (RTS/CTS)</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Software (XON/XOFF)</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QCheckBox" name="spRts">
+               <property name="text">
+                <string>RTS toggle</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="1">
+              <widget class="QCheckBox" name="spDtr">
+               <property name="text">
+                <string>DTR toggle</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>

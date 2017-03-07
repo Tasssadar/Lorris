@@ -52,6 +52,9 @@ private slots:
     void saveBin();
     void inputAct(int act);
     void sendButton();
+    void spRtsToggled(bool);
+    void spDtrToggled(bool);
+    void serialPortConnectionChanged();
 
     void readData(const QByteArray& data);
     void sendKeyEvent(const QString& key);

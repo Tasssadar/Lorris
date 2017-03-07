@@ -25,6 +25,7 @@
 #include "../ui/ui_lorristerminal.h"
 #include "../ui/chooseconnectiondlg.h"
 #include "../ui/tooltipwarn.h"
+#include "../connection/serialport.h"
 
 LorrisTerminal::LorrisTerminal()
     : ui(new Ui::LorrisTerminal)
@@ -90,6 +91,9 @@ void LorrisTerminal::initUI()
 
     inputAct(sConfig.get(CFG_QUINT32_TERMINAL_INPUT));
 
+    ui->spRts->setVisible(false);
+    ui->spDtr->setVisible(false);
+
     ui->terminal->loadSettings(sConfig.get(CFG_STRING_TERMINAL_SETTINGS));
 
     connect(inputMap,          SIGNAL(mapped(int)),                 SLOT(inputAct(int)));
@@ -106,6 +110,8 @@ void LorrisTerminal::initUI()
     connect(chgSettings,       SIGNAL(triggered()),   ui->terminal, SLOT(showSettings()));
     connect(ui->terminal,      SIGNAL(fmtSelected(int)),            SLOT(checkFmtAct(int)));
     connect(ui->terminal,      SIGNAL(paused(bool)),                SLOT(setPauseBtnText(bool)));
+    connect(ui->spRts,         SIGNAL(toggled(bool)),               SLOT(spRtsToggled(bool)));
+    connect(ui->spDtr,         SIGNAL(toggled(bool)),               SLOT(spDtrToggled(bool)));
 
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
@@ -259,9 +265,26 @@ void LorrisTerminal::inputAct(int act)
 
 void LorrisTerminal::setPortConnection(ConnectionPointer<PortConnection> const & con)
 {
+    if(m_con && m_con->getType() == CONNECTION_SERIAL_PORT) {
+        disconnect(m_con.data(), SIGNAL(changed()), this, SLOT(serialPortConnectionChanged()));
+    }
+
     this->PortConnWorkTab::setPortConnection(con);
     m_connectButton->setConn(con, false);
     connectedStatus(con && con->isOpen());
+
+    if(con && con->getType() == CONNECTION_SERIAL_PORT) {
+        SerialPort *sp = static_cast<SerialPort*>(con.data());
+        ui->spDtr->setVisible(true);
+        ui->spDtr->setChecked(sp->dtr());
+        ui->spRts->setVisible(true);
+        ui->spRts->setChecked(sp->rts());
+        ui->spRts->setEnabled(sp->flowControl() != FLOW_HARDWARE);
+        connect(m_con.data(), SIGNAL(changed()), this, SLOT(serialPortConnectionChanged()));
+    } else {
+        ui->spDtr->setVisible(false);
+        ui->spRts->setVisible(false);
+    }
 }
 
 void LorrisTerminal::saveTermSettings()
@@ -336,4 +359,25 @@ void LorrisTerminal::sendButton()
         m_con->SendData(data);
 
     lastText = text;
+}
+
+void LorrisTerminal::spRtsToggled(bool set) {
+    if(m_con && m_con->getType() == CONNECTION_SERIAL_PORT) {
+        SerialPort *sp = static_cast<SerialPort*>(m_con.data());
+        sp->setRts(set);
+    }
+}
+
+void LorrisTerminal::spDtrToggled(bool set) {
+    if(m_con && m_con->getType() == CONNECTION_SERIAL_PORT) {
+        SerialPort *sp = static_cast<SerialPort*>(m_con.data());
+        sp->setDtr(set);
+    }
+}
+
+void LorrisTerminal::serialPortConnectionChanged() {
+    if(m_con && m_con->getType() == CONNECTION_SERIAL_PORT) {
+        SerialPort *sp = static_cast<SerialPort*>(m_con.data());
+        ui->spRts->setEnabled(sp->flowControl() != FLOW_HARDWARE);
+    }
 }

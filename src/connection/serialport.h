@@ -45,8 +45,12 @@ public:
     void setStopBits(StopBitsType st);
     DataBitsType dataBits() const { return m_dataBits; }
     void setDataBits(DataBitsType dt);
+    FlowType flowControl() const { return m_flowControl; }
+    void setFlowControl(FlowType type);
 
+    bool dtr() const { return m_dtrToggled; }
     void setDtr(bool set);
+    bool rts() const { return m_rtsToggled; }
     void setRts(bool set);
 
     QString deviceName() const { return m_deviceName; }
@@ -90,14 +94,18 @@ private:
     QString m_deviceName;
     QString m_friendlyName;
 
+    bool m_devNameEditable;
+
     QextSerialPort *m_port;
     int m_rate;
     ParityType m_parity;
     StopBitsType m_stopBits;
     DataBitsType m_dataBits;
+    FlowType m_flowControl;
+    bool m_rtsToggled;
+    bool m_dtrToggled;
 
     QMutex m_port_mutex;
-    bool m_devNameEditable;
 
 #ifdef Q_OS_WIN
     SerialPortThread *m_thread;

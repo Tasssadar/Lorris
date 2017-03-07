@@ -23,7 +23,8 @@
 #include "../shared/programmer.h"
 
 SerialPort::SerialPort() : PortConnection(CONNECTION_SERIAL_PORT),
-      m_devNameEditable(true), m_parity(PAR_NONE), m_stopBits(STOP_1), m_dataBits(DATA_8)
+      m_devNameEditable(true), m_parity(PAR_NONE), m_stopBits(STOP_1), m_dataBits(DATA_8),
+      m_flowControl(FLOW_OFF), m_rtsToggled(true), m_dtrToggled(true)
 {
     m_port = NULL;
     m_openThread = NULL;
@@ -212,13 +213,24 @@ void SerialPort::setDataBits(DataBitsType dt)
 }
 
 void SerialPort::setDtr(bool set) {
+    m_dtrToggled = set;
     if(isOpen())
         m_port->setDtr(set);
+    emit changed();
 }
 
 void SerialPort::setRts(bool set) {
-    if(isOpen())
+    m_rtsToggled = set;
+    if(isOpen() && flowControl() != FLOW_HARDWARE)
         m_port->setRts(set);
+    emit changed();
+}
+
+void SerialPort::setFlowControl(FlowType type) {
+    m_flowControl = type;
+    if(isOpen())
+        m_port->setFlowControl(type);
+    emit changed();
 }
 
 void SerialPort::socketError(SocketError err)
@@ -238,6 +250,9 @@ QHash<QString, QVariant> SerialPort::config() const
     res["data_bits"] = (int)this->dataBits();
     res["parity"] = (int)this->parity();
     res["stop_bits"] = (int)this->stopBits();
+    res["flow_control"] = (int)this->flowControl();
+    res["rts"] = (int)this->rts();
+    res["dtr"] = (int)this->dtr();
     return res;
 }
 
@@ -248,6 +263,9 @@ bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
     this->setDataBits((DataBitsType)config.value("data_bits", DATA_8).toInt());
     this->setParity((ParityType)config.value("parity", PAR_NONE).toInt());
     this->setStopBits((StopBitsType)config.value("stop_bits", STOP_1).toInt());
+    this->setFlowControl((FlowType)config.value("flow_control", FLOW_OFF).toInt());
+    this->setRts(config.value("rts", 1).toInt());
+    this->setDtr(config.value("dtr", 1).toInt());
     return this->PortConnection::applyConfig(config);
 }
 
@@ -283,11 +301,12 @@ void SerialPortOpenThread::run()
     m_port->setTimeout(500);
 #endif
 
+
     m_port->setBaudRate(m_conn->baudRate());
     m_port->setDataBits(m_conn->dataBits());
     m_port->setParity(m_conn->parity());
     m_port->setStopBits(m_conn->stopBits());
-    m_port->setFlowControl(FLOW_OFF);
+    m_port->setFlowControl(m_conn->flowControl());
 
     bool res = m_port->open(QIODevice::ReadWrite | QIODevice::Unbuffered);
     if(res && m_run)
@@ -297,6 +316,10 @@ void SerialPortOpenThread::run()
         delete m_port;
         m_port = NULL;
     }
+
+    if(m_conn->flowControl() != FLOW_HARDWARE)
+        m_port->setRts(m_conn->rts());
+    m_port->setDtr(m_conn->dtr());
 
     m_conn->unlockMutex();
 }

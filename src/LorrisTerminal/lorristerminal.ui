@@ -114,7 +114,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="7">
+     <item row="0" column="9">
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -126,6 +126,32 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="0" column="7">
+      <widget class="QCheckBox" name="spRts">
+       <property name="toolTip">
+        <string>Toggles RTS serial port pin.</string>
+       </property>
+       <property name="text">
+        <string>RTS</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="8">
+      <widget class="QCheckBox" name="spDtr">
+       <property name="toolTip">
+        <string>Toggles DTR serial port pin.</string>
+       </property>
+       <property name="text">
+        <string>DTR</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

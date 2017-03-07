@@ -53,6 +53,10 @@ private slots:
     void on_spParity_currentIndexChanged(int value);
     void on_spStopBits_currentIndexChanged(int value);
     void on_spDataBits_currentIndexChanged(int value);
+    void on_spFlowControl_currentIndexChanged(int value);
+    void on_spRts_stateChanged(int state);
+    void on_spDtr_stateChanged(int state);
+
     void progBtn_clicked(int programmer);
 
     void on_actionCreateTcpClient_triggered();
