@@ -26,7 +26,7 @@
 #include "../ui/tooltipwarn.h"
 #include "../WorkTab/WorkTabMgr.h"
 
-#define MANIFEST_URL "http://technika.tasemnice.eu/lorris/updater_manifest.txt"
+#define MANIFEST_URL "http://tasemnice.eu/lorris/updater_manifest.txt"
 
 QNetworkRequest Updater::getNetworkRequest(const QUrl& url)
 {
