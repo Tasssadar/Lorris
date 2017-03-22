@@ -12,6 +12,7 @@
 #include <QFile>
 #include <QDir>
 #include <QDesktopServices>
+#include <QDesktopWidget>
 
 #if QT_VERSION < 0x050000
 #include <QDesktopServices>
@@ -210,23 +211,31 @@ void Utils::loadWindowParams(QWidget *w, const QString &param)
     if(params.size() < 5)
         return;
 
+    QDesktopWidget *d = qApp->desktop();
     QRect s;
     for(int i = 0; i < params.size(); ++i)
     {
         int val = params[i].toInt();
         switch(i)
         {
-            case 0:
-                if(val != 0)
-                {
-                    w->setWindowState(Qt::WindowMaximized);
-                    return;
-                }
-                break;
-            case 1: s.setWidth(val); break;
-            case 2: s.setHeight(val);break;
-            case 3: s.setX(val); break;
-            case 4: s.setY(val); break;
+        case 0:
+            if(val != 0) {
+                w->setWindowState(Qt::WindowMaximized);
+                return;
+            }
+            break;
+        case 1:
+            s.setWidth((std::min)(d->width(), val));
+            break;
+        case 2:
+            s.setHeight((std::min)(d->height(), val));
+            break;
+        case 3:
+            s.setX((std::max)(0, (std::min)(d->width() - s.width(), val)));
+            break;
+        case 4:
+            s.setY((std::max)(0, (std::min)(d->height() - s.height(), val)));
+            break;
         }
     }
     w->resize(s.size());
