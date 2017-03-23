@@ -301,7 +301,6 @@ void SerialPortOpenThread::run()
     m_port->setTimeout(500);
 #endif
 
-
     m_port->setBaudRate(m_conn->baudRate());
     m_port->setDataBits(m_conn->dataBits());
     m_port->setParity(m_conn->parity());
@@ -310,16 +309,17 @@ void SerialPortOpenThread::run()
 
     bool res = m_port->open(QIODevice::ReadWrite | QIODevice::Unbuffered);
     if(res && m_run)
+    {
+        if(m_conn->flowControl() != FLOW_HARDWARE)
+            m_port->setRts(m_conn->rts());
+        m_port->setDtr(m_conn->dtr());
         m_port->moveToThread(QApplication::instance()->thread());
+    }
     else
     {
         delete m_port;
         m_port = NULL;
     }
-
-    if(m_conn->flowControl() != FLOW_HARDWARE)
-        m_port->setRts(m_conn->rts());
-    m_port->setDtr(m_conn->dtr());
 
     m_conn->unlockMutex();
 }
