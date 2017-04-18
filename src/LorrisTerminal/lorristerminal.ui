@@ -110,7 +110,7 @@
      <item row="0" column="6">
       <widget class="QPushButton" name="sendBtn">
        <property name="text">
-        <string>Send bytes...</string>
+        <string>Send...</string>
        </property>
       </widget>
      </item>

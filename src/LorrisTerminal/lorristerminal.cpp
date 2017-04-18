@@ -331,25 +331,38 @@ void LorrisTerminal::loadData(DataFileParser *file)
 void LorrisTerminal::sendButton()
 {
     static QString lastText;
-    QString text = QInputDialog::getText(this, tr("Send data"), tr("Enter bytes to send:\n - Numbers from 0 to 255,"
-                                         "-127 to 128 or 0x00 to 0xFF\n - Separated by space"), QLineEdit::Normal, lastText);
+    QString text = QInputDialog::getText(this, tr("Send data"),
+                                         tr("Send bytes (Separated by space):\n  * numbers from 0 to 255\n"
+                                         "  * -127 to 128\n  * 0x00 to 0xFF"
+                                         "\nString:\n  * enclose it by quotation marks:\n"
+                                         "     \"string to send as utf8\"\n"
+                                         "  * do not escape anything in the string"), QLineEdit::Normal, lastText);
     if(text.isEmpty())
         return;
 
-    QStringList nums = text.split(" ", QString::SkipEmptyParts);
-    QByteArray data;
-    bool ok = false;
-    for(int i = 0; i < nums.size(); ++i)
-    {
-        int base;
-        if(nums[i].contains(QChar('x'), Qt::CaseInsensitive))
-            base = 16;
-        else
-            base = 10;
+    lastText = text;
 
-        char num = nums[i].toInt(&ok, base);
-        if(ok)
-            data.push_back(num);
+    QByteArray data;
+    if(text.length() >= 3 && text.startsWith(QChar('"')) && text.endsWith(QChar('"'))) {
+        data = text.mid(1, text.length()-2).toUtf8();
+    } else {
+        QStringList nums = text.split(" ", QString::SkipEmptyParts);
+        bool ok = false;
+        for(int i = 0; i < nums.size(); ++i)
+        {
+            int base;
+            if(nums[i].contains(QChar('x'), Qt::CaseInsensitive))
+                base = 16;
+            else
+                base = 10;
+
+            char num = nums[i].toInt(&ok, base);
+            if(ok)
+                data.push_back(num);
+        }
+
+        if(data.isEmpty() && text.length() >= 3)
+            data = text.toUtf8();
     }
 
     if(data.isEmpty())
@@ -357,8 +370,6 @@ void LorrisTerminal::sendButton()
 
     if(m_con)
         m_con->SendData(data);
-
-    lastText = text;
 }
 
 void LorrisTerminal::spRtsToggled(bool set) {

@@ -2837,9 +2837,13 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Zmrazit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.ui" line="113"/>
         <source>Send bytes...</source>
-        <translation>Poslat byty...</translation>
+        <translation type="vanished">Poslat byty...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisTerminal/lorristerminal.ui" line="113"/>
+        <source>Send...</source>
+        <translation>Poslat...</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="133"/>
@@ -2954,11 +2958,29 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Poslat data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="334"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="335"/>
+        <source>Send bytes (Separated by space):
+  * numbers from 0 to 255
+  * -127 to 128
+  * 0x00 to 0xFF
+String:
+  * enclose it by quotation marks:
+     &quot;string to send as utf8&quot;
+  * do not escape anything in the string</source>
+        <translation>Poslat bajty (oddělte mezerami):
+  * čísla od 0 do 255
+  * -127 do 128
+  * 0x00 do 0xFF
+Text:
+  * zadejte do úvozovek:
+      &quot;text k odeslání jako UTF8&quot;
+   * není třeba nic escapovat</translation>
+    </message>
+    <message>
         <source>Enter bytes to send:
  - Numbers from 0 to 255,-127 to 128 or 0x00 to 0xFF
  - Separated by space</source>
-        <translation>Zadejte byty:
+        <translation type="vanished">Zadejte byty:
 - Čísla od 0 do 255, od -127 do 128 nebo od 0x00 do 0xFF
 - oddělte je mezerami</translation>
     </message>
