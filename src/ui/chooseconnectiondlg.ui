@@ -1540,6 +1540,11 @@ p, li { white-space: pre-wrap; }
     <string>Clone</string>
    </property>
   </action>
+  <action name="actionCreateUdpSocket">
+   <property name="text">
+    <string>Add UDP socket</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../icons.qrc"/>

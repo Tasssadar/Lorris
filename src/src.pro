@@ -163,7 +163,8 @@ SOURCES += ui/mainwindow.cpp \
     ui/floatinginputdialog.cpp \
     LorrisProgrammer/modes/shupitospitunnel.cpp \
     connection/shupitospitunnelconn.cpp \
-    LorrisProgrammer/programmers/arduinoprogrammer.cpp
+    LorrisProgrammer/programmers/arduinoprogrammer.cpp \
+    connection/udpsocket.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -301,7 +302,8 @@ HEADERS += ui/mainwindow.h \
     LorrisAnalyzer/storagedata.h \
     LorrisProgrammer/modes/shupitospitunnel.h \
     connection/shupitospitunnelconn.h \
-    LorrisProgrammer/programmers/arduinoprogrammer.h
+    LorrisProgrammer/programmers/arduinoprogrammer.h \
+    connection/udpsocket.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

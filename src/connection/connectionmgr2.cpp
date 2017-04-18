@@ -16,6 +16,7 @@
 #include "proxytunnel.h"
 #include "shupitotunnel.h"
 #include "shupitospitunnelconn.h"
+#include "udpsocket.h"
 #include "../misc/config.h"
 #include "../misc/utils.h"
 
@@ -483,6 +484,9 @@ QVariant ConnectionManager2::config() const
             "",                // CONNECTION_LIBYB_USB
             "usb_yb_acm",      // CONNECTION_USB_ACM2
             "",                // CONNECTION_SHUPITO23
+            "stm32",           // CONNECTION_STM32
+            "",                // CONNECTION_SHUPITO_SPI_TUNNEL
+            "udp_socket",      // CONNECTION_UDP_SOCKET
         };
 
         Q_ASSERT(conn->getType() < sizeof_array(connTypes));
@@ -533,6 +537,8 @@ bool ConnectionManager2::applyConfig(QVariant const & config)
             conn.reset(new SerialPort());
         else if (type == "tcp_client")
             conn.reset(new TcpSocket());
+        else if (type == "udp_socket")
+            conn.reset(new UdpSocket());
 #ifdef HAVE_LIBYB
         else if (type == "usb_yb_acm")
             conn.reset(new UsbAcmConnection2(m_yb_runner));
@@ -584,6 +590,13 @@ SerialPort * ConnectionManager2::createSerialPort()
 TcpSocket * ConnectionManager2::createTcpSocket()
 {
     ConnectionPointer<TcpSocket> conn(new TcpSocket());
+    this->addUserOwnedConn(conn.data());
+    return conn.take();
+}
+
+UdpSocket * ConnectionManager2::createUdpSocket()
+{
+    ConnectionPointer<UdpSocket> conn(new UdpSocket());
     this->addUserOwnedConn(conn.data());
     return conn.take();
 }
@@ -709,6 +722,14 @@ ConnectionPointer<Connection> ConnectionManager2::getConnWithConfig(quint8 type,
             {
                 TcpSocket *socket = (TcpSocket*)m_conns[i];
                 if(socket->host() == cfg["host"] && socket->port() == cfg["port"])
+                    return ConnectionPointer<Connection>::fromPtr(socket);
+                break;
+            }
+            case CONNECTION_UDP_SOCKET:
+            {
+                UdpSocket *socket = (UdpSocket*)m_conns[i];
+                if (socket->name() == cfg["name"] &&
+                    socket->host() == cfg["host"] && socket->port() == cfg["port"])
                     return ConnectionPointer<Connection>::fromPtr(socket);
                 break;
             }

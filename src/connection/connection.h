@@ -40,6 +40,7 @@ enum ConnectionType
     CONNECTION_SHUPITO23           = 10,
     CONNECTION_STM32               = 11,
     CONNECTION_SHUPITO_SPI_TUNNEL  = 12,
+    CONNECTION_UDP_SOCKET          = 13,
 
     MAX_CON_TYPE
 };

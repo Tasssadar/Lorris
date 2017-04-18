@@ -11,6 +11,7 @@
 #include "../connection/serialport.h"
 #include "../connection/tcpsocket.h"
 #include "../connection/shupitotunnel.h"
+#include "../connection/udpsocket.h"
 #include "../misc/config.h"
 #include <QMenu>
 #include <QPushButton>
@@ -160,6 +161,7 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     QMenu * menu = new QMenu(this);
     menu->addAction(ui->actionCreateSerialPort);
     menu->addAction(ui->actionCreateTcpClient);
+    menu->addAction(ui->actionCreateUdpSocket);
     menu->addAction(ui->actionCreateUsbAcmConn);
     ui->createConnectionBtn->setMenu(menu);
 
@@ -346,6 +348,16 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             setActiveProgBtn(tc->programmerType());
         }
         break;
+    case CONNECTION_UDP_SOCKET:
+        {
+            UdpSocket * tc = static_cast<UdpSocket *>(conn);
+            ui->settingsStack->setCurrentWidget(ui->tcpClientPage);
+            updateEditText(ui->tcHostEdit, tc->host());
+            ui->tcPortEdit->setValue(tc->port());
+            ui->programmerSelection->setVisible(m_allowedConns & pct_port_programmable);
+            setActiveProgBtn(tc->programmerType());
+        }
+        break;
     case CONNECTION_USB_ACM2:
         {
             UsbAcmConnection2 * c = static_cast<UsbAcmConnection2 *>(conn);
@@ -437,6 +449,15 @@ void ChooseConnectionDlg::on_actionCreateTcpClient_triggered()
 {
     TcpSocket * port = sConMgr2.createTcpSocket();
     port->setName(tr("New TCP client"));
+    port->setHost("localhost");
+    port->setPort(80);
+    this->focusNewConn(port);
+}
+
+void ChooseConnectionDlg::on_actionCreateUdpSocket_triggered()
+{
+    UdpSocket * port = sConMgr2.createUdpSocket();
+    port->setName(tr("New UDP socket"));
     port->setHost("localhost");
     port->setPort(80);
     this->focusNewConn(port);
@@ -609,16 +630,34 @@ void ChooseConnectionDlg::on_tcHostEdit_textChanged(const QString &arg1)
 {
     if (!m_current)
         return;
-    Q_ASSERT(m_current->getType() == CONNECTION_TCP_SOCKET);
-    static_cast<TcpSocket *>(m_current.data())->setHost(arg1);
+
+    switch(m_current->getType()) {
+    case CONNECTION_TCP_SOCKET:
+        static_cast<TcpSocket *>(m_current.data())->setHost(arg1);
+        break;
+    case CONNECTION_UDP_SOCKET:
+        static_cast<UdpSocket *>(m_current.data())->setHost(arg1);
+        break;
+    default:
+        Q_ASSERT(false);
+    }
 }
 
 void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
 {
     if (!m_current)
         return;
-    Q_ASSERT(m_current->getType() == CONNECTION_TCP_SOCKET);
-    static_cast<TcpSocket *>(m_current.data())->setPort(arg1);
+
+    switch(m_current->getType()) {
+    case CONNECTION_TCP_SOCKET:
+        static_cast<TcpSocket *>(m_current.data())->setPort(arg1);
+        break;
+    case CONNECTION_UDP_SOCKET:
+        static_cast<UdpSocket *>(m_current.data())->setPort(arg1);
+        break;
+    default:
+        Q_ASSERT(false);
+    }
 }
 
 void ChooseConnectionDlg::on_usbVidEdit_textChanged(QString const & value)

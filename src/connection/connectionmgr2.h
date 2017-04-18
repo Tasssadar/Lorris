@@ -20,6 +20,7 @@
 
 class SerialPort;
 class TcpSocket;
+class UdpSocket;
 
 class SerialPortEnumerator : public QObject
 {
@@ -192,6 +193,7 @@ public:
 
     SerialPort * createSerialPort();
     TcpSocket * createTcpSocket();
+    UdpSocket * createUdpSocket();
 #ifdef HAVE_LIBYB
     UsbAcmConnection2 * createUsbAcmConn();
     STM32Connection * createSTM32Conn();

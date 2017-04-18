@@ -60,6 +60,7 @@ private slots:
     void progBtn_clicked(int programmer);
 
     void on_actionCreateTcpClient_triggered();
+    void on_actionCreateUdpSocket_triggered();
     void on_actionCreateUsbAcmConn_triggered();
 
     void on_tcHostEdit_textChanged(const QString &arg1);
