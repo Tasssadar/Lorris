@@ -1,6 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="cs_CZ" sourcelanguage="en_US">
+<TS version="2.1" language="cs_CZ" sourcelanguage="en_US">
+<context>
+    <name>ArduinoProgrammer</name>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="53"/>
+        <source>Already stopping!</source>
+        <translation>Jeden pokus o zastavení čipu již probíhá!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="81"/>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="89"/>
+        <source>Failed to switch to flash mode (timeout).</source>
+        <translation>Nemůžu přepnout čip do flash módu (timeout).</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="139"/>
+        <source>Failed to read device id (timeout)</source>
+        <translation>Nemůžu přečíst device id (timeout)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="151"/>
+        <source>Arduino bootloader can only read eeprom and flash memories.</source>
+        <translation>Arduino bootloader umí přečíst pouze EEPROM a programovou paměť.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="194"/>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="355"/>
+        <source>The load address command has failed!</source>
+        <translation>Příkaz &quot;load address&quot; selhal!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="204"/>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="370"/>
+        <source>Timeout while reading memory!</source>
+        <translation>Timeout při čtení paměti!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="210"/>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="374"/>
+        <source>Invalid response while reading memory!</source>
+        <translation>Neznámá odpověď při čtení paměti!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="233"/>
+        <source>arduino can only write to flash and EEPROM</source>
+        <translation>Arduino bootloader umí přečíst pouze EEPROM a programovou paměť.</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="276"/>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="281"/>
+        <source>Failed to write page (timeout during address set)</source>
+        <translation>Chyba při zapisování stránky paměti (timeout při &quot;set address&quot;)</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="305"/>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="309"/>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="335"/>
+        <source>Verification failed!</source>
+        <translation>Chyba při kontrole - data nesedí!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/programmers/arduinoprogrammer.cpp" line="381"/>
+        <source>Arduino bootloader does not support chip erase.</source>
+        <translation>Arduino bootloader neumí smazat čip.</translation>
+    </message>
+</context>
 <context>
     <name>AtsamProgrammer</name>
     <message>
@@ -233,157 +298,157 @@
         <translation>Zvolte připojení</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="124"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="133"/>
         <source>Name:</source>
         <translation>Jméno:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="179"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="188"/>
         <source>Select a connection to edit its settings.</source>
         <translation>Po zvolení připojení můžete měnit jeho nastavení.</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="195"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="204"/>
         <source>Physical device name:</source>
         <translation>Jméno fyzického zařízení:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="205"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="549"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="214"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="726"/>
         <source>Speed:</source>
         <translation>Rychlost:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="222"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="575"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="231"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="761"/>
         <source>50</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="227"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="580"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="236"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="766"/>
         <source>75</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="232"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="585"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="241"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="771"/>
         <source>110</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="237"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="590"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="246"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="776"/>
         <source>134</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="242"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="595"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="251"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="781"/>
         <source>150</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="247"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="256"/>
         <source>200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="252"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="600"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="261"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="786"/>
         <source>300</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="257"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="605"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="266"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="791"/>
         <source>600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="262"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="610"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="271"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="796"/>
         <source>1200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="267"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="615"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="276"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="801"/>
         <source>1800</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="272"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="620"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="281"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="806"/>
         <source>2400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="277"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="625"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="286"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="811"/>
         <source>4800</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="282"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="635"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="291"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="821"/>
         <source>9600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="287"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="640"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="296"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="826"/>
         <source>14400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="292"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="645"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="301"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="831"/>
         <source>19200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="297"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="650"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="306"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="836"/>
         <source>38400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="302"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="311"/>
         <source>56000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="307"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="655"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="316"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="841"/>
         <source>57600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="312"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="321"/>
         <source>76800</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="317"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="660"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="326"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="846"/>
         <source>115200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="322"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="665"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="331"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="851"/>
         <source>128000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="327"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="680"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="336"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="866"/>
         <source>256000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1127"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1340"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -396,323 +461,377 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Typ programátoru:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1149"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1362"/>
         <source>Shupito</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1201"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1414"/>
         <source>avr232boot</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1175"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1388"/>
         <source>atsam</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="134"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="143"/>
         <source>Store on the device</source>
         <translation>Uložit do zařízení</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="137"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="146"/>
         <source>...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="354"/>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="367"/>
-        <source>TextLabel</source>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="430"/>
+        <source>Flow control:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="387"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://technika.junior.cz/trac/wiki/shupito#shupito23_firmware&quot;&gt;Check for updates&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://technika.junior.cz/trac/wiki/shupito#shupito23_firmware&quot;&gt;Zkontrolovat aktualizace&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="403"/>
-        <source>Hardware:</source>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="443"/>
+        <source>Hardware (RTS/CTS)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="410"/>
-        <source>Firmware:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="436"/>
-        <source>VID:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="446"/>
-        <source>PID:</source>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="448"/>
+        <source>Software (XON/XOFF)</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/ui/chooseconnectiondlg.ui" line="456"/>
+        <source>RTS toggle</source>
+        <translation>Nastavit RTS pin</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="466"/>
+        <source>DTR toggle</source>
+        <translation>Nastavit DTR pin</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="495"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="517"/>
+        <source>TextLabel</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="537"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://technika.junior.cz/trac/wiki/shupito#shupito23_firmware&quot;&gt;Check for updates&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://technika.junior.cz/trac/wiki/shupito#shupito23_firmware&quot;&gt;Zkontrolovat aktualizace&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="553"/>
+        <source>Hardware:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="560"/>
+        <source>Firmware:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="595"/>
+        <source>VID:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="605"/>
+        <source>PID:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="615"/>
         <source>S/N:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="469"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="628"/>
         <source>Interface:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="630"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="816"/>
         <source>7200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="670"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="856"/>
         <source>230400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="675"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="861"/>
         <source>250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="685"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="871"/>
         <source>460800</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="690"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="876"/>
         <source>500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="695"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="881"/>
         <source>512000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="700"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="886"/>
         <source>921600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="705"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="891"/>
         <source>1000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="710"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="896"/>
         <source>1024000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="715"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="901"/>
         <source>1250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="720"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="906"/>
         <source>1500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="725"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="911"/>
         <source>1750000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="730"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="916"/>
         <source>1843200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="735"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="921"/>
         <source>2000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="740"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="926"/>
         <source>2048000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="745"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="931"/>
         <source>2250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="750"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="936"/>
         <source>2500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="755"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="941"/>
         <source>2750000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="760"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="946"/>
         <source>3000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="765"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="951"/>
         <source>3250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="770"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="956"/>
         <source>3500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="775"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="961"/>
         <source>3686400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="780"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="966"/>
         <source>3750000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="785"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="971"/>
         <source>4000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="825"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1545"/>
+        <source>Add UDP socket</source>
+        <translation>Přidat UDP socket</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="344"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1011"/>
         <source>Stop bits:</source>
         <translation>Stop bity:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="848"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="352"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1043"/>
         <source>1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="853"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="357"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1048"/>
         <source>1.5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="858"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="362"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1053"/>
         <source>2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="882"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="370"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1077"/>
         <source>Parity:</source>
         <translation>Parita:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="905"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="378"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="438"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1109"/>
         <source>None</source>
         <translation>Žádná</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="910"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="383"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1114"/>
         <source>Odd</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="915"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="388"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1119"/>
         <source>Even</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="939"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="396"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1143"/>
         <source>Data bits:</source>
         <translation>Data bity:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="962"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="407"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1175"/>
         <source>5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="967"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="412"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1180"/>
         <source>6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="972"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="417"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1185"/>
         <source>7</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="977"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="422"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1190"/>
         <source>8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1038"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1251"/>
         <source>Host:</source>
         <translation>Adresa:</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1061"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1274"/>
         <source>Port:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1097"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1310"/>
         <source>This connection has no settings.</source>
         <translation>Toto připojení nemá žádná nastavení. </translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1227"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1440"/>
         <source>avr109</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1267"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1466"/>
+        <source>Arduino</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1503"/>
         <source>Add serial port</source>
         <translation>Přidat sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1276"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1512"/>
         <source>Remove connection</source>
         <translation>Odebrat připojení</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1284"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1520"/>
         <source>Add TCP client</source>
         <translation>Přidat TCP clienta</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1289"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1525"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1294"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1530"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1299"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1535"/>
         <source>Add USB connection</source>
         <translation>Přidat USB spojení</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.ui" line="1304"/>
+        <location filename="../src/ui/chooseconnectiondlg.ui" line="1540"/>
         <source>Clone</source>
         <translation>Duplikovat</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="421"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="442"/>
         <source>New Serial Port</source>
         <translation>Nový sériový port</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="430"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="451"/>
         <source>New TCP client</source>
         <translation>Nový TCP client</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="439"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="460"/>
+        <source>New UDP socket</source>
+        <translation>Nový UDP socket</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="469"/>
         <source>New USB connection</source>
         <translation>Nové USB spojení</translation>
     </message>
@@ -818,12 +937,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>CloseLabel</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="1056"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="1057"/>
         <source> [L] </source>
         <translation> [Z] </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="1057"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/datawidget.cpp" line="1058"/>
         <source> [S] </source>
         <translation></translation>
     </message>
@@ -1055,12 +1174,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ExamplePreviewItem</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="646"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="650"/>
         <source>&lt;a href=&quot;%1&quot;&gt;Load to editor&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;%1&quot;&gt;Otevřit v editoru&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="647"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="651"/>
         <source>&lt;a href=&quot;%1&quot;&gt;Show preview&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;%1&quot;&gt;Zobrazit náhled&lt;/a&gt;</translation>
     </message>
@@ -1068,12 +1187,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ExamplePreviewTab</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="679"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="683"/>
         <source> - example</source>
         <translation>- příklad</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="684"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="688"/>
         <source>Could not load example!</source>
         <translation>Nemůžu načíst příklad!</translation>
     </message>
@@ -1313,253 +1432,246 @@ Vstupní hodnota bude zpracována výrazem, který zde vyplníte. &amp;quot;%n&a
         <translation>&lt;Žádný soubor&gt;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="442"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="455"/>
         <source>Chip ID:</source>
         <translation>ID čipu:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="466"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="479"/>
         <source>Programming</source>
         <translation>Programování</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="481"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="494"/>
         <source>Programming speed (Hz):</source>
         <translation>Rychlost programování (Hz):</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="504"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="517"/>
         <source>250000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="509"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="873"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="522"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="886"/>
         <source>500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="514"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="878"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="527"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="891"/>
         <source>1000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="519"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="888"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="532"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="901"/>
         <source>2000000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="527"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="540"/>
         <source>Show warning when
 flashing same file twice:</source>
         <translation>Zobrazit varování při zápisu
 stejného souboru vícekrát:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="535"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="548"/>
         <source>Show</source>
         <translation>Zobrazit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="568"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="578"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="581"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="591"/>
         <source>Bytes which cause running program to restart into bootloader. Hex or normal numbers separateed by spaces.</source>
         <translation>Sled bajtů, které způsobí, že se čip restartuje do bootloaderu. Zadejte čísla v hexadecimální nebo desítkové soustavě, oddělte je čárkami.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="571"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="584"/>
         <source>Bootloader entry sequence:</source>
         <translation>Příkaz pro vstup do bootloaderu:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="594"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="607"/>
         <source>Clock output</source>
         <translation>Hodinový výstup</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="602"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="615"/>
         <source>Disabled</source>
         <translation>Vypnutý</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="608"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="618"/>
         <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="628"/>
-        <source>pwmRadioGroup</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="615"/>
         <source>Generic</source>
         <translation>Obecný</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="625"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="638"/>
         <source>Servo</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="667"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="680"/>
         <source>Clock frequency:</source>
         <translation>Frekvence hodin:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="651"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="664"/>
         <source> Hz</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="674"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="687"/>
         <source>Duty cycle:</source>
         <translation>Střída:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="681"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="694"/>
         <source>%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="694"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="704"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="707"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="717"/>
         <source>Real output frequency and duty cycle can vary from requested values because shupito is can make only certain frequencies.</source>
         <translation>Opravdová výstupní frekvence a střída nemusí být stejné jako ty požadované, protože shupito dokáže generovat pouze určité násobky svojí vlastní frekvence.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="697"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="710"/>
         <source>Output:</source>
         <translation>Výstup:</translation>
     </message>
-    <message utf8="true">
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="720"/>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="733"/>
         <source>°</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="762"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="775"/>
         <source>Min:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="769"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="792"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="782"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="805"/>
         <source> ms</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="785"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="798"/>
         <source>Max:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="817"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="830"/>
         <source>RS232 tunnel</source>
         <translation>RS232 tunel</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="829"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="842"/>
         <source>Speed:</source>
         <translation>Rychlost:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="858"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="871"/>
         <source>38400</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="863"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="876"/>
         <source>57600</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="868"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="881"/>
         <source>115200</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="883"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="896"/>
         <source>1500000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="938"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="951"/>
         <source>Enable:</source>
         <translation>Povolit:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="948"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="961"/>
         <source>Overvoltage warning</source>
         <translation>Varování při přepětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="954"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="967"/>
         <source>Warn at:</source>
         <translation>Varovat při:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="967"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="980"/>
         <source> V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="977"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="990"/>
         <source>Enable</source>
         <translation>Zapnout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="987"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1000"/>
         <source>Turn off VCC</source>
         <translation>Vypnout VCC</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1029"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="385"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1042"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="386"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1037"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1050"/>
         <source>Format:</source>
         <translation>Formát:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1048"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1061"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1053"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1066"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1077"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1090"/>
         <source>Pause</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1087"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1100"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1126"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1139"/>
         <source>Log</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1166"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.ui" line="1188"/>
         <source>Fuses</source>
         <translation>Pojistky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="387"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="388"/>
         <source>Program memory</source>
         <translation>Paměť programu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="389"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="390"/>
         <source>EEPROM</source>
         <translation>EEPROM</translation>
     </message>
@@ -1609,58 +1721,63 @@ stejného souboru vícekrát:</translation>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="391"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="392"/>
         <source>SVF</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="569"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="570"/>
         <source>Fuses had been succesfully read</source>
         <translation>Pojistky byly úspěšně přečteny</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="602"/>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="638"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="603"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="639"/>
         <source>Fuses had not been read yet</source>
         <translation>Pojistky ještě nebyly přečteny ze součástky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="608"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="609"/>
         <source>You have to &quot;Remember&quot; fuses prior to writing</source>
         <translation>Před zapsáním pojistek je musíte &quot;zapamatovat&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="612"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="613"/>
         <source>Write fuses?</source>
         <translation>Programovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="612"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="613"/>
         <source>Do you really wanna to write fuses to the chip?</source>
         <translation>Opravdu chcete naprogramovat pojistky?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="627"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="628"/>
         <source>Fuses had been succesfully written</source>
         <translation>Pojistky byly úspěšně naprogramovány</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="654"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="655"/>
         <source>You have flashed this file already, and it was not changed since.</source>
         <translation>Tento soubor se od posledního flashnutí nezměnil!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="793"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="794"/>
         <source> | h:mm:ss M.d.yyyy</source>
         <translation> | h:mm:ss d.M.yyyy</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="841"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="802"/>
+        <source> | NEW</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="850"/>
         <source>%1 Hz @ %2%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="886"/>
+        <location filename="../src/LorrisProgrammer/ui/fullprogrammerui.cpp" line="895"/>
         <source>Fill with...</source>
         <translation>Vyplnit bajty...</translation>
     </message>
@@ -1707,19 +1824,19 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>Graph</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="78"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="79"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="80"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="71"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="72"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="73"/>
         <source>Double-click to add marker</source>
         <translation>Dvojklikem přidáte značku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="242"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="235"/>
         <source>Remove markers</source>
         <translation>Odstranit značky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="249"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graph.cpp" line="242"/>
         <source>No markers</source>
         <translation>Žádné značky</translation>
     </message>
@@ -1889,167 +2006,192 @@ stejného souboru vícekrát:</translation>
         <translation>Výstup:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="82"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="89"/>
         <source>Browse</source>
         <translation>Vybrat soubor</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="93"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="100"/>
+        <source>Sample range:</source>
+        <translation>Vzorky:</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="107"/>
+        <source>from </source>
+        <translation>od </translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="117"/>
+        <source>-</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="130"/>
+        <source>to </source>
+        <translation>až </translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="140"/>
+        <source>Reset range</source>
+        <translation>Reset</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="164"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="112"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="192"/>
         <source>Curve:</source>
         <translation>Křivka:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="122"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="202"/>
         <source>Index:</source>
         <translation>Index:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="129"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="389"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="209"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="469"/>
         <source>Include</source>
         <translation>Zahrnout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="136"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="216"/>
         <source>Index width:</source>
         <translation>Šířka indexu:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="166"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="200"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="246"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="280"/>
         <source>1 byte</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="171"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="205"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="251"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="285"/>
         <source>2 bytes</source>
         <translation>2 byty</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="176"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="210"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="256"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="290"/>
         <source>4 bytes</source>
         <translation>4 byty</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="181"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="215"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="261"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="295"/>
         <source>8 bytes</source>
         <translation>8 bytu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="189"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="269"/>
         <source>Data width:</source>
         <translation>Šířka dat:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="223"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="303"/>
         <source>Data type:</source>
         <translation>Datový typ:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="231"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="311"/>
         <source>Integer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="236"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="316"/>
         <source>Float (4 bytes)</source>
         <translation>Float (4 byty)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="241"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="321"/>
         <source>Double (8 bytes)</source>
         <translation>Double (8 bytů)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="249"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="329"/>
         <source>Endianness:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="257"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="337"/>
         <source>Big endian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="262"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="342"/>
         <source>Little endian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="298"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="378"/>
         <source>Columns (drag to reorder):</source>
         <translation>Sloupce (tažením změníte pořadí):</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="324"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="404"/>
         <source>Index</source>
         <translation>Index</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="337"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="417"/>
         <source>Separator:</source>
         <translation>Oddělovací sekvence:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="344"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="424"/>
         <source>,</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="351"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="431"/>
         <source>Line edning:</source>
         <translation>Konce řádků:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="359"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="439"/>
         <source>\r\n</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="364"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="444"/>
         <source>\n</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="369"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="449"/>
         <source>\n\r</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="374"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="454"/>
         <source>\r</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="382"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="462"/>
         <source>Column names:</source>
         <translation>Jména sloupců:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="428"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.ui" line="508"/>
         <source>Preview:</source>
         <translation>Náhled:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp" line="56"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp" line="64"/>
         <source>No preview available for binary format.</source>
         <translation>Náhled pro binární formát není k dispozici.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp" line="220"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp" line="231"/>
         <source>Failed to open output file!</source>
         <translation>Nemůžu otevřít výstupní soubor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp" line="261"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphexport.cpp" line="272"/>
         <source>Graph data export</source>
         <translation>Export dat z grafu</translation>
     </message>
@@ -2090,79 +2232,89 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>GraphWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="59"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="60"/>
         <source>Edit curve properties</source>
         <translation>Upravit vlastnosti křivky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="62"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="63"/>
         <source>Remove Curve</source>
         <translation>Odebrat křivku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="66"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="67"/>
         <source>Remove all curves</source>
         <translation>Odstranit všechny křivky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="69"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="70"/>
         <source>Sample size</source>
         <translation>Velikost vzorku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="75"/>
         <source>Show all data</source>
         <translation>Zobrazit všechna data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="75"/>
         <source>Set custom...</source>
         <translation>Zadat...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="75"/>
         <source>According to X axis</source>
         <translation>Podle osy X</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="94"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="95"/>
         <source>Visible axes</source>
         <translation>Zobrazené osy</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="97"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="98"/>
         <source>Y - left</source>
         <translation>Y - levá</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="97"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="98"/>
         <source>Y - right</source>
         <translation>Y - pravá</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="111"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="112"/>
         <source>Export data...</source>
         <translation>Exportovat data...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="112"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="113"/>
         <source>Change background...</source>
         <translation>Změnit barvu pozadí...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="114"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="115"/>
         <source>Show legend</source>
         <translation>Zobrazit legendu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="118"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="119"/>
         <source>Automaticaly scroll graph</source>
         <translation>Automaticky posouvat graf</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="510"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="123"/>
+        <source>Set refresh rate...</source>
+        <translation>Obnovovací frekvence...</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="530"/>
         <source>Sample size:</source>
         <translation>Velikost vzorku</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/GraphWidget/graphwidget.cpp" line="714"/>
+        <source>Refresh rate in ms:</source>
+        <translation>Obnovovací frekvence v ms:</translation>
     </message>
 </context>
 <context>
@@ -2216,12 +2368,12 @@ stejného souboru vícekrát:</translation>
         <translation>Skrýt seznam widgetů</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="84"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="85"/>
         <source>&amp;Data</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="86"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="87"/>
         <source>New source...</source>
         <translation>Nový zdroj...</translation>
     </message>
@@ -2231,109 +2383,110 @@ stejného souboru vícekrát:</translation>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="203"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="329"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="453"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="607"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="629"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="207"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="333"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="457"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="611"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="633"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="866"/>
         <source> of </source>
         <translation> z </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="362"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="366"/>
         <source>Data has been modified.</source>
         <translation>Data byla změněna.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="369"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="373"/>
         <source>Do you want to save your changes?</source>
         <translation>Chcete je uložit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="471"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="482"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="475"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="486"/>
         <source>File &quot;%1&quot; was saved</source>
         <translation>Soubor &quot;%1&quot; byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="589"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="593"/>
         <source>Clear everything?</source>
         <translation>Vymazat vše?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="590"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="594"/>
         <source>Do you really want to clear data, widgets and packet structure?</source>
         <translation>Opravdu chcete vymazat data, widgety a strukturu packetu?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="95"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="96"/>
         <source>Clear received data</source>
         <translation>Vymazat data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="88"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="89"/>
         <source>Open...</source>
         <translation>Otevřít...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="90"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="91"/>
         <source>Save as...</source>
         <translation>Uložit jako...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="89"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="90"/>
         <source>Save</source>
         <translation>Uložit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="92"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="510"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="93"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="514"/>
         <source>Import binary data</source>
         <translation>Importovat binární data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="93"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="489"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="94"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="493"/>
         <source>Export binary data</source>
         <translation>Exportovat binární data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="96"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="97"/>
         <source>Clear everything</source>
         <translation>Vymazat vše</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="104"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="108"/>
         <source>Change structure</source>
         <translation>Změnit strukturu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="106"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="110"/>
         <source>Export received bytes as binary file</source>
         <translation>Exportuje přijaté byty do binárního souboru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="107"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="111"/>
         <source>Change structure of incoming data</source>
         <translation>Změnit strukturu přijmaných dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="313"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="317"/>
         <source>Could not open file %1 for reading!</source>
         <translation>Nemůžu otevřít soubor %1!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="315"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="319"/>
         <source>Importing...</source>
         <translation>Importuji...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="315"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="319"/>
         <source>Importing your data...</source>
         <translation>Importuji vaše data...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="365"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="369"/>
         <source>Data has been modified.
 
 %1</source>
@@ -2342,22 +2495,22 @@ stejného souboru vícekrát:</translation>
 %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="502"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="506"/>
         <source>Binary data were exported to file &quot;%1&quot;</source>
         <translation>Binární data byla exportována do souboru &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="591"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="595"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="592"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="596"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="854"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="858"/>
         <source>Set maximum number of packets</source>
         <translation>Zadejte maximální počet packetů</translation>
     </message>
@@ -2365,182 +2518,186 @@ stejného souboru vícekrát:</translation>
 <context>
     <name>LorrisProgrammer</name>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="137"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="138"/>
         <source>Chip</source>
         <translation>Součástka</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="140"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="141"/>
         <source>Start chip</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="141"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="142"/>
         <source>Stop chip</source>
         <translation>Stop</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="142"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="143"/>
         <source>Restart chip</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="154"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="155"/>
         <source>Mode</source>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="157"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="158"/>
         <source>Verify write</source>
         <translation>Ověření naprogramovaných dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="164"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="165"/>
         <source>None</source>
         <translation>Vypnout</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="165"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="166"/>
         <source>Verify only non-empty pages</source>
         <translation>Ověřit pouze zaplněné stránky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="166"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="167"/>
         <source>Verify all</source>
         <translation>Ověřit celou paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="179"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="180"/>
         <source>Set RS232 tunnel name...</source>
         <translation>Nastavit jméno RS232 tunelu...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="183"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="184"/>
         <source>Enable hardware button</source>
         <translation>Povolit HW tlačítko</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="188"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="189"/>
         <source>Load...</source>
         <translation>Otevřít...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="193"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="195"/>
         <source>Save...</source>
         <translation>Uložit...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="198"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="201"/>
         <source>Blink LED</source>
         <translation>Bliknout diodou</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="203"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="206"/>
         <source>Minimal UI</source>
         <translation>Zmenšené UI</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="321"/>
         <source>Can&apos;t set output VCC, voltage detected!</source>
-        <translation>Nemůžu nastavit výstupní napětí, na pinech už nějáké bylo detekováno!</translation>
+        <translation type="vanished">Nemůžu nastavit výstupní napětí, na pinech už nějáké bylo detekováno!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="347"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="343"/>
         <source>It looks like your Shupito does not support RS232 tunnel!</source>
         <translation>Vypadá to že vaše Shupito nepodporuje RS232 tunel!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="360"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="356"/>
         <source>RS232 tunnel %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="360"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="356"/>
         <source>enabled</source>
         <translation>zapnut</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="360"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="356"/>
         <source>disabled</source>
         <translation>vypnut</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="365"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="361"/>
         <source>Set tunnel name</source>
         <translation>Nastavit jméno RS232 tunelu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="365"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="361"/>
         <source>Tunnel name:</source>
         <translation>Jméno tunelu:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="414"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="410"/>
         <source>No voltage present</source>
         <translation>Nebylo detekováno žádné napětí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="416"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="412"/>
         <source>Output voltage detected!</source>
         <translation>Detekováno napětí na výstupu!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="427"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="423"/>
         <source>&lt;unknown&gt;</source>
         <translation>&lt;neznámý&gt;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="508"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="504"/>
         <source>Unsupported chip: %1</source>
         <translation>Nepodporovaný čip: %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="520"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="516"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="521"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="517"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="547"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="543"/>
         <source>Chip has been started</source>
         <translation>Součástka byla spuštěna</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="569"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="565"/>
         <source>Chip has been stopped</source>
         <translation>Součástka byla zastavena</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="664"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="663"/>
         <source>File loaded</source>
         <translation>Soubor byl načten</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="692"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="691"/>
         <source>Failed to open %1 for writing!</source>
         <translation>Nemůžu otevčit soubor %1 pro zápis!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="701"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="700"/>
         <source>File saved</source>
         <translation>Data byla uložena</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="735"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="734"/>
         <source>Failed to reload file %1</source>
         <translation>Chyba při načítání souboru %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="864"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="783"/>
+        <source>Arduino programmer only works with serial port connection!</source>
+        <translation>Programátor &quot;Arduino&quot; funguje jen s připojením přes sériový port!</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="870"/>
         <source>VCC was turned off due to overvoltage!</source>
         <translation>VCC bylo vypnuto kvůli přepětí!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="875"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="881"/>
         <source>Shupito is not responding, try to re-plug it into computer!</source>
         <translation>Shupito neodpovídá, zkuste ho odpojit a znovu připojit!</translation>
     </message>
@@ -2675,7 +2832,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="90"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="146"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="154"/>
         <source>Pause</source>
         <translation>Zmrazit</translation>
     </message>
@@ -2685,27 +2842,47 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Poslat byty...</translation>
     </message>
     <message>
+        <location filename="../src/LorrisTerminal/lorristerminal.ui" line="133"/>
+        <source>Toggles RTS serial port pin.</source>
+        <translation>Přepne výstup na pinu RTS (0/1).</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisTerminal/lorristerminal.ui" line="136"/>
+        <source>RTS</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisTerminal/lorristerminal.ui" line="146"/>
+        <source>Toggles DTR serial port pin.</source>
+        <translation>Přepne výstup na pinu DTR (0/1).</translation>
+    </message>
+    <message>
+        <location filename="../src/LorrisTerminal/lorristerminal.ui" line="149"/>
+        <source>DTR</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="83"/>
         <source>Clear</source>
         <translation>Vyčistit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="76"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="79"/>
         <source>Send key code immediately after press</source>
         <translation>Pošle kód klávesy ihned po stisknutí</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="87"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="90"/>
         <source>Change settings...</source>
         <translation>Změnit nastavení...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="187"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="195"/>
         <source>Open File</source>
         <translation>Otevřít soubor</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="144"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="152"/>
         <source>Unpause</source>
         <translation>Odmrazit</translation>
     </message>
@@ -2715,69 +2892,69 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="39"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="40"/>
         <source>Format</source>
         <translation>Formát</translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="62"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="46"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="47"/>
         <source>Text</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../src/LorrisTerminal/lorristerminal.ui" line="67"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="46"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="47"/>
         <source>Hex dump</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="55"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="56"/>
         <source>Terminal</source>
         <translation>Terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="57"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="58"/>
         <source>Load text file into terminal</source>
         <translation>Načíst soubor do terminálu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="61"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="62"/>
         <source>Save terminal content to text file</source>
         <translation>Uložit obsah terminálu do souboru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="62"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="63"/>
         <source>Save received data to binary file</source>
         <translation>Uložit přijatá data do binárního souboru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="68"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="71"/>
         <source>Input handling</source>
         <translation>Vstup</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="73"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="76"/>
         <source>Just send key presses</source>
         <translation>Posílat stisky kláves</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="73"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="76"/>
         <source>TCP-terminal-like</source>
         <translation>Jako TCP terminál</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="77"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="80"/>
         <source>Show pressed keys in terminal and send after pressing return</source>
         <translation>Zobrazí to co píšete v terminálu a odešle až po stisku klávesy enter</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="309"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="334"/>
         <source>Send data</source>
         <translation>Poslat data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="309"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="334"/>
         <source>Enter bytes to send:
  - Numbers from 0 to 255,-127 to 128 or 0x00 to 0xFF
  - Separated by space</source>
@@ -2786,34 +2963,34 @@ a nebo sledovat co clienti do proxy posílají.</translation>
 - oddělte je mezerami</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="186"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="208"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="194"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="216"/>
         <source>Text file (*.txt);;Any file (*.*)</source>
         <translation>Textový soubor (*.txt);;Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="196"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="204"/>
         <source>Can&apos;t open file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít soubor &quot;%1&quot;!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="209"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="217"/>
         <source>Save text data</source>
         <translation>Uložit textová data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="230"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="238"/>
         <source>Any file (*.*)</source>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="231"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="239"/>
         <source>Save binary data</source>
         <translation>Uložit binární data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="218"/>
-        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="240"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="226"/>
+        <location filename="../src/LorrisTerminal/lorristerminal.cpp" line="248"/>
         <source>Can&apos;t open/create file &quot;%1&quot;!</source>
         <translation>Nemůžu otevřít/vytvořit soubor &quot;%1&quot;!</translation>
     </message>
@@ -3090,7 +3267,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Něco je špatně, velikost dat v záložce: %1 velikost čipu: %2</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="365"/>
+        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="366"/>
         <source>Do you really want to erase the WHOLE chip?</source>
         <translation>Opravdu chcete vymazat CELÝ čip?</translation>
     </message>
@@ -3100,27 +3277,27 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Programuji paměť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="365"/>
+        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="366"/>
         <source>Erase chip?</source>
         <translation>Vymazat čip?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="375"/>
+        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="376"/>
         <source>Erasing chip...</source>
         <translation>Mažu čip...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="393"/>
+        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="394"/>
         <source>Chip was succesfuly erased!</source>
         <translation>Čip byl úspěšně vymazán!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="422"/>
+        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="423"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="427"/>
+        <location filename="../src/LorrisProgrammer/ui/programmerui.cpp" line="428"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
@@ -3159,54 +3336,54 @@ a nebo sledovat co clienti do proxy posílají.</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="96"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="105"/>
         <source>Export Data</source>
         <translation>Export dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="64"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="73"/>
         <source>Can&apos;t create/open file!</source>
         <translation>Nemůžu vytvořit/otevřít soubor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="95"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="104"/>
         <source>Compressed Lorris data file (*.cldta);;Lorris data file (*.ldta)</source>
         <translation>Komprimovaný datový soubor Lorris (*.cldta);;Datový soubor Lorris (*.ldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="488"/>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="509"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="492"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="513"/>
         <source>Any file (*.*)</source>
         <translation>Všechny soubory (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="658"/>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="186"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="662"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="195"/>
         <source>Lorris data files (*.ldta *.cldta)</source>
         <translation>Datové soubory Lorris (*.ldta *.cldta)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="187"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="196"/>
         <source>Import Data</source>
         <translation>Import dat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="407"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="416"/>
         <source>Warning!</source>
         <translation>Pozor!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="408"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="417"/>
         <source>You are opening file with old structure format, some things may be messed up!</source>
         <translation>Otevíráte soubor staré verze, něco může být rozbité!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="414"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="423"/>
         <source>Data file has wrong magic!</source>
         <translation>Data mají špatné magic číslo!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="199"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="208"/>
         <source>Can&apos;t open file!</source>
         <translation>Nemůžu otevřít soubor!</translation>
     </message>
@@ -3358,22 +3535,22 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Nemůžu naprogramovat stránku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="52"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="53"/>
         <source>All supported file types (*.hex *.bin);;Intel HEX file (*.hex);;Binary file (*.bin)</source>
         <translation>Všechny podporované soubory (*.hex *.bin);;Intel HEX soubory (*.hex);;Binární soubor (*.bin)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="53"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="54"/>
         <source>Serial Vector Format file (*.svf)</source>
         <translation>Soubor Serial Vector Format (*.svf)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="609"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="605"/>
         <source>Import data</source>
         <translation>Importovat data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="672"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="671"/>
         <source>Export data</source>
         <translation>Exportovat data</translation>
     </message>
@@ -3388,7 +3565,7 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Program není kompatibilní s tímto typem patchování.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="654"/>
+        <location filename="../src/LorrisProgrammer/lorrisprogrammer.cpp" line="650"/>
         <location filename="../src/shared/hexfile.cpp" line="56"/>
         <location filename="../src/shared/hexfile.cpp" line="67"/>
         <location filename="../src/shared/hexfile.cpp" line="175"/>
@@ -3483,12 +3660,12 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Chybná odpověď od zařízení.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="659"/>
+        <location filename="../src/LorrisAnalyzer/lorrisanalyzer.cpp" line="663"/>
         <source>Load data file</source>
         <translation>Nahrát data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp" line="31"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/scriptagent.cpp" line="32"/>
         <source>Uncaught exception: </source>
         <translation>Neošetřená výjimka: </translation>
     </message>
@@ -3520,22 +3697,22 @@ a nebo sledovat co clienti do proxy posílají.</translation>
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="30"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="31"/>
         <source>(Connecting...)</source>
         <translation>(Připojování...)</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="32"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="33"/>
         <source>(Connected)</source>
         <translation>(Připojeno)</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="34"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="35"/>
         <source>(Pending)</source>
         <translation>(Čekajicí)</translation>
     </message>
     <message>
-        <location filename="../src/ui/chooseconnectiondlg.cpp" line="36"/>
+        <location filename="../src/ui/chooseconnectiondlg.cpp" line="37"/>
         <source>(Disconnecting...)</source>
         <translation>(Odpojování...)</translation>
     </message>
@@ -3593,12 +3770,12 @@ a nebo sledovat co clienti do proxy posílají.</translation>
         <translation>Příkaz == 0x%1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="342"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="343"/>
         <source>Byte at idx %1 == 0x%2</source>
         <translation>Byte na pozici %1 == 0x%2</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="368"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="369"/>
         <source>// Return true if okay, false to filter out
 function dataPass(data, dev, cmd) {
     return false;
@@ -3611,12 +3788,12 @@ function dataPass(data, dev, cmd) {
 </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="393"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="394"/>
         <source>Could not find dataPass function!</source>
         <translation>Nemůžu najít fci dataPass!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="438"/>
+        <location filename="../src/LorrisAnalyzer/datafilter.cpp" line="439"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -3780,7 +3957,7 @@ function dataPass(data, dev, cmd) {
 <context>
     <name>QtScriptEngine</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="190"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/engines/qtscriptengine.cpp" line="193"/>
         <source>%1 on line %2</source>
         <translation>%1 na řádku %2</translation>
     </message>
@@ -3953,8 +4130,8 @@ function dataPass(data, dev, cmd) {
     <name>ScriptEditor</name>
     <message>
         <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.ui" line="14"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="216"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="217"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="220"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="221"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
@@ -3999,19 +4176,19 @@ function dataPass(data, dev, cmd) {
         <translation>Uložit jako...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="186"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="190"/>
         <source>Load file</source>
         <translation>Načíst ze souboru</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="194"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="198"/>
         <source>Failed to open &quot;%1!&quot;</source>
         <translation>Nemůžu otevřit &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="175"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="210"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="211"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="179"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="214"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="215"/>
         <source>%1 - Script</source>
         <translation></translation>
     </message>
@@ -4036,73 +4213,73 @@ function dataPass(data, dev, cmd) {
         <translation>Použít</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="79"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="80"/>
         <source>Load (Ctrl+O)</source>
         <translation>Otevřít (Ctrl+O)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="81"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="82"/>
         <source>Save (Ctrl+S)</source>
         <translation>Uložit (Ctrl+S)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="83"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="85"/>
         <source>Save as... (Ctrl+Shift+S)</source>
         <translation>Uložit jako... (Ctrl+Shift+S)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="85"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="88"/>
         <source>Apply (F5)</source>
         <translation>Použít (F5)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="105"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="109"/>
         <source>Undo (%1)</source>
         <translation>Zpět (%1)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="106"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="110"/>
         <source>Redo (%1)</source>
         <translation>Opakovat (%1)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="246"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="250"/>
         <source>Load example</source>
         <translation>Načíst příklad</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="246"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="250"/>
         <source>Script was changed, do you really want to load an example?</source>
         <translation>Script byl změněn, přejete si přesto načíst vybraný příklad?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="265"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="272"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="269"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="276"/>
         <source>Show errors (%1)</source>
         <translation>Zobrazit chyby (%1)</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="288"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="292"/>
         <source>Can&apos;t open file %1 for writing!</source>
         <translation>Nemůžu otevčit soubor %1 pro zápis!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="294"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="298"/>
         <source>File %1 was saved</source>
         <translation>Subor %1 byl uložen</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="302"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="306"/>
         <source>Save file</source>
         <translation>Uložit soubor</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="371"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="375"/>
         <source>File on disk was changed</source>
         <translation>Soubor na disku byl změněn</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="516"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="520"/>
         <source>Script was changed, but not applied. Apply?</source>
         <translation>Script byl změněn, ale nebyl použit. Použít? </translation>
     </message>
@@ -4119,23 +4296,23 @@ function dataPass(data, dev, cmd) {
         <translation type="obsolete">Ignorovat</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="319"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="323"/>
         <source>Can&apos;t open file %1 for reading!</source>
         <translation>Nemůžu otevčit soubor %1 pro čtení!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="372"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="376"/>
         <source>File on disk was changed. Do you want to reload it from disk?</source>
         <translation>Soubor na disku byl změněn. Chcete ho nahrát z disku?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="480"/>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="515"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="484"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="519"/>
         <source>Script was changed</source>
         <translation>Script se změnil</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="481"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="485"/>
         <source>File was changed, but not saved:</source>
         <translation>Soubor byl změněn, ale není uložen:</translation>
     </message>
@@ -4144,7 +4321,7 @@ function dataPass(data, dev, cmd) {
         <translation type="obsolete">Script byl změněn, ale nebyl použit - změny budou ztraceny! </translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="560"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="564"/>
         <source>Source was applied.</source>
         <translation>Script byl použit.</translation>
     </message>
@@ -4182,57 +4359,57 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
 <context>
     <name>SearchWidget</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="117"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="118"/>
         <source>Add %1</source>
         <translation>Přidat %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="119"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="120"/>
         <source>Clear data</source>
         <translation>Vymazat data</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="120"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="121"/>
         <source>Change structure</source>
         <translation>Změnit strukturu</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="122"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="123"/>
         <source>Create bookmark</source>
         <translation>Přidat záložku</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="123"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="124"/>
         <source>Lock all widgets</source>
         <translation>Uzamknout widgety</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="124"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="125"/>
         <source>Unlock all widgets</source>
         <translation>Odemknout widgety</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="125"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="126"/>
         <source>Toggle grid visibility</source>
         <translation>Ukázat síť</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="126"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="127"/>
         <source>Show/hide bookmarks</source>
         <translation>Přepnout záložky</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="127"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="128"/>
         <source>Align widgets to grid</source>
         <translation>Zarovnat widgety k síti</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="128"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="129"/>
         <source>Toggle area preview</source>
         <translation>Přepnout náhled</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="129"/>
+        <location filename="../src/LorrisAnalyzer/searchwidget.cpp" line="130"/>
         <source>Toggle widget titles</source>
         <translation>Přepnout titulky widgetů</translation>
     </message>
@@ -4240,12 +4417,12 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
 <context>
     <name>SerialPort</name>
     <message>
-        <location filename="../src/connection/serialport.cpp" line="192"/>
+        <location filename="../src/connection/serialport.cpp" line="240"/>
         <source>Connection to %1 lost!</source>
         <translation>Připojení k %1 bylo ztraceno!</translation>
     </message>
     <message>
-        <location filename="../src/connection/serialport.cpp" line="215"/>
+        <location filename="../src/connection/serialport.cpp" line="276"/>
         <source>Clone of </source>
         <translation>Kopie </translation>
     </message>
@@ -4344,27 +4521,27 @@ Dostupné ve scriptu jako objekt &quot;inputLine&quot; (třída QLineEdit).</tra
         <translation>Hlavní</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="97"/>
+        <location filename="../src/ui/settingsdialog.ui" line="118"/>
         <source>Language</source>
         <translation>Jazyk</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="105"/>
+        <location filename="../src/ui/settingsdialog.ui" line="126"/>
         <source>Choose language:</source>
         <translation>Zvolte jazyk:</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="121"/>
+        <location filename="../src/ui/settingsdialog.ui" line="142"/>
         <source>Note: you need to restart Lorris for this change to take effect</source>
         <translation>Poznámka: tato změna se projeví až po restartování Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="156"/>
+        <location filename="../src/ui/settingsdialog.ui" line="177"/>
         <source>Font</source>
         <translation>Písmo</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="188"/>
+        <location filename="../src/ui/settingsdialog.ui" line="209"/>
         <source>Set font for whole application</source>
         <translation>Nastaví písmo pro celou aplikaci</translation>
     </message>
@@ -4376,12 +4553,12 @@ Handy for USB flash drives.</source>
 Užitečné při použití z USB flash disku.</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="221"/>
+        <location filename="../src/ui/settingsdialog.ui" line="242"/>
         <source>Performance</source>
         <translation>Výkon</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="227"/>
+        <location filename="../src/ui/settingsdialog.ui" line="248"/>
         <source>Visual</source>
         <translation>Vzhled</translation>
     </message>
@@ -4391,18 +4568,18 @@ Užitečné při použití z USB flash disku.</translation>
         <translation>Přenostelný mód</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="484"/>
-        <location filename="../src/ui/settingsdialog.cpp" line="153"/>
+        <location filename="../src/ui/settingsdialog.ui" line="505"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="164"/>
         <source>Reset settings</source>
         <translation>Reset nastavení</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="481"/>
+        <location filename="../src/ui/settingsdialog.ui" line="502"/>
         <source>Resets all settings to their default values.</source>
         <translation>Resetuje všechna nastavení na jejich výchozí hodnoty.</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="233"/>
+        <location filename="../src/ui/settingsdialog.ui" line="254"/>
         <source>Use smooth scaling (better quality, but slower) for previews in Analyzer and ctrl+tab preview</source>
         <translation>Použít jemné škálování (kvalitnější, ale pomalejší) při zmenšování náhledů v Analyzéru a ctrl+tab menu</translation>
     </message>
@@ -4432,49 +4609,59 @@ Užitečné při použití z USB flash disku.</translation>
         <translation>Povolit zvuky</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="91"/>
+        <location filename="../src/ui/settingsdialog.ui" line="74"/>
+        <source>Script freeze detector timeout:</source>
+        <translation>Zabít dlouho běžící skripty po:</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/settingsdialog.ui" line="81"/>
+        <source> ms</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/settingsdialog.ui" line="112"/>
         <source>User interface</source>
         <translation>Uživatelské prostředí</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="236"/>
+        <location filename="../src/ui/settingsdialog.ui" line="257"/>
         <source>Smooth scaling of previews</source>
         <translation>Jemné škálování pro náhledy</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="246"/>
+        <location filename="../src/ui/settingsdialog.ui" line="267"/>
         <source>Data files</source>
         <translation>Datové soubory</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="254"/>
-        <location filename="../src/ui/settingsdialog.ui" line="264"/>
+        <location filename="../src/ui/settingsdialog.ui" line="275"/>
+        <location filename="../src/ui/settingsdialog.ui" line="285"/>
         <source>When saving compressed data files, data will be split to X mb blocks so that compression uses less memory.</source>
         <translation>Při ukládání komprimovaných datových souborů budou data rozdělena do X MB bloků,
 takže se při komprimaci použije méně paměti.</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="257"/>
+        <location filename="../src/ui/settingsdialog.ui" line="278"/>
         <source>Compress block size: </source>
         <translation>Velikost bloků při komprimaci:</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="267"/>
+        <location filename="../src/ui/settingsdialog.ui" line="288"/>
         <source> MB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="312"/>
+        <location filename="../src/ui/settingsdialog.ui" line="333"/>
         <source>About</source>
         <translation>O Lorris</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="338"/>
+        <location filename="../src/ui/settingsdialog.ui" line="359"/>
         <source>Lorris</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="374"/>
+        <location filename="../src/ui/settingsdialog.ui" line="395"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -4493,39 +4680,39 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Tahle aplikace je vydaná pod GNU GPLv3.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.ui" line="434"/>
+        <location filename="../src/ui/settingsdialog.ui" line="455"/>
         <source>Check for update</source>
         <translation>Zkontrolovat aktualizace</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="26"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="30"/>
         <source>%1 - git revision %2, using Qt %3</source>
         <translation>%1 - git revize %2, používá Qt %3</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="27"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="31"/>
         <source>Qt runtime %1; compiled againts Qt %2</source>
         <translation>Qt knihovny %1, zkompilováno proti Qt %2</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="43"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="47"/>
         <source>Same as OS - </source>
         <translation>Stejný jako OS - </translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="138"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="149"/>
         <source>Unable to copy settings files!</source>
         <translation>Nemůžu zkopírovat soubor s nastavením!</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="146"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="157"/>
         <source>Update feature is available on Windows only, you have to rebuild Lorris by yourself.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris&lt;/a&gt;</source>
         <translation>Automatická aktualizace je dostupná pouze pro Windows, musíte si Lorris překompilovat sami.
 &lt;a href=&apos;http://tasssadar.github.com/Lorris&apos;&gt;http://tasssadar.github.com/Lorris/cz/&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/settingsdialog.cpp" line="153"/>
+        <location filename="../src/ui/settingsdialog.cpp" line="164"/>
         <source>Do you really wanna to reset all settings to their default values? This will not affect already loaded settings.</source>
         <translation>Opravdu chcete resetovat nastavení na výchozí hodnoty? Toto neovlivní již načtená nastavení.</translation>
     </message>
@@ -4533,17 +4720,17 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SettingsPopup</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="727"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="731"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="729"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="733"/>
         <source>Language:</source>
         <translation>Jazyk:</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="731"/>
+        <location filename="../src/LorrisAnalyzer/DataWidgets/ScriptWidget/scripteditor.cpp" line="735"/>
         <source>Editor:</source>
         <translation></translation>
     </message>
@@ -4866,7 +5053,7 @@ p, li { white-space: pre-wrap; }
         <translation>Hlavička</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="162"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="163"/>
         <source>Length</source>
         <translation>Délka</translation>
     </message>
@@ -4979,7 +5166,7 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
     </message>
     <message>
         <location filename="../src/LorrisAnalyzer/sourcedialog.ui" line="79"/>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="163"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="164"/>
         <source>Static</source>
         <translation>Static</translation>
     </message>
@@ -5029,17 +5216,17 @@ Kvůli tomu nejde nastavit ve standartním UI, proto existuje tato speciální m
         <translation>Text</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="122"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="123"/>
         <source>You have to set something!</source>
         <translation>Musíte něco nastavit!</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="164"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="165"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="165"/>
+        <location filename="../src/LorrisAnalyzer/sourcedialog.cpp" line="166"/>
         <source>Cmd</source>
         <translation>Příkaz</translation>
     </message>
@@ -5236,32 +5423,32 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
 <context>
     <name>Storage</name>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="74"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="83"/>
         <source>File has changed</source>
         <translation>Soubor byl změněn</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="75"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="84"/>
         <source>The file has been changed since last save.</source>
         <translation>Soubor se od posledního uložení změnil.</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="76"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="85"/>
         <source>Ignore and save anyway?</source>
         <translation>Chcete soubor přesto uložit?</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="204"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="213"/>
         <source>Loading data file...</source>
         <translation>Načítám datový soubor...</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="222"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="231"/>
         <source>Error while loading data file: %1</source>
         <translation>Chyba při načítání datového souboru: %1</translation>
     </message>
     <message>
-        <location filename="../src/LorrisAnalyzer/storage.cpp" line="391"/>
+        <location filename="../src/LorrisAnalyzer/storage.cpp" line="400"/>
         <source>Unable to open file %1 for writing!</source>
         <translation>Nemůžu otevřít subor %1!</translation>
     </message>
@@ -5289,12 +5476,12 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
         <translation>Přejmenovat...</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="810"/>
+        <location filename="../src/ui/tabwidget.cpp" line="811"/>
         <source>Rename tab</source>
         <translation>Přejmenovat panel</translation>
     </message>
     <message>
-        <location filename="../src/ui/tabwidget.cpp" line="810"/>
+        <location filename="../src/ui/tabwidget.cpp" line="811"/>
         <source>New name:</source>
         <translation>Nové jméno:</translation>
     </message>
@@ -5391,6 +5578,11 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
         <location filename="../src/connection/tcpsocket.cpp" line="112"/>
         <source>Connection to %1:%2 lost!</source>
         <translation>Připojení k %1:%2 bylo ztraceno!</translation>
+    </message>
+    <message>
+        <location filename="../src/connection/tcpsocket.cpp" line="154"/>
+        <source>Clone of </source>
+        <translation>Kopie </translation>
     </message>
 </context>
 <context>
@@ -5704,6 +5896,24 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
     </message>
 </context>
 <context>
+    <name>UdpSocket</name>
+    <message>
+        <location filename="../src/connection/udpsocket.cpp" line="65"/>
+        <source>Failed to bind UDP socket to port %1 (&quot;%2&quot;)</source>
+        <translation>Nemůžu nabindovat UDP socket &quot;%2&quot; na port %1</translation>
+    </message>
+    <message>
+        <location filename="../src/connection/udpsocket.cpp" line="95"/>
+        <source>Connection to %1:%2 lost!</source>
+        <translation>Připojení k %1:%2 bylo ztraceno!</translation>
+    </message>
+    <message>
+        <location filename="../src/connection/udpsocket.cpp" line="137"/>
+        <source>Clone of </source>
+        <translation>Kopie </translation>
+    </message>
+</context>
+<context>
     <name>UpdateHandler</name>
     <message>
         <location filename="../src/misc/updater.cpp" line="137"/>
@@ -5753,7 +5963,7 @@ Pokud na začátek čísla v poli &quot;Hodnota&quot; přidáte znak &quot;&amp;
 <context>
     <name>Utils</name>
     <message>
-        <location filename="../src/misc/utils.cpp" line="130"/>
+        <location filename="../src/misc/utils.cpp" line="132"/>
         <source>Error!</source>
         <translation>Chyba!</translation>
     </message>
