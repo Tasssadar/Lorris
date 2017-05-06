@@ -37,7 +37,7 @@ public:
     WorkTabMgr();
     ~WorkTabMgr();
 
-    void initialize(const QStringList& openFiles);
+    void initialize(const QStringList& openFiles, const QString& session);
 
     void RegisterTabInfo(WorkTabInfo *info);
 

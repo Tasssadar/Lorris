@@ -57,9 +57,14 @@ QString SessionMgr::getFolder()
     }
 }
 
-QByteArray SessionMgr::openSessionFile(const QString& name)
+QByteArray SessionMgr::openSession(const QString& name)
 {
-    QFile file(getFolder() + name);
+    return openSessionFilePath(getFolder() + name + ".cldta");
+}
+
+QByteArray SessionMgr::openSessionFilePath(const QString& path)
+{
+    QFile file(path);
     if(!file.open(QIODevice::ReadOnly))
         return QByteArray();
 
@@ -169,21 +174,22 @@ void SessionMgr::saveSessionAct()
     updateSessions();
 }
 
-void SessionMgr::loadSession(QString name)
+void SessionMgr::loadSession(QString name, bool closeOthers)
 {
-    bool closeOther = name.isNull();
-    if(closeOther)
+    if(name.isEmpty())
         name = tr("[Last session]");
 
-    if(!name.contains("cldta"))
-        name.append(".cldta");
+    QByteArray data;
+    if(name.contains("cldta"))
+        data = openSessionFilePath(name);
+    else
+        data = openSession(name);
 
-    QByteArray data = openSessionFile(name);
     if(data.isEmpty())
         return;
 
     DataFileParser parser(&data, QIODevice::ReadOnly, getFolder());
-    sWorkTabMgr.loadData(&parser, closeOther);
+    sWorkTabMgr.loadData(&parser, closeOthers);
 }
 
 void SessionMgr::updateSessions()

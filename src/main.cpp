@@ -30,50 +30,59 @@
  #include "misc/updater.h"
 #endif
 
-static bool checkArgs(int argc, char** argv, QStringList& openFiles)
+static bool checkArgs(const QStringList& args, QStringList& openFiles, QString& session)
 {
-    for(int i = 1; i < argc; ++i)
+    for(int i = 1; i < args.size(); ++i)
     {
-        if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0)
+        if(args[i] == "--version" || args[i] == "-v")
         {
             printf("Lorris release %s, git revision %u\n", VERSION, REVISION);
             return false;
         }
-        else if(strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
+        else if(args[i] == "--help" || args[i] == "-h")
         {
             printf("Usage: %s [ARGUMENTS...] [*.cldta file]\n\n"
                 "Lorris, GUI tool for robotics - https://github.com/Tasssadar/Lorris\n\n"
                 "Command line argumens:\n"
-                "           --dump-cldta=FILE    Dump contents of *.cldta file and exit\n"
-                "           --move-data          Move config.ini and sessions to user's documents folder"
-                "       -h, --help               Display this help and exit\n"
-                "       -v, --version            Display version info and exit\n",
-                argv[0]);
+                "           --dump-cldta=FILE              Dump contents of *.cldta file and exit\n"
+                "           --move-data                    Move config.ini and sessions to user's documents folder\n"
+                "       -h, --help                         Display this help and exit\n"
+                "       -s NAME|FILE, --session=NAME|FILE  Open session NAME or FILE\n"
+                "       -v, --version                      Display version info and exit\n",
+                args[0].toStdString().c_str());
             return false;
         }
-        else if(strstr(argv[i], "--dump-cldta="))
+        else if(args[i].startsWith("--dump-cldta="))
         {
             // This will not handle non-ASCII characters on Windows. /care
-            char *p = strchr(argv[i], '=')+1;
-            QString path = QString::fromLocal8Bit(p);
-            DataFileBuilder::dumpFileInfo(path);
+            int idx = args[i].indexOf('=');
+            DataFileBuilder::dumpFileInfo(args[i].mid(idx+1));
             return false;
         }
-        else if(strcmp(argv[i], "--move-data") == 0)
+        else if(args[i] == "--move-data")
         {
             Utils::moveDataFolder();
             return false;
         }
+        else if(args[i] == "-s" && i+1 < args.size())
+        {
+            session = args[i+1];
+            ++i;
+        }
+        else if(args[i].startsWith("--session="))
+        {
+            int idx = args[i].indexOf('=');
+            session = args[i].mid(idx+1);
+        }
         else
         {
-            QString filename(argv[i]);
-            QStringList parts = filename.split(".", QString::SkipEmptyParts);
+            QStringList parts = args[i].split(".", QString::SkipEmptyParts);
 
             if(parts.empty())
                continue;
 
             if(sWorkTabMgr.isFileHandled(parts.back()))
-                openFiles << filename;
+                openFiles << args[i];
         }
     }
     return true;
@@ -130,12 +139,17 @@ int main(int argc, char *argv[])
     // Also adds handled filetypes, so must be before checkArgs
     sWorkTabMgr.SortTabInfos();
 
-    QStringList openFiles;
-    if(!checkArgs(argc, argv, openFiles))
-        return 0;
-
     QtSingleApplication a(argc, argv);
-    if(sConfig.get(CFG_BOOL_ONE_INSTANCE) && a.isRunning() && a.sendMessage("newWindow|" + openFiles.join(";")))
+
+    QStringList openFiles;
+    QString session;
+    if(!checkArgs(a.arguments(), openFiles, session))
+    {
+        fflush(stdout);
+        return 0;
+    }
+
+    if(a.isRunning() && sConfig.get(CFG_BOOL_ONE_INSTANCE) && a.sendMessage("newWindow|" + openFiles.join(";")))
     {
         qWarning("Running instance activated");
         return 0;
@@ -152,6 +166,6 @@ int main(int argc, char *argv[])
 
     registerMetaTypes();
 
-    sWorkTabMgr.initialize(openFiles);
+    sWorkTabMgr.initialize(openFiles, session);
     return a.exec();
 }

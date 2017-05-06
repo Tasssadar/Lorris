@@ -25,7 +25,8 @@ public:
     SessionMgr(QObject *parent);
 
     void initMenu(QMenu *menu);
-    QByteArray openSessionFile(const QString& name);
+    QByteArray openSession(const QString& name);
+    QByteArray openSessionFilePath(const QString& path);
 
     void saveSession(QString name = tr("[Last session]"));
 
@@ -39,7 +40,7 @@ public:
 
 public slots:
     void saveSessionAct();
-    void loadSession(QString name = QString());
+    void loadSession(QString name = QString(), bool closeOthers = false);
     void removeSession(QString name);
 
 private slots:

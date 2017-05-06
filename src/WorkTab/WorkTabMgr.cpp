@@ -27,16 +27,13 @@ WorkTabMgr::~WorkTabMgr()
 {
 }
 
-void WorkTabMgr::initialize(const QStringList &openFiles)
+void WorkTabMgr::initialize(const QStringList &openFiles, const QString& session)
 {
     m_session_mgr = new SessionMgr(this);
     newWindow(openFiles);
 
-    if(openFiles.isEmpty() && sConfig.get(CFG_BOOL_LOAD_LAST_SESSION))
-    {
-        m_session_mgr->loadSession();
-        return;
-    }
+    if(!session.isEmpty() || (openFiles.isEmpty() && sConfig.get(CFG_BOOL_LOAD_LAST_SESSION)))
+        m_session_mgr->loadSession(session, true);
 }
 
 void WorkTabMgr::RegisterTabInfo(WorkTabInfo *info)
