@@ -348,7 +348,7 @@ void Utils::moveDataFolder()
     }
 
     if(dir.rmdir(data))
-        printf("Data successfuly moved to %s\n", documents.toStdString().c_str());
+        utils_printf("Data successfuly moved to %s\n", documents.toStdString().c_str());
     else
         fprintf(stderr, "Failed to remove folder %s", data.toStdString().c_str());
 }

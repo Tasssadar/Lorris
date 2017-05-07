@@ -39,6 +39,14 @@ class QLayout;
   #define PROCESSOR_X86
 #endif
 
+#ifdef Q_OS_WIN
+    #define utils_printf(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
+    #define utils_flush() fflush(stderr)
+#else
+    #define utils_printf(fmt, ...) fprintf(stdout, fmt, ##__VA_ARGS__)
+    #define utils_flush() fflush(stdout)
+#endif
+
 class Utils : public QThread
 {
     Q_OBJECT

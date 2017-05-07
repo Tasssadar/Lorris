@@ -173,7 +173,7 @@ char *DataFileParser::getBlockWithFormat(const char *block, quint8& lenght)
 {
     lenght = strlen(block) + 3;
     char* name = new char[lenght+1];
-    sprintf(name, "%c%s%c%c", 0x80, block, 0, 0x80);
+    snprintf(name, lenght+1, "%c%s%c%c", 0x80, block, 0, 0x80);
     return name;
 }
 
@@ -392,7 +392,7 @@ QByteArray DataFileBuilder::readAndCheck(QFile &file, DataFileTypes expectedType
                 throw QObject::tr("Corrupted data file - MD5 checksum does not match");
         }
         else
-            printf("MD5 checksums do not match!\n");
+            utils_printf("MD5 checksums do not match!\n");
     }
 
 
@@ -546,10 +546,10 @@ void DataFileBuilder::dumpFileInfo(const QString& filename)
         QByteArray data = readAndCheck(f, DATAFILE_NONE, &legacy, &header);
         f.close();
 
-        if(legacy) printf("This file does not have header\n");
+        if(legacy) utils_printf("This file does not have header\n");
         else       dumpHeader(header);
 
-        printf("\nData blocks:\n");
+        utils_printf("\nData blocks:\n");
         int cur = 0;
         char *st, *itr;
         int offset = legacy ? 0 : sizeof(DataFileHeader);
@@ -561,7 +561,7 @@ void DataFileBuilder::dumpFileInfo(const QString& filename)
                 if(*itr == 0)
                 {
                     if(*(itr+1) == (char)0x80 && itr != st)
-                        printf("%08X: %s\n", cur+offset, st);
+                        utils_printf("%08X: %s\n", cur+offset, st);
                     break;
                 }
             }
@@ -570,7 +570,7 @@ void DataFileBuilder::dumpFileInfo(const QString& filename)
     }
     catch (const QString& str)
     {
-        printf("ERROR: %s\n", str.toStdString().c_str());
+        utils_printf("ERROR: %s\n", str.toStdString().c_str());
     }
 }
 
@@ -595,15 +595,15 @@ void DataFileBuilder::dumpHeader(const DataFileHeader& header)
     }
 
     QString md5 = Utils::toBase16((quint8*)header.md5, (quint8*)header.md5+16);
-    printf("Header:\n");
-    printf("             str: %c%c%c%c\n", header.str[0], header.str[1], header.str[2], header.str[3]);
-    printf("         version: %u\n", header.version);
-    printf("           flags: 0x%X - %s\n", header.flags, flags.toStdString().c_str());
-    printf("       data_type: %u (%s)\n", header.data_type, type.toStdString().c_str());
-    printf("             md5: %s\n", md5.toStdString().c_str());
-    printf("     header_size: %u\n", header.header_size);
-    printf("compressed_block: %u (%.1f MB)\n", header.compressed_block, float(header.compressed_block)/1024/1024);
-    printf("      lorris_rev: %u\n", header.lorris_rev);
+    utils_printf("Header:\n");
+    utils_printf("             str: %c%c%c%c\n", header.str[0], header.str[1], header.str[2], header.str[3]);
+    utils_printf("         version: %u\n", header.version);
+    utils_printf("           flags: 0x%X - %s\n", header.flags, flags.toStdString().c_str());
+    utils_printf("       data_type: %u (%s)\n", header.data_type, type.toStdString().c_str());
+    utils_printf("             md5: %s\n", md5.toStdString().c_str());
+    utils_printf("     header_size: %u\n", header.header_size);
+    utils_printf("compressed_block: %u (%.1f MB)\n", header.compressed_block, float(header.compressed_block)/1024/1024);
+    utils_printf("      lorris_rev: %u\n", header.lorris_rev);
 }
 
 ProgressReporter::ProgressReporter() : QObject()

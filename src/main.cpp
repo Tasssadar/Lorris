@@ -36,12 +36,12 @@ static bool checkArgs(const QStringList& args, QStringList& openFiles, QString& 
     {
         if(args[i] == "--version" || args[i] == "-v")
         {
-            printf("Lorris release %s, git revision %u\n", VERSION, REVISION);
+            utils_printf("Lorris release %s, git revision %u\n", VERSION, REVISION);
             return false;
         }
         else if(args[i] == "--help" || args[i] == "-h")
         {
-            printf("Usage: %s [ARGUMENTS...] [*.cldta file]\n\n"
+            utils_printf("Usage: %s [ARGUMENTS...] [*.cldta file]\n\n"
                 "Lorris, GUI tool for robotics - https://github.com/Tasssadar/Lorris\n\n"
                 "Command line argumens:\n"
                 "           --dump-cldta=FILE              Dump contents of *.cldta file and exit\n"
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
     QString session;
     if(!checkArgs(a.arguments(), openFiles, session))
     {
-        fflush(stdout);
+        utils_flush();
         return 0;
     }
 
