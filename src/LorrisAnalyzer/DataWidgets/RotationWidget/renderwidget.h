@@ -8,7 +8,7 @@
 #ifndef RENDERWIDGET_H
 #define RENDERWIDGET_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QVector>
 #include <QVector3D>
 #include <QVector2D>
@@ -21,7 +21,7 @@ class DataFileParser;
 
 using namespace GLUtils;
 
-class RenderWidget : public QGLWidget
+class RenderWidget : public QOpenGLWidget
 {
     Q_OBJECT
 public:

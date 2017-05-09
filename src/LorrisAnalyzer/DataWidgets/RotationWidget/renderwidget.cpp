@@ -16,11 +16,11 @@
 #include "../../../misc/utils.h"
 #include "../../../misc/datafileparser.h"
 
-#define RENDER_TIMER 16
+#define RENDER_TIMER 33 // peasantry
 #define DEFAULT_MODEL ":/models/default.obj"
 
 RenderWidget::RenderWidget(QWidget *parent) :
-    QGLWidget(parent)
+    QOpenGLWidget(parent)
 {
     m_modelRotX = m_modelRotY = m_modelRotZ = 0;
     m_renderRequested = false;
@@ -131,13 +131,12 @@ void RenderWidget::resizeGL(int width, int height)
 
     glMatrixMode(GL_MODELVIEW);
 
-    updateGL();
+    update();
 }
 
 void RenderWidget::paintGL()
 {
-
-    qglClearColor(Qt::darkGray);
+    glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
@@ -240,14 +239,14 @@ void RenderWidget::setRotationZ(float ang)
 void RenderWidget::mousePressEvent(QMouseEvent *ev)
 {
     if(!(ev->buttons() & (Qt::LeftButton | Qt::MidButton)))
-        return QGLWidget::mousePressEvent(ev);
+        return QOpenGLWidget::mousePressEvent(ev);
     lastPos = ev->pos();
 }
 
 void RenderWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if(!(event->buttons() & (Qt::LeftButton | Qt::MidButton)))
-        return QGLWidget::mouseMoveEvent(event);
+        return QOpenGLWidget::mouseMoveEvent(event);
 
     int dx = event->x() - lastPos.x();
     int dy = event->y() - lastPos.y();
@@ -270,7 +269,7 @@ void RenderWidget::wheelEvent(QWheelEvent *ev)
     m_scale += 0.05*(delta/120);
     if(m_scale <= 0)
         m_scale = 0.05;
-    updateGL();
+    update();
 }
 
 void RenderWidget::keyPressEvent(QKeyEvent *ev)
@@ -302,13 +301,13 @@ void RenderWidget::keyPressEvent(QKeyEvent *ev)
         case Qt::Key_Shift:
         case Qt::Key_Q:
             m_y += 0.25;
-            return updateGL();
+            return update();
         case Qt::Key_Control:
         case Qt::Key_E:
             m_y -= 0.25;
-            return updateGL();
+            return update();
         default:
-            return QGLWidget::keyPressEvent(ev);
+            return QOpenGLWidget::keyPressEvent(ev);
     }
 
     ang *= (M_PI / 180);
@@ -322,7 +321,7 @@ void RenderWidget::keyPressEvent(QKeyEvent *ev)
 void RenderWidget::requestRender()
 {
     if(m_lastRender.elapsed() > RENDER_TIMER)
-        updateGL();
+        update();
     else
         m_timer->start();
 }
