@@ -1035,9 +1035,6 @@ void WidgetAreaPreview::prepareRender()
 void WidgetAreaPreview::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
-    p.setBackgroundMode(Qt::TransparentMode);
-    p.setBackground(QBrush(Qt::transparent));
-    p.setOpacity(0.8);
 
     p.drawPixmap(QPoint(), m_render);
 
