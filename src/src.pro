@@ -164,7 +164,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/modes/shupitospitunnel.cpp \
     connection/shupitospitunnelconn.cpp \
     LorrisProgrammer/programmers/arduinoprogrammer.cpp \
-    connection/udpsocket.cpp
+    connection/udpsocket.cpp \
+    LorrisProgrammer/programmers/zmodemprogrammer.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -303,7 +304,8 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/modes/shupitospitunnel.h \
     connection/shupitospitunnelconn.h \
     LorrisProgrammer/programmers/arduinoprogrammer.h \
-    connection/udpsocket.h
+    connection/udpsocket.h \
+    LorrisProgrammer/programmers/zmodemprogrammer.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
