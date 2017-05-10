@@ -22,5 +22,6 @@
         <file alias="arrow-bottom">icons/go-bottom.png</file>
         <file alias="arrow-top">icons/go-top.png</file>
         <file alias="arduino">icons/arduino.png</file>
+        <file alias="zmodem">icons/zmodem.png</file>
     </qresource>
 </RCC>

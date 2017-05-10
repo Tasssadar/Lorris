@@ -184,6 +184,7 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     m_prog_btns[programmer_atsam] = ui->progAtsam;
     m_prog_btns[programmer_avr109] = ui->progAVR109;
     m_prog_btns[programmer_arduino] = ui->progArduino;
+    m_prog_btns[programmer_zmodem] = ui->progZmodem;
 
     ui->programmerSelection->setVisible(false);
 
