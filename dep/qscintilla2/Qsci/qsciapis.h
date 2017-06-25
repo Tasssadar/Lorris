@@ -26,7 +26,7 @@
 #ifndef QSCIAPIS_H
 #define QSCIAPIS_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -221,7 +221,7 @@ private:
     QsciAPIs &operator=(const QsciAPIs &);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

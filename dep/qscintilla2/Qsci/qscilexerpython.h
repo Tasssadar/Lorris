@@ -26,7 +26,7 @@
 #ifndef QSCILEXERPYTHON_H
 #define QSCILEXERPYTHON_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -327,7 +327,7 @@ private:
     QsciLexerPython &operator=(const QsciLexerPython &);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

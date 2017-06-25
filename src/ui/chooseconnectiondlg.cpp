@@ -358,6 +358,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             setActiveProgBtn(tc->programmerType());
         }
         break;
+#ifdef HAVE_LIBYB
     case CONNECTION_USB_ACM2:
         {
             UsbAcmConnection2 * c = static_cast<UsbAcmConnection2 *>(conn);
@@ -400,6 +401,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             }
         }
         break;
+#endif
     case CONNECTION_SHUPITO_TUNNEL:
         {
             ShupitoTunnel * st = static_cast<ShupitoTunnel *>(conn);
@@ -465,9 +467,11 @@ void ChooseConnectionDlg::on_actionCreateUdpSocket_triggered()
 
 void ChooseConnectionDlg::on_actionCreateUsbAcmConn_triggered()
 {
+#ifdef HAVE_LIBYB
     UsbAcmConnection2 * conn = sConMgr2.createUsbAcmConn();
     conn->setName(tr("New USB connection"));
     this->focusNewConn(conn);
+#endif
 }
 
 void ChooseConnectionDlg::on_actionRemoveConnection_triggered()
@@ -662,6 +666,7 @@ void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
 
 void ChooseConnectionDlg::on_usbVidEdit_textChanged(QString const & value)
 {
+#ifdef HAVE_LIBYB
     if (!m_current)
         return;
     Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
@@ -670,10 +675,12 @@ void ChooseConnectionDlg::on_usbVidEdit_textChanged(QString const & value)
     int n = value.toInt(&ok, 16);
     if (ok)
         static_cast<UsbAcmConnection2 *>(m_current.data())->setVid(n);
+#endif
 }
 
 void ChooseConnectionDlg::on_usbPidEdit_textChanged(QString const & value)
 {
+#ifdef HAVE_LIBYB
     if (!m_current)
         return;
     Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
@@ -682,26 +689,32 @@ void ChooseConnectionDlg::on_usbPidEdit_textChanged(QString const & value)
     int n = value.toInt(&ok, 16);
     if (ok)
         static_cast<UsbAcmConnection2 *>(m_current.data())->setPid(n);
+#endif
 }
 
 void ChooseConnectionDlg::on_usbAcmSnEdit_textChanged(QString const & value)
 {
+#ifdef HAVE_LIBYB
     if (!m_current)
         return;
     Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
     static_cast<UsbAcmConnection2 *>(m_current.data())->setSerialNumber(value);
+#endif
 }
 
 void ChooseConnectionDlg::on_usbIntfNameEdit_textChanged(QString const & value)
 {
+#ifdef HAVE_LIBYB
     if (!m_current)
         return;
     Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
     static_cast<UsbAcmConnection2 *>(m_current.data())->setIntfName(value);
+#endif
 }
 
 void ChooseConnectionDlg::on_usbBaudRateEdit_editTextChanged(QString const & value)
 {
+#ifdef HAVE_LIBYB
     if (!m_current)
         return;
     Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
@@ -710,33 +723,40 @@ void ChooseConnectionDlg::on_usbBaudRateEdit_editTextChanged(QString const & val
     uint baud_rate = value.toUInt(&ok);
     if (ok)
         static_cast<UsbAcmConnection2 *>(m_current.data())->setBaudRate(baud_rate);
+#endif
 }
 
 void ChooseConnectionDlg::on_usbDataBitsCombo_currentIndexChanged(int value)
 {
+#ifdef HAVE_LIBYB
     if (!m_current)
         return;
     Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
 
     static_cast<UsbAcmConnection2 *>(m_current.data())->setDataBits(ui->usbDataBitsCombo->itemText(value).toInt());
+#endif
 }
 
 void ChooseConnectionDlg::on_usbParityCombo_currentIndexChanged(int value)
 {
+#ifdef HAVE_LIBYB
     if (!m_current)
         return;
     Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
 
     static_cast<UsbAcmConnection2 *>(m_current.data())->setParity((UsbAcmConnection2::parity_t)value);
+#endif
 }
 
 void ChooseConnectionDlg::on_usbStopBitsCombo_currentIndexChanged(int value)
 {
+#ifdef HAVE_LIBYB
     if (!m_current)
         return;
     Q_ASSERT(dynamic_cast<UsbAcmConnection2 *>(m_current.data()) != 0);
 
     static_cast<UsbAcmConnection2 *>(m_current.data())->setStopBits((UsbAcmConnection2::stop_bits_t)value);
+#endif
 }
 
 void ChooseConnectionDlg::on_actionConnect_triggered()

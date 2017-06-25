@@ -26,7 +26,7 @@
 #ifndef QSCISTYLE_H
 #define QSCISTYLE_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -195,7 +195,7 @@ private:
     void init(int style);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

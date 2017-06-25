@@ -27,8 +27,8 @@
 #ifndef QSCISCINTILLA_H
 #define QSCISCINTILLA_H
 
-#ifdef __APPLE__
-extern "C++" {
+#if 0 // __APPLE__
+//extern "C++" {
 #endif
 
 #include <qobject.h>
@@ -42,7 +42,7 @@ extern "C++" {
 #include <Qsci/qscicommand.h>
 #include <Qsci/qscidocument.h>
 #include <Qsci/qsciscintillabase.h>
-
+#include <Qsci/qscilexer.h>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -2097,8 +2097,8 @@ private:
     QsciScintilla &operator=(const QsciScintilla &);
 };
 
-#ifdef __APPLE__
-}
+#if 0 // __APPLE__
+//}
 #endif
 
 #endif

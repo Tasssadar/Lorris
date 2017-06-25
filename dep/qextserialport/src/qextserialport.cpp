@@ -953,5 +953,3 @@ qint64 QextSerialPort::writeData(const char *data, qint64 maxSize)
     QWriteLocker locker(&d->lock);
     return d->writeData_sys(data, maxSize);
 }
-
-#include "moc_qextserialport.cpp"

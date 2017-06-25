@@ -26,7 +26,7 @@
 #ifndef QSCIMACRO_H
 #define QSCIMACRO_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -105,7 +105,7 @@ private:
     QsciMacro &operator=(const QsciMacro &);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

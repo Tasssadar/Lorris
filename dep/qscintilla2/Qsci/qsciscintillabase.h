@@ -26,7 +26,7 @@
 #ifndef QSCISCINTILLABASE_H
 #define QSCISCINTILLABASE_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -3322,7 +3322,7 @@ private:
     QsciScintillaBase &operator=(const QsciScintillaBase &);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

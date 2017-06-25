@@ -16,11 +16,14 @@
 #include "shupitocc25xx.h"
 #include "shupitospiflash.h"
 #include "shupitods89c.h"
-#include "shupitojtag.h"
 #include "shupitospi.h"
 #include "shupitospitunnel.h"
 #include "../../shared/defmgr.h"
 #include "../../shared/hexfile.h"
+
+#ifdef HAVE_LIBYB
+#include "shupitojtag.h"
+#endif
 
 ShupitoMode::ShupitoMode(Shupito *shupito)
     : m_cancel_requested(false), m_shupito(shupito)
@@ -55,10 +58,12 @@ ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito, ShupitoDesc *de
         if (desc->getConfig("633125ab-32e0-49ec-b240-7d845bb70b2d"))
             return new ShupitoSpiFlash(shupito);
         return nullptr;
+#ifdef HAVE_LIBYB
     case MODE_JTAG:
         if (desc->getConfig("fe047e35-dec8-48ab-b194-e3762c8f6b66"))
             return new ShupitoJtag(shupito);
         return nullptr;
+#endif
     case MODE_SPITUNNEL:
         if(desc->getConfig("633125ab-32e0-49ec-b240-7d845bb70b2d"))
             return new ShupitoSpiTunnel(shupito);

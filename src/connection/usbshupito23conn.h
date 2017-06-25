@@ -4,6 +4,7 @@
 #include "connection.h"
 #include "shupitoconn.h"
 #include "../misc/threadchannel.h"
+
 #include <libyb/usb/usb_device.hpp>
 #include <libyb/usb/interface_guard.hpp>
 #include <libyb/async/async_channel.hpp>

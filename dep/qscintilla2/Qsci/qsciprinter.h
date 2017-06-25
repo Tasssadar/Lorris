@@ -26,7 +26,7 @@
 #ifndef QSCIPRINTER_H
 #define QSCIPRINTER_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -114,7 +114,7 @@ private:
     QsciPrinter &operator=(const QsciPrinter &);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 
