@@ -17,6 +17,7 @@
 #include <QLabel>
 #include <QDrag>
 #include <QMimeData>
+#include <QMenuBar>
 
 #include "tabview.h"
 #include "homedialog.h"
@@ -45,7 +46,6 @@ TabView::TabView(MainWindow *parent) :
     layout->setMargin(LAYOUT_MARGIN);
 
     m_active_widget = newTabWidget(layout);
-
     QMenu *file_menu = new QMenu(tr("&File"), this);
     QMenu *session_menu = new QMenu(tr("&Sessions"), this);
     QMenu *opt_menu = new QMenu(tr("&Options"), this);
@@ -57,6 +57,15 @@ TabView::TabView(MainWindow *parent) :
     m_menus.push_back(opt_menu->menuAction());
     m_menus.push_back(connectAll);
     m_menus.push_back(disconnectAll);
+
+    QMenuBar *menuBar = new QMenuBar(0);
+
+    menuBar->addMenu(file_menu);
+    menuBar->addAction(connectAll);
+    menuBar->addAction(disconnectAll);
+    menuBar->addMenu(session_menu);
+    menuBar->addMenu(opt_menu);
+    parent->setMenuBar(menuBar);
 
     QMenu * menuFileNew = file_menu->addMenu(tr("&New"));
     {

@@ -13,6 +13,7 @@
 #include <qtsingleapplication/qtsingleapplication.h>
 #include <QScopedPointer>
 #include <QMetaType>
+#include <QMenuBar>
 #include <QProxyStyle>
 
 #include "revision.h"

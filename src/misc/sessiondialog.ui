@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>453</width>
+    <width>498</width>
     <height>300</height>
    </rect>
   </property>
@@ -32,11 +32,7 @@
         <string>Save new session</string>
        </property>
        <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../actions.qrc">
-         <normaloff>:/actions/icons/list-add_32.png</normaloff>:/actions/icons/list-add_32.png</iconset>
+        <string>+</string>
        </property>
        <property name="iconSize">
         <size>
@@ -49,17 +45,13 @@
      <item>
       <widget class="QPushButton" name="removeBtn">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="toolTip">
         <string>Delete session</string>
        </property>
        <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../actions.qrc">
-         <normaloff>:/actions/icons/list-remove_32.png</normaloff>:/actions/icons/list-remove_32.png</iconset>
+        <string>-</string>
        </property>
        <property name="iconSize">
         <size>
@@ -104,9 +96,7 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../actions.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

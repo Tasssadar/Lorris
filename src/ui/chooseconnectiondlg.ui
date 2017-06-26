@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>653</width>
-    <height>650</height>
+    <width>661</width>
+    <height>665</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,19 +70,24 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QToolButton" name="createConnectionBtn">
-           <property name="icon">
-            <iconset resource="../icons.qrc">
-             <normaloff>:/icons/list-add</normaloff>:/icons/list-add</iconset>
+          <widget class="QPushButton" name="createConnectionBtn">
+           <property name="mouseTracking">
+            <bool>false</bool>
            </property>
-           <property name="popupMode">
-            <enum>QToolButton::InstantPopup</enum>
+           <property name="contextMenuPolicy">
+            <enum>Qt::NoContextMenu</enum>
            </property>
-           <property name="autoRaise">
+           <property name="toolTip">
+            <string notr="true"/>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="autoDefault">
             <bool>true</bool>
-           </property>
-           <property name="arrowType">
-            <enum>Qt::NoArrow</enum>
            </property>
           </widget>
          </item>
