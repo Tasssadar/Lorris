@@ -68,7 +68,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 #ifdef __APPLE__
-//    this->setDocumentMode(true);
+    this->setDocumentMode(true);
 #endif
 
     sWorkTabMgr.registerTabWidget(this);

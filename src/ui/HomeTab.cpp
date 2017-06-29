@@ -15,9 +15,6 @@
 #include "../WorkTab/WorkTabMgr.h"
 #include "chooseconnectiondlg.h"
 
-//#import <AppKit/AppKit.h>
-//#include <QMacCocoaViewContainer>
-//#include <QLayout>
 
 
 #include "../ui/ui_hometab.h"
@@ -39,7 +36,7 @@ HomeTab::HomeTab(QWidget *parent) : Tab(TABTYPE_HOME, parent), ui(new Ui::HomeTa
         btn->setText(info->GetName());
         btn->setDescription(info->GetDescription());
         btn->setMaximumHeight(100);
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
         QIcon icon(":/icons/icons/follow-link.png");
         btn->setIcon(icon);
 
