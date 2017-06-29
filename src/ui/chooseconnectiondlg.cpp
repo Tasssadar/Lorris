@@ -162,7 +162,9 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     menu->addAction(ui->actionCreateSerialPort);
     menu->addAction(ui->actionCreateTcpClient);
     menu->addAction(ui->actionCreateUdpSocket);
+#ifndef __APPLE__
     menu->addAction(ui->actionCreateUsbAcmConn);
+#endif
     ui->createConnectionBtn->setMenu(menu);
 
     sConMgr2.refresh();
