@@ -12,6 +12,7 @@
 #include <set>
 #include <QHash>
 #include <QLocale>
+#include <QMenuBar>
 
 #include "../misc/sessionmgr.h"
 #include "tabwidget.h"
@@ -83,6 +84,10 @@ public:
 
     bool canCloseWindow();
     void forceCloseChilds();
+
+#ifdef __APPLE__
+    QMenuBar *m_menuBar;
+#endif
 
 private slots:
     void split(int pos, int index);

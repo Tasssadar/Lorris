@@ -441,11 +441,13 @@ unix:!macx:!symbian {
 macx {
     LIBS += -lqwt_lorris -lqextserialport_lorris
     #CONFIG += libyb
+    ICON = icon.icns
+
 
     translations.path = /usr/share/lorris/
     translations.files = ../translations/Lorris.*.qm
-    qext.path = /usr/lib/
-    qext.files = ../dep/qextserialport/lib/libqextserialport_lorris.*
+#    qext.path = /usr/lib/
+#    qext.files = ../dep/qextserialport/lib/libqextserialport_lorris.*
     target.path = /Applications/
     INSTALLS += target translations qext
 }

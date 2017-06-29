@@ -30,13 +30,17 @@ FilterTabWidget::FilterTabWidget(QWidget *parent) :
     m_header = NULL;
 
     setTabPosition(QTabWidget::South);
-
+#ifdef __APPLE__
+    setTabPosition(QTabWidget::North);
+#endif
     addEmptyFilter();
 
     QPushButton *btn = new QPushButton(tr("Filters"), this);
-    btn->setIcon(QIcon(":/icons/system_dark"));
-    setCornerWidget(btn, Qt::BottomLeftCorner);
-
+#ifdef __APPLE__
+    setCornerWidget(btn, Qt::TopLeftCorner);
+#else
+     setCornerWidget(btn, Qt::BottomLeftCorner);
+#endif
     connect(btn, SIGNAL(clicked()), SLOT(showSettings()));
 }
 
@@ -242,9 +246,15 @@ void FilterTabWidget::addFilter(DataFilter *f)
     QWidget *w = new QWidget();
 
     QPalette p = area->palette();
-    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    p.setColor(QPalette::Window, QColor("#ececec"));
+
     area->setPalette(p);
     area->setAutoFillBackground(true);
+
+#ifdef __APPLE__
+    area->setStyleSheet("QScrollArea {border: 0px; background-color: transparent;}");
+    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+#endif
 
     if(m_header)
     {

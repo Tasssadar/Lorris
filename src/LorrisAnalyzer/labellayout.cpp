@@ -21,6 +21,10 @@ LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enab
 {
     setSizeConstraint(QLayout::SetMinAndMaxSize);
 
+#ifdef __APPLE__
+    parent->setStyleSheet("background-color: transparent;");
+#endif
+
     if(enable_reorder && enable_drag)
     {
         m_spacer_l = new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Expanding);

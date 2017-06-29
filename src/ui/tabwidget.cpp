@@ -12,7 +12,6 @@
 #include <QPushButton>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QMenuBar>
 #include <QHBoxLayout>
 #include <QStyleOption>
 #include <QStylePainter>
@@ -40,15 +39,20 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     m_switchWidget = NULL;
     m_altEventValid = false;
 
+
     m_tab_bar = new TabBar(m_id, this);
     setTabBar(m_tab_bar);
+
     m_menuBtn = new QPushButton(tr("&Menu"), this);
     m_menuBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     m_menuBtn->setMenu(m_menu);
     m_menuBtn->setFlat(true);
     m_menuBtn->installEventFilter(this);
-
+#ifdef __APPLE__
+    m_menuBtn->hide();
+#else
     setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
+#endif
 
     new QShortcut(QKeySequence("Ctrl+T"), this, SLOT(newTabBtn()), NULL, Qt::WidgetWithChildrenShortcut);
 
@@ -64,7 +68,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 #ifdef __APPLE__
-    this->setDocumentMode(true);
+//    this->setDocumentMode(true);
 #endif
 
     sWorkTabMgr.registerTabWidget(this);
@@ -267,18 +271,29 @@ void TabWidget::changeMenu(int idx)
     clearMenu();
 
     const std::vector<QAction*>& acts = tab->getActions();
-    for(quint32 i = 0; i < acts.size(); ++i)
+    for(quint32 i = 0; i < acts.size(); ++i) {
         m_menu->addAction(acts[i]);
+#ifdef __APPLE__
+        tabView()->m_menuBar->addAction(acts[i]);
+#endif
+    }
     m_menuBtn->setEnabled(true);
 }
 
 void TabWidget::clearMenu()
 {
     m_menu->clear();
+#ifdef __APPLE__
+    tabView()->m_menuBar->clear();
+#endif
 
     const std::vector<QAction*>& menus = tabView()->getMenus();
-    for(quint32 i = 0; i < menus.size(); ++i)
+    for(quint32 i = 0; i < menus.size(); ++i) {
         m_menu->addAction(menus[i]);
+#ifdef __APPLE__
+        tabView()->m_menuBar->addAction(menus[i]);
+#endif
+    }
 
     m_menu->addSeparator();
 }

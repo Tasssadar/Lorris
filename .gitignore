@@ -70,3 +70,7 @@ dep/qwt/src/release/
 dep/qwt/lib/
 src/ipch/
 src/pch.h.cpp
+
+*.dylib
+
+*.cldta

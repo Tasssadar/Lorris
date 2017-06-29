@@ -114,13 +114,15 @@ LorrisAnalyzer::LorrisAnalyzer()
     bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     bar->setIconSize(QSize(16, 16));
     bar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+//    bar
+//    bar->showIn
+//    window()->
 
 
 //    QPalette p(bar->palette());
 //    p.setColor(QPalette::AlternateBase, Qt::blue);
 //    bar->setPalette(p);
     bar->setStyleSheet("QToolBar { border: 0px; background-color: transparent;}");
-
     ui->topLayout->insertWidget(1, bar);
 
     bar->addAction(newSource);

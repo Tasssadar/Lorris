@@ -17,6 +17,7 @@
 #include <QLabel>
 #include <QDrag>
 #include <QMimeData>
+#include <QToolBar>
 #include <QMenuBar>
 
 #include "tabview.h"
@@ -30,13 +31,17 @@
 #include "../connection/connectionmgr2.h"
 
 #ifdef Q_OS_WIN
- #include "../misc/updater.h"
+#include "../misc/updater.h"
+#endif
+
+#ifdef __APPLE__
+void qt_mac_set_dock_menu(QMenu *menu);
 #endif
 
 #define LAYOUT_MARGIN 4
 
 TabView::TabView(MainWindow *parent) :
-    QWidget(parent), m_active_widget(NULL)
+    QWidget(parent), m_active_widget(NULL), m_menuBar(NULL)
 {
     m_windowId = parent->getId();
     m_blockActive = false;
@@ -51,21 +56,24 @@ TabView::TabView(MainWindow *parent) :
     QMenu *opt_menu = new QMenu(tr("&Options"), this);
     QAction *connectAll = new QAction(tr("&Open all connections"), this);
     QAction *disconnectAll = new QAction(tr("&Close all connections"), this);
-
     m_menus.push_back(file_menu->menuAction());
     m_menus.push_back(session_menu->menuAction());
     m_menus.push_back(opt_menu->menuAction());
     m_menus.push_back(connectAll);
     m_menus.push_back(disconnectAll);
 
-    QMenuBar *menuBar = new QMenuBar(0);
 
-    menuBar->addMenu(file_menu);
-    menuBar->addAction(connectAll);
-    menuBar->addAction(disconnectAll);
-    menuBar->addMenu(session_menu);
-    menuBar->addMenu(opt_menu);
-    parent->setMenuBar(menuBar);
+#ifdef __APPLE__
+    m_menuBar = new QMenuBar(0);
+    m_menuBar->addMenu(file_menu);
+//    m_menuBar->addAction(connectAll);
+//    m_menuBar->addAction(disconnectAll);
+    m_menuBar->addMenu(session_menu);
+    m_menuBar->addMenu(opt_menu);
+
+    qt_mac_set_dock_menu(file_menu);
+    parent->setMenuBar(m_menuBar);
+#endif
 
     QMenu * menuFileNew = file_menu->addMenu(tr("&New"));
     {
@@ -85,8 +93,14 @@ TabView::TabView(MainWindow *parent) :
 
     QAction* actionConnectionManager = file_menu->addAction(tr("Connection &manager..."));
     QAction* actCloseAll = file_menu->addAction(tr("Close &all tabs"));
+#ifndef __APPLE__
     QAction* actionQuit = file_menu->addAction(tr("&Close"));
     actionQuit->setShortcut(QKeySequence("Alt+F4"));
+#else
+    file_menu->addSeparator();
+    file_menu->addAction(connectAll);
+    file_menu->addAction(disconnectAll);
+#endif
 
     sWorkTabMgr.getSessionMgr()->initMenu(session_menu);
 
@@ -96,7 +110,9 @@ TabView::TabView(MainWindow *parent) :
     connect(actionConnectionManager, SIGNAL(triggered()), SLOT(OpenConnectionManager()));
     connect(settingsAct,             SIGNAL(triggered()), SLOT(showSettings()));
     connect(updateAct,               SIGNAL(triggered()), SLOT(checkForUpdate()));
+#ifndef __APPLE__
     connect(actionQuit,              SIGNAL(triggered()), SIGNAL(closeWindow()));
+#endif
     connect(newW,                    SIGNAL(triggered()), &sWorkTabMgr, SLOT(newWindow()));
     connect(actCloseAll,             SIGNAL(triggered()), SLOT(closeAllTabs()));
     connect(connectAll,              SIGNAL(triggered()), &sConMgr2, SLOT(connectAll()));

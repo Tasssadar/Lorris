@@ -71,23 +71,8 @@
          </property>
          <item>
           <widget class="QPushButton" name="createConnectionBtn">
-           <property name="mouseTracking">
-            <bool>false</bool>
-           </property>
-           <property name="contextMenuPolicy">
-            <enum>Qt::NoContextMenu</enum>
-           </property>
-           <property name="toolTip">
-            <string notr="true"/>
-           </property>
-           <property name="autoFillBackground">
-            <bool>false</bool>
-           </property>
            <property name="text">
-            <string/>
-           </property>
-           <property name="autoDefault">
-            <bool>true</bool>
+            <string>Choose new connection</string>
            </property>
           </widget>
          </item>
