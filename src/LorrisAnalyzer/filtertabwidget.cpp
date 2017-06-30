@@ -29,19 +29,23 @@ FilterTabWidget::FilterTabWidget(QWidget *parent) :
     m_filterIdCounter = 0;
     m_header = NULL;
 
-    setTabPosition(QTabWidget::South);
 #ifdef __APPLE__
     setTabPosition(QTabWidget::North);
+#else
+    setTabPosition(QTabWidget::South);
+#endif
+
+#ifndef __APPLE__
+    QPushButton *btn = new QPushButton(tr("Filters"), this);
+    setCornerWidget(btn, Qt::BottomLeftCorner);
+    connect(btn, SIGNAL(clicked()), SLOT(showSettings()));
+#else
+    QWidget *empty = new QWidget();
+    addTab(empty, tr("Filters"));
+
+    connect(this, SIGNAL(tabBarClicked(int)), this, SLOT(showSettings(int)));
 #endif
     addEmptyFilter();
-
-    QPushButton *btn = new QPushButton(tr("Filters"), this);
-#ifdef __APPLE__
-    setCornerWidget(btn, Qt::TopLeftCorner);
-#else
-     setCornerWidget(btn, Qt::BottomLeftCorner);
-#endif
-    connect(btn, SIGNAL(clicked()), SLOT(showSettings()));
 }
 
 FilterTabWidget::~FilterTabWidget()
@@ -230,10 +234,18 @@ void FilterTabWidget::handleData(analyzer_data *data, quint32 index)
         m_filters[i]->handleData(data, index);
 }
 
-void FilterTabWidget::showSettings()
-{
+void FilterTabWidget::showSettings(int index)
+{    
+#ifdef __APPLE__
+    if (index != 0)
+        return;
+#endif
+
     FilterDialog d(this);
     d.exec();
+#ifdef __APPLE__
+    setCurrentIndex(currentIndex());
+#endif
 }
 
 void FilterTabWidget::addFilter(DataFilter *f)
@@ -263,6 +275,10 @@ void FilterTabWidget::addFilter(DataFilter *f)
     }
     area->setWidget(w);
     addTab(area, f->getName());
+
+#ifdef __APPLE__
+    setCurrentIndex(indexOf(area));
+#endif
 
     f->setAreaAndLayout(area, layout);
     m_filters.push_back(f);
