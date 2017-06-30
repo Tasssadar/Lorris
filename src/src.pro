@@ -439,15 +439,29 @@ unix:!macx:!symbian {
     INSTALLS += target translations
 }
 macx {
-    LIBS += -lqwt_lorris -lqextserialport_lorris
+    #Note: Mac apps are designed as bundles, so using shared library is aganst mac conventions
+    LIBS += -lqwt_lorris -framework IOKit -framework CoreFoundation
     #CONFIG += libyb
     ICON = icon.icns
+
+    HEADERS += \
+        ../dep/qextserialport/src/qextserialport_p.h \
+        ../dep/qextserialport/src/qextserialport_global.h \
+        ../dep/qextserialport/src/qextserialport.h \
+        ../dep/qextserialport/src/qextserialenumerator_p.h \
+        ../dep/qextserialport/src/qextserialenumerator.h \
+
+    SOURCES += \
+        ../dep/qextserialport/src/qextserialenumerator_osx.cpp \
+        ../dep/qextserialport/src/qextserialport_unix.cpp \
+        ../dep/qextserialport/src/qextserialport.cpp \
+        ../dep/qextserialport/src/qextserialenumerator.cpp \
 
 
     translations.path = /usr/share/lorris/
     translations.files = ../translations/Lorris.*.qm
-    qext.path = /usr/lib/
-    qext.files = ../dep/qextserialport/lib/libqextserialport_lorris.*
+    qext.path = bin
+#    qext.files = ../dep/qextserialport/lib/libqextserialport_lorris.*
     target.path = /Applications/
     INSTALLS += target translations qext
 }

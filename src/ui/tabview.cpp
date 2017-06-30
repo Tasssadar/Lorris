@@ -34,11 +34,15 @@
 #include "../misc/updater.h"
 #endif
 
+
+
 #ifdef __APPLE__
-void qt_mac_set_dock_menu(QMenu *menu);
+    void qt_mac_set_dock_menu(QMenu *menu);
+#define LAYOUT_MARGIN 0
+#else
+#define LAYOUT_MARGIN 4
 #endif
 
-#define LAYOUT_MARGIN 4
 
 TabView::TabView(MainWindow *parent) :
     QWidget(parent), m_active_widget(NULL), m_menuBar(NULL)
