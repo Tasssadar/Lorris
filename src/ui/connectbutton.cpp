@@ -24,6 +24,20 @@ ConnectButton::ConnectButton(QToolButton * btn)
     connect(m_chooseAction, SIGNAL(triggered()), this, SLOT(choose()));
 }
 
+#ifdef __APPLE__
+ConnectButton:: ConnectButton(QToolButton * btn, QMacToolBarItem * connectBtn, QMacToolBarItem * chooseConnectionBtn)
+    : QObject(btn),m_btn(btn), m_connect(connectBtn), m_chooseConnection(chooseConnectionBtn), m_conn(0), m_connTypes(pct_port_data)
+{
+    m_connectAction = m_menu.addAction(tr("Connect"));
+    m_menu.setDefaultAction(m_connectAction);
+
+    m_chooseAction = m_menu.addAction(tr("Choose connection..."));
+
+    connect(connectBtn, SIGNAL(activated()), this, SLOT(connectTriggered()));
+    connect(chooseConnectionBtn, SIGNAL(activated()), this, SLOT(choose()));
+}
+#endif
+
 void ConnectButton::connectTriggered()
 {
     if (!m_conn || m_conn->isMissing())
@@ -87,18 +101,34 @@ void ConnectButton::connectionStateChanged(ConnectionState state)
     case st_disconnected:
     case st_missing:
     case st_connect_pending:
+#ifdef __APPLE__
+        m_connect->setText(tr("Connect"));
+        m_connect->setSelectable(true);
+#endif
         m_connectAction->setText(tr("Connect"));
         m_connectAction->setEnabled(true);
         break;
     case st_connecting:
+#ifdef __APPLE__
+        m_connect->setText(tr("Connecting..."));
+        m_connect->setSelectable(false);
+#endif
         m_connectAction->setText(tr("Connecting..."));
         m_connectAction->setEnabled(false);
         break;
     case st_connected:
+#ifdef __APPLE__
+        m_connect->setText(tr("Disconnect..."));
+        m_connect->setSelectable(true);
+#endif
         m_connectAction->setText(tr("Disconnect"));
         m_connectAction->setEnabled(true);
         break;
     case st_disconnecting:
+#ifdef __APPLE__
+        m_connect->setText(tr("Disconnecting..."));
+        m_connect->setSelectable(true);
+#endif
         m_connectAction->setText(tr("Disconnecting..."));
         m_connectAction->setEnabled(true);
         break;

@@ -18,6 +18,10 @@
 #include "tabwidget.h"
 #include "resizeline.h"
 
+#ifdef __APPLE__
+#include <QtMacExtras>
+#endif
+
 class QLayoutItem;
 class QBoxLayout;
 class TabViewResLine;
@@ -87,6 +91,7 @@ public:
 
 #ifdef __APPLE__
     QMenuBar *m_menuBar;
+    QMacToolBar *macBar;
 #endif
 
 private slots:

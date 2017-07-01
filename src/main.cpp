@@ -138,7 +138,6 @@ public:
 //    int layoutSpacing(QSizePolicy::ControlType control1, QSizePolicy::ControlType control2, Qt::Orientation orientation, const QStyleOption *option, const QWidget *widget) const {
 //        return 0;
 //    }
-
 };
 
 #endif

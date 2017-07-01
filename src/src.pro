@@ -443,6 +443,7 @@ macx {
     LIBS += -lqwt_lorris -framework IOKit -framework CoreFoundation
     #CONFIG += libyb
     ICON = icon.icns
+    QT += macextras
 
     HEADERS += \
         ../dep/qextserialport/src/qextserialport_p.h \

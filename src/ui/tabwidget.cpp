@@ -21,6 +21,10 @@
 #include <QDrag>
 #include <QMimeData>
 
+#ifdef __APPLE__
+#include <QtMacExtras>
+#endif
+
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
 #include "../misc/datafileparser.h"
@@ -50,6 +54,11 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     m_menuBtn->installEventFilter(this);
 #ifdef __APPLE__
     m_menuBtn->hide();
+
+    m_macBar = new QMacToolBar();
+    m_macBar->addItem(QIcon(":/actions/info"), "Test");
+    window()->winId();
+    m_macBar->attachToWindow(window()->windowHandle());
 #else
     setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
 #endif
@@ -69,6 +78,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
 
 #ifdef __APPLE__
     this->setDocumentMode(true);
+
 #endif
 
     sWorkTabMgr.registerTabWidget(this);
@@ -275,6 +285,17 @@ void TabWidget::changeMenu(int idx)
         m_menu->addAction(acts[i]);
 #ifdef __APPLE__
         tabView()->m_menuBar->addAction(acts[i]);
+
+        m_macBar = new QMacToolBar();
+        m_macBar->addItem(QIcon(":/actions/info"), "Test");
+        m_macBar->addItem(QIcon(":/actions/info"), "Test 2");
+        m_macBar->setItems(tab->getMacBarItems());
+        m_macBar->detachFromWindow();
+
+        window()->winId();
+        m_macBar->attachToWindow(window()->windowHandle());
+        m_macBar->addSeparator();
+        m_macBar->addItem(QIcon(":/actions/info"), "Test 3");
 #endif
     }
     m_menuBtn->setEnabled(true);
@@ -285,6 +306,13 @@ void TabWidget::clearMenu()
     m_menu->clear();
 #ifdef __APPLE__
     tabView()->m_menuBar->clear();
+
+    QList<QMacToolBarItem *> emptyList = QList<QMacToolBarItem *>();
+    m_macBar->setItems(emptyList);
+    m_macBar->detachFromWindow();
+    m_macBar->addSeparator();
+    window()->winId();
+    m_macBar->attachToWindow(window()->windowHandle());
 #endif
 
     const std::vector<QAction*>& menus = tabView()->getMenus();

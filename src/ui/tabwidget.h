@@ -14,6 +14,11 @@
 #include <QFrame>
 #include <QMenu>
 
+#ifdef __APPLE__
+#include <QtMacExtras>
+#endif
+
+
 #include "plustabbar.h"
 
 class QPushButton;
@@ -122,6 +127,9 @@ private:
 
     QPushButton *m_menuBtn;
     QMenu *m_menu;
+#ifdef __APPLE__
+    QMacToolBar* m_macBar;
+#endif
 
     bool m_altEventValid;
 

@@ -11,6 +11,10 @@
 #include <QMutex>
 #include <QTime>
 
+#ifdef __APPLE__
+#include <QtMacExtras>
+#endif
+
 #include "../WorkTab/WorkTab.h"
 #include "packet.h"
 #include "DataWidgets/datawidget.h"
@@ -135,6 +139,9 @@ private:
 
     bool m_enableSearchWidget;
     SearchWidget *m_searchWidget;
+#ifdef __APPLE__
+    QMacToolBarItem *addItemMacToolBar(const QIcon &icon, const QString &text);
+#endif
 };
 
 #endif // LORRISANALYZER_H

@@ -37,6 +37,7 @@
 
 
 #ifdef __APPLE__
+#include <QtMacExtras>
     void qt_mac_set_dock_menu(QMenu *menu);
 #define LAYOUT_MARGIN 0
 #else
@@ -70,13 +71,17 @@ TabView::TabView(MainWindow *parent) :
 #ifdef __APPLE__
     m_menuBar = new QMenuBar(0);
     m_menuBar->addMenu(file_menu);
-//    m_menuBar->addAction(connectAll);
-//    m_menuBar->addAction(disconnectAll);
     m_menuBar->addMenu(session_menu);
     m_menuBar->addMenu(opt_menu);
 
     qt_mac_set_dock_menu(file_menu);
     parent->setMenuBar(m_menuBar);
+
+//    QMacToolBar* bar = new QMacToolBar();
+//    bar->addItem(QIcon(":/actions/info"), "Test");
+//    parent->winId();
+//    bar->attachToWindow(parent->windowHandle());
+
 #endif
 
     QMenu * menuFileNew = file_menu->addMenu(tr("&New"));
