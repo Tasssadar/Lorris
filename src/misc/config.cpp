@@ -108,7 +108,7 @@ static const QString def_string[] =
     "",                           // CFG_STRING_SCRIPT_WND_PARAMS
     "Proxy tunnel",               // CFG_STRING_PROXY_TUNNEL_NAME
     "0x74 0x7E 0x7A 0x33",        // CFG_STRING_AVR109_BOOTSEQ
-    "0x74 0x7E 0x7A 0x33",        // CFG_STRING_ZMODEM_BOOTSEQ
+    "" /*"0x74 0x7E 0x7A 0x33"*/, // CFG_STRING_ZMODEM_BOOTSEQ
 };
 
 static const QString keys_bool[] =

@@ -12,7 +12,7 @@
 #include "../../connection/serialport.h"
 
 class ZmodemProgrammer
-    : public QObject
+    : public Programmer
 {
     Q_OBJECT
 public:
@@ -46,6 +46,10 @@ private slots:
     void dataRead(const QByteArray& data);
 
 private:
+    void sendHexHeader(quint8 type, quint8 a1 = 0, quint8 a2 = 0, quint8 a3 = 0, quint8 a4 = 0);
+    QByteArray getPaddedZDLE();
+    void appendHex(QByteArray& dest, quint8 val);
+
     ConnectionPointer<PortConnection> m_conn;
     QString m_bootseq;
     bool m_flash_mode;

@@ -36,6 +36,7 @@
 #include "programmers/atsamprogrammer.h"
 #include "programmers/avr109programmer.h"
 #include "programmers/arduinoprogrammer.h"
+#include "programmers/zmodemprogrammer.h"
 
 #ifdef HAVE_LIBYB
 #include "programmers/flipprogrammer.h"
@@ -782,6 +783,9 @@ void LorrisProgrammer::updateProgrammer()
                 } else {
                     Utils::showErrorBox(tr("Arduino programmer only works with serial port connection!"));
                 }
+                break;
+            case programmer_zmodem:
+                m_programmer.reset(new ZmodemProgrammer(con, &m_logsink));
                 break;
             default:
                 break;
