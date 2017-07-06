@@ -842,6 +842,10 @@ void LorrisProgrammer::setConnection(ConnectionPointer<Connection> const & con)
 
         m_connectButton->setConn(m_con, false);
         connect(m_con.data(), SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
+
+        PortConnection *port = dynamic_cast<PortConnection *>(m_con.data());
+        if(port)
+            connect(port, SIGNAL(programmerTypeChanged(int)), this, SLOT(updateProgrammer()));
     }
 
     this->connectedStatus(m_con && m_con->isOpen());

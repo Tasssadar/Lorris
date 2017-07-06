@@ -12,6 +12,7 @@
 #include "../connection/tcpsocket.h"
 #include "../connection/shupitotunnel.h"
 #include "../connection/udpsocket.h"
+#include "../connection/proxytunnel.h"
 #include "../misc/config.h"
 #include <QMenu>
 #include <QPushButton>
@@ -402,8 +403,9 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
         }
         break;
     case CONNECTION_SHUPITO_TUNNEL:
+    case CONNECTION_PROXY_TUNNEL:
         {
-            ShupitoTunnel * st = static_cast<ShupitoTunnel *>(conn);
+            PortConnection * st = static_cast<PortConnection *>(conn);
             ui->programmerSelection->setVisible(m_allowedConns & pct_port_programmable);
             setActiveProgBtn(st->programmerType());
 

@@ -154,8 +154,6 @@ void ZmodemProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& ch
     if(!waitForPkt(ZRPOS, 2000))
         qDebug() << tr("Timeout while waiting for ZRPOS.");
 
-    qDebug() << "Send itr " << data.size();
-
     m_cancel_requested = false;
 
     int sent = 0;
@@ -163,13 +161,9 @@ void ZmodemProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& ch
         int chunk = (std::min)(m_send_bufsize, data.size() - sent);
         buf = data.mid(sent, chunk);
 
-        qDebug() << "Send itr " << m_send_bufsize << " " << chunk << " " << sent;
-
         sendBin32Header(ZDATA, sent, sent >> 8, sent >> 16, sent >> 24);
 
         sent += chunk;
-
-        qDebug() << "Send itr " << m_send_bufsize << " " << chunk << " " << sent;
 
         quint8 type = ZCRCW;
         if(sent >= data.size())
@@ -457,8 +451,6 @@ bool ZmodemProgrammer::rx_hex_byte(int &c) {
 
 void ZmodemProgrammer::dataRead(const QByteArray& data)
 {
-    //qDebug() << "recv " << data.toStdString().c_str();
-
     const int sz = data.size();
     for(int i = 0; i < sz; ++i) {
         int c = quint8(data[i]);

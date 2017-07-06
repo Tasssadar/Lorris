@@ -211,3 +211,10 @@ ConnectionPointer<Connection> Connection::clone()
 {
     return ConnectionPointer<Connection>();
 }
+
+void PortConnection::setProgrammerType(int type) {
+    if(type != m_programmer_type) {
+        m_programmer_type = type;
+        emit programmerTypeChanged(type);
+    }
+}

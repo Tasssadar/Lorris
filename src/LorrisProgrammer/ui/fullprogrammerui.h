@@ -98,6 +98,8 @@ private slots:
 
     void hexEditMenuReq(const QPoint& p);
 
+    void progButtonClicked();
+
 private:
     void initMenus();
     void updateProgrammersBox(Programmer *prog);
