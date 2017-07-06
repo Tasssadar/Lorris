@@ -90,6 +90,9 @@ void QtScriptEngine::prepareNewContext()
     QScriptValue getDataCount = m_engine->newFunction(&QtScriptEngine_private::__getDataCount);
     QScriptValue playErrorSound = m_engine->newFunction(&QtScriptEngine_private::__playErrorSound);
     QScriptValue setMaxPacketNumber = m_engine->newFunction(&QtScriptEngine_private::__setMaxPacketNumber);
+    QScriptValue setInterval = m_engine->newFunction(&QtScriptEngine_private::__setInterval);
+    QScriptValue setTimeout = m_engine->newFunction(&QtScriptEngine_private::__setTimeout);
+    QScriptValue clearTimer = m_engine->newFunction(&QtScriptEngine_private::__clearTimer);
 
     QScriptValue numberW = m_engine->newFunction(&QtScriptEngine_private::__newNumberWidget);
     QScriptValue barW = m_engine->newFunction(&QtScriptEngine_private::__newBarWidget);
@@ -123,6 +126,10 @@ void QtScriptEngine::prepareNewContext()
     m_global.setProperty("getDataCount", getDataCount);
     m_global.setProperty("playErrorSound", playErrorSound);
     m_global.setProperty("setMaxPacketNumber", setMaxPacketNumber);
+    m_global.setProperty("setInterval", setInterval);
+    m_global.setProperty("setTimeout", setTimeout);
+    m_global.setProperty("clearInterval", clearTimer);
+    m_global.setProperty("clearTimeout", clearTimer);
 
     m_global.setProperty("newNumberWidget", numberW);
     m_global.setProperty("newBarWidget", barW);
@@ -296,11 +303,11 @@ DataWidget *QtScriptEngine::addWidget(quint8 type, QScriptContext *context, quin
     return w;
 }
 
-QScriptValue QtScriptEngine::newTimer()
+QTimer *QtScriptEngine::newTimer()
 {
     QTimer *t = new QTimer(this);
     m_timers.push_back(t);
-    return m_engine->newQObject(t);
+    return t;
 }
 
 void QtScriptEngine::onWidgetAdd(DataWidget *w)
@@ -494,7 +501,7 @@ int QtScriptEngine_private::getHeight()
 
 QScriptValue QtScriptEngine_private::newTimer()
 {
-    return m_base->newTimer();
+    return newQObject(m_base->newTimer());
 }
 
 QByteArray *QtScriptEngine_private::getData(quint32 idx) const
@@ -808,4 +815,57 @@ QScriptValue QtScriptEngine_private::__setMaxPacketNumber(QScriptContext *contex
 
     eng->m_base->getStorage()->setPacketLimit(limit);
     return QScriptValue();
+}
+
+QScriptValue QtScriptEngine_private::__setInterval(QScriptContext *context, QScriptEngine *engine)
+{
+    QtScriptEngine_private *eng = (QtScriptEngine_private*)engine;
+    if(context->argumentCount() < 2 || !context->argument(0).isFunction() || !context->argument(1).isNumber())
+        return QScriptValue();
+
+    QTimer *t = eng->m_base->newTimer();
+    QtScriptTimerCallback *callback = new QtScriptTimerCallback(context->thisObject(), context->argument(0), t);
+    connect(t, SIGNAL(timeout()), callback, SLOT(trigger()));
+    t->setSingleShot(false);
+    t->start(context->argument(1).toInt32());
+    return eng->newQObject(t);
+}
+
+QScriptValue QtScriptEngine_private::__setTimeout(QScriptContext *context, QScriptEngine *engine)
+{
+    QtScriptEngine_private *eng = (QtScriptEngine_private*)engine;
+    if(context->argumentCount() < 2 || !context->argument(0).isFunction() || !context->argument(1).isNumber())
+        return QScriptValue();
+
+    QTimer *t = eng->m_base->newTimer();
+    QtScriptTimerCallback *callback = new QtScriptTimerCallback(context->thisObject(), context->argument(0), t);
+    connect(t, SIGNAL(timeout()), callback, SLOT(trigger()));
+    t->setSingleShot(true);
+    t->start(context->argument(1).toInt32());
+    return eng->newQObject(t);
+}
+
+QScriptValue QtScriptEngine_private::__clearTimer(QScriptContext *context, QScriptEngine *engine)
+{
+    if(context->argumentCount() < 1 || !context->argument(0).isQObject())
+        return QScriptValue();
+
+    QTimer *timer = dynamic_cast<QTimer *>(context->argument(0).toQObject());
+    if(timer)
+        timer->stop();
+    return QScriptValue();
+}
+
+QtScriptTimerCallback::QtScriptTimerCallback(const QScriptValue &this_object, const QScriptValue &callback, QObject *parent) :
+    QObject(parent), m_this_object(this_object), m_callback(callback)
+{
+
+}
+
+QtScriptTimerCallback::~QtScriptTimerCallback() {
+
+}
+
+void QtScriptTimerCallback::trigger() {
+    m_callback.call(m_this_object);
 }
