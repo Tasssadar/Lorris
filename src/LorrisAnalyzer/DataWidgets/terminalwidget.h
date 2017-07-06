@@ -18,6 +18,8 @@ public:
     ~TerminalWidget();
 
     void setUp(Storage *storage);
+protected slots:
+    void newData(analyzer_data *data, quint32 index);
 };
 
 #endif // TERMINALWIDGET_H

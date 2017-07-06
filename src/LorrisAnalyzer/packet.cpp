@@ -177,7 +177,7 @@ bool analyzer_data::getLenFromHeader(quint32& len)
 
 QString analyzer_data::getString(quint32 pos)
 {
-    QString str = "";
+    QString str;
     if(pos >= (quint32)m_data->length())
         return str;
     for(; pos < (quint32)m_data->length() && m_data->at(pos) != '\0'; ++pos)
