@@ -134,6 +134,8 @@ private:
 
     void setEnableButtons(bool enable);
 
+    QString getFileDialogFilter(int memid);
+
     ProgrammerUI *ui;
 
     bool m_chipStopped;

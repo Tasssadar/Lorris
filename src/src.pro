@@ -305,7 +305,8 @@ HEADERS += ui/mainwindow.h \
     connection/shupitospitunnelconn.h \
     LorrisProgrammer/programmers/arduinoprogrammer.h \
     connection/udpsocket.h \
-    LorrisProgrammer/programmers/zmodemprogrammer.h
+    LorrisProgrammer/programmers/zmodemprogrammer.h \
+    LorrisProgrammer/programmers/zmodemprogrammer-defines.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

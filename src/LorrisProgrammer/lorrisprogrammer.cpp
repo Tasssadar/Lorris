@@ -51,9 +51,6 @@ static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
 static const QString colorSavedToFile= "#FFE0E0";
 
-static const QString hex_filters = QObject::tr("All supported file types (*.hex *.bin);;Intel HEX file (*.hex);;Binary file (*.bin)");
-static const QString svf_filters = QObject::tr("Serial Vector Format file (*.svf)");
-
 LorrisProgrammer::LorrisProgrammer()
     : WorkTab(), m_logsink(this)
 {
@@ -597,6 +594,16 @@ void LorrisProgrammer::restartChip()
     startChip();
 }
 
+QString LorrisProgrammer::getFileDialogFilter(int memid) {
+    if(this->m_programmer && m_programmer->getType() == programmer_zmodem) {
+        return QObject::tr("All files (*)");
+    } else if(memid == MEM_JTAG) {
+        return QObject::tr("Serial Vector Format file (*.svf)");
+    } else {
+        return QObject::tr("All supported file types (*.hex *.bin);;Intel HEX file (*.hex);;Binary file (*.bin)");;
+    }
+}
+
 void LorrisProgrammer::loadFromFile()
 {
     try
@@ -605,7 +612,7 @@ void LorrisProgrammer::loadFromFile()
 
         QString filename = QFileDialog::getOpenFileName(this, QObject::tr("Import data"),
                                                         sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
-                                                        memid == MEM_JTAG? svf_filters: hex_filters);
+                                                        getFileDialogFilter(memid));
         if(filename.isEmpty())
             return;
 
@@ -671,7 +678,7 @@ void LorrisProgrammer::saveToFile()
         int memId = ui->getMemIndex();
         QString filename = QFileDialog::getSaveFileName(this, QObject::tr("Export data"),
                                                         sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
-                                                        memId == MEM_JTAG? svf_filters: hex_filters);
+                                                        getFileDialogFilter(memId));
         if(filename.isEmpty())
             return;
 

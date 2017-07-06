@@ -5,55 +5,42 @@
 **    See README and COPYING
 ***********************************************/
 
+#include <QEventLoop>
+#include <QTimer>
+#include <QFileInfo>
+#include <QDateTime>
+
 #include "zmodemprogrammer.h"
 #include "../../shared/defmgr.h"
 #include "../../misc/config.h"
 #include "../../misc/utils.h"
 #include "../../shared/hexfile.h"
 
-#define	ZPAD		0x2a		/* pad character; begins frames */
-#define	ZDLE		0x18		/* ctrl-x zmodem escape */
-#define	ZDLEE       0x58        /* escaped ZDLE */
-#define	ZBIN		0x41		/* binary frame indicator (CRC16) */
-#define	ZHEX		0x42		/* hex frame indicator */
-#define	ZBIN32      0x43        /* binary frame indicator (CRC32) */
+#include "zmodemprogrammer-defines.h"
 
-#define	ZRQINIT		0x00		/* request receive init (s->r) */
-#define	ZRINIT		0x01		/* receive init (r->s) */
-#define	ZSINIT		0x02		/* send init sequence (optional) (s->r) */
-#define	ZACK		0x03		/* ack to ZRQINIT ZRINIT or ZSINIT (s<->r) */
-#define	ZFILE		0x04		/* file name (s->r) */
-#define	ZSKIP		0x05		/* skip this file (r->s) */
-#define	ZNAK		0x06		/* last packet was corrupted (?) */
-#define	ZABORT		0x07		/* abort batch transfers (?) */
-#define	ZFIN		0x08		/* finish session (s<->r) */
-#define	ZRPOS		0x09		/* resume data transmission here (r->s) */
-#define	ZDATA		0x0a		/* data packet(s) follow (s->r) */
-#define	ZEOF		0x0b		/* end of file reached (s->r) */
-#define	ZFERR		0x0c		/* fatal read or write error detected (?) */
-#define	ZCRC		0x0d		/* request for file CRC and response (?) */
-#define	ZCHALLENGE	0x0e		/* security challenge (r->s) */
-#define	ZCOMPL		0x0f		/* request is complete (?) */
-#define	ZCAN		0x10		/* pseudo frame;
-                                   other end cancelled session with 5* CAN */
-#define	ZFREECNT	0x11		/* request free bytes on file system (s->r) */
-#define	ZCOMMAND	0x12		/* issue command (s->r) */
-#define	ZSTDERR	0x13 /* output data to stderr (??) */
-
-#define	XON			0x11
-#define	XOFF	0x13
-
-#define HDRLEN 5            /* size of a zmodem header */
-#define ZBLOCKLEN	1024	/* "true" Zmodem max subpacket length */
+enum recv_state {
+    st_idle,
+    st_zdle,
+    st_hdr_type,
+    st_hdr_bin16,
+    st_hdr_bin32,
+    st_hdr_hex,
+};
 
 ZmodemProgrammer::ZmodemProgrammer(const ConnectionPointer<PortConnection> &conn, ProgrammerLogSink *logsink) :
     Programmer(logsink), m_conn(conn)
 {
     m_conn = conn;
     m_flash_mode = false;
-    //m_wait_act = WAIT_NONE;
     m_cancel_requested = false;
     m_bootseq = sConfig.get(CFG_STRING_ZMODEM_BOOTSEQ);
+    m_recv_state = st_idle;
+    m_escape_ctrl_chars = false;
+    m_inside_zdle_seq = false;
+    m_drop_newline = false;
+    m_recv_32bit_data = false;
+    m_wait_pkt = 0;
+    m_send_bufsize = 4096;
 
     connect(m_conn.data(), SIGNAL(dataRead(QByteArray)), this, SLOT(dataRead(QByteArray)));
 }
@@ -85,19 +72,25 @@ void ZmodemProgrammer::stopAll(bool /*wait*/)
 {
 }
 
+void ZmodemProgrammer::cancelRequested() {
+    m_cancel_requested = true;
+}
+
 void ZmodemProgrammer::switchToFlashMode(quint32 /*prog_speed_hz*/)
 {
     // FIXME
     if(!m_bootseq.isEmpty())
     {
         QByteArray bootseq = Utils::convertByteStr(m_bootseq);
-        if(!bootseq.isEmpty())
+        if(bootseq.isEmpty())
             throw tr("Invalid bootloader sequence!");
-
         m_conn->SendData(bootseq);
     }
 
     m_flash_mode = true;
+    m_recv_buff.clear();
+    m_hex_nibble_buff.clear();
+    m_recv_state = st_idle;
 }
 
 void ZmodemProgrammer::switchToRunMode()
@@ -139,16 +132,99 @@ void ZmodemProgrammer::erase_device(chip_definition& chip)
 void ZmodemProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
 {
     sendHexHeader(ZRQINIT);
+    if(!waitForPkt(ZRINIT, 2000))
+        throw tr("Timeout while waiting for ZRINIT");
+
+    const QByteArray data = file.getDataArray(0);
+
+    sendBin32Header(ZFILE, 0, 0, ZF1_ZMCLOB, ZF0_ZCBIN);
+
+    QString fname = QFileInfo(file.getFilePath()).fileName();
+    if(fname.isEmpty()) {
+        fname = "lorris" + QDateTime::currentDateTime().toString(Qt::ISODate);
+    }
+
+    QByteArray buf;
+    buf.append(fname);
+    buf.append('\0');
+    buf.append(QString("%1 0 0644 0 1 %1").arg(data.size()));
+    buf.append('\0');
+    sendBin32Data(ZCRCW, buf);
+
+    if(!waitForPkt(ZRPOS, 2000))
+        qDebug() << tr("Timeout while waiting for ZRPOS.");
+
+    qDebug() << "Send itr " << data.size();
+
+    m_cancel_requested = false;
+
+    int sent = 0;
+    while(sent < data.size()) {
+        int chunk = (std::min)(m_send_bufsize, data.size() - sent);
+        buf = data.mid(sent, chunk);
+
+        qDebug() << "Send itr " << m_send_bufsize << " " << chunk << " " << sent;
+
+        sendBin32Header(ZDATA, sent, sent >> 8, sent >> 16, sent >> 24);
+
+        sent += chunk;
+
+        qDebug() << "Send itr " << m_send_bufsize << " " << chunk << " " << sent;
+
+        quint8 type = ZCRCW;
+        if(sent >= data.size())
+            type = ZCRCE;
+
+        sendBin32Data(type, buf);
+
+        if(type == ZCRCW && !waitForPkt(ZACK, 2000))
+            throw tr("Timeout while waiting for ZACK.");
+
+        if(m_cancel_requested)
+        {
+            qDebug() << "cancel";
+            emit updateProgressDialog(-1);
+            m_cancel_requested = false;
+            break;
+        }
+
+        emit updateProgressDialog(double(sent)/data.size()*100);
+    }
+
+    sendHexHeader(ZEOF, sent, sent >> 8, sent >> 16, sent >> 24);
+    if(!waitForPkt(ZRINIT, 2000))
+        throw tr("Timeout while waiting for ZRINIT.");
+
+    sendHexHeader(ZFIN);
+    if(!waitForPkt(ZFIN, 2000))
+        throw tr("Timeout while waiting for ZFIN.");
+    m_conn->SendData(QByteArray("OO"));
 }
 
-void ZmodemProgrammer::dataRead(const QByteArray& data)
+bool ZmodemProgrammer::waitForPkt(int waitPkt, int timeout)
 {
-}
+    if(m_wait_pkt != 0)
+    {
+        Q_ASSERT(false);
+        return false;
+    }
 
-QByteArray ZmodemProgrammer::getPaddedZDLE()
-{
-    static const char data[] = { ZPAD, ZPAD, ZDLE };
-    return QByteArray::fromRawData(data, 3);
+    m_wait_pkt = waitPkt;
+
+    QEventLoop ev;
+    QTimer t;
+
+    connect(&t,   SIGNAL(timeout()), &ev, SLOT(quit()));
+    connect(this, SIGNAL(waitPktDone()),  &ev, SLOT(quit()));
+
+    t.setSingleShot(true);
+    t.start(timeout);
+
+    ev.exec();
+
+    m_wait_pkt = 0;
+
+    return t.isActive();
 }
 
 void ZmodemProgrammer::appendHex(QByteArray &dest, quint8 val)
@@ -158,47 +234,52 @@ void ZmodemProgrammer::appendHex(QByteArray &dest, quint8 val)
     dest.append(xdigit[val & 0xF]);
 }
 
-static const quint16 crc16tbl[] = {
-    0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
-    0x8108, 0x9129, 0xA14A, 0xB16B, 0xC18C, 0xD1AD, 0xE1CE, 0xF1EF,
-    0x1231, 0x0210, 0x3273, 0x2252, 0x52B5, 0x4294, 0x72F7, 0x62D6,
-    0x9339, 0x8318, 0xB37B, 0xA35A, 0xD3BD, 0xC39C, 0xF3FF, 0xE3DE,
-    0x2462, 0x3443, 0x0420, 0x1401, 0x64E6, 0x74C7, 0x44A4, 0x5485,
-    0xA56A, 0xB54B, 0x8528, 0x9509, 0xE5EE, 0xF5CF, 0xC5AC, 0xD58D,
-    0x3653, 0x2672, 0x1611, 0x0630, 0x76D7, 0x66F6, 0x5695, 0x46B4,
-    0xB75B, 0xA77A, 0x9719, 0x8738, 0xF7DF, 0xE7FE, 0xD79D, 0xC7BC,
-    0x48C4, 0x58E5, 0x6886, 0x78A7, 0x0840, 0x1861, 0x2802, 0x3823,
-    0xC9CC, 0xD9ED, 0xE98E, 0xF9AF, 0x8948, 0x9969, 0xA90A, 0xB92B,
-    0x5AF5, 0x4AD4, 0x7AB7, 0x6A96, 0x1A71, 0x0A50, 0x3A33, 0x2A12,
-    0xDBFD, 0xCBDC, 0xFBBF, 0xEB9E, 0x9B79, 0x8B58, 0xBB3B, 0xAB1A,
-    0x6CA6, 0x7C87, 0x4CE4, 0x5CC5, 0x2C22, 0x3C03, 0x0C60, 0x1C41,
-    0xEDAE, 0xFD8F, 0xCDEC, 0xDDCD, 0xAD2A, 0xBD0B, 0x8D68, 0x9D49,
-    0x7E97, 0x6EB6, 0x5ED5, 0x4EF4, 0x3E13, 0x2E32, 0x1E51, 0x0E70,
-    0xFF9F, 0xEFBE, 0xDFDD, 0xCFFC, 0xBF1B, 0xAF3A, 0x9F59, 0x8F78,
-    0x9188, 0x81A9, 0xB1CA, 0xA1EB, 0xD10C, 0xC12D, 0xF14E, 0xE16F,
-    0x1080, 0x00A1, 0x30C2, 0x20E3, 0x5004, 0x4025, 0x7046, 0x6067,
-    0x83B9, 0x9398, 0xA3FB, 0xB3DA, 0xC33D, 0xD31C, 0xE37F, 0xF35E,
-    0x02B1, 0x1290, 0x22F3, 0x32D2, 0x4235, 0x5214, 0x6277, 0x7256,
-    0xB5EA, 0xA5CB, 0x95A8, 0x8589, 0xF56E, 0xE54F, 0xD52C, 0xC50D,
-    0x34E2, 0x24C3, 0x14A0, 0x0481, 0x7466, 0x6447, 0x5424, 0x4405,
-    0xA7DB, 0xB7FA, 0x8799, 0x97B8, 0xE75F, 0xF77E, 0xC71D, 0xD73C,
-    0x26D3, 0x36F2, 0x0691, 0x16B0, 0x6657, 0x7676, 0x4615, 0x5634,
-    0xD94C, 0xC96D, 0xF90E, 0xE92F, 0x99C8, 0x89E9, 0xB98A, 0xA9AB,
-    0x5844, 0x4865, 0x7806, 0x6827, 0x18C0, 0x08E1, 0x3882, 0x28A3,
-    0xCB7D, 0xDB5C, 0xEB3F, 0xFB1E, 0x8BF9, 0x9BD8, 0xABBB, 0xBB9A,
-    0x4A75, 0x5A54, 0x6A37, 0x7A16, 0x0AF1, 0x1AD0, 0x2AB3, 0x3A92,
-    0xFD2E, 0xED0F, 0xDD6C, 0xCD4D, 0xBDAA, 0xAD8B, 0x9DE8, 0x8DC9,
-    0x7C26, 0x6C07, 0x5C64, 0x4C45, 0x3CA2, 0x2C83, 0x1CE0, 0x0CC1,
-    0xEF1F, 0xFF3E, 0xCF5D, 0xDF7C, 0xAF9B, 0xBFBA, 0x8FD9, 0x9FF8,
-    0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
-};
-
-#define ucrc16(ch,crc) (crc16tbl[((crc>>8)&0xff)^(unsigned char)ch]^(crc << 8))
+void ZmodemProgrammer::appendEscapedByte(QByteArray &dest, quint8 c)
+{
+    switch(c) {
+    case DLE:
+    case DLE|0x80:
+    case XON:
+    case XON|0x80:
+    case XOFF:
+    case XOFF|0x80:
+    case ZDLE:
+        dest.append(ZDLE);
+        dest.append(c ^ 0x40);
+        return;
+    case '\r':
+    case '\r'|0x80:
+        if(m_escape_ctrl_chars && dest.size() != 0 && dest[dest.size()-1] == '@') {
+            dest.append(ZDLE);
+            dest.append(c ^ 0x40);
+            return;
+        }
+        break;
+   /* case TELNET_IAC:
+        if(m_escape_telnet_iac) {
+            dest.append(ZDLE);
+            dest.append(ZRUB1);
+            return;
+        }
+        break;*/
+    default:
+        if(m_escape_ctrl_chars && (c & 0x60) == 0) {
+            dest.append(ZDLE);
+            dest.append(c ^ 0x40);
+            return;
+        }
+        break;
+    }
+    dest.append(c);
+}
 
 void ZmodemProgrammer::sendHexHeader(quint8 type, quint8 a1, quint8 a2, quint8 a3, quint8 a4)
 {
     quint16 crc = 0;
-    QByteArray data = getPaddedZDLE();
+    QByteArray data;
+    data.append(ZPAD);
+    data.append(ZPAD);
+    data.append(ZDLE);
     data.append(ZHEX);
 
     appendHex(data, type);
@@ -212,9 +293,8 @@ void ZmodemProgrammer::sendHexHeader(quint8 type, quint8 a1, quint8 a2, quint8 a
     appendHex(data, a4);
     crc = ucrc16(a4, crc);
 
-    data.append(quint8(crc >> 8));
-    data.append(quint8(crc & 0xFF));
-
+    appendHex(data, quint8(crc >> 8));
+    appendHex(data, quint8(crc & 0xFF));
     data.append("\r\n");
 
     if(type!=ZACK && type!=ZFIN)
@@ -223,4 +303,306 @@ void ZmodemProgrammer::sendHexHeader(quint8 type, quint8 a1, quint8 a2, quint8 a
     m_conn->SendData(data);
 }
 
+void ZmodemProgrammer::sendBin32Header(quint8 type, quint8 a1, quint8 a2, quint8 a3, quint8 a4)
+{
+    quint32 crc = 0xffffffffL;
+    QByteArray data;
+    data.append(ZPAD);
+    data.append(ZDLE);
+    data.append(ZBIN32);
 
+    appendEscapedByte(data, type);
+    crc = ucrc32(type, crc);
+    appendEscapedByte(data, a1);
+    crc = ucrc32(a1, crc);
+    appendEscapedByte(data, a2);
+    crc = ucrc32(a2, crc);
+    appendEscapedByte(data, a3);
+    crc = ucrc32(a3, crc);
+    appendEscapedByte(data, a4);
+    crc = ucrc32(a4, crc);
+
+    crc = ~crc;
+
+    appendEscapedByte(data, quint8(crc & 0xFF));
+    appendEscapedByte(data, quint8(crc >> 8));
+    appendEscapedByte(data, quint8(crc >> 16));
+    appendEscapedByte(data, quint8(crc >> 24));
+
+    m_conn->SendData(data);
+}
+
+void ZmodemProgrammer::sendBin32Data(quint8 type, const QByteArray& data)
+{
+    QByteArray buf;
+    quint32 crc = 0xffffffffL;
+
+    for(int i = 0; i < data.size(); ++i) {
+        crc = ucrc32((quint8)data[i], crc);
+        appendEscapedByte(buf, data[i]);
+    }
+
+    crc = ucrc32(type, crc);
+    buf.append(ZDLE);
+    buf.append(type);
+
+    crc = ~crc;
+
+    appendEscapedByte(buf, quint8(crc & 0xFF));
+    appendEscapedByte(buf, quint8(crc >> 8));
+    appendEscapedByte(buf, quint8(crc >> 16));
+    appendEscapedByte(buf, quint8(crc >> 24));
+
+    if(type == ZCRCW)
+        buf.append(XON);
+
+    m_conn->SendData(buf);
+}
+
+
+bool ZmodemProgrammer::rx_byte(int &c)
+{
+    if(!m_inside_zdle_seq) {
+        switch(c) {
+        case ZDLE:
+            m_inside_zdle_seq = true;
+            break;
+        case XON:
+        case XON|0x80:
+        case XOFF:
+        case XOFF|0x80:
+            return false;
+        default:
+            if(m_escape_ctrl_chars && (c >= 0) && (c & 0x60) == 0)
+                return false;
+            return true;
+        }
+    } else {
+        switch(c) {
+        case XON:
+        case XON|0x80:
+        case XOFF:
+        case XOFF|0x80:
+        case ZDLE:
+            return false;
+        case ZCRCE:
+        case ZCRCG:
+        case ZCRCQ:
+        case ZCRCW:
+            m_inside_zdle_seq = false;
+            c = (c | ZDLEESC);
+            return true;
+        case ZRUB0:
+            m_inside_zdle_seq = false;
+            c = 0x7f;
+            return true;
+        case ZRUB1:
+            m_inside_zdle_seq = false;
+            c = 0xFF;
+            return true;
+        default:
+            if(c < 0) {
+                m_inside_zdle_seq = false;
+                return true;
+            }
+
+            if(m_escape_ctrl_chars && (c & 0x60) == 0) {
+                return false;
+            }
+
+            if((c & 0x60) == 0x40) {
+                m_inside_zdle_seq = false;
+                c = c ^ 0x40;
+                return true;
+            }
+            return false;
+        }
+    }
+    Q_UNREACHABLE();
+}
+
+bool ZmodemProgrammer::rx_hex_byte(int &c) {
+    if(!rx_byte(c))
+        return false;
+
+    if(c < 0)
+        return true;
+
+    if(m_hex_nibble_buff.size() > 1)
+        m_hex_nibble_buff.clear();
+
+    if(c > '9') {
+        if(c < 'a' || c > 'f') {
+            qDebug() << "zmodem: illegal hex character " << c;
+            return true;
+        }
+        c -= 'a' - 10;
+    } else {
+        if(c < '0') {
+            qDebug() << "zmodem: illegal hex character " << c;
+            return true;
+        }
+        c -= '0';
+    }
+
+    m_hex_nibble_buff.append(c);
+    if(m_hex_nibble_buff.size() == 1) {
+        return false;
+    } else {
+        c = (m_hex_nibble_buff[0] << 4) | m_hex_nibble_buff[1];
+        m_hex_nibble_buff.clear();
+        return true;
+    }
+}
+
+void ZmodemProgrammer::dataRead(const QByteArray& data)
+{
+    //qDebug() << "recv " << data.toStdString().c_str();
+
+    const int sz = data.size();
+    for(int i = 0; i < sz; ++i) {
+        int c = quint8(data[i]);
+
+        if(m_drop_newline) {
+            m_drop_newline = false;
+            continue;
+        }
+
+        switch(m_recv_state) {
+        case st_idle:
+            if(c != ZPAD)
+                continue;
+            m_inside_zdle_seq = false;
+            m_recv_state = st_zdle;
+            break;
+        case st_zdle:
+            if(c == ZPAD)
+                continue;
+
+            if(c != ZDLE) {
+                m_recv_state = st_idle;
+                qDebug() << "zmodem: expected  ZDLE, received " << c;
+            } else {
+                m_recv_state = st_hdr_type;
+            }
+            break;
+        case st_hdr_type:
+            if(!rx_byte(c))
+                continue;
+
+            m_recv_buff.clear();
+
+            switch(c) {
+            case ZBIN:
+                m_recv_state = st_hdr_bin16;
+                m_recv_32bit_data = false;
+                break;
+            case ZBIN32:
+                m_recv_state = st_hdr_bin32;
+                m_recv_32bit_data = true;
+                break;
+            case ZHEX:
+                m_recv_state = st_hdr_hex;
+                m_recv_32bit_data = false;
+                break;
+            default:
+                qDebug() << "zmodem: unrecognized header style " << c;
+                m_recv_state = st_idle;
+                break;
+            }
+            break;
+        case st_hdr_bin16:
+        case st_hdr_bin32: {
+            if(!rx_byte(c))
+                continue;
+
+            m_recv_buff.append((char)c);
+            const int crcsize = m_recv_state == st_hdr_bin16 ? 2 : 4;
+            if(m_recv_buff.size() != HDRLEN + crcsize)
+                continue;
+
+            if(m_recv_state == st_hdr_bin16) {
+                quint16 crc = 0;
+                for(int i = 0; i < HDRLEN; ++i)
+                    crc = ucrc16(m_recv_buff[i], crc);
+
+                quint16 expected_crc = (quint8(m_recv_buff[HDRLEN]) << 8) | quint8(m_recv_buff[HDRLEN+1]);
+                if(crc != expected_crc) {
+                    qDebug() << "zmodem: invalid crc16 in hdr_bin16";
+                }
+            } else {
+                quint32 crc = 0xffffffffL;
+                for(int i = 0; i < HDRLEN; ++i)
+                    crc = ucrc32(quint8(m_recv_buff[i]), crc);
+
+                quint32 expected_crc = quint8(m_recv_buff[HDRLEN]) |
+                        (quint8(m_recv_buff[HDRLEN+1]) << 8) |
+                        (quint8(m_recv_buff[HDRLEN+2]) << 16) |
+                        (quint8(m_recv_buff[HDRLEN+3]) << 24);
+                if(crc != expected_crc) {
+                    qDebug() << "zmodem: invalid crc32 in hdr_bin32";
+                }
+            }
+
+            m_recv_buff.resize(HDRLEN);
+            m_recv_state = st_idle;
+            processHeader(m_recv_buff);
+            break;
+        }
+        case st_hdr_hex: {
+            if(m_recv_buff.size() == HDRLEN + 2) {
+                if(!rx_byte(c))
+                    continue;
+                m_recv_buff.append((char)c);
+            } else {
+                if(rx_hex_byte(c))
+                    m_recv_buff.append((char)c);
+                continue;
+            }
+
+            quint16 crc = 0;
+            for(int i = 0; i < HDRLEN; ++i)
+                crc = ucrc16(m_recv_buff[i], crc);
+
+            quint16 expected_crc = (quint8(m_recv_buff[HDRLEN]) << 8) | quint8(m_recv_buff[HDRLEN+1]);
+            if(crc != expected_crc) {
+                qDebug() << "zmodem: invalid crc16 in hdr_hex";
+            }
+
+            m_drop_newline = m_recv_buff[HDRLEN + 2] == '\r';
+
+            m_recv_buff.resize(HDRLEN);
+            m_recv_state = st_idle;
+            processHeader(m_recv_buff);
+            break;
+        }
+        }
+    }
+}
+
+void ZmodemProgrammer::processHeader(const QByteArray& hdr) {
+    Q_ASSERT(hdr.size() == HDRLEN);
+
+    int frame_type = hdr[0];
+    switch(frame_type) {
+    case ZRINIT:
+        // Ignoring most flags
+        m_escape_ctrl_chars = (hdr[ZF0] & ZF0_ESCCTL) != 0;
+
+        m_send_bufsize = hdr[ZP0] | (hdr[ZP1] << 8);
+        if(m_send_bufsize <= 0 || m_send_bufsize > 32*1024*1024)
+            m_send_bufsize = 4096;
+        break;
+    case ZRPOS:
+    case ZACK:
+    case ZFIN:
+        break;
+    default:
+        qDebug() << "zmodem: got unhandled header " << frame_type;
+    }
+
+    if(m_wait_pkt == frame_type) {
+        m_wait_hdr = hdr;
+        emit waitPktDone();
+    }
+}

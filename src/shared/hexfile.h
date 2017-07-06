@@ -95,10 +95,14 @@ public:
     bool intersects(quint32 address, quint32 length);
     void getRange(quint32 address, quint32 length, quint8 * out);
 
+    QString getFilePath() const { return m_filepath; }
+    void setFilePath(QString path) { m_filepath = path; }
+
 private:
     QByteArray getExtAddrLine(quint32 addr);
 
     regionMap m_data;
+    QString m_filepath;
 };
 
 #endif // HEXFILE_H
