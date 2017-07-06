@@ -343,6 +343,7 @@ void ProgrammerUI::writeMem(quint8 memId, chip_definition &chip)
     if (memId != MEM_JTAG)
     {
         HexFile file;
+        file.setFilePath(m_widget->m_hexFilenames[memId]);
         file.setData(data);
 
         prog()->flashRaw(file, memId, chip, m_widget->m_verify_mode);

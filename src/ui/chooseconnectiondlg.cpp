@@ -12,6 +12,7 @@
 #include "../connection/tcpsocket.h"
 #include "../connection/shupitotunnel.h"
 #include "../connection/udpsocket.h"
+#include "../connection/proxytunnel.h"
 #include "../misc/config.h"
 #include <QMenu>
 #include <QPushButton>
@@ -184,6 +185,7 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     m_prog_btns[programmer_atsam] = ui->progAtsam;
     m_prog_btns[programmer_avr109] = ui->progAVR109;
     m_prog_btns[programmer_arduino] = ui->progArduino;
+    m_prog_btns[programmer_zmodem] = ui->progZmodem;
 
     ui->programmerSelection->setVisible(false);
 
@@ -401,8 +403,9 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
         }
         break;
     case CONNECTION_SHUPITO_TUNNEL:
+    case CONNECTION_PROXY_TUNNEL:
         {
-            ShupitoTunnel * st = static_cast<ShupitoTunnel *>(conn);
+            PortConnection * st = static_cast<PortConnection *>(conn);
             ui->programmerSelection->setVisible(m_allowedConns & pct_port_programmable);
             setActiveProgBtn(st->programmerType());
 
