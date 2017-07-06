@@ -41,6 +41,8 @@ enum NumberTypes
     NUM_FLOAT,
     NUM_DOUBLE,
 
+    NUM_STRING,
+
     NUM_COUNT
 };
 

@@ -94,7 +94,9 @@ void NumberWidget::setUp(Storage *storage)
         tr("signed 64bit"),
 
         tr("float (4 bytes)"),
-        tr("double (8 bytes)")
+        tr("double (8 bytes)"),
+
+        tr("Null-terminated string"),
     };
 
     QSignalMapper *signalMapBits = new QSignalMapper(this);
@@ -165,8 +167,12 @@ void NumberWidget::setUp(Storage *storage)
 
 void NumberWidget::processData(analyzer_data *data)
 {
-    QVariant var = DataWidget::getNumFromPacket(data, m_info.pos, m_numberType);
-    setValue(var);
+    if(m_numberType != NUM_STRING) {
+        QVariant var = DataWidget::getNumFromPacket(data, m_info.pos, m_numberType);
+        setValue(var);
+    } else {
+        setValue(data->getString(m_info.pos));
+    }
 }
 
 void NumberWidget::setValue(QVariant var)
@@ -174,6 +180,11 @@ void NumberWidget::setValue(QVariant var)
     if(var.isNull())
     {
         m_num->setText("N/A");
+        return;
+    }
+
+    if(var.type() == QVariant::String) {
+        m_num->setText(var.toString());
         return;
     }
 
