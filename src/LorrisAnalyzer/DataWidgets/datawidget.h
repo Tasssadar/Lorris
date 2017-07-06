@@ -281,7 +281,6 @@ private:
 
     void copyWidget(QMouseEvent *ev);
 
-    QPoint mOrigin;
     QPoint m_clickPos;
     quint8 m_dragAction;
     DataWidget *m_copy_widget;

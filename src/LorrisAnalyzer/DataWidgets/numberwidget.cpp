@@ -53,7 +53,7 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
     // FIXME
     //m_num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
-    QFont font = Utils::getMonospaceFont(20);
+    QFont font = Utils::getMonospaceFont(4);
     m_num->setFont(font);
     layout->addWidget(m_num);
 
