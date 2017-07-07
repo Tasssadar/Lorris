@@ -385,12 +385,6 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 win32 {
     CONFIG -= flat
     CONFIG += libenjoy
-
-
-    *g++* {
-        warning("It looks like you are trying to build Lorris with mingw")
-        warning("Make sure it has at least GCC 4.6 or newer, Lorris needs some C++x0 features")
-    }
     CONFIG += libyb
 
     CONFIG(debug, debug|release) {
