@@ -37,9 +37,10 @@ public:
     qint32 getMin() { return m_min; }
     quint32 getMaxX();
     void clear();
-    void reloadData();
+    void reloadData(bool force);
 
-    void setSampleSize(quint32 size);
+    void setSampleSize(quint32 size, quint32 offset);
+    void setSampleOffset(quint32 offset);
     void dataPosChanged(quint32 index);
 
     void setDataType(quint8 type);
@@ -55,6 +56,8 @@ private:
     inline DataMapItr insertData(DataMapItr hint, quint32 idx, double val);
     inline void setMinMax(double val);
 
+    QPointF getPointAtIdx(quint32 idx);
+
     FormulaEvaluation m_eval;
     bool m_script_based;
 
@@ -62,10 +65,14 @@ private:
     data_widget_info m_info;
 
     quint32 m_sample_size;
+    quint32 m_sample_offset;
     quint8 m_data_type;
 
-    quint32 m_last_index;
     DataMap m_data;
+    quint32 m_data_start;
+    quint32 m_data_end;
+    quint32 m_last_index;
+
     double m_min, m_max;
 };
 

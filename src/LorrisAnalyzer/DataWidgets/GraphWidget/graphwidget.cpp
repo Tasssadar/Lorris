@@ -377,6 +377,7 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
             m_graph->showCurve(curve, file->readVal<bool>());
     }
     updateRemoveMapping();
+    updateSampleSize();
 }
 
 void GraphWidget::dropEvent(QDropEvent *event)
@@ -487,8 +488,11 @@ void GraphWidget::tryReplot()
     if(m_indexChange != UINT32_MAX) {
         const size_t size = m_curves.size();
         if(size != 0) {
-            for(size_t i = 0; i < size; ++i)
+            for(size_t i = 0; i < size; ++i) {
+                if(m_enableAutoScroll && m_sample_size == -3)
+                     m_curves[i]->curve->setSampleOffset(m_indexChange);
                 m_curves[i]->curve->dataPosChanged(m_indexChange);
+            }
             m_doReplot = true;
         }
 
@@ -551,7 +555,7 @@ void GraphWidget::sampleSizeChanged(int val)
             break;
         case -1: // all data
             for(quint8 i = 0; i < m_curves.size(); ++i)
-                m_curves[i]->curve->setSampleSize(UINT_MAX);
+                m_curves[i]->curve->setSampleSize(UINT32_MAX);
             break;
         default:
             for(quint8 i = 0; i < m_curves.size(); ++i)
@@ -684,7 +688,7 @@ void GraphWidget::updateSampleSize()
     qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound());
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
-        m_curves[i]->curve->setSampleSize(size);
+        m_curves[i]->curve->setSampleSize(size, (std::max)(m_graph->XupperBound(), 0.0));
 }
 
 void GraphWidget::exportData()

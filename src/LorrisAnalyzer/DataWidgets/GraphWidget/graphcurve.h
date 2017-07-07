@@ -9,6 +9,7 @@
 #define GRAPHCURVE_H
 
 #include <qwt_plot_curve.h>
+#include <limits>
 
 #include "graphdata.h"
 #include "../datawidget.h"
@@ -30,7 +31,8 @@ public:
 
     void init();
 
-    void setSampleSize(quint32 size);
+    void setSampleSize(quint32 size, quint32 offset = UINT32_MAX);
+    void setSampleOffset(quint32 offset);
     void dataPosChanged(quint32 pos);
 
     qint32 getMin();
