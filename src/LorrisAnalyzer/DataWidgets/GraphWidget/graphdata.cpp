@@ -195,9 +195,9 @@ void GraphData::dataPosChanged(quint32 index)
     {
         Q_ASSERT(m_data[i].x() > lastx);
         lastx = m_data[i].x();
-    }*/
-
+    }
     Q_ASSERT(m_data.size() == (end - start));
+    */
 
     m_data_start = start;
     m_data_end = end;
