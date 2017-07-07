@@ -166,13 +166,7 @@ static const bool def_bool[] =
     false,                        // CFG_BOOL_SCRIPT_SHOW_INPUT
     true,                         // CFG_BOOL_ONE_INSTANCE
     true,                         // CFG_BOOL_ANALYZER_PLACEMENT_LINES
-
-#ifdef Q_OS_WIN // this is painfully slow on Windows
-    false,                        // CFG_BOOL_ANALYZER_SHOW_PREVIEW
-#else
     true,                         // CFG_BOOL_ANALYZER_SHOW_PREVIEW
-#endif
-
     true,                         // CFG_BOOL_SHUPITO_ENABLE_HW_BUTTON
     true,                         // CFG_BOOL_ANALYZER_SHOW_BOOKMARKS
     true,                         // CFG_BOOL_CONN_ON_NEW_TAB
