@@ -145,7 +145,7 @@ LorrisAnalyzer::LorrisAnalyzer()
     m_macBarItems.push_back(new QMacToolBarItem);
     connect(addItemMacToolBar(QIcon(":/actions/clear"), tr("Clear received data")), SIGNAL(activated()), this, SLOT(clearData()));
     m_macBarItems.push_back(new QMacToolBarItem);
-    connect(addItemMacToolBar(QIcon(":/actions/system"), tr(("Change structure")), SIGNAL(activated()), this, SLOT(editStructure()));
+    connect(addItemMacToolBar(QIcon(":/actions/system"), tr("Change structure")), SIGNAL(activated()), this, SLOT(editStructure()));
 
     ui->connectButton->hide();
     m_connectButton = new ConnectButton(ui->connectButton, connectBtn, chooseConnection);
