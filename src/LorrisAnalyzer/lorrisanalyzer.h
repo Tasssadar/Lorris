@@ -11,6 +11,10 @@
 #include <QMutex>
 #include <QTime>
 
+#ifdef __APPLE__
+#include <QtMacExtras>
+#endif
+
 #include "../WorkTab/WorkTab.h"
 #include "packet.h"
 #include "DataWidgets/datawidget.h"

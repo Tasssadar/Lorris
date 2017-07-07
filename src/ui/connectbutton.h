@@ -12,6 +12,11 @@
 #include <QMenu>
 #include <QAction>
 #include <QToolButton>
+
+#ifdef __APPLE__
+#include <QtMacExtras>
+#endif
+
 #include "../connection/connection.h"
 
 class ConnectButton : public QObject
@@ -20,6 +25,9 @@ class ConnectButton : public QObject
 
 public:
     ConnectButton(QToolButton * btn);
+#ifdef __APPLE__
+    ConnectButton(QToolButton * btn, QMacToolBarItem * connectBtn, QMacToolBarItem * chooseConnectionBtn);
+#endif
     void setConn(ConnectionPointer<Connection> const & conn, bool emitConnChosen = true);
     void setConnectionTypes(PrimaryConnectionTypes type);
 
@@ -42,6 +50,10 @@ private:
     QAction * m_chooseAction;
 
     QToolButton * m_btn;
+#ifdef __APPLE__
+    QMacToolBarItem * m_connect;
+    QMacToolBarItem * m_chooseConnection;
+#endif
     ConnectionPointer<Connection> m_conn;
     PrimaryConnectionTypes m_connTypes;
 };

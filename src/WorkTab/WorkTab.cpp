@@ -59,6 +59,18 @@ void WorkTab::childClosed(QWidget *child)
     delete child;
 }
 
+#ifdef __APPLE__
+QMacToolBarItem *WorkTab::addItemMacToolBar(const QIcon &icon, const QString &text)
+{
+    QMacToolBarItem *btn = new QMacToolBarItem;
+    btn->setIcon(icon);
+    btn->setText(text);
+    m_macBarItems.push_back(btn);
+
+    return btn;
+}
+#endif
+
 //----------------------------------------------------------------------------
 PortConnWorkTab::PortConnWorkTab()
 {

@@ -35,8 +35,25 @@ LorrisProxy::LorrisProxy()
     ui->tunnelName->setText(sConfig.get(CFG_STRING_PROXY_TUNNEL_NAME));
     ui->tunnelBox->setChecked(sConfig.get(CFG_BOOL_PROXY_TUNNEL));
 
+#ifndef __APPLE__
     m_connectButton = new ConnectButton(ui->connectButton);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+#else
+    QMacToolBarItem *connectBtn = new QMacToolBarItem;
+    connectBtn->setIcon(QIcon(":/actions/wire"));
+    connectBtn->setText("Connect");
+    m_macBarItems.push_back(connectBtn);
+
+    QMacToolBarItem *chooseConnection = new QMacToolBarItem;
+    chooseConnection->setIcon(QIcon(":/actions/wire"));
+    chooseConnection->setText("Choose connection");
+    m_macBarItems.push_back(chooseConnection);
+    m_macBarItems.push_back(new QMacToolBarItem);
+
+    ui->connectButton->hide();
+    m_connectButton = new ConnectButton(ui->connectButton, connectBtn, chooseConnection);
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+#endif
 }
 
 LorrisProxy::~LorrisProxy()
