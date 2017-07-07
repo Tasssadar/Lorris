@@ -64,7 +64,7 @@ private:
      bool m_level;
      quint8 m_digits;
 
-     QAction *m_bitsAction[NUM_COUNT];
+     QAction *m_bitsAction[NUM_COUNT_WITH_STRING];
      QAction *m_fmtAction[FMT_COUNT];
      QAction *m_precAct[PREC_COUNT];
      QAction *m_levelAction;

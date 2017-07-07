@@ -41,9 +41,9 @@ enum NumberTypes
     NUM_FLOAT,
     NUM_DOUBLE,
 
-    NUM_STRING,
-
-    NUM_COUNT
+    NUM_COUNT,
+    NUM_STRING = NUM_COUNT,
+    NUM_COUNT_WITH_STRING,
 };
 
 enum DragActions

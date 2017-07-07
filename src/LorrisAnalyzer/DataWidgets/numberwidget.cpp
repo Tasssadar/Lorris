@@ -101,9 +101,9 @@ void NumberWidget::setUp(Storage *storage)
 
     QSignalMapper *signalMapBits = new QSignalMapper(this);
 
-    for(quint8 i = 0; i < NUM_COUNT; ++i)
+    for(quint8 i = 0; i < NUM_COUNT_WITH_STRING; ++i)
     {
-        if(i%4 == 0 && i != 0)
+        if(i == 4 || i == 8 || i == 10)
             bitsMenu->addSeparator();
 
         m_bitsAction[i] = new QAction(dataTypes[i], this);
@@ -279,7 +279,7 @@ void NumberWidget::setFormat(int fmt)
 
 void NumberWidget::setDataType(int i)
 {
-    for(quint8 y = 0; y < NUM_COUNT; ++y)
+    for(quint8 y = 0; y < NUM_COUNT_WITH_STRING; ++y)
         m_bitsAction[y]->setChecked(y == i);
 
     if(i >= NUM_INT8 && m_numberType < NUM_FLOAT)
