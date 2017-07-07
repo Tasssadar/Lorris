@@ -306,7 +306,8 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/programmers/arduinoprogrammer.h \
     connection/udpsocket.h \
     LorrisProgrammer/programmers/zmodemprogrammer.h \
-    LorrisProgrammer/programmers/zmodemprogrammer-defines.h
+    LorrisProgrammer/programmers/zmodemprogrammer-defines.h \
+    ui/termina-colors.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \

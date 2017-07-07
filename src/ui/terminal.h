@@ -14,6 +14,8 @@
 #include <QPoint>
 #include <QTime>
 #include <QTimer>
+#include <unordered_map>
+#include <map>
 
 class QMenu;
 class QByteArray;
@@ -30,6 +32,7 @@ enum settings
     SET_FORMFEED,
     SET_IGNORE_NULL,
     SET_ENTER_SEND,
+    SET_HANDLE_ESCAPE,
 
     SET_MAX
 };
@@ -88,6 +91,7 @@ struct terminal_settings
         chars[SET_RETURN] = NL_RETURN;
         chars[SET_IGNORE_NULL] = 1;
         chars[SET_ENTER_SEND] = NLS_RN;
+        chars[SET_HANDLE_ESCAPE] = 1;
         tabReplace = 4;
 
         colors[COLOR_BG] = Qt::black;
@@ -184,6 +188,7 @@ private:
     void redrawAll();
     QPoint mouseToTextPos(const QPoint& pos);
     QString getCurrNewlineStr(Qt::KeyboardModifiers modifiers);
+    void handleEscSeq();
 
     void selectAll();
 
@@ -194,9 +199,26 @@ private:
         return m_paused ? m_pause_lines : m_lines;
     }
 
+    enum EscFlags {
+        ESC_BOLD      = 0x01,
+    };
+
+    struct EscBlock {
+        EscFlags flags;
+        QColor color;
+        QColor background;
+
+        bool isEmpty() const {
+            return !color.isValid() && !background.isValid() && flags == 0;
+        }
+    };
+
     std::vector<QString> m_lines;
     std::vector<QString> m_pause_lines;
     std::vector<char> m_data;
+    std::unordered_map<int, std::map<int, EscBlock> > m_escapes;
+    QString m_esc_seq;
+    EscBlock *m_last_esc;
 
     QString m_command;
 
