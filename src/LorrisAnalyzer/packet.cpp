@@ -120,7 +120,12 @@ bool analyzer_data::getCmd(quint8 &cmd)
         return false;
 
     if(m_packet->header->data_mask & DATA_OPCODE)
-        cmd = (quint8)m_data->at(m_packet->header->findDataPos(DATA_OPCODE));
+    {
+        int pos = m_packet->header->findDataPos(DATA_OPCODE);
+        if(pos < 0 || pos >= m_data->size())
+            return false;
+        cmd = (quint8)m_data->at(pos);
+    }
     else
     {
         int pos = m_packet->header->findDataPos(DATA_AVAKAR);
