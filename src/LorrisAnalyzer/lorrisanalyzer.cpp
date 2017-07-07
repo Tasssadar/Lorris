@@ -135,17 +135,17 @@ LorrisAnalyzer::LorrisAnalyzer()
     chooseConnection->setIcon(QIcon(":/actions/wire"));
     chooseConnection->setText("Choose connection");
     m_macBarItems.push_back(chooseConnection);
+    m_macBarItems.push_back(new QMacToolBarItem);
 
 
-    connect(addItemMacToolBar(QIcon(":/actions/new"), "New source..."), SIGNAL(activated()), this, SLOT(doNewSource()));
-    connect(addItemMacToolBar(QIcon(":/actions/open"), "Open"), SIGNAL(activated()), this, SLOT(openFile()));
-    connect(addItemMacToolBar(QIcon(":/actions/open"), "Save"), SIGNAL(activated()), this, SLOT(saveButton()));
-    connect(addItemMacToolBar(QIcon(":/actions/open"), "Save as..."), SIGNAL(activated()), this, SLOT(saveAsButton()));
-    connect(addItemMacToolBar(QIcon(":/actions/update"), "Import binary data"), SIGNAL(activated()), this, SLOT(importBinAct()));
-    connect(addItemMacToolBar(QIcon(":/actions/update"), "Export binary data"), SIGNAL(activated()), this, SLOT(exportBin()));
-    connect(addItemMacToolBar(QIcon(":/actions/clear"), "Clear received data"), SIGNAL(activated()), this, SLOT(clearData()));
-    connect(addItemMacToolBar(QIcon(":/actions/clear"), "Clear everithing"), SIGNAL(activated()), this, SLOT(clearAllButton()));
-    connect(addItemMacToolBar(QIcon(":/actions/system"), "Change structure"), SIGNAL(activated()), this, SLOT(editStructure()));
+    connect(addItemMacToolBar(QIcon(":/actions/new"), tr("New source...")), SIGNAL(activated()), this, SLOT(doNewSource()));
+    connect(addItemMacToolBar(QIcon(":/actions/open"), tr("Open")), SIGNAL(activated()), this, SLOT(openFile()));
+    connect(addItemMacToolBar(QIcon(":/actions/open"), tr("Save")), SIGNAL(activated()), this, SLOT(saveButton()));
+    connect(addItemMacToolBar(QIcon(":/actions/open"), tr("Save as...")), SIGNAL(activated()), this, SLOT(saveAsButton()));
+    m_macBarItems.push_back(new QMacToolBarItem);
+    connect(addItemMacToolBar(QIcon(":/actions/clear"), tr("Clear received data")), SIGNAL(activated()), this, SLOT(clearData()));
+    m_macBarItems.push_back(new QMacToolBarItem);
+    connect(addItemMacToolBar(QIcon(":/actions/system"), tr(("Change structure")), SIGNAL(activated()), this, SLOT(editStructure()));
 
     ui->connectButton->hide();
     m_connectButton = new ConnectButton(ui->connectButton, connectBtn, chooseConnection);
@@ -907,15 +907,3 @@ void LorrisAnalyzer::setEnableSearchWidget(bool enable)
     else
         qApp->removeEventFilter(this);
 }
-
-#ifdef __APPLE__
-QMacToolBarItem *LorrisAnalyzer::addItemMacToolBar(const QIcon &icon, const QString &text)
-{
-    QMacToolBarItem *btn = new QMacToolBarItem;
-    btn->setIcon(icon);
-    btn->setText(text);
-    m_macBarItems.push_back(btn);
-
-    return btn;
-}
-#endif

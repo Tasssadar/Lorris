@@ -139,9 +139,6 @@ private:
 
     bool m_enableSearchWidget;
     SearchWidget *m_searchWidget;
-#ifdef __APPLE__
-    QMacToolBarItem *addItemMacToolBar(const QIcon &icon, const QString &text);
-#endif
 };
 
 #endif // LORRISANALYZER_H

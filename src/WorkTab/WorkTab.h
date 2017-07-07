@@ -62,6 +62,7 @@ protected:
 
 #ifdef __APPLE__
     QList<QMacToolBarItem*> m_macBarItems;
+    QMacToolBarItem *addItemMacToolBar(const QIcon &icon, const QString &text);
 #endif
 
     quint32 m_id;

@@ -54,11 +54,7 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     m_menuBtn->installEventFilter(this);
 #ifdef __APPLE__
     m_menuBtn->hide();
-
     m_macBar = new QMacToolBar();
-    m_macBar->addItem(QIcon(":/actions/info"), "Test");
-    window()->winId();
-    m_macBar->attachToWindow(window()->windowHandle());
 #else
     setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
 #endif
@@ -78,7 +74,6 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
 
 #ifdef __APPLE__
     this->setDocumentMode(true);
-
 #endif
 
     sWorkTabMgr.registerTabWidget(this);
@@ -287,15 +282,10 @@ void TabWidget::changeMenu(int idx)
         tabView()->m_menuBar->addAction(acts[i]);
 
         m_macBar = new QMacToolBar();
-        m_macBar->addItem(QIcon(":/actions/info"), "Test");
-        m_macBar->addItem(QIcon(":/actions/info"), "Test 2");
         m_macBar->setItems(tab->getMacBarItems());
-        m_macBar->detachFromWindow();
-
         window()->winId();
         m_macBar->attachToWindow(window()->windowHandle());
         m_macBar->addSeparator();
-        m_macBar->addItem(QIcon(":/actions/info"), "Test 3");
 #endif
     }
     m_menuBtn->setEnabled(true);
