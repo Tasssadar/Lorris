@@ -138,7 +138,8 @@ void Terminal::addLines(const QString &text)
                 m_esc_seq.clear();
                 line_start = line_end;
                 ++line_end;
-            } else if(c == 'm') {
+            } else if((*line_end).isLetter()) {
+                m_esc_seq.append(c);
                 handleEscSeq();
                 m_esc_seq.clear();
                 ++line_end;
@@ -1030,7 +1031,10 @@ void Terminal::handleEscSeq()
     if(m_last_esc)
         blk = *m_last_esc;
 
-    QString cnt = m_esc_seq.mid(2);
+    if(m_esc_seq[m_esc_seq.size()-1] != 'm')
+        return;
+
+    QString cnt = m_esc_seq.mid(2, m_esc_seq.size()-3);
     QStringList parts = cnt.split(';');
     bool ok = false;
     for(int i = 0; i < parts.length(); ++i) {
@@ -1098,8 +1102,8 @@ void Terminal::handleEscSeq()
             if(parts[i-1] != "5")
                 break;
 
-            int clridx = parts[i].toInt(&ok);
-            if(!ok || clridx < 0 || clridx > 255)
+            uint clridx = parts[i].toUInt(&ok);
+            if(!ok || clridx >= sizeof_array(term256colors))
                 break;
             if(code == 38)
                 blk.color = term256colors[clridx];
