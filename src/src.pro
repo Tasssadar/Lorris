@@ -355,7 +355,6 @@ include(../dep/qtsingleapplication/qtsingleapplication.pri)
 RC_FILE = winicon.rc
 
 OTHER_FILES += \
-    ../dep/qextserialport/qextserialport.pri \
     shared/fusedesc.txt \
     shared/chipdefs.txt \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/snake.py \
@@ -420,13 +419,24 @@ win32 {
 }
 unix:!macx:!symbian {
     CONFIG += libenjoy libyb
-    LIBS += -lqextserialport_lorris
 
     system_qwt {
         LIBS += -lqwt
     } else {
         LIBS += -lqwt_lorris
     }
+
+    HEADERS += \
+        ../dep/qextserialport/src/qextserialport_p.h \
+        ../dep/qextserialport/src/qextserialport_global.h \
+        ../dep/qextserialport/src/qextserialport.h \
+        ../dep/qextserialport/src/qextserialenumerator_p.h \
+        ../dep/qextserialport/src/qextserialenumerator.h
+    SOURCES += \
+        ../dep/qextserialport/src/qextserialenumerator_unix.cpp \
+        ../dep/qextserialport/src/qextserialport_unix.cpp \
+        ../dep/qextserialport/src/qextserialport.cpp \
+        ../dep/qextserialport/src/qextserialenumerator.cpp
 
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" 2> /dev/null \
@@ -435,12 +445,15 @@ unix:!macx:!symbian {
         ../translations/*.qm \
         "$$DESTDIR/translations/ 2> /dev/null" || true
 
-    translations.path = /usr/share/lorris/
+    translations.path = /usr/local/share/lorris/
     translations.files = ../translations/Lorris.*.qm
-    target.path = /usr/bin/
+    target.path = /usr/local/bin/
     INSTALLS += target translations
 }
 macx {
+    OTHER_FILES += \
+        ../dep/qextserialport/qextserialport.pri
+
     INCLUDEPATH += ../dep/SDL/include
     LIBS += -lqwt_lorris -lqextserialport -lqextserialport_lorris
 

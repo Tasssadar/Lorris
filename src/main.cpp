@@ -94,7 +94,7 @@ static void installTranslator(QApplication& a)
     static const transl_entry trans[] =
     {
         { "qt_%1", (QStringList() << QLibraryInfo::location(QLibraryInfo::TranslationsPath) << "translations") },
-        { "Lorris.%1", (QStringList() << "translations" << "/usr/share/lorris") }
+        { "Lorris.%1", (QStringList() << "translations" << "/usr/share/lorris" << "/usr/local/share/lorris") }
     };
 
     QString lang = QLocale(langs[sConfig.get(CFG_QUINT32_LANGUAGE)]).name();

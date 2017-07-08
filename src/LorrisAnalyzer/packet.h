@@ -260,7 +260,7 @@ template <typename T>
 T analyzer_data::read(quint32 pos) const
 {
     T val = 0;
-    if(pos + sizeof(T) > m_data->size())
+    if(int(pos + sizeof(T)) > m_data->size())
         return val;
 
     val = *((T const*)&m_data->data()[pos]);
