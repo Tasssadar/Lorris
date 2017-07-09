@@ -220,7 +220,7 @@ Supported programming interfaces
 </p>
 <h4>Building on Windows</h4>
 <p style="margin-left: 30px">
-    Download <a href="http://qt.nokia.com/downloads">Qt SDK</a> with Qt version >= 4.7 and gcc compiler and install it.<br>
+    Download <a href="http://qt.nokia.com/downloads">Qt SDK</a> with Qt version >= 5.4 and gcc compiler and install it.<br>
     If you want python support, you also need to 
     <a href="http://www.python.org/download/releases/2.7.3/#download">install python 2.7.x</a>.
     If not, comment out line "DEFINES += WITH_PYTHON" in config.pri.<br>
@@ -230,22 +230,17 @@ Supported programming interfaces
     <b style="margin-left: 30px">Required packages:</b>
     <p style="margin-left: 60px">
     <b>
-      - Qt SDK >= 4.7.0<br>
+      - Qt SDK >= 5.4.0<br>
       - make, g++<br>
       - libudev-dev<br>
       - python-dev == 2.7.x</b> (Only if you want python support in LorrisAnalyzer - see config.pri)<b><br>
-      - libkdecore5, kate, kdelibs5-dev </b> (For kate editor in ScriptWidget - see config.pri)<b><br>
-      - libqscintilla2-dev </b> (For QScintilla editor in ScriptWidget - see config.pri)<br>
+    </b>
     </p>
     <p style="margin-left: 30px">
     So, apt-get line for Debian Testing would look like this:
     </p>
     <pre style="margin-left: 30px">
-    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libudev-dev python2.7-dev libkdecore5 kate kdelibs5-dev libqscintilla2-dev</pre>
-    <p style="margin-left: 30px">
-    Lorris also needs libqwt >= 6.0.0, but it will build it by itself since
-    <a href="https://github.com/Tasssadar/Lorris/commit/664209866876d439e4e9b02bf156e42c62b04c76">664209866876d439e4e9b02bf156e42c62b04c76</a>.
-    </p>
+    sudo apt-get install g++ make libudev-dev python2.7-dev qt5-default qttools5-dev qtscript5-dev pkg-config</pre>
 <p style="margin-left: 30px">
     Now you can build Lorris with QtCreator or go to Lorris folder and execute these commands:
 </p>

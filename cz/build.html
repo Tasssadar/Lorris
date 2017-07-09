@@ -6,7 +6,7 @@
 </p>
 <h4>Windows</h4>
 <p style="margin-left: 30px">
-    Stáhněte si <a href="http://qt.nokia.com/downloads">Qt SDK</a> s Qt >= 4.7 a gcc kompilátorem a nainstalujte ho.<br>
+    Stáhněte si <a href="http://qt.nokia.com/downloads">Qt SDK</a> s Qt >= 5.4 a gcc kompilátorem a nainstalujte ho.<br>
     Pokud chcete podporu pythonu v analyzéru, musíte si nainstalovat také <a href="http://www.python.org/download/releases/2.7.3/#download">python 2.7.x</a>.
     Pokud ne, zakomentujte řádek "DEFINES += WITH_PYTHON" v config.pri</br>
     Nakonec stáhněte Lorris, otevřete Lorris.pro v QtCreatoru a stiskněte "Sestavit".
@@ -15,23 +15,17 @@
 <b style="margin-left: 30px">Potřebné balíčky:</b>
 <p style="margin-left: 60px">
   <b>
-  - Qt SDK >= 4.7.0<br>
+  - Qt SDK >= 5.4.0<br>
   - make, g++<br>
   - libudev-dev<br>
   - python-dev == 2.7.x</b> (Jen pokud chcete podporu Pythonu v Analyzéru - viz config.pri)<b><br>
-  - libkdecore5, kate, kdelibs5-dev </b> (Jen když chcet mít Kate editor pro editaci scriptu ve ScriptWidgetu - viz config.pri)<b><br>
-  - libqscintilla2-dev </b> (Jen když chcet mít QScintilla2 editor pro editaci scriptu ve ScriptWidgetu - viz config.pri)<br>
+</b>
 </p>
 <p style="margin-left: 30px">
     apt-get pro Debian Testing by vypadalo takto:
 </p>
 <pre style="margin-left: 30px">
-    sudo apt-get install qt4-dev-tools libqt4-dev qt4-qmake g++ make libudev-dev python2.7-dev libkdecore5 kate kdelibs5-dev libqscintilla2-dev</pre>
-<p style="margin-left: 30px">
-    Lorris také potřebuje libqwt-dev >= 6.0.0, ale od
-    <a href="https://github.com/Tasssadar/Lorris/commit/664209866876d439e4e9b02bf156e42c62b04c76">664209866876d439e4e9b02bf156e42c62b04c76</a>
-    si ji dokáže zkompilovat sám.
-</p>
+    sudo apt-get install g++ make libudev-dev python2.7-dev qt5-default qttools5-dev qtscript5-dev pkg-config</pre>
 <p style="margin-left: 30px">
     <b>Podívejte se do souboru config.pri - nastavují se tam možnosti kompilace.</b>
     </p>
