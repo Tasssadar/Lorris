@@ -26,7 +26,7 @@
 #ifndef QSCIGLOBAL_H
 #define QSCIGLOBAL_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -60,7 +60,7 @@ extern "C++" {
 #define QT_END_NAMESPACE
 #endif
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

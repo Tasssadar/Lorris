@@ -51,6 +51,9 @@
          <height>23</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="text">
         <string>Connect</string>
        </property>
@@ -102,6 +105,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="collapseTop">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -270,17 +276,26 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="toolTip">
+          <string/>
+         </property>
          <property name="styleSheet">
           <string notr="true">padding: 0</string>
          </property>
          <property name="text">
           <string>Playback</string>
          </property>
+         <property name="autoDefault">
+          <bool>false</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
          <property name="flat">
           <bool>false</bool>
          </property>
          <property name="rotation" stdset="0">
-          <UInt>1</UInt>
+          <UInt>0</UInt>
          </property>
         </widget>
        </item>
@@ -367,11 +382,21 @@
        <property name="autoFillBackground">
         <bool>true</bool>
        </property>
+       <property name="styleSheet">
+        <string notr="true">WidgetArea {
+	background-color: #e4e4e4;
+	border-width: 1px solid #e4e4e4;
+	border-radius: 5px;
+}</string>
+       </property>
        <property name="frameShape">
         <enum>QFrame::Panel</enum>
        </property>
        <property name="frameShadow">
         <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
        </property>
       </widget>
      </item>
@@ -472,8 +497,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>90</width>
-              <height>199</height>
+              <width>76</width>
+              <height>194</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -519,8 +544,8 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../actions.qrc"/>
   <include location="../icons.qrc"/>
+  <include location="../actions.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -12,7 +12,6 @@
 #include <QPushButton>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QMenuBar>
 #include <QHBoxLayout>
 #include <QStyleOption>
 #include <QStylePainter>
@@ -21,6 +20,10 @@
 #include <QLabel>
 #include <QDrag>
 #include <QMimeData>
+
+#ifdef Q_OS_MAC
+#include <QtMacExtras>
+#endif
 
 #include "../WorkTab/WorkTabMgr.h"
 #include "tabwidget.h"
@@ -40,15 +43,22 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     m_switchWidget = NULL;
     m_altEventValid = false;
 
+
     m_tab_bar = new TabBar(m_id, this);
     setTabBar(m_tab_bar);
+
     m_menuBtn = new QPushButton(tr("&Menu"), this);
     m_menuBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     m_menuBtn->setMenu(m_menu);
     m_menuBtn->setFlat(true);
     m_menuBtn->installEventFilter(this);
-
+#ifndef Q_OS_MAC
     setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
+#else
+    setDocumentMode(true);
+    m_menuBtn->hide();
+    m_macBar = new QMacToolBar();
+#endif
 
     new QShortcut(QKeySequence("Ctrl+T"), this, SLOT(newTabBtn()), NULL, Qt::WidgetWithChildrenShortcut);
 
@@ -263,8 +273,18 @@ void TabWidget::changeMenu(int idx)
     clearMenu();
 
     const std::vector<QAction*>& acts = tab->getActions();
-    for(quint32 i = 0; i < acts.size(); ++i)
+    for(quint32 i = 0; i < acts.size(); ++i) {
         m_menu->addAction(acts[i]);
+
+#ifdef Q_OS_MAC
+        tabView()->m_menuBar->addAction(acts[i]);
+
+        m_macBar = new QMacToolBar();
+        m_macBar->setItems(tab->getMacBarItems());
+        m_macBar->attachToWindow(window()->windowHandle());
+        m_macBar->addSeparator();
+#endif
+    }
     m_menuBtn->setEnabled(true);
 }
 
@@ -272,9 +292,24 @@ void TabWidget::clearMenu()
 {
     m_menu->clear();
 
+#ifdef Q_OS_MAC
+    tabView()->m_menuBar->clear();
+
+    QList<QMacToolBarItem *> emptyList = QList<QMacToolBarItem *>();
+    m_macBar->setItems(emptyList);
+    m_macBar->detachFromWindow();
+    m_macBar->addSeparator();
+    m_macBar->attachToWindow(window()->windowHandle());
+#endif
+
     const std::vector<QAction*>& menus = tabView()->getMenus();
-    for(quint32 i = 0; i < menus.size(); ++i)
+    for(quint32 i = 0; i < menus.size(); ++i) {
         m_menu->addAction(menus[i]);
+
+#ifdef Q_OS_MAC
+        tabView()->m_menuBar->addAction(menus[i]);
+#endif
+    }
 
     m_menu->addSeparator();
 }

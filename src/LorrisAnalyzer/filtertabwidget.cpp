@@ -29,15 +29,22 @@ FilterTabWidget::FilterTabWidget(QWidget *parent) :
     m_filterIdCounter = 0;
     m_header = NULL;
 
+#ifndef Q_OS_MAC
     setTabPosition(QTabWidget::South);
 
-    addEmptyFilter();
-
     QPushButton *btn = new QPushButton(tr("Filters"), this);
-    btn->setIcon(QIcon(":/icons/system_dark"));
     setCornerWidget(btn, Qt::BottomLeftCorner);
-
     connect(btn, SIGNAL(clicked()), SLOT(showSettings()));
+#else
+    setTabPosition(QTabWidget::North);
+
+    QWidget *empty = new QWidget();
+    addTab(empty, tr("Filters"));
+
+    connect(this, SIGNAL(tabBarClicked(int)), this, SLOT(showSettings()));
+#endif
+
+    addEmptyFilter();
 }
 
 FilterTabWidget::~FilterTabWidget()
@@ -226,8 +233,14 @@ void FilterTabWidget::handleData(analyzer_data *data, quint32 index)
         m_filters[i]->handleData(data, index);
 }
 
-void FilterTabWidget::showSettings()
-{
+void FilterTabWidget::showSettings(int index)
+{    
+#ifdef Q_OS_MAC
+    if (index != 0)
+        return;
+    setCurrentIndex(currentIndex());
+#endif
+
     FilterDialog d(this);
     d.exec();
 }
@@ -242,7 +255,8 @@ void FilterTabWidget::addFilter(DataFilter *f)
     QWidget *w = new QWidget();
 
     QPalette p = area->palette();
-    p.setColor(QPalette::Window, QColor("#F5F5F5"));
+    p.setColor(QPalette::Window, QColor("#ececec"));
+
     area->setPalette(p);
     area->setAutoFillBackground(true);
 
@@ -253,6 +267,12 @@ void FilterTabWidget::addFilter(DataFilter *f)
     }
     area->setWidget(w);
     addTab(area, f->getName());
+
+#ifdef Q_OS_MAC
+    area->setStyleSheet("QScrollArea {border: 0px; background-color: transparent;}");
+    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    setCurrentIndex(indexOf(area));
+#endif
 
     f->setAreaAndLayout(area, layout);
     m_filters.push_back(f);

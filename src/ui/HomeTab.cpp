@@ -15,6 +15,8 @@
 #include "../WorkTab/WorkTabMgr.h"
 #include "chooseconnectiondlg.h"
 
+
+
 #include "../ui/ui_hometab.h"
 
 HomeTab::HomeTab(QWidget *parent) : Tab(TABTYPE_HOME, parent), ui(new Ui::HomeTab)
@@ -34,7 +36,11 @@ HomeTab::HomeTab(QWidget *parent) : Tab(TABTYPE_HOME, parent), ui(new Ui::HomeTa
         btn->setText(info->GetName());
         btn->setDescription(info->GetDescription());
         btn->setMaximumHeight(100);
+
 #ifdef Q_OS_MAC
+        QIcon icon(":/icons/icons/follow-link.png");
+        btn->setIcon(icon);
+
         QFont fnt = btn->font();
         fnt.setPointSize(11);
         btn->setFont(fnt);

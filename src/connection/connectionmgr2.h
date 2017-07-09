@@ -10,7 +10,11 @@
 
 #include "../connection/connection.h"
 #include "../connection/shupitoconn.h"
+
+#ifdef HAVE_LIBYB
 #include "../connection/usbshupito23conn.h"
+#endif
+
 #include <QString>
 #include <QTimer>
 #include <QHash>

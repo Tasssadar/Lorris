@@ -13,6 +13,8 @@
 #include <qtsingleapplication/qtsingleapplication.h>
 #include <QScopedPointer>
 #include <QMetaType>
+#include <QMenuBar>
+#include <QProxyStyle>
 
 #include "revision.h"
 #include "ui/mainwindow.h"
@@ -132,6 +134,7 @@ int main(int argc, char *argv[])
 {
     //TODO: found an organization
     //QCoreApplication::setOrganizationName("-");
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     QCoreApplication::setOrganizationDomain("github.com/Tasssadar");
     QCoreApplication::setApplicationName("Lorris");
 
@@ -140,6 +143,11 @@ int main(int argc, char *argv[])
     sWorkTabMgr.SortTabInfos();
 
     QtSingleApplication a(argc, argv);
+
+#ifdef Q_OS_MAC
+    //Temporaly solution, does not set icon during app lunch!
+    QApplication::setWindowIcon(QIcon(":/icons/icons/icon.icns"));
+#endif
 
     QStringList openFiles;
     QString session;

@@ -113,10 +113,26 @@ void LorrisTerminal::initUI()
     connect(ui->spRts,         SIGNAL(toggled(bool)),               SLOT(spRtsToggled(bool)));
     connect(ui->spDtr,         SIGNAL(toggled(bool)),               SLOT(spDtrToggled(bool)));
 
+    fmtAction(fmt);
+
+#ifndef Q_OS_MAC
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+#else
+    QMacToolBarItem *connectBtn = new QMacToolBarItem;
+    connectBtn->setIcon(QIcon(":/actions/wire"));
+    connectBtn->setText("Connect");
+    m_macBarItems.push_back(connectBtn);
 
-    fmtAction(fmt);
+    QMacToolBarItem *chooseConnection = new QMacToolBarItem;
+    chooseConnection->setIcon(QIcon(":/actions/wire"));
+    chooseConnection->setText("Choose connection");
+    m_macBarItems.push_back(chooseConnection);
+    ui->connectButton2->hide();
+    ui->horizontalSpacer->changeSize(0,0, QSizePolicy::Fixed, QSizePolicy::Fixed);
+    m_connectButton = new ConnectButton(ui->connectButton2, connectBtn, chooseConnection);
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
+#endif
 }
 
 LorrisTerminal::~LorrisTerminal()

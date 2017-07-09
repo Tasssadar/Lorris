@@ -14,6 +14,7 @@
 #include "../connection/serialport.h"
 #include "../connection/tcpsocket.h"
 
+
 WorkTab::WorkTab() : Tab(TABTYPE_WORKTAB, NULL)
 {
     m_id = 0;
@@ -58,6 +59,18 @@ void WorkTab::childClosed(QWidget *child)
 {
     delete child;
 }
+
+#ifdef Q_OS_MAC
+QMacToolBarItem *WorkTab::addItemMacToolBar(const QIcon &icon, const QString &text)
+{
+    QMacToolBarItem *btn = new QMacToolBarItem;
+    btn->setIcon(icon);
+    btn->setText(text);
+    m_macBarItems.push_back(btn);
+
+    return btn;
+}
+#endif
 
 //----------------------------------------------------------------------------
 PortConnWorkTab::PortConnWorkTab()

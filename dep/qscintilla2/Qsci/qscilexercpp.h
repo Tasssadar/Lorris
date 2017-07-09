@@ -26,7 +26,7 @@
 #ifndef QSCILEXERCPP_H
 #define QSCILEXERCPP_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -349,7 +349,7 @@ private:
     QsciLexerCPP &operator=(const QsciLexerCPP &);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

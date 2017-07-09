@@ -3,7 +3,6 @@
 
 #include "../../shared/programmer.h"
 #include "../../connection/genericusbconn.h"
-#include <libyb/libyb/shupito/flip2.hpp>
 #include <QEventLoop>
 
 class AtsamProgrammer

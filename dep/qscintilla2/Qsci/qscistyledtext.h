@@ -26,7 +26,7 @@
 #ifndef QSCISTYLEDTEXT_H
 #define QSCISTYLEDTEXT_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -68,7 +68,7 @@ private:
     const QsciStyle *explicit_style;
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

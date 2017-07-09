@@ -26,7 +26,7 @@
 #ifndef QSCIDOCUMENT_H
 #define QSCIDOCUMENT_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -67,7 +67,7 @@ private:
     QsciDocumentP *pdoc;
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

@@ -26,7 +26,7 @@
 #ifndef QSCICOMMAND_H
 #define QSCICOMMAND_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -408,7 +408,7 @@ private:
     QsciCommand &operator=(const QsciCommand &);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

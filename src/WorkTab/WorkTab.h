@@ -12,6 +12,10 @@
 #include <vector>
 #include <QMenu>
 
+#ifdef Q_OS_MAC
+#include <QtMacExtras>
+#endif
+
 #include "../common.h"
 #include "../connection/connection.h"
 #include "WorkTabInfo.h"
@@ -37,6 +41,10 @@ public:
     virtual void openFile(const QString& filename);
     virtual std::vector<QAction*>& getActions() { return m_actions; }
 
+#ifdef Q_OS_MAC
+    virtual QList<QMacToolBarItem*>& getMacBarItems() { return m_macBarItems; }
+#endif
+
     WorkTabInfo *getInfo() const { return m_info; }
     void setInfo(WorkTabInfo *info) { m_info = info; }
 
@@ -51,6 +59,11 @@ protected:
 
     void addTopMenu(QMenu *menu);
     void addTopAction(QAction *act);
+
+#ifdef Q_OS_MAC
+    QList<QMacToolBarItem*> m_macBarItems;
+    QMacToolBarItem *addItemMacToolBar(const QIcon &icon, const QString &text);
+#endif
 
     quint32 m_id;
 

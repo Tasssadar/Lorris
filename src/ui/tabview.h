@@ -12,10 +12,15 @@
 #include <set>
 #include <QHash>
 #include <QLocale>
+#include <QMenuBar>
 
 #include "../misc/sessionmgr.h"
 #include "tabwidget.h"
 #include "resizeline.h"
+
+#ifdef Q_OS_MAC
+#include <QtMacExtras>
+#endif
 
 class QLayoutItem;
 class QBoxLayout;
@@ -123,6 +128,11 @@ private:
     bool m_blockActive;
 
     QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
+
+#ifdef Q_OS_MAC
+    QMenuBar *m_menuBar;
+    QMacToolBar *macBar;
+#endif
 };
 
 class TabViewResLine : public ResizeLine

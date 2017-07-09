@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>653</width>
-    <height>650</height>
+    <width>661</width>
+    <height>665</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,19 +70,19 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QToolButton" name="createConnectionBtn">
+          <widget class="QPushButton" name="createConnectionBtn">
+           <property name="toolTip">
+            <string>Create new connection...</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
            <property name="icon">
-            <iconset resource="../icons.qrc">
-             <normaloff>:/icons/list-add</normaloff>:/icons/list-add</iconset>
+            <iconset resource="../actions.qrc">
+             <normaloff>:/actions/icons/list-add_32.png</normaloff>:/actions/icons/list-add_32.png</iconset>
            </property>
-           <property name="popupMode">
-            <enum>QToolButton::InstantPopup</enum>
-           </property>
-           <property name="autoRaise">
+           <property name="flat">
             <bool>true</bool>
-           </property>
-           <property name="arrowType">
-            <enum>Qt::NoArrow</enum>
            </property>
           </widget>
          </item>
@@ -1577,6 +1577,7 @@ p, li { white-space: pre-wrap; }
  </widget>
  <resources>
   <include location="../icons.qrc"/>
+  <include location="../actions.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -26,7 +26,7 @@
 #ifndef QSCILEXERJSCRIPT_H
 #define QSCILEXERJSCRIPT_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -87,7 +87,7 @@ private:
     QsciLexerJavaScript &operator=(const QsciLexerJavaScript &);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

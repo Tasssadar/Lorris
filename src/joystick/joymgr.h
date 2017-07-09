@@ -87,6 +87,7 @@ public:
     QList<quint32> getIdList() { return QList<quint32>(); }
 
     Joystick *getJoystick(quint32) { return NULL; }
+    Joystick *getFirstJoystick() { return NULL; }
 
     bool hasJoystick(quint32)
     {

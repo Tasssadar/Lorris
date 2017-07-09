@@ -26,8 +26,8 @@
 #ifndef QSCIABSTRACTAPIS_H
 #define QSCIABSTRACTAPIS_H
 
-#ifdef __APPLE__
-extern "C++" {
+#if 0 // __APPLE__
+//extern "C++" {
 #endif
 
 #include <qobject.h>
@@ -98,8 +98,8 @@ private:
     QsciAbstractAPIs &operator=(const QsciAbstractAPIs &);
 };
 
-#ifdef __APPLE__
-}
+#if 0 // __APPLE__
+//}
 #endif
 
 #endif

@@ -14,6 +14,10 @@
 #include <QFrame>
 #include <QMenu>
 
+#ifdef Q_OS_MAC
+#include <QtMacExtras>
+#endif
+
 #include "plustabbar.h"
 
 class QPushButton;
@@ -126,6 +130,10 @@ private:
     bool m_altEventValid;
 
     TabSwitchWidget *m_switchWidget;
+
+#ifdef Q_OS_MAC
+    QMacToolBar* m_macBar;
+#endif
 };
 
 class TabBar : public PlusTabBar

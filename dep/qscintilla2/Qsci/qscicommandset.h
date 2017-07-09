@@ -26,7 +26,7 @@
 #ifndef QSCICOMMANDSET_H
 #define QSCICOMMANDSET_H
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 extern "C++" {
 #endif
 
@@ -95,7 +95,7 @@ private:
     QsciCommandSet &operator=(const QsciCommandSet &);
 };
 
-#ifdef __APPLE__
+#if 0 // __APPLE__
 }
 #endif
 

@@ -138,10 +138,8 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/lorrisprogrammer.cpp \
     LorrisProgrammer/programmers/shupitoprogrammer.cpp \
     LorrisProgrammer/programmers/avr232bootprogrammer.cpp \
-    LorrisProgrammer/programmers/atsamprogrammer.cpp \
     LorrisProgrammer/modes/shupitospi.cpp \
     LorrisProgrammer/modes/shupitospiflash.cpp \
-    LorrisProgrammer/modes/shupitojtag.cpp \
     LorrisProgrammer/modes/shupitopdi.cpp \
     LorrisProgrammer/modes/shupitomode.cpp \
     LorrisProgrammer/modes/shupitocc25xx.cpp \
@@ -153,6 +151,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/ui/fusewidget.cpp \
     LorrisProgrammer/ui/fullprogrammerui.cpp \
     LorrisProgrammer/programmers/avr109programmer.cpp \
+    LorrisProgrammer/programmers/atsamprogrammer.cpp \
     ui/bytevalidator.cpp \
     misc/qtobjectpointer.cpp \
     LorrisAnalyzer/searchwidget.cpp \
@@ -280,10 +279,8 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/lorrisprogrammer.h \
     LorrisProgrammer/programmers/shupitoprogrammer.h \
     LorrisProgrammer/programmers/avr232bootprogrammer.h \
-    LorrisProgrammer/programmers/atsamprogrammer.h \
     LorrisProgrammer/modes/shupitospi.h \
     LorrisProgrammer/modes/shupitospiflash.h \
-    LorrisProgrammer/modes/shupitojtag.h \
     LorrisProgrammer/modes/shupitopdi.h \
     LorrisProgrammer/modes/shupitomode.h \
     LorrisProgrammer/modes/shupitocc25xx.h \
@@ -295,6 +292,7 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/ui/fusewidget.h \
     LorrisProgrammer/ui/fullprogrammerui.h \
     LorrisProgrammer/programmers/avr109programmer.h \
+    LorrisProgrammer/programmers/atsamprogrammer.h \
     ui/bytevalidator.h \
     misc/qtobjectpointer.h \
     LorrisAnalyzer/searchwidget.h \
@@ -443,11 +441,11 @@ unix:!macx:!symbian {
     INSTALLS += target translations
 }
 macx {
-    OTHER_FILES += \
-        ../dep/qextserialport/qextserialport.pri
-
-    INCLUDEPATH += ../dep/SDL/include
-    LIBS += -lqwt_lorris
+    #Note: Mac apps are designed as bundles, so using shared library is aganst mac conventions
+    LIBS += -lqwt_lorris -framework IOKit -framework CoreFoundation
+    #CONFIG += libyb
+    ICON = icon.icns
+    QT += macextras
 
     SOURCES += \
         ../dep/qextserialport/src/qextserialenumerator_osx.cpp \
@@ -483,6 +481,7 @@ libyb {
         connection/usbacmconn.cpp \
         connection/usbshupito22conn.cpp \
         connection/usbshupito23conn.cpp \
+        LorrisProgrammer/modes/shupitojtag.cpp \
         LorrisProgrammer/programmers/flipprogrammer.cpp \
         LorrisProgrammer/programmers/stm32programmer.cpp \
         connection/stm32connection.cpp
@@ -492,6 +491,7 @@ libyb {
         connection/usbacmconn.h \
         connection/usbshupito22conn.h \
         connection/usbshupito23conn.h \
+        LorrisProgrammer/modes/shupitojtag.h \
         LorrisProgrammer/programmers/flipprogrammer.h \
         LorrisProgrammer/programmers/stm32programmer.h \
         connection/stm32connection.h \

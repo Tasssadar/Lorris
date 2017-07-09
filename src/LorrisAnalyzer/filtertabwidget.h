@@ -62,7 +62,7 @@ public slots:
     void handleData(analyzer_data *data, quint32 index);
 
 private slots:
-    void showSettings();
+    void showSettings(int index = 1);
     void activateTab();
 
 private:
