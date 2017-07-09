@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 QT += gui core network script
-TARGET = Lorris
+TARGET = lorris
 CONFIG += precompile_header
 CONFIG(debug, debug|release):DESTDIR = $$PWD/../bin/debug
 else:DESTDIR = $$PWD/../bin/release
@@ -165,7 +165,9 @@ SOURCES += ui/mainwindow.cpp \
     connection/shupitospitunnelconn.cpp \
     LorrisProgrammer/programmers/arduinoprogrammer.cpp \
     connection/udpsocket.cpp \
-    LorrisProgrammer/programmers/zmodemprogrammer.cpp
+    LorrisProgrammer/programmers/zmodemprogrammer.cpp \
+    ../dep/qextserialport/src/qextserialport.cpp \
+    ../dep/qextserialport/src/qextserialenumerator.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -307,7 +309,12 @@ HEADERS += ui/mainwindow.h \
     connection/udpsocket.h \
     LorrisProgrammer/programmers/zmodemprogrammer.h \
     LorrisProgrammer/programmers/zmodemprogrammer-defines.h \
-    ui/termina-colors.h
+    ui/termina-colors.h \
+    ../dep/qextserialport/src/qextserialport_p.h \
+    ../dep/qextserialport/src/qextserialport_global.h \
+    ../dep/qextserialport/src/qextserialport.h \
+    ../dep/qextserialport/src/qextserialenumerator_p.h \
+    ../dep/qextserialport/src/qextserialenumerator.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
@@ -401,18 +408,11 @@ win32 {
 
     HEADERS += \
         ../dep/qextserialport/src/qextwineventnotifier_p.h \
-        ../dep/qextserialport/src/qextserialport_p.h \
-        ../dep/qextserialport/src/qextserialport_global.h \
-        ../dep/qextserialport/src/qextserialport.h \
-        ../dep/qextserialport/src/qextserialenumerator_p.h \
-        ../dep/qextserialport/src/qextserialenumerator.h \
         misc/updater.h
     SOURCES += \
         ../dep/qextserialport/src/qextserialenumerator_win.cpp \
         ../dep/qextserialport/src/qextwineventnotifier_p.cpp \
         ../dep/qextserialport/src/qextserialport_win.cpp \
-        ../dep/qextserialport/src/qextserialport.cpp \
-        ../dep/qextserialport/src/qextserialenumerator.cpp \
         misc/updater.cpp
 
     LIBS += -lsetupapi -lwinmm -lole32 -ladvapi32 -luser32
@@ -426,17 +426,9 @@ unix:!macx:!symbian {
         LIBS += -lqwt_lorris
     }
 
-    HEADERS += \
-        ../dep/qextserialport/src/qextserialport_p.h \
-        ../dep/qextserialport/src/qextserialport_global.h \
-        ../dep/qextserialport/src/qextserialport.h \
-        ../dep/qextserialport/src/qextserialenumerator_p.h \
-        ../dep/qextserialport/src/qextserialenumerator.h
     SOURCES += \
         ../dep/qextserialport/src/qextserialenumerator_unix.cpp \
-        ../dep/qextserialport/src/qextserialport_unix.cpp \
-        ../dep/qextserialport/src/qextserialport.cpp \
-        ../dep/qextserialport/src/qextserialenumerator.cpp
+        ../dep/qextserialport/src/qextserialport_unix.cpp
 
     QMAKE_POST_LINK = mkdir \
         "$$DESTDIR/translations" 2> /dev/null \
@@ -455,14 +447,16 @@ macx {
         ../dep/qextserialport/qextserialport.pri
 
     INCLUDEPATH += ../dep/SDL/include
-    LIBS += -lqwt_lorris -lqextserialport -lqextserialport_lorris
+    LIBS += -lqwt_lorris
 
-    translations.path = /usr/share/lorris/
-    translations.files = ../translations/Lorris.*.qm
-    qext.path = /usr/lib/
-    qext.files = ../dep/qextserialport/lib/libqextserialport_lorris.*
+    SOURCES += \
+        ../dep/qextserialport/src/qextserialenumerator_osx.cpp \
+        ../dep/qextserialport/src/qextserialport_unix.cpp
+
+    #translations.path = /usr/share/lorris/
+    #translations.files = ../translations/Lorris.*.qm
     target.path = /Applications/
-    INSTALLS += target translations qext
+    INSTALLS += target translations
 }
 
 python {
