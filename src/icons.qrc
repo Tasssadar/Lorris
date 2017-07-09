@@ -24,5 +24,6 @@
         <file alias="arduino">icons/arduino.png</file>
         <file>icons/icon.icns</file>
         <file>icons/follow-link.png</file>
+        <file alias="zmodem">icons/zmodem.png</file>
     </qresource>
 </RCC>

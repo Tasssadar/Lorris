@@ -35,6 +35,7 @@
 #include "../common.h"
 #include "terminal.h"
 #include "terminalsettings.h"
+#include "termina-colors.h"
 
 Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 {
@@ -51,6 +52,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
     m_fmt = FMT_MAX+1;
     m_input = INPUT_SEND_KEYPRESS;
     m_hex_pos = 0;
+    m_last_esc = NULL;
 
     viewport()->setCursor(Qt::IBeamCursor);
     setFont(Utils::getMonospaceFont());
@@ -129,7 +131,27 @@ void Terminal::addLines(const QString &text)
 
     for(int i = 0; i < text.size(); ++i)
     {
-        switch((*line_end).unicode())
+        const auto c = (*line_end).unicode();
+
+        if(!m_esc_seq.isEmpty()) {
+            if(m_esc_seq.length() == 1 && c != '[') {
+                m_esc_seq.clear();
+                line_start = line_end;
+                ++line_end;
+            } else if((*line_end).isLetter()) {
+                m_esc_seq.append(c);
+                handleEscSeq();
+                m_esc_seq.clear();
+                ++line_end;
+                line_start = line_end;
+            } else {
+                m_esc_seq.append(c);
+                ++line_end;
+            }
+            continue;
+        }
+
+        switch(c)
         {
             case '\f':
             {
@@ -232,6 +254,16 @@ void Terminal::addLines(const QString &text)
                     break;
                 }
             }
+            case '\e':
+            {
+                if(m_settings.chars[SET_HANDLE_ESCAPE]) {
+                    addLine(pos, line_start, line_end);
+                    m_esc_seq.append(c);
+                } else {
+                    ++line_end;
+                }
+                break;
+            }
             default:
             {
                 ++line_end;
@@ -265,6 +297,9 @@ void Terminal::addLine(quint32 pos, QChar *&line_start, QChar *&line_end)
         *line_end = tmp;
 
         m_cursor_pos.setX(m_lines[pos].length());
+
+        if(m_last_esc && !m_last_esc->isEmpty())
+            m_escapes[pos][0] = *m_last_esc;
     }
 
     m_cursor_pos.setY(pos);
@@ -527,11 +562,11 @@ void Terminal::paintEvent(QPaintEvent *)
 {
     QPainter painter(viewport());
 
-    int width = viewport()->width()/m_char_width;
-    int height = viewport()->height()/m_char_height;
+    const int width = viewport()->width()/m_char_width;
+    const int height = viewport()->height()/m_char_height;
 
-    int startX = horizontalScrollBar()->value();
-    int startY = verticalScrollBar()->value();
+    const int startX = horizontalScrollBar()->value();
+    const int startY = verticalScrollBar()->value();
 
     int y = 0;
     int x = 0;
@@ -555,7 +590,8 @@ void Terminal::paintEvent(QPaintEvent *)
     }
 
     // draw selection
-    if(m_sel_start != m_sel_stop && !m_sel_stop.isNull())
+    const bool drawSelection = m_sel_start != m_sel_stop && !m_sel_stop.isNull();
+    if(drawSelection)
     {
         quint32 textLine = m_sel_start.y();
         quint32 max = m_sel_stop.y() - m_sel_start.y();
@@ -597,6 +633,9 @@ void Terminal::paintEvent(QPaintEvent *)
 
     painter.setPen(QPen(m_settings.colors[COLOR_TEXT]));
 
+    bool colorChanged = false;
+    bool fontChanged = false;
+
     for(y = 0; (int)i < maxLines && i < lines().size(); ++i, y += m_char_height)
     {
         QString& l = lines()[i];
@@ -604,8 +643,60 @@ void Terminal::paintEvent(QPaintEvent *)
         int len = std::min(l.length() - startX, maxLen);
         if(len <= 0)
             continue;
-        painter.drawText(0, y, viewport()->width(), m_char_height, 0,
+
+        const auto ei = m_escapes.find(i);
+        if(ei != m_escapes.end()) {
+            const auto blks = ei->second;
+            int curX = startX;
+            for(auto itr = blks.begin(); itr != blks.end();) {
+                const auto cur = itr++;
+                if(itr != blks.end() && itr->first < curX)
+                    continue;
+
+                int end = std::min(l.length(), maxLen);
+                if(itr != blks.end() && itr->first < end)
+                    end = itr->first;
+
+                if(cur->second.color.isValid()) {
+                    painter.setPen(cur->second.color);
+                    colorChanged = true;
+                } else if(colorChanged) {
+                    painter.setPen(m_settings.colors[COLOR_TEXT]);
+                    colorChanged = false;
+                }
+
+                if(!drawSelection && cur->second.background.isValid()) {
+                    painter.save();
+
+                    painter.setBrush(QBrush(cur->second.background));
+                    painter.setPen(Qt::NoPen);
+
+                    QRectF bgrect((curX - startX)*m_char_width, y, (end - curX)*m_char_width, m_char_height);
+                    painter.drawRect(bgrect);
+
+                    painter.restore();
+                }
+
+                if(cur->second.flags & ESC_BOLD) {
+                    fontChanged = true;
+                    QFont f = painter.font();
+                    f.setBold(true);
+                    painter.setFont(f);
+                } else if(fontChanged) {
+                    QFont f = painter.font();
+                    f.setBold(false);
+                    painter.setFont(f);
+                }
+
+                painter.drawText((curX - startX)*m_char_width, y, viewport()->width(), m_char_height, 0,
+                             QString::fromRawData(l.data()+curX, end - curX));
+
+                curX = end;
+            }
+        } else {
+            painter.drawText(0, y, viewport()->width(), m_char_height, 0,
                          QString::fromRawData(l.data()+startX, len));
+        }
     }
 }
 
@@ -646,6 +737,9 @@ void Terminal::clear()
     m_data.clear();
     m_data.reserve(512);
 
+    m_last_esc = NULL;
+    m_esc_seq.clear();
+    m_escapes.clear();
     m_lines.clear();
     m_pause_lines.clear();
     m_cursor_pos = m_cursor_pause_pos = QPoint(0, 0);
@@ -689,18 +783,18 @@ QPoint Terminal::mouseToTextPos(const QPoint& pos)
     int startX = horizontalScrollBar()->value();
     int startY = verticalScrollBar()->value();
 
-    y = startY + pos.y()/m_char_height;
-    if(y > startY + height)
-    {
-        y = 0;
-        return res;
-    }
-
     x = startX + pos.x()/m_char_width;
     if(x > startX + width)
-    {
+        x = startX + width;
+    else if(x < 0)
         x = 0;
+
+    y = startY + pos.y()/m_char_height;
+    if(y > startY + height) {
+        y = startY + height;
+    } else if(y < 0) {
         y = 0;
+        x = 0;
     }
 
     return res;
@@ -863,6 +957,9 @@ void Terminal::applySettings(const terminal_settings& set)
 void Terminal::redrawAll()
 {
     m_lines.clear();
+    m_escapes.clear();
+    m_last_esc = NULL;
+    m_esc_seq.clear();
     m_hex_pos = 0;
     m_cursor_pos = m_cursor_pause_pos = QPoint(0, 0);
 
@@ -926,4 +1023,102 @@ void Terminal::endBlink()
     setPalette(p);
 
     update();
+}
+
+void Terminal::handleEscSeq()
+{
+    EscBlock blk;
+    if(m_last_esc)
+        blk = *m_last_esc;
+
+    if(m_esc_seq[m_esc_seq.size()-1] != 'm')
+        return;
+
+    QString cnt = m_esc_seq.mid(2, m_esc_seq.size()-3);
+    QStringList parts = cnt.split(';');
+    bool ok = false;
+    for(int i = 0; i < parts.length(); ++i) {
+        int code = parts[i].toInt(&ok);
+        if(!ok)
+            continue;
+
+        switch(code) {
+        case 0:
+            blk = EscBlock();
+            break;
+        case 1:
+            blk.flags = EscFlags(blk.flags | ESC_BOLD);
+            break;
+        case 21:
+            blk.flags = EscFlags(blk.flags & ~ESC_BOLD);
+            break;
+        case 39:
+            blk.color = QColor();
+            break;
+        case 49:
+            blk.background = QColor();
+            break;
+
+        case 30: blk.color = Qt::black; break;
+        case 31: blk.color = Qt::darkRed; break;
+        case 32: blk.color = Qt::darkGreen; break;
+        case 33: blk.color = Qt::darkYellow; break;
+        case 34: blk.color = Qt::darkBlue; break;
+        case 35: blk.color = Qt::darkMagenta; break;
+        case 36: blk.color = Qt::darkCyan; break;
+        case 37: blk.color = Qt::lightGray; break;
+        case 90: blk.color = Qt::darkGray; break;
+        case 91: blk.color = Qt::red; break;
+        case 92: blk.color = Qt::green; break;
+        case 93: blk.color = Qt::yellow; break;
+        case 94: blk.color = Qt::blue; break;
+        case 95: blk.color = Qt::magenta; break;
+        case 96: blk.color = Qt::cyan; break;
+        case 97: blk.color = Qt::white; break;
+
+        case 40:  blk.background = Qt::black; break;
+        case 41:  blk.background = Qt::darkRed; break;
+        case 42:  blk.background = Qt::darkGreen; break;
+        case 43:  blk.background = Qt::darkYellow; break;
+        case 44:  blk.background = Qt::darkBlue; break;
+        case 45:  blk.background = Qt::darkMagenta; break;
+        case 46:  blk.background = Qt::darkCyan; break;
+        case 47:  blk.background = Qt::lightGray; break;
+        case 100: blk.background = Qt::darkGray; break;
+        case 101: blk.background = Qt::red; break;
+        case 102: blk.background = Qt::green; break;
+        case 103: blk.background = Qt::yellow; break;
+        case 104: blk.background = Qt::blue; break;
+        case 105: blk.background = Qt::magenta; break;
+        case 106: blk.background = Qt::cyan; break;
+        case 107: blk.background = Qt::white; break;
+
+        case 38:
+        case 48: {
+            if(i+2 >= parts.length())
+                break;
+
+            i += 2;
+            if(parts[i-1] != "5")
+                break;
+
+            uint clridx = parts[i].toUInt(&ok);
+            if(!ok || clridx >= sizeof_array(term256colors))
+                break;
+            if(code == 38)
+                blk.color = term256colors[clridx];
+            else
+                blk.background = term256colors[clridx];
+            break;
+        }
+        }
+    }
+
+    if(!blk.isEmpty() || m_last_esc) {
+        m_escapes[m_cursor_pos.y()][m_cursor_pos.x()] = blk;
+        if(!blk.isEmpty())
+            m_last_esc = &m_escapes[m_cursor_pos.y()][m_cursor_pos.x()];
+        else
+            m_last_esc = NULL;
+    }
 }

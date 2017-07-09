@@ -32,6 +32,7 @@ enum ProgrammerTypes
     programmer_avr109,
     programmer_stm32,
     programmer_arduino,
+    programmer_zmodem,
 
     programmer_max
 };

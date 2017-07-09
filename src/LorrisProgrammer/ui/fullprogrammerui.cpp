@@ -97,6 +97,7 @@ void FullProgrammerUI::setupUi(LorrisProgrammer *widget)
     connect(ui->servoPosSlider,  SIGNAL(valueChanged(int)),        ui->servoPosSpin, SLOT(setValue(int)));
     connect(ui->servoPosSpin,    SIGNAL(valueChanged(int)),        SLOT(setPwmServo()));
     connect(ui->servoPosSpin,    SIGNAL(valueChanged(int)),        ui->servoPosSlider, SLOT(setValue(int)));
+    connect(ui->progButton,      SIGNAL(clicked(bool)),            SLOT(progButtonClicked()));
 
     ui->pwmRadioGroup->setId(ui->disablePwmRadio, 0);
     ui->pwmRadioGroup->setId(ui->genericPwmRadio, 1);
@@ -261,7 +262,7 @@ void FullProgrammerUI::initMenus()
 
     // toolbar
     QToolBar *bar = new QToolBar(m_widget);
-    ui->topLayout->insertWidget(3, bar);
+    ui->topLayout->insertWidget(2, bar);
     bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     bar->setIconSize(QSize(16, 16));
 
@@ -295,7 +296,7 @@ void FullProgrammerUI::connectProgrammer(Programmer * prog)
 void FullProgrammerUI::updateProgrammersBox(Programmer *prog)
 {
     // corresponds to enum ProgrammerTypes
-    static const QString names[] = { "Shupito", "Flip", "avr232boot", "atsam", "avr109", "STM32 STLink", "Arduino" };
+    static const QString names[] = { "Shupito", "Flip", "avr232boot", "atsam", "avr109", "STM32 STLink", "Arduino", "Zmodem" };
     static const QString icons[] = {
         ":/icons/symbol_triangle",
         ":/icons/symbol_circle",
@@ -303,14 +304,15 @@ void FullProgrammerUI::updateProgrammersBox(Programmer *prog)
         ":/icons/symbol_cross",
         ":/icons/symbol_moon",
         ":/icons/symbol_circle",
-        ":/icons/arduino"
+        ":/icons/arduino",
+        ":/icons/zmodem"
     };
 
     Q_ASSERT(sizeof_array(names) == programmer_max);
     Q_ASSERT(sizeof_array(icons) == programmer_max);
 
-    ui->progName->setText(names[prog->getType()]);
-    ui->progIcon->setPixmap(QIcon(icons[prog->getType()]).pixmap(16, 16));
+    ui->progButton->setText(names[prog->getType()]);
+    ui->progButton->setIcon(QIcon(icons[prog->getType()]).pixmap(16, 16));
 }
 
 void FullProgrammerUI::hideLogBtn(bool checked)
@@ -904,4 +906,11 @@ void FullProgrammerUI::hexEditMenuReq(const QPoint &/*p*/)
     data += fill.left(data_size%fill_size);
 
     h->setData(data);
+}
+
+void FullProgrammerUI::progButtonClicked()
+{
+    auto *btn = m_widget->getConnBtn();
+    if(btn)
+        btn->choose();
 }

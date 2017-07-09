@@ -55,6 +55,8 @@ void HexFile::LoadFromBin(const QString &path)
     if(!file.open(QIODevice::ReadOnly))
         throw QString(QObject::tr("Can't open file \"%1\"!")).arg(path);
 
+    m_filepath = path;
+
     QByteArray data = file.readAll();
     m_data.clear();
     m_data[0].assign(data.data(), data.data() + data.size());
@@ -65,6 +67,8 @@ void HexFile::LoadFromFile(const QString &path)
     QFile file(path);
     if(!file.open(QIODevice::ReadOnly))
         throw QString(QObject::tr("Can't open file \"%1\"!")).arg(path);
+
+    m_filepath = path;
 
     this->DecodeFromString(file.readAll());
 }

@@ -24,6 +24,7 @@
 #include "graphexport.h"
 #include "../../datafilter.h"
 #include "../../../ui/floatinginputdialog.h"
+#include "../../labellayout.h"
 
 REGISTER_DATAWIDGET(WIDGET_GRAPH, Graph, NULL)
 W_TR(QT_TRANSLATE_NOOP("DataWidget", "Graph"))
@@ -34,6 +35,7 @@ GraphWidget::GraphWidget(QWidget *parent) : DataWidget(parent)
 {
     m_graph = new Graph(this);
     m_add_dialog = NULL;
+    m_drop_layout = NULL;
 
     layout->addWidget(m_graph);
 
@@ -42,6 +44,7 @@ GraphWidget::GraphWidget(QWidget *parent) : DataWidget(parent)
 
 GraphWidget::~GraphWidget()
 {
+    delete m_drop_layout;
     delete m_graph;
     delete m_add_dialog;
 
@@ -377,11 +380,105 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
             m_graph->showCurve(curve, file->readVal<bool>());
     }
     updateRemoveMapping();
+    updateSampleSize();
+}
+
+void GraphWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    DataWidget::dragEnterEvent(event);
+    if(!event->isAccepted())
+        return;
+
+    m_graph->setVisible(false);
+
+    m_drop_cur_label = -1;
+    m_drop_layout = new QVBoxLayout;
+    m_drop_layout->addStretch(1);
+
+    QLabel *headline = new QLabel(tr("Assign to curve:"), this);
+    QFont f = headline->font();
+    f.setPointSize(f.pointSize()*1.5);
+    headline->setFont(f);
+    m_drop_layout->addWidget(headline, 0, Qt::AlignHCenter);
+
+    QHBoxLayout *l = new QHBoxLayout;
+    m_drop_layout->addLayout(l);
+    l->addStretch(1);
+
+    QLabel *lab = new QLabel("New curve...", this);
+    lab->setAutoFillBackground(true);
+    lab->setStyleSheet("border: 2px solid black; padding: 15px 8px; background: white;");
+    l->addWidget(lab);
+    l->addSpacing(20);
+    m_drop_labels.push_back(lab);
+
+    for(size_t i = 0; i < m_curves.size(); ++i) {
+        GraphCurveInfo *cd = m_curves[i];
+
+        lab = new QLabel(cd->curve->title().text(), this);
+        lab->setAutoFillBackground(true);
+        QColor clr = cd->curve->pen().color();
+        lab->setStyleSheet(QString("border: 4px solid rgb(%1, %2, %3); padding: 15px 8px; background: white;").arg(clr.red()).arg(clr.green()).arg(clr.blue()));
+
+        l->addWidget(lab);
+        l->addSpacing(10);
+        m_drop_labels.push_back(lab);
+    }
+    l->addStretch(1);
+
+    m_drop_layout->addStretch(1);
+
+    layout->addLayout(m_drop_layout, 1);
+}
+
+void GraphWidget::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    m_graph->setVisible(true);
+    if(m_drop_layout) {
+        m_drop_labels.clear();
+        Utils::deleteLayoutMembers(m_drop_layout);
+        delete m_drop_layout;
+        m_drop_layout = NULL;
+    }
+}
+
+void GraphWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+    int newTarget = 0;
+    for(size_t i = 0; i < m_drop_labels.size(); ++i) {
+        QLabel *l = m_drop_labels[i];
+        if(l->geometry().contains(event->pos())) {
+            newTarget = i;
+            break;
+        }
+    }
+
+    if(newTarget != m_drop_cur_label) {
+        if(m_drop_cur_label != -1) {
+            QString s = m_drop_labels[m_drop_cur_label]->styleSheet();
+            s.replace("background: yellow;", "background: white;");
+            m_drop_labels[m_drop_cur_label]->setStyleSheet(s);
+        }
+
+        QString s = m_drop_labels[newTarget]->styleSheet();
+        s.replace("background: white;", "background: yellow;");
+        m_drop_labels[newTarget]->setStyleSheet(s);
+
+        m_drop_cur_label = newTarget;
+    }
 }
 
 void GraphWidget::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
+
+    m_graph->setVisible(true);
+    if(m_drop_layout) {
+        m_drop_labels.clear();
+        Utils::deleteLayoutMembers(m_drop_layout);
+        delete m_drop_layout;
+        m_drop_layout = NULL;
+    }
 
     quint32 pos;
     DataFilter *f;
@@ -392,13 +489,28 @@ void GraphWidget::dropEvent(QDropEvent *event)
     str >> pos;
     str.readRawData((char*)&f, sizeof(f));
 
-    m_dropData = std::make_pair(pos, f);
+    if(m_drop_cur_label > 0) {
+        emit mouseStatus(false, m_info, m_widgetControlled);
 
-    if(m_add_dialog)
-        delete m_add_dialog;
-    m_add_dialog = new GraphCurveAddDialog(this, &m_curves, false);
-    connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(acceptCurveChanges()));
-    m_add_dialog->open();
+        setInfo(f, pos);
+
+        GraphCurveInfo *targetCurve = m_curves[m_drop_cur_label-1];
+        targetCurve->curve->setDataInfo(m_info);
+        targetCurve->info = m_info;
+        m_info.filter->connectWidget(this, false);
+
+        updateRemoveMapping();
+        updateVisibleArea();
+        emit updateForMe();
+    } else {
+        m_dropData = std::make_pair(pos, f);
+
+        if(m_add_dialog)
+            delete m_add_dialog;
+        m_add_dialog = new GraphCurveAddDialog(this, &m_curves, false);
+        connect(m_add_dialog, SIGNAL(accepted()), this, SLOT(acceptCurveChanges()));
+        m_add_dialog->open();
+    }
 }
 
 void GraphWidget::applyCurveChanges()
@@ -487,8 +599,11 @@ void GraphWidget::tryReplot()
     if(m_indexChange != UINT32_MAX) {
         const size_t size = m_curves.size();
         if(size != 0) {
-            for(size_t i = 0; i < size; ++i)
+            for(size_t i = 0; i < size; ++i) {
+                if(m_enableAutoScroll && m_sample_size == -3)
+                     m_curves[i]->curve->setSampleOffset(m_indexChange);
                 m_curves[i]->curve->dataPosChanged(m_indexChange);
+            }
             m_doReplot = true;
         }
 
@@ -551,7 +666,7 @@ void GraphWidget::sampleSizeChanged(int val)
             break;
         case -1: // all data
             for(quint8 i = 0; i < m_curves.size(); ++i)
-                m_curves[i]->curve->setSampleSize(UINT_MAX);
+                m_curves[i]->curve->setSampleSize(UINT32_MAX);
             break;
         default:
             for(quint8 i = 0; i < m_curves.size(); ++i)
@@ -684,7 +799,7 @@ void GraphWidget::updateSampleSize()
     qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound());
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
-        m_curves[i]->curve->setSampleSize(size);
+        m_curves[i]->curve->setSampleSize(size, (std::max)(m_graph->XupperBound(), 0.0));
 }
 
 void GraphWidget::exportData()

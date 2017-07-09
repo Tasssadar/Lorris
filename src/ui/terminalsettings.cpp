@@ -26,6 +26,7 @@ TerminalSettings::TerminalSettings(const terminal_settings &set, QWidget *parent
     ui->formBox->setChecked(set.chars[SET_FORMFEED]);
     ui->nullBox->setChecked(set.chars[SET_IGNORE_NULL]);
     ui->enterSendBox->setCurrentIndex(set.chars[SET_ENTER_SEND]);
+    ui->escapeBox->setChecked(set.chars[SET_HANDLE_ESCAPE]);
 
     ui->widthBox->setValue(set.tabReplace);
     ui->fontBox->setCurrentFont(set.font);
@@ -52,6 +53,7 @@ terminal_settings TerminalSettings::getSettings()
     set.chars[SET_FORMFEED] = ui->formBox->isChecked();
     set.chars[SET_IGNORE_NULL] = ui->nullBox->isChecked();
     set.chars[SET_ENTER_SEND] = ui->enterSendBox->currentIndex();
+    set.chars[SET_HANDLE_ESCAPE] = ui->escapeBox->isChecked();
 
     set.tabReplace = ui->widthBox->value();
     set.font = ui->fontBox->currentFont();

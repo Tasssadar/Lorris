@@ -41,7 +41,9 @@ enum NumberTypes
     NUM_FLOAT,
     NUM_DOUBLE,
 
-    NUM_COUNT
+    NUM_COUNT,
+    NUM_STRING = NUM_COUNT,
+    NUM_COUNT_WITH_STRING,
 };
 
 enum DragActions
@@ -279,7 +281,6 @@ private:
 
     void copyWidget(QMouseEvent *ev);
 
-    QPoint mOrigin;
     QPoint m_clickPos;
     quint8 m_dragAction;
     DataWidget *m_copy_widget;

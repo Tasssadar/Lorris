@@ -163,12 +163,13 @@ class PortConnection : public Connection
 
 Q_SIGNALS:
     void dataRead(const QByteArray& data);
+    void programmerTypeChanged(int type);
 
 public:
     explicit PortConnection(ConnectionType type);
 
     int programmerType() const { return m_programmer_type; }
-    void setProgrammerType(int type) { m_programmer_type = type; }
+    void setProgrammerType(int type);
 
     virtual QHash<QString, QVariant> config() const;
     virtual bool applyConfig(QHash<QString, QVariant> const & config);

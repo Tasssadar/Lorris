@@ -236,8 +236,8 @@ public:
     bool getLenFromHeader(quint32& len);
     quint32 getLenght(bool *readFromHeader = NULL);
 
-    quint8   getUInt8  (quint32 pos) const { return m_data->at(pos); }
-    qint8    getInt8   (quint32 pos) const { return m_data->at(pos); }
+    quint8   getUInt8  (quint32 pos) const { return read<quint8>(pos); }
+    qint8    getInt8   (quint32 pos) const { return read<qint8>(pos); }
     quint16  getUInt16 (quint32 pos) const { return read<quint16>(pos); }
     qint16   getInt16  (quint32 pos) const { return read<qint16> (pos); }
     quint32  getUInt32 (quint32 pos) const { return read<quint32>(pos); }
@@ -259,8 +259,12 @@ private:
 template <typename T>
 T analyzer_data::read(quint32 pos) const
 {
-    T val = *((T const*)&m_data->data()[pos]);
-    if(m_packet->big_endian)
+    T val = 0;
+    if(int(pos + sizeof(T)) > m_data->size())
+        return val;
+
+    val = *((T const*)&m_data->data()[pos]);
+    if(sizeof(T) > 1 && m_packet->big_endian)
         Utils::swapEndian(val);
     return val;
 }

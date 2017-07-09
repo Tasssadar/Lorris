@@ -78,6 +78,8 @@ DataWidget *WidgetFactory::copy(DataWidget *w)
     p.seek(0);
     res->loadWidgetInfo(&p);
 
+    res->updateForThis();
+
     res->resize(w->size());
     return res;
 }

@@ -322,7 +322,7 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
     valueLabel = new QLabel(text, this);
     valueLabel->setAlignment(Qt::AlignCenter);
     valueLabel->setFont(Utils::getMonospaceFont());
-    valueLabel->setAcceptDrops(true);
+    valueLabel->setAcceptDrops(m_drop);
 
     layout->setSpacing(0);
     layout->setMargin(0);
@@ -343,7 +343,7 @@ DraggableLabel::DraggableLabel(const QString &text, quint32 pos, bool drop, bool
     m_drop = drop;
     m_drag = drag;
 
-    setAcceptDrops(true);
+    setAcceptDrops(m_drop);
 
     this->setAutoFillBackground(true);
 }
@@ -412,8 +412,10 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 void DraggableLabel::dragEnterEvent(QDragEnterEvent *event)
 {
     const QMimeData *mime = event->mimeData();
-    if(!mime || !mime->hasFormat("analyzer/dropLabel") || !event->source())
+    if(!m_drop || !mime || !mime->hasFormat("analyzer/dropLabel") || !event->source()) {
+        event->ignore();
         return QWidget::dragEnterEvent(event);
+    }
 
     int pos;
     int myPos = labelLayout->getLabelPos(this);
@@ -443,8 +445,11 @@ void DraggableLabel::dragLeaveEvent(QDragLeaveEvent */*event*/)
 
 void DraggableLabel::dropEvent(QDropEvent *event)
 {
-    if(!m_drop)
+    if(!m_drop) {
+        event->ignore();
+        QWidget::dropEvent(event);
         return;
+    }
 
     int myPos = labelLayout->getLabelPos(this);
     int pos;

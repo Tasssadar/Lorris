@@ -17,7 +17,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,1,0,0">
      <item>
-      <layout class="QHBoxLayout" name="topLayout" stretch="0,0,0,0,0">
+      <layout class="QHBoxLayout" name="topLayout" stretch="0,0,0,0">
        <item>
         <widget class="QToolButton" name="connectButton">
          <property name="sizePolicy">
@@ -44,40 +44,12 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="progIcon">
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Programmer type</string>
-         </property>
+        <widget class="QPushButton" name="progButton">
          <property name="text">
           <string/>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="progName">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string>Programmer type</string>
-         </property>
-         <property name="text">
-          <string/>
+         <property name="flat">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -612,7 +584,7 @@ flashing same file twice:</string>
             <item>
              <widget class="QRadioButton" name="disablePwmRadio">
               <property name="text">
-               <string>Disabled</string>
+               <string>&amp;Disabled</string>
               </property>
               <property name="checked">
                <bool>true</bool>

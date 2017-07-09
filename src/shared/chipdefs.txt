@@ -60,3 +60,5 @@ stm32f3 stm32:2ba01477-422 flash=0:2048 !flash_size_reg=0x1ffff7cc !erased_patte
 
 ds89c430 ds89c:ds89c430 flash=16384:256 lb:3,4,5 ocr:11
 ds89c450 ds89c:ds89c450 flash=65536:256 lb:3,4,5 ocr:11
+
+GenericZmodem zmodem:00 flash=0:4096

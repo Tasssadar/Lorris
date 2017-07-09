@@ -143,6 +143,13 @@ UpdateHandler::UpdateHandler(bool autoCheck, QObject *parent) : QObject(parent)
 
 void UpdateHandler::updateBtn()
 {
+    QPushButton *btn = dynamic_cast<QPushButton*>(sender());
+    if(btn) {
+        btn->setEnabled(false);
+        btn->setText(tr("Starting..."));
+        qApp->processEvents();
+    }
+
     if(Updater::startUpdater())
         qApp->closeAllWindows();
     deleteLater();

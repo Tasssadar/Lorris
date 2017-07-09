@@ -8,6 +8,8 @@
 #include "ScriptWidget/engines/qtscriptengine.h"
 #include "terminalwidget.h"
 
+#include "../../ui/terminal.h"
+
 REGISTER_DATAWIDGET(WIDGET_TERMINAL, Terminal, NULL)
 W_TR(QT_TRANSLATE_NOOP("DataWidget", "Terminal"))
 
@@ -35,4 +37,15 @@ void TerminalWidget::setUp(Storage *storage)
 TerminalWidget::~TerminalWidget()
 {
 
+}
+
+void TerminalWidget::newData(analyzer_data *data, quint32 index)
+{
+    if(this->isAssigned()) {
+        QString str = data->getString(m_info.pos);
+        if(!str.isEmpty())
+            m_terminal->appendText(str);
+    } else {
+        ScriptWidget::newData(data, index);
+    }
 }

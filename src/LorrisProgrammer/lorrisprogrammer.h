@@ -61,6 +61,7 @@ public:
 
     void stopAll(bool wait);
     void createConnBtn(QToolButton *btn);
+    ConnectButton *getConnBtn() const { return m_connectButton; };
 
 public slots:
     void setConnection(ConnectionPointer<Connection> const & con);
@@ -117,8 +118,9 @@ private slots:
 
     void blinkLed();
 
-private:
     void updateProgrammer();
+
+private:
     bool checkVoltage(bool active);
     void showProgressDialog(const QString& text, QObject *sender = NULL);
     bool showContinueBox(const QString& title, const QString& text);
@@ -133,6 +135,8 @@ private:
     void setUiType(int type);
 
     void setEnableButtons(bool enable);
+
+    QString getFileDialogFilter(int memid);
 
     ProgrammerUI *ui;
 

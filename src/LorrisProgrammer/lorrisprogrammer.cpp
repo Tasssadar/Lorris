@@ -35,6 +35,7 @@
 #include "programmers/avr232bootprogrammer.h"
 #include "programmers/avr109programmer.h"
 #include "programmers/arduinoprogrammer.h"
+#include "programmers/zmodemprogrammer.h"
 
 #ifdef HAVE_LIBYB
 #include "programmers/flipprogrammer.h"
@@ -49,9 +50,6 @@
 static const QString colorFromDevice = "#C0FFFF";
 static const QString colorFromFile   = "#C0FFC0";
 static const QString colorSavedToFile= "#FFE0E0";
-
-static const QString hex_filters = QObject::tr("All supported file types (*.hex *.bin);;Intel HEX file (*.hex);;Binary file (*.bin)");
-static const QString svf_filters = QObject::tr("Serial Vector Format file (*.svf)");
 
 LorrisProgrammer::LorrisProgrammer()
     : WorkTab(), m_logsink(this)
@@ -596,6 +594,16 @@ void LorrisProgrammer::restartChip()
     startChip();
 }
 
+QString LorrisProgrammer::getFileDialogFilter(int memid) {
+    if(this->m_programmer && m_programmer->getType() == programmer_zmodem) {
+        return QObject::tr("All files (*)");
+    } else if(memid == MEM_JTAG) {
+        return QObject::tr("Serial Vector Format file (*.svf)");
+    } else {
+        return QObject::tr("All supported file types (*.hex *.bin);;Intel HEX file (*.hex);;Binary file (*.bin)");;
+    }
+}
+
 void LorrisProgrammer::loadFromFile()
 {
     try
@@ -604,7 +612,7 @@ void LorrisProgrammer::loadFromFile()
 
         QString filename = QFileDialog::getOpenFileName(this, QObject::tr("Import data"),
                                                         sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
-                                                        memid == MEM_JTAG? svf_filters: hex_filters);
+                                                        getFileDialogFilter(memid));
         if(filename.isEmpty())
             return;
 
@@ -670,7 +678,7 @@ void LorrisProgrammer::saveToFile()
         int memId = ui->getMemIndex();
         QString filename = QFileDialog::getSaveFileName(this, QObject::tr("Export data"),
                                                         sConfig.get(CFG_STRING_SHUPITO_HEX_FOLDER),
-                                                        memId == MEM_JTAG? svf_filters: hex_filters);
+                                                        getFileDialogFilter(memId));
         if(filename.isEmpty())
             return;
 
@@ -785,6 +793,9 @@ void LorrisProgrammer::updateProgrammer()
                     Utils::showErrorBox(tr("Arduino programmer only works with serial port connection!"));
                 }
                 break;
+            case programmer_zmodem:
+                m_programmer.reset(new ZmodemProgrammer(con, &m_logsink));
+                break;
             default:
                 break;
             }
@@ -833,6 +844,10 @@ void LorrisProgrammer::setConnection(ConnectionPointer<Connection> const & con)
 
         m_connectButton->setConn(m_con, false);
         connect(m_con.data(), SIGNAL(disconnecting()), this, SLOT(connDisconnecting()));
+
+        PortConnection *port = dynamic_cast<PortConnection *>(m_con.data());
+        if(port)
+            connect(port, SIGNAL(programmerTypeChanged(int)), this, SLOT(updateProgrammer()));
     }
 
     this->connectedStatus(m_con && m_con->isOpen());

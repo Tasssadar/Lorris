@@ -71,6 +71,9 @@ private:
     static QScriptValue __getDataCount(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __playErrorSound(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __setMaxPacketNumber(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __setInterval(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __setTimeout(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue __clearTimer(QScriptContext *context, QScriptEngine *engine);
 
     static QScriptValue __newNumberWidget(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue __newBarWidget(QScriptContext *context, QScriptEngine *engine);
@@ -103,7 +106,7 @@ public:
     QString dataChanged(analyzer_data *data, quint32 index);
     DataWidget *addWidget(quint8 type, QScriptContext *context, quint8 removeArg = 0);
 
-    QScriptValue newTimer();
+    QTimer *newTimer();
 
     void onWidgetAdd(DataWidget *w);
     void onWidgetRemove(DataWidget *w);
@@ -136,6 +139,20 @@ private:
     QScriptValue  m_on_raw;
 
     QtScriptEngine_private *m_engine;
+};
+
+class QtScriptTimerCallback : public QObject {
+    Q_OBJECT
+public:
+    QtScriptTimerCallback(const QScriptValue& this_object, const QScriptValue& callback, QObject *parent);
+    ~QtScriptTimerCallback();
+
+public slots:
+    void trigger();
+
+private:
+    QScriptValue m_this_object;
+    QScriptValue m_callback;
 };
 
 #endif // QTSCRIPTENGINE_H

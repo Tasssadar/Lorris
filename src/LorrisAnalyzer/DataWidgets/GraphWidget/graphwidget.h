@@ -52,6 +52,9 @@ public slots:
 
 protected:
     void processData(analyzer_data *data);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
 
 private slots:
@@ -77,6 +80,10 @@ private:
     GraphCurveAddDialog *m_add_dialog;
     std::pair<quint32, DataFilter*> m_dropData;
     Storage *m_storage;
+
+    QVBoxLayout *m_drop_layout;
+    std::vector<QLabel*> m_drop_labels;
+    int m_drop_cur_label;
 
     QAction *m_sample_act[SAMPLE_ACT_COUNT];
     QAction *m_axis_act[QwtPlot::xTop];

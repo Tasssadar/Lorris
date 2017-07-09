@@ -53,7 +53,7 @@ NumberWidget::NumberWidget(QWidget *parent) : DataWidget(parent)
     // FIXME
     //m_num->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
-    QFont font = Utils::getMonospaceFont(20);
+    QFont font = Utils::getMonospaceFont(4);
     m_num->setFont(font);
     layout->addWidget(m_num);
 
@@ -94,14 +94,16 @@ void NumberWidget::setUp(Storage *storage)
         tr("signed 64bit"),
 
         tr("float (4 bytes)"),
-        tr("double (8 bytes)")
+        tr("double (8 bytes)"),
+
+        tr("Null-terminated string"),
     };
 
     QSignalMapper *signalMapBits = new QSignalMapper(this);
 
-    for(quint8 i = 0; i < NUM_COUNT; ++i)
+    for(quint8 i = 0; i < NUM_COUNT_WITH_STRING; ++i)
     {
-        if(i%4 == 0 && i != 0)
+        if(i == 4 || i == 8 || i == 10)
             bitsMenu->addSeparator();
 
         m_bitsAction[i] = new QAction(dataTypes[i], this);
@@ -165,8 +167,12 @@ void NumberWidget::setUp(Storage *storage)
 
 void NumberWidget::processData(analyzer_data *data)
 {
-    QVariant var = DataWidget::getNumFromPacket(data, m_info.pos, m_numberType);
-    setValue(var);
+    if(m_numberType != NUM_STRING) {
+        QVariant var = DataWidget::getNumFromPacket(data, m_info.pos, m_numberType);
+        setValue(var);
+    } else {
+        setValue(data->getString(m_info.pos));
+    }
 }
 
 void NumberWidget::setValue(QVariant var)
@@ -174,6 +180,11 @@ void NumberWidget::setValue(QVariant var)
     if(var.isNull())
     {
         m_num->setText("N/A");
+        return;
+    }
+
+    if(var.type() == QVariant::String) {
+        m_num->setText(var.toString());
         return;
     }
 
@@ -268,7 +279,7 @@ void NumberWidget::setFormat(int fmt)
 
 void NumberWidget::setDataType(int i)
 {
-    for(quint8 y = 0; y < NUM_COUNT; ++y)
+    for(quint8 y = 0; y < NUM_COUNT_WITH_STRING; ++y)
         m_bitsAction[y]->setChecked(y == i);
 
     if(i >= NUM_INT8 && m_numberType < NUM_FLOAT)

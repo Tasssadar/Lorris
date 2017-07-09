@@ -221,7 +221,6 @@ void DataWidget::mousePressEvent( QMouseEvent* e )
         return; // must not call QFrame::mousePressEvent(e);
 
     m_dragAction = getDragAction(e);
-    mOrigin = e->globalPos();
     m_clickPos = e->pos();
 
     if(e->modifiers() & Qt::ShiftModifier)
@@ -370,40 +369,38 @@ void DataWidget::dragResize(QMouseEvent* e)
     int x = pos().x();
     int y = pos().y();
 
-    QPoint p = e->pos();
+    QPoint p = mapToParent(e->pos());
     mapXYToGrid(p);
-    p -= widgetArea()->getGridOffset();
 
     if(m_dragAction & DRAG_RES_LEFT)
     {
-        int gx = x + e->pos().x();
-        mapToGrid(gx);
-
-        w += x - gx;
-        x = gx;
+        w += x - p.x();
+        x = p.x();
     }
     else if(m_dragAction & DRAG_RES_RIGHT)
-        w = p.x();
+        w = p.x() - x;
 
     if(m_dragAction & DRAG_RES_TOP)
     {
-        int gy = y + e->pos().y();
-        mapToGrid(gy);
-
-        h += y - gy;
-        y = gy;
+        h += y - p.y();
+        y = p.y();
     }
     else if(m_dragAction & DRAG_RES_BOTTOM)
-        h = p.y();
+        h = p.y() - y;
 
-    if(w < minimumWidth())
+    int minw = minimumWidth() + widgetArea()->getGrid()/2;
+    int minh = minimumHeight() + widgetArea()->getGrid()/2;
+    mapToGrid(minw);
+    mapToGrid(minh);
+
+    if(w < minw)
         x = pos().x();
 
-    if(h < minimumHeight())
+    if(h < minh)
         y = pos().y();
 
-    w = (std::max)(w, minimumWidth());
-    h = (std::max)(h, minimumHeight());
+    w = (std::max)(w, minw);
+    h = (std::max)(h, minh);
 
     // stick to placement lines
     widgetArea()->updatePlacement(x, y, w, h, this);
@@ -457,10 +454,8 @@ void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
         return;
     }
 
-    QPoint p = widget->pos() + ( e->globalPos() - mOrigin );
+    QPoint p = mapToParent(e->pos()) - m_clickPos;
     mapXYToGrid(p);
-    mOrigin = e->globalPos();
-    mapXYToGrid(mOrigin);
 
     // stick to placement lines
     widgetArea()->updatePlacement(p.x(), p.y(),
@@ -499,6 +494,9 @@ void DataWidget::dragMove(QMouseEvent *e, DataWidget *widget)
             (*itr)->move((*itr)->pos() + diff);
         }
     }
+
+    if(p == widget->pos())
+        return;
 
     widget->move(p);
 
@@ -717,8 +715,12 @@ void DataWidget::mapXYToGrid(int& x, int& y)
 void DataWidget::mapToGrid(int &val)
 {
     int grid = widgetArea()->getGrid();
-    int div = abs(val%grid);
-    val += div >= grid/2 ? grid - div : -div;
+    int div = abs(val)%grid;
+    if(val >= 0) {
+        val += div >= grid/2 ? grid - div : -div;
+    } else {
+        val += div >= grid/2 ? -(grid - div) : div;
+    }
 }
 
 void DataWidget::align()
@@ -729,8 +731,8 @@ void DataWidget::align()
     move(p);
 
     p = QPoint(width(), height());
-    mapXYToGrid(p);
-    p -= widgetArea()->getGridOffset();
+    mapToGrid(p.rx());
+    mapToGrid(p.ry());
     resize(p.x(), p.y());
 }
 

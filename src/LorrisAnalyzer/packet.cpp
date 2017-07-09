@@ -120,7 +120,12 @@ bool analyzer_data::getCmd(quint8 &cmd)
         return false;
 
     if(m_packet->header->data_mask & DATA_OPCODE)
-        cmd = (quint8)m_data->at(m_packet->header->findDataPos(DATA_OPCODE));
+    {
+        int pos = m_packet->header->findDataPos(DATA_OPCODE);
+        if(pos < 0 || pos >= m_data->size())
+            return false;
+        cmd = (quint8)m_data->at(pos);
+    }
     else
     {
         int pos = m_packet->header->findDataPos(DATA_AVAKAR);
@@ -177,7 +182,7 @@ bool analyzer_data::getLenFromHeader(quint32& len)
 
 QString analyzer_data::getString(quint32 pos)
 {
-    QString str = "";
+    QString str;
     if(pos >= (quint32)m_data->length())
         return str;
     for(; pos < (quint32)m_data->length() && m_data->at(pos) != '\0'; ++pos)
