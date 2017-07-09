@@ -58,40 +58,29 @@ void SerialPortEnumerator::refresh()
     {
         QextPortInfo info = ports[i];
 
-#ifndef __APPLE__
-        QHash<QString, SerialPort *>::const_iterator it = m_portMap.find(ports[i].physName);
-#else
-        QHash<QString, SerialPort *>::const_iterator it = m_portMap.find(ports[i].portName);
+        QString physName = ports[i].physName;
+
+#ifdef Q_OS_MAC
+        physName = ports[i].portName;
 #endif
 
+        QHash<QString, SerialPort *>::const_iterator it = m_portMap.find(physName);
         if (it == m_portMap.end())
         {
             ConnectionPointer<SerialPort> portGuard(new SerialPort());
             portGuard->setName(info.portName, /*isDefault=*/true);
-#ifndef __APPLE__
-//            portGuard->setDeviceName(info.physName);
-#else
-            portGuard->setDeviceName(info.portName);
-#endif
+            portGuard->setDeviceName(physName);
             portGuard->setFriendlyName(info.friendName);
             portGuard->setBaudRate(38400);
             portGuard->setDevNameEditable(false);
 
-#ifndef __APPLE__
-            QHash<QString, QVariant>::iterator cfgIt = m_connCfg.find(info.physName);
-#else
-            QHash<QString, QVariant>::iterator cfgIt = m_connCfg.find(info.portName);
-#endif
+            QHash<QString, QVariant>::iterator cfgIt = m_connCfg.find(physName);
             if(cfgIt != m_connCfg.end() && (*cfgIt).type() == QVariant::Hash)
                 portGuard->applyConfig((*cfgIt).toHash());
 
             connect(portGuard.data(), SIGNAL(destroyed()), this, SLOT(connectionDestroyed()));
 
-#ifndef __APPLE__
-            m_portMap[info.physName] = portGuard.data();
-#else
-            m_portMap[info.portName] = portGuard.data();
-#endif
+            m_portMap[physName] = portGuard.data();
 
             sConMgr2.addConnection(portGuard.data());
 

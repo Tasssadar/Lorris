@@ -21,7 +21,7 @@
 #include <QDrag>
 #include <QMimeData>
 
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
 #include <QtMacExtras>
 #endif
 
@@ -52,11 +52,12 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     m_menuBtn->setMenu(m_menu);
     m_menuBtn->setFlat(true);
     m_menuBtn->installEventFilter(this);
-#ifdef __APPLE__
+#ifndef Q_OS_MAC
+    setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
+#else
+    setDocumentMode(true);
     m_menuBtn->hide();
     m_macBar = new QMacToolBar();
-#else
-    setCornerWidget(m_menuBtn, Qt::TopLeftCorner);
 #endif
 
     new QShortcut(QKeySequence("Ctrl+T"), this, SLOT(newTabBtn()), NULL, Qt::WidgetWithChildrenShortcut);
@@ -71,10 +72,6 @@ TabWidget::TabWidget(quint32 id, QWidget *parent) :
     connect(m_tab_bar, SIGNAL(newWindow(int)),         SLOT(newWindow(int)), Qt::QueuedConnection);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-#ifdef __APPLE__
-    this->setDocumentMode(true);
-#endif
 
     sWorkTabMgr.registerTabWidget(this);
 }
@@ -278,12 +275,12 @@ void TabWidget::changeMenu(int idx)
     const std::vector<QAction*>& acts = tab->getActions();
     for(quint32 i = 0; i < acts.size(); ++i) {
         m_menu->addAction(acts[i]);
-#ifdef __APPLE__
+
+#ifdef Q_OS_MAC
         tabView()->m_menuBar->addAction(acts[i]);
 
         m_macBar = new QMacToolBar();
         m_macBar->setItems(tab->getMacBarItems());
-        window()->winId();
         m_macBar->attachToWindow(window()->windowHandle());
         m_macBar->addSeparator();
 #endif
@@ -294,21 +291,22 @@ void TabWidget::changeMenu(int idx)
 void TabWidget::clearMenu()
 {
     m_menu->clear();
-#ifdef __APPLE__
+
+#ifdef Q_OS_MAC
     tabView()->m_menuBar->clear();
 
     QList<QMacToolBarItem *> emptyList = QList<QMacToolBarItem *>();
     m_macBar->setItems(emptyList);
     m_macBar->detachFromWindow();
     m_macBar->addSeparator();
-    window()->winId();
     m_macBar->attachToWindow(window()->windowHandle());
 #endif
 
     const std::vector<QAction*>& menus = tabView()->getMenus();
     for(quint32 i = 0; i < menus.size(); ++i) {
         m_menu->addAction(menus[i]);
-#ifdef __APPLE__
+
+#ifdef Q_OS_MAC
         tabView()->m_menuBar->addAction(menus[i]);
 #endif
     }

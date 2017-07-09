@@ -163,7 +163,7 @@ ChooseConnectionDlg::ChooseConnectionDlg(QWidget *parent) :
     menu->addAction(ui->actionCreateSerialPort);
     menu->addAction(ui->actionCreateTcpClient);
     menu->addAction(ui->actionCreateUdpSocket);
-#ifndef __APPLE__
+#ifdef HAVE_LIBYB
     menu->addAction(ui->actionCreateUsbAcmConn);
 #endif
     ui->createConnectionBtn->setMenu(menu);

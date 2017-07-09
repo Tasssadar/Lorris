@@ -151,6 +151,7 @@ SOURCES += ui/mainwindow.cpp \
     LorrisProgrammer/ui/fusewidget.cpp \
     LorrisProgrammer/ui/fullprogrammerui.cpp \
     LorrisProgrammer/programmers/avr109programmer.cpp \
+    LorrisProgrammer/programmers/atsamprogrammer.cpp \
     ui/bytevalidator.cpp \
     misc/qtobjectpointer.cpp \
     LorrisAnalyzer/searchwidget.cpp \
@@ -291,6 +292,7 @@ HEADERS += ui/mainwindow.h \
     LorrisProgrammer/ui/fusewidget.h \
     LorrisProgrammer/ui/fullprogrammerui.h \
     LorrisProgrammer/programmers/avr109programmer.h \
+    LorrisProgrammer/programmers/atsamprogrammer.h \
     ui/bytevalidator.h \
     misc/qtobjectpointer.h \
     LorrisAnalyzer/searchwidget.h \
@@ -480,7 +482,6 @@ libyb {
         connection/usbshupito22conn.cpp \
         connection/usbshupito23conn.cpp \
         LorrisProgrammer/modes/shupitojtag.cpp \
-        LorrisProgrammer/programmers/atsamprogrammer.cpp \
         LorrisProgrammer/programmers/flipprogrammer.cpp \
         LorrisProgrammer/programmers/stm32programmer.cpp \
         connection/stm32connection.cpp
@@ -491,7 +492,6 @@ libyb {
         connection/usbshupito22conn.h \
         connection/usbshupito23conn.h \
         LorrisProgrammer/modes/shupitojtag.h \
-        LorrisProgrammer/programmers/atsamprogrammer.h \
         LorrisProgrammer/programmers/flipprogrammer.h \
         LorrisProgrammer/programmers/stm32programmer.h \
         connection/stm32connection.h \

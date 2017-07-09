@@ -130,18 +130,6 @@ static void registerMetaTypes()
     qRegisterMetaType<GraphCurve>("GraphCurve");
 }
 
-#ifdef __APPLE__
-
-class Pr : public QProxyStyle
-{
-public:
-//    int layoutSpacing(QSizePolicy::ControlType control1, QSizePolicy::ControlType control2, Qt::Orientation orientation, const QStyleOption *option, const QWidget *widget) const {
-//        return 0;
-//    }
-};
-
-#endif
-
 int main(int argc, char *argv[])
 {
     //TODO: found an organization
@@ -155,10 +143,9 @@ int main(int argc, char *argv[])
     sWorkTabMgr.SortTabInfos();
 
     QtSingleApplication a(argc, argv);
-#ifdef __APPLE__
-    a.setStyle(new Pr);
 
-    //Temporaly solution, does not sets icon during app lunch!
+#ifdef Q_OS_MAC
+    //Temporaly solution, does not set icon during app lunch!
     QApplication::setWindowIcon(QIcon(":/icons/icons/icon.icns"));
 #endif
 

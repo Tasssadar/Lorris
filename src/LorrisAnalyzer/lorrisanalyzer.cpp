@@ -40,6 +40,9 @@
 
 #include "ui_lorrisanalyzer.h"
 
+#ifdef Q_OS_MAC
+#include <QtMacExtras>
+#endif
 
 static bool sortDataWidget(DataWidgetAddBtn *a, DataWidgetAddBtn *b)
 {
@@ -110,7 +113,8 @@ LorrisAnalyzer::LorrisAnalyzer()
 
     exportAct->setStatusTip(tr("Export received bytes as binary file"));
     structAct->setStatusTip(tr("Change structure of incoming data"));
-#ifndef __APPLE__
+
+#ifndef Q_OS_MAC
     QToolBar *bar = new QToolBar(this);
     bar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     bar->setIconSize(QSize(16, 16));
@@ -125,6 +129,9 @@ LorrisAnalyzer::LorrisAnalyzer()
     bar->addAction(structAct);
     bar->addSeparator();
     bar->addAction(clearAct);
+
+    m_connectButton = new ConnectButton(ui->connectButton);
+    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 #else
     QMacToolBarItem *connectBtn = new QMacToolBarItem;
     connectBtn->setIcon(QIcon(":/actions/wire"));
@@ -193,11 +200,6 @@ LorrisAnalyzer::LorrisAnalyzer()
     setAreaVisibility(AREA_TOP, true);
 
     m_data_changed = false;
-
-#ifndef __APPLE__
-    m_connectButton = new ConnectButton(ui->connectButton);
-    connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
-#endif
 }
 
 LorrisAnalyzer::~LorrisAnalyzer()

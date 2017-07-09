@@ -18,7 +18,7 @@
 #include "tabwidget.h"
 #include "resizeline.h"
 
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
 #include <QtMacExtras>
 #endif
 
@@ -89,11 +89,6 @@ public:
     bool canCloseWindow();
     void forceCloseChilds();
 
-#ifdef __APPLE__
-    QMenuBar *m_menuBar;
-    QMacToolBar *macBar;
-#endif
-
 private slots:
     void split(int pos, int index);
     void removeWidget(quint32 id);
@@ -133,6 +128,11 @@ private:
     bool m_blockActive;
 
     QHash<QObject *, WorkTabInfo *> m_actionTabInfoMap;
+
+#ifdef Q_OS_MAC
+    QMenuBar *m_menuBar;
+    QMacToolBar *macBar;
+#endif
 };
 
 class TabViewResLine : public ResizeLine

@@ -36,7 +36,8 @@ HomeTab::HomeTab(QWidget *parent) : Tab(TABTYPE_HOME, parent), ui(new Ui::HomeTa
         btn->setText(info->GetName());
         btn->setDescription(info->GetDescription());
         btn->setMaximumHeight(100);
-#ifdef __APPLE__
+
+#ifdef Q_OS_MAC
         QIcon icon(":/icons/icons/follow-link.png");
         btn->setIcon(icon);
 

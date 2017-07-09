@@ -71,8 +71,18 @@
          </property>
          <item>
           <widget class="QPushButton" name="createConnectionBtn">
+           <property name="toolTip">
+            <string>Create new connection...</string>
+           </property>
            <property name="text">
-            <string>Choose new connection</string>
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../actions.qrc">
+             <normaloff>:/actions/icons/list-add_32.png</normaloff>:/actions/icons/list-add_32.png</iconset>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -1567,6 +1577,7 @@ p, li { white-space: pre-wrap; }
  </widget>
  <resources>
   <include location="../icons.qrc"/>
+  <include location="../actions.qrc"/>
  </resources>
  <connections>
   <connection>

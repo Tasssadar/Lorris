@@ -35,7 +35,7 @@ LorrisProxy::LorrisProxy()
     ui->tunnelName->setText(sConfig.get(CFG_STRING_PROXY_TUNNEL_NAME));
     ui->tunnelBox->setChecked(sConfig.get(CFG_BOOL_PROXY_TUNNEL));
 
-#ifndef __APPLE__
+#ifndef Q_OS_MAC
     m_connectButton = new ConnectButton(ui->connectButton);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 #else

@@ -21,7 +21,7 @@ LabelLayout::LabelLayout(analyzer_header *header, bool enable_reorder, bool enab
 {
     setSizeConstraint(QLayout::SetMinAndMaxSize);
 
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
     parent->setStyleSheet("background-color: transparent;");
 #endif
 

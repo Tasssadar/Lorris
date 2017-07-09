@@ -33,6 +33,7 @@
 #include "../connection/connectionmgr2.h"
 #include "programmers/shupitoprogrammer.h"
 #include "programmers/avr232bootprogrammer.h"
+#include "programmers/atsamprogrammer.h"
 #include "programmers/avr109programmer.h"
 #include "programmers/arduinoprogrammer.h"
 #include "programmers/zmodemprogrammer.h"
@@ -40,7 +41,6 @@
 #ifdef HAVE_LIBYB
 #include "programmers/flipprogrammer.h"
 #include "programmers/stm32programmer.h"
-#include "programmers/atsamprogrammer.h"
 #endif
 
 // When no packet from shupito is received for TIMEOUT_INTERVAL ms,
@@ -778,11 +778,9 @@ void LorrisProgrammer::updateProgrammer()
             case programmer_avr232boot:
                 m_programmer.reset(new avr232bootProgrammer(con, &m_logsink));
                 break;
-            #ifdef HAVE_LIBYB
             case programmer_atsam:
                 m_programmer.reset(new AtsamProgrammer(con, &m_logsink));
                 break;
-#endif
             case programmer_avr109:
                 m_programmer.reset(new avr109Programmer(con, &m_logsink));
                 break;

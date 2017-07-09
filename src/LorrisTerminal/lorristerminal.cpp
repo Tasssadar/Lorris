@@ -113,7 +113,9 @@ void LorrisTerminal::initUI()
     connect(ui->spRts,         SIGNAL(toggled(bool)),               SLOT(spRtsToggled(bool)));
     connect(ui->spDtr,         SIGNAL(toggled(bool)),               SLOT(spDtrToggled(bool)));
 
-#ifndef __APPLE__
+    fmtAction(fmt);
+
+#ifndef Q_OS_MAC
     m_connectButton = new ConnectButton(ui->connectButton2);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 #else
@@ -131,7 +133,6 @@ void LorrisTerminal::initUI()
     m_connectButton = new ConnectButton(ui->connectButton2, connectBtn, chooseConnection);
     connect(m_connectButton, SIGNAL(connectionChosen(ConnectionPointer<Connection>)), this, SLOT(setConnection(ConnectionPointer<Connection>)));
 #endif
-    fmtAction(fmt);
 }
 
 LorrisTerminal::~LorrisTerminal()

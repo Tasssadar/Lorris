@@ -29,22 +29,21 @@ FilterTabWidget::FilterTabWidget(QWidget *parent) :
     m_filterIdCounter = 0;
     m_header = NULL;
 
-#ifdef __APPLE__
-    setTabPosition(QTabWidget::North);
-#else
+#ifndef Q_OS_MAC
     setTabPosition(QTabWidget::South);
-#endif
 
-#ifndef __APPLE__
     QPushButton *btn = new QPushButton(tr("Filters"), this);
     setCornerWidget(btn, Qt::BottomLeftCorner);
     connect(btn, SIGNAL(clicked()), SLOT(showSettings()));
 #else
+    setTabPosition(QTabWidget::North);
+
     QWidget *empty = new QWidget();
     addTab(empty, tr("Filters"));
 
-    connect(this, SIGNAL(tabBarClicked(int)), this, SLOT(showSettings(int)));
+    connect(this, SIGNAL(tabBarClicked(int)), this, SLOT(showSettings()));
 #endif
+
     addEmptyFilter();
 }
 
@@ -236,16 +235,14 @@ void FilterTabWidget::handleData(analyzer_data *data, quint32 index)
 
 void FilterTabWidget::showSettings(int index)
 {    
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
     if (index != 0)
         return;
+    setCurrentIndex(currentIndex());
 #endif
 
     FilterDialog d(this);
     d.exec();
-#ifdef __APPLE__
-    setCurrentIndex(currentIndex());
-#endif
 }
 
 void FilterTabWidget::addFilter(DataFilter *f)
@@ -263,11 +260,6 @@ void FilterTabWidget::addFilter(DataFilter *f)
     area->setPalette(p);
     area->setAutoFillBackground(true);
 
-#ifdef __APPLE__
-    area->setStyleSheet("QScrollArea {border: 0px; background-color: transparent;}");
-    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-#endif
-
     if(m_header)
     {
         layout = new ScrollDataLayout(m_header, false, true, this, w);
@@ -276,7 +268,9 @@ void FilterTabWidget::addFilter(DataFilter *f)
     area->setWidget(w);
     addTab(area, f->getName());
 
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
+    area->setStyleSheet("QScrollArea {border: 0px; background-color: transparent;}");
+    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setCurrentIndex(indexOf(area));
 #endif
 

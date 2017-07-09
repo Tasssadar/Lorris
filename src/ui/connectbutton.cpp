@@ -24,7 +24,7 @@ ConnectButton::ConnectButton(QToolButton * btn)
     connect(m_chooseAction, SIGNAL(triggered()), this, SLOT(choose()));
 }
 
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
 ConnectButton:: ConnectButton(QToolButton * btn, QMacToolBarItem * connectBtn, QMacToolBarItem * chooseConnectionBtn)
     : QObject(btn),m_btn(btn), m_connect(connectBtn), m_chooseConnection(chooseConnectionBtn), m_conn(0), m_connTypes(pct_port_data)
 {
@@ -96,43 +96,37 @@ void ConnectButton::setConn(ConnectionPointer<Connection> const & conn, bool emi
 
 void ConnectButton::connectionStateChanged(ConnectionState state)
 {
+    QString text;
+    bool interact;
     switch (state)
     {
     case st_disconnected:
     case st_missing:
     case st_connect_pending:
-#ifdef __APPLE__
-        m_connect->setText(tr("Connect"));
-        m_connect->setSelectable(true);
-#endif
-        m_connectAction->setText(tr("Connect"));
-        m_connectAction->setEnabled(true);
+        text = tr("Connect");
+        interact = true;
         break;
     case st_connecting:
-#ifdef __APPLE__
-        m_connect->setText(tr("Connecting..."));
-        m_connect->setSelectable(false);
-#endif
-        m_connectAction->setText(tr("Connecting..."));
-        m_connectAction->setEnabled(false);
+        text = tr("Connecting...");
+        interact = false;
         break;
     case st_connected:
-#ifdef __APPLE__
-        m_connect->setText(tr("Disconnect..."));
-        m_connect->setSelectable(true);
-#endif
-        m_connectAction->setText(tr("Disconnect"));
-        m_connectAction->setEnabled(true);
+        text = tr("Disconnect");
+        interact = true;
         break;
     case st_disconnecting:
-#ifdef __APPLE__
-        m_connect->setText(tr("Disconnecting..."));
-        m_connect->setSelectable(true);
-#endif
-        m_connectAction->setText(tr("Disconnecting..."));
-        m_connectAction->setEnabled(true);
+        text = tr("Disconnecting..");
+        interact = true;
         break;
     }
+
+#ifndef Q_OS_MAC
+    m_connectAction->setText(text);
+    m_connectAction->setEnabled(interact);
+#else
+    m_connect->setText(text);
+    m_connect->setSelectable(interact);
+#endif
 }
 
 void ConnectButton::connectionBeingDestroyed()

@@ -12,7 +12,7 @@
 #include <vector>
 #include <QMenu>
 
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
 #include <QtMacExtras>
 #endif
 
@@ -41,7 +41,7 @@ public:
     virtual void openFile(const QString& filename);
     virtual std::vector<QAction*>& getActions() { return m_actions; }
 
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
     virtual QList<QMacToolBarItem*>& getMacBarItems() { return m_macBarItems; }
 #endif
 
@@ -60,7 +60,7 @@ protected:
     void addTopMenu(QMenu *menu);
     void addTopAction(QAction *act);
 
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
     QList<QMacToolBarItem*> m_macBarItems;
     QMacToolBarItem *addItemMacToolBar(const QIcon &icon, const QString &text);
 #endif

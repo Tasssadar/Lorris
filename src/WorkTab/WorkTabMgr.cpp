@@ -5,11 +5,8 @@
 **    See README and COPYING
 ***********************************************/
 
-//#define QT_NO_MENUBAR;
-
 #include <algorithm>
 #include <QStatusBar>
-#include <QMenuBar>
 
 #include "WorkTabMgr.h"
 #include "WorkTabInfo.h"
