@@ -970,15 +970,17 @@ void DataWidgetAddBtn::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
+        event->accept();
+
         QMimeData *mimeData = new QMimeData;
         mimeData->setText("w" + QString::number(m_widgetType));
 
         QDrag *drag = new QDrag(this);
         drag->setMimeData(mimeData);
         drag->setPixmap(getRender());
-        drag->exec();
-        drag->deleteLater();
-        event->accept();
+        if(drag->exec() == Qt::IgnoreAction) {
+            drag->deleteLater();
+        }
     }
 }
 

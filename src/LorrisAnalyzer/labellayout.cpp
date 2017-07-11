@@ -375,6 +375,8 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::LeftButton)
     {
+        event->accept();
+
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
 
@@ -395,13 +397,11 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
 
         QPixmap pixmap(size());
         this->render(&pixmap);
-
         drag->setPixmap(pixmap);
 
-        drag->exec();
-        drag->deleteLater();
-
-        event->accept();
+        if(drag->exec() == Qt::IgnoreAction) {
+            drag->deleteLater();
+        }
     }
 }
 
