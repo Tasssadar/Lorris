@@ -715,7 +715,7 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
     drag->setPixmap(map);
     drag->setMimeData(mime);
     drag->exec();
-    delete drag;
+    drag->deleteLater();
 }
 
 void TabBar::dragEnterEvent(QDragEnterEvent *event)

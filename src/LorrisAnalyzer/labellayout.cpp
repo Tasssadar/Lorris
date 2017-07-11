@@ -399,7 +399,7 @@ void DraggableLabel::mousePressEvent(QMouseEvent *event)
         drag->setPixmap(pixmap);
 
         drag->exec();
-        delete drag;
+        drag->deleteLater();
 
         event->accept();
     }
