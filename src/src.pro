@@ -501,13 +501,6 @@ libyb {
         connection/stm32defines.h
 }
 
-kate_editor:unix {
-    !contains(QT_MAJOR_VERSION, 5) {
-        DEFINES += USE_KATE
-        LIBS += -lktexteditor -lkdecore
-    }
-}
-
 qsci_editor {
     DEFINES += USE_QSCI
     LIBS += -L"$$PWD/../dep/qscintilla2/lib"

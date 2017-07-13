@@ -2,7 +2,6 @@
 LIBYB_REPO="git://github.com/avakar/libyb.git"
 LIBENJOY_REPO="git://github.com/Tasssadar/libenjoy.git"
 GOT_PYTHON=0
-GOT_KATE=0
 GOT_QSCI=0
 GOT_JOYSTICK=0
 GOT_QTOPENGL=0
@@ -179,38 +178,9 @@ if [ "$REQ_PYTHON_VERSION" != "0" ] ; then
     fi
 fi
 
-# Check for kate
+# Check for editor
 echo ""
 echo "Code editor configuration"
-echo -n "Do you want to use Kate editor? [Y/n]: "
-read use_kate_user
-echo ""
-if [ -z $use_kate_user ] || [ $use_kate_user == "y" ] || [ $use_kate_user == "Y" ] ; then
-    echo -n "Checking for kate and kde developement files..."
-    cat > /tmp/test.cpp << EOF
-#include <ktexteditor/document.h>
-#include <ktexteditor/view.h>
-#include <ktexteditor/editor.h>
-#include <ktexteditor/editorchooser.h>
-#include <ktexteditor/configinterface.h>
-#include <kconfig.h>
-int main() { KTextEditor::Editor *editor = KTextEditor::EditorChooser::editor(); return 0; }
-EOF
-    $cpp_bin /tmp/test.cpp -o /tmp/test -I"$($qmake_bin -query QT_INSTALL_HEADERS)" -I"$($qmake_bin -query QT_INSTALL_HEADERS)/QtCore" -I"$($qmake_bin -query QT_INSTALL_HEADERS)/QtGui" -lktexteditor -lkdecore -lQtCore -lQtGui
-    if [ $? -eq 0 ] ; then
-        echo "ok"
-        rm /tmp/test.cpp
-        rm /tmp/test
-        GOT_KATE=1
-    else
-        echo "failed"
-        echo "Install kate and kdelibs devel files!"
-        rm /tmp/test.cpp
-        exit 1
-    fi
-else
-    echo "Not using kate"
-fi
 
 echo -n "Do you want to use QScintilla2 editor? [Y/n]: "
 read use_qsci_user
@@ -263,10 +233,6 @@ echo "" > config.pri
 if [ $GOT_PYTHON -eq 1 ] ; then 
     echo "PYTHON_VERSION=$REQ_PYTHON_VERSION" >> config.pri
     echo "CONFIG += python" >> config.pri
-fi
-
-if [ $GOT_KATE -eq 1 ] ; then 
-    echo "CONFIG += kate_editor" >> config.pri
 fi
 
 if [ $GOT_QSCI -eq 1 ] ; then 

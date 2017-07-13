@@ -19,8 +19,8 @@ class QComboBox;
 enum editors
 {
     EDITOR_INTERNAL = 0,
-    EDITOR_KATE,
-    EDITOR_QSCINTILLA,
+    // EDITOR_KATE = 1, deprecated
+    EDITOR_QSCINTILLA = 2,
 
     EDITOR_MAX
 };
@@ -127,64 +127,6 @@ private:
     int m_scroll;
     quint8 m_last_w;
 };
-
-#ifdef USE_KATE
-
-namespace KTextEditor {
-    class Document;
-    class View;
-    class ConfigInterface;
-}
-
-class EditorWidgetKate : public EditorWidget
-{
-    Q_OBJECT
-public:
-    EditorWidgetKate(QWidget *parent);
-    ~EditorWidgetKate();
-
-    QWidget *getWidget();
-
-    void setHighlighter(EditorHighlight lang);
-
-    QString getText() const;
-    void setText(const QString &text);
-
-    bool hasSettings();
-    int getType() const { return EDITOR_KATE; }
-
-    QString getUndoShortcut() const { return "Ctrl+Z"; }
-    QString getRedoShortcut() const { return "Ctrl+Shift+Z"; }
-
-    void setModified(bool modded);
-    void setReadOnly(bool readOnly);
-
-    void scrollToBottom() { /* FIXME */ }
-
-public slots:
-    void settingsBtn();
-    void undo();
-    void redo();
-
-protected:
-    bool eventFilter(QObject *, QEvent *ev);
-
-private slots:
-    void modified(KTextEditor::Document*);
-
-private:
-    void save();
-    void saveSettings(KTextEditor::ConfigInterface *iface, cfg_variant cfg);
-    void loadSettings(KTextEditor::ConfigInterface *iface, cfg_variant cfg);
-
-    KTextEditor::Document *m_doc;
-    KTextEditor::View *m_view;
-    bool m_readOnly;
-    bool m_canUndo;
-    bool m_canRedo;
-};
-
-#endif // USE_KATE
 
 #ifdef USE_QSCI
 

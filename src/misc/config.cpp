@@ -179,8 +179,6 @@ static const QString keys_variant[] =
 {
     "main/connections",        // CFG_VARIANT_CONNECTIONS
     "main/usb_yb_enumerator",  // CFG_VARIANT_USB_ENUMERATOR
-    "kate/kate_sett_doc",         // CFG_VARIANT_KATE_SETTINGS_DOC
-    "kate/kate_sett_view",        // CFG_VARIANT_KATE_SETTINGS_VIEW
     "main/serial_connections", // CFG_VARIANT_SERIAL_CONNECTIONS
 };
 

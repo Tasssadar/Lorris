@@ -105,9 +105,8 @@ ScriptEditor::ScriptEditor(WidgetArea *area, const QString& source, const QStrin
 
     quint32 editor_cfg = sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE);
 
-#ifdef USE_KATE
-    setEditor(EDITOR_KATE);
-#elif defined(USE_QSCI)
+
+#if defined(USE_QSCI)
     setEditor(EDITOR_QSCINTILLA);
 #else
     setEditor(EDITOR_INTERNAL);
