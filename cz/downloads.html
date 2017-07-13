@@ -16,22 +16,26 @@
     <a href="http://www.python.org/download/releases/2.7.3/#download">nainstalovat Python 2.7.x</a>. Bez něj nebudou ve Script widgetu
     dostupné žádné další moduly, to znamená že například "import random" skončí chybou.
 </p>
-<!--<h4>Balíčky pro Debian Wheezy</h4>
-<table  style="margin-left: 30px; border: 0px">
-<tr>
-    <td><b>0.6.0-dev, revize 481: </b></td>
-    <td align="right">i386: </td>
-    <td><a href="https://github.com/downloads/Tasssadar/Lorris/lorris_0.6.0~dev+481-1_i386.deb">lorris_0.6.0~dev+481-1_i386.deb</a></td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td>amd64: </td>
-    <td><a href="https://github.com/downloads/Tasssadar/Lorris/lorris_0.6.0~dev+481-1_amd64.deb">lorris_0.6.0~dev+481-1_amd64.deb</a></td>
-</table>-->
-<h4>Changelog</h4>
+
+<h4>Balíčky pro Debian/Ubuntu</h4>
 <p style="margin-left: 30px">
-    Changelog je umístěn v repozitáři: <a href="https://github.com/Tasssadar/Lorris/blob/master/CHANGELOG">https://github.com/Tasssadar/Lorris/blob/master/CHANGELOG</a>.
+    APT repozitář je na adrese <a href="http://apt.tasemnice.eu/ubuntu">http://apt.tasemnice.eu/ubuntu</a>
 </p>
+<pre style="margin-left: 30px; padding-left:30px;"># 1. Přidání podpisového klíče
+wget -O - -q https://apt.tasemnice.eu/key.gpg | sudo apt-key add -v -
+
+# 2. Přidání repozitáře
+echo deb http://apt.tasemnice.eu/ubuntu <b>stable</b> non-free | sudo tee /etc/apt/sources.list.d/lorris.list
+
+# 3. Aktualizace informací o balíčcích a instalace
+sudo apt-get update && sudo apt-get install lorris
+</pre>
+<p style="margin-left: 30px">Vydání <b>stable</b> je pro poslední LTS vydání Ubuntu a pravděpodobně bude fungovat na většině distribucí založených na Debianu. Jsou podporované i některá další vydání Ubuntu, můžete vyzkoušet například <code>xenial</code> nebo <code>zesty</code>.</p>
+
+<p style="margin-left: 30px">Pokud máte Ubuntu 14.04, Mint 17.1 nebo podobné, použijte vydání <b>trusty</b>:<br>
+<code>echo deb http://apt.tasemnice.eu/ubuntu <b>trusty</b> non-free | sudo tee /etc/apt/sources.list.d/lorris.list</code></p>
+
+<p style="margin-left: 30px">Samotné <a href="https://apt.tasemnice.eu/ubuntu/pool/dists/stable/">.deb balíčky najdete zde</a>.</p>
 
 <h4>Zdrojový kód</h4>
 <p style="margin-left: 30px">

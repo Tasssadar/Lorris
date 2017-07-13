@@ -16,31 +16,34 @@
     <a href="http://www.python.org/download/releases/2.7.3/#download">install Python 2.7.x</a> if you want all its features.
     Without it, you will not be able to use extra modules, which means that for example "import random" will result in exception.
 </p>
-<!--<h4>Debian Wheezy packages</h4>
-<table  style="margin-left: 30px; border: 0px">
-<tr>
-    <td><b>0.6.0-dev, revision 481: </b></td>
-    <td align="right">i386: </td>
-    <td><a href="https://github.com/downloads/Tasssadar/Lorris/lorris_0.6.0~dev+481-1_i386.deb">lorris_0.6.0~dev+481-1_i386.deb</a></td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td>amd64: </td>
-    <td><a href="https://github.com/downloads/Tasssadar/Lorris/lorris_0.6.0~dev+481-1_amd64.deb">lorris_0.6.0~dev+481-1_amd64.deb</a></td>
-</table>-->
-<h4>Changelog</h4>
+
+<h4>Debian/Ubuntu packages</h4>
 <p style="margin-left: 30px">
-    Changelog is placed in repository: <a href="https://github.com/Tasssadar/Lorris/blob/master/CHANGELOG">https://github.com/Tasssadar/Lorris/blob/master/CHANGELOG</a>.
+    An APT repository is running at <a href="http://apt.tasemnice.eu/ubuntu">http://apt.tasemnice.eu/ubuntu</a>
 </p>
+<pre style="margin-left: 30px; padding-left:30px;"># 1. Add the repository key
+wget -O - -q https://apt.tasemnice.eu/key.gpg | sudo apt-key add -v -
+
+# 2. Add the lorris repository
+echo deb http://apt.tasemnice.eu/ubuntu <b>stable</b> non-free | sudo tee /etc/apt/sources.list.d/lorris.list
+
+# 3. Update packages and install
+sudo apt-get update && sudo apt-get install lorris
+</pre>
+<p style="margin-left: 30px">The <b>stable</b> dist is for the latest Ubuntu LTS and is likely to work on all recent debian-based distributions. Some other Ubuntu releases are also supported, so you can try those as well (e.g. <code>xenial</code> or <code>zesty</code>).</p>
+<p style="margin-left: 30px">For Ubuntu 14.04/Mint 17.1, use dist <b>trusty</b> instead:<br> <code>echo deb http://apt.tasemnice.eu/ubuntu <b>trusty</b> non-free | sudo tee /etc/apt/sources.list.d/lorris.list</code>
+</p>
+
+<p style="margin-left: 30px">You can find the <a href="https://apt.tasemnice.eu/ubuntu/pool/dists/stable/">raw .deb packages in the pool</a>.</p>
 
 <h4>Source code</h4>
 <p style="margin-left: 30px">
     GitHub repository is at <a href="https://github.com/Tasssadar/Lorris">https://github.com/Tasssadar/Lorris</a>, you can clone it with:
 </p>
-<pre style="margin-left: 30px">
-    git clone git://github.com/Tasssadar/Lorris.git
-    cd Lorris
-    git submodule update --init
+<pre style="margin-left: 30px;padding-left:30px;">
+git clone git://github.com/Tasssadar/Lorris.git
+cd Lorris
+git submodule update --init
 </pre>
 <p style="margin-left: 30px">
     Testing and newest changes are in "master" branch, stable release is in "stable" branch.
