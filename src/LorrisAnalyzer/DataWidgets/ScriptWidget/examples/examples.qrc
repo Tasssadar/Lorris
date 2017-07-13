@@ -18,5 +18,7 @@
         <file>input.js</file>
         <file>rotation.js</file>
         <file>rotation.py</file>
+        <file>controls.js</file>
+        <file>controls.py</file>
     </qresource>
 </RCC>

@@ -384,7 +384,9 @@ OTHER_FILES += \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/input.js \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/input.py \
     LorrisAnalyzer/DataWidgets/ScriptWidget/examples/rotation.js \
-    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/rotation.py
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/rotation.py \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/controls.js \
+    LorrisAnalyzer/DataWidgets/ScriptWidget/examples/controls.py
 
 PRECOMPILED_HEADER  = pch.h
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {
