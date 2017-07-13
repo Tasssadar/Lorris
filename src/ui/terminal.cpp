@@ -59,10 +59,13 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
     m_context_menu = new QMenu(this);
     QAction *copy = m_context_menu->addAction(tr("Copy"));
-    copy->setShortcut(QKeySequence("Ctrl+C"));
+    copy->setShortcut(QKeySequence("Ctrl+Shift+C"));
 
     QAction *paste = m_context_menu->addAction(tr("Paste"));
-    paste->setShortcut(QKeySequence("Ctrl+V"));
+    paste->setShortcut(QKeySequence("Ctrl+Shift+V"));
+
+    QAction *selectAllAct = m_context_menu->addAction(tr("Select all"));
+    selectAllAct->setShortcut(QKeySequence("Ctrl+Shift+A"));
 
     m_context_menu->addSeparator();
 
@@ -86,6 +89,7 @@ Terminal::Terminal(QWidget *parent) : QAbstractScrollArea(parent)
 
     connect(copy,  SIGNAL(triggered()), SLOT(copyToClipboard()));
     connect(paste, SIGNAL(triggered()), SLOT(pasteFromClipboard()));
+    connect(selectAllAct, SIGNAL(triggered()), SLOT(selectAll()));
     connect(clear, SIGNAL(triggered()), SLOT(clear()));
     connect(m_pauseAct, SIGNAL(toggled(bool)), SLOT(pause(bool)));
     connect(settings,   SIGNAL(triggered()),   SLOT(showSettings()));

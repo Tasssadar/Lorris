@@ -162,6 +162,10 @@ public slots:
     void blink(const QColor& color);
     void blink(const QString& color) { blink(QColor(color)); }
 
+    void copyToClipboard();
+    void pasteFromClipboard();
+    void selectAll();
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void paintEvent(QPaintEvent *e);
@@ -174,8 +178,6 @@ protected:
     void inputMethodEvent(QInputMethodEvent *e);
 
 private slots:
-    void copyToClipboard();
-    void pasteFromClipboard();
     void updateScrollBars();
     void endBlink();
 
@@ -189,8 +191,6 @@ private:
     QPoint mouseToTextPos(const QPoint& pos);
     QString getCurrNewlineStr(Qt::KeyboardModifiers modifiers);
     void handleEscSeq();
-
-    void selectAll();
 
     inline void adjustSelectionWidth(int &w, quint32 i, quint32 max, int len);
 
