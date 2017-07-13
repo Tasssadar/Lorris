@@ -300,7 +300,7 @@ void LorrisTerminal::saveData(DataFileParser *file)
     {
         QByteArray termData = ui->terminal->getData();
         file->writeVal(termData.size());
-        file->write(termData);
+         file->write(termData);
     }
 
     file->writeBlockIdentifier("LorrTermSettings");

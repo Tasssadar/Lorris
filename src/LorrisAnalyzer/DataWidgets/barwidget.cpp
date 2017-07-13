@@ -151,6 +151,12 @@ void BarWidget::processData(analyzer_data *data)
     setValuePrivate(value);
 }
 
+QStringList BarWidget::getScriptEvents() {
+    return (QStringList() << "valueChanged(val)" << "alarm(alarmLevel)"
+            << "rangeChanged(min, max)" << "alarmEnabled(enabled)"
+            << "alarmLevelChanged(level)");
+}
+
 void BarWidget::setValuePrivate(double val)
 {
     if(m_eval.isActive())
@@ -163,17 +169,17 @@ void BarWidget::setValuePrivate(double val)
     m_bar->setValue(val);
     m_label->setText(QString::number(val));
 
-    emit scriptEvent(getTitle() + "_valueChanged");
+    emit scriptEvent(getTitle() + "_valueChanged", QVariantList() << val);
 
     if(m_bar->alarmEnabled() && val >= m_bar->alarmLevel())
-        emit scriptEvent(getTitle() + "_alarm");
+        emit scriptEvent(getTitle() + "_alarm", QVariantList() << m_bar->alarmLevel());
 }
 
 void BarWidget::setRange(double min, double max)
 {
     m_bar->setScale(min, max);
 
-    emit scriptEvent(getTitle() + "_rangeChanged");
+    emit scriptEvent(getTitle() + "_rangeChanged", QVariantList() << min << max);
 }
 
 double BarWidget::getValue() const
@@ -196,14 +202,14 @@ void BarWidget::setAlarmEnabled(bool enable)
     m_bar->setAlarmEnabled(enable);
     m_alarmEnable->setChecked(enable);
     m_alarmLevel->setEnabled(enable);
-    emit scriptEvent(getTitle() + "_alarmEnabled");
+    emit scriptEvent(getTitle() + "_alarmEnabled", QVariantList() << enable);
 }
 
 void BarWidget::setAlarmLevel(double val)
 {
     m_bar->setAlarmLevel(val);
 
-    emit scriptEvent(getTitle() + "_alarmLevelChanged");
+    emit scriptEvent(getTitle() + "_alarmLevelChanged", QVariantList() << val);
 }
 
 bool BarWidget::isAlarmEnabled() const

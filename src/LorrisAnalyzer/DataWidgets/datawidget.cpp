@@ -1089,3 +1089,7 @@ QVariant DataWidget::getNumFromPacket(analyzer_data *data, quint32 pos, quint8 t
 
     return res;
 }
+
+QStringList DataWidget::getScriptEvents() {
+    return QStringList();
+}

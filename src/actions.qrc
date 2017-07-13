@@ -20,5 +20,6 @@
         <file alias="undo">icons/edit-undo.png</file>
         <file alias="pause">icons/media-playback-pause.png</file>
         <file alias="search">icons/search.png</file>
+        <file alias="merge">icons/merge.png</file>
     </qresource>
 </RCC>

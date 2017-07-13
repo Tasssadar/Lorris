@@ -139,6 +139,11 @@ void EditorWidgetLorris::redo()
     m_edit->redo();
 }
 
+void EditorWidgetLorris::scrollToBottom()
+{
+    m_edit->verticalScrollBar()->setValue(m_edit->verticalScrollBar()->maximum());
+}
+
 LineNumber::LineNumber(QWidget *parent) : QWidget(parent)
 {
 #ifdef Q_OS_MAC
@@ -483,6 +488,11 @@ void EditorWidgetQSci::setHighlighter(EditorHighlight lang)
 QWidget *EditorWidgetQSci::getWidget()
 {
     return m_widget;
+}
+
+void EditorWidgetQSci::scrollToBottom()
+{
+    m_editor->verticalScrollBar()->setValue(m_editor->verticalScrollBar()->maximum());
 }
 
 void EditorWidgetQSci::modified(bool mod)

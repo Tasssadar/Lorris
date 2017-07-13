@@ -21,6 +21,7 @@
 #include "engines/scriptengine.h"
 #include "../../../ui/editorwidget.h"
 #include "../../../WorkTab/WorkTabMgr.h"
+#include "../../widgetarea.h"
 
 #define MD5(x) QCryptographicHash::hash(x, QCryptographicHash::Md5)
 
@@ -30,8 +31,8 @@ static const QString filters[ENGINE_MAX] =
     ScriptEditor::tr("Python file (*.py);;Any file (*.*)"),
 };
 
-ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int type) :
-    ChildTab(NULL), ui(new Ui::ScriptEditor), m_language(ENGINE_QTSCRIPT), m_editor(NULL)
+ScriptEditor::ScriptEditor(WidgetArea *area, const QString& source, const QString& filename, int type) :
+    ChildTab(NULL), ui(new Ui::ScriptEditor), m_area(area), m_language(ENGINE_QTSCRIPT), m_editor(NULL)
 {
     ui->setupUi(this);
 
@@ -51,12 +52,20 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     m_settingsBtn->setFlat(true);
     m_settingsBtn->setStyleSheet("padding: 3px;");
 
+    m_eventsBtn = new QPushButton(this);
+    m_eventsBtn->setToolTip(tr("Add widget event handler..."));
+    m_eventsBtn->setCheckable(true);
+    m_eventsBtn->setIconSize(QSize(24, 24));
+    m_eventsBtn->setIcon(QIcon(":/actions/merge"));
+    m_eventsBtn->setFlat(true);
+    m_eventsBtn->setStyleSheet("padding: 3px;");
+
     QLabel *docLabel = new QLabel(this);
     docLabel->setTextFormat(Qt::RichText);
     docLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     docLabel->setOpenExternalLinks(true);
-    docLabel->setText(tr("<a href=\"http://technika.junior.cz/docs/Lorris/index.html\">Documentation</a>"));
-    docLabel->setToolTip("http://technika.junior.cz/docs/Lorris/index.html");
+    docLabel->setText(tr("<a href=\"http://technika.tasemnice.eu/docs/Lorris/index.html\">Documentation</a>"));
+    docLabel->setToolTip("http://technika.tasemnice.eu/docs/Lorris/index.html");
 
     QToolBar *bar = new QToolBar(this);
     bar->setIconSize(QSize(24, 24));
@@ -70,6 +79,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     bar->addSeparator();
     QAction *apply = bar->addAction(QIcon(":/icons/start"), tr("Apply"), this, SLOT(applyAct()));
     bar->addSeparator();
+    bar->addWidget(m_eventsBtn);
     bar->addWidget(m_exampleBtn);
     bar->addWidget(m_settingsBtn);
     bar->addSeparator();
@@ -134,6 +144,7 @@ ScriptEditor::ScriptEditor(const QString& source, const QString& filename, int t
     m_fileChanged = false;
     checkChange();
 
+    connect(m_eventsBtn,   SIGNAL(clicked()),  SLOT(eventsBtn()));
     connect(m_exampleBtn,  SIGNAL(clicked()), SLOT(exampleBtn()));
     connect(m_settingsBtn, SIGNAL(clicked()), SLOT(settingsBtn()));
 }
@@ -443,6 +454,7 @@ void ScriptEditor::exampleBtn()
     if(m_examples)
     {
         delete m_examples.data();
+        m_examples.clear();
         return;
     }
 
@@ -542,6 +554,7 @@ void ScriptEditor::settingsBtn()
     if(m_settings)
     {
         delete m_settings.data();
+        m_settings.clear();
         return;
     }
 
@@ -563,6 +576,47 @@ void ScriptEditor::applyAct()
     emit applySource();
     setStatus(tr("Source was applied."));
     m_contentChanged = false;
+}
+
+void ScriptEditor::eventsBtn()
+{
+    if(m_events)
+    {
+        delete m_events.data();
+        m_events.clear();
+        return;
+    }
+
+    m_events = new EventsPopup(this, m_area);
+    m_events->move(m_eventsBtn->mapToGlobal(QPoint(0, 0)) + QPoint(0, m_eventsBtn->height()));
+    m_events->show();
+    m_events->setFocus();
+
+    connect(m_events.data(), SIGNAL(destroyed()), SLOT(eventsDestroyed()));
+    connect(m_events.data(), SIGNAL(addHandler(QString,QString)), SLOT(addEventHandler(QString,QString)));
+}
+
+void ScriptEditor::eventsDestroyed()
+{
+    m_eventsBtn->setChecked(false);
+}
+
+void ScriptEditor::addEventHandler(const QString& widgetTitle, const QString& event)
+{
+    QString source = getSource();
+    switch(m_language) {
+    case ENGINE_QTSCRIPT:
+        source += QString("\n\nfunction %1_%2 {\n\n}\n").arg(widgetTitle).arg(event);
+        break;
+    case ENGINE_PYTHON:
+        source += QString("\n\ndef %1_%2:\n    pass").arg(widgetTitle).arg(event);
+        break;
+    default:
+        Q_ASSERT(false);
+        break;
+    }
+    setSource(source);
+    m_editor->scrollToBottom();
 }
 
 ExamplesPreview::ExamplesPreview(int engine, QWidget *parent) : QScrollArea(parent)
@@ -697,7 +751,7 @@ void ExamplePreviewTab::loadExample(const QString &name)
     m_editor->setText(QString::fromUtf8(f.readAll()));
 }
 
-SettingsPopup::SettingsPopup(ScriptEditor *editor) : QFrame(editor)
+ScriptEditorPopup::ScriptEditorPopup(ScriptEditor *editor) : QFrame(editor)
 {
     setWindowFlags(windowFlags() | Qt::Popup);
     setAutoFillBackground(true);
@@ -710,6 +764,30 @@ SettingsPopup::SettingsPopup(ScriptEditor *editor) : QFrame(editor)
 
     setFrameStyle(QFrame::Box | QFrame::Plain);
 
+    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*, QWidget*)));
+}
+
+
+void ScriptEditorPopup::focusChanged(QWidget *, QWidget *to)
+{
+    if(!to || (to != this && !isAncestorOf(to)))
+        deleteLater();
+}
+
+
+bool ScriptEditorPopup::isAncestorOf(const QWidget *child) const
+{
+    while (child)
+    {
+        if (child == this)
+            return true;
+        child = child->parentWidget();
+    }
+    return false;
+}
+
+SettingsPopup::SettingsPopup(ScriptEditor *editor) : ScriptEditorPopup(editor)
+{
     QGridLayout *l = new QGridLayout(this);
 
     QComboBox *langBox = new QComboBox(this);
@@ -740,16 +818,9 @@ SettingsPopup::SettingsPopup(ScriptEditor *editor) : QFrame(editor)
 
     adjustSize();
 
-    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(focusChanged(QWidget*, QWidget*)));
     connect(m_editorSett, SIGNAL(clicked()), editor->getEditor(), SLOT(settingsBtn()));
     connect(m_editorBox,  SIGNAL(currentIndexChanged(int)),       SLOT(editorChanged(int)));
     connect(langBox,      SIGNAL(currentIndexChanged(int)),editor,SLOT(setLanguage(int)));
-}
-
-void SettingsPopup::focusChanged(QWidget *, QWidget *to)
-{
-    if(!to || (to != this && !isAncestorOf(to)))
-        deleteLater();
 }
 
 void SettingsPopup::editorChanged(int idx)
@@ -767,13 +838,56 @@ void SettingsPopup::editorChanged(int idx)
     adjustSize();
 }
 
-bool SettingsPopup::isAncestorOf(const QWidget *child) const
+EventsPopup::EventsPopup(ScriptEditor *editor, WidgetArea *area) : ScriptEditorPopup(editor)
 {
-    while (child)
-    {
-        if (child == this)
-            return true;
-        child = child->parentWidget();
+    m_area = area;
+
+    m_widgetsBox = new QComboBox(this);
+    m_eventsBox = new QComboBox(this);
+    QPushButton *confirmBtn = new QPushButton(tr("Add handler"), this);
+
+    auto widgets = m_area->getWidgets();
+
+    QList<quint32> ids = widgets.keys();
+    std::sort(ids.begin(), ids.end(), [&widgets](quint32 a, quint32 b) {
+        return widgets[a]->getTitle() < widgets[b]->getTitle();
+    });
+
+    for(auto id : ids) {
+        auto &w = widgets[id];
+        QStringList events = w->getScriptEvents();
+
+        if(!events.empty()) {
+            m_widgetsBox->addItem(w->getTitle());
+            m_widgetEvents.push_back(events);
+        }
     }
-    return false;
+
+    if(m_widgetsBox->count() == 0)
+        confirmBtn->setEnabled(false);
+
+    QGridLayout *l = new QGridLayout(this);
+    l->addWidget(new QLabel(tr("Widget:"), this), 0, 0);
+    l->addWidget(m_widgetsBox, 0, 1);
+    l->addWidget(new QLabel(tr("Event:"), this), 0, 2);
+    l->addWidget(m_eventsBox, 0, 3);
+    l->addWidget(confirmBtn, 1, 2, 1, 2);
+
+    widgetBoxIndexChanged(0);
+
+    connect(confirmBtn, SIGNAL(clicked()), SLOT(addHandlerClicked()));
+    connect(m_widgetsBox, SIGNAL(currentIndexChanged(int)), SLOT(widgetBoxIndexChanged(int)));
+}
+
+void EventsPopup::widgetBoxIndexChanged(int idx) {
+    m_eventsBox->clear();
+    if((size_t)idx < m_widgetEvents.size())
+        m_eventsBox->addItems(m_widgetEvents[idx]);
+    adjustSize();
+}
+
+void EventsPopup::addHandlerClicked()
+{
+    emit addHandler(m_widgetsBox->currentText(), m_eventsBox->currentText());
+    deleteLater();
 }

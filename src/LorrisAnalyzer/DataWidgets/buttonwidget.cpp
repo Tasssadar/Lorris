@@ -48,6 +48,10 @@ void ButtonWidget::setUp(Storage *storage)
     connect(m_button,    SIGNAL(released()),  SIGNAL(released()));
 }
 
+QStringList ButtonWidget::getScriptEvents() {
+    return (QStringList() << "clicked()" << "pressed()" << "released()");
+}
+
 void ButtonWidget::buttonClicked()
 {
     emit scriptEvent(getTitle() + "_clicked");

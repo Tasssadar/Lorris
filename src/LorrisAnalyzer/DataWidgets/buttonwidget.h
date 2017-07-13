@@ -25,6 +25,8 @@ public:
     void saveWidgetInfo(DataFileParser *file);
     void loadWidgetInfo(DataFileParser *file);
 
+    QStringList getScriptEvents();
+
 public slots:
     void setButtonName(const QString& name);
     void setButtonName();

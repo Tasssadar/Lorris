@@ -24,6 +24,8 @@ class EditorWidget;
 class ExamplesPreview;
 class QComboBox;
 class SettingsPopup;
+class EventsPopup;
+class WidgetArea;
 
 class ScriptEditor : public ChildTab, private Ui::ScriptEditor
 {
@@ -39,7 +41,7 @@ Q_SIGNALS:
     void redoAvailable(bool available);
     
 public:
-    ScriptEditor(const QString& source, const QString& filename, int type);
+    ScriptEditor(WidgetArea *area, const QString& source, const QString& filename, int type);
     ~ScriptEditor();
 
     void setSource(const QString& source);
@@ -78,6 +80,9 @@ private slots:
     void examplePreviewDestroyed();
     void settingsDestroyed();
     void loadExample(const QString& name);
+    void eventsBtn();
+    void eventsDestroyed();
+    void addEventHandler(const QString& widgetTitle, const QString& event);
 
 private:
     bool save(const QString& file);
@@ -100,10 +105,13 @@ private:
 
     QPushButton *m_exampleBtn;
     QPushButton *m_settingsBtn;
+    QPushButton *m_eventsBtn;
 
+    WidgetArea *m_area;
     EditorWidget *m_editor;
     QPointer<ExamplesPreview> m_examples;
     QPointer<SettingsPopup> m_settings;
+    QPointer<EventsPopup> m_events;
 
     QHash<QString, QByteArray> m_ignoredFiles;
 };
@@ -150,22 +158,51 @@ private:
     EditorWidget *m_editor;
 };
 
-class SettingsPopup : public QFrame
+class ScriptEditorPopup : public QFrame {
+    Q_OBJECT
+public:
+    ScriptEditorPopup(ScriptEditor *editor);
+
+protected slots:
+    void focusChanged(QWidget *, QWidget *to);
+
+protected:
+    bool isAncestorOf(const QWidget *child) const;
+    inline ScriptEditor *editor() { return (ScriptEditor*)parent(); }
+};
+
+class SettingsPopup : public ScriptEditorPopup
 {
     Q_OBJECT
 public:
     SettingsPopup(ScriptEditor *editor);
 
 private slots:
-    void focusChanged(QWidget *, QWidget *to);
     void editorChanged(int idx);
 
 private:
-    bool isAncestorOf(const QWidget *child) const;
-    inline ScriptEditor *editor() { return (ScriptEditor*)parent(); }
-
     QComboBox *m_editorBox;
     QPushButton *m_editorSett;
+};
+
+class EventsPopup : public ScriptEditorPopup {
+    Q_OBJECT
+Q_SIGNALS:
+    void addHandler(const QString& widgetTitle, const QString& event);
+
+public:
+    EventsPopup(ScriptEditor *editor, WidgetArea *area);
+
+private slots:
+    void widgetBoxIndexChanged(int idx);
+    void addHandlerClicked();
+
+private:
+    WidgetArea *m_area;
+    std::vector<QStringList> m_widgetEvents;
+    QComboBox *m_widgetsBox;
+    QComboBox *m_eventsBox;
+    QTextEdit *m_preview;
 };
 
 #endif // SCRIPTEDITOR_H

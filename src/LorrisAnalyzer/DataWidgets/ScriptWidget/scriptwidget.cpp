@@ -215,7 +215,7 @@ void ScriptWidget::setSourceTriggered(QString source)
     if(source.isNull())
         source = m_engine->getSource();
 
-    m_editor = new ScriptEditor(source, m_filename, m_engine_type);
+    m_editor = new ScriptEditor(widgetArea(), source, m_filename, m_engine_type);
     emit addChildTab(m_editor, m_editor->windowTitle());
     m_editor->activateTab();
 

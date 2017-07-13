@@ -40,6 +40,8 @@ public:
     void saveWidgetInfo(DataFileParser *file);
     void loadWidgetInfo(DataFileParser *file);
 
+    QStringList getScriptEvents();
+
 public slots:
     void setInteger() { setType(false); }
     void setDouble() { setType(true); }

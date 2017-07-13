@@ -190,6 +190,8 @@ public:
     void showSelectFrame(bool show);
     void dragMove(QMouseEvent* e, DataWidget *widget);
 
+    virtual QStringList getScriptEvents();
+
 public slots:
     virtual void newData(analyzer_data *data, quint32);
     void setTitle(QString title);

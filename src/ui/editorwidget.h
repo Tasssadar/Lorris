@@ -58,6 +58,8 @@ public:
     virtual void setModified(bool /*modded*/) { }
     virtual void setReadOnly(bool readOnly) = 0;
 
+    virtual void scrollToBottom() = 0;
+
 public slots:
     virtual void settingsBtn() { }
     virtual void undo() = 0;
@@ -87,6 +89,8 @@ public:
 
     QString getUndoShortcut() const { return "Ctrl+Z"; }
     QString getRedoShortcut() const { return "Ctrl+Shift+Z"; }
+
+    void scrollToBottom();
 
 public slots:
     void undo();
@@ -155,6 +159,8 @@ public:
     void setModified(bool modded);
     void setReadOnly(bool readOnly);
 
+    void scrollToBottom() { /* FIXME */ }
+
 public slots:
     void settingsBtn();
     void undo();
@@ -206,6 +212,8 @@ public:
 
     QString getUndoShortcut() const { return "Ctrl+Z"; }
     QString getRedoShortcut() const { return "Ctrl+Y"; }
+
+    void scrollToBottom();
 
 public slots:
     void undo();

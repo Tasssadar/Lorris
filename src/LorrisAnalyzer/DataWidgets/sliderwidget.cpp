@@ -215,19 +215,19 @@ void SliderWidget::setType(bool isDouble)
         p_setRange(m_min, m_max);
     }
 
-    emit scriptEvent(getTitle() + "_typeChanged");
+    emit scriptEvent(getTitle() + "_typeChanged", QVariantList() << isDouble);
 }
 
 void SliderWidget::on_minEdit_textChanged(const QString &text)
 {
     parseMinMax(false, text);
-    emit scriptEvent(getTitle() + "_minimumChanged");
+    emit scriptEvent(getTitle() + "_minimumChanged", QVariantList() << m_min);
 }
 
 void SliderWidget::on_maxEdit_textChanged(const QString &text)
 {
     parseMinMax(true, text);
-    emit scriptEvent(getTitle() + "_maximumChanged");
+    emit scriptEvent(getTitle() + "_maximumChanged", QVariantList() << m_max);
 }
 
 void SliderWidget::on_curEdit_textEdited(const QString &text)
@@ -239,7 +239,14 @@ void SliderWidget::on_slider_valueChanged(double val)
 {
     curEdit()->setText(QString::number(val));
 
-    emit scriptEvent(getTitle() + "_valueChanged");
+    emit scriptEvent(getTitle() + "_valueChanged", QVariantList() << val);
+}
+
+QStringList SliderWidget::getScriptEvents() {
+    return (QStringList() << "valueChanged(val)" <<
+            "maximumChanged(max)" << "minimumChanged(min)" <<
+            "typeChanged(isDouble)" << "orientationChanged(orientation)" <<
+            "visibilityChanged(isVisible)");
 }
 
 void SliderWidget::parseMinMax(bool isMax, const QString& text)
@@ -354,7 +361,7 @@ void SliderWidget::setOrientation(int ori)
     connect(maxEdit(),     SIGNAL(textChanged(QString)), SLOT(on_maxEdit_textChanged(QString)));
     connect(curEdit(),     SIGNAL(textEdited(QString)),  SLOT(on_curEdit_textEdited(QString)));
 
-    emit scriptEvent(getTitle() + "_orientationChanged");
+    emit scriptEvent(getTitle() + "_orientationChanged", QVariantList() << ori);
 }
 
 void SliderWidget::p_setRange(double min, double max)
@@ -381,7 +388,7 @@ void SliderWidget::hideMinMax(bool hide)
         ui_ver->maxLabel->setVisible(!hide);
     }
 
-    emit scriptEvent(getTitle() + "_visibilityChanged");
+    emit scriptEvent(getTitle() + "_visibilityChanged", QVariantList() << !hide);
 }
 
 bool SliderWidget::isMinMaxVisible() const
