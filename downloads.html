@@ -25,13 +25,13 @@
 wget -O - -q https://apt.tasemnice.eu/key.gpg | sudo apt-key add -v -
 
 # 2. Add the lorris repository
-echo deb http://apt.tasemnice.eu/ubuntu <b>stable</b> non-free | sudo tee /etc/apt/sources.list.d/lorris.list
+echo deb http://apt.tasemnice.eu/ubuntu <b>stable</b> main | sudo tee /etc/apt/sources.list.d/lorris.list
 
 # 3. Update packages and install
 sudo apt-get update && sudo apt-get install lorris
 </pre>
 <p style="margin-left: 30px">The <b>stable</b> dist is for the latest Ubuntu LTS and is likely to work on all recent debian-based distributions. Some other Ubuntu releases are also supported, so you can try those as well (e.g. <code>xenial</code> or <code>zesty</code>).</p>
-<p style="margin-left: 30px">For Ubuntu 14.04/Mint 17.1, use dist <b>trusty</b> instead:<br> <code>echo deb http://apt.tasemnice.eu/ubuntu <b>trusty</b> non-free | sudo tee /etc/apt/sources.list.d/lorris.list</code>
+<p style="margin-left: 30px">For Ubuntu 14.04/Mint 17.1, use dist <b>trusty</b> instead:<br> <code>echo deb http://apt.tasemnice.eu/ubuntu <b>trusty</b> main | sudo tee /etc/apt/sources.list.d/lorris.list</code>
 </p>
 
 <p style="margin-left: 30px">You can find the <a href="https://apt.tasemnice.eu/ubuntu/pool/dists/stable/">raw .deb packages in the pool</a>.</p>

@@ -86,7 +86,7 @@
 wget -O - -q https://apt.tasemnice.eu/key.gpg | sudo apt-key add -v -
 
 # 2. Přidání repozitáře
-echo deb http://apt.tasemnice.eu/ubuntu <b>stable</b> non-free | sudo tee /etc/apt/sources.list.d/lorris.list
+echo deb http://apt.tasemnice.eu/ubuntu <b>stable</b> main | sudo tee /etc/apt/sources.list.d/lorris.list
 
 # 3. Aktualizace informací o balíčcích a instalace
 sudo apt-get update && sudo apt-get install lorris
@@ -94,7 +94,7 @@ sudo apt-get update && sudo apt-get install lorris
 <p style="margin-left: 30px">Vydání <b>stable</b> je pro poslední LTS vydání Ubuntu a pravděpodobně bude fungovat na většině distribucí založených na Debianu. Jsou podporované i některá další vydání Ubuntu, můžete vyzkoušet například <code>xenial</code> nebo <code>zesty</code>.</p>
 
 <p style="margin-left: 30px">Pokud máte Ubuntu 14.04, Mint 17.1 nebo podobné, použijte vydání <b>trusty</b>:<br>
-<code>echo deb http://apt.tasemnice.eu/ubuntu <b>trusty</b> non-free | sudo tee /etc/apt/sources.list.d/lorris.list</code></p>
+<code>echo deb http://apt.tasemnice.eu/ubuntu <b>trusty</b> main | sudo tee /etc/apt/sources.list.d/lorris.list</code></p>
 
 <p style="margin-left: 30px">Samotné <a href="https://apt.tasemnice.eu/ubuntu/pool/dists/stable/">.deb balíčky najdete zde</a>.</p>
 
