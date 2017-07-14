@@ -5,8 +5,8 @@
 #     ...more fuses...
 # }
 
-# ATmega 8u2, 16, 48, 88, 168, 328, 328p, 1284p, 128, 644
-{=avr:1e9389,avr:1e9403,avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702,avr:1e9609
+# ATmega 8u2, 16, 48, 88, 168, 328, 328p, 1284p, 128, 644, 168p
+{=avr:1e9389,avr:1e9403,avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702,avr:1e9609,avr:1e940b
     eesave | EEPROM memory is preserved through the Chip Erase. Default: Erase | 0b1=Erase | 0b0=Preserve
     lb | Memory lock bit (Default: No lock) | 0b11=No lock | 0b10=Disable write | 0b00=Disable read and write | 0b01=<reserved>
     blb0 | Boot lock bit (Default: No restrictions) | 0b11=No restrictions
@@ -15,8 +15,8 @@
     spien | Enable SPI Serial program and Data downloading (default: enabled) | 0b0=Enabled | 0b1=Disabled
 }
 
-# ATmega 8u2, 16, 88, 168, 328, 328p, 1284p, 128, 644
-{=avr:1e9389,avr:1e9403,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702,avr:1e9609 
+# ATmega 8u2, 16, 88, 168, 328, 328p, 1284p, 128, 644, 168p
+{=avr:1e9389,avr:1e9403,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9702,avr:1e9609,avr:1e940b
     bootrst | Reset address (Default: Normal) | 0b1=Normal | 0b0=Bootloader
 }
 
@@ -24,8 +24,8 @@
 {=avr:1e9705,avr:1e9702,avr:1e9609
     bootsz | Bootloader section size (default: 4096 words) | 0b11=512 words | 0b10=1024 words | 0b01=2048 words | 0b00=4096 words
 }
-# ATmega 16, 88, 168
-{=avr:1e9403,avr:1e930a,avr:1e9406
+# ATmega 16, 88, 168, 168p
+{=avr:1e9403,avr:1e930a,avr:1e9406,avr:1e940b
     bootsz | Bootloader section size (default: 1024 words) | 0b11=128 words | 0b10=256 words | 0b01=512 words | 0b00=1024 words
 }
 # ATmega 328,328p
@@ -73,8 +73,8 @@
     bodlevel | Brown-out Detector trigger level. BODEN must be enabled! (default 2.7V) | 0b0=4.0V | 0b1=2.7V
 }
 
-# ATmega 48, 88, 168, 328, 328p, 1284p, 644
-{=avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9609
+# ATmega 48, 88, 168, 328, 328p, 1284p, 644, 168p
+{=avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9609,avr:1e940b
     sut+cksel | first 2b start-up time; next 4b clock source, see datasheet (default: IntRC 8Mhz 6ck+65ms) ||
         0b000010=IntRC 8Mhz 6ck | 0b010010=IntRC 8Mhz 6ck+4.1ms | 0b100010=IntRC 8Mhz 6ck+65ms | 0b110010=<reserved> ||
         0b000000=Ext clock 6ck | 0b010000=Ext clock 6ck+4.1ms | 0b100000=Ext clock 6ck+65ms | 0b110000=<reserved> ||
@@ -122,8 +122,8 @@
     bootsz | Bootloader section size (default: 2048 words) | 0b11=256 words | 0b10=512 words | 0b01=1024 words | 0b00=2048 words
 }
 
-# ATmega 48, 88, 168, 328, 328p, 1284p, 8u2, 644
-{=avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9389,avr:1e9609
+# ATmega 48, 88, 168, 328, 328p, 1284p, 8u2, 644, 168p
+{=avr:1e9205,avr:1e930a,avr:1e9406,avr:1e9514,avr:1e950f,avr:1e9705,avr:1e9389,avr:1e9609,avr:1e940b
     ckout | Output system clock to CLKO pin (default: disabled) | 0b1=Disabled | 0b0=Enabled
     ckdiv8 | Divide system click by 8 (default: enabled) | 0b1=Disabled | 0b0=Enabled
     dwen | Enable debugWIRE (default: disabled) | 0b1=Disabled | 0b0=Enabled
