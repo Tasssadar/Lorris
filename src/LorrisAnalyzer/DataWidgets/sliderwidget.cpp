@@ -145,8 +145,9 @@ void SliderWidget::setRange(double min, double max, double /*step*/)
 
 void SliderWidget::setRange(double min, double max)
 {
-    minEdit()->setText(QString::number(min));
-    maxEdit()->setText(QString::number(max));
+    QLocale c;
+    minEdit()->setText(c.toString(min));
+    maxEdit()->setText(c.toString(max));
 }
 
 double SliderWidget::getValue()
@@ -161,12 +162,14 @@ void SliderWidget::setValue(double val)
 
 void SliderWidget::setMin(double min)
 {
-    minEdit()->setText(QString::number(min));
+    QLocale c;
+    minEdit()->setText(c.toString(min));
 }
 
 void SliderWidget::setMax(double max)
 {
-    maxEdit()->setText(QString::number(max));
+    QLocale c;
+    maxEdit()->setText(c.toString(max));
 }
 
 double SliderWidget::getMin() const
@@ -208,9 +211,9 @@ void SliderWidget::setType(bool isDouble)
     }
     else
     {
-        minEdit()->setValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this));
-        maxEdit()->setValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this));
-        curEdit()->setValidator(new QDoubleValidator(-DBL_MAX, DBL_MAX, 0, this));
+        minEdit()->setValidator(new QDoubleValidator(this));
+        maxEdit()->setValidator(new QDoubleValidator(this));
+        curEdit()->setValidator(new QDoubleValidator(this));
 
         p_setRange(m_min, m_max);
     }
@@ -232,12 +235,15 @@ void SliderWidget::on_maxEdit_textChanged(const QString &text)
 
 void SliderWidget::on_curEdit_textEdited(const QString &text)
 {
-    slider()->setValue(text.toDouble());
+    QLocale c;
+    double val = c.toDouble(text);
+    slider()->setValue(val);
 }
 
 void SliderWidget::on_slider_valueChanged(double val)
 {
-    curEdit()->setText(QString::number(val));
+    QLocale c;
+    curEdit()->setText(c.toString(val));
 
     emit scriptEvent(getTitle() + "_valueChanged", QVariantList() << val);
 }
@@ -251,7 +257,8 @@ QStringList SliderWidget::getScriptEvents() {
 
 void SliderWidget::parseMinMax(bool isMax, const QString& text)
 {
-    double val = text.toDouble();
+    QLocale c;
+    double val = c.toDouble(text);
     if(isMax) p_setRange(m_min, val);
     else      p_setRange(val, m_max);
 }
@@ -347,9 +354,11 @@ void SliderWidget::setOrientation(int ori)
     slider()->setTrough(false);
     p_setRange(m_min, m_max);
     slider()->setValue(value);
-    minEdit()->setText(QString::number(m_min));
-    maxEdit()->setText(QString::number(m_max));
-    curEdit()->setText(QString::number(value));
+
+    QLocale c;
+    minEdit()->setText(c.toString(m_min));
+    maxEdit()->setText(c.toString(m_max));
+    curEdit()->setText(c.toString(value));
 
     if(m_hide_act)
         hideMinMax(m_hide_act->isChecked());
