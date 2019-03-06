@@ -24,25 +24,25 @@ def onKeyPress(key):
         Slider.hideMinMax(True);
 
 # called whenever the value is changed
-def Slider_valueChanged():
-    terminal.appendText("value changed: " + str(Slider.getValue()) + "\n");
+def Slider_valueChanged(val):
+    terminal.appendText("value changed: " + str(val) + "\n");
 
 # called whenever the minimum value is changed
-def Slider_minimumChanged():
-    terminal.appendText("minimum changed: " + str(Slider.getMin()) + "\n");
+def Slider_minimumChanged(min):
+    terminal.appendText("minimum changed: " + str(min) + "\n");
 
 # called whenever the maximum value is changed
-def Slider_maximumChanged():
-    terminal.appendText("maximum changed: " + str(Slider.getMax()) + "\n");
+def Slider_maximumChanged(max):
+    terminal.appendText("maximum changed: " + str(max) + "\n");
 
 # called whenever the data type is changed
-def Slider_typeChanged():
-    terminal.appendText("type changed to " + ("Integer" if Slider.isInteger() else "Double") + "\n");
+def Slider_typeChanged(isDouble):
+    terminal.appendText("type changed to " + ("Integer" if not isDouble else "Double") + "\n");
 
 # called whenever the orientation is changed
-def Slider_orientationChanged():
-    terminal.appendText("orientation changed to " + str(Slider.getOrientation()) + "\n");
+def Slider_orientationChanged(orientation):
+    terminal.appendText("orientation changed to " + str(orientation) + "\n");
 
 # called whenever the visibility of min/max boxes is changed
-def Slider_visibilityChanged():
-    terminal.appendText("min/max visibility changed: " + ("Visible" if Slider.isMinMaxVisible() else "Hidden") + "\n");
+def Slider_visibilityChanged(visible):
+    terminal.appendText("min/max visibility changed: " + ("Visible" if visible else "Hidden") + "\n");

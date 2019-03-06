@@ -29,37 +29,37 @@ function onKeyPress(key)
 }
 
 // called whenever the value is changed
-function Slider_valueChanged()
+function Slider_valueChanged(val)
 {
-    appendTerm("value changed: " + Slider.getValue() + "\n");
+    appendTerm("value changed: " + val + "\n");
 }
 
 // called whenever the minimum value is changed
-function Slider_minimumChanged()
+function Slider_minimumChanged(min)
 {
-    appendTerm("minimum changed: " + Slider.getMin() + "\n");
+    appendTerm("minimum changed: " + min + "\n");
 }
 
 // called whenever the maximum value is changed
-function Slider_maximumChanged()
+function Slider_maximumChanged(max)
 {
-    appendTerm("maximum changed: " + Slider.getMax() + "\n");
+    appendTerm("maximum changed: " + max + "\n");
 }
 
 // called whenever the data type is changed
-function Slider_typeChanged()
+function Slider_typeChanged(isDouble)
 {
-    appendTerm("type changed to " + (Slider.isInteger() ? "Integer" : "Double") + "\n");
+    appendTerm("type changed to " + (isDouble ? "Double" : "Integer") + "\n");
 }
 
 // called whenever the orientation is changed
-function Slider_orientationChanged()
+function Slider_orientationChanged(orientation)
 {
-    appendTerm("orientation changed to " + Slider.getOrientation() + "\n");
+    appendTerm("orientation changed to " + orientation + "\n");
 }
 
 // called whenever the visibility of min/max boxes is changed
-function Slider_visibilityChanged()
+function Slider_visibilityChanged(isVisible)
 {
-    appendTerm("min/max visibility changed: " + (Slider.isMinMaxVisible() ? "Visible" : "Hidden") + "\n");
+    appendTerm("min/max visibility changed: " + (isVisible ? "Visible" : "Hidden") + "\n");
 }
