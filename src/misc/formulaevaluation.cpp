@@ -65,7 +65,7 @@ QVariant FormulaEvaluation::evaluate(const QString& val)
 
     if(!m_script_eng->hasUncaughtException())
     {
-        if(res.isValid() && res.isNumber())
+        if(res.isValid())
             return res.toVariant();
     }
     else
