@@ -10,7 +10,7 @@
 
 #include "connection.h"
 
-class TcpServer;
+class Server;
 
 class ProxyTunnel : public PortConnection
 {
@@ -20,7 +20,7 @@ public:
 
     void SendData(const QByteArray &data);
 
-    void setTcpServer(TcpServer *server);
+    void setServer(Server *server);
 
     QHash<QString, QVariant> config() const;
     bool canSaveToSession() const { return true; }
@@ -31,7 +31,7 @@ protected:
     void doClose();
 
 private:
-    TcpServer *m_server;
+    Server *m_server;
 };
 
 #endif // PROXYTUNNEL_H

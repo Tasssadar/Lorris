@@ -6,7 +6,7 @@
 ***********************************************/
 
 #include "proxytunnel.h"
-#include "../LorrisProxy/tcpserver.h"
+#include "../LorrisProxy/server.h"
 
 ProxyTunnel::ProxyTunnel() : PortConnection(CONNECTION_PROXY_TUNNEL)
 {
@@ -33,7 +33,7 @@ void ProxyTunnel::doClose()
     this->SetState(st_disconnected);
 }
 
-void ProxyTunnel::setTcpServer(TcpServer *server)
+void ProxyTunnel::setServer(Server *server)
 {
     if(isOpen())
         Close();

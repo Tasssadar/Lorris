@@ -15,6 +15,7 @@
 #include <QGridLayout>
 #include <QVector>
 #include <QMetaType>
+#include <QHash>
 
 enum ConnectionState {
     st_disconnected,

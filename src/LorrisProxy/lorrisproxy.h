@@ -10,6 +10,7 @@
 
 #include "../WorkTab/WorkTab.h"
 #include "../ui/connectbutton.h"
+#include "../connection/proxytunnel.h"
 #include "tcpserver.h"
 
 namespace Ui {
@@ -17,6 +18,7 @@ namespace Ui {
 }
 
 class QTcpSocket;
+class Server;
 
 class LorrisProxy : public PortConnWorkTab
 {
@@ -38,17 +40,29 @@ public:
 private slots:
     void updateAddressText();
     void listenChanged();
-    void addConnection(QTcpSocket *connection, quint32 id);
+    void addConnection(QString address, quint32 id);
     void removeConnection(quint32 id);
     void connectionMenu(const QPoint& pos);
     void tunnelNameEditFinished();
     void tunnelNameEdited(const QString& text);
     void tunnelToggled(bool enable);
+    void protocolToggled(bool isTcp);
 
 private:
+    void createProxyTunnel(const QString& name);
+    void destroyProxyTunnel();
+
+    enum {
+        PROTOCOL_TCP = 0,
+        PROTOCOL_UDP = 1,
+    };
+
+    ConnectionPointer<ProxyTunnel> m_tunnel_conn;
+
     Ui::LorrisProxy *ui;
-    TcpServer m_server;
+    Server *m_server;
     ConnectButton * m_connectButton;
+    quint8 m_protocol;
 };
 
 #endif // LORRISPROXY_H

@@ -170,7 +170,9 @@ SOURCES += ui/mainwindow.cpp \
     connection/udpsocket.cpp \
     LorrisProgrammer/programmers/zmodemprogrammer.cpp \
     ../dep/qextserialport/src/qextserialport.cpp \
-    ../dep/qextserialport/src/qextserialenumerator.cpp
+    ../dep/qextserialport/src/qextserialenumerator.cpp \
+    LorrisProxy/udpserver.cpp \
+    LorrisProxy/server.cpp
 
 HEADERS += ui/mainwindow.h \
     revision.h \
@@ -317,7 +319,9 @@ HEADERS += ui/mainwindow.h \
     ../dep/qextserialport/src/qextserialport_global.h \
     ../dep/qextserialport/src/qextserialport.h \
     ../dep/qextserialport/src/qextserialenumerator_p.h \
-    ../dep/qextserialport/src/qextserialenumerator.h
+    ../dep/qextserialport/src/qextserialenumerator.h \
+    LorrisProxy/udpserver.h \
+    LorrisProxy/server.h
 
 FORMS += \
     LorrisAnalyzer/sourcedialog.ui \
