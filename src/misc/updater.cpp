@@ -32,6 +32,8 @@
 #define MANIFEST_URL "https://tasemnice.eu/lorris32/updater_manifest.txt"
 #endif
 
+
+
 QNetworkRequest Updater::getNetworkRequest(const QUrl& url)
 {
     QNetworkRequest req(url);
@@ -43,7 +45,7 @@ QNetworkRequest Updater::getNetworkRequest(const QUrl& url)
     return req;
 }
 
-int Updater::checkManifest()
+UpdateCheckResult Updater::checkManifest()
 {
     QUrl baseUrl(MANIFEST_URL);
     QNetworkAccessManager manager;
@@ -59,7 +61,7 @@ int Updater::checkManifest()
             QCoreApplication::processEvents();
 
         if(rep->error() != QNetworkReply::NoError)
-            return RES_CHECK_FAILED;
+            return UpdateCheckResult(RES_CHECK_FAILED, rep->error(), rep->errorString());
 
         QVariant redirect = rep->attribute(QNetworkRequest::RedirectionTargetAttribute);
         if(redirect.type() != QVariant::Url)
@@ -84,12 +86,12 @@ int Updater::checkManifest()
                 continue;
 
             if(REVISION < parts[1].toInt())
-                return RES_UPDATE_AVAILABLE;
+                return UpdateCheckResult(RES_UPDATE_AVAILABLE);
             else
-                return RES_NO_UPDATE;
+                return UpdateCheckResult(RES_NO_UPDATE);
         }
     }
-    return RES_NO_UPDATE;
+    return UpdateCheckResult(RES_NO_UPDATE);
 }
 
 void Updater::checkForUpdate(bool autoCheck)
@@ -107,7 +109,7 @@ void Updater::checkForUpdate(bool autoCheck)
     sConfig.set(CFG_QUINT32_LAST_UPDATE_CHECK, time);
 
     UpdateHandler *h = new UpdateHandler(autoCheck);
-    QFuture<int> f = QtConcurrent::run(&Updater::checkManifest);
+    QFuture<UpdateCheckResult> f = QtConcurrent::run(&Updater::checkManifest);
     h->createWatcher(f);
 }
 
@@ -159,9 +161,9 @@ void UpdateHandler::updateBtn()
     deleteLater();
 }
 
-void UpdateHandler::createWatcher(const QFuture<int> &f)
+void UpdateHandler::createWatcher(const QFuture<UpdateCheckResult> &f)
 {
-    m_watcher = new QFutureWatcher<int>(this);
+    m_watcher = new QFutureWatcher<UpdateCheckResult>(this);
 
     connect(m_watcher, SIGNAL(finished()), SLOT(updateCheckResult()));
     m_watcher->setFuture(f);
@@ -172,56 +174,42 @@ void UpdateHandler::updateCheckResult()
     if(!m_progress.isNull())
         m_progress->deleteLater();
 
-    int res = m_watcher->result();
-    if(m_autoCheck && (res == RES_CHECK_FAILED || res == RES_NO_UPDATE))
+    UpdateCheckResult res = m_watcher->result();
+    if(m_autoCheck && (res.code == RES_CHECK_FAILED || res.code == RES_NO_UPDATE))
     {
         deleteLater();
         return;
     }
 
     static const QString texts[] = {
-        tr("Update check has failed!"),
+        tr("Update check has failed: %1 %2!"),
         tr("No update available"),
         tr("New update for Lorris is available")
     };
 
-    switch(res)
-    {
-        case RES_CHECK_FAILED:
-        {
-            sWorkTabMgr.printToAllStatusBars(texts[res]);
-            ToolTipWarn *w = new ToolTipWarn(texts[res], NULL, NULL, 4000, ":/icons/warning");
-            w->toRightBottom();
-            deleteLater();
-            break;
-        }
-        case RES_NO_UPDATE:
-        {
-            sWorkTabMgr.printToAllStatusBars(texts[res]);
-            ToolTipWarn *w = new ToolTipWarn(texts[res], NULL, NULL, 3000, ":/actions/info");
-            w->toRightBottom();
-            deleteLater();
-            break;
-        }
-        case RES_UPDATE_AVAILABLE:
-        {
-            sWorkTabMgr.printToAllStatusBars(texts[res]);
-            ToolTipWarn *w = new ToolTipWarn(texts[res], NULL, NULL, 30000, ":/actions/update");
-            QPushButton *btn = new QPushButton(tr("Download"));
-            w->setButton(btn);
-            w->toRightBottom();
+    static const char *icons[] = {
+        ":/icons/warning",
+        ":/icons/info",
+        ":/icons/update"
+    };
 
-            connect(btn, SIGNAL(clicked()), this, SLOT(updateBtn()));
-            connect(btn, SIGNAL(clicked()), w, SLOT(deleteLater()));
-            break;
-        }
-        default:
-        {
-            sWorkTabMgr.printToAllStatusBars("");
-            deleteLater();
-            break;
-        }
+    static const int times[] = { 4000, 3000, 30000 };
+
+    Q_ASSERT(res.code >= 0 && res.code < RES_MAX);
+
+    QString text = texts[res.code].arg(int(res.error)).arg(res.errorString);
+    sWorkTabMgr.printToAllStatusBars(text);
+    ToolTipWarn *w = new ToolTipWarn(text, NULL, NULL, times[res.code], icons[res.code]);
+
+    if(res.code == RES_UPDATE_AVAILABLE) {
+        QPushButton *btn = new QPushButton(tr("Download"));
+        w->setButton(btn);
+        connect(btn, SIGNAL(clicked()), this, SLOT(updateBtn()));
+        connect(btn, SIGNAL(clicked()), w, SLOT(deleteLater()));
+    } else {
+        deleteLater();
     }
+    w->toRightBottom();
 }
 
 

@@ -13,6 +13,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QNetworkRequest>
+#include <QNetworkReply>
 
 #include "../ui/tooltipwarn.h"
 #include "qtobjectpointer.h"
@@ -21,7 +22,25 @@ enum
 {
     RES_CHECK_FAILED     = 0,
     RES_NO_UPDATE,
-    RES_UPDATE_AVAILABLE
+    RES_UPDATE_AVAILABLE,
+
+    RES_MAX
+};
+
+struct UpdateCheckResult {
+    UpdateCheckResult() {
+        UpdateCheckResult(0);
+    }
+
+    UpdateCheckResult(int code, QNetworkReply::NetworkError error = QNetworkReply::NetworkError::NoError, QString errorString = QString()) {
+        this->code = code;
+        this->error = error;
+        this->errorString = errorString;
+    }
+
+    int code;
+    QNetworkReply::NetworkError error;
+    QString errorString;
 };
 
 class Updater
@@ -32,7 +51,7 @@ public:
     static bool startUpdater();
 
 private:
-    static int checkManifest();
+    static UpdateCheckResult checkManifest();
     static bool copyUpdater();
     static QNetworkRequest getNetworkRequest(const QUrl &url);
 };
@@ -45,14 +64,14 @@ class UpdateHandler : public QObject
 protected:
     UpdateHandler(bool autoCheck, QObject *parent = NULL);
 
-    void createWatcher(const QFuture<int>& f);
+    void createWatcher(const QFuture<UpdateCheckResult>& f);
 
 protected slots:
     void updateBtn();
     void updateCheckResult();
 
 private:
-    QFutureWatcher<int> *m_watcher;
+    QFutureWatcher<UpdateCheckResult> *m_watcher;
     QtObjectPointer<ToolTipWarn> m_progress;
     bool m_autoCheck;
 };
