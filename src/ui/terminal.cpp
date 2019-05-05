@@ -445,6 +445,15 @@ void Terminal::keyPressEvent(QKeyEvent *event)
         }
     }
 
+    if(m_settings.chars[SET_HANDLE_ESCAPE]) {
+        switch(event->key()) {
+            case Qt::Key_Up:    key = "\x1B[1A"; break;
+            case Qt::Key_Down:  key = "\x1B[1B"; break;
+            case Qt::Key_Right: key = "\x1B[1C"; break;
+            case Qt::Key_Left:  key = "\x1B[1D"; break;
+        }
+    }
+
     if(key.isEmpty())
         QAbstractScrollArea::keyPressEvent(event);
     else
