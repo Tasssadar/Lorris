@@ -35,7 +35,7 @@ public:
     void setImport(const QString& filename);
     
 public slots:
-    bool newData(const QByteArray& data, bool emitSig = true);
+    bool newData(QByteArray data, bool emitSig = true);
     void resetCurPacket();
     void tryImport();
 
@@ -49,6 +49,7 @@ private:
     QFile m_import;
     quint32 m_packetItr;
     quint32 m_staticDataOffset;
+    QByteArray m_startWindow;
 };
 
 #endif // PACKETPARSER_H

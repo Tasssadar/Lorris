@@ -24,13 +24,23 @@ PacketParser::~PacketParser()
     m_import.close();
 }
 
-bool PacketParser::newData(const QByteArray &data, bool emitSig)
+bool PacketParser::newData(QByteArray data, bool emitSig)
 {
     if(m_paused || !m_packet)
         return false;
 
-    if(!m_curData.getLenght())
+    quint32 expLength = m_curData.getLenght();
+    if(!expLength)
         return false;
+
+    if(m_packetItr == 0 && m_startWindow.size()+data.size() < expLength) {
+        m_startWindow.append(data);
+        return false;
+    } else if(m_startWindow.size() != 0) {
+        m_startWindow.append(data);
+        data = QByteArray(m_startWindow);
+        m_startWindow.clear();
+    }
 
     char *d_start = (char*)data.data();
     char *d_itr = d_start;
