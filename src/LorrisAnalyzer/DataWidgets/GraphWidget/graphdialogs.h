@@ -34,6 +34,7 @@ public:
     QString getEditName();
     QString getFormula();
     int getAxis();
+    int getWidth();
 
     bool forceEdit();
     bool edit();

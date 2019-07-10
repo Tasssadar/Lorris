@@ -245,6 +245,10 @@ void GraphWidget::saveWidgetInfo(DataFileParser *file)
         // visibility
         file->writeBlockIdentifier("graphWCurveVisible");
         file->writeVal(info->curve->isVisible());
+
+        // curve width
+        file->writeBlockIdentifier("graphWCurveWidth");
+        file->writeVal((qint32)info->curve->pen().width());
     }
 }
 
@@ -361,7 +365,8 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
         GraphData *dta = new GraphData(m_storage, info, m_sample_size, dataType);
         GraphCurve *curve = new GraphCurve(name, dta);
 
-        curve->setPen(QPen(QColor(color)));
+        QPen pen = QPen(QColor(color));
+
         curve->setYAxis(axis);
         curve->attach(m_graph);
         m_graph->showCurve(curve, true);
@@ -378,6 +383,11 @@ void GraphWidget::loadWidgetInfo(DataFileParser *file)
 
         if(file->seekToNextBlock("graphWCurveVisible", "graphWCurve"))
             m_graph->showCurve(curve, file->readVal<bool>());
+
+        if(file->seekToNextBlock("graphWCurveWidth", "graphWCurve"))
+            pen.setWidth(file->readVal<qint32>());
+
+        curve->setPen(pen);
     }
     updateRemoveMapping();
     updateSampleSize();
@@ -522,7 +532,9 @@ void GraphWidget::applyCurveChanges()
     {
         GraphData *data = new GraphData(m_storage, m_info, m_sample_size, m_add_dialog->getDataType());
         GraphCurve *curve = new GraphCurve(m_add_dialog->getName(), data);
-        curve->setPen(QPen(m_add_dialog->getColor()));
+        QPen pen = QPen(m_add_dialog->getColor());
+        pen.setWidth(m_add_dialog->getWidth());
+        curve->setPen(pen);
         curve->attach(m_graph);
         curve->setYAxis(m_add_dialog->getAxis());
         data->setFormula(m_add_dialog->getFormula());
@@ -558,8 +570,11 @@ void GraphWidget::applyCurveChanges()
         deleteCurve = m_deleteCurve->addAction(m_add_dialog->getName());
         m_deleteAct[m_add_dialog->getName()] = deleteCurve;
 
+        QPen pen = QPen(m_add_dialog->getColor());
+        pen.setWidth(m_add_dialog->getWidth());
+
         info->curve->setTitle(m_add_dialog->getName());
-        info->curve->setPen(QPen(m_add_dialog->getColor()));
+        info->curve->setPen(pen);
         info->curve->setYAxis(m_add_dialog->getAxis());
         if(!m_add_dialog->forceEdit())
         {

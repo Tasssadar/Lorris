@@ -100,6 +100,11 @@ QColor GraphCurveAddDialog::getColor()
     return m_color;
 }
 
+int GraphCurveAddDialog::getWidth()
+{
+    return edit_widget_ui->widthEdit->value();
+}
+
 QString GraphCurveAddDialog::getFormula()
 {
     return edit_widget_ui->formulaEdit->text();
@@ -168,6 +173,7 @@ void GraphCurveAddDialog::curveChanged(int idx)
     edit_widget_ui->dataTypeBox->setCurrentIndex(curve->getDataType());
     edit_widget_ui->formulaEdit->setText(curve->getFormula());
     edit_widget_ui->axisBox->setCurrentIndex(curve->yAxis());
+    edit_widget_ui->widthEdit->setValue(curve->pen().width());
 
     setButtonColor(curve->pen().color());
 }
