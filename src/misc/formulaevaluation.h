@@ -33,5 +33,6 @@ public slots:
 private:
     QScriptEngine *m_script_eng;
     QString m_formula;
+    bool m_error;
 };
 #endif // FORMULAEVALUATION_H

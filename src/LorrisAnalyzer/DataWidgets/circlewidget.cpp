@@ -41,6 +41,8 @@ void CircleWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
+    setUseErrorLabel(true);
+
     m_range_min = 0;
     m_range_max = 4095;
     m_num_type = NUM_UINT8;
@@ -107,6 +109,7 @@ void CircleWidget::setUp(Storage *storage)
 
     connect(m_clockwiseAct, SIGNAL(triggered(bool)), SLOT(setClockwise(bool)));
     connect(m_drawAngAct, SIGNAL(triggered(bool)),   SLOT(drawAngle(bool)));
+    connect(&m_eval,      SIGNAL(setError(bool,QString)), SLOT(setError(bool,QString)));
 }
 
 void CircleWidget::saveWidgetInfo(DataFileParser *file)

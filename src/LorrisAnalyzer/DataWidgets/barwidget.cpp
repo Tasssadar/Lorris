@@ -60,6 +60,8 @@ void BarWidget::setUp(Storage *storage)
 {
     DataWidget::setUp(storage);
 
+    setUseErrorLabel(true);
+
     m_min = 0;
     m_max = 1000;
     m_numberType = NUM_UINT8;
@@ -135,6 +137,7 @@ void BarWidget::setUp(Storage *storage)
     connect(m_alarmLevel,   SIGNAL(triggered()),     SLOT(alarmLevelAct()));
     connect(colorAct,       SIGNAL(triggered()),     SLOT(showColorsDialog()));
     connect(formula,        SIGNAL(triggered()),     SLOT(showFormulaDialog()));
+    connect(&m_eval,        SIGNAL(setError(bool,QString)), SLOT(setError(bool,QString)));
 }
 
 void BarWidget::processData(analyzer_data *data)
