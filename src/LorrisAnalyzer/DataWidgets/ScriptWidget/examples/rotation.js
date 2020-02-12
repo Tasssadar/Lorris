@@ -19,14 +19,14 @@
 })();
 
 // Set rotation of the object by slider values
-function rot_x_valueChanged() {
-    rot_test.setRotationX(rot_x.getValue());
+function rot_x_valueChanged(val) {
+    rot_test.setRotationX(val);
 }
 
-function rot_y_valueChanged() {
-    rot_test.setRotationY(rot_y.getValue());
+function rot_y_valueChanged(val) {
+    rot_test.setRotationY(val);
 }
 
-function rot_z_valueChanged() {
-    rot_test.setRotationZ(rot_z.getValue());
+function rot_z_valueChanged(val) {
+    rot_test.setRotationZ(val);
 }

@@ -20,11 +20,11 @@ def createWidgets():
 createWidgets()
 
 # Set rotation of the object by slider values
-def rot_x_valueChanged():
-    rot_test.setRotationX(rot_x.getValue())
+def rot_x_valueChanged(val):
+    rot_test.setRotationX(val)
 
-def rot_y_valueChanged():
-    rot_test.setRotationY(rot_y.getValue());
+def rot_y_valueChanged(val):
+    rot_test.setRotationY(val);
 
-def rot_z_valueChanged():
-    rot_test.setRotationZ(rot_z.getValue())
+def rot_z_valueChanged(val):
+    rot_test.setRotationZ(val)
