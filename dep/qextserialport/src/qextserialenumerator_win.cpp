@@ -130,7 +130,6 @@ static QString getRegKeyValue(HKEY key, LPCTSTR property)
     QString result;
     if(::RegQueryValueEx(key, property, NULL, &type, buff, & size) == ERROR_SUCCESS )
         result = TCHARToQString(buff);
-    ::RegCloseKey(key);
     delete [] buff;
     return result;
 }
@@ -157,6 +156,61 @@ static QString getDeviceProperty(HDEVINFO devInfo, PSP_DEVINFO_DATA devData, DWO
     return result;
 }
 
+static void getBluetoothFriendlyName(HKEY devKey, QextPortInfo *info) {
+    // {00001101-0000-1000-8000-00805f9b34fb}#A4CF1224C9CE_C00000000
+    const QString id = getRegKeyValue(devKey, TEXT("Bluetooth_UniqueID"));
+
+    int start = id.indexOf("#");
+    if(start == -1)
+        return;
+    ++start;
+
+    int end = id.indexOf("_", start);
+    if(end == -1 || end - start != 12)
+        return;
+
+    const QString mac = id.mid(start, 12).toUpper();
+    if(mac == "000000000000")
+        return;
+
+    QString friendlyMac;
+    for(int i = 0; i < 10; i += 2) {
+        friendlyMac += mac.mid(i, 2) + ":";
+    }
+    friendlyMac += mac.mid(10, 2);
+
+    info->friendName = friendlyMac;
+
+    HKEY btDevKey;
+    const QString deviceKeyPath = "SYSTEM\\CurrentControlSet\\Enum\\BTHENUM\\Dev_" + mac;
+    if(::RegOpenKeyExW(HKEY_LOCAL_MACHINE, (LPCWSTR)deviceKeyPath.utf16(), 0, KEY_READ, &btDevKey) != ERROR_SUCCESS)
+        return;
+
+    DWORD name_size = 256;
+    WCHAR name_buf[256];
+    for(DWORD i = 0; ::RegEnumKeyExW(btDevKey, i, name_buf, &name_size, NULL, NULL, NULL, NULL) == ERROR_SUCCESS; ++i) {
+        QString name = QString::fromUtf16((char16_t*)name_buf, name_size);
+        name_size = 256;
+
+        if(!name.contains(mac, Qt::CaseInsensitive))
+            continue;
+
+        QString friendlyName;
+        HKEY paramsKey;
+        if(::RegOpenKeyExW(btDevKey, name_buf, 0, KEY_QUERY_VALUE, &paramsKey) == ERROR_SUCCESS) {
+             friendlyName = getRegKeyValue(paramsKey, TEXT("FriendlyName"));
+            ::RegCloseKey(paramsKey);
+        }
+
+        if(!friendlyName.isEmpty()) {
+            info->friendName = QString("%1 (%2)").arg(friendlyName).arg(friendlyMac);
+            break;
+        }
+    }
+
+    ::RegCloseKey(btDevKey);
+}
+
 /*!
      \internal
 */
@@ -166,8 +220,14 @@ static bool getDeviceDetailsWin( QextPortInfo* portInfo, HDEVINFO devInfo, PSP_D
     portInfo->friendName = getDeviceProperty(devInfo, devData, SPDRP_FRIENDLYNAME);
     portInfo->enumName = getDeviceProperty(devInfo, devData, SPDRP_ENUMERATOR_NAME);
     QString hardwareIDs = getDeviceProperty(devInfo, devData, SPDRP_HARDWAREID);
+
     HKEY devKey = ::SetupDiOpenDevRegKey(devInfo, devData, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_QUERY_VALUE);
     portInfo->portName = getRegKeyValue(devKey, TEXT("PortName"));
+    if(hardwareIDs.startsWith("BTHENUM\\")) {
+        getBluetoothFriendlyName(devKey, portInfo);
+    }
+    ::RegCloseKey(devKey);
+
     portInfo->physName = "\\\\.\\" + portInfo->portName;
     QRegExp idRx(QLatin1String("VID_(\\w+)&PID_(\\w+)"));
     if(hardwareIDs.toUpper().contains(idRx)) {

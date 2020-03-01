@@ -70,3 +70,4 @@ dep/qwt/src/release/
 dep/qwt/lib/
 src/ipch/
 src/pch.h.cpp
+dep/qscintilla2/lib/qscintilla2_lorrisd.dll
