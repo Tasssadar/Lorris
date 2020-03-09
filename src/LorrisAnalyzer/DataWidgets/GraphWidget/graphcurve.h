@@ -31,8 +31,7 @@ public:
 
     void init();
 
-    void setSampleSize(quint32 size, quint32 offset = UINT32_MAX);
-    void setSampleOffset(quint32 offset);
+    void setSampleSize(quint32 size);
     void dataPosChanged(quint32 pos);
 
     qint32 getMin();

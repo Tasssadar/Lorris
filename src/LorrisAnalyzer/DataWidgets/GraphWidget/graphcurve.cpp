@@ -35,14 +35,9 @@ void GraphCurve::init()
     setData(m_data);
 }
 
-void GraphCurve::setSampleSize(quint32 size, quint32 offset)
+void GraphCurve::setSampleSize(quint32 size)
 {
-    m_data->setSampleSize(size, offset);
-}
-
-void GraphCurve::setSampleOffset(quint32 offset)
-{
-    m_data->setSampleOffset(offset);
+    m_data->setSampleSize(size);
 }
 
 void GraphCurve::dataPosChanged(quint32 pos)

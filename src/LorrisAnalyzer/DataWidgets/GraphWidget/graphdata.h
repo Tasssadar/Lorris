@@ -39,8 +39,7 @@ public:
     void clear();
     void reloadData(bool force);
 
-    void setSampleSize(quint32 size, quint32 offset);
-    void setSampleOffset(quint32 offset);
+    void setSampleSize(quint32 size);
     void dataPosChanged(quint32 index);
 
     void setDataType(quint8 type);
@@ -65,7 +64,6 @@ private:
     data_widget_info m_info;
 
     quint32 m_sample_size;
-    quint32 m_sample_offset;
     quint8 m_data_type;
 
     DataMap m_data;

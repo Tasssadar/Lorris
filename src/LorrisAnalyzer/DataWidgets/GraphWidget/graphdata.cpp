@@ -18,7 +18,6 @@ GraphData::GraphData(Storage *storage, data_widget_info &info, qint32 sample_siz
     m_info = info;
 
     m_sample_size = sample_size;
-    m_sample_offset = UINT32_MAX;
     m_data_type = data_type;
 
     m_data_start = 0;
@@ -81,20 +80,13 @@ quint32 GraphData::getMaxX()
     return m_data.back().x();
 }
 
-void GraphData::setSampleSize(quint32 size, quint32 offset)
+void GraphData::setSampleSize(quint32 size)
 {
-    if(m_script_based || (m_sample_size == size && m_sample_offset == offset))
+    if(m_script_based || m_sample_size == size)
         return;
 
     m_sample_size = size;
-    m_sample_offset = offset;
     reloadData(false);
-}
-
-void GraphData::setSampleOffset(quint32 offset)
-{
-    if(!m_script_based)
-        m_sample_offset = offset;
 }
 
 void GraphData::setDataType(quint8 type)
@@ -139,12 +131,8 @@ void GraphData::dataPosChanged(quint32 index)
 
     m_last_index = index;
 
-    if(index > m_sample_offset && m_sample_offset < m_storage->getMaxIdx()) {
-        index = m_sample_offset;
-    }
-
     // FIXME: this can be solved better, somehow
-    if(m_data_end == index && m_storage->isFull())
+    if(m_data_end == index+1 && m_storage->isFull())
     {
         m_data.clear();
         m_data_start = 0;
@@ -159,7 +147,7 @@ void GraphData::dataPosChanged(quint32 index)
         m_data.clear();
         for(quint32 i = start; i < end; ++i) {
             auto p = getPointAtIdx(i);
-            if(p.x() >= 0.0)
+            if((qint64)p.x() >= 0)
                 m_data.push_back(p);
         }
     } else {
@@ -169,11 +157,11 @@ void GraphData::dataPosChanged(quint32 index)
             removeDataAfter(end-1);
 
         // fill before prev range
-        if(m_data_start > 0) {
+        if(start < m_data_start) {
             const quint32 start_limit = (std::min)(m_data_start-1, m_storage->getMaxIdx());
             for(quint32 i = start_limit; i >= start; --i) {
                 auto p = getPointAtIdx(i);
-                if(p.x() >= 0.0)
+                if((qint64)p.x() >= 0)
                     m_data.push_front(p);
 
                 if(i == 0)
@@ -185,7 +173,7 @@ void GraphData::dataPosChanged(quint32 index)
         const quint32 end_limit = (std::max)(m_data_end, start);
         for(quint32 i = end_limit; i < end; ++i) {
             auto p = getPointAtIdx(i);
-            if(p.x() >= 0.0)
+            if((qint64)p.x() >= 0.0)
                 m_data.push_back(p);
         }
     }
@@ -196,8 +184,7 @@ void GraphData::dataPosChanged(quint32 index)
         Q_ASSERT(m_data[i].x() > lastx);
         lastx = m_data[i].x();
     }
-    Q_ASSERT(m_data.size() == (end - start));
-    */
+    Q_ASSERT(m_data.size() == (end - start));*/
 
     m_data_start = start;
     m_data_end = end;
@@ -207,15 +194,9 @@ void GraphData::removeDataAfter(quint32 index)
 {
     for(size_t i = 0; i < m_data.size(); ++i)
     {
-        if(m_data[i].x() == index)
+        if((qint64)m_data[i].x() > index)
         {
-            ++i;
             m_data.erase(m_data.begin()+i, m_data.end());
-            return;
-        }
-        else if(m_data[i].x() > index)
-        {
-            m_data.clear();
             return;
         }
     }
@@ -223,15 +204,11 @@ void GraphData::removeDataAfter(quint32 index)
 
 void GraphData::removeDataBefore(quint32 index)
 {
-    for(size_t i = 1; i < m_data.size(); ++i)
+    for(size_t i = 0; i < m_data.size(); ++i)
     {
-        if(m_data[i].x() == index)
+        if((qint64)m_data[i].x() >= index)
         {
             m_data.erase(m_data.begin(), m_data.begin()+i);
-            return;
-        }
-        else if(m_data[i].x() > index)
-        {
             return;
         }
     }

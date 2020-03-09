@@ -613,14 +613,10 @@ void GraphWidget::tryReplot()
 {
     if(m_indexChange != UINT32_MAX) {
         const size_t size = m_curves.size();
-        if(size != 0) {
-            for(size_t i = 0; i < size; ++i) {
-                if(m_enableAutoScroll && m_sample_size == -3)
-                     m_curves[i]->curve->setSampleOffset(m_indexChange);
-                m_curves[i]->curve->dataPosChanged(m_indexChange);
-            }
-            m_doReplot = true;
+        for(size_t i = 0; i < size; ++i) {
+            m_curves[i]->curve->dataPosChanged(m_indexChange);
         }
+        m_doReplot = size != 0;
 
         m_indexChange = UINT32_MAX;
     }
@@ -633,13 +629,12 @@ void GraphWidget::tryReplot()
 
             for(quint8 i = 0; i < m_curves.size(); ++i)
             {
-                qint32 c_size = m_curves[i]->curve->getMaxX();
-
+                const qint32 c_size = m_curves[i]->curve->getMaxX();
                 if(c_size > size)
                     size = c_size;
             }
 
-            qint32 x_max = abs(m_graph->XupperBound() - m_graph->XlowerBound());
+            const qint32 x_max = abs(m_graph->XupperBound() - m_graph->XlowerBound());
             m_graph->setAxisScale(QwtPlot::xBottom, size - x_max, size);
         }
 
@@ -814,7 +809,7 @@ void GraphWidget::updateSampleSize()
     qint32 size = abs(m_graph->XupperBound() - m_graph->XlowerBound());
 
     for(quint8 i = 0; i < m_curves.size(); ++i)
-        m_curves[i]->curve->setSampleSize(size, (std::max)(m_graph->XupperBound(), 0.0));
+        m_curves[i]->curve->setSampleSize(size);
 }
 
 void GraphWidget::exportData()
