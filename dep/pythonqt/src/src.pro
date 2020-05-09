@@ -31,7 +31,9 @@ contains(QT_MAJOR_VERSION, 5) {
 
 # Qt 5.4 adds this option, but this is not compatible with the Python API
 QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+
 QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-missing-field-initializers -Wno-write-strings -Wno-cast-function-type
+QMAKE_CXXFLAGS += -Wno-strict-aliasing -Wno-maybe-uninitialized
  
 INCLUDEPATH += $$PWD
 
