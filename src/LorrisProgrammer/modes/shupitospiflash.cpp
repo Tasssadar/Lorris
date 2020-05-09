@@ -105,7 +105,7 @@ chip_definition ShupitoSpiFlash::readDeviceId()
     return cd;
 }
 
-void ShupitoSpiFlash::readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size)
+void ShupitoSpiFlash::readMemRange(quint8 /*memid*/, QByteArray& memory, quint32 address, quint32 size)
 {
     ShupitoPacket out;
     out.push_back(m_prog_cmd_base + 2);
@@ -137,7 +137,7 @@ void ShupitoSpiFlash::readMemRange(quint8 memid, QByteArray& memory, quint32 add
     }
 }
 
-void ShupitoSpiFlash::flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address)
+void ShupitoSpiFlash::flashPage(chip_definition::memorydef * /*memdef*/, std::vector<quint8>& memory, quint32 address)
 {
     this->writeEnable();
     if ((this->readStatus() & (1<<1)) == 0)
@@ -159,7 +159,7 @@ void ShupitoSpiFlash::flashPage(chip_definition::memorydef *memdef, std::vector<
         throw tr("The device didn't reset the write enable latch");
 }
 
-void ShupitoSpiFlash::erase_device(chip_definition& chip)
+void ShupitoSpiFlash::erase_device(chip_definition& /*chip*/)
 {
     this->writeEnable();
     if ((this->readStatus() & (1<<1)) == 0)

@@ -81,7 +81,7 @@ public:
     void vddSetup(const vdd_setup &vs);
     void setStartStopBtn(bool start);
     virtual void setFileAndTime(const QString& /*file*/, const QDateTime&) = 0;
-    virtual void setFileNeverFlashed(bool neverFlashed) { };
+    virtual void setFileNeverFlashed(bool /*neverFlashed*/) { };
     virtual void setChipId(const QString&) {}
 
     void readMemInFlash(quint8 memId);

@@ -72,15 +72,15 @@ chip_definition ShupitoJtag::readDeviceId()
     return cd;
 }
 
-void ShupitoJtag::erase_device(chip_definition& chip)
+void ShupitoJtag::erase_device(chip_definition& /*chip*/)
 {
 }
 
-void ShupitoJtag::flashPage(chip_definition::memorydef *memdef, std::vector<quint8>& memory, quint32 address)
+void ShupitoJtag::flashPage(chip_definition::memorydef * /*memdef*/, std::vector<quint8>& /*memory*/, quint32 /*address*/)
 {
 }
 
-void ShupitoJtag::readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size)
+void ShupitoJtag::readMemRange(quint8 /*memid*/, QByteArray& /*memory*/, quint32 /*address*/, quint32 /*size*/)
 {
 }
 
@@ -287,7 +287,7 @@ struct ShupitoJtag::play_visitor
     double total_cost;
 };
 
-void ShupitoJtag::executeText(QByteArray const & data, quint8 memId, chip_definition & chip)
+void ShupitoJtag::executeText(QByteArray const & data, quint8 /*memId*/, chip_definition & /*chip*/)
 {
     std::istringstream ss((std::string(data.data(), data.size())));
     yb::svf_file doc = yb::svf_parse(ss);

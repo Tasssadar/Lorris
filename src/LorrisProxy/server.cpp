@@ -21,7 +21,7 @@ Server::~Server()
 {
 }
 
-void Server::closeConnection(quint32 id)
+void Server::closeConnection(quint32 /*id*/)
 {
 
 }

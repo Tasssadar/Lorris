@@ -42,25 +42,6 @@ static const char *blockNames[] = {
     "tabWidgetTab",        // BLOCK_WORKTAB
 };
 
-DataFileHeader::DataFileHeader(quint8 data_type)
-{
-    memset(&str[0], 0, sizeof(DataFileHeader));
-
-    str[0] = 'L'; str[1] = 'D'; str[2] = 'T'; str[3] = 'A';
-    version = 2;
-    this->data_type = data_type;
-    header_size = 64;
-    compressed_block = UINT_MAX;
-    lorris_rev = REVISION;
-
-    memset(&unused[0], 0xFF, sizeof(unused));
-}
-
-DataFileHeader::DataFileHeader(const DataFileHeader& other)
-{
-    memcpy(&str[0], &other.str[0], sizeof(DataFileHeader));
-}
-
 DataFileParser::DataFileParser(QByteArray *data, QIODevice::OpenMode openMode, QString path, QString name, QObject *parent) :
     QBuffer(data, parent)
 {
@@ -458,13 +439,28 @@ QByteArray DataFileBuilder::writeWithHeader(const QString& filename, QByteArray 
     return res;
 }
 
+void DataFileBuilder::initHeader(DataFileHeader& h, quint8 data_type)
+{
+    memset(&h, 0, sizeof(DataFileHeader));
+
+    h.str[0] = 'L'; h.str[1] = 'D'; h.str[2] = 'T'; h.str[3] = 'A';
+    h.version = 2;
+    h.data_type = data_type;
+    h.header_size = 64;
+    h.compressed_block = UINT_MAX;
+    h.lorris_rev = REVISION;
+
+    memset(&h.unused[0], 0xFF, sizeof(h.unused));
+}
+
 QByteArray DataFileBuilder::writeWithHeader_private(const QString& filename, QByteArray& data, bool compress, DataFileTypes type)
 {
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
         return QByteArray();
 
-    DataFileHeader header(type);
+    DataFileHeader header;
+    initHeader(header, type);
     if(compress)
     {
         header.flags |= DATAFLAG_COMPRESSED;

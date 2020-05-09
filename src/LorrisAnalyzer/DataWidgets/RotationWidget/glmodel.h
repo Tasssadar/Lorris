@@ -45,6 +45,16 @@ struct material
         illum = m.illum;
     }
 
+    material& operator=(const material& m) {
+        memcpy(Ka, m.Ka, sizeof(Ka));
+        memcpy(Kd, m.Kd, sizeof(Kd));
+        memcpy(Ks, m.Ks, sizeof(Ks));
+        d = m.d;
+        Ns = m.Ns;
+        illum = m.illum;
+        return *this;
+    }
+
     void dump()
     {
         qDebug("Ka: %f %f %f %f", Ka[0], Ka[1], Ka[2], Ka[3]);

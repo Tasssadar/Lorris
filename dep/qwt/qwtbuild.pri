@@ -66,3 +66,5 @@ RCC_DIR      = resources
 #        error( "local build will conflict with $${QMAKE_LIBDIR_QT}/libqwt.*" )
 #    }
 #}
+
+QMAKE_CXXFLAGS += -Wno-unused-result

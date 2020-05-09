@@ -441,7 +441,7 @@ void GraphWidget::dragEnterEvent(QDragEnterEvent *event)
     layout->addLayout(m_drop_layout, 1);
 }
 
-void GraphWidget::dragLeaveEvent(QDragLeaveEvent *event)
+void GraphWidget::dragLeaveEvent(QDragLeaveEvent *)
 {
     m_graph->setVisible(true);
     if(m_drop_layout) {

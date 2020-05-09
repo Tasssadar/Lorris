@@ -272,7 +272,7 @@ void AtsamProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chi
 quint16 AtsamProgrammer::crc16(QByteArray const & data, quint32 crc = 0)
 {
     crc &= 0xFFFF;
-    for(size_t i = 0; i != data.size(); ++i)
+    for(int i = 0; i != data.size(); ++i)
     {
         crc ^= (data.at(i) << 8);
         for(int j = 0; j != 8; ++j)
@@ -289,7 +289,7 @@ void AtsamProgrammer::write_file(const uint32_t& address, QByteArray const & dat
 {
     int attempts = 0;
     this->transact(QString("S%1,#").arg(address, 0, 16), "C");
-    for(size_t i = 0; i != data.size() / 128 + 1; ++i)
+    for(int i = 0; i != data.size() / 128 + 1; ++i)
     {
         QByteArray packet;
         if(i != data.size() / 128)
@@ -412,7 +412,7 @@ QByteArray AtsamProgrammer::transact(const QByteArray & data, const QString & de
     return m_recvBuffer;
 }
 
-void AtsamProgrammer::debug_output(QString const & dir, QString data)
+void AtsamProgrammer::debug_output(QString const & /*dir*/, QString /*data*/)
 {
     //this->log(QString("%2 %1 \"%3\"\n").arg(dir).arg(QTime::currentTime().toString("hh:mm:ss.zzz")).arg(data.replace("\n", "\\n").replace("\r", "\\r")).toLatin1());
 }

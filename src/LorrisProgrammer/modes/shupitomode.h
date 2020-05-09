@@ -51,7 +51,7 @@ public:
 
     virtual ProgrammerCapabilities capabilities() const = 0;
     virtual QList<QWidget*> widgets() { return QList<QWidget*>(); }
-    virtual void setActive(bool active) { }
+    virtual void setActive(bool /*active*/) { }
 
 protected:
     virtual ShupitoDesc::config const *getModeCfg() = 0;

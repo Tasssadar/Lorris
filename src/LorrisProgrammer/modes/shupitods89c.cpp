@@ -186,7 +186,7 @@ void ShupitoDs89c::write(QByteArray const & line)
 {
     size_t maxSize = m_shupito->maxPacketSize();
 
-    size_t offs = 0;
+    int offs = 0;
     std::vector<uint8_t> pck;
     pck.push_back(m_prog_cmd_base + 2);
     while (offs < line.size())
@@ -203,7 +203,7 @@ void ShupitoDs89c::write(QByteArray const & line)
     }
 }
 
-void ShupitoDs89c::readMemRange(quint8 memid, QByteArray& memory, quint32 address, quint32 size)
+void ShupitoDs89c::readMemRange(quint8 /*memid*/, QByteArray& memory, quint32 address, quint32 size)
 {
     QByteArray cmd = QString("D %1 %2\r").arg(address, 0, 16).arg(address + size - 1, 0, 16).toUpper().toUtf8();
 
@@ -225,14 +225,14 @@ void ShupitoDs89c::readMemRange(quint8 memid, QByteArray& memory, quint32 addres
     hf.getRange(address, size, (quint8 *)memory.data() + memory.size() - size);
 }
 
-void ShupitoDs89c::erase_device(chip_definition& chip)
+void ShupitoDs89c::erase_device(chip_definition&)
 {
     m_shupito->sendPacket(makeShupitoPacket(m_prog_cmd_base + 2, 2, 'K', '\r'));
     m_shupito->waitForPacket(m_prog_cmd_base + 2);
     this->waitForPrompt();
 }
 
-void ShupitoDs89c::readFuses(std::vector<quint8>& data, chip_definition &chip)
+void ShupitoDs89c::readFuses(std::vector<quint8>& data, chip_definition &)
 {
     m_shupito->sendPacket(makeShupitoPacket(m_prog_cmd_base + 2, 2, 'R', '\r'));
     m_shupito->waitForPacket(m_prog_cmd_base + 2);

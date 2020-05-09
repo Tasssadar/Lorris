@@ -41,13 +41,13 @@ void ScriptAgent::scriptLoad(qint64, const QString &, const QString &, int)
     m_enterFuncCnt = 0;
 }
 
-void ScriptAgent::functionEntry(qint64 scriptId)
+void ScriptAgent::functionEntry(qint64 /*scriptId*/)
 {
     if(++m_enterFuncCnt == 1)
         ((QtScriptEngine_private*)engine())->startFreezeDetector();
 }
 
-void ScriptAgent::functionExit(qint64 scriptId, const QScriptValue &returnValue)
+void ScriptAgent::functionExit(qint64 /*scriptId*/, const QScriptValue &/*returnValue*/)
 {
     if(--m_enterFuncCnt == 0)
         ((QtScriptEngine_private*)engine())->stopFreezeDetector();

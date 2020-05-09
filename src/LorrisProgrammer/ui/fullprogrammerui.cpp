@@ -529,6 +529,7 @@ void FullProgrammerUI::setCurrentTab(tabs_t t)
     case tab_widgets:
         if (m_programmer_caps.widgets)
             ui->memTabs->setCurrentIndex(0);
+        break;
     case tab_terminal:
         if (m_programmer_caps.terminal)
             ui->memTabs->setCurrentIndex(m_programmer_caps.widgets);
@@ -671,9 +672,9 @@ int FullProgrammerUI::getMemIndex()
         return MEM_EEPROM;
     case tab_svf:
         return MEM_JTAG;
+    default:
+        return MEM_NONE;
     }
-
-    return MEM_NONE;
 }
 
 void FullProgrammerUI::overvoltageSwitched(bool enabled)

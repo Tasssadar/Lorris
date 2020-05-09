@@ -156,7 +156,7 @@ void STM32Connection::send_cmd(const stm32_cmd &cmd)
 int STM32Connection::send_recv_cmd(const stm32_cmd &cmd, uint8_t *reply, size_t reply_len)
 {
     yb::task_result<size_t> res = m_runner.try_run(m_dev.bulk_write(m_out_ep, cmd.data, sizeof(cmd.data))
-        .then([this, reply, reply_len](size_t r) -> yb::task<size_t>  {
+        .then([this, reply, reply_len](size_t) -> yb::task<size_t>  {
             return m_dev.bulk_read(m_in_ep, reply, reply_len);
         }));
 

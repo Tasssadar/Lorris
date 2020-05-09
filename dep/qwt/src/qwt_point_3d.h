@@ -29,6 +29,8 @@ public:
     QwtPoint3D( const QwtPoint3D & );
     QwtPoint3D( const QPointF & );
 
+    QwtPoint3D& operator=(const QwtPoint3D& other);
+
     bool isNull()    const;
 
     double x() const;
@@ -88,6 +90,13 @@ inline QwtPoint3D::QwtPoint3D( const QwtPoint3D &other ):
     d_y( other.d_y ),
     d_z( other.d_z )
 {
+}
+
+inline QwtPoint3D& QwtPoint3D::operator=(const QwtPoint3D& other) {
+    d_x = other.d_x;
+    d_y = other.d_y;
+    d_z = other.d_z;
+    return *this;
 }
 
 /*!

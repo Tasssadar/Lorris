@@ -114,22 +114,22 @@ QByteArray ZmodemProgrammer::readMemory(const QString&/*mem*/, chip_definition &
     throw tr("Zmodem protocol cannot read program from the device.");
 }
 
-void ZmodemProgrammer::readFuses(std::vector<quint8>& data, chip_definition &chip)
+void ZmodemProgrammer::readFuses(std::vector<quint8>&, chip_definition &)
 {
     throw tr("Zmodem protocol cannot handle fuses.");
 }
 
-void ZmodemProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode)
+void ZmodemProgrammer::writeFuses(std::vector<quint8>&, chip_definition &, VerifyMode)
 {
     throw tr("Zmodem protocol cannot handle fuses.");
 }
 
-void ZmodemProgrammer::erase_device(chip_definition& chip)
+void ZmodemProgrammer::erase_device(chip_definition&)
 {
     throw tr("Zmodem protocol cannot erase the device.");
 }
 
-void ZmodemProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& chip, VerifyMode verifyMode)
+void ZmodemProgrammer::flashRaw(HexFile& file, quint8 /*memId*/, chip_definition&, VerifyMode)
 {
     sendHexHeader(ZRQINIT);
     if(!waitForPkt(ZRINIT, 2000))

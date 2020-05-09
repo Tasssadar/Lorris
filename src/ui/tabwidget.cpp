@@ -683,7 +683,11 @@ void TabBar::mouseMoveEvent(QMouseEvent *event)
 
     tabView()->createSplitOverlay(m_id, drag);
 
+#if QT_VERSION > 0x050000
+    QStyleOptionTab tab;
+#else
     QStyleOptionTabV3 tab;
+#endif
     initStyleOption(&tab, idx);
 
     QWidget *tabWidget = ((QTabWidget*)parent())->widget(idx);

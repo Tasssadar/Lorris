@@ -39,7 +39,11 @@ void PlusTabBar::updateRect()
         QRect rect = tabRect(count()-1);
         m_plusRect.moveLeft(rect.x()+rect.width()+2);
 
+#if QT_VERSION > 0x050000
+        QStyleOptionTab tab;
+#else
         QStyleOptionTabV3 tab;
+#endif
         initStyleOption(&tab, count()-1);
         rect = style()->subElementRect(QStyle::SE_TabBarTabText, &tab, this);
         m_plusRect.moveTop(rect.y() + ((rect.height() - m_plusRect.height()) / 2));

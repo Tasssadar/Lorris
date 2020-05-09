@@ -233,7 +233,7 @@ void PythonQt::init(int flags, const QByteArray& pythonQtModuleName)
       "QtSystemMsg"
     };
     
-    for (int i = 0; i<sizeof(enumValues)/sizeof(int); i++) {
+    for (size_t i = 0; i<sizeof(enumValues)/sizeof(int); i++) {
       PyObject* obj = PyInt_FromLong(enumValues[i]);
       PyModule_AddObject(pack, enumNames[i], obj);
       Py_INCREF(obj);

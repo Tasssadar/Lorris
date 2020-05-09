@@ -57,8 +57,11 @@ public:
         Q_ASSERT(index.isValid());
         Connection * conn = index.data(Qt::UserRole).value<Connection *>();
 
+#if QT_VERSION >= 0x050000
+        auto& opt = option;
+#else
         QStyleOptionViewItemV4 const & opt = static_cast<QStyleOptionViewItemV4 const &>(option);
-
+#endif
         QSize res;
 
         QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
@@ -82,7 +85,11 @@ public:
         Q_ASSERT(index.isValid());
         Connection * conn = index.data(Qt::UserRole).value<Connection *>();
 
+#if QT_VERSION >= 0x050000
+        auto &opt = option;
+#else
         QStyleOptionViewItemV4 const & opt = static_cast<QStyleOptionViewItemV4 const &>(option);
+#endif
         QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
 
         // background

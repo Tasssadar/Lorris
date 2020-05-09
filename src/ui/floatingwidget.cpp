@@ -58,7 +58,7 @@ bool FloatingWidget::isAncestorOf(const QWidget *child) const
     return false;
 }
 
-void FloatingWidget::resizeEvent(QResizeEvent *ev)
+void FloatingWidget::resizeEvent(QResizeEvent *)
 {
     QPixmap pixmap(size());
     QPainter painter(&pixmap);

@@ -32,7 +32,7 @@ static const QString filters[ENGINE_MAX] =
 };
 
 ScriptEditor::ScriptEditor(WidgetArea *area, const QString& source, const QString& filename, int type) :
-    ChildTab(NULL), ui(new Ui::ScriptEditor), m_area(area), m_language(ENGINE_QTSCRIPT), m_editor(NULL)
+    ChildTab(NULL), ui(new Ui::ScriptEditor), m_language(ENGINE_QTSCRIPT), m_area(area), m_editor(NULL)
 {
     ui->setupUi(this);
 
@@ -394,12 +394,14 @@ void ScriptEditor::checkChange()
                 break;
             case QMessageBox::YesToAll:
                 sWorkTabMgr.setBatchVar("scripteditor_reloadall", true);
+                // fallthrough
             case QMessageBox::Yes:
                 qDebug("Load file %s", m_filename.toStdString().c_str());
                 load(f);
                 break;
             case QMessageBox::NoToAll:
                 sWorkTabMgr.setBatchVar("scripteditor_keepall", true);
+                // fallthrough
             case QMessageBox::No:
                 m_ignoredFiles[m_filename] = disk;
                 break;
@@ -500,11 +502,13 @@ bool ScriptEditor::onTabClose()
         {
             case QMessageBox::YesAll:
                 sWorkTabMgr.setBatchVar("scripteditor_saveall", true);
+                // fallthrough
             case QMessageBox::Yes:
                 save(m_filename);
                 return true;
             case QMessageBox::NoAll:
                 sWorkTabMgr.setBatchVar("scripteditor_discardall", true);
+                // fallthrough
             case QMessageBox::No:
                 return true;
             case QMessageBox::Cancel:
@@ -534,11 +538,13 @@ bool ScriptEditor::onTabClose()
         {
             case QMessageBox::YesAll:
                 sWorkTabMgr.setBatchVar("scripteditor_applyall", true);
+                // fallthrough
             case QMessageBox::Yes:
                 applyAct();
                 return true;
             case QMessageBox::NoAll:
                 sWorkTabMgr.setBatchVar("scripteditor_ignoreall", true);
+                // fallthrough
             case QMessageBox::No:
                 return true;
             case QMessageBox::Cancel:

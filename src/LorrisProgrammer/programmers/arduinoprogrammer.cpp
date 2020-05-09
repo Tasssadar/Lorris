@@ -44,7 +44,7 @@ void ArduinoProgrammer::stopAll(bool /*wait*/) {
 
 }
 
-void ArduinoProgrammer::switchToFlashMode(quint32 prog_speed_hz) {
+void ArduinoProgrammer::switchToFlashMode(quint32 /*prog_speed_hz*/) {
     if(m_flash_mode) {
         return;
     }
@@ -220,11 +220,11 @@ QByteArray ArduinoProgrammer::readMemory(const QString& mem, chip_definition &ch
     return res;
 }
 
-void ArduinoProgrammer::readFuses(std::vector<quint8>& data, chip_definition &chip) {
+void ArduinoProgrammer::readFuses(std::vector<quint8>&, chip_definition &) {
 
 }
 
-void ArduinoProgrammer::writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode) {
+void ArduinoProgrammer::writeFuses(std::vector<quint8>&, chip_definition &, VerifyMode) {
 
 }
 
@@ -295,13 +295,11 @@ void ArduinoProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& c
         verifyMode = VERIFY_ALL_PAGES;
 
     switch(verifyMode) {
-    case VERIFY_NONE:
-        break;
     case VERIFY_ALL_PAGES: {
         QByteArray mem = readMemory(chip.memIdToName(memId), chip);
         for (size_t i = 0; i < pages.size(); ++i) {
             const page &p = pages[i];
-            if(p.address + p.data.size() > mem.size()) {
+            if(p.address + p.data.size() > (quint32)mem.size()) {
                 throw tr("Verification failed!");
             }
 
@@ -338,6 +336,8 @@ void ArduinoProgrammer::flashRaw(HexFile& file, quint8 memId, chip_definition& c
         }
         break;
     }
+    default:
+        break;
     }
 
     setStayInBootloaderTimer(true);
@@ -377,7 +377,7 @@ QByteArray ArduinoProgrammer::readPage(quint16 address, quint16 pagesize, quint8
     return QByteArray(m_rec_buff.data() + 1, pagesize);
 }
 
-void ArduinoProgrammer::erase_device(chip_definition& chip) {
+void ArduinoProgrammer::erase_device(chip_definition&) {
     throw tr("Arduino bootloader does not support chip erase.");
     // Arduino ignores this.
     /*static const char eraseCmd[] = { STK_CHIP_ERASE, Sync_CRC_EOP };

@@ -127,7 +127,7 @@ private:
     PacketParser m_parser;
 
     bool m_data_changed;
-    qint32 m_curIndex;
+    quint32 m_curIndex;
 
     ConnectButton * m_connectButton;
     analyzer_data m_curData;

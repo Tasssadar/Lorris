@@ -177,6 +177,8 @@ void ShupitoSpiTunnel::tunnelState(ConnectionState state)
             }
             emit spiStateSwitchComplete(true);
             break;
+        default:
+            break;
     }
 }
 

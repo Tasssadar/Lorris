@@ -105,7 +105,7 @@ QPointF GraphData::getPointAtIdx(quint32 idx)
 {
     analyzer_data cur(m_storage->get(idx), m_storage->getPacket());
 
-    if(!m_info.filter->isOkay(&cur) || m_info.pos >= cur.getData().size())
+    if(!m_info.filter->isOkay(&cur) || m_info.pos >= (quint32)cur.getData().size())
         return QPointF(-1, 0);
 
     QVariant num = DataWidget::getNumFromPacket(&cur, m_info.pos, m_data_type);

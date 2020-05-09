@@ -153,12 +153,12 @@ void ShupitoMode::prepare()
     m_prepared = true;
 }
 
-void ShupitoMode::readFuses(std::vector<quint8>& data, chip_definition &chip)
+void ShupitoMode::readFuses(std::vector<quint8>&, chip_definition &)
 {
     throw QString(tr("The device does not have fuses."));
 }
 
-void ShupitoMode::writeFuses(std::vector<quint8>& data, chip_definition &chip, VerifyMode verifyMode)
+void ShupitoMode::writeFuses(std::vector<quint8>&, chip_definition &, VerifyMode)
 {
     throw QString(tr("The device does not have fuses."));
 }
@@ -291,7 +291,7 @@ void ShupitoModeCommon::writeFuses(std::vector<quint8> &data, chip_definition &c
     flashRaw(file, MEM_FUSES, chip, verifyMode);
 }
 
-void ShupitoMode::prepareMemForWriting(chip_definition::memorydef *memdef, chip_definition& chip)
+void ShupitoMode::prepareMemForWriting(chip_definition::memorydef *, chip_definition&)
 {
 }
 

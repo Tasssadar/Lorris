@@ -60,9 +60,6 @@ enum DataFileTypes
 
 PACK_STRUCT(struct DataFileHeader
 {
-    DataFileHeader(quint8 data_type = DATAFILE_NONE);
-    DataFileHeader(const DataFileHeader& other);
-
     char str[4];             // must be "LDTA" without null end
     quint16 version;
     quint32 flags;           // enum DataFileFlags
@@ -147,6 +144,8 @@ private:
     static void readHeader(QFile& file, DataFileHeader *header);
     static void writeHeader(QIODevice &file, DataFileHeader *header);
     static void dumpHeader(const DataFileHeader& header);
+
+    static void initHeader(DataFileHeader& header, quint8 data_type);
 
     static QByteArray writeWithHeader_private(const QString& filename, QByteArray& data, bool compress, DataFileTypes type);
 

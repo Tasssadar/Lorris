@@ -330,7 +330,7 @@ void CmdFilterCondition::load(DataFileParser *file)
 bool ByteFilterCondition::isOkay(analyzer_data *data)
 {
     try {
-        if(m_pos < data->getData().length())
+        if(m_pos < (quint32)data->getData().length())
             return data->getUInt8(m_pos) == m_byte;
     }
     catch(const char*) {

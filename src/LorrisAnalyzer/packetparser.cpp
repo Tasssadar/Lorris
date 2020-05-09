@@ -33,7 +33,7 @@ bool PacketParser::newData(QByteArray data, bool emitSig)
     if(!expLength)
         return false;
 
-    if(m_packetItr == 0 && m_startWindow.size()+data.size() < expLength) {
+    if(m_packetItr == 0 && (quint32)m_startWindow.size()+(quint32)data.size() < expLength) {
         m_startWindow.append(data);
         return false;
     } else if(m_startWindow.size() != 0) {
@@ -55,7 +55,7 @@ bool PacketParser::newData(QByteArray data, bool emitSig)
             int index = data.indexOf(m_packet->getStaticData(), d_itr - d_start);
             if(index == -1)
                 break;
-            if(index < m_staticDataOffset)
+            if((quint32)index < m_staticDataOffset)
                 break;
             d_itr = d_start + index - m_staticDataOffset;
             m_curData.clear();

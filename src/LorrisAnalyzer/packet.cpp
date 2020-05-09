@@ -143,7 +143,7 @@ bool analyzer_data::getLenFromHeader(quint32& len)
         try
         {
             quint32 pos = m_packet->header->findDataPos(DATA_LEN);
-            if(!m_data || pos >= m_data->size())
+            if(!m_data || pos >= (quint32)m_data->size())
                 return false;
 
             switch(m_packet->header->len_fmt)
@@ -165,7 +165,7 @@ bool analyzer_data::getLenFromHeader(quint32& len)
         try
         {
             quint32 pos = m_packet->header->findDataPos(DATA_AVAKAR);
-            if(m_data->size() <= pos)
+            if((quint32)m_data->size() <= pos)
                 return false;
             len = (getUInt8(pos) & 0xF) + m_packet->header->len_offset;
         }

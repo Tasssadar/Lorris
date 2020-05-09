@@ -193,13 +193,13 @@ void LorrisAnalyzer::connectedStatus(bool)
 
 void LorrisAnalyzer::readData(const QByteArray& data)
 {
-    bool atMax = (m_curIndex == ui->timeSlider->maximum());
+    bool atMax = (m_curIndex == (quint32)ui->timeSlider->maximum());
     bool update = atMax || (m_storage.getSize() >= (quint32)m_storage.getPacketLimit());
     if(!m_parser.newData(data, update))
         return;
 
     m_data_changed = true;
-    int size = m_storage.getMaxIdx();
+    quint32 size = m_storage.getMaxIdx();
 
     ui->timeSlider->setMaximum(size);
     ui->timeBox->setMaximum(size);
@@ -379,11 +379,13 @@ bool LorrisAnalyzer::askToSave()
     {
         case QMessageBox::YesAll:
             sWorkTabMgr.setBatchVar("analyzer_saveall", true);
+            // fallthrough
         case QMessageBox::Yes:
             saveButton();
             return true;
         case QMessageBox::NoAll:
             sWorkTabMgr.setBatchVar("analyzer_discardall", true);
+            // fallthrough
         case QMessageBox::No:
             return true;
         case QMessageBox::Cancel:
@@ -394,7 +396,7 @@ bool LorrisAnalyzer::askToSave()
 
 void LorrisAnalyzer::indexChanged(int value)
 {
-    if(value == m_curIndex)
+    if((quint32)value == m_curIndex)
         return;
 
     m_curIndex = value;
@@ -408,7 +410,7 @@ void LorrisAnalyzer::updateData()
     ui->timeBox->setValue(m_curIndex);
     ui->timeSlider->setValue(m_curIndex);
 
-    if((quint32)m_curIndex < m_storage.getSize())
+    if(m_curIndex < m_storage.getSize())
     {
         m_curData.setData(m_storage.get(m_curIndex));
         emit newData(&m_curData, m_curIndex);
@@ -724,7 +726,7 @@ void LorrisAnalyzer::updateForWidget()
 
     m_data_changed = true;
 
-    if(m_curIndex && (quint32)m_curIndex < m_storage.getSize())
+    if(m_curIndex && m_curIndex < m_storage.getSize())
     {
         m_curData.setData(m_storage.get(m_curIndex));
         ((DataWidget*)sender())->newData(&m_curData, m_curIndex);

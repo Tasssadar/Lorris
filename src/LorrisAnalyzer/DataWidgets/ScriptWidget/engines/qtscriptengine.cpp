@@ -282,16 +282,16 @@ DataWidget *QtScriptEngine::addWidget(quint8 type, QScriptContext *context, quin
             int x = m_x + context->argument(3+removeArg).toInt32();
             int y = m_y + context->argument(4+removeArg).toInt32();
             w->move(x, y);
-            // Fallthrough
         }
+        /* fall-thru */
         case 3:
         {
             int wid = context->argument(1+removeArg).toUInt32();
             int h = context->argument(2+removeArg).toUInt32();
             if(wid || h)
                 w->resize(wid, h);
-            // Fallthrough
         }
+        /* fall-thru */
         case 1:
             w->setTitle(context->argument(0+removeArg).toString());
             break;
@@ -797,7 +797,7 @@ QScriptValue QtScriptEngine_private::__getDataCount(QScriptContext */*context*/,
     return ((QtScriptEngine_private*)engine)->getDataCount();
 }
 
-QScriptValue QtScriptEngine_private::__playErrorSound(QScriptContext *context, QScriptEngine *engine)
+QScriptValue QtScriptEngine_private::__playErrorSound(QScriptContext *, QScriptEngine *)
 {
     Utils::playErrorSound();
     return QScriptValue();
@@ -845,7 +845,7 @@ QScriptValue QtScriptEngine_private::__setTimeout(QScriptContext *context, QScri
     return eng->newQObject(t);
 }
 
-QScriptValue QtScriptEngine_private::__clearTimer(QScriptContext *context, QScriptEngine *engine)
+QScriptValue QtScriptEngine_private::__clearTimer(QScriptContext *context, QScriptEngine *)
 {
     if(context->argumentCount() < 1 || !context->argument(0).isQObject())
         return QScriptValue();

@@ -606,11 +606,13 @@ int QwtDate::utcOffset( const QDateTime &dateTime )
         case Qt::OffsetFromUTC:
         {
             seconds = dateTime.utcOffset();
+            break;
         }
         default:
         {
             const QDateTime dt1( dateTime.date(), dateTime.time(), Qt::UTC );
             seconds = dateTime.secsTo( dt1 );
+            break;
         }
     }
 

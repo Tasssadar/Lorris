@@ -81,7 +81,7 @@ void Graph::showCurve(GraphCurve *curve, bool show)
     showCurve(itemToInfo(curve), show, -1);
 }
 
-void Graph::showCurve(const QVariant &itemInfo, bool on, int index )
+void Graph::showCurve(const QVariant &itemInfo, bool on, int /*index*/ )
 {
     QwtPlotItem *it = infoToItem(itemInfo);
     if(it)

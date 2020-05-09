@@ -510,8 +510,8 @@ void* PythonQtConv::ConvertPythonToQt(const PythonQtMethodInfo::ParameterInfo& i
        break;
      case QMetaType::ULong:
        {
-         qint64 val = (unsigned long)PyObjGetLongLong(obj, strict, ok);
-         if (ok && (val >= 0 && val <= ULONG_MAX)) {
+         quint64 val = (unsigned long)PyObjGetLongLong(obj, strict, ok);
+         if (ok && val <= ULONG_MAX) {
            PythonQtValueStorage_ADD_VALUE_IF_NEEDED(alreadyAllocatedCPPObject,global_valueStorage, unsigned long, val, ptr);
          }
        }
@@ -535,7 +535,7 @@ void* PythonQtConv::ConvertPythonToQt(const PythonQtMethodInfo::ParameterInfo& i
      case QMetaType::UInt:
        {
          quint64 val = PyObjGetLongLong(obj, strict, ok);
-         if (ok && (val >= 0 && val <= UINT_MAX)) {
+         if (ok && val <= UINT_MAX) {
            PythonQtValueStorage_ADD_VALUE_IF_NEEDED(alreadyAllocatedCPPObject,global_valueStorage, unsigned int, val, ptr);
          }
        }
@@ -1171,7 +1171,7 @@ QVariant PythonQtConv::PyObjToQVariant(PyObject* val, int type)
           }
         }
       }
-    } else if (type >= QVariant::UserType) {
+    } else if (type >= (int)QVariant::UserType) {
       // not an instance wrapper, but there might be other converters 
       // Maybe we have a special converter that is registered for that type:
       PythonQtConvertPythonToMetaTypeCB* converter = _pythonToMetaTypeConverters.value(type);
