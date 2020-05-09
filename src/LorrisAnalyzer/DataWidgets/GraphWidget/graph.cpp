@@ -76,6 +76,10 @@ Graph::Graph(QWidget *parent) : QwtPlot(parent)
     replot();
 }
 
+Graph::~Graph()
+{
+}
+
 void Graph::showCurve(GraphCurve *curve, bool show)
 {
     showCurve(itemToInfo(curve), show, -1);

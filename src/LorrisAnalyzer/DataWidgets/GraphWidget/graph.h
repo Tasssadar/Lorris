@@ -31,6 +31,7 @@ Q_SIGNALS:
 
 public:
     Graph(QWidget *parent = 0);
+    ~Graph();
 
     void showLegend(bool show);
 
