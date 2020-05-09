@@ -289,8 +289,8 @@ void Shupito::handleVccPacket(ShupitoPacket const & p)
                     vp.drives.push_back("<hiz>");
                 else
                 {
-                    char buff[50];
-                    sprintf(buff, "%.2fV, %dmA", voltage, amps);
+                    char buff[64];
+                    snprintf(buff, sizeof(buff), "%.2fV, %dmA", voltage, amps);
                     vp.drives.push_back(QString(buff));
                 }
                 i += 4;
