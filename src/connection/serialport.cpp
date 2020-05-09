@@ -259,7 +259,7 @@ QHash<QString, QVariant> SerialPort::config() const
 bool SerialPort::applyConfig(QHash<QString, QVariant> const & config)
 {
     this->setDeviceName(config.value("device_name").toString());
-    this->setBaudRate(config.value("baud_rate", 38400).toInt());
+    this->setBaudRate(config.value("baud_rate", sConfig.get(CFG_QUINT32_SERIAL_BAUD)).toInt());
     this->setDataBits((DataBitsType)config.value("data_bits", DATA_8).toInt());
     this->setParity((ParityType)config.value("parity", PAR_NONE).toInt());
     this->setStopBits((StopBitsType)config.value("stop_bits", STOP_1).toInt());

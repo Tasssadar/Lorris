@@ -65,7 +65,7 @@ void SerialPortEnumerator::refresh()
             portGuard->setName(info.portName, /*isDefault=*/true);
             portGuard->setDeviceName(info.physName);
             portGuard->setFriendlyName(info.friendName);
-            portGuard->setBaudRate(38400);
+            portGuard->setBaudRate(sConfig.get(CFG_QUINT32_SERIAL_BAUD));
             portGuard->setDevNameEditable(false);
 
             QHash<QString, QVariant>::iterator cfgIt = m_connCfg.find(info.physName);
