@@ -13,6 +13,7 @@
 #include <QJsonDocument>
 
 #include <map>
+#include <memory>
 
 #include "datafilter.h"
 #include "lorrisanalyzer.h"
