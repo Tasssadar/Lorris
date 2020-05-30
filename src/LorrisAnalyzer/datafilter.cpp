@@ -128,11 +128,25 @@ void DataFilter::save(DataFileParser *file)
     file->writeVal(m_id);
     file->writeString(m_name);
     file->writeVal(m_lastIdx);
+
+    file->writeBlockIdentifier("dataFilterDividers");
+    file->writeVal<quint32>(m_dividers.size());
+    for(const auto idx : m_dividers) {
+        file->writeVal<qint32>(idx);
+    }
 }
 
 void DataFilter::load(DataFileParser *file)
 {
     m_lastIdx = file->readVal<quint32>();
+
+    m_dividers.clear();
+    if(file->seekToNextBlock("dataFilterDividers", "dataFilter")) {
+        const auto size = file->readVal<quint32>();
+        for(quint32 i = 0; i < size; ++i) {
+            m_dividers.push_back(file->readVal<qint32>());
+        }
+    }
 }
 
 void DataFilter::widgetMouseStatus(bool in, const data_widget_info& info, qint32 parent)
