@@ -56,6 +56,8 @@ LabelLayout::~LabelLayout()
     removeItem(m_spacer_l);
     delete m_spacer_r;
     delete m_spacer_l;
+
+    setDividers(std::vector<int>());
 }
 
 void LabelLayout::ClearLabels()
@@ -66,6 +68,7 @@ void LabelLayout::ClearLabels()
         setLabelFreed(m_labels[i]);
     }
     m_labels.clear();
+    updateDividerWidgets();
 }
 
 void LabelLayout::freeLabels()
@@ -80,6 +83,52 @@ void LabelLayout::setLabelFreed(DraggableLabel *label)
     label->setVisible(false);
     disconnect(label, 0, this, 0);
     m_freedLabels.push_back(label);
+}
+
+void LabelLayout::setDividers(std::vector<int> dividers) {
+    for(auto itr = m_dividers.begin(); itr != m_dividers.end(); ++itr) {
+        if(itr->second != nullptr) {
+            removeWidget(itr->second);
+            delete itr->second;
+        }
+    }
+    m_dividers.clear();
+
+    for(auto idx : dividers) {
+        m_dividers.emplace(idx, nullptr);
+    }
+    updateDividerWidgets();
+}
+
+void LabelLayout::updateDividerWidgets() {
+    if(m_dividers.empty())
+        return;
+
+    int labelIdx = 0;
+    for(int i = 0; i < this->count(); ++i) {
+        auto *it = this->itemAt(i);
+        if(it->spacerItem() != nullptr || !qobject_cast<DraggableLabel*>(it->widget()))
+            continue;
+
+        auto itr = m_dividers.find(labelIdx);
+        if(itr != m_dividers.end() && itr->second == nullptr) {
+            QFrame *div = new QFrame((QWidget*)this->parent());
+            div->setFixedWidth(2);
+            div->setFrameShape(QFrame::Box);
+            this->insertWidget(i, div);
+            itr->second = div;
+            ++i;
+        }
+        ++labelIdx;
+    }
+
+    for(auto itr = m_dividers.lower_bound(labelIdx); itr != m_dividers.end(); ++itr) {
+        if(itr->second != nullptr) {
+            removeWidget(itr->second);
+            delete itr->second;
+            itr->second = nullptr;
+        }
+    }
 }
 
 void LabelLayout::AddLabel(QString value, qint8 type)
@@ -106,8 +155,10 @@ void LabelLayout::AddLabel(QString value, qint8 type)
     if(m_enableReorder)
         connect(label, SIGNAL(changePos(int,int)), this, SLOT(changePos(int,int)));
 
-    insertWidget(getFirstLabelPos(true), label);
+    insertWidget(this->count() - 1, label);
     m_labels.push_back(label);
+
+    updateDividerWidgets();
 }
 
 void LabelLayout::RemoveLabel(quint16 index)
@@ -122,6 +173,8 @@ void LabelLayout::RemoveLabel(quint16 index)
 
     for(quint16 i = index; i < m_labels.size(); ++i)
         m_labels[i]->setPos(i);
+
+    updateDividerWidgets();
 }
 
 QString LabelLayout::getLabelText(quint32 index)
@@ -157,7 +210,7 @@ void LabelLayout::changePos(int this_label, int dragged_label)
     for(quint16 i = 0; i < m_labels.size(); ++i)
     {
         SetLabelType(m_labels[i], GetTypeForPos(i));
-        insertWidget(getFirstLabelPos(false) + i, m_labels[i]);
+        insertWidget(getFirstLabelPos() + i, m_labels[i]);
     }
     emit orderChanged();
 }

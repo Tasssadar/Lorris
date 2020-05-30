@@ -111,7 +111,14 @@ void DataFilter::setAreaAndLayout(QScrollArea *a, ScrollDataLayout *l)
     {
         m_area->setContextMenuPolicy(Qt::CustomContextMenu);
         connect(m_area, SIGNAL(customContextMenuRequested(QPoint)), SLOT(layoutContextMenu(QPoint)));
+        m_layout->setDividers(m_dividers);
     }
+}
+
+void DataFilter::setDividers(const std::vector<int>& dividers) {
+    m_dividers = dividers;
+    if(m_layout)
+        m_layout->setDividers(m_dividers);
 }
 
 void DataFilter::save(DataFileParser *file)

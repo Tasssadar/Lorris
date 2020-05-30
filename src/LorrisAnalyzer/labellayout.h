@@ -11,6 +11,7 @@
 #include <QHBoxLayout>
 #include <QWidget>
 #include <vector>
+#include <map>
 
 class FilterTabWidget;
 
@@ -74,6 +75,8 @@ public:
 
     void setHeader(analyzer_header *header);
 
+    void setDividers(std::vector<int> dividers);
+
 public slots:
     void lenChanged(int len);
     void changePos(int this_label, int dragged_label);
@@ -87,12 +90,9 @@ protected:
     std::vector<DraggableLabel*> m_freedLabels;
     analyzer_header *m_header;
 
-    inline quint32 getFirstLabelPos(bool withLabelsSize)
+    inline quint32 getFirstLabelPos()
     {
-        quint32 res = m_spacer_l ? 1 : 0;
-        if(withLabelsSize)
-            res += m_labels.size();
-        return res;
+        return m_spacer_l ? 1 : 0;
     }
 
 private slots:
@@ -100,12 +100,15 @@ private slots:
     void freeLabels();
 
 private:
+    void updateDividerWidgets();
+
     QSpacerItem *m_spacer_r;
     QSpacerItem *m_spacer_l;
     bool m_enableReorder;
     bool m_enableDrag;
 
     FilterTabWidget *m_filterWidget;
+    std::map<int, QWidget*> m_dividers;
 };
 
 class ScrollDataLayout : public LabelLayout

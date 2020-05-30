@@ -732,6 +732,15 @@ QJsonDocument FilterDialog::toJson() const {
         QJsonObject filter;
         filter["name"] = f->getName();
         filter["conditions"] = conditions;
+
+        if(!f->getDividers().empty()) {
+            QJsonArray dividers;
+            for(auto idx : f->getDividers()) {
+                dividers.append(QJsonValue(idx));
+            }
+            filter["dividers"] = dividers;
+        }
+
         filters.append(filter);
     }
 
@@ -828,6 +837,17 @@ ConditionFilter *FilterDialog::parseFilter(int pos, QJsonObject obj,
     }
     const auto conds = condsValue.toArray();
 
+    const auto dividersJson = obj["dividers"].toArray();
+    std::vector<int> dividers;
+    for(int i = 0; i < dividersJson.size(); ++i) {
+        auto idx = dividersJson.at(i).toInt(-1);
+        if(idx == -1) {
+            error = tr("Invalid type of member in 'dividers' array of filter %1, expected int").arg(pos);
+            return nullptr;
+        }
+        dividers.push_back(idx);
+    }
+
     std::vector<std::unique_ptr<FilterCondition>> newConditions;
     for(int i = 0; i < conds.size(); ++i) {
         const auto cond = conds[i].toObject();
@@ -921,6 +941,8 @@ ConditionFilter *FilterDialog::parseFilter(int pos, QJsonObject obj,
     for(auto& p : newConditions) {
         res_filter->addCondition(p.release());
     }
+
+    res_filter->setDividers(dividers);
 
     return res_filter;
 }

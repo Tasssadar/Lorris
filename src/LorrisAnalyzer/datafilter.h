@@ -183,8 +183,8 @@ public:
     void clearLastData();
     void connectWidget(DataWidget *w, bool exclusive = true);
 
-    ScrollDataLayout *m_layout;
-    QScrollArea *m_area;
+    void setDividers(const std::vector<int>& dividers);
+    const std::vector<int>& getDividers() const { return m_dividers; }
 
 protected slots:
     void updateForWidget();
@@ -198,6 +198,10 @@ protected:
 
     analyzer_data m_lastData;
     quint32 m_lastIdx;
+
+    ScrollDataLayout *m_layout;
+    QScrollArea *m_area;
+    std::vector<int> m_dividers;
 };
 
 class ConditionFilter : public DataFilter
