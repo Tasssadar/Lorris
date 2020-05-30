@@ -10,6 +10,9 @@
 
 #include <QTabWidget>
 #include <QFrame>
+#include <QJsonDocument>
+
+#include <map>
 
 #include "datafilter.h"
 #include "lorrisanalyzer.h"
@@ -93,6 +96,9 @@ private slots:
     void on_rmBtn_clicked();
     void on_rmCondBtn_clicked();
     void on_applyBtn_clicked();
+    void on_jsonModeBtn_toggled(bool value);
+    void on_jsonApplyBtn_clicked();
+    void jsonModified();
 
     void on_nameEdit_textEdited(const QString& text);
 
@@ -102,14 +108,23 @@ private slots:
     void on_bytePosBox_valueChanged(int val);
 
 private:
+    void loadFilters();
     inline FilterTabWidget *tabWidget() const { return (FilterTabWidget*)parent(); }
     QString getNewFilterName();
     void fillCondData(FilterCondition *c);
     FilterCondition *getCurrCondition();
     ConditionFilter *getCurrFilter();
+    QJsonDocument toJson() const;
+    QString fromJson();
+    ConditionFilter* parseFilter(int pos,
+                                 QJsonObject obj,
+                                 std::map<QString, std::unique_ptr<std::vector<ConditionFilter*>> >& filterMap,
+                                 QString &error,
+                                 bool& isNewFilter) const;
 
     Ui::FilterDialog *ui;
-    EditorWidget *m_editor;
+    EditorWidget *m_scriptEditor;
+    EditorWidget *m_jsonEditor;
 };
 
 #endif // FILTERTABWIDGET_H

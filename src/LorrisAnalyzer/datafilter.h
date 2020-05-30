@@ -183,6 +183,9 @@ public:
     void clearLastData();
     void connectWidget(DataWidget *w, bool exclusive = true);
 
+    ScrollDataLayout *m_layout;
+    QScrollArea *m_area;
+
 protected slots:
     void updateForWidget();
     void widgetMouseStatus(bool in, const data_widget_info &info, qint32 parent);
@@ -193,8 +196,6 @@ protected:
     quint32 m_id;
     quint8 m_type;
 
-    ScrollDataLayout *m_layout;
-    QScrollArea *m_area;
     analyzer_data m_lastData;
     quint32 m_lastIdx;
 };

@@ -19,12 +19,13 @@ DataFilter::DataFilter(quint8 type, quint32 id, QString name, QObject *parent) :
     m_id = id;
     m_name = name;
     m_layout = NULL;
+    m_area = NULL;
     m_lastIdx = 0;
 }
 
 DataFilter::~DataFilter()
 {
-    delete m_layout;
+    //delete m_layout; layout is child of area
     delete m_area;
 }
 
@@ -100,6 +101,9 @@ void DataFilter::setHeader(analyzer_header *header)
 
 void DataFilter::setAreaAndLayout(QScrollArea *a, ScrollDataLayout *l)
 {
+    delete m_area;
+    //delete m_layout; layout is child of area
+
     m_area = a;
     m_layout = l;
 

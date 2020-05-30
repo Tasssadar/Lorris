@@ -14,6 +14,12 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QGridLayout>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonValue>
+
+#include <map>
 
 #include "filtertabwidget.h"
 #include "packet.h"
@@ -257,6 +263,10 @@ void FilterTabWidget::addFilter(DataFilter *f)
     f->setAreaAndLayout(area, layout);
     m_filters.push_back(f);
 
+    if(f->getId() >= m_filterIdCounter) {
+        m_filterIdCounter = f->getId() + 1;
+    }
+
     connect(f, SIGNAL(activateTab()), SLOT(activateTab()));
 }
 
@@ -359,17 +369,36 @@ FilterDialog::FilterDialog(QWidget *parent) : QDialog(parent), ui(new Ui::Filter
 {
     ui->setupUi(this);
 
-    m_editor = EditorWidget::getEditor(sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE), this);
-    if(!m_editor)
-        m_editor = EditorWidget::getEditor(EDITOR_INTERNAL, this);
+    m_scriptEditor = EditorWidget::getEditor(sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE), this);
+    if(!m_scriptEditor)
+        m_scriptEditor = EditorWidget::getEditor(EDITOR_INTERNAL, this);
+    m_scriptEditor->setHighlighter(HIGHLIGHT_JSCRIPT);
+    ui->condGrid->addWidget(m_scriptEditor->getWidget(), ui->condGrid->rowCount()-2, 0, 1, 2);
 
-    m_editor->setHighlighter(HIGHLIGHT_JSCRIPT);
-    ui->condGrid->addWidget(m_editor->getWidget(), ui->condGrid->rowCount()-2, 0, 1, 2);
+    m_jsonEditor = EditorWidget::getEditor(sConfig.get(CFG_QUINT32_SCRIPTEDITOR_TYPE), this);
+    if(!m_jsonEditor)
+        m_jsonEditor = EditorWidget::getEditor(EDITOR_INTERNAL, this);
+    m_jsonEditor->setHighlighter(HIGHLIGHT_JSCRIPT);
+    ui->jsonPageLayout->insertWidget(0, m_jsonEditor->getWidget(), 1);
 
     setCondVisibility(COND_MAX);
 
     connect(ui->typeBox, SIGNAL(currentIndexChanged(int)), SLOT(setCondVisibility(int)));
-    connect(m_editor,    SIGNAL(textChangedByUser()),      SLOT(scriptModified()));
+    connect(m_scriptEditor,    SIGNAL(textChangedByUser()),      SLOT(scriptModified()));
+    connect(m_jsonEditor,   SIGNAL(textChangedByUser()), SLOT(jsonModified()));
+
+    loadFilters();
+}
+
+FilterDialog::~FilterDialog()
+{
+    delete m_scriptEditor;
+    delete m_jsonEditor;
+    delete ui;
+}
+
+void FilterDialog::loadFilters() {
+    ui->filterList->clear();
 
     const std::vector<DataFilter*>& filters = tabWidget()->getFilters();
     for(quint32 i = 1; i < filters.size(); ++i)
@@ -381,13 +410,7 @@ FilterDialog::FilterDialog(QWidget *parent) : QDialog(parent), ui(new Ui::Filter
         it->setData(Qt::UserRole, QVariant::fromValue((void*)f));
     }
     ui->filterList->setCurrentRow(0);
-    ui->mainStack->setCurrentIndex(filters.size() > 1 ? 0 : 1);
-}
-
-FilterDialog::~FilterDialog()
-{
-    delete m_editor;
-    delete ui;
+    ui->propsStack->setCurrentIndex(filters.size() > 1 ? 0 : 1);
 }
 
 void FilterDialog::setCondVisibility(int cond)
@@ -408,7 +431,7 @@ void FilterDialog::setCondVisibility(int cond)
 
     ui->langLabel->setVisible(cond == COND_SCRIPT);
     ui->langBox->setVisible(cond == COND_SCRIPT);
-    m_editor->getWidget()->setVisible(cond == COND_SCRIPT);
+    m_scriptEditor->getWidget()->setVisible(cond == COND_SCRIPT);
     ui->errorLabel->setVisible(cond == COND_SCRIPT);
     ui->applyBtn->setVisible(cond == COND_SCRIPT);
 }
@@ -427,7 +450,7 @@ void FilterDialog::on_addBtn_clicked()
 
 void FilterDialog::on_filterList_currentItemChanged(QListWidgetItem *current, QListWidgetItem * /*prev*/)
 {
-    ui->mainStack->setCurrentIndex(current == NULL);
+    ui->propsStack->setCurrentIndex(current == NULL);
     ui->rmBtn->setEnabled(current != NULL);
     if(!current)
         return;
@@ -627,8 +650,8 @@ void FilterDialog::on_applyBtn_clicked()
     ui->errorLabel->setToolTip(QString());
 
     ScriptFilterCondition *sc = (ScriptFilterCondition*)c;
-    sc->setScript(m_editor->getText());
-    m_editor->setModified(false);
+    sc->setScript(m_scriptEditor->getText());
+    m_scriptEditor->setModified(false);
     ui->applyBtn->setEnabled(false);
 
     QString error = sc->getError();
@@ -637,6 +660,269 @@ void FilterDialog::on_applyBtn_clicked()
         ui->errorLabel->setText(tr("Error! Mouseover to see details."));
         ui->errorLabel->setToolTip(error);
     }
+}
+
+void FilterDialog::on_jsonModeBtn_toggled(bool value) {
+    ui->mainStack->setCurrentIndex(value ? 1 : 0);
+
+    if(value) {
+        if(ui->jsonErrorLabel->text().isEmpty()) {
+            m_jsonEditor->setText(QString(toJson().toJson(QJsonDocument::Indented)));
+            ui->jsonApplyBtn->setEnabled(false);
+        }
+        return;
+    }
+
+    const QString err = fromJson();
+    if(!err.isNull()) {
+        ui->jsonErrorLabel->setText(err);
+        ui->jsonModeBtn->setChecked(true);
+        return;
+    }
+    ui->jsonErrorLabel->setText("");
+}
+
+void FilterDialog::on_jsonApplyBtn_clicked() {
+    const QString err = fromJson();
+    ui->jsonErrorLabel->setText(!err.isNull() ? err : "");
+    if(err.isNull())
+        ui->jsonApplyBtn->setEnabled(false);
+}
+
+void FilterDialog::jsonModified() {
+    ui->jsonApplyBtn->setEnabled(true);
+}
+
+QJsonDocument FilterDialog::toJson() const {
+    QJsonArray filters;
+    for(auto *f : tabWidget()->getFilters())
+    {
+        if(f->getType() != FILTER_CONDITION)
+            continue;
+
+        QJsonArray conditions;
+        for(auto *c : ((ConditionFilter*)f)->getConditions()) {
+            QJsonObject cond;
+            cond["type"] = c->getType();
+            switch(c->getType()) {
+                case COND_DEV:
+                    cond["dev"] = ((DevFilterCondition*)c)->getDev();
+                    break;
+                case COND_CMD:
+                    cond["cmd"] = ((CmdFilterCondition*)c)->getCmd();
+                    break;
+                case COND_BYTE:
+                {
+                    ByteFilterCondition *d = (ByteFilterCondition*)c;
+                    cond["idx"] = (int)d->getPos();
+                    cond["value"] = d->getByte();
+                    break;
+                }
+                case COND_SCRIPT:
+                {
+                    ScriptFilterCondition *d = (ScriptFilterCondition*)c;
+                    cond["script"] = d->getScript();
+                    cond["engine"] = d->getEngine();
+                    break;
+                }
+            }
+            conditions.append(cond);
+        }
+
+        QJsonObject filter;
+        filter["name"] = f->getName();
+        filter["conditions"] = conditions;
+        filters.append(filter);
+    }
+
+    return QJsonDocument(filters);
+}
+
+QString FilterDialog::fromJson() {
+    QJsonParseError err;
+    const auto doc = QJsonDocument::fromJson(m_jsonEditor->getText().toUtf8(), &err);
+    if(doc.isNull()) {
+        return err.errorString();
+    }
+
+    if(!doc.isArray()) {
+        return tr("The root value is not an array.");
+    }
+
+    std::map<QString, std::unique_ptr<std::vector<ConditionFilter*>> > filterMap;
+    for(auto *f : tabWidget()->getFilters()) {
+        if(f->getType() != FILTER_CONDITION)
+            continue;
+
+        std::vector<ConditionFilter*> *vec = nullptr;
+        auto itr = filterMap.find(f->getName());
+        if(itr == filterMap.end()) {
+            vec = new std::vector<ConditionFilter*>();
+            filterMap.emplace(f->getName(), std::unique_ptr<std::vector<ConditionFilter*>>(vec));
+        } else {
+            vec = itr->second.get();
+        }
+        vec->push_back((ConditionFilter*)f);
+    }
+
+    std::vector<DataFilter*> newFilters;
+    std::vector<std::unique_ptr<DataFilter>> newFilterDestroyer;
+    const auto filters = doc.array();
+    for(int i = 0; i < filters.size(); ++i) {
+        if(!filters[i].isObject()) {
+            return tr("Filter at position %1 is not an object.").arg(i);
+        }
+
+        QString err;
+        bool isNewFilter = false;
+        ConditionFilter *f = parseFilter(i, filters[i].toObject(), filterMap, err, isNewFilter);
+        if(!err.isEmpty()) {
+            return err;
+        }
+
+        newFilters.push_back(f);
+        if(isNewFilter) {
+            newFilterDestroyer.emplace_back(std::unique_ptr<DataFilter>(f));
+        }
+    }
+
+    delete tabWidget()->getFilters()[0]; // EmptyFilter
+    tabWidget()->getFilters().clear();
+    tabWidget()->removeAll();
+    for(auto *f : newFilters) {
+        tabWidget()->addFilter(f);
+    }
+    loadFilters();
+
+    for(auto& p : newFilterDestroyer) {
+        p.release();
+    }
+
+    for(auto itr = filterMap.begin(); itr != filterMap.end(); ++itr) {
+        for(ConditionFilter *oldf : *itr->second) {
+            delete oldf;
+        }
+    }
+
+    return QString();
+}
+
+ConditionFilter *FilterDialog::parseFilter(int pos, QJsonObject obj,
+                                                           std::map<QString, std::unique_ptr<std::vector<ConditionFilter*>> >& filterMap,
+                                                           QString &error, bool& isNewFilter) const {
+    if(obj.isEmpty()) {
+        error = tr("Filter at position %1 is not an object or is empty.").arg(pos);
+        return nullptr;
+    }
+
+    const auto name = obj["name"];
+    if(!name.isString()) {
+        error = tr("Invalid type of property 'name' of filter %1, expected string").arg(pos);
+        return nullptr;
+    }
+
+    const auto condsValue = obj["conditions"];
+    if(!condsValue.isArray()) {
+        error = tr("Invalid type of property 'conditions' of filter %1, expected array").arg(pos);
+        return nullptr;
+    }
+    const auto conds = condsValue.toArray();
+
+    std::vector<std::unique_ptr<FilterCondition>> newConditions;
+    for(int i = 0; i < conds.size(); ++i) {
+        const auto cond = conds[i].toObject();
+        if(cond.isEmpty()) {
+            error = tr("Invalid type of 'conditions' array member %1 of filter %2, expected object").arg(i).arg(pos);
+            return nullptr;
+        }
+
+        std::unique_ptr<FilterCondition> filter_cond;
+        switch(cond["type"].toInt(-1)) {
+        case COND_DEV:
+        {
+            const auto dev = cond["dev"].toInt(-255);
+            if(dev == -255) {
+                error = tr("Invalid value of 'dev' property of a filter condition %1 of filter %2, expected int").arg(i).arg(pos);
+                return nullptr;
+            }
+            filter_cond.reset(new DevFilterCondition(dev));
+            break;
+        }
+        case COND_CMD:
+        {
+            const auto cmd = cond["cmd"].toInt(-255);
+            if(cmd == -255) {
+                error = tr("Invalid value of 'cmd' property of a filter condition %1 of filter %2, expected int").arg(i).arg(pos);
+                return nullptr;
+            }
+            filter_cond.reset(new CmdFilterCondition(cmd));
+            break;
+        }
+        case COND_BYTE:
+        {
+            const auto idx = cond["idx"].toInt(-1);
+            if(idx == -1) {
+                error = tr("Invalid value of 'idx' property of a filter condition %1 of filter %2, expected int").arg(i).arg(pos);
+                return nullptr;
+            }
+            const auto byte = cond["value"].toInt(-255);
+            if(idx == -255) {
+                error = tr("Invalid value of 'byte' property of a filter condition %1 of filter %2, expected int").arg(i).arg(pos);
+                return nullptr;
+            }
+            filter_cond.reset(new ByteFilterCondition(idx, byte));
+            break;
+        }
+        case COND_SCRIPT:
+        {
+            const auto engine = cond["engine"].toInt(-1);
+            if(engine != 0) {
+                error = tr("Invalid value of 'engine' property of a filter condition %1 of filter %2, expected int == 0").arg(i).arg(pos);
+                return nullptr;
+            }
+            const auto script = cond["script"].toString();
+            if(script.isNull()) {
+                error = tr("Invalid value of 'script' property of a filter condition %1 of filter %2, expected string").arg(i).arg(pos);
+                return nullptr;
+            }
+            auto *sc = new ScriptFilterCondition(engine);
+            sc->setScript(script);
+            filter_cond.reset(sc);
+            break;
+        }
+        default:
+            error = tr("Invalid condition type: %1").arg(cond["type"].toDouble(-1));
+            return nullptr;
+        }
+
+        newConditions.emplace_back(std::move(filter_cond));
+    }
+
+    ConditionFilter *res_filter = nullptr;
+    const auto itr = filterMap.find(name.toString());
+    if(itr != filterMap.end()) {
+        auto *oldFilters = itr->second.get();
+        res_filter = oldFilters->front();
+        oldFilters->erase(oldFilters->begin());
+        if(oldFilters->empty()) {
+            filterMap.erase(itr);
+        }
+        isNewFilter = false;
+    } else {
+        res_filter = (ConditionFilter*)DataFilter::createFilter(FILTER_CONDITION, tabWidget()->generateId(), name.toString(), parent());
+        isNewFilter = true;
+    }
+
+    for(FilterCondition *c : res_filter->getConditions()) {
+        delete c;
+    }
+    res_filter->getConditions().clear();
+
+    for(auto& p : newConditions) {
+        res_filter->addCondition(p.release());
+    }
+
+    return res_filter;
 }
 
 void FilterDialog::scriptModified()
@@ -691,8 +977,8 @@ void FilterDialog::fillCondData(FilterCondition *c)
             ui->errorLabel->setToolTip(QString());
 
             ScriptFilterCondition *d = (ScriptFilterCondition*)c;
-            m_editor->setText(d->getScript());
-            m_editor->setModified(false);
+            m_scriptEditor->setText(d->getScript());
+            m_scriptEditor->setModified(false);
             ui->applyBtn->setEnabled(false);
             ui->langBox->setCurrentIndex(d->getEngine());
 
