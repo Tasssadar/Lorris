@@ -119,7 +119,7 @@ void Terminal::appendText(const QByteArray& text)
 
     switch(m_fmt)
     {
-        case FMT_TEXT: addLines(QString::fromUtf8(text)); break;
+        case FMT_TEXT: addLines(QString::fromUtf8(text, text.size())); break;
         case FMT_HEX:  addHex();       break;
     }
 
