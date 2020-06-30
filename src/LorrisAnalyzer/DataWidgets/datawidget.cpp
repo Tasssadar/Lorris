@@ -587,8 +587,10 @@ void DataWidget::saveWidgetInfo(DataFileParser *file)
     *file << x() << y() << width() << height();
 
     // data info
-    file->writeBlockIdentifier("widgetDataInfoV2");
-    saveDataInfo(file, m_info);
+    if(isAssigned()) {
+        file->writeBlockIdentifier("widgetDataInfoV2");
+        saveDataInfo(file, m_info);
+    }
 
     // locked
     file->writeBlockIdentifier("widgetLocked");
