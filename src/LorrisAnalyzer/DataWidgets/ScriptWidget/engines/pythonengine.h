@@ -58,6 +58,13 @@ public slots:
 
     void playErrorSound();
 
+    QString getOpenFileName(const QString& caption=QString(), const QString &dir = QString(), const QString &filter = QString());
+    QStringList getOpenFileNames(const QString& caption=QString(), const QString &dir = QString(), const QString &filter = QString());
+    QString getSaveFileName(const QString& caption=QString(), const QString &dir = QString(), const QString &filter = QString());
+    QString getExistingDirectory(const QString& caption=QString(), const QString &dir = QString());
+
+    QString fileLoad(const QString& path);
+
 private:
     PythonEngine *m_engine;
 };

@@ -11,6 +11,7 @@
 #include <QByteArray>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QFileDialog>
 
 #include "../../../../ui/terminal.h"
 #include "../../../packet.h"
@@ -398,3 +399,28 @@ void PythonFunctions::setMaxPacketNumber(int limit)
         limit = INT_MAX;
     m_engine->getStorage()->setPacketLimit(limit);
 }
+
+QString PythonFunctions::getOpenFileName(const QString& caption, const QString &dir, const QString &filter) {
+    return QFileDialog::getOpenFileName(m_engine->m_area, caption, dir, filter);
+}
+
+QStringList PythonFunctions::getOpenFileNames(const QString& caption, const QString &dir, const QString &filter) {
+    return QFileDialog::getOpenFileNames(m_engine->m_area, caption, dir, filter);
+}
+
+QString PythonFunctions::getSaveFileName(const QString& caption, const QString &dir, const QString &filter) {
+    return QFileDialog::getSaveFileName(m_engine->m_area, caption, dir, filter);
+}
+
+QString PythonFunctions::getExistingDirectory(const QString& caption, const QString &dir) {
+    return QFileDialog::getExistingDirectory(m_engine->m_area, caption, dir);
+}
+
+QString PythonFunctions::fileLoad(const QString& path) {
+    QFile f(path);
+    if(!f.open(QFile::ReadOnly)) {
+        return "";
+    }
+    return QString::fromUtf8(f.readAll());
+}
+
