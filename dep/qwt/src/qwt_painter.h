@@ -17,6 +17,7 @@
 #include <qpen.h>
 #include <qline.h>
 #include <qpalette.h>
+#include <qpainterpath.h>
 
 class QPainter;
 class QBrush;

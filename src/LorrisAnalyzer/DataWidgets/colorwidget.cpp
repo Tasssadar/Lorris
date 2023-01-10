@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QSignalMapper>
 #include <QPainter>
+#include <QPainterPath>
 
 #include "../../WorkTab/WorkTab.h"
 #include "colorwidget.h"

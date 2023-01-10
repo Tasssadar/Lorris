@@ -13,6 +13,7 @@
 #include <qpaintengine.h>
 #include <qimage.h>
 #include <qevent.h>
+#include <qpainterpath.h>
 
 static QImage::Format qwtMaskImageFormat()
 {

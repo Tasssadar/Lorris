@@ -27,6 +27,7 @@
 #include <qstyle.h>
 #include <qstyleoption.h>
 #include <qimagewriter.h>
+#include <qpainterpath.h>
 #ifndef QWT_NO_SVG
 #ifdef QT_SVG_LIB
 #include <qsvggenerator.h>
