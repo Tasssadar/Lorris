@@ -140,6 +140,10 @@ int main(int argc, char *argv[])
     sWorkTabMgr.SortTabInfos();
 
     QtSingleApplication a(argc, argv);
+#if QT_VERSION >= 0x050600
+    a.setAttribute(Qt::AA_EnableHighDpiScaling);
+    a.setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
 
     QStringList openFiles;
     QString session;

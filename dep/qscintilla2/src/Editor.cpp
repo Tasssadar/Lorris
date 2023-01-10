@@ -119,7 +119,7 @@ Editor::Editor() {
 	errorStatus = 0;
 	mouseDownCaptures = true;
 
-	bufferedDraw = true;
+    bufferedDraw = false;
 	twoPhaseDraw = true;
 
 	lastClickTime = 0;
