@@ -8,6 +8,8 @@
 #ifndef SHUPITOJTAG_H
 #define SHUPITOJTAG_H
 
+#ifdef HAVE_LIBYB
+
 #include "shupitomode.h"
 #include <libyb/utils/svf_file.hpp>
 #include <stdint.h>
@@ -43,5 +45,7 @@ private:
     uint32_t m_freq_base;
     uint32_t m_max_freq_hz;
 };
+
+#endif // HAVE_LIBYB
 
 #endif // SHUPITOJTAG_H

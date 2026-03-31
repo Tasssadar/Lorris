@@ -1,3 +1,4 @@
+#ifdef HAVE_LIBYB
 /**********************************************
 **    This file is part of Lorris
 **    http://tasssadar.github.com/Lorris/
@@ -324,3 +325,5 @@ void ShupitoJtag::cmd_frequency(uint32_t speed_hz)
     serialize_le(packet + 1, period);
     m_shupito->waitForPacket(ShupitoPacket(packet, packet + sizeof packet), packet[0]);
 }
+
+#endif // HAVE_LIBYB

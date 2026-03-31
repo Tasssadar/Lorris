@@ -66,6 +66,7 @@ private slots:
     void on_tcHostEdit_textChanged(const QString &arg1);
     void on_tcPortEdit_valueChanged(int arg1);
 
+#ifdef HAVE_LIBYB
     void on_usbVidEdit_textChanged(QString const & value);
     void on_usbPidEdit_textChanged(QString const & value);
     void on_usbAcmSnEdit_textChanged(QString const & value);
@@ -74,6 +75,7 @@ private slots:
     void on_usbDataBitsCombo_currentIndexChanged(int value);
     void on_usbParityCombo_currentIndexChanged(int value);
     void on_usbStopBitsCombo_currentIndexChanged(int value);
+#endif
 
     void on_actionConnect_triggered();
     void on_actionDisconnect_triggered();

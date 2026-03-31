@@ -8,6 +8,8 @@
 #ifndef GENERICUSBCONN_H
 #define GENERICUSBCONN_H
 
+#ifdef HAVE_LIBYB
+
 #include "connection.h"
 #include "usbacmconn.h"
 #include <libyb/async/async_runner.hpp>
@@ -49,5 +51,7 @@ protected:
     QString m_serialNumber;
     QString m_details;
 };
+
+#endif // HAVE_LIBYB
 
 #endif // GENERICUSBCONN_H

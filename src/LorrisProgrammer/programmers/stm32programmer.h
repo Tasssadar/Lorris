@@ -8,6 +8,7 @@
 #ifndef STM32PROGRAMMER_H
 #define STM32PROGRAMMER_H
 
+#ifdef HAVE_LIBYB
 
 #include "../../shared/programmer.h"
 #include "../../connection/stm32connection.h"
@@ -117,5 +118,6 @@ private:
     bool m_lock_on_destroy;
 };
 
+#endif // HAVE_LIBYB
 
 #endif // STM32PROGRAMMER_H

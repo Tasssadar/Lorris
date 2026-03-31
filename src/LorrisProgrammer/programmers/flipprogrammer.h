@@ -8,6 +8,8 @@
 #ifndef FLIP_PROGRAMMER_H
 #define FLIP_PROGRAMMER_H
 
+#ifdef HAVE_LIBYB
+
 #include "../../shared/programmer.h"
 #include "../../connection/genericusbconn.h"
 #include <libyb/libyb/shupito/flip2.hpp>
@@ -44,4 +46,6 @@ private:
     yb::flip2 m_flip;
 };
 
-#endif
+#endif // HAVE_LIBYB
+
+#endif // FLIP_PROGRAMMER_H

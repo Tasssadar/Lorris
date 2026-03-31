@@ -1,3 +1,4 @@
+#ifdef HAVE_LIBYB
 /**********************************************
 **    This file is part of Lorris
 **    http://tasssadar.github.com/Lorris/
@@ -518,3 +519,5 @@ void STM32VLFlash::write_data_for_loader(const flash_loader& loader, const uint8
     if(rem)
         m_conn->c_write_mem8(loader.buff_addr+chunk, data+chunk, rem);
 }
+
+#endif // HAVE_LIBYB

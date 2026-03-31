@@ -1,6 +1,8 @@
 #ifndef USBSHUPITOCONN_H
 #define USBSHUPITOCONN_H
 
+#ifdef HAVE_LIBYB
+
 #include "connection.h"
 #include "usbacmconn.h"
 #include "shupitoconn.h"
@@ -41,5 +43,7 @@ private:
     ConnectionPointer<UsbAcmConnection2> m_acm_conn;
     ConnectionPointer<PortShupitoConnection> m_shupito_conn;
 };
+
+#endif // HAVE_LIBYB
 
 #endif // USBSHUPITOCONN_H

@@ -257,7 +257,9 @@ void ChooseConnectionDlg::connAdded(Connection * conn)
     switch (conn->getType())
     {
     case CONNECTION_LIBYB_USB:
+#ifdef HAVE_LIBYB
     case CONNECTION_USB_ACM2:
+#endif
     case CONNECTION_SHUPITO23:
     case CONNECTION_USB_SHUPITO:
         item->setIcon(QIcon(":/icons/icons/usb-conn.png"));
@@ -367,6 +369,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             setActiveProgBtn(tc->programmerType());
         }
         break;
+#ifdef HAVE_LIBYB
     case CONNECTION_USB_ACM2:
         {
             UsbAcmConnection2 * c = static_cast<UsbAcmConnection2 *>(conn);
@@ -392,6 +395,7 @@ void ChooseConnectionDlg::updateDetailsUi(Connection * conn)
             setActiveProgBtn(c->programmerType());
         }
         break;
+#endif
     case CONNECTION_USB_SHUPITO:
     case CONNECTION_SHUPITO23:
         {
@@ -475,9 +479,11 @@ void ChooseConnectionDlg::on_actionCreateUdpSocket_triggered()
 
 void ChooseConnectionDlg::on_actionCreateUsbAcmConn_triggered()
 {
+#ifdef HAVE_LIBYB
     UsbAcmConnection2 * conn = sConMgr2.createUsbAcmConn();
     conn->setName(tr("New USB connection"));
     this->focusNewConn(conn);
+#endif
 }
 
 void ChooseConnectionDlg::on_actionRemoveConnection_triggered()
@@ -670,6 +676,7 @@ void ChooseConnectionDlg::on_tcPortEdit_valueChanged(int arg1)
     }
 }
 
+#ifdef HAVE_LIBYB
 void ChooseConnectionDlg::on_usbVidEdit_textChanged(QString const & value)
 {
     if (!m_current)
@@ -748,6 +755,7 @@ void ChooseConnectionDlg::on_usbStopBitsCombo_currentIndexChanged(int value)
 
     static_cast<UsbAcmConnection2 *>(m_current.data())->setStopBits((UsbAcmConnection2::stop_bits_t)value);
 }
+#endif // HAVE_LIBYB
 
 void ChooseConnectionDlg::on_actionConnect_triggered()
 {

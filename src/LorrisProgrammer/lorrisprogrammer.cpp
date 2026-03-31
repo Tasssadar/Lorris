@@ -779,7 +779,9 @@ void LorrisProgrammer::updateProgrammer()
                 m_programmer.reset(new avr232bootProgrammer(con, &m_logsink));
                 break;
             case programmer_atsam:
+#ifdef HAVE_LIBYB
                 m_programmer.reset(new AtsamProgrammer(con, &m_logsink));
+#endif
                 break;
             case programmer_avr109:
                 m_programmer.reset(new avr109Programmer(con, &m_logsink));

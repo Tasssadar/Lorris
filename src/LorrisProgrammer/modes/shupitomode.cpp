@@ -56,8 +56,10 @@ ShupitoMode *ShupitoMode::getMode(quint8 mode, Shupito *shupito, ShupitoDesc *de
             return new ShupitoSpiFlash(shupito);
         return nullptr;
     case MODE_JTAG:
+#ifdef HAVE_LIBYB
         if (desc->getConfig("fe047e35-dec8-48ab-b194-e3762c8f6b66"))
             return new ShupitoJtag(shupito);
+#endif
         return nullptr;
     case MODE_SPITUNNEL:
         if(desc->getConfig("633125ab-32e0-49ec-b240-7d845bb70b2d"))

@@ -1,3 +1,4 @@
+#ifdef HAVE_LIBYB
 /**********************************************
 **    This file is part of Lorris
 **    http://tasssadar.github.com/Lorris/
@@ -106,3 +107,5 @@ ProgrammerCapabilities FlipProgrammer::capabilities() const
     sources.eeprom = true;
     return sources;
 }
+
+#endif // HAVE_LIBYB

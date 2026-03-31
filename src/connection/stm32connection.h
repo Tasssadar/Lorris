@@ -8,6 +8,8 @@
 #ifndef STM32CONNECTION_H
 #define STM32CONNECTION_H
 
+#ifdef HAVE_LIBYB
+
 #include <libyb/usb/usb_device.hpp>
 #include <libyb/usb/interface_guard.hpp>
 #include <libyb/async/async_runner.hpp>
@@ -97,5 +99,7 @@ private:
 
     stlink_version m_version;
 };
+
+#endif // HAVE_LIBYB
 
 #endif // STM32CONNECTION_H

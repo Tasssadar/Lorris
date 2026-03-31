@@ -8,6 +8,8 @@
 #ifndef USBACMCONN_H
 #define USBACMCONN_H
 
+#ifdef HAVE_LIBYB
+
 #include "connection.h"
 #include "../misc/threadchannel.h"
 #include <libyb/async/async_runner.hpp>
@@ -132,5 +134,7 @@ private:
     ThreadChannel<uint8_t> m_incomingDataChannel;
     ThreadChannel<void> m_sendCompleted;
 };
+
+#endif // HAVE_LIBYB
 
 #endif // USBACMCONN_H

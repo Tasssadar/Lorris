@@ -1,6 +1,8 @@
 #ifndef ATSAM_PROGRAMMER_H
 #define ATSAM_PROGRAMMER_H
 
+#ifdef HAVE_LIBYB
+
 #include "../../shared/programmer.h"
 #include "../../connection/genericusbconn.h"
 #include <libyb/libyb/shupito/flip2.hpp>
@@ -67,4 +69,6 @@ private:
     ConnectionPointer<PortConnection> m_conn;
 };
 
-#endif
+#endif // HAVE_LIBYB
+
+#endif // ATSAM_PROGRAMMER_H

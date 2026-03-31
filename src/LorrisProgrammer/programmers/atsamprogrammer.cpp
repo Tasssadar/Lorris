@@ -1,3 +1,4 @@
+#ifdef HAVE_LIBYB
 #include "atsamprogrammer.h"
 #include "../../shared/defmgr.h"
 #include "../../shared/hexfile.h"
@@ -456,3 +457,5 @@ ProgrammerCapabilities AtsamProgrammer::capabilities() const
     ps.fuses = true;
     return ps;
 }
+
+#endif // HAVE_LIBYB

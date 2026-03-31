@@ -1,6 +1,8 @@
 #ifndef LORRIS_CONNECTION_USBSHUPITO23CONN_H
 #define LORRIS_CONNECTION_USBSHUPITO23CONN_H
 
+#ifdef HAVE_LIBYB
+
 #include "connection.h"
 #include "shupitoconn.h"
 #include "../misc/threadchannel.h"
@@ -83,5 +85,7 @@ private:
     std::unique_ptr<read_loop_ctx[]> m_read_loops;
     yb::task<void> read_loop(uint8_t i);
 };
+
+#endif // HAVE_LIBYB
 
 #endif // LORRIS_CONNECTION_USBSHUPITO23CONN_H
