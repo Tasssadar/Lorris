@@ -456,7 +456,13 @@ macx {
         ../dep/qextserialport/qextserialport.pri
 
     INCLUDEPATH += ../dep/SDL/include
-    LIBS += -lqwt_lorris
+    system_qwt {
+        LIBS += -F/opt/homebrew/Cellar/qwt-qt5/6.3.0/lib -framework qwt
+        INCLUDEPATH += /opt/homebrew/Cellar/qwt-qt5/6.3.0/lib/qwt.framework/Headers
+        QMAKE_LFLAGS += -F/opt/homebrew/Cellar/qwt-qt5/6.3.0/lib
+    } else {
+        LIBS += -lqwt_lorris
+    }
 
     SOURCES += \
         ../dep/qextserialport/src/qextserialenumerator_osx.cpp \
@@ -527,7 +533,8 @@ qsci_editor {
 
 qsci_system:unix {
     DEFINES += USE_QSCI
-    LIBS += -lqscintilla2
+    LIBS += -L/opt/homebrew/lib -lqscintilla2_qt6
+    INCLUDEPATH += /opt/homebrew/include
 }
 
 joystick:libenjoy {
